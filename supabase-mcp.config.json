@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "supabase-amazong": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-supabase"
+      ],
+      "env": {
+        "SUPABASE_URL": "https://dhtzybnkvpimmomzwrce.supabase.co",
+        "SUPABASE_KEY": "sb_secret_Ox7sEhu77tMawibsLmWhqw_sWeScQyK"
+      }
+    }
+  }
+}
