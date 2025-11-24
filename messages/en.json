@@ -348,5 +348,20 @@
         "helpful": "Helpful",
         "report": "Report",
         "seeAllReviews": "See all reviews"
+    },
+    "SearchFilters": {
+        "department": "Department",
+        "allDepartments": "All Departments",
+        "customerReviews": "Customer Reviews",
+        "andUp": "& Up",
+        "clearRating": "Clear rating filter",
+        "price": "Price",
+        "under25": "Under $25",
+        "range2550": "$25 to $50",
+        "range50100": "$50 to $100",
+        "range100200": "$100 to $200",
+        "above200": "$200 & Above",
+        "clearPrice": "Clear Price Filter",
+        "loadingCategories": "Loading categories..."
     }
 }

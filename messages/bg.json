@@ -348,5 +348,20 @@
         "helpful": "Полезно",
         "report": "Докладвай",
         "seeAllReviews": "Виж всички отзиви"
+    },
+    "SearchFilters": {
+        "department": "Отдел",
+        "allDepartments": "Всички отдели",
+        "customerReviews": "Клиентски отзиви",
+        "andUp": "и нагоре",
+        "clearRating": "Изчисти филтър за оценка",
+        "price": "Цена",
+        "under25": "Под 25 лв.",
+        "range2550": "25 до 50 лв.",
+        "range50100": "50 до 100 лв.",
+        "range100200": "100 до 200 лв.",
+        "above200": "Над 200 лв.",
+        "clearPrice": "Изчисти филтър за цена",
+        "loadingCategories": "Зареждане на категории..."
     }
 }

@@ -11,7 +11,7 @@ import { SidebarMenu } from "@/components/sidebar-menu"
 import { getCountryName } from "@/lib/geolocation"
 import { useEffect, useState, Suspense } from "react"
 import { Link, useRouter, usePathname } from "@/i18n/routing"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import {
   Select,
   SelectContent,
@@ -21,19 +21,52 @@ import {
 } from "@/components/ui/select"
 import { LanguageSwitcher } from "@/components/language-switcher"
 
+interface Category {
+  id: string
+  name: string
+  name_bg: string | null
+  slug: string
+}
+
 function SearchBar() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [query, setQuery] = useState(searchParams.get("q") || "")
   const [category, setCategory] = useState("all")
+  const [categories, setCategories] = useState<Category[]>([])
   const t = useTranslations('Navigation')
   const tCat = useTranslations('SearchCategories')
+  const locale = useLocale()
+
+  useEffect(() => {
+    // Fetch categories from API
+    fetch('/api/categories')
+      .then(res => res.json())
+      .then(data => {
+        if (data.categories) {
+          setCategories(data.categories)
+        }
+      })
+      .catch(err => console.error('Failed to fetch categories:', err))
+  }, [])
+
+  const getCategoryName = (cat: Category) => {
+    if (locale === 'bg' && cat.name_bg) {
+      return cat.name_bg
+    }
+    return cat.name
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
+    const params = new URLSearchParams()
     if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query)}&category=${category}`)
+      params.set('q', query)
     }
+    if (category !== 'all') {
+      params.set('category', category)
+    }
+    router.push(`/search?${params.toString()}`)
   }
 
   return (
@@ -44,18 +77,13 @@ function SearchBar() {
             <SelectTrigger className="h-full w-auto min-w-[50px] max-w-[150px] bg-transparent border-none text-xs text-slate-600 rounded-none focus:ring-0 gap-1 px-3 data-[placeholder]:text-slate-600">
               <SelectValue placeholder={tCat('all')} />
             </SelectTrigger>
-            <SelectContent className="bg-white text-black border-slate-200">
+            <SelectContent className="bg-white text-black border-slate-200 max-h-[400px]">
               <SelectItem value="all">{tCat('all')}</SelectItem>
-              <SelectItem value="arts">{tCat('arts')}</SelectItem>
-              <SelectItem value="automotive">{tCat('automotive')}</SelectItem>
-              <SelectItem value="baby">{tCat('baby')}</SelectItem>
-              <SelectItem value="beauty">{tCat('beauty')}</SelectItem>
-              <SelectItem value="books">{tCat('books')}</SelectItem>
-              <SelectItem value="computers">{tCat('computers')}</SelectItem>
-              <SelectItem value="electronics">{tCat('electronics')}</SelectItem>
-              <SelectItem value="fashion">{tCat('fashion')}</SelectItem>
-              <SelectItem value="home">{tCat('home')}</SelectItem>
-              <SelectItem value="toys">{tCat('toys')}</SelectItem>
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.slug}>
+                  {getCategoryName(cat)}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
