@@ -50,6 +50,25 @@
         "smartHome": "Smart Home",
         "artsCrafts": "Arts & Crafts",
         "automotive": "Automotive",
+        "baby": "Baby",
+        "beauty": "Beauty & Personal Care",
+        "womensFashion": "Women's Fashion",
+        "mensFashion": "Men's Fashion",
+        "girlsFashion": "Girls' Fashion",
+        "boysFashion": "Boys' Fashion",
+        "healthHousehold": "Health & Household",
+        "homeKitchen": "Home & Kitchen",
+        "industrialScientific": "Industrial & Scientific",
+        "luggage": "Luggage",
+        "moviesTV": "Movies & Television",
+        "petSupplies": "Pet Supplies",
+        "software": "Software",
+        "sportsOutdoors": "Sports & Outdoors",
+        "toolsHome": "Tools & Home Improvement",
+        "toysGames": "Toys & Games",
+        "videoGames": "Video Games",
+        "seeAll": "See All",
+        "seeLess": "See Less",
         "programsFeatures": "Programs & Features",
         "giftCards": "Gift Cards",
         "shopByInterest": "Shop By Interest",
@@ -109,6 +128,30 @@
             "toys": "Toys",
             "beauty": "Beauty",
             "home": "Home"
+        },
+        "dailyDeals": {
+            "title": "🔥 Daily Deals",
+            "subtitle": "Amazing discounts every day",
+            "cta": "See all deals",
+            "badge": "Up to 70% off",
+            "timer": "Time left",
+            "hours": "h",
+            "minutes": "m",
+            "seconds": "s"
+        },
+        "categoryCircles": {
+            "title": "Shop by Category",
+            "electronics": "Electronics",
+            "computers": "Computers",
+            "gaming": "Gaming",
+            "smartHome": "Smart Home",
+            "homeKitchen": "Home & Kitchen",
+            "fashion": "Fashion",
+            "beauty": "Beauty",
+            "toys": "Toys",
+            "sports": "Sports",
+            "books": "Books",
+            "automotive": "Automotive"
         }
     },
     "Product": {
@@ -290,5 +333,20 @@
             "title": "Your Messages",
             "desc": "View messages from Amazon and sellers"
         }
+    },
+    "Reviews": {
+        "customerReviews": "Customer reviews",
+        "outOf5": "out of 5",
+        "globalRatings": "{count} global ratings",
+        "star": "star",
+        "reviewThisProduct": "Review this product",
+        "shareThoughts": "Share your thoughts with other customers",
+        "writeReview": "Write a customer review",
+        "topReviews": "Top reviews from the United States",
+        "verifiedPurchase": "Verified Purchase",
+        "helpfulCount": "{count} people found this helpful",
+        "helpful": "Helpful",
+        "report": "Report",
+        "seeAllReviews": "See all reviews"
     }
 }

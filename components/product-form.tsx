@@ -22,13 +22,14 @@ export function ProductForm({ userId }: { userId: string }) {
     setError(null)
 
     const formData = new FormData(e.currentTarget)
+    const imageUrl = formData.get("image_url") as string
     const product = {
       title: formData.get("title") as string,
       description: formData.get("description") as string,
       price: Number.parseFloat(formData.get("price") as string),
       category: formData.get("category") as string,
       stock: Number.parseInt(formData.get("stock") as string),
-      image_url: formData.get("image_url") as string,
+      images: imageUrl ? [imageUrl] : [], // Use images array instead of image_url
       seller_id: userId,
     }
 

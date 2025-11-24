@@ -1,9 +1,9 @@
 -- Seed Categories
 INSERT INTO public.categories (name, slug, image_url)
 VALUES
-  ('Electronics', 'electronics', 'https://images.unsplash.com/photo-1498049860654-af1a5c5668ba?w=500&q=80'),
+  ('Electronics', 'electronics', 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=500&q=80'),
   ('Computers', 'computers', 'https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=500&q=80'),
-  ('Smart Home', 'smart-home', 'https://images.unsplash.com/photo-1558002038-1091a166111c?w=500&q=80'),
+  ('Smart Home', 'smart-home', 'https://images.unsplash.com/photo-1558002038-1055907df827?w=500&q=80'),
   ('Home & Kitchen', 'home', 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=500&q=80'),
   ('Fashion', 'fashion', 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80'),
   ('Beauty', 'beauty', 'https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=500&q=80'),

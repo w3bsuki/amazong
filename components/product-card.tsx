@@ -48,7 +48,7 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
   const formattedDate = new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'short', day: 'numeric' }).format(deliveryDate)
 
   return (
-    <Card className="bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-300 transition-all duration-200 flex flex-col group relative">
+    <Card className="bg-white border border-slate-200 rounded-lg overflow-hidden hover:border-slate-400 flex flex-col group relative">
       {/* Hit Area for Nav */}
       <Link href={`/product/${id}`} className="absolute inset-0 z-0" aria-label={`View ${title}`} />
 
@@ -65,7 +65,7 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
       </CardContent>
 
       <CardFooter className="p-4 flex-1 flex flex-col z-10 pointer-events-none bg-white">
-        <h3 className="text-sm font-medium text-slate-900 group-hover:text-amber-600 line-clamp-2 mb-1 leading-snug transition-colors">
+        <h3 className="text-sm font-medium text-slate-900 group-hover:text-amber-600 group-hover:underline line-clamp-2 mb-1 leading-snug">
           {title}
         </h3>
 
@@ -92,7 +92,7 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
 
           <Button
             onClick={handleAddToCart}
-            className="w-full bg-amber-400 hover:bg-amber-500 text-slate-900 text-xs font-semibold py-2 rounded-full transition-colors active:scale-95"
+            className="w-full bg-amber-400 hover:bg-amber-500 text-slate-900 text-xs font-semibold py-2 rounded-full"
           >
             {t('addToCart')}
           </Button>

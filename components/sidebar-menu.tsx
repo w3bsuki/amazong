@@ -31,6 +31,23 @@ export function SidebarMenu() {
                 { label: t('smartHome'), href: "/search?q=Smart+Home" },
                 { label: t('artsCrafts'), href: "/search?category=arts" },
                 { label: t('automotive'), href: "/search?category=automotive" },
+                { label: t('baby'), href: "/search?category=baby" },
+                { label: t('beauty'), href: "/search?category=beauty" },
+                { label: t('womensFashion'), href: "/search?category=fashion" },
+                { label: t('mensFashion'), href: "/search?category=fashion" },
+                { label: t('girlsFashion'), href: "/search?category=fashion" },
+                { label: t('boysFashion'), href: "/search?category=fashion" },
+                { label: t('healthHousehold'), href: "/search?category=health" },
+                { label: t('homeKitchen'), href: "/search?category=home" },
+                { label: t('industrialScientific'), href: "/search?category=industrial" },
+                { label: t('luggage'), href: "/search?category=luggage" },
+                { label: t('moviesTV'), href: "/search?category=movies" },
+                { label: t('petSupplies'), href: "/search?category=pets" },
+                { label: t('software'), href: "/search?category=software" },
+                { label: t('sportsOutdoors'), href: "/search?category=sports" },
+                { label: t('toolsHome'), href: "/search?category=tools" },
+                { label: t('toysGames'), href: "/search?category=toys" },
+                { label: t('videoGames'), href: "/search?category=videogames" },
             ],
         },
         {
@@ -56,6 +73,15 @@ export function SidebarMenu() {
         },
     ]
 
+    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
+
+    const toggleSection = (title: string) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [title]: !prev[title]
+        }))
+    }
+
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -80,28 +106,45 @@ export function SidebarMenu() {
                 </SheetHeader>
                 <ScrollArea className="h-[calc(100vh-60px)] pb-4">
                     <div className="flex flex-col">
-                        {menuSections.map((section, index) => (
-                            <div key={index}>
-                                <div className="px-9 py-4">
-                                    <h3 className="font-bold text-lg mb-2 text-[#111111]">{section.title}</h3>
-                                    <ul className="space-y-0">
-                                        {section.items.map((item, i) => (
-                                            <li key={i}>
-                                                <Link
-                                                    href={item.href}
-                                                    className="flex items-center justify-between py-3 text-sm text-[#111111] hover:bg-zinc-100 -mx-9 px-9 cursor-pointer group"
-                                                    onClick={() => setOpen(false)}
-                                                >
-                                                    <span>{item.label}</span>
-                                                    <ChevronRight className="h-4 w-4 text-zinc-400 group-hover:text-[#111111]" />
-                                                </Link>
-                                            </li>
-                                        ))}
-                                    </ul>
+                        {menuSections.map((section, index) => {
+                            const isExpandable = section.items.length > 4;
+                            const isExpanded = expandedSections[section.title];
+                            const visibleItems = isExpandable && !isExpanded ? section.items.slice(0, 4) : section.items;
+
+                            return (
+                                <div key={index}>
+                                    <div className="px-9 py-4">
+                                        <h3 className="font-bold text-lg mb-2 text-[#111111]">{section.title}</h3>
+                                        <ul className="space-y-0">
+                                            {visibleItems.map((item, i) => (
+                                                <li key={i}>
+                                                    <Link
+                                                        href={item.href}
+                                                        className="flex items-center justify-between py-3 text-sm text-[#111111] hover:bg-zinc-100 -mx-9 px-9 cursor-pointer group"
+                                                        onClick={() => setOpen(false)}
+                                                    >
+                                                        <span>{item.label}</span>
+                                                        <ChevronRight className="h-4 w-4 text-zinc-400 group-hover:text-[#111111]" />
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                            {isExpandable && (
+                                                <li>
+                                                    <button
+                                                        onClick={() => toggleSection(section.title)}
+                                                        className="flex items-center gap-1 py-3 text-sm text-[#111111] hover:bg-zinc-100 -mx-9 px-9 cursor-pointer w-[calc(100%+4.5rem)] text-left font-medium"
+                                                    >
+                                                        <span>{isExpanded ? t('seeLess') : t('seeAll')}</span>
+                                                        <ChevronRight className={`h-4 w-4 text-zinc-400 transition-transform ${isExpanded ? '-rotate-90' : 'rotate-90'}`} />
+                                                    </button>
+                                                </li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                    {index < menuSections.length - 1 && <Separator className="bg-zinc-200" />}
                                 </div>
-                                {index < menuSections.length - 1 && <Separator className="bg-zinc-200" />}
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 </ScrollArea>
             </SheetContent>

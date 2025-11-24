@@ -12,6 +12,8 @@ export default async function SearchPage({
     minPrice?: string
     maxPrice?: string
     minRating?: string
+    subcategory?: string
+    tag?: string
   }
 }) {
   const supabase = await createClient()
@@ -39,6 +41,14 @@ export default async function SearchPage({
 
     if (searchParams.maxPrice) {
       dbQuery = dbQuery.lte("price", Number(searchParams.maxPrice))
+    }
+
+    if (searchParams.subcategory) {
+      dbQuery = dbQuery.ilike("subcategory", `%${searchParams.subcategory}%`)
+    }
+
+    if (searchParams.tag) {
+      dbQuery = dbQuery.contains("tags", [searchParams.tag])
     }
 
     // Note: Rating is not in DB yet, so we can't filter by it on server.

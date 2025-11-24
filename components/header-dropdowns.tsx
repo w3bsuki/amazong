@@ -20,22 +20,20 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
     const router = useRouter()
 
     const handleSignOut = async () => {
-        const supabase = createClient()
-        await supabase.auth.signOut()
-        router.refresh()
+        router.push('/api/auth/sign-out')
     }
 
     return (
         <HoverCard openDelay={100} closeDelay={200}>
             <HoverCardTrigger asChild>
                 <Link href={user ? "/account" : "/auth/login"}>
-                    <Button variant="ghost" className="flex flex-col items-start hover:bg-zinc-800 h-[50px] text-white border-none ring-0 focus-visible:ring-0 rounded-[2px] px-2">
-                        <span className="text-[12px] text-[#ccc] leading-[14px]">
+                    <Button variant="ghost" className="flex flex-col items-start leading-none gap-0 text-white border border-transparent hover:border-white/20 rounded transition-colors duration-200 p-2 px-3">
+                        <span className="text-[10px] text-slate-200">
                             {user ? `${t('hello')}, ${user.email?.split('@')[0]}` : t('helloSignIn')}
                         </span>
-                        <span className="font-bold text-[14px] flex items-center gap-1 leading-[15px]">
+                        <span className="font-bold text-sm flex items-center gap-1 mt-0.5">
                             {t('accountAndLists')}
-                            <span className="text-[10px] text-[#a0a0a0]">▼</span>
+                            <span className="text-[10px] text-slate-400">▼</span>
                         </span>
                     </Button>
                 </Link>

@@ -5,7 +5,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Package, User, CreditCard, Lock, MapPin, MessageSquare, Headphones } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 
-export default async function AccountPage() {
+interface AccountPageProps {
+  params: Promise<{
+    locale: string
+  }>
+}
+
+export default async function AccountPage({ params }: AccountPageProps) {
+  const { locale } = await params
   const supabase = await createClient()
 
   if (!supabase) {
@@ -20,7 +27,7 @@ export default async function AccountPage() {
     redirect("/auth/login")
   }
 
-  const t = await getTranslations('Account')
+  const t = await getTranslations({ locale, namespace: 'Account' })
 
   const menuItems = [
     {

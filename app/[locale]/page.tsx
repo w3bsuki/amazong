@@ -4,6 +4,8 @@ import { ProductCard } from "@/components/product-card"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
+import { CategoryCircles } from "@/components/category-circles"
+import { DailyDealsBanner } from "@/components/daily-deals-banner"
 
 import { WelcomeToast } from "@/components/welcome-toast"
 import { getTranslations, getLocale } from "next-intl/server"
@@ -11,12 +13,6 @@ import { getTranslations, getLocale } from "next-intl/server"
 export default async function Home() {
   const supabase = await createClient()
   const locale = await getLocale()
-
-  interface Category {
-    title: string
-    image: string
-    link: string
-  }
 
   interface Product {
     id: string
@@ -42,8 +38,6 @@ export default async function Home() {
   const t = await getTranslations('Home')
   const tProduct = await getTranslations('Product')
 
-  let categories: Category[] = []
-
   let featuredProducts: Product[] = []
 
   let deals: Deal[] = []
@@ -52,20 +46,6 @@ export default async function Home() {
     if (supabase) {
       const { data: authData } = await supabase.auth.getUser()
       user = authData?.user || null
-
-      // Fetch Categories
-      const { data: categoriesData } = await supabase
-        .from('categories')
-        .select('*')
-        .limit(4)
-
-      if (categoriesData && categoriesData.length > 0) {
-        categories = categoriesData.map((c: any) => ({
-          title: c.name,
-          image: c.image_url,
-          link: `/search?category=${c.slug}`
-        }))
-      }
 
       // Fetch Featured Products (random or specific logic)
       const { data: productsData } = await supabase
@@ -121,35 +101,182 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center bg-slate-50 pb-10">
       <WelcomeToast />
-      <HeroCarousel />
+      <HeroCarousel locale={locale} />
 
-      {/* Category Grid - Overlapping the Hero */}
+      {/* Main Content Container */}
       <div className="w-full max-w-[1600px] px-4 -mt-20 sm:-mt-32 md:-mt-60 z-10 relative mb-6">
+        
+        {/* NEW: Category Circles - Horizontal scrollable categories */}
+        <div className="mb-6">
+          <CategoryCircles locale={locale} />
+        </div>
+
+        {/* NEW: Daily Deals Banner */}
+        <div className="mb-6">
+          <DailyDealsBanner locale={locale} />
+        </div>
+
+        {/* Category Grid with Subcategories */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {categories.map((category, i) => (
-            <Card
-              key={i}
-              className="bg-white rounded-lg border-slate-200 shadow-md flex flex-col h-[380px] sm:h-[420px] p-5 cursor-pointer transition-colors duration-200"
-            >
-              <CardHeader className="p-0 mb-3">
-                <CardTitle className="text-xl font-bold text-slate-900 leading-tight">{category.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1 p-0 flex flex-col">
-                <Link href={category.link} className="flex flex-col h-full group">
-                  <div className="relative flex-1 w-full mb-3 overflow-hidden rounded">
-                    <img
-                      src={category.image || "/placeholder.svg"}
-                      alt={category.title}
-                      className="object-cover w-full h-full"
-                    />
+          {/* Computers Card */}
+          <Card className="bg-white rounded-lg border-slate-200 shadow-md flex flex-col h-[420px] p-5">
+            <CardHeader className="p-0 mb-3">
+              <CardTitle className="text-xl font-bold text-slate-900 leading-tight">
+                {locale === "bg" ? "Компютри" : "Computers"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 p-0 flex flex-col">
+              <div className="grid grid-cols-2 gap-3 flex-1">
+                <Link href="/search?category=laptops" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&q=80" alt="Laptops" className="object-cover w-full h-full" />
                   </div>
-                  <span className="text-cyan-700 group-hover:text-amber-600 group-hover:underline text-sm font-medium mt-auto transition-colors">
-                    {t('sections.seeMore')}
-                  </span>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Лаптопи" : "Laptops"}</span>
                 </Link>
-              </CardContent>
-            </Card>
-          ))}
+                <Link href="/search?category=desktops" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1593062096033-9a26b09da705?w=300&q=80" alt="Desktops" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Настолни" : "Desktops"}</span>
+                </Link>
+                <Link href="/search?category=monitors" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300&q=80" alt="Monitors" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Монитори" : "Monitors"}</span>
+                </Link>
+                <Link href="/search?category=accessories" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1625723044792-44de16ccb4e9?w=300&q=80" alt="Accessories" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Аксесоари" : "Accessories"}</span>
+                </Link>
+              </div>
+              <Link href="/search?category=computers" className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium mt-3">
+                {t('sections.seeMore')}
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Home & Kitchen Card */}
+          <Card className="bg-white rounded-lg border-slate-200 shadow-md flex flex-col h-[420px] p-5">
+            <CardHeader className="p-0 mb-3">
+              <CardTitle className="text-xl font-bold text-slate-900 leading-tight">
+                {locale === "bg" ? "Дом и кухня" : "Home & Kitchen"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 p-0 flex flex-col">
+              <div className="grid grid-cols-2 gap-3 flex-1">
+                <Link href="/search?category=kitchen" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&q=80" alt="Kitchen" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Кухня" : "Kitchen"}</span>
+                </Link>
+                <Link href="/search?category=furniture" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&q=80" alt="Furniture" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Мебели" : "Furniture"}</span>
+                </Link>
+                <Link href="/search?category=bedding" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=300&q=80" alt="Bedding" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Спално бельо" : "Bedding"}</span>
+                </Link>
+                <Link href="/search?category=decor" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300&q=80" alt="Decor" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Декорация" : "Decor"}</span>
+                </Link>
+              </div>
+              <Link href="/search?category=home" className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium mt-3">
+                {t('sections.seeMore')}
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Fashion Card */}
+          <Card className="bg-white rounded-lg border-slate-200 shadow-md flex flex-col h-[420px] p-5">
+            <CardHeader className="p-0 mb-3">
+              <CardTitle className="text-xl font-bold text-slate-900 leading-tight">
+                {locale === "bg" ? "Мода" : "Fashion"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 p-0 flex flex-col">
+              <div className="grid grid-cols-2 gap-3 flex-1">
+                <Link href="/search?category=women" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=300&q=80" alt="Women" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Дамски" : "Women"}</span>
+                </Link>
+                <Link href="/search?category=men" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=300&q=80" alt="Men" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Мъжки" : "Men"}</span>
+                </Link>
+                <Link href="/search?category=shoes" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&q=80" alt="Shoes" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Обувки" : "Shoes"}</span>
+                </Link>
+                <Link href="/search?category=bags" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=300&q=80" alt="Bags" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Чанти" : "Bags"}</span>
+                </Link>
+              </div>
+              <Link href="/search?category=fashion" className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium mt-3">
+                {t('sections.seeMore')}
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Beauty Card */}
+          <Card className="bg-white rounded-lg border-slate-200 shadow-md flex flex-col h-[420px] p-5">
+            <CardHeader className="p-0 mb-3">
+              <CardTitle className="text-xl font-bold text-slate-900 leading-tight">
+                {locale === "bg" ? "Красота" : "Beauty"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 p-0 flex flex-col">
+              <div className="grid grid-cols-2 gap-3 flex-1">
+                <Link href="/search?category=skincare" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=300&q=80" alt="Skincare" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Грижа за кожата" : "Skincare"}</span>
+                </Link>
+                <Link href="/search?category=makeup" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=300&q=80" alt="Makeup" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Грим" : "Makeup"}</span>
+                </Link>
+                <Link href="/search?category=haircare" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&q=80" alt="Haircare" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Грижа за косата" : "Haircare"}</span>
+                </Link>
+                <Link href="/search?category=fragrance" className="flex flex-col group">
+                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&q=80" alt="Fragrance" className="object-cover w-full h-full" />
+                  </div>
+                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Парфюми" : "Fragrance"}</span>
+                </Link>
+              </div>
+              <Link href="/search?category=beauty" className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium mt-3">
+                {t('sections.seeMore')}
+              </Link>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Featured Products Row */}
@@ -158,7 +285,7 @@ export default async function Home() {
             <h2 className="text-xl font-bold text-slate-900">{t('sections.topPicks')}</h2>
             <Link
               href="/search?q=featured"
-              className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium transition-colors"
+              className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium"
             >
               {t('sections.seeMore')}
             </Link>
@@ -176,7 +303,7 @@ export default async function Home() {
             <h2 className="text-xl font-bold text-slate-900">{t('sections.dealsOfDay')}</h2>
             <Link
               href="/search?q=deals"
-              className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium transition-colors"
+              className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium"
             >
               {t('sections.seeAllDeals')}
             </Link>
@@ -267,7 +394,7 @@ export default async function Home() {
             <h3 className="text-[21px] font-bold mb-3 text-[#0F1111]">{t('sections.newArrivals')}</h3>
             <Link href="/search?q=toys" className="flex-1 group overflow-hidden">
               <div className="relative w-full h-full overflow-hidden rounded-[2px] bg-gray-100">
-                <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600&q=80" alt="New Toys" className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105" />
+                <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600&q=80" alt="New Toys" className="object-cover w-full h-full" />
               </div>
             </Link>
             <div className="mt-auto pt-3">
@@ -287,7 +414,7 @@ export default async function Home() {
                 <img
                   src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80"
                   alt="Fashion Trends"
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                  className="object-cover w-full h-full"
                 />
               </div>
             </Link>

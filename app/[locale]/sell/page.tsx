@@ -11,6 +11,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
+import { ImageUpload } from "@/components/image-upload"
+
+interface UploadedImage {
+  url: string
+  thumbnailUrl: string
+}
 
 export default function SellPage() {
   const [loading, setLoading] = useState(true)
@@ -28,7 +34,9 @@ export default function SellPage() {
   const [productDescription, setProductDescription] = useState("")
   const [productPrice, setProductPrice] = useState("")
   const [productCategory, setProductCategory] = useState("")
-  const [productImage, setProductImage] = useState("")
+  const [productSubcategory, setProductSubcategory] = useState("")
+  const [productTags, setProductTags] = useState("")
+  const [productImages, setProductImages] = useState<UploadedImage[]>([])
   const [categories, setCategories] = useState<any[]>([])
 
   useEffect(() => {
@@ -42,20 +50,25 @@ export default function SellPage() {
   }
 
   async function checkUser() {
+    console.log("Checking user...")
     try {
       const { data: { user } } = await supabase.auth.getUser()
+      console.log("User found:", user?.id)
       if (!user) {
+        console.log("No user, redirecting...")
         router.push("/auth/login?next=/sell")
         return
       }
       setUser(user)
 
       // Check if user is a seller
-      const { data: sellerData } = await supabase
+      const { data: sellerData, error } = await supabase
         .from("sellers")
         .select("*")
         .eq("id", user.id)
         .single()
+
+      console.log("Seller data:", sellerData, "Error:", error)
 
       if (sellerData) {
         setSeller(sellerData)
@@ -64,6 +77,7 @@ export default function SellPage() {
       console.error("Error checking user:", error)
     } finally {
       setLoading(false)
+      console.log("Loading set to false")
     }
   }
 
@@ -71,27 +85,22 @@ export default function SellPage() {
     e.preventDefault()
     setSubmitting(true)
     try {
-      // 1. Ensure profile exists
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .upsert({
-          id: user.id,
-          email: user.email,
-          role: 'seller'
-        })
+      const response = await fetch('/api/stores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          storeName,
+          description: storeDescription,
+        }),
+      })
 
-      if (profileError) throw profileError
+      const data = await response.json()
 
-      // 2. Create seller record
-      const { error: sellerError } = await supabase
-        .from("sellers")
-        .insert({
-          id: user.id,
-          store_name: storeName,
-          description: storeDescription
-        })
-
-      if (sellerError) throw sellerError
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create store")
+      }
 
       toast.success("Store created successfully!")
       setSeller({ id: user.id, store_name: storeName })
@@ -104,32 +113,41 @@ export default function SellPage() {
 
   async function handleCreateProduct(e: React.FormEvent) {
     e.preventDefault()
+    
+    if (productImages.length === 0) {
+      toast.error("Please upload at least one product image")
+      return
+    }
+    
     setSubmitting(true)
     try {
-      // Get category ID (mock for now, ideally fetch from DB)
-      // For MVP we will just use a hardcoded UUID if we can't find one, or insert one.
-      // Actually, let's fetch categories first or just use a known one.
-      // For simplicity, we'll just insert without category_id if it's optional, or fetch one.
-      // The schema says category_id is optional.
-
-      const { error } = await supabase
-        .from("products")
-        .insert({
-          seller_id: user.id,
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           title: productTitle,
           description: productDescription,
-          price: parseFloat(productPrice),
-          images: [productImage],
-          category_id: productCategory || null,
-        })
+          price: productPrice,
+          categoryId: productCategory,
+          subcategory: productSubcategory,
+          tags: productTags ? productTags.split(',').map(t => t.trim()).filter(t => t) : [],
+          images: productImages,
+        }),
+      })
 
-      if (error) throw error
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to list product")
+      }
 
       toast.success("Product listed successfully!")
       setProductTitle("")
       setProductDescription("")
       setProductPrice("")
-      setProductImage("")
+      setProductImages([])
       router.push("/search?q=" + encodeURIComponent(productTitle))
     } catch (error: any) {
       toast.error(error.message || "Failed to list product")
@@ -226,6 +244,27 @@ export default function SellPage() {
               </Select>
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="subcategory">Subcategory</Label>
+                <Input
+                  id="subcategory"
+                  value={productSubcategory}
+                  onChange={(e) => setProductSubcategory(e.target.value)}
+                  placeholder="e.g. Vase"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="tags">Tags</Label>
+                <Input
+                  id="tags"
+                  value={productTags}
+                  onChange={(e) => setProductTags(e.target.value)}
+                  placeholder="e.g. flower, glass, decor"
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -238,17 +277,11 @@ export default function SellPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                value={productImage}
-                onChange={(e) => setProductImage(e.target.value)}
-                required
-                placeholder="https://example.com/image.jpg"
-              />
-              <p className="text-xs text-gray-500">For MVP, please provide a direct image URL.</p>
-            </div>
+            <ImageUpload 
+              onImagesChange={setProductImages}
+              maxImages={5}
+              maxSizeMB={5}
+            />
 
             <Button type="submit" className="w-full bg-[#f08804] hover:bg-[#d67904] text-black" disabled={submitting}>
               {submitting ? "Listing Product..." : "List Product"}

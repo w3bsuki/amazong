@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 export default function Page() {
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
@@ -37,6 +38,9 @@ export default function Page() {
         password,
         options: {
           emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/?welcome=true`,
+          data: {
+            full_name: name,
+          },
         },
       })
       if (error) throw error
@@ -62,6 +66,20 @@ export default function Page() {
             <CardContent>
               <form onSubmit={handleSignUp}>
                 <div className="flex flex-col gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="name" className="font-bold text-xs">
+                      Your name
+                    </Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      placeholder="First and last name"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="h-8 rounded-[3px] border-zinc-400 focus-visible:ring-1 focus-visible:ring-[#e77600] focus-visible:border-[#e77600]"
+                    />
+                  </div>
                   <div className="grid gap-2">
                     <Label htmlFor="email" className="font-bold text-xs">
                       Email

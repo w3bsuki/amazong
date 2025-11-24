@@ -110,9 +110,9 @@ export function SiteHeader({ user }: SiteHeaderProps) {
           </Link>
 
           {/* Deliver to */}
-          <Button variant="ghost" className="hidden lg:flex flex-col leading-none text-slate-300 hover:text-white text-xs ml-2 p-2 border border-transparent hover:border-white/20 rounded transition-colors duration-200">
-            <span className="text-slate-400 font-normal">{t('deliverTo')}</span>
-            <div className="flex items-center gap-1 font-medium text-sm text-white">
+          <Button variant="ghost" className="hidden lg:flex flex-col items-start leading-none gap-0 text-slate-300 hover:text-white text-xs ml-2 p-2 px-3 border border-transparent hover:border-white/20 rounded transition-colors duration-200">
+            <span className="text-slate-400 font-normal text-[10px]">{t('deliverTo')}</span>
+            <div className="flex items-center gap-1 font-medium text-sm text-white mt-0.5">
               <MapPin className="h-3.5 w-3.5" />
               <span>{country}</span>
             </div>
@@ -132,14 +132,14 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             <AccountDropdown user={user} />
 
             <Link href="/account/orders">
-              <Button variant="ghost" className="hidden md:flex flex-col items-start leading-tight p-2 border border-transparent hover:border-white/20 rounded transition-colors duration-200">
-                <span className="text-xs text-slate-200">{t('returns')}</span>
-                <span className="text-sm font-medium">{t('orders')}</span>
+              <Button variant="ghost" className="hidden md:flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-white/20 rounded transition-colors duration-200">
+                <span className="text-[10px] text-slate-200">{t('returns')}</span>
+                <span className="text-sm font-medium mt-0.5">{t('orders')}</span>
               </Button>
             </Link>
 
             <Link href="/cart">
-              <Button variant="ghost" className="flex items-end gap-1 p-2 border border-transparent hover:border-white/20 rounded relative transition-colors duration-200 group">
+              <Button variant="ghost" className="flex items-end gap-1 p-2 px-3 border border-transparent hover:border-white/20 rounded relative transition-colors duration-200 group">
                 <div className="relative">
                   <ShoppingCart className="h-7 w-7 group-hover:scale-105 transition-transform" />
                   <span className="absolute -top-1 -right-1 bg-amber-400 text-slate-900 text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full transition-transform">
@@ -157,10 +157,10 @@ export function SiteHeader({ user }: SiteHeaderProps) {
       <nav className="bg-slate-800 text-sm py-1.5 px-4 overflow-x-auto no-scrollbar border-t border-slate-700">
         <div className="flex items-center gap-5 whitespace-nowrap text-slate-200">
           <SidebarMenu />
-          <Link href="/todays-deals" className="hover:text-white transition-colors">{t('todaysDeals')}</Link>
-          <Link href="/customer-service" className="hover:text-white transition-colors">{t('customerService')}</Link>
-          <Link href="/registry" className="hover:text-white transition-colors">{t('registry')}</Link>
-          <Link href="/gift-cards" className="hover:text-white transition-colors">{t('giftCards')}</Link>
+          <Link href="/todays-deals" className="hover:text-white hover:underline transition-colors">{t('todaysDeals')}</Link>
+          <Link href="/customer-service" className="hover:text-white hover:underline transition-colors">{t('customerService')}</Link>
+          <Link href="/registry" className="hover:text-white hover:underline transition-colors">{t('registry')}</Link>
+          <Link href="/gift-cards" className="hover:text-white hover:underline transition-colors">{t('giftCards')}</Link>
           <Link href="/sell" className="hover:text-white transition-colors font-medium text-amber-400 hover:underline">{t('sell')}</Link>
         </div>
       </nav>
