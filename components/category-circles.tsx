@@ -90,6 +90,55 @@ const categories: Category[] = [
     slug: "automotive",
     icon: "🚗",
     gradient: "from-red-500 to-red-700"
+  },
+  {
+    name: "Градина",
+    nameEn: "Garden",
+    slug: "garden",
+    icon: "🌱",
+    gradient: "from-emerald-500 to-emerald-700"
+  },
+  {
+    name: "Здраве",
+    nameEn: "Health",
+    slug: "health",
+    icon: "💊",
+    gradient: "from-cyan-500 to-cyan-700"
+  },
+  {
+    name: "Бебета",
+    nameEn: "Baby",
+    slug: "baby",
+    icon: "👶",
+    gradient: "from-sky-400 to-sky-600"
+  },
+  {
+    name: "Домашни любимци",
+    nameEn: "Pets",
+    slug: "pets",
+    icon: "🐕",
+    gradient: "from-amber-500 to-amber-700"
+  },
+  {
+    name: "Офис",
+    nameEn: "Office",
+    slug: "office",
+    icon: "🖨️",
+    gradient: "from-gray-500 to-gray-700"
+  },
+  {
+    name: "Музика",
+    nameEn: "Music",
+    slug: "music",
+    icon: "🎵",
+    gradient: "from-violet-500 to-violet-700"
+  },
+  {
+    name: "Филми",
+    nameEn: "Movies",
+    slug: "movies",
+    icon: "🎬",
+    gradient: "from-indigo-500 to-indigo-700"
   }
 ]
 
@@ -134,67 +183,114 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
   }
 
   return (
-    <div className="relative w-full bg-white py-4 px-2 shadow-sm rounded-lg">
-      <h2 className="text-lg font-bold text-slate-900 mb-4 px-2">
+    <div className={cn(
+      "relative w-full overflow-hidden",
+      // Mobile: White card styling to sit cleanly below hero gradient
+      "bg-white pt-3 pb-2 border-0 rounded-none",
+      // Desktop: Card styling with border
+      "sm:py-4 sm:border sm:border-slate-200 sm:rounded"
+    )}>
+      <h2 className={cn(
+        "font-bold text-slate-900 mb-2",
+        // Mobile: Proper padding for safe area
+        "text-sm px-4",
+        // Desktop: Larger with proper padding
+        "sm:text-lg sm:mb-4 sm:px-4"
+      )}>
         {locale === "bg" ? "Пазарувай по категория" : "Shop by Category"}
       </h2>
       
-      {/* Left Arrow */}
-      <button
-        onClick={() => scroll("left")}
-        className={cn(
-          "absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow rounded-full p-2",
-          !canScrollLeft && "opacity-0 pointer-events-none"
-        )}
-        aria-label="Scroll left"
-      >
-        <ChevronLeft className="h-6 w-6 text-slate-700" />
-      </button>
-
-      {/* Scrollable Container */}
+      {/* Scrollable Container with snap scroll */}
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide px-2 pb-2"
+        className={cn(
+          "flex overflow-x-auto scrollbar-hide snap-x-mandatory",
+          // Mobile: Safe area padding on left/right with scroll padding
+          "gap-4 pl-4 pb-1 scroll-pl-4",
+          // Desktop: More spacing with padding
+          "sm:gap-4 sm:pl-4 sm:pb-2 sm:scroll-pl-4"
+        )}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
-        {categories.map((category) => (
+        {categories.map((category, index) => (
           <Link
             key={category.slug}
             href={`/search?category=${category.slug}`}
-            className="flex flex-col items-center gap-2 min-w-[100px] group"
+            className={cn(
+              "flex flex-col items-center gap-1.5 sm:gap-2.5 min-w-[72px] sm:min-w-[100px] group snap-start tap-transparent shrink-0",
+              // Add right padding to last item for safe area
+              index === categories.length - 1 && "mr-4 sm:mr-4"
+            )}
           >
-            {/* Circle with gradient and icon */}
+            {/* Circle with icon - larger touch target on mobile */}
             <div
               className={cn(
-                "w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center text-3xl md:text-4xl",
-                "bg-gradient-to-br shadow-md",
-                "ring-2 ring-white ring-offset-2 ring-offset-transparent",
-                "group-hover:ring-amber-400",
-                category.gradient
+                "rounded-full flex items-center justify-center",
+                // Mobile: Clean look with subtle border, no shadow
+                "size-14 text-xl bg-slate-50 border border-slate-200 shadow-none",
+                // Desktop: Larger with border styling
+                "sm:size-20 sm:text-3xl md:size-24 md:text-4xl",
+                "sm:bg-slate-100 sm:border sm:border-slate-200",
+                "group-hover:border-blue-400 group-hover:bg-blue-50",
+                "transition-all group-active:scale-95"
               )}
             >
               <span>{category.icon}</span>
             </div>
             
             {/* Category Name */}
-            <span className="text-xs md:text-sm font-medium text-slate-700 text-center group-hover:text-amber-600 group-hover:underline line-clamp-2 max-w-[90px]">
+            <span className={cn(
+              "font-medium text-center group-hover:text-blue-600 group-hover:underline line-clamp-2",
+              // Mobile: Smaller text, darker for visibility on light bg
+              "text-[11px] text-slate-800 max-w-[72px]",
+              // Desktop: Standard sizing
+              "sm:text-xs md:text-sm sm:text-slate-700 sm:max-w-[90px]"
+            )}>
               {locale === "bg" ? category.name : category.nameEn}
             </span>
           </Link>
         ))}
       </div>
 
-      {/* Right Arrow */}
+      {/* Left Arrow - Desktop only */}
+      <button
+        onClick={() => scroll("left")}
+        className={cn(
+          "absolute left-0 top-1/2 -translate-y-1/2 z-10",
+          "h-full w-12 bg-linear-to-r from-white via-white/90 to-transparent",
+          "flex items-center justify-start pl-1",
+          "transition-opacity",
+          "hidden sm:flex",
+          !canScrollLeft && "opacity-0 pointer-events-none"
+        )}
+        aria-label="Scroll left"
+      >
+        <ChevronLeft className="size-8 text-slate-600 drop-shadow" />
+      </button>
+
+      {/* Right Arrow - Desktop only */}
       <button
         onClick={() => scroll("right")}
         className={cn(
-          "absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow rounded-full p-2",
+          "absolute right-0 top-1/2 -translate-y-1/2 z-10",
+          "h-full w-12 bg-linear-to-l from-white via-white/90 to-transparent",
+          "flex items-center justify-end pr-1",
+          "transition-opacity",
+          "hidden sm:flex",
           !canScrollRight && "opacity-0 pointer-events-none"
         )}
         aria-label="Scroll right"
       >
-        <ChevronRight className="h-6 w-6 text-slate-700" />
+        <ChevronRight className="size-8 text-slate-600 drop-shadow" />
       </button>
+
+      {/* Mobile scroll indicator - subtle fade */}
+      <div 
+        className={cn(
+          "absolute right-0 top-0 bottom-0 w-6 bg-linear-to-l from-white to-transparent pointer-events-none sm:hidden transition-opacity",
+          !canScrollRight && "opacity-0"
+        )} 
+      />
     </div>
   )
 }

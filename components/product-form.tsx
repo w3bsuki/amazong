@@ -135,7 +135,7 @@ export function ProductForm({ userId }: { userId: string }) {
       <Button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-[#f7ca00] hover:bg-[#f2bd00] text-black border-none rounded-full font-normal shadow-sm"
+        className="w-full bg-[#f7ca00] hover:bg-[#f2bd00] text-black border-none rounded font-normal"
       >
         {isLoading ? "Adding Product..." : "Add Product"}
       </Button>

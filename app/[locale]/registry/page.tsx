@@ -2,10 +2,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Gift, Search, UserPlus } from "lucide-react"
 import Link from "next/link"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 export default function RegistryPage() {
     return (
         <div className="min-h-screen bg-white">
+            <div className="container mx-auto max-w-6xl px-4 pt-4">
+                <Breadcrumb items={[{ label: 'Registry & Gift Lists', icon: <Gift className="h-3.5 w-3.5" /> }]} />
+            </div>
+            
             {/* Hero Section */}
             <div className="relative bg-[#002f36] text-white py-16 px-4">
                 <div className="container mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between">

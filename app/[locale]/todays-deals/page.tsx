@@ -3,10 +3,11 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Star } from "lucide-react"
+import { Star, Percent } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { useTranslations } from "next-intl"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 export default function TodaysDealsPage() {
     const t = useTranslations('TodaysDeals')
@@ -84,9 +85,11 @@ export default function TodaysDealsPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-white pb-12">
+        <div className="min-h-screen bg-background pb-12">
             <div className="container mx-auto max-w-7xl px-4 py-6">
-                <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
+                <Breadcrumb items={[{ label: t('title'), icon: <Percent className="h-3.5 w-3.5" /> }]} />
+                
+                <h1 className="text-3xl font-bold mb-6 text-slate-900">{t('title')}</h1>
 
                 {/* Categories */}
                 <div className="flex flex-wrap gap-2 mb-8">
@@ -94,9 +97,9 @@ export default function TodaysDealsPage() {
                         <button
                             key={cat}
                             onClick={() => setActiveCategory(cat)}
-                            className={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${activeCategory === cat
-                                ? "bg-black text-white"
-                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeCategory === cat
+                                ? "bg-blue-600 text-white"
+                                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                                 }`}
                         >
                             {cat}
@@ -105,11 +108,11 @@ export default function TodaysDealsPage() {
                 </div>
 
                 {/* Deals Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                     {deals.map((deal) => (
-                        <Card key={deal.id} className="h-full hover:shadow-lg transition-shadow cursor-pointer border-gray-200">
+                        <Card key={deal.id} className="h-full hover:border-blue-400 transition-colors cursor-pointer border-slate-200 rounded overflow-hidden group">
                             <CardContent className="p-4">
-                                <div className="aspect-square relative mb-4 bg-gray-50 rounded-md overflow-hidden">
+                                <div className="aspect-square relative mb-4 bg-slate-50 rounded overflow-hidden">
                                     <img
                                         src={deal.image}
                                         alt={deal.title}
@@ -118,40 +121,40 @@ export default function TodaysDealsPage() {
                                 </div>
 
                                 <div className="flex items-center gap-2 mb-2">
-                                    <Badge className="bg-[#cc0c39] hover:bg-[#cc0c39] text-white rounded-sm px-1.5 py-0.5 text-xs font-bold">
+                                    <Badge className="bg-rose-600 hover:bg-rose-600 text-white rounded-md px-2 py-0.5 text-xs font-bold">
                                         {deal.discount}
                                     </Badge>
-                                    <span className="text-[#cc0c39] font-bold text-sm">{t('limitedTime')}</span>
+                                    <span className="text-rose-600 font-bold text-sm">{t('limitedTime')}</span>
                                 </div>
 
                                 <div className="mb-2">
                                     <span className="text-xl font-medium align-top">$</span>
-                                    <span className="text-3xl font-bold">{Math.floor(deal.price)}</span>
+                                    <span className="text-3xl font-bold text-slate-900">{Math.floor(deal.price)}</span>
                                     <span className="text-sm align-top">{deal.price.toFixed(2).split('.')[1]}</span>
-                                    <span className="text-gray-500 text-sm line-through ml-2">
+                                    <span className="text-slate-500 text-sm line-through ml-2">
                                         ${deal.originalPrice}
                                     </span>
                                 </div>
 
-                                <h3 className="text-sm font-medium line-clamp-2 mb-2 hover:text-[#c7511f] hover:underline">
+                                <h3 className="text-sm font-medium line-clamp-2 mb-2 text-slate-800 group-hover:text-blue-600 transition-colors">
                                     {deal.title}
                                 </h3>
 
                                 <div className="flex items-center gap-1 mb-2">
-                                    <div className="flex text-[#ffa41c]">
+                                    <div className="flex text-amber-500">
                                         {[...Array(5)].map((_, i) => (
                                             <Star
                                                 key={i}
-                                                className={`w-4 h-4 ${i < Math.floor(deal.rating) ? "fill-current" : "text-gray-300"}`}
+                                                className={`w-4 h-4 ${i < Math.floor(deal.rating) ? "fill-current" : "text-slate-200 fill-current"}`}
                                             />
                                         ))}
                                     </div>
-                                    <span className="text-xs text-[#007185] hover:underline cursor-pointer">
+                                    <span className="text-xs text-blue-600 font-medium hover:underline cursor-pointer">
                                         {deal.reviews.toLocaleString()}
                                     </span>
                                 </div>
 
-                                <p className="text-xs text-gray-500">{deal.timeLeft}</p>
+                                <p className="text-xs text-slate-500">{deal.timeLeft}</p>
                             </CardContent>
                         </Card>
                     ))}

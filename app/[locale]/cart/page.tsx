@@ -5,8 +5,9 @@ import Link from "next/link"
 import { useCart } from "@/lib/cart-context"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle2 } from "lucide-react"
+import { CheckCircle2, ShoppingCart } from "lucide-react"
 import { createCheckoutSession } from "@/app/actions/checkout"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
@@ -33,7 +34,9 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="container mx-auto p-4 bg-white dark:bg-zinc-900 min-h-screen">
-        <div className="bg-white p-8 rounded shadow-sm">
+        <Breadcrumb items={[{ label: 'Shopping Cart', icon: <ShoppingCart className="h-3.5 w-3.5" /> }]} />
+        
+        <div className="bg-white p-8 rounded shadow-sm mt-4">
           <h1 className="text-2xl font-bold mb-4">Your Amazon Cart is empty.</h1>
           <p className="mb-6">
             Your Shopping Cart lives to serve. Give it purpose — fill it with groceries, clothing, household supplies,
@@ -50,7 +53,9 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto p-4 bg-gray-100 dark:bg-zinc-900 min-h-screen">
-      <div className="flex flex-col lg:flex-row gap-6">
+      <Breadcrumb items={[{ label: 'Shopping Cart', icon: <ShoppingCart className="h-3.5 w-3.5" /> }]} />
+      
+      <div className="flex flex-col lg:flex-row gap-6 mt-4">
         {/* Cart Items */}
         <div className="flex-1 bg-white p-6 rounded shadow-sm">
           <div className="flex justify-between items-end mb-2">

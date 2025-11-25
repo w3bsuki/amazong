@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { HeroCarousel } from "@/components/hero-carousel"
 import { ProductCard } from "@/components/product-card"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Link } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { CategoryCircles } from "@/components/category-circles"
 import { DailyDealsBanner } from "@/components/daily-deals-banner"
+import { cn } from "@/lib/utils"
 
 import { WelcomeToast } from "@/components/welcome-toast"
 import { getTranslations, getLocale } from "next-intl/server"
@@ -99,198 +100,192 @@ export default async function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-slate-50 pb-10">
+    <main className="flex min-h-screen flex-col items-center bg-slate-100 pb-10">
       <WelcomeToast />
       <HeroCarousel locale={locale} />
 
-      {/* Main Content Container */}
-      <div className="w-full max-w-[1600px] px-4 -mt-20 sm:-mt-32 md:-mt-60 z-10 relative mb-6">
+      {/* Main Content Container - overlaps hero like Amazon */}
+      <div className={cn(
+        "w-full max-w-[1500px] relative z-10 mb-6",
+        // Mobile: No horizontal padding, full bleed categories
+        "px-0",
+        // Desktop: Horizontal padding
+        "sm:px-3",
+        // Mobile: Minimal overlap, categories sit right at hero edge
+        "-mt-6",
+        // Desktop: More overlap for Amazon-style effect
+        "sm:-mt-28 md:-mt-32"
+      )}>
         
-        {/* NEW: Category Circles - Horizontal scrollable categories */}
-        <div className="mb-6">
+        {/* Category Circles - Horizontal scrollable categories */}
+        <div className="mb-2 sm:mb-4">
           <CategoryCircles locale={locale} />
         </div>
 
-        {/* NEW: Daily Deals Banner */}
-        <div className="mb-6">
+        {/* Daily Deals Banner */}
+        <div className="mb-4 px-3 sm:px-0">
           <DailyDealsBanner locale={locale} />
         </div>
 
         {/* Category Grid with Subcategories */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 px-3 sm:px-0">
           {/* Computers Card */}
-          <Card className="bg-white rounded-lg border-slate-200 shadow-md flex flex-col h-[420px] p-5">
-            <CardHeader className="p-0 mb-3">
-              <CardTitle className="text-xl font-bold text-slate-900 leading-tight">
-                {locale === "bg" ? "Компютри" : "Computers"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 p-0 flex flex-col">
-              <div className="grid grid-cols-2 gap-3 flex-1">
-                <Link href="/search?category=laptops" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&q=80" alt="Laptops" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Лаптопи" : "Laptops"}</span>
-                </Link>
-                <Link href="/search?category=desktops" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1593062096033-9a26b09da705?w=300&q=80" alt="Desktops" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Настолни" : "Desktops"}</span>
-                </Link>
-                <Link href="/search?category=monitors" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300&q=80" alt="Monitors" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Монитори" : "Monitors"}</span>
-                </Link>
-                <Link href="/search?category=accessories" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1625723044792-44de16ccb4e9?w=300&q=80" alt="Accessories" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Аксесоари" : "Accessories"}</span>
-                </Link>
-              </div>
-              <Link href="/search?category=computers" className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium mt-3">
-                {t('sections.seeMore')}
+          <div className="bg-white rounded border border-slate-200 p-2 sm:p-3">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 mb-1.5 sm:mb-2">
+              {locale === "bg" ? "Компютри" : "Computers"}
+            </h3>
+            <div className="grid grid-cols-2 gap-1 sm:gap-1.5">
+              <Link href="/search?category=laptops" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&q=80" alt="Laptops" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Лаптопи" : "Laptops"}</span>
               </Link>
-            </CardContent>
-          </Card>
+              <Link href="/search?category=desktops" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1593062096033-9a26b09da705?w=300&q=80" alt="Desktops" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Настолни" : "Desktops"}</span>
+              </Link>
+              <Link href="/search?category=monitors" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300&q=80" alt="Monitors" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Монитори" : "Monitors"}</span>
+              </Link>
+              <Link href="/search?category=accessories" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1625723044792-44de16ccb4e9?w=300&q=80" alt="Accessories" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Аксесоари" : "Accessories"}</span>
+              </Link>
+            </div>
+            <Link href="/search?category=computers" className="text-blue-600 hover:underline text-[10px] sm:text-xs mt-1.5 block">
+              {t('sections.seeMore')}
+            </Link>
+          </div>
 
           {/* Home & Kitchen Card */}
-          <Card className="bg-white rounded-lg border-slate-200 shadow-md flex flex-col h-[420px] p-5">
-            <CardHeader className="p-0 mb-3">
-              <CardTitle className="text-xl font-bold text-slate-900 leading-tight">
-                {locale === "bg" ? "Дом и кухня" : "Home & Kitchen"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 p-0 flex flex-col">
-              <div className="grid grid-cols-2 gap-3 flex-1">
-                <Link href="/search?category=kitchen" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&q=80" alt="Kitchen" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Кухня" : "Kitchen"}</span>
-                </Link>
-                <Link href="/search?category=furniture" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&q=80" alt="Furniture" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Мебели" : "Furniture"}</span>
-                </Link>
-                <Link href="/search?category=bedding" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=300&q=80" alt="Bedding" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Спално бельо" : "Bedding"}</span>
-                </Link>
-                <Link href="/search?category=decor" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300&q=80" alt="Decor" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Декорация" : "Decor"}</span>
-                </Link>
-              </div>
-              <Link href="/search?category=home" className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium mt-3">
-                {t('sections.seeMore')}
+          <div className="bg-white rounded border border-slate-200 p-2 sm:p-3">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 mb-1.5 sm:mb-2">
+              {locale === "bg" ? "Дом и кухня" : "Home"}
+            </h3>
+            <div className="grid grid-cols-2 gap-1 sm:gap-1.5">
+              <Link href="/search?category=kitchen" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&q=80" alt="Kitchen" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Кухня" : "Kitchen"}</span>
               </Link>
-            </CardContent>
-          </Card>
+              <Link href="/search?category=furniture" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&q=80" alt="Furniture" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Мебели" : "Furniture"}</span>
+              </Link>
+              <Link href="/search?category=bedding" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=300&q=80" alt="Bedding" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Спално бельо" : "Bedding"}</span>
+              </Link>
+              <Link href="/search?category=decor" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300&q=80" alt="Decor" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Декорация" : "Decor"}</span>
+              </Link>
+            </div>
+            <Link href="/search?category=home" className="text-blue-600 hover:underline text-[10px] sm:text-xs mt-1.5 block">
+              {t('sections.seeMore')}
+            </Link>
+          </div>
 
           {/* Fashion Card */}
-          <Card className="bg-white rounded-lg border-slate-200 shadow-md flex flex-col h-[420px] p-5">
-            <CardHeader className="p-0 mb-3">
-              <CardTitle className="text-xl font-bold text-slate-900 leading-tight">
-                {locale === "bg" ? "Мода" : "Fashion"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 p-0 flex flex-col">
-              <div className="grid grid-cols-2 gap-3 flex-1">
-                <Link href="/search?category=women" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=300&q=80" alt="Women" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Дамски" : "Women"}</span>
-                </Link>
-                <Link href="/search?category=men" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=300&q=80" alt="Men" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Мъжки" : "Men"}</span>
-                </Link>
-                <Link href="/search?category=shoes" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&q=80" alt="Shoes" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Обувки" : "Shoes"}</span>
-                </Link>
-                <Link href="/search?category=bags" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=300&q=80" alt="Bags" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Чанти" : "Bags"}</span>
-                </Link>
-              </div>
-              <Link href="/search?category=fashion" className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium mt-3">
-                {t('sections.seeMore')}
+          <div className="bg-white rounded border border-slate-200 p-2 sm:p-3">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 mb-1.5 sm:mb-2">
+              {locale === "bg" ? "Мода" : "Fashion"}
+            </h3>
+            <div className="grid grid-cols-2 gap-1 sm:gap-1.5">
+              <Link href="/search?category=women" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=300&q=80" alt="Women" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Дамски" : "Women"}</span>
               </Link>
-            </CardContent>
-          </Card>
+              <Link href="/search?category=men" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=300&q=80" alt="Men" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Мъжки" : "Men"}</span>
+              </Link>
+              <Link href="/search?category=shoes" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&q=80" alt="Shoes" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Обувки" : "Shoes"}</span>
+              </Link>
+              <Link href="/search?category=bags" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=300&q=80" alt="Bags" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Чанти" : "Bags"}</span>
+              </Link>
+            </div>
+            <Link href="/search?category=fashion" className="text-blue-600 hover:underline text-[10px] sm:text-xs mt-1.5 block">
+              {t('sections.seeMore')}
+            </Link>
+          </div>
 
           {/* Beauty Card */}
-          <Card className="bg-white rounded-lg border-slate-200 shadow-md flex flex-col h-[420px] p-5">
-            <CardHeader className="p-0 mb-3">
-              <CardTitle className="text-xl font-bold text-slate-900 leading-tight">
-                {locale === "bg" ? "Красота" : "Beauty"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 p-0 flex flex-col">
-              <div className="grid grid-cols-2 gap-3 flex-1">
-                <Link href="/search?category=skincare" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=300&q=80" alt="Skincare" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Грижа за кожата" : "Skincare"}</span>
-                </Link>
-                <Link href="/search?category=makeup" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=300&q=80" alt="Makeup" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Грим" : "Makeup"}</span>
-                </Link>
-                <Link href="/search?category=haircare" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&q=80" alt="Haircare" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Грижа за косата" : "Haircare"}</span>
-                </Link>
-                <Link href="/search?category=fragrance" className="flex flex-col group">
-                  <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded bg-gray-100">
-                    <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&q=80" alt="Fragrance" className="object-cover w-full h-full" />
-                  </div>
-                  <span className="text-xs text-slate-800 group-hover:text-amber-600 group-hover:underline">{locale === "bg" ? "Парфюми" : "Fragrance"}</span>
-                </Link>
-              </div>
-              <Link href="/search?category=beauty" className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium mt-3">
-                {t('sections.seeMore')}
+          <div className="bg-white rounded border border-slate-200 p-2 sm:p-3">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 mb-1.5 sm:mb-2">
+              {locale === "bg" ? "Красота" : "Beauty"}
+            </h3>
+            <div className="grid grid-cols-2 gap-1 sm:gap-1.5">
+              <Link href="/search?category=skincare" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=300&q=80" alt="Skincare" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Грижа" : "Skincare"}</span>
               </Link>
-            </CardContent>
-          </Card>
+              <Link href="/search?category=makeup" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=300&q=80" alt="Makeup" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Грим" : "Makeup"}</span>
+              </Link>
+              <Link href="/search?category=haircare" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&q=80" alt="Haircare" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Коса" : "Haircare"}</span>
+              </Link>
+              <Link href="/search?category=fragrance" className="group">
+                <div className="h-[55px] sm:h-[85px] rounded overflow-hidden bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&q=80" alt="Fragrance" className="object-cover w-full h-full" />
+                </div>
+                <span className="text-[10px] sm:text-xs text-slate-700 group-hover:text-blue-600 block mt-0.5">{locale === "bg" ? "Парфюми" : "Fragrance"}</span>
+              </Link>
+            </div>
+            <Link href="/search?category=beauty" className="text-blue-600 hover:underline text-[10px] sm:text-xs mt-1.5 block">
+              {t('sections.seeMore')}
+            </Link>
+          </div>
         </div>
 
         {/* Featured Products Row */}
-        <div className="mt-6 bg-white p-5 shadow-sm rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-slate-900">{t('sections.topPicks')}</h2>
+        <div className="mt-4 sm:mt-6 bg-white p-3 sm:p-6 rounded border border-slate-200 mx-3 sm:mx-0">
+          <div className="flex items-center justify-between mb-3 sm:mb-5">
+            <h2 className="text-base sm:text-xl font-bold text-slate-900">{t('sections.topPicks')}</h2>
             <Link
               href="/search?q=featured"
-              className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium"
+              className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition-colors"
             >
               {t('sections.seeMore')}
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-5">
             {featuredProducts.map((product) => (
               <ProductCard key={product.id} {...product} />
             ))}
@@ -298,43 +293,43 @@ export default async function Home() {
         </div>
 
         {/* Deals of the Day - Horizontal Scroll */}
-        <div className="mt-6 bg-white p-5 shadow-sm rounded-lg">
-          <div className="flex items-center gap-4 mb-4">
-            <h2 className="text-xl font-bold text-slate-900">{t('sections.dealsOfDay')}</h2>
+        <div className="mt-4 sm:mt-6 bg-white p-3 sm:p-6 rounded border border-slate-200 mx-3 sm:mx-0">
+          <div className="flex items-center gap-2 sm:gap-4 mb-3 sm:mb-5">
+            <h2 className="text-base sm:text-xl font-bold text-slate-900">{t('sections.dealsOfDay')}</h2>
             <Link
               href="/search?q=deals"
-              className="text-cyan-700 hover:text-amber-600 hover:underline text-sm font-medium"
+              className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition-colors"
             >
               {t('sections.seeAllDeals')}
             </Link>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+          <div className="flex gap-2 sm:gap-5 overflow-x-auto pb-2 sm:pb-4 no-scrollbar snap-x-mandatory -mx-3 px-3 sm:mx-0 sm:px-0">
             {deals.map((deal) => (
               <Link
                 key={deal.id}
                 href={`/product/${deal.id}`}
-                className="min-w-[240px] flex flex-col gap-2 cursor-pointer group"
+                className="min-w-[140px] sm:min-w-[240px] flex flex-col gap-1.5 sm:gap-2 cursor-pointer group border border-transparent hover:border-blue-400 rounded p-1.5 sm:p-2 transition-colors snap-start tap-transparent active-scale"
               >
-                <div className="bg-[#f7f7f7] p-4 h-[240px] flex items-center justify-center rounded-sm">
+                <div className="bg-slate-50 p-1.5 sm:p-4 h-32 sm:h-60 flex items-center justify-center rounded">
                   <img
                     src={deal.image || "/placeholder.svg"}
                     alt={deal.title}
-                    className="max-h-full object-contain mix-blend-multiply"
+                    className="max-h-full object-contain mix-blend-multiply "
                   />
                 </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="bg-[#cc0c39] text-white text-xs font-bold px-2 py-1 rounded-[2px]">
+                <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-2">
+                  <span className="bg-rose-600 text-white text-[9px] sm:text-xs font-bold px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md">
                     {Math.round((1 - deal.price / deal.listPrice) * 100)}% off
                   </span>
-                  <span className="text-[#cc0c39] font-bold text-xs">{tProduct('deal')}</span>
+                  <span className="text-rose-600 font-bold text-[9px] sm:text-xs">{tProduct('deal')}</span>
                 </div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-[21px] font-bold text-[#0F1111]">{formatPrice(deal.price)}</span>
+                  <span className="text-sm sm:text-xl font-bold text-slate-900">{formatPrice(deal.price)}</span>
                 </div>
-                <div className="text-[12px] text-[#565959]">
+                <div className="text-[9px] sm:text-xs text-slate-500">
                   {tProduct('listPrice')}: <span className="line-through">{formatPrice(deal.listPrice)}</span>
                 </div>
-                <div className="text-[13px] text-[#0F1111] line-clamp-2 group-hover:text-[#c7511f] group-hover:underline">
+                <div className="text-[10px] sm:text-sm text-slate-800 line-clamp-2 group-hover:text-blue-600 transition-colors">
                   {deal.title}
                 </div>
               </Link>
@@ -343,85 +338,86 @@ export default async function Home() {
         </div>
 
         {/* More Categories / Sign In */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="mt-4 sm:mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 px-3 sm:px-0">
           {!user && (
-            <Card className="bg-white rounded-[4px] border-none shadow-md p-5 flex flex-col justify-center items-start h-[420px]">
-              <h3 className="text-[21px] font-bold mb-3 text-[#0F1111]">{t('sections.signIn')}</h3>
+            <Card className="bg-white rounded border border-slate-200 p-6 flex flex-col justify-center items-start h-[420px]">
+              <h3 className="text-xl font-bold mb-4 text-slate-900">{t('sections.signIn')}</h3>
+              <p className="text-sm text-slate-600 mb-4">Sign in for personalized recommendations and faster checkout.</p>
               <Link href="/auth/login" className="w-full">
-                <Button className="w-full bg-[#f7ca00] hover:bg-[#f2bd00] text-black text-[13px] border-none mb-3 shadow-sm rounded-[8px] h-[29px]">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium border-none rounded h-11 transition-colors">
                   {t('sections.signInSecurely')}
                 </Button>
               </Link>
             </Card>
           )}
 
-          <Card className="bg-white rounded-[4px] border-none shadow-md p-5 flex flex-col h-[420px] overflow-hidden">
-            <h3 className="text-[21px] font-bold mb-3 text-[#0F1111] truncate">{t('sections.shopByCategory')}</h3>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2 flex-1 min-h-0">
-              <Link href="/search?q=fashion" className="flex flex-col cursor-pointer hover:opacity-80 group">
-                <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded-[2px] bg-gray-100">
-                  <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=300&q=80" alt="Fashion" className="object-cover w-full h-full" />
+          <Card className="bg-white rounded border border-slate-200 p-5 flex flex-col h-[420px] overflow-hidden">
+            <h3 className="text-xl font-bold mb-3 text-slate-900 truncate">{t('sections.shopByCategory')}</h3>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3 flex-1 min-h-0">
+              <Link href="/search?q=fashion" className="flex flex-col cursor-pointer group">
+                <div className="relative w-full h-[120px] mb-1.5 overflow-hidden rounded-lg bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=300&q=80" alt="Fashion" className="object-cover w-full h-full " />
                 </div>
-                <span className="text-[12px] text-[#0F1111] group-hover:text-[#c7511f] group-hover:underline leading-tight truncate">{t('sections.fashion')}</span>
+                <span className="text-xs text-slate-700 group-hover:text-blue-600 transition-colors leading-tight truncate">{t('sections.fashion')}</span>
               </Link>
-              <Link href="/search?q=toys" className="flex flex-col cursor-pointer hover:opacity-80 group">
-                <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded-[2px] bg-gray-100">
-                  <img src="https://images.unsplash.com/photo-1566576912902-48f5d9307bb1?w=300&q=80" alt="Toys" className="object-cover w-full h-full" />
+              <Link href="/search?q=toys" className="flex flex-col cursor-pointer group">
+                <div className="relative w-full h-[120px] mb-1.5 overflow-hidden rounded-lg bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1566576912902-48f5d9307bb1?w=300&q=80" alt="Toys" className="object-cover w-full h-full " />
                 </div>
-                <span className="text-[12px] text-[#0F1111] group-hover:text-[#c7511f] group-hover:underline leading-tight truncate">{t('sections.toys')}</span>
+                <span className="text-xs text-slate-700 group-hover:text-blue-600 transition-colors leading-tight truncate">{t('sections.toys')}</span>
               </Link>
-              <Link href="/search?q=beauty" className="flex flex-col cursor-pointer hover:opacity-80 group">
-                <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded-[2px] bg-gray-100">
-                  <img src="https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=300&q=80" alt="Beauty" className="object-cover w-full h-full" />
+              <Link href="/search?q=beauty" className="flex flex-col cursor-pointer group">
+                <div className="relative w-full h-[120px] mb-1.5 overflow-hidden rounded-lg bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=300&q=80" alt="Beauty" className="object-cover w-full h-full " />
                 </div>
-                <span className="text-[12px] text-[#0F1111] group-hover:text-[#c7511f] group-hover:underline leading-tight truncate">{t('sections.beauty')}</span>
+                <span className="text-xs text-slate-700 group-hover:text-blue-600 transition-colors leading-tight truncate">{t('sections.beauty')}</span>
               </Link>
-              <Link href="/search?q=home" className="flex flex-col cursor-pointer hover:opacity-80 group">
-                <div className="relative w-full h-[120px] mb-1 overflow-hidden rounded-[2px] bg-gray-100">
-                  <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300&q=80" alt="Home" className="object-cover w-full h-full" />
+              <Link href="/search?q=home" className="flex flex-col cursor-pointer group">
+                <div className="relative w-full h-[120px] mb-1.5 overflow-hidden rounded-lg bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300&q=80" alt="Home" className="object-cover w-full h-full " />
                 </div>
-                <span className="text-[12px] text-[#0F1111] group-hover:text-[#c7511f] group-hover:underline leading-tight truncate">{t('sections.home')}</span>
+                <span className="text-xs text-slate-700 group-hover:text-blue-600 transition-colors leading-tight truncate">{t('sections.home')}</span>
               </Link>
             </div>
-            <div className="mt-2 pt-0">
-              <Link href="/search" className="text-[#007185] hover:text-[#c7511f] hover:underline text-[13px] font-medium">
+            <div className="mt-3 pt-0">
+              <Link href="/search" className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors">
                 {t('sections.seeMore')}
               </Link>
             </div>
           </Card>
 
-          <Card className="bg-white rounded-[4px] border-none shadow-md p-5 flex flex-col h-[420px]">
-            <h3 className="text-[21px] font-bold mb-3 text-[#0F1111]">{t('sections.newArrivals')}</h3>
+          <Card className="bg-white rounded border border-slate-200 p-5 flex flex-col h-[420px]">
+            <h3 className="text-xl font-bold mb-3 text-slate-900">{t('sections.newArrivals')}</h3>
             <Link href="/search?q=toys" className="flex-1 group overflow-hidden">
-              <div className="relative w-full h-full overflow-hidden rounded-[2px] bg-gray-100">
-                <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600&q=80" alt="New Toys" className="object-cover w-full h-full" />
+              <div className="relative w-full h-full overflow-hidden rounded-lg bg-slate-100">
+                <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600&q=80" alt="New Toys" className="object-cover w-full h-full " />
               </div>
             </Link>
             <div className="mt-auto pt-3">
               <Link
                 href="/search?q=toys"
-                className="text-[#007185] hover:text-[#c7511f] hover:underline text-[13px] font-medium"
+                className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
               >
                 {t('sections.shopNow')}
               </Link>
             </div>
           </Card>
 
-          <Card className="bg-white rounded-[4px] border-none shadow-md p-5 flex flex-col h-[420px]">
-            <h3 className="text-[21px] font-bold mb-3 text-[#0F1111]">{t('sections.fashionTrends')}</h3>
+          <Card className="bg-white rounded border border-slate-200 p-5 flex flex-col h-[420px]">
+            <h3 className="text-xl font-bold mb-3 text-slate-900">{t('sections.fashionTrends')}</h3>
             <Link href="/search?q=fashion" className="flex-1 group overflow-hidden">
-              <div className="relative w-full h-full overflow-hidden rounded-[2px] bg-gray-100">
+              <div className="relative w-full h-full overflow-hidden rounded-lg bg-slate-100">
                 <img
                   src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80"
                   alt="Fashion Trends"
-                  className="object-cover w-full h-full"
+                  className="object-cover w-full h-full "
                 />
               </div>
             </Link>
             <div className="mt-auto pt-3">
               <Link
                 href="/search?q=fashion"
-                className="text-[#007185] hover:text-[#c7511f] hover:underline text-[13px] font-medium"
+                className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
               >
                 {t('sections.seeMore')}
               </Link>

@@ -4,85 +4,107 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Amazon Light Mode */
-  --background: oklch(0.96 0 0);
-  /* #f3f3f3 */
-  --foreground: oklch(0.13 0.02 260);
-  /* #0F1111 */
+  /* Trust Blue - Professional E-commerce 2025 */
+  --background: oklch(0.98 0.002 250);
+  /* Clean off-white with subtle blue tint */
+  --foreground: oklch(0.14 0.01 260);
+  /* Rich dark text */
   --card: oklch(1 0 0);
-  /* #ffffff */
-  --card-foreground: oklch(0.13 0.02 260);
+  /* Pure white cards */
+  --card-foreground: oklch(0.14 0.01 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.13 0.02 260);
-  --primary: oklch(0.25 0.02 260);
-  /* #232f3e */
+  --popover-foreground: oklch(0.14 0.01 260);
+  --primary: oklch(0.21 0.02 260);
+  /* Deep zinc-900 */
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.96 0 0);
-  --secondary-foreground: oklch(0.13 0.02 260);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.45 0 0);
-  --accent: oklch(0.85 0.15 85);
-  /* #febd69 */
-  --accent-foreground: oklch(0.13 0.02 260);
+  --secondary: oklch(0.96 0.005 250);
+  /* Soft blue-gray */
+  --secondary-foreground: oklch(0.14 0.01 260);
+  --muted: oklch(0.955 0.005 250);
+  --muted-foreground: oklch(0.5 0.01 260);
+  --accent: oklch(0.68 0.16 230);
+  /* Sky blue accent */
+  --accent-foreground: oklch(1 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.85 0 0);
-  /* #d5d9d9 */
-  --input: oklch(1 0 0);
-  --ring: oklch(0.75 0.15 60);
-  /* #e77600 */
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --border: oklch(0.90 0.005 250);
+  /* Subtle blue-tinted border */
+  --input: oklch(0.97 0.003 250);
+  --ring: oklch(0.60 0.18 240);
+  /* Blue focus ring */
+  --chart-1: oklch(0.60 0.18 240);
+  /* Blue */
+  --chart-2: oklch(0.70 0.14 180);
+  /* Teal */
+  --chart-3: oklch(0.55 0.15 280);
+  /* Purple */
+  --chart-4: oklch(0.75 0.12 150);
+  /* Green */
+  --chart-5: oklch(0.65 0.16 30);
+  /* Orange */
   --radius: 0.25rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.13 0.02 260);
-  --sidebar-primary: oklch(0.13 0.02 260);
+  /* Clean 4px radius for e-commerce */
+  
+  /* Custom brand colors */
+  --brand-blue: oklch(0.55 0.2 250);
+  /* Primary blue */
+  --brand-blue-light: oklch(0.68 0.16 230);
+  /* Light blue */
+  --brand-blue-dark: oklch(0.40 0.18 255);
+  /* Dark blue */
+  --brand-success: oklch(0.65 0.18 145);
+  /* Green */
+  --brand-warning: oklch(0.80 0.15 80);
+  /* Amber */
+  --brand-deal: oklch(0.55 0.22 25);
+  /* Red for deals */
+  
+  --sidebar: oklch(0.985 0.002 250);
+  --sidebar-foreground: oklch(0.14 0.01 260);
+  --sidebar-primary: oklch(0.14 0.01 260);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.96 0 0);
-  --sidebar-accent-foreground: oklch(0.13 0.02 260);
-  --sidebar-border: oklch(0.92 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-accent: oklch(0.96 0.005 250);
+  --sidebar-accent-foreground: oklch(0.14 0.01 260);
+  --sidebar-border: oklch(0.92 0.003 250);
+  --sidebar-ring: oklch(0.60 0.18 240);
 }
 
 .dark {
-  /* Amazon Dark Mode (approximate) */
-  --background: oklch(0.25 0.02 260);
-  /* #232f3e */
-  --foreground: oklch(1 0 0);
-  --card: oklch(0.3 0.02 260);
-  --card-foreground: oklch(1 0 0);
-  --popover: oklch(0.3 0.02 260);
-  --popover-foreground: oklch(1 0 0);
-  --primary: oklch(0.9 0.05 85);
-  /* #febd69 */
-  --primary-foreground: oklch(0.13 0.02 260);
-  --secondary: oklch(0.35 0.02 260);
-  --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.35 0.02 260);
-  --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(0.9 0.05 85);
-  --accent-foreground: oklch(0.13 0.02 260);
-  --destructive: oklch(0.396 0.141 25.723);
+  /* Trust Blue - Dark Mode */
+  --background: oklch(0.16 0.015 260);
+  /* Deep blue-black */
+  --foreground: oklch(0.96 0.005 250);
+  --card: oklch(0.20 0.015 260);
+  --card-foreground: oklch(0.96 0.005 250);
+  --popover: oklch(0.20 0.015 260);
+  --popover-foreground: oklch(0.96 0.005 250);
+  --primary: oklch(0.68 0.16 230);
+  /* Sky blue in dark mode */
+  --primary-foreground: oklch(0.14 0.01 260);
+  --secondary: oklch(0.25 0.015 260);
+  --secondary-foreground: oklch(0.96 0.005 250);
+  --muted: oklch(0.25 0.015 260);
+  --muted-foreground: oklch(0.65 0.01 260);
+  --accent: oklch(0.68 0.16 230);
+  --accent-foreground: oklch(0.14 0.01 260);
+  --destructive: oklch(0.50 0.2 25);
   --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.4 0.02 260);
-  --input: oklch(0.4 0.02 260);
-  --ring: oklch(0.9 0.05 85);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.25 0.02 260);
-  --sidebar-foreground: oklch(1 0 0);
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0.25 0.02 260);
-  --sidebar-accent: oklch(0.3 0.02 260);
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.4 0.02 260);
-  --sidebar-ring: oklch(0.9 0.05 85);
+  --border: oklch(0.30 0.015 260);
+  --input: oklch(0.25 0.015 260);
+  --ring: oklch(0.68 0.16 230);
+  --chart-1: oklch(0.65 0.18 240);
+  --chart-2: oklch(0.70 0.14 180);
+  --chart-3: oklch(0.60 0.15 280);
+  --chart-4: oklch(0.72 0.12 150);
+  --chart-5: oklch(0.70 0.16 30);
+  --sidebar: oklch(0.16 0.015 260);
+  --sidebar-foreground: oklch(0.96 0.005 250);
+  --sidebar-primary: oklch(0.68 0.16 230);
+  --sidebar-primary-foreground: oklch(0.14 0.01 260);
+  --sidebar-accent: oklch(0.25 0.015 260);
+  --sidebar-accent-foreground: oklch(0.96 0.005 250);
+  --sidebar-border: oklch(0.30 0.015 260);
+  --sidebar-ring: oklch(0.68 0.16 230);
 }
 
 @theme inline {
@@ -113,10 +135,20 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  /* Brand colors */
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-light: var(--brand-blue-light);
+  --color-brand-blue-dark: var(--brand-blue-dark);
+  --color-brand-success: var(--brand-success);
+  --color-brand-warning: var(--brand-warning);
+  --color-brand-deal: var(--brand-deal);
+  /* Modern radius scale */
   --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
+  --radius-2xl: calc(var(--radius) + 14px);
+  --radius-full: 9999px;
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -133,29 +165,28 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-amber-100 selection:text-amber-900;
+    @apply bg-background text-foreground antialiased selection:bg-blue-100 selection:text-blue-900;
   }
 }
 
 /* Custom Scrollbar Styles */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: oklch(0.96 0.005 250);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  /* slate-300 */
-  border-radius: 3px;
+  background: oklch(0.80 0.01 250);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-  /* slate-400 */
+  background: oklch(0.70 0.02 250);
 }
 
 /* Utility Classes */
@@ -216,4 +247,229 @@
   visibility: visible;
   opacity: 1;
   bottom: 50px;
+}
+
+/* ==========================================
+   MOBILE OPTIMIZATION UTILITIES
+   ========================================== */
+
+/* Safe Area Insets for notched phones (iPhone X+, etc.) */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+.pl-safe {
+  padding-left: env(safe-area-inset-left);
+}
+
+.pr-safe {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Snap scrolling for mobile horizontal carousels */
+.snap-x-mandatory {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.snap-start {
+  scroll-snap-align: start;
+}
+
+.snap-center {
+  scroll-snap-align: center;
+}
+
+/* Mobile navigation scroll with gradient indicators */
+.mobile-nav-scroll {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-nav-scroll > * {
+  scroll-snap-align: start;
+}
+
+/* Gradient fade indicators for scrollable content */
+.scroll-fade-right::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to right, transparent, rgb(39 39 42));
+  pointer-events: none;
+}
+
+.scroll-fade-right-light::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to right, transparent, rgb(255 255 255));
+  pointer-events: none;
+}
+
+.scroll-fade-left::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to left, transparent, rgb(39 39 42));
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Touch target optimization - minimum 44x44px */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Instant tap response for interactive elements */
+.touch-action-manipulation {
+  touch-action: manipulation;
+}
+
+/* Remove tap highlight on mobile */
+.tap-transparent {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Active state feedback for touch */
+.active-scale:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease-out;
+}
+
+/* Mobile button improvements */
+.btn-mobile {
+  min-height: 44px;
+  padding: 12px 16px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-mobile:active {
+  transform: scale(0.98);
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Mobile bottom navigation bar styling */
+.mobile-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid rgb(226 232 240);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 50;
+}
+
+/* Add bottom padding to main content when tab bar is visible */
+.has-mobile-tab-bar {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+}
+
+/* Smooth GPU-accelerated animations */
+.will-change-transform {
+  will-change: transform;
+}
+
+/* Mobile-friendly filter chips */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 9999px;
+  border: 1px solid rgb(226 232 240);
+  background: white;
+  flex-shrink: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s ease;
+}
+
+.filter-chip:active {
+  transform: scale(0.95);
+}
+
+.filter-chip.active {
+  background: rgb(37 99 235);
+  color: white;
+  border-color: rgb(37 99 235);
+}
+
+/* Scroll indicator dots */
+.scroll-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.2s ease;
+}
+
+.scroll-dot.active {
+  background: white;
+  transform: scale(1.2);
+}
+
+/* Mobile search overlay */
+.mobile-search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 50;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease;
 }

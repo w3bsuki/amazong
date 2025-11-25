@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Package, User, CreditCard, Lock, MapPin, MessageSquare, Headphones } from "lucide-react"
 import { getTranslations } from "next-intl/server"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 interface AccountPageProps {
   params: Promise<{
@@ -76,6 +77,8 @@ export default async function AccountPage({ params }: AccountPageProps) {
 
   return (
     <div className="container mx-auto p-4 max-w-5xl min-h-screen bg-white dark:bg-zinc-900">
+      <Breadcrumb items={[{ label: t('title'), icon: <User className="h-3.5 w-3.5" /> }]} />
+      
       <h1 className="text-3xl font-normal mb-6">{t('title')}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

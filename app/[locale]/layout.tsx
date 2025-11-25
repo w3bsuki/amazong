@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/lib/cart-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { MobileTabBar } from "@/components/mobile-tab-bar";
 import { Suspense } from "react";
 import { AuthStateListener } from "@/components/auth-state-listener";
 
@@ -54,8 +55,9 @@ export default async function LocaleLayout({
                         <Suspense fallback={<div className="h-[100px] w-full bg-slate-900" />}>
                             <SiteHeader user={user} />
                         </Suspense>
-                        <div className="flex-1">{children}</div>
+                        <div className="flex-1 pb-16 md:pb-0">{children}</div>
                         <SiteFooter />
+                        <MobileTabBar locale={locale} />
                         <Toaster />
                     </CartProvider>
                 </NextIntlClientProvider>

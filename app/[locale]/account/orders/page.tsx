@@ -5,7 +5,8 @@ import Image from "next/image"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
+import { Search, Package } from "lucide-react"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 export default async function OrdersPage() {
   const supabase = await createClient()
@@ -32,15 +33,14 @@ export default async function OrdersPage() {
 
   return (
     <div className="container mx-auto p-4 max-w-5xl min-h-screen bg-white dark:bg-zinc-900">
-      <div className="flex items-center gap-2 mb-4 text-sm text-[#007185]">
-        <Link href="/account" className="hover:underline hover:text-[#c7511f]">
-          Your Account
-        </Link>
-        <span>›</span>
-        <span className="text-[#c7511f]">Your Orders</span>
-      </div>
+      <Breadcrumb 
+        items={[
+          { label: 'Your Account', href: '/account' },
+          { label: 'Your Orders', icon: <Package className="h-3.5 w-3.5" /> }
+        ]} 
+      />
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 mt-4">
         <h1 className="text-3xl font-normal">Your Orders</h1>
         <div className="relative w-full md:w-auto">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-zinc-500" />

@@ -53,13 +53,13 @@ export function AddToCart({ product }: AddToCartProps) {
             <Button
                 onClick={handleAddToCart}
                 disabled={isPending}
-                className="w-full bg-[#f7ca00] hover:bg-[#f2bd00] text-black border-none rounded-[20px] shadow-sm h-[36px] text-[13px]"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white border-none rounded h-9 text-[13px] font-medium transition-colors"
             >
                 {isPending ? "Adding..." : t('addToCart')}
             </Button>
             <Button
                 onClick={handleBuyNow}
-                className="w-full bg-[#fa8900] hover:bg-[#e37b00] text-black border-none rounded-[20px] shadow-sm h-[36px] text-[13px]"
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white border-none rounded h-9 text-[13px] font-medium transition-colors"
             >
                 {t('buyNow')}
             </Button>

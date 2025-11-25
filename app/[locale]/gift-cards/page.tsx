@@ -3,12 +3,18 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Gift, Mail, Printer, CreditCard } from "lucide-react"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 export default async function GiftCardsPage() {
     const t = await getTranslations('GiftCards')
 
     return (
         <div className="min-h-screen bg-gray-50 pb-12">
+            {/* Breadcrumb */}
+            <div className="container mx-auto max-w-6xl px-4 pt-4">
+                <Breadcrumb items={[{ label: t('title'), icon: <Gift className="h-3.5 w-3.5" /> }]} />
+            </div>
+            
             {/* Hero Banner */}
             <div className="bg-[#232f3e] text-white py-8 px-4">
                 <div className="container mx-auto max-w-6xl">

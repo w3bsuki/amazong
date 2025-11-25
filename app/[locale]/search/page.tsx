@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { ProductCard } from "@/components/product-card"
 import { SearchFilters } from "@/components/search-filters"
+import { SubcategoryTabs } from "@/components/subcategory-tabs"
+import { SearchHeader } from "@/components/search-header"
 import { Suspense } from "react"
 
 // Define types for better type safety
@@ -23,9 +25,9 @@ interface Product {
 }
 
 export default async function SearchPage({
-  searchParams,
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     q?: string
     category?: string
     minPrice?: string
@@ -33,45 +35,58 @@ export default async function SearchPage({
     minRating?: string
     subcategory?: string
     tag?: string
-  }
+    prime?: string
+    deals?: string
+    brand?: string
+    availability?: string
+  }>
 }) {
+  const searchParams = await searchParamsPromise
   const supabase = await createClient()
   const query = searchParams.q || ""
   let products: Product[] = []
   let currentCategory: Category | null = null
+  let parentCategory: Category | null = null
   let subcategories: Category[] = []
   let allCategories: Category[] = []
+  let allCategoriesWithSubs: { category: Category; subs: Category[] }[] = []
+  let brands: string[] = []
 
   if (supabase) {
-    // Fetch all top-level categories for the sidebar
-    const { data: topCategories } = await supabase
+    // Fetch ALL categories (both top-level and subcategories) in one query
+    const { data: allCats } = await supabase
       .from("categories")
       .select("id, name, name_bg, slug, parent_id")
-      .is("parent_id", null)
       .order("name")
     
-    allCategories = topCategories || []
+    if (allCats) {
+      // Separate top-level and subcategories
+      allCategories = allCats.filter(c => c.parent_id === null)
+      
+      // Build the hierarchical structure for the sidebar
+      allCategoriesWithSubs = allCategories.map(cat => ({
+        category: cat,
+        subs: allCats.filter(c => c.parent_id === cat.id)
+      }))
+    }
 
     // If a category is specified, get its details and subcategories
     if (searchParams.category) {
-      // First check if this is a parent category
-      const { data: categoryData } = await supabase
-        .from("categories")
-        .select("id, name, name_bg, slug, parent_id")
-        .eq("slug", searchParams.category)
-        .single()
+      // Find the category from our already fetched data
+      const categoryData = allCats?.find(c => c.slug === searchParams.category) || null
 
       if (categoryData) {
         currentCategory = categoryData
 
-        // Get subcategories of this category
-        const { data: subCats } = await supabase
-          .from("categories")
-          .select("id, name, name_bg, slug, parent_id")
-          .eq("parent_id", categoryData.id)
-          .order("name")
-
-        subcategories = subCats || []
+        // Check if this is a subcategory (has parent_id)
+        if (categoryData.parent_id) {
+          parentCategory = allCats?.find(c => c.id === categoryData.parent_id) || null
+          // No subcategories for a subcategory
+          subcategories = []
+        } else {
+          // This is a main category - get its subcategories
+          subcategories = allCats?.filter(c => c.parent_id === categoryData.id) || []
+        }
 
         // Build product query with category filter
         // Get products from this category AND all its subcategories
@@ -105,6 +120,14 @@ export default async function SearchPage({
           dbQuery = dbQuery.gte("rating", Number(searchParams.minRating))
         }
 
+        if (searchParams.prime === "true") {
+          dbQuery = dbQuery.eq("is_prime", true)
+        }
+
+        if (searchParams.availability === "instock") {
+          dbQuery = dbQuery.gt("stock", 0)
+        }
+
         const { data } = await dbQuery
         products = data || []
       }
@@ -135,9 +158,21 @@ export default async function SearchPage({
         dbQuery = dbQuery.gte("rating", Number(searchParams.minRating))
       }
 
+      if (searchParams.prime === "true") {
+        dbQuery = dbQuery.eq("is_prime", true)
+      }
+
+      if (searchParams.availability === "instock") {
+        dbQuery = dbQuery.gt("stock", 0)
+      }
+
       const { data } = await dbQuery
       products = data || []
     }
+
+    // Extract unique brands from products for the filter
+    // This would ideally come from a brands table, but for now we can extract from products
+    // brands = [...new Set(products.map(p => p.brand).filter(Boolean))]
   }
 
 
@@ -146,18 +181,38 @@ export default async function SearchPage({
     <div className="min-h-screen bg-white">
       <div className="flex max-w-[1500px] mx-auto">
         {/* Sidebar Filters */}
-        <div className="w-60 p-4 border-r border-[#eee] hidden lg:block space-y-6">
+        <div className="w-64 p-4 border-r border-[#eee] hidden lg:block space-y-6">
           <Suspense>
             <SearchFilters 
               categories={allCategories}
               subcategories={subcategories}
               currentCategory={currentCategory}
+              allCategoriesWithSubs={allCategoriesWithSubs}
+              brands={brands}
             />
           </Suspense>
         </div>
 
         {/* Main Results */}
         <div className="flex-1 p-4">
+          {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
+          {currentCategory ? (
+            <Suspense>
+              <SubcategoryTabs
+                currentCategory={currentCategory}
+                subcategories={subcategories}
+                parentCategory={parentCategory}
+              />
+            </Suspense>
+          ) : (
+            <Suspense>
+              <SearchHeader 
+                query={query}
+                totalResults={products.length}
+              />
+            </Suspense>
+          )}
+
           <div className="mb-4 flex items-center justify-between border-b border-[#eee] pb-2">
             <h1 className="font-bold text-sm">
               {products.length} results
@@ -166,6 +221,9 @@ export default async function SearchPage({
                   {" "}
                   for <span className="text-[#c45500]">"{query}"</span>
                 </span>
+              )}
+              {currentCategory && !query && (
+                <span className="font-normal text-[#565959]"> in {currentCategory.name}</span>
               )}
             </h1>
             <div className="flex items-center gap-2">

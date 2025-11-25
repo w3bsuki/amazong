@@ -1,13 +1,14 @@
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Image from "next/image"
-import { Star, Truck, ShieldCheck, RotateCcw } from "lucide-react"
+import { Star, Truck, ShieldCheck, RotateCcw, Package } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { ProductCard } from "@/components/product-card"
 import { ReviewsSection } from "@/components/reviews-section"
 import { AddToCart } from "@/components/add-to-cart"
 import { getTranslations } from "next-intl/server"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 interface ProductPageProps {
   params: Promise<{
@@ -23,11 +24,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // Fetch product data
   let product: any = null
   let relatedProducts: any[] = []
+  let category: any = null
+  let parentCategory: any = null
 
   if (supabase) {
     const { data, error } = await supabase
       .from("products")
-      .select("*")
+      .select("*, categories(*)")
       .eq("id", id)
       .single()
 
@@ -35,6 +38,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
       console.error("Error fetching product:", error)
     } else {
       product = data
+      category = data?.categories
+      
+      // Fetch parent category if this is a subcategory
+      if (category?.parent_id) {
+        const { data: parent } = await supabase
+          .from("categories")
+          .select("*")
+          .eq("id", category.parent_id)
+          .single()
+        parentCategory = parent
+      }
     }
 
     // Fetch related products (random for now)
@@ -104,13 +118,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="min-h-screen bg-white pb-10">
       <div className="max-w-[1500px] mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_400px_300px] gap-8">
+        {/* Breadcrumb */}
+        <Breadcrumb 
+          items={[
+            ...(parentCategory ? [{ label: parentCategory.name, href: `/search?category=${parentCategory.slug}` }] : []),
+            ...(category ? [{ label: category.name, href: `/search?category=${category.slug}` }] : []),
+            { label: product.title?.slice(0, 50) + (product.title?.length > 50 ? '...' : ''), icon: <Package className="h-3.5 w-3.5" /> }
+          ]} 
+        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_400px_300px] gap-8 mt-4">
 
           {/* Left Column: Images */}
           <div className="flex gap-4 sticky top-4 h-fit">
             <div className="flex flex-col gap-3 w-[60px]">
               {(product.images || [product.image]).slice(0, 6).map((img: string, i: number) => (
-                <div key={i} className="border border-[#a2a6ac] rounded-[2px] p-1 cursor-pointer hover:shadow-[0_0_0_2px_#e77600] hover:border-[#e77600] transition-all">
+                <div key={i} className="border border-gray-300 rounded p-1 cursor-pointer hover:border-blue-600 transition-colors">
                   <div className="relative w-full aspect-square">
                     <Image src={img || "/placeholder.svg"} alt="Thumbnail" fill className="object-contain" />
                   </div>
@@ -133,15 +156,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <h1 className="text-[24px] font-medium text-[#0F1111] leading-tight mb-1">{product.title}</h1>
 
             <div className="flex items-center gap-2 mb-2">
-              <div className="flex text-[#f08804] text-sm">
+              <div className="flex text-amber-400 text-sm">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 ${i < Math.floor(product.rating || 0) ? "fill-current" : "text-transparent stroke-current stroke-1 text-[#f08804]"}`}
+                    className={`h-4 w-4 ${i < Math.floor(product.rating || 0) ? "fill-current" : "text-transparent stroke-current stroke-1 text-amber-400"}`}
                   />
                 ))}
               </div>
-              <span className="text-[#007185] hover:text-[#c7511f] hover:underline cursor-pointer text-sm font-medium">
+              <span className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer text-sm font-medium">
                 {t('ratings', { count: product.reviews_count })}
               </span>
             </div>
@@ -155,26 +178,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 <span className="text-sm align-top font-medium text-[#0F1111] relative top-1.5">{(product.price % 1).toFixed(2).substring(1)}</span>
               </div>
               {product.is_prime && (
-                <div className="flex items-center gap-1 text-[#007185] text-sm">
-                  <span className="font-bold text-[#00a8e1]">prime</span>
+                <div className="flex items-center gap-1 text-blue-600 text-sm">
+                  <span className="font-bold text-blue-500">prime</span>
                   <span className="text-[#565959]">One-Day</span>
                 </div>
               )}
               <span className="text-sm text-[#0F1111]">{t('freeReturns')}</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 text-xs text-[#007185] my-4">
+            <div className="grid grid-cols-3 gap-4 text-xs text-blue-600 my-4">
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
-                <RotateCcw className="h-8 w-8 text-gray-400 group-hover:text-[#e77600]" />
-                <span className="group-hover:text-[#c7511f] group-hover:underline">{t('freeReturns')}</span>
+                <RotateCcw className="h-8 w-8 text-gray-400 group-hover:text-blue-600" />
+                <span className="group-hover:text-blue-700 group-hover:underline">{t('freeReturns')}</span>
               </div>
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
-                <Truck className="h-8 w-8 text-gray-400 group-hover:text-[#e77600]" />
-                <span className="group-hover:text-[#c7511f] group-hover:underline">{t('freeDelivery')}</span>
+                <Truck className="h-8 w-8 text-gray-400 group-hover:text-blue-600" />
+                <span className="group-hover:text-blue-700 group-hover:underline">{t('freeDelivery')}</span>
               </div>
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
-                <ShieldCheck className="h-8 w-8 text-gray-400 group-hover:text-[#e77600]" />
-                <span className="group-hover:text-[#c7511f] group-hover:underline">{t('secureTransaction')}</span>
+                <ShieldCheck className="h-8 w-8 text-gray-400 group-hover:text-blue-600" />
+                <span className="group-hover:text-blue-700 group-hover:underline">{t('secureTransaction')}</span>
               </div>
             </div>
 
@@ -187,7 +210,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Right Column: Buy Box */}
-          <div className="border border-[#d5d9d9] rounded-[8px] p-4 h-fit sticky top-4 bg-white shadow-sm">
+          <div className="border border-[#d5d9d9] rounded p-4 h-fit sticky top-4 bg-white">
             <div className="flex items-baseline gap-1 mb-2">
               <span className="text-sm align-top font-medium text-[#0F1111]">$</span>
               <span className="text-[28px] font-medium text-[#0F1111]">{Math.floor(product.price)}</span>
@@ -198,7 +221,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               FREE delivery <span className="font-bold text-[#0F1111]">Monday, August 14</span>
             </div>
 
-            <div className="text-[18px] text-[#007600] font-medium mb-4">{t('inStock')}</div>
+            <div className="text-[18px] text-emerald-600 font-medium mb-4">{t('inStock')}</div>
 
             <AddToCart
               product={{

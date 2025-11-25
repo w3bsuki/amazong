@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Package, RefreshCw, CreditCard, User, Shield, HelpCircle, Search } from "lucide-react"
+import { Package, RefreshCw, CreditCard, User, Shield, HelpCircle, Search, Headphones } from "lucide-react"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 export default async function CustomerServicePage() {
     const t = await getTranslations('CustomerService')
@@ -23,6 +24,8 @@ export default async function CustomerServicePage() {
     return (
         <div className="min-h-screen bg-white pb-12">
             <div className="container mx-auto max-w-5xl px-4 py-8">
+                <Breadcrumb items={[{ label: t('title'), icon: <Headphones className="h-3.5 w-3.5" /> }]} />
+                
                 <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
 
                 <div className="mb-12">

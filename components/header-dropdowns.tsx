@@ -43,7 +43,7 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                     {!user ? (
                         <>
                             <Link href="/auth/login" className="w-56">
-                                <Button className="w-full bg-[#f0c14b] hover:bg-[#e2b13c] text-black shadow-sm border border-[#a88734] rounded-[3px] h-[30px] font-normal text-[13px] bg-gradient-to-b from-[#f7dfa5] to-[#f0c14b]">
+                                <Button className="w-full bg-[#f0c14b] hover:bg-[#e2b13c] text-black border border-[#a88734] rounded-[3px] h-[30px] font-normal text-[13px]">
                                     {t('signIn')}
                                 </Button>
                             </Link>

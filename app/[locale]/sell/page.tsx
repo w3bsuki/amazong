@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
+import { Loader2, Store } from "lucide-react"
 import { ImageUpload } from "@/components/image-upload"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 interface UploadedImage {
   url: string
@@ -163,7 +164,9 @@ export default function SellPage() {
   if (!seller) {
     return (
       <div className="container max-w-lg mx-auto py-10 px-4">
-        <Card>
+        <Breadcrumb items={[{ label: 'Sell on Amazon', icon: <Store className="h-3.5 w-3.5" /> }]} />
+        
+        <Card className="mt-4">
           <CardHeader>
             <CardTitle className="text-2xl">Start Selling on Amazon</CardTitle>
           </CardHeader>
@@ -200,7 +203,9 @@ export default function SellPage() {
 
   return (
     <div className="container max-w-2xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-6">Add a New Product</h1>
+      <Breadcrumb items={[{ label: 'Sell on Amazon', icon: <Store className="h-3.5 w-3.5" /> }]} />
+      
+      <h1 className="text-3xl font-bold mb-6 mt-4">Add a New Product</h1>
       <Card>
         <CardContent className="pt-6">
           <form onSubmit={handleCreateProduct} className="space-y-6">
