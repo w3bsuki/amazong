@@ -17,5 +17,19 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "iconLibrary": "lucide"
+  "iconLibrary": "lucide",
+  "registries": {
+    "@magicui": {
+      "url": "https://magicui.design/r/{name}.json"
+    },
+    "@tweakcn": {
+      "url": "https://tweakcn.com/r/{name}.json"
+    },
+    "@aceternity": {
+      "url": "https://ui.aceternity.com/r/{name}.json"
+    },
+    "@originui": {
+      "url": "https://originui.com/r/{name}.json"
+    }
+  }
 }
