@@ -52,10 +52,23 @@ export default async function LocaleLayout({
                 <NextIntlClientProvider messages={messages}>
                     <AuthStateListener />
                     <CartProvider>
+                        {/* Skip Links - Accessibility */}
+                        <a 
+                            href="#main-content" 
+                            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-blue-500 focus:font-medium"
+                        >
+                            Skip to main content
+                        </a>
+                        <a 
+                            href="#footer" 
+                            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-52 focus:z-100 focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-blue-500 focus:font-medium"
+                        >
+                            Skip to footer
+                        </a>
                         <Suspense fallback={<div className="h-[100px] w-full bg-slate-900" />}>
                             <SiteHeader user={user} />
                         </Suspense>
-                        <div className="flex-1 pb-16 md:pb-0">{children}</div>
+                        <div id="main-content" className="flex-1 pb-16 md:pb-0">{children}</div>
                         <SiteFooter />
                         <MobileTabBar locale={locale} />
                         <Toaster />

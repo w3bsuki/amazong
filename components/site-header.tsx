@@ -95,7 +95,7 @@ function SearchBar() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <Button type="submit" className="h-full w-12 bg-amber-400 hover:bg-amber-500 text-zinc-900 rounded-none border-none flex items-center justify-center transition-colors">
+        <Button type="submit" aria-label={t('searchPlaceholder')} className="h-full w-12 bg-amber-400 hover:bg-amber-500 text-zinc-900 rounded-none border-none flex items-center justify-center transition-colors">
           <Search className="size-5" />
         </Button>
       </div>
@@ -185,11 +185,11 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             </div>
 
             {/* Cart - Always visible */}
-            <Link href="/cart">
+            <Link href="/cart" aria-label={`${t('cart')} - ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`}>
               <Button variant="ghost" className="flex items-center p-2 md:px-3 border border-transparent hover:border-white/20 rounded-lg relative transition-all duration-200 hover:bg-white/5 group md:items-end md:gap-1">
                 <div className="relative">
-                  <ShoppingCart className="size-6 text-white" />
-                  <span className="absolute -top-1 -right-1.5 bg-orange-500 text-white text-xs font-bold size-4 flex items-center justify-center rounded-full">
+                  <ShoppingCart className="size-6 text-white" aria-hidden="true" />
+                  <span className="absolute -top-1 -right-1.5 bg-orange-500 text-white text-xs font-bold size-4 flex items-center justify-center rounded-full" aria-hidden="true">
                     {totalItems}
                   </span>
                 </div>

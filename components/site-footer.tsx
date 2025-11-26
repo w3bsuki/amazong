@@ -51,7 +51,7 @@ export function SiteFooter() {
     ]
 
     return (
-        <footer className="bg-slate-800 text-slate-300 mt-auto w-full">
+        <footer id="footer" className="bg-slate-800 text-slate-300 mt-auto w-full">
             {/* Back to Top */}
             <div
                 className="bg-slate-700 py-3 text-center hover:bg-slate-600 transition-colors cursor-pointer tap-transparent"

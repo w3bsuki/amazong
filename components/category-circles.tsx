@@ -10,7 +10,7 @@ interface Category {
   nameEn: string
   slug: string
   icon: string
-  gradient: string
+  image?: string
 }
 
 const categories: Category[] = [
@@ -19,126 +19,112 @@ const categories: Category[] = [
     nameEn: "Electronics",
     slug: "electronics",
     icon: "📱",
-    gradient: "from-blue-500 to-blue-700"
+    image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=150&q=80"
   },
   {
     name: "Компютри",
     nameEn: "Computers",
     slug: "computers",
     icon: "💻",
-    gradient: "from-slate-500 to-slate-700"
+    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=150&q=80"
   },
   {
     name: "Gaming",
     nameEn: "Gaming",
     slug: "gaming",
     icon: "🎮",
-    gradient: "from-purple-500 to-purple-700"
+    image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=150&q=80"
   },
   {
     name: "Умен дом",
     nameEn: "Smart Home",
     slug: "smart-home",
     icon: "🏠",
-    gradient: "from-teal-500 to-teal-700"
+    image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=150&q=80"
   },
   {
     name: "Дом и кухня",
     nameEn: "Home & Kitchen",
     slug: "home",
     icon: "🍳",
-    gradient: "from-orange-500 to-orange-700"
+    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=150&q=80"
   },
   {
     name: "Мода",
     nameEn: "Fashion",
     slug: "fashion",
     icon: "👗",
-    gradient: "from-pink-500 to-pink-700"
+    image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=150&q=80"
   },
   {
     name: "Красота",
     nameEn: "Beauty",
     slug: "beauty",
     icon: "💄",
-    gradient: "from-rose-400 to-rose-600"
+    image: "https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=150&q=80"
   },
   {
     name: "Играчки",
     nameEn: "Toys",
     slug: "toys",
     icon: "🧸",
-    gradient: "from-yellow-400 to-yellow-600"
+    image: "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=150&q=80"
   },
   {
     name: "Спорт",
     nameEn: "Sports",
     slug: "sports",
     icon: "⚽",
-    gradient: "from-green-500 to-green-700"
+    image: "https://images.unsplash.com/photo-1461896836934-afa09e87b19e?w=150&q=80"
   },
   {
     name: "Книги",
     nameEn: "Books",
     slug: "books",
     icon: "📚",
-    gradient: "from-amber-600 to-amber-800"
+    image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=150&q=80"
   },
   {
     name: "Автомобили",
     nameEn: "Automotive",
     slug: "automotive",
     icon: "🚗",
-    gradient: "from-red-500 to-red-700"
+    image: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=150&q=80"
   },
   {
     name: "Градина",
     nameEn: "Garden",
     slug: "garden",
     icon: "🌱",
-    gradient: "from-emerald-500 to-emerald-700"
+    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=150&q=80"
   },
   {
     name: "Здраве",
     nameEn: "Health",
     slug: "health",
     icon: "💊",
-    gradient: "from-cyan-500 to-cyan-700"
+    image: "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=150&q=80"
   },
   {
     name: "Бебета",
     nameEn: "Baby",
     slug: "baby",
     icon: "👶",
-    gradient: "from-sky-400 to-sky-600"
+    image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=150&q=80"
   },
   {
     name: "Домашни любимци",
     nameEn: "Pets",
     slug: "pets",
     icon: "🐕",
-    gradient: "from-amber-500 to-amber-700"
+    image: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=150&q=80"
   },
   {
     name: "Офис",
     nameEn: "Office",
     slug: "office",
     icon: "🖨️",
-    gradient: "from-gray-500 to-gray-700"
-  },
-  {
-    name: "Музика",
-    nameEn: "Music",
-    slug: "music",
-    icon: "🎵",
-    gradient: "from-violet-500 to-violet-700"
-  },
-  {
-    name: "Филми",
-    nameEn: "Movies",
-    slug: "movies",
-    icon: "🎬",
-    gradient: "from-indigo-500 to-indigo-700"
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=150&q=80"
   }
 ]
 
@@ -185,30 +171,30 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
   return (
     <div className={cn(
       "relative w-full overflow-hidden",
-      // Mobile: White card styling to sit cleanly below hero gradient
-      "bg-white pt-3 pb-2 border-0 rounded-none",
-      // Desktop: Card styling with border
-      "sm:py-4 sm:border sm:border-slate-200 sm:rounded"
+      // Mobile: White card styling
+      "bg-white pt-4 pb-3 border-0 rounded-none",
+      // Desktop: Card styling with rounded corners
+      "sm:py-5 sm:border sm:border-slate-200 sm:rounded-xl"
     )}>
       <h2 className={cn(
-        "font-bold text-slate-900 mb-2",
-        // Mobile: Proper padding for safe area
-        "text-sm px-4",
+        "font-bold text-slate-900 mb-3",
+        // Mobile: Clean styling
+        "text-base px-4",
         // Desktop: Larger with proper padding
-        "sm:text-lg sm:mb-4 sm:px-4"
+        "sm:text-lg sm:mb-4 sm:px-5"
       )}>
         {locale === "bg" ? "Пазарувай по категория" : "Shop by Category"}
       </h2>
       
-      {/* Scrollable Container with snap scroll */}
+      {/* Scrollable Container - Target style with circular images */}
       <div
         ref={scrollRef}
         className={cn(
-          "flex overflow-x-auto scrollbar-hide snap-x-mandatory",
-          // Mobile: Safe area padding on left/right with scroll padding
-          "gap-4 pl-4 pb-1 scroll-pl-4",
-          // Desktop: More spacing with padding
-          "sm:gap-4 sm:pl-4 sm:pb-2 sm:scroll-pl-4"
+          "flex overflow-x-auto scrollbar-hide snap-x-mandatory scroll-smooth",
+          // Mobile: Safe area padding
+          "gap-4 pl-4 pb-2 scroll-pl-4",
+          // Desktop: Better spacing
+          "sm:gap-5 sm:pl-5 sm:pb-3 sm:scroll-pl-5"
         )}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
@@ -217,34 +203,41 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
             key={category.slug}
             href={`/search?category=${category.slug}`}
             className={cn(
-              "flex flex-col items-center gap-1.5 sm:gap-2.5 min-w-[72px] sm:min-w-[100px] group snap-start tap-transparent shrink-0",
-              // Add right padding to last item for safe area
-              index === categories.length - 1 && "mr-4 sm:mr-4"
+              "flex flex-col items-center gap-2 sm:gap-2.5 min-w-[72px] sm:min-w-[90px] md:min-w-[100px] group snap-start tap-transparent shrink-0",
+              // Add right padding to last item
+              index === categories.length - 1 && "mr-4 sm:mr-5"
             )}
           >
-            {/* Circle with icon - larger touch target on mobile */}
+            {/* Circle with image - Target style */}
             <div
               className={cn(
-                "rounded-full flex items-center justify-center",
-                // Mobile: Clean look with subtle border, no shadow
-                "size-14 text-xl bg-slate-50 border border-slate-200 shadow-none",
-                // Desktop: Larger with border styling
-                "sm:size-20 sm:text-3xl md:size-24 md:text-4xl",
-                "sm:bg-slate-100 sm:border sm:border-slate-200",
-                "group-hover:border-blue-400 group-hover:bg-blue-50",
-                "transition-all group-active:scale-95"
+                "rounded-full flex items-center justify-center overflow-hidden",
+                // Mobile: Compact
+                "size-16 bg-slate-100 border-2 border-slate-200",
+                // Desktop: Larger with hover effects
+                "sm:size-20 md:size-24",
+                "group-hover:border-blue-500 group-hover:shadow-md",
+                "transition-all duration-200 group-active:scale-95"
               )}
             >
-              <span>{category.icon}</span>
+              {category.image ? (
+                <img 
+                  src={category.image} 
+                  alt={locale === "bg" ? category.name : category.nameEn}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+              ) : (
+                <span className="text-2xl sm:text-3xl md:text-4xl">{category.icon}</span>
+              )}
             </div>
             
             {/* Category Name */}
             <span className={cn(
-              "font-medium text-center group-hover:text-blue-600 group-hover:underline line-clamp-2",
-              // Mobile: Smaller text, darker for visibility on light bg
-              "text-[11px] text-slate-800 max-w-[72px]",
+              "font-medium text-center group-hover:text-blue-600 transition-colors line-clamp-2",
+              // Mobile: Compact text
+              "text-[11px] text-slate-700 max-w-[72px]",
               // Desktop: Standard sizing
-              "sm:text-xs md:text-sm sm:text-slate-700 sm:max-w-[90px]"
+              "sm:text-xs md:text-sm sm:text-slate-800 sm:max-w-[90px] md:max-w-[100px]"
             )}>
               {locale === "bg" ? category.name : category.nameEn}
             </span>
@@ -252,42 +245,42 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
         ))}
       </div>
 
-      {/* Left Arrow - Desktop only */}
+      {/* Left Arrow - Desktop only, always visible when scrollable */}
       <button
         onClick={() => scroll("left")}
         className={cn(
-          "absolute left-0 top-1/2 -translate-y-1/2 z-10",
-          "h-full w-12 bg-linear-to-r from-white via-white/90 to-transparent",
-          "flex items-center justify-start pl-1",
-          "transition-opacity",
+          "absolute left-1 top-1/2 -translate-y-1/2 z-10",
+          "size-9 bg-white hover:bg-slate-50 rounded-full shadow-lg border border-slate-200",
+          "flex items-center justify-center",
+          "transition-all duration-200",
           "hidden sm:flex",
           !canScrollLeft && "opacity-0 pointer-events-none"
         )}
         aria-label="Scroll left"
       >
-        <ChevronLeft className="size-8 text-slate-600 drop-shadow" />
+        <ChevronLeft className="size-5 text-slate-600" />
       </button>
 
       {/* Right Arrow - Desktop only */}
       <button
         onClick={() => scroll("right")}
         className={cn(
-          "absolute right-0 top-1/2 -translate-y-1/2 z-10",
-          "h-full w-12 bg-linear-to-l from-white via-white/90 to-transparent",
-          "flex items-center justify-end pr-1",
-          "transition-opacity",
+          "absolute right-1 top-1/2 -translate-y-1/2 z-10",
+          "size-9 bg-white hover:bg-slate-50 rounded-full shadow-lg border border-slate-200",
+          "flex items-center justify-center",
+          "transition-all duration-200",
           "hidden sm:flex",
           !canScrollRight && "opacity-0 pointer-events-none"
         )}
         aria-label="Scroll right"
       >
-        <ChevronRight className="size-8 text-slate-600 drop-shadow" />
+        <ChevronRight className="size-5 text-slate-600" />
       </button>
 
       {/* Mobile scroll indicator - subtle fade */}
       <div 
         className={cn(
-          "absolute right-0 top-0 bottom-0 w-6 bg-linear-to-l from-white to-transparent pointer-events-none sm:hidden transition-opacity",
+          "absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white to-transparent pointer-events-none sm:hidden transition-opacity",
           !canScrollRight && "opacity-0"
         )} 
       />

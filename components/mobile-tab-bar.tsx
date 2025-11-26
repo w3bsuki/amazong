@@ -83,7 +83,7 @@ export function MobileTabBar({
       role="navigation"
       aria-label="Mobile navigation"
     >
-      <div className="flex items-center justify-around h-14">
+      <div className="flex items-center justify-around h-16">
         {tabs.map((tab) => {
           const active = isActive(tab)
           
@@ -94,7 +94,7 @@ export function MobileTabBar({
                 key={tab.id}
                 onClick={() => handleTabClick(tab)}
                 className={cn(
-                  "flex flex-col items-center justify-center flex-1 h-full gap-0.5",
+                  "flex flex-col items-center justify-center flex-1 min-h-11 min-w-11 h-full gap-0.5",
                   "tap-transparent active-scale transition-colors",
                   active ? "text-amber-600" : "text-slate-600"
                 )}
@@ -114,7 +114,7 @@ export function MobileTabBar({
               key={tab.id}
               href={tab.href || "/"}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full gap-0.5 relative",
+                "flex flex-col items-center justify-center flex-1 min-h-11 min-w-11 h-full gap-0.5 relative",
                 "tap-transparent active-scale transition-colors",
                 active ? "text-amber-600" : "text-slate-600"
               )}
