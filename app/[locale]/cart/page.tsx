@@ -36,7 +36,7 @@ export default function CartPage() {
       <div className="container mx-auto p-4 bg-white dark:bg-zinc-900 min-h-screen">
         <Breadcrumb items={[{ label: 'Shopping Cart', icon: <ShoppingCart className="h-3.5 w-3.5" /> }]} />
         
-        <div className="bg-white p-8 rounded shadow-sm mt-4">
+        <div className="bg-white p-8 rounded border border-border mt-4">
           <h1 className="text-2xl font-bold mb-4">Your Amazon Cart is empty.</h1>
           <p className="mb-6">
             Your Shopping Cart lives to serve. Give it purpose — fill it with groceries, clothing, household supplies,
@@ -57,7 +57,7 @@ export default function CartPage() {
       
       <div className="flex flex-col lg:flex-row gap-6 mt-4">
         {/* Cart Items */}
-        <div className="flex-1 bg-white p-6 rounded shadow-sm">
+        <div className="flex-1 bg-white p-6 rounded border border-border">
           <div className="flex justify-between items-end mb-2">
             <h1 className="text-3xl font-normal">Shopping Cart</h1>
             <span className="text-sm text-gray-500">Price</span>
@@ -66,23 +66,23 @@ export default function CartPage() {
 
           <div className="space-y-6">
             {items.map((item) => (
-              <div key={item.id} className="flex gap-4">
-                <div className="w-48 h-48 relative flex-shrink-0">
+              <div key={item.id} className="flex flex-col sm:flex-row gap-4">
+                <div className="w-full sm:w-32 md:w-48 h-32 sm:h-32 md:h-48 relative flex-shrink-0">
                   <Image src={item.image || "/placeholder.svg"} alt={item.title} fill className="object-contain" />
                 </div>
                 <div className="flex-1">
-                  <div className="flex justify-between">
+                  <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
                     <div>
                       <Link
                         href={`/product/${item.id}`}
-                        className="text-lg font-medium hover:text-[#c7511f] hover:underline line-clamp-2"
+                        className="text-base sm:text-lg font-medium hover:text-[#c7511f] hover:underline line-clamp-2"
                       >
                         {item.title}
                       </Link>
                       <div className="text-green-700 text-xs my-1">In Stock</div>
                       <div className="text-xs text-gray-500 mb-2">Eligible for FREE Shipping & FREE Returns</div>
-                      <div className="flex items-center gap-2 text-xs">
-                        <div className="flex items-center border rounded shadow-sm bg-[#f0f2f2] hover:bg-[#e3e6e6]">
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        <div className="flex items-center border rounded bg-[#f0f2f2] hover:bg-[#e3e6e6]">
                           <span className="px-2 py-1 bg-gray-100 border-r border-gray-300">Qty:</span>
                           <select
                             value={item.quantity}
@@ -96,15 +96,15 @@ export default function CartPage() {
                             ))}
                           </select>
                         </div>
-                        <Separator orientation="vertical" className="h-3" />
+                        <Separator orientation="vertical" className="h-3 hidden sm:block" />
                         <button onClick={() => removeFromCart(item.id)} className="text-[#007185] hover:underline">
                           Delete
                         </button>
-                        <Separator orientation="vertical" className="h-3" />
+                        <Separator orientation="vertical" className="h-3 hidden sm:block" />
                         <button className="text-[#007185] hover:underline">Save for later</button>
                       </div>
                     </div>
-                    <div className="text-right font-bold text-lg">${(item.price * item.quantity).toFixed(2)}</div>
+                    <div className="text-left sm:text-right font-bold text-lg mt-2 sm:mt-0">${(item.price * item.quantity).toFixed(2)}</div>
                   </div>
                 </div>
               </div>

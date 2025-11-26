@@ -4,11 +4,10 @@ import { useRouter, usePathname } from "@/i18n/routing"
 import { useLocale } from "next-intl"
 import { Button } from "@/components/ui/button"
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card"
 import { Globe } from "lucide-react"
 
 const locales = [
@@ -28,31 +27,35 @@ export function LanguageSwitcher() {
     }
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+        <HoverCard openDelay={100} closeDelay={200}>
+            <HoverCardTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="flex items-center gap-1.5 p-2 border border-transparent hover:border-white/20 rounded transition-colors duration-200 text-white"
+                    className="flex items-center gap-1.5 p-2 border border-transparent hover:border-white/20 rounded-md text-white hover:bg-white/10"
                 >
                     <Globe className="h-4 w-4" />
                     <span className="text-sm font-medium">{currentLocale.code.toUpperCase()}</span>
                 </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white text-slate-900">
+            </HoverCardTrigger>
+            <HoverCardContent align="end" sideOffset={8} className="w-40 p-1 bg-white text-foreground border-none shadow-xl rounded-md">
                 {locales.map((loc) => (
-                    <DropdownMenuItem
+                    <button
                         key={loc.code}
                         onClick={() => switchLocale(loc.code)}
-                        className="cursor-pointer hover:bg-slate-100"
+                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
+                            loc.code === locale 
+                                ? 'bg-brand-blue/10 text-brand-blue font-medium' 
+                                : 'text-zinc-700 hover:bg-zinc-100'
+                        }`}
                     >
-                        <span className="mr-2">{loc.flag}</span>
+                        <span>{loc.flag}</span>
                         <span>{loc.name}</span>
                         {loc.code === locale && (
-                            <span className="ml-auto text-amber-600">✓</span>
+                            <span className="ml-auto text-brand-success">✓</span>
                         )}
-                    </DropdownMenuItem>
+                    </button>
                 ))}
-            </DropdownMenuContent>
-        </DropdownMenu>
+            </HoverCardContent>
+        </HoverCard>
     )
 }

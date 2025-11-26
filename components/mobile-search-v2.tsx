@@ -122,7 +122,7 @@ export function MobileSearchV2() {
       {/* Search icon trigger for mobile */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center p-2 text-white hover:bg-white/5 rounded-lg md:hidden transition-colors"
+        className="flex items-center justify-center p-2 text-white hover:bg-white/5 rounded-md md:hidden"
         aria-label={t('searchPlaceholder')}
       >
         <Search className="size-6" />
@@ -171,7 +171,7 @@ export function MobileSearchV2() {
             }>
               {recentSearches.map((search, i) => (
                 <CommandItem key={`recent-${i}`} onSelect={() => handleSearch(search)}>
-                  <Clock className="mr-2 h-4 w-4 text-slate-400" />
+                  <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
                   {search}
                 </CommandItem>
               ))}
@@ -187,7 +187,7 @@ export function MobileSearchV2() {
           }>
             {trendingSearches.map((search, i) => (
               <CommandItem key={`trending-${i}`} onSelect={() => handleSearch(search)}>
-                <TrendingUp className="mr-2 h-4 w-4 text-orange-500" />
+                <TrendingUp className="mr-2 h-4 w-4 text-brand-deal" />
                 {search}
               </CommandItem>
             ))}

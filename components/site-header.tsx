@@ -1,25 +1,18 @@
 "use client"
 
 import type React from "react"
-import { Search, ShoppingCart, MapPin } from "lucide-react"
+import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
 import { useSearchParams } from "next/navigation"
-import { AccountDropdown } from "@/components/header-dropdowns"
+import { AccountDropdown, CartDropdown, ReturnsOrdersDropdown, LocationDropdown, SearchCategoryDropdown } from "@/components/header-dropdowns"
 import { SidebarMenu } from "@/components/sidebar-menu"
 import { MobileSearchV2 } from "@/components/mobile-search-v2"
 import { getCountryName } from "@/lib/geolocation"
 import { useEffect, useState, Suspense } from "react"
 import { Link, useRouter } from "@/i18n/routing"
-import { useTranslations, useLocale } from "next-intl"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { useTranslations } from "next-intl"
 import { LanguageSwitcher } from "@/components/language-switcher"
 
 interface Category {
@@ -36,8 +29,6 @@ function SearchBar() {
   const [category, setCategory] = useState("all")
   const [categories, setCategories] = useState<Category[]>([])
   const t = useTranslations('Navigation')
-  const tCat = useTranslations('SearchCategories')
-  const locale = useLocale()
 
   useEffect(() => {
     // Fetch categories from API
@@ -50,13 +41,6 @@ function SearchBar() {
       })
       .catch(err => console.error('Failed to fetch categories:', err))
   }, [])
-
-  const getCategoryName = (cat: Category) => {
-    if (locale === 'bg' && cat.name_bg) {
-      return cat.name_bg
-    }
-    return cat.name
-  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -72,30 +56,20 @@ function SearchBar() {
 
   return (
     <form onSubmit={handleSearch} className="flex-1 flex items-center mx-4 h-11">
-      <div className="flex h-full w-full rounded overflow-hidden bg-white border border-slate-200 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors">
-        <div className="h-full bg-slate-50 border-r border-slate-200 flex items-center hover:bg-slate-100 cursor-pointer transition-colors">
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="h-full w-auto min-w-[50px] max-w-[150px] bg-transparent border-none text-xs text-slate-600 rounded-none focus:ring-0 gap-1 px-3 data-[placeholder]:text-slate-600">
-              <SelectValue placeholder={tCat('all')} />
-            </SelectTrigger>
-            <SelectContent className="bg-white text-black border-slate-200 max-h-[400px] rounded">
-              <SelectItem value="all">{tCat('all')}</SelectItem>
-              {categories.map((cat) => (
-                <SelectItem key={cat.id} value={cat.slug}>
-                  {getCategoryName(cat)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="flex h-full w-full rounded overflow-hidden bg-white border border-border focus-within:ring-2 focus-within:ring-ring focus-within:border-ring transition-colors">
+        <SearchCategoryDropdown
+          categories={categories}
+          selectedCategory={category}
+          onCategoryChange={setCategory}
+        />
         <Input
           type="text"
           placeholder={t('searchPlaceholder')}
-          className="h-full border-0 rounded-none focus-visible:ring-0 text-slate-900 px-4 text-sm placeholder:text-slate-400"
+          className="h-full border-0 rounded-none focus-visible:ring-0 text-foreground px-4 text-sm placeholder:text-muted-foreground"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <Button type="submit" aria-label={t('searchPlaceholder')} className="h-full w-12 bg-amber-400 hover:bg-amber-500 text-zinc-900 rounded-none border-none flex items-center justify-center transition-colors">
+        <Button type="submit" aria-label={t('searchPlaceholder')} className="h-full w-12 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-none border-none flex items-center justify-center transition-colors">
           <Search className="size-5" />
         </Button>
       </div>
@@ -128,33 +102,27 @@ export function SiteHeader({ user }: SiteHeaderProps) {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 w-full flex flex-col border-b border-zinc-700">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full flex flex-col border-b border-zinc-700 bg-zinc-900">
       {/* Top Header */}
-      <div className="bg-zinc-900 text-white">
-        <div className="flex items-center h-14 md:h-16 px-3 md:px-4 gap-2 md:gap-3">
+      <div className="text-white">
+        <div className="flex items-center h-14 md:h-16 px-2 md:px-4 gap-1 md:gap-3">
           {/* Mobile: Hamburger Menu */}
           <div className="md:hidden shrink-0">
             <SidebarMenu />
           </div>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-0.5 md:gap-1.5 shrink-0 hover:opacity-90 transition-opacity outline-none focus:ring-2 focus:ring-white/20 rounded-lg md:px-2 py-1">
+          <Link href="/" className="flex items-center gap-0.5 md:gap-1.5 shrink-0 hover:opacity-90 transition-opacity outline-none focus:ring-2 focus:ring-white/20 rounded-md px-1.5 md:px-2 py-1 min-h-11">
             <span className="text-lg md:text-2xl font-bold tracking-tight">AMZN</span>
-            <div className="size-1 md:size-2 bg-amber-400 rounded-full mt-0.5 md:mt-1"></div>
+            <div className="size-1.5 md:size-2 bg-brand-blue-light rounded-full mt-0.5 md:mt-1"></div>
           </Link>
 
-          {/* Deliver to - Hidden on mobile */}
-          <Button variant="ghost" className="hidden lg:flex flex-col items-start leading-none gap-0 text-slate-300 hover:text-white text-xs ml-2 p-2 px-3 border border-transparent hover:border-white/20 rounded-lg transition-all duration-200 hover:bg-white/5 shrink-0">
-            <span className="text-slate-400 font-normal text-[10px]">{t('deliverTo')}</span>
-            <div className="flex items-center gap-1 font-medium text-sm text-white mt-0.5">
-              <MapPin className="size-3.5" />
-              <span>{country}</span>
-            </div>
-          </Button>
+          {/* Deliver to - With Dropdown - Hidden on mobile */}
+          <LocationDropdown country={country} />
 
           {/* Search Bar - Desktop only - TAKES ALL AVAILABLE SPACE */}
           <div className="hidden md:block flex-1">
-            <Suspense fallback={<div className="w-full h-11 bg-white rounded-lg" />}>
+            <Suspense fallback={<div className="w-full h-11 bg-white rounded-md" />}>
               <SearchBar />
             </Suspense>
           </div>
@@ -171,29 +139,32 @@ export function SiteHeader({ user }: SiteHeaderProps) {
               <AccountDropdown user={user} />
             </div>
 
-            {/* Orders - Hidden on mobile */}
-            <Link href="/account/orders">
-              <Button variant="ghost" className="hidden lg:flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-white/20 rounded-lg transition-all duration-200 hover:bg-white/5">
-                <span className="text-[10px] text-slate-300">{t('returns')}</span>
-                <span className="text-sm font-medium mt-0.5">{t('orders')}</span>
-              </Button>
-            </Link>
+            {/* Returns & Orders - With Dropdown - Hidden on mobile */}
+            <div className="hidden lg:block">
+              <ReturnsOrdersDropdown user={user} />
+            </div>
 
             {/* Mobile Search - Next to cart on mobile */}
             <div className="md:hidden">
               <MobileSearchV2 />
             </div>
 
-            {/* Cart - Always visible */}
-            <Link href="/cart" aria-label={`${t('cart')} - ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`}>
-              <Button variant="ghost" className="flex items-center p-2 md:px-3 border border-transparent hover:border-white/20 rounded-lg relative transition-all duration-200 hover:bg-white/5 group md:items-end md:gap-1">
+            {/* Cart - With Dropdown on Desktop */}
+            <div className="hidden md:block">
+              <CartDropdown />
+            </div>
+            
+            {/* Cart - Simple link on Mobile */}
+            <Link href="/cart" aria-label={`${t('cart')} - ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`} className="md:hidden">
+              <Button variant="ghost" className="flex items-center min-h-11 min-w-11 p-2 border border-transparent hover:border-white/20 rounded-md relative hover:bg-white/5 group">
                 <div className="relative">
-                  <ShoppingCart className="size-6 text-white" aria-hidden="true" />
-                  <span className="absolute -top-1 -right-1.5 bg-orange-500 text-white text-xs font-bold size-4 flex items-center justify-center rounded-full" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6 text-white" aria-hidden="true">
+                    <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                  </svg>
+                  <span className="absolute -top-1 -right-1.5 bg-brand-deal text-white text-[10px] font-bold min-w-5 h-5 flex items-center justify-center rounded-full px-1" aria-hidden="true">
                     {totalItems}
                   </span>
                 </div>
-                <span className="text-sm font-medium hidden md:block translate-y-px">{t('cart')}</span>
               </Button>
             </Link>
           </div>
@@ -201,15 +172,15 @@ export function SiteHeader({ user }: SiteHeaderProps) {
       </div>
 
       {/* Bottom Navigation - Hidden on mobile (use tab bar), visible on tablet+ */}
-      <nav className="hidden sm:block bg-zinc-800 text-sm py-2 px-4 border-t border-zinc-700 relative">
-        <div className="flex items-center gap-6 whitespace-nowrap text-slate-200">
+      <nav className="hidden sm:block bg-zinc-800 text-sm py-1.5 px-4 border-t border-zinc-700 relative">
+        <div className="flex items-center gap-1 whitespace-nowrap text-white/80">
           <SidebarMenu />
           
-          <Link href="/todays-deals" className="hover:text-white hover:underline transition-colors py-1.5 px-1">{t('todaysDeals')}</Link>
-          <Link href="/customer-service" className="hover:text-white hover:underline transition-colors py-1.5 px-1">{t('customerService')}</Link>
-          <Link href="/registry" className="hover:text-white hover:underline transition-colors py-1.5 px-1">{t('registry')}</Link>
-          <Link href="/gift-cards" className="hover:text-white hover:underline transition-colors py-1.5 px-1">{t('giftCards')}</Link>
-          <Link href="/sell" className="transition-colors font-medium text-blue-400 hover:text-blue-300 hover:underline py-1.5 px-1">{t('sell')}</Link>
+          <Link href="/todays-deals" className="hover:text-white hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-white/5">{t('todaysDeals')}</Link>
+          <Link href="/customer-service" className="hover:text-white hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-white/5">{t('customerService')}</Link>
+          <Link href="/registry" className="hover:text-white hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-white/5">{t('registry')}</Link>
+          <Link href="/gift-cards" className="hover:text-white hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-white/5">{t('giftCards')}</Link>
+          <Link href="/sell" className="transition-colors font-medium text-blue-400 hover:text-blue-300 hover:underline min-h-10 px-3 flex items-center rounded-md hover:bg-white/5">{t('sell')}</Link>
         </div>
       </nav>
     </header>

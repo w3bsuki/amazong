@@ -117,30 +117,33 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen bg-white pb-10">
-      <div className="max-w-[1500px] mx-auto px-4 py-8">
+      <div className="max-w-[1500px] mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Breadcrumb */}
         <Breadcrumb 
           items={[
             ...(parentCategory ? [{ label: parentCategory.name, href: `/search?category=${parentCategory.slug}` }] : []),
             ...(category ? [{ label: category.name, href: `/search?category=${category.slug}` }] : []),
-            { label: product.title?.slice(0, 50) + (product.title?.length > 50 ? '...' : ''), icon: <Package className="h-3.5 w-3.5" /> }
+            { label: product.title?.slice(0, 30) + (product.title?.length > 30 ? '...' : ''), icon: <Package className="h-3.5 w-3.5" /> }
           ]} 
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_400px_300px] gap-8 mt-4">
+        {/* Mobile-first responsive grid layout */}
+        <div className="flex flex-col lg:grid lg:grid-cols-[1fr_400px_300px] gap-4 sm:gap-6 lg:gap-8 mt-4">
 
-          {/* Left Column: Images */}
-          <div className="flex gap-4 sticky top-4 h-fit">
-            <div className="flex flex-col gap-3 w-[60px]">
+          {/* Images Section - Stacked on mobile, side-by-side on desktop */}
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 lg:sticky lg:top-4 h-fit order-1">
+            {/* Thumbnails - horizontal scroll on mobile, vertical on desktop */}
+            <div className="flex sm:flex-col gap-2 sm:gap-3 overflow-x-auto sm:overflow-visible no-scrollbar sm:w-[60px] pb-2 sm:pb-0">
               {(product.images || [product.image]).slice(0, 6).map((img: string, i: number) => (
-                <div key={i} className="border border-gray-300 rounded p-1 cursor-pointer hover:border-blue-600 transition-colors">
+                <div key={i} className="border border-gray-300 rounded p-1 cursor-pointer hover:border-blue-600 transition-colors shrink-0 w-14 sm:w-full">
                   <div className="relative w-full aspect-square">
                     <Image src={img || "/placeholder.svg"} alt="Thumbnail" fill className="object-contain" />
                   </div>
                 </div>
               ))}
             </div>
-            <div className="flex-1 relative aspect-square max-h-[600px] min-h-[400px]">
+            {/* Main image */}
+            <div className="flex-1 relative aspect-square max-h-[400px] sm:max-h-[500px] lg:max-h-[600px] min-h-[280px] sm:min-h-[400px]">
               <Image
                 src={product.images?.[0] || product.image || "/placeholder.svg"}
                 alt={product.title}
@@ -152,15 +155,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Middle Column: Product Details */}
-          <div className="flex flex-col gap-2">
-            <h1 className="text-[24px] font-medium text-[#0F1111] leading-tight mb-1">{product.title}</h1>
+          <div className="flex flex-col gap-2 order-2">
+            <h1 className="text-xl sm:text-2xl font-medium text-[#0F1111] leading-tight mb-1">{product.title}</h1>
 
             <div className="flex items-center gap-2 mb-2">
-              <div className="flex text-amber-400 text-sm">
+              <div className="flex text-rating text-sm">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 ${i < Math.floor(product.rating || 0) ? "fill-current" : "text-transparent stroke-current stroke-1 text-amber-400"}`}
+                    className={`h-4 w-4 ${i < Math.floor(product.rating || 0) ? "fill-current" : "text-rating-empty fill-rating-empty"}`}
                   />
                 ))}
               </div>
@@ -174,7 +177,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="flex flex-col gap-1">
               <div className="flex items-baseline gap-1">
                 <span className="text-sm align-top font-medium text-[#0F1111] relative top-1.5">$</span>
-                <span className="text-[28px] font-medium text-[#0F1111]">{Math.floor(product.price)}</span>
+                <span className="text-2xl sm:text-[28px] font-medium text-[#0F1111]">{Math.floor(product.price)}</span>
                 <span className="text-sm align-top font-medium text-[#0F1111] relative top-1.5">{(product.price % 1).toFixed(2).substring(1)}</span>
               </div>
               {product.is_prime && (
@@ -186,18 +189,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <span className="text-sm text-[#0F1111]">{t('freeReturns')}</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 text-xs text-blue-600 my-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-xs text-blue-600 my-4">
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
-                <RotateCcw className="h-8 w-8 text-gray-400 group-hover:text-blue-600" />
-                <span className="group-hover:text-blue-700 group-hover:underline">{t('freeReturns')}</span>
+                <RotateCcw className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-blue-600" />
+                <span className="group-hover:text-blue-700 group-hover:underline text-[10px] sm:text-xs">{t('freeReturns')}</span>
               </div>
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
-                <Truck className="h-8 w-8 text-gray-400 group-hover:text-blue-600" />
-                <span className="group-hover:text-blue-700 group-hover:underline">{t('freeDelivery')}</span>
+                <Truck className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-blue-600" />
+                <span className="group-hover:text-blue-700 group-hover:underline text-[10px] sm:text-xs">{t('freeDelivery')}</span>
               </div>
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
-                <ShieldCheck className="h-8 w-8 text-gray-400 group-hover:text-blue-600" />
-                <span className="group-hover:text-blue-700 group-hover:underline">{t('secureTransaction')}</span>
+                <ShieldCheck className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-blue-600" />
+                <span className="group-hover:text-blue-700 group-hover:underline text-[10px] sm:text-xs">{t('secureTransaction')}</span>
               </div>
             </div>
 
@@ -209,11 +212,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
           </div>
 
-          {/* Right Column: Buy Box */}
-          <div className="border border-[#d5d9d9] rounded p-4 h-fit sticky top-4 bg-white">
+          {/* Right Column: Buy Box - Full width on mobile, sticky on desktop */}
+          <div className="border border-[#d5d9d9] rounded-lg p-4 h-fit lg:sticky lg:top-4 bg-white order-3">
             <div className="flex items-baseline gap-1 mb-2">
               <span className="text-sm align-top font-medium text-[#0F1111]">$</span>
-              <span className="text-[28px] font-medium text-[#0F1111]">{Math.floor(product.price)}</span>
+              <span className="text-2xl sm:text-[28px] font-medium text-[#0F1111]">{Math.floor(product.price)}</span>
               <span className="text-sm align-top font-medium text-[#0F1111]">{(product.price % 1).toFixed(2).substring(1)}</span>
             </div>
 
@@ -248,9 +251,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold text-black mb-4">{t('relatedProducts')}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="mt-8 sm:mt-12">
+            <h2 className="text-xl sm:text-2xl font-bold text-black mb-4">{t('relatedProducts')}</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
               {relatedProducts.map((p: any) => (
                 <ProductCard
                   key={p.id}
@@ -266,7 +269,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         )}
 
-        <Separator className="my-8" />
+        <Separator className="my-6 sm:my-8" />
 
         {/* Reviews Section */}
         <ReviewsSection rating={product.rating || 0} reviewCount={product.reviews_count || 0} />

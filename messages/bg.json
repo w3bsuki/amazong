@@ -243,21 +243,63 @@
     },
     "Footer": {
         "backToTop": "Обратно нагоре",
-        "getToKnow": "Опознай ни",
-        "careers": "Кариери",
-        "blog": "Блог",
+        "footerLabel": "Долен колонтитул на сайта",
+        "newsletterTitle": "Получете топ оферти, най-новите тенденции и още.",
+        "newsletterSubtitle": "Абонирайте се за имейли, за да получавате оферти, нови продукти и още—моментално.",
+        "emailPlaceholder": "Имейл адрес",
+        "signUp": "Абонирай се",
+        "subscribing": "Абониране...",
+        "promoDisclaimer": "Вижте детайли за офертата. Важат ограничения. Цени, промоции и наличност може да варират по местоположение.",
+        
         "aboutUs": "За нас",
-        "makeMoney": "Печели с нас",
-        "sellProducts": "Продавай продукти",
-        "becomeAffiliate": "Стани партньор",
-        "payment": "Платежни продукти",
-        "businessCard": "Бизнес карта",
-        "shopPoints": "Пазарувай с точки",
-        "helpYou": "Нека ти помогнем",
-        "yourAccount": "Твоят акаунт",
-        "yourOrders": "Твоите поръчки",
+        "aboutUsLink": "За AMZN",
+        "careers": "Кариери",
+        "newsAndBlog": "Новини и блог",
+        "sustainability": "Устойчивост и управление",
+        "pressCenter": "Прес център",
+        "investors": "Инвеститори",
+        "affiliatesPartners": "Партньори и сътрудници",
+        "advertise": "Рекламирайте при нас",
+        "suppliers": "Доставчици",
+        
         "help": "Помощ",
-        "copyright": "© {year} Amazon.com, Inc. или партньори"
+        "helpCenter": "Помощен център AMZN",
+        "returns": "Връщания",
+        "trackOrders": "Проследи поръчки",
+        "recalls": "Изтегляния",
+        "contactUs": "Свържи се с нас",
+        "feedback": "Обратна връзка",
+        "accessibility": "Достъпност",
+        "securityFraud": "Сигурност и измами",
+        
+        "storesServices": "Магазини",
+        "findStore": "Намери магазин",
+        "pharmacy": "Аптека",
+        "optical": "Оптика",
+        "clinic": "Клиника",
+        "moreServices": "Още услуги в магазина",
+        
+        "services": "Услуги",
+        "membershipProgram": "Членска програма",
+        "giftCards": "Подаръчни карти",
+        "giftRegistry": "Регистър",
+        "sameDayDelivery": "Доставка същия ден",
+        "orderPickup": "Вземане на поръчка",
+        "freeShipping": "Безплатна доставка",
+        "sellWithUs": "Продавай с нас",
+        
+        "socialMedia": "Последвайте ни в социалните мрежи",
+        "homePage": "Към начална страница",
+        "legalLinks": "Правни връзки и поверителност",
+        
+        "terms": "Условия",
+        "privacyPolicy": "Политика за поверителност",
+        "cookiePolicy": "Предпочитания за бисквитки",
+        "caPrivacyRights": "Права за поверителност - CA",
+        "yourPrivacyChoices": "Вашите избори за поверителност",
+        "interestBasedAds": "Реклами, базирани на интереси",
+        
+        "copyright": "TM & © {year} AMZN, Inc. или партньори"
     },
     "Common": {
         "search": "Търсене",
@@ -391,5 +433,42 @@
         "resultsFor": "Резултати за",
         "exploreAllProducts": "Разгледай всички продукти",
         "productsFound": "намерени продукта"
+    },
+    "Cookies": {
+        "title": "Използваме бисквитки",
+        "description": "Използваме бисквитки и подобни технологии, за да персонализираме съдържанието, да адаптираме и измерваме рекламите и да осигурим по-добро изживяване. Като щракнете върху 'Приеми всички', вие се съгласявате с това.",
+        "descriptionShort": "Използваме бисквитки, за да персонализираме съдържанието, адаптираме рекламите и осигурим по-добро изживяване.",
+        "learnMore": "Научете повече",
+        "acceptAll": "Приеми всички бисквитки",
+        "declineOptional": "Откажи незадължителните",
+        "managePreferences": "Управление на предпочитанията",
+        "close": "Затвори"
+    },
+    "CartDropdown": {
+        "title": "Количка",
+        "empty": "Вашата количка е празна",
+        "startShopping": "Започнете да пазарувате",
+        "item": "артикул",
+        "items": "артикула",
+        "moreItems": "още артикула",
+        "subtotal": "Междинна сума",
+        "viewCart": "Виж количката",
+        "checkout": "Към плащане"
+    },
+    "ReturnsDropdown": {
+        "title": "Връщания и поръчки",
+        "trackOrders": "Проследи поръчките си",
+        "trackOrdersDesc": "Виж статуса и актуализации за доставка",
+        "startReturn": "Започни връщане",
+        "startReturnDesc": "Върни артикули за възстановяване на сума",
+        "deliveryHelp": "Помощ с доставка",
+        "deliveryHelpDesc": "Получи помощ с проблеми при доставка",
+        "signInToSee": "Влез, за да видиш поръчките си"
+    },
+    "LocationDropdown": {
+        "chooseLocation": "Избери местоположение",
+        "deliveryOptions": "Опциите и скоростта на доставка може да варират",
+        "popularLocations": "Популярни локации",
+        "manageAddresses": "Управлявай адреси"
     }
 }

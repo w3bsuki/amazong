@@ -39,25 +39,25 @@ export default async function GiftCardsPage() {
             <div className="container mx-auto max-w-6xl px-4 py-8">
                 {/* Quick Actions */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-                    <Card className="hover:shadow-md cursor-pointer transition-shadow">
+                    <Card className="hover:border-blue-400 cursor-pointer transition-colors">
                         <CardContent className="flex flex-col items-center justify-center p-6 space-y-4">
                             <Mail className="w-12 h-12 text-[#007185]" />
                             <span className="font-bold text-center">{t('eGiftCards')}</span>
                         </CardContent>
                     </Card>
-                    <Card className="hover:shadow-md cursor-pointer transition-shadow">
+                    <Card className="hover:border-blue-400 cursor-pointer transition-colors">
                         <CardContent className="flex flex-col items-center justify-center p-6 space-y-4">
                             <Printer className="w-12 h-12 text-[#007185]" />
                             <span className="font-bold text-center">{t('printAtHome')}</span>
                         </CardContent>
                     </Card>
-                    <Card className="hover:shadow-md cursor-pointer transition-shadow">
+                    <Card className="hover:border-blue-400 cursor-pointer transition-colors">
                         <CardContent className="flex flex-col items-center justify-center p-6 space-y-4">
                             <Gift className="w-12 h-12 text-[#007185]" />
                             <span className="font-bold text-center">{t('mail')}</span>
                         </CardContent>
                     </Card>
-                    <Card className="hover:shadow-md cursor-pointer transition-shadow">
+                    <Card className="hover:border-blue-400 cursor-pointer transition-colors">
                         <CardContent className="flex flex-col items-center justify-center p-6 space-y-4">
                             <CreditCard className="w-12 h-12 text-[#007185]" />
                             <span className="font-bold text-center">{t('reloadBalance')}</span>
@@ -70,7 +70,7 @@ export default async function GiftCardsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                         <div key={i} className="group cursor-pointer">
-                            <div className="aspect-[1.6] bg-gradient-to-br from-[#232f3e] to-[#37475a] rounded-lg mb-2 relative overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
+                            <div className="aspect-[1.6] bg-gradient-to-br from-[#232f3e] to-[#37475a] rounded-lg mb-2 relative overflow-hidden group-hover:opacity-90 transition-opacity">
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <span className="text-white font-bold text-xl">Amazon</span>
                                     <span className="text-[#febd69] ml-1">{t('smile')}</span>

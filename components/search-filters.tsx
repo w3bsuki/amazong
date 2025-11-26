@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from "next/navigation"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Star, ChevronDown, ChevronRight, Check, Package, Percent, Truck } from "lucide-react"
-import { Label } from "@/components/ui/label"
 import { useLocale, useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { useState, useEffect } from "react"
@@ -14,6 +13,7 @@ interface Category {
   name_bg: string | null
   slug: string
   parent_id: string | null
+  image_url?: string | null
 }
 
 interface SearchFiltersProps {
@@ -129,51 +129,51 @@ export function SearchFilters({
   }
 
   return (
-    <div className="space-y-5 text-[#0F1111]">
+    <div className="space-y-5 text-foreground">
       {/* Clear Filters Button */}
       {hasActiveFilters && (
         <button
           onClick={clearAllFilters}
-          className="w-full text-left text-sm text-[#007185] hover:text-[#c7511f] hover:underline font-medium"
+          className="w-full text-left text-sm text-brand-blue hover:text-brand-deal hover:underline font-medium min-h-10 flex items-center"
         >
           {t('clearAllFilters')}
         </button>
       )}
 
       {/* Delivery & Prime Section */}
-      <div className="pb-4 border-b border-[#e7e7e7]">
+      <div className="pb-4 border-b border-border">
         <h3 className="font-bold text-sm mb-3">{t('deliveryDay')}</h3>
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2">
+        <div className="space-y-1">
+          <label htmlFor="prime" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
             <Checkbox 
               id="prime" 
               checked={currentPrime === "true"}
               onCheckedChange={() => toggleParam("prime")}
-              className="border-[#888] data-[state=checked]:bg-[#007185] data-[state=checked]:border-[#007185]" 
+              className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
             />
-            <Label htmlFor="prime" className="text-sm font-medium flex items-center gap-1.5 cursor-pointer">
+            <span className="text-sm font-medium flex items-center gap-1.5">
               <img src="https://m.media-amazon.com/images/G/01/prime/marketing/slashPrime/amazon-prime-delivery-checkmark._CB611051915_.png" alt="Prime" className="h-3.5" />
-              <span className="text-[#007185]">{t('getPrimeDelivery')}</span>
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
+              <span className="text-brand-blue">{t('getPrimeDelivery')}</span>
+            </span>
+          </label>
+          <label htmlFor="freeShipping" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
             <Checkbox 
               id="freeShipping" 
-              className="border-[#888] data-[state=checked]:bg-[#007185] data-[state=checked]:border-[#007185]" 
+              className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
             />
-            <Label htmlFor="freeShipping" className="text-sm cursor-pointer flex items-center gap-1.5">
-              <Truck className="h-3.5 w-3.5 text-[#565959]" />
+            <span className="text-sm flex items-center gap-1.5">
+              <Truck className="size-4 text-muted-foreground" />
               {t('freeShipping')}
-            </Label>
-          </div>
+            </span>
+          </label>
         </div>
       </div>
 
       {/* Department/Category Navigation - Always show all main categories */}
-      <div className="pb-4 border-b border-[#e7e7e7]">
+      <div className="pb-4 border-b border-border">
         <h3 className="font-bold text-sm mb-3">{t('department')}</h3>
         
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           {/* Show all main categories with expandable subcategories */}
           {categories.map((cat) => {
             const isExpanded = expandedCategories.includes(cat.slug)
@@ -188,8 +188,8 @@ export function SearchFilters({
                 <div className="flex items-center justify-between group">
                   <Link
                     href={`/search?category=${cat.slug}`}
-                    className={`text-sm cursor-pointer hover:text-[#c7511f] flex-1 py-0.5 ${
-                      isCurrentCategory ? 'font-bold text-[#c7511f]' : 'text-[#0F1111]'
+                    className={`text-sm cursor-pointer hover:text-brand-deal flex-1 min-h-9 flex items-center ${
+                      isCurrentCategory ? 'font-bold text-brand-deal' : 'text-foreground'
                     }`}
                   >
                     {getCategoryName(cat)}
@@ -200,12 +200,12 @@ export function SearchFilters({
                         e.preventDefault()
                         toggleCategory(cat.slug)
                       }}
-                      className="p-1 hover:bg-[#f7fafa] rounded"
+                      className="min-h-9 min-w-9 flex items-center justify-center hover:bg-muted rounded-md"
                     >
                       {isExpanded ? (
-                        <ChevronDown className="h-3.5 w-3.5 text-[#565959]" />
+                        <ChevronDown className="size-4 text-muted-foreground" />
                       ) : (
-                        <ChevronRight className="h-3.5 w-3.5 text-[#565959]" />
+                        <ChevronRight className="size-4 text-muted-foreground" />
                       )}
                     </button>
                   )}
@@ -213,13 +213,13 @@ export function SearchFilters({
                 
                 {/* Subcategories */}
                 {isExpanded && hasSubs && (
-                  <div className="ml-3 mt-1 space-y-1 border-l-2 border-[#e7e7e7] pl-3">
+                  <div className="ml-3 mt-1 space-y-0.5 border-l-2 border-border pl-3">
                     {catSubs.map((subcat) => (
                       <Link
                         key={subcat.id}
                         href={`/search?category=${subcat.slug}`}
-                        className={`block text-sm cursor-pointer hover:text-[#c7511f] py-0.5 ${
-                          currentCategory?.slug === subcat.slug ? 'font-bold text-[#c7511f]' : 'text-[#565959]'
+                        className={`text-sm cursor-pointer hover:text-brand-deal min-h-9 flex items-center ${
+                          currentCategory?.slug === subcat.slug ? 'font-bold text-brand-deal' : 'text-muted-foreground'
                         }`}
                       >
                         {getCategoryName(subcat)}
@@ -234,33 +234,33 @@ export function SearchFilters({
       </div>
 
       {/* Customer Reviews */}
-      <div className="pb-4 border-b border-[#e7e7e7]">
+      <div className="pb-4 border-b border-border">
         <h3 className="font-bold text-sm mb-3">{t('customerReviews')}</h3>
         {[4, 3, 2, 1].map((stars) => (
-          <div
+          <button
             key={stars}
-            className={`flex items-center gap-1 mb-1.5 cursor-pointer hover:opacity-80 group ${
+            className={`min-h-10 w-full flex items-center gap-1.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1 group ${
               currentRating === stars.toString() ? 'font-bold' : ''
             }`}
             onClick={() => updateParams("minRating", currentRating === stars.toString() ? null : stars.toString())}
           >
-            <div className="flex text-[#f08804]">
+            <div className="flex text-rating">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-4 w-4 ${i < stars ? "fill-current" : "fill-none stroke-current stroke-1"}`}
+                  className={`size-4 ${i < stars ? "fill-current" : "fill-none stroke-current stroke-1"}`}
                 />
               ))}
             </div>
-            <span className="text-sm text-[#007185] group-hover:text-[#c7511f] group-hover:underline">{t('andUp')}</span>
+            <span className="text-sm text-brand-blue group-hover:text-brand-deal group-hover:underline">{t('andUp')}</span>
             {currentRating === stars.toString() && (
-              <Check className="h-3.5 w-3.5 text-[#007185] ml-1" />
+              <Check className="size-4 text-brand-blue ml-1" />
             )}
-          </div>
+          </button>
         ))}
         {currentRating && (
           <button
-            className="pt-1 text-[#007185] text-xs hover:underline"
+            className="pt-1 text-brand-blue text-xs hover:underline min-h-8 flex items-center"
             onClick={() => updateParams("minRating", null)}
           >
             {t('clearRating')}
@@ -270,26 +270,24 @@ export function SearchFilters({
 
       {/* Brands - only show if brands are available */}
       {brands.length > 0 && (
-        <div className="pb-4 border-b border-[#e7e7e7]">
+        <div className="pb-4 border-b border-border">
           <h3 className="font-bold text-sm mb-3">{t('brand')}</h3>
-          <div className="space-y-2 max-h-40 overflow-y-auto">
+          <div className="space-y-1 max-h-48 overflow-y-auto">
             {brands.slice(0, 10).map((brand) => (
-              <div key={brand} className="flex items-center space-x-2">
+              <label key={brand} htmlFor={`brand-${brand}`} className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
                 <Checkbox 
                   id={`brand-${brand}`}
                   checked={currentBrand === brand}
                   onCheckedChange={() => updateParams("brand", currentBrand === brand ? null : brand)}
-                  className="border-[#888] data-[state=checked]:bg-[#007185] data-[state=checked]:border-[#007185]" 
+                  className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
                 />
-                <Label htmlFor={`brand-${brand}`} className="text-sm cursor-pointer">
-                  {brand}
-                </Label>
-              </div>
+                <span className="text-sm">{brand}</span>
+              </label>
             ))}
           </div>
           {currentBrand && (
             <button
-              className="pt-2 text-[#007185] text-xs hover:underline"
+              className="pt-2 text-brand-blue text-xs hover:underline min-h-8 flex items-center"
               onClick={() => updateParams("brand", null)}
             >
               {t('clearBrand')}
@@ -299,9 +297,9 @@ export function SearchFilters({
       )}
 
       {/* Price */}
-      <div className="pb-4 border-b border-[#e7e7e7]">
+      <div className="pb-4 border-b border-border">
         <h3 className="font-bold text-sm mb-3">{t('price')}</h3>
-        <div className="space-y-1.5 text-sm text-[#0F1111]">
+        <div className="space-y-0.5 text-sm text-foreground">
           {[
             { label: t('under25'), min: null, max: "25" },
             { label: t('range2550'), min: "25", max: "50" },
@@ -311,14 +309,14 @@ export function SearchFilters({
           ].map(({ label, min, max }) => {
             const isActive = currentMinPrice === min && currentMaxPrice === max
             return (
-              <div
+              <button
                 key={label}
-                className={`cursor-pointer hover:text-[#c7511f] hover:underline flex items-center gap-1.5 ${isActive ? 'font-bold text-[#c7511f]' : ''}`}
+                className={`min-h-10 w-full text-left cursor-pointer hover:text-brand-deal hover:underline flex items-center gap-1.5 px-1 -mx-1 hover:bg-muted/50 rounded-md ${isActive ? 'font-bold text-brand-deal' : ''}`}
                 onClick={() => handlePriceClick(min, max)}
               >
                 {label}
-                {isActive && <Check className="h-3.5 w-3.5" />}
-              </div>
+                {isActive && <Check className="size-4" />}
+              </button>
             )
           })}
         </div>
@@ -326,30 +324,30 @@ export function SearchFilters({
         {/* Custom price range input */}
         <div className="mt-3 flex items-center gap-2">
           <div className="flex items-center">
-            <span className="text-sm text-[#565959] mr-1">$</span>
+            <span className="text-sm text-muted-foreground mr-1">$</span>
             <input 
               type="number" 
               placeholder={t('min')}
-              className="w-16 text-sm border border-[#888] rounded px-2 py-1 focus:border-[#e77600] focus:ring-1 focus:ring-[#e77600] outline-none"
+              className="w-16 text-sm border border-input rounded-md px-2 py-2 min-h-10 focus:border-ring focus:ring-1 focus:ring-ring outline-none bg-background"
             />
           </div>
-          <span className="text-sm text-[#565959]">-</span>
+          <span className="text-sm text-muted-foreground">-</span>
           <div className="flex items-center">
-            <span className="text-sm text-[#565959] mr-1">$</span>
+            <span className="text-sm text-muted-foreground mr-1">$</span>
             <input 
               type="number" 
               placeholder={t('max')}
-              className="w-16 text-sm border border-[#888] rounded px-2 py-1 focus:border-[#e77600] focus:ring-1 focus:ring-[#e77600] outline-none"
+              className="w-16 text-sm border border-input rounded-md px-2 py-2 min-h-10 focus:border-ring focus:ring-1 focus:ring-ring outline-none bg-background"
             />
           </div>
-          <button className="text-sm px-2 py-1 bg-[#f0f2f2] border border-[#d5d9d9] rounded hover:bg-[#e3e6e6]">
+          <button className="text-sm px-3 min-h-10 bg-secondary border border-border rounded-md hover:bg-muted transition-colors font-medium">
             {t('go')}
           </button>
         </div>
         
         {(currentMinPrice || currentMaxPrice) && (
           <button
-            className="pt-2 text-[#007185] text-xs hover:underline"
+            className="pt-2 text-brand-blue text-xs hover:underline min-h-8 flex items-center"
             onClick={() => handlePriceClick(null, null)}
           >
             {t('clearPrice')}
@@ -358,62 +356,60 @@ export function SearchFilters({
       </div>
 
       {/* Deals & Discounts */}
-      <div className="pb-4 border-b border-[#e7e7e7]">
+      <div className="pb-4 border-b border-border">
         <h3 className="font-bold text-sm mb-3">{t('dealsDiscounts')}</h3>
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2">
+        <div className="space-y-1">
+          <label htmlFor="deals" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
             <Checkbox 
               id="deals" 
               checked={currentDeals === "true"}
               onCheckedChange={() => toggleParam("deals")}
-              className="border-[#888] data-[state=checked]:bg-[#007185] data-[state=checked]:border-[#007185]" 
+              className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
             />
-            <Label htmlFor="deals" className="text-sm cursor-pointer flex items-center gap-1.5">
-              <Percent className="h-3.5 w-3.5 text-[#cc0c39]" />
+            <span className="text-sm flex items-center gap-1.5">
+              <Percent className="size-4 text-brand-deal" />
               {t('todaysDeals')}
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2">
+            </span>
+          </label>
+          <label htmlFor="lightning" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
             <Checkbox 
               id="lightning" 
-              className="border-[#888] data-[state=checked]:bg-[#007185] data-[state=checked]:border-[#007185]" 
+              className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
             />
-            <Label htmlFor="lightning" className="text-sm cursor-pointer">
-              {t('lightningDeals')}
-            </Label>
-          </div>
+            <span className="text-sm">{t('lightningDeals')}</span>
+          </label>
         </div>
       </div>
 
       {/* Availability */}
-      <div className="pb-4 border-b border-[#e7e7e7]">
+      <div className="pb-4 border-b border-border">
         <h3 className="font-bold text-sm mb-3">{t('availability')}</h3>
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2">
+        <div className="space-y-1">
+          <label htmlFor="instock" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
             <Checkbox 
               id="instock" 
               checked={currentAvailability === "instock"}
               onCheckedChange={() => updateParams("availability", currentAvailability === "instock" ? null : "instock")}
-              className="border-[#888] data-[state=checked]:bg-[#007185] data-[state=checked]:border-[#007185]" 
+              className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
             />
-            <Label htmlFor="instock" className="text-sm cursor-pointer flex items-center gap-1.5">
-              <Package className="h-3.5 w-3.5 text-[#007600]" />
+            <span className="text-sm flex items-center gap-1.5">
+              <Package className="size-4 text-green-600 dark:text-green-500" />
               {t('includeOutOfStock')}
-            </Label>
-          </div>
+            </span>
+          </label>
         </div>
       </div>
 
       {/* New Arrivals */}
       <div>
         <h3 className="font-bold text-sm mb-3">{t('newArrivals')}</h3>
-        <div className="space-y-1.5 text-sm">
-          <div className="cursor-pointer text-[#0F1111] hover:text-[#c7511f] hover:underline">
+        <div className="space-y-0.5 text-sm">
+          <button className="min-h-10 w-full text-left cursor-pointer text-foreground hover:text-brand-deal hover:underline px-1 -mx-1 hover:bg-muted/50 rounded-md flex items-center">
             {t('last30Days')}
-          </div>
-          <div className="cursor-pointer text-[#0F1111] hover:text-[#c7511f] hover:underline">
+          </button>
+          <button className="min-h-10 w-full text-left cursor-pointer text-foreground hover:text-brand-deal hover:underline px-1 -mx-1 hover:bg-muted/50 rounded-md flex items-center">
             {t('last90Days')}
-          </div>
+          </button>
         </div>
       </div>
     </div>

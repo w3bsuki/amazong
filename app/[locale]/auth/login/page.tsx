@@ -66,7 +66,7 @@ export default function Page() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-8 rounded-[3px] border-zinc-400 focus-visible:ring-1 focus-visible:ring-[#e77600] focus-visible:border-[#e77600] shadow-[0_1px_0_rgba(255,255,255,0.5),0_1px_0_rgba(0,0,0,0.07)_inset]"
+                      className="h-8 rounded-sm border-zinc-400 focus-visible:ring-1 focus-visible:ring-brand-warning focus-visible:border-brand-warning shadow-[0_1px_0_rgba(255,255,255,0.5),0_1px_0_rgba(0,0,0,0.07)_inset]"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -84,7 +84,7 @@ export default function Page() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-8 rounded-[3px] border-zinc-400 focus-visible:ring-1 focus-visible:ring-[#e77600] focus-visible:border-[#e77600] shadow-[0_1px_0_rgba(255,255,255,0.5),0_1px_0_rgba(0,0,0,0.07)_inset]"
+                      className="h-8 rounded-sm border-zinc-400 focus-visible:ring-1 focus-visible:ring-brand-warning focus-visible:border-brand-warning shadow-[0_1px_0_rgba(255,255,255,0.5),0_1px_0_rgba(0,0,0,0.07)_inset]"
                     />
                   </div>
                   {error && (
@@ -94,7 +94,7 @@ export default function Page() {
                   )}
                   <Button
                     type="submit"
-                    className="w-full bg-[#f0c14b] hover:bg-[#f4d078] text-black border border-[#a88734] rounded-[3px] h-8 shadow-[0_1px_0_rgba(255,255,255,0.4)_inset] text-sm font-normal"
+                    className="w-full bg-[#f0c14b] hover:bg-[#f4d078] text-black border border-[#a88734] rounded-sm h-8 shadow-[0_1px_0_rgba(255,255,255,0.4)_inset] text-sm font-normal"
                     disabled={isLoading}
                   >
                     {isLoading ? t('signingIn') : t('signIn')}
@@ -120,7 +120,7 @@ export default function Page() {
                 <Link href="/auth/sign-up" className="mt-4 block">
                   <Button
                     variant="outline"
-                    className="w-full bg-zinc-50 hover:bg-zinc-100 border-zinc-300 shadow-sm h-8 text-sm font-normal rounded-[3px]"
+                    className="w-full bg-zinc-50 hover:bg-zinc-100 border-zinc-300 shadow-sm h-8 text-sm font-normal rounded-sm"
                   >
                     {t('createAccount')}
                   </Button>

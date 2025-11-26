@@ -77,7 +77,7 @@ export default function Page() {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="h-8 rounded-[3px] border-zinc-400 focus-visible:ring-1 focus-visible:ring-[#e77600] focus-visible:border-[#e77600]"
+                      className="h-8 rounded-sm border-zinc-400 focus-visible:ring-1 focus-visible:ring-brand-warning focus-visible:border-brand-warning"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -91,7 +91,7 @@ export default function Page() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-8 rounded-[3px] border-zinc-400 focus-visible:ring-1 focus-visible:ring-[#e77600] focus-visible:border-[#e77600]"
+                      className="h-8 rounded-sm border-zinc-400 focus-visible:ring-1 focus-visible:ring-brand-warning focus-visible:border-brand-warning"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -105,7 +105,7 @@ export default function Page() {
                       placeholder="At least 6 characters"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-8 rounded-[3px] border-zinc-400 focus-visible:ring-1 focus-visible:ring-[#e77600] focus-visible:border-[#e77600]"
+                      className="h-8 rounded-sm border-zinc-400 focus-visible:ring-1 focus-visible:ring-brand-warning focus-visible:border-brand-warning"
                     />
                     <div className="text-[10px] text-zinc-500 flex items-center gap-1">
                       <span className="text-[#007185] font-bold">i</span> Passwords must be at least 6 characters.
@@ -121,13 +121,13 @@ export default function Page() {
                       required
                       value={repeatPassword}
                       onChange={(e) => setRepeatPassword(e.target.value)}
-                      className="h-8 rounded-[3px] border-zinc-400 focus-visible:ring-1 focus-visible:ring-[#e77600] focus-visible:border-[#e77600]"
+                      className="h-8 rounded-sm border-zinc-400 focus-visible:ring-1 focus-visible:ring-brand-warning focus-visible:border-brand-warning"
                     />
                   </div>
                   {error && <p className="text-sm text-red-600 font-medium">{error}</p>}
                   <Button
                     type="submit"
-                    className="w-full bg-[#f0c14b] hover:bg-[#f4d078] text-black border border-[#a88734] rounded-[3px] h-8 shadow-[0_1px_0_rgba(255,255,255,0.4)_inset] text-sm font-normal"
+                    className="w-full bg-[#f0c14b] hover:bg-[#f4d078] text-black border border-[#a88734] rounded-sm h-8 shadow-[0_1px_0_rgba(255,255,255,0.4)_inset] text-sm font-normal"
                     disabled={isLoading}
                   >
                     {isLoading ? "Creating account..." : "Create your Amazon account"}

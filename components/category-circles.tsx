@@ -174,10 +174,10 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
       // Mobile: White card styling
       "bg-white pt-4 pb-3 border-0 rounded-none",
       // Desktop: Card styling with rounded corners
-      "sm:py-5 sm:border sm:border-slate-200 sm:rounded-xl"
+      "sm:py-5 sm:border sm:border-border sm:rounded-md"
     )}>
       <h2 className={cn(
-        "font-bold text-slate-900 mb-3",
+        "font-bold text-foreground mb-3",
         // Mobile: Clean styling
         "text-base px-4",
         // Desktop: Larger with proper padding
@@ -203,7 +203,8 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
             key={category.slug}
             href={`/search?category=${category.slug}`}
             className={cn(
-              "flex flex-col items-center gap-2 sm:gap-2.5 min-w-[72px] sm:min-w-[90px] md:min-w-[100px] group snap-start tap-transparent shrink-0",
+              "flex flex-col items-center gap-1.5 sm:gap-2.5 min-w-[76px] sm:min-w-[90px] md:min-w-[100px] group snap-start shrink-0",
+              "touch-action-manipulation active:scale-95 transition-transform",
               // Add right padding to last item
               index === categories.length - 1 && "mr-4 sm:mr-5"
             )}
@@ -212,19 +213,18 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
             <div
               className={cn(
                 "rounded-full flex items-center justify-center overflow-hidden",
-                // Mobile: Compact
-                "size-16 bg-slate-100 border-2 border-slate-200",
+                // Mobile: 72px for proper touch target (close to 44px minimum when tapping)
+                "size-[72px] bg-muted border-2 border-border",
                 // Desktop: Larger with hover effects
                 "sm:size-20 md:size-24",
-                "group-hover:border-blue-500 group-hover:shadow-md",
-                "transition-all duration-200 group-active:scale-95"
+                "group-hover:border-brand-blue"
               )}
             >
               {category.image ? (
                 <img 
                   src={category.image} 
                   alt={locale === "bg" ? category.name : category.nameEn}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <span className="text-2xl sm:text-3xl md:text-4xl">{category.icon}</span>
@@ -233,11 +233,11 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
             
             {/* Category Name */}
             <span className={cn(
-              "font-medium text-center group-hover:text-blue-600 transition-colors line-clamp-2",
+              "font-medium text-center group-hover:text-blue-600 line-clamp-2",
               // Mobile: Compact text
-              "text-[11px] text-slate-700 max-w-[72px]",
+              "text-[11px] text-muted-foreground max-w-[72px]",
               // Desktop: Standard sizing
-              "sm:text-xs md:text-sm sm:text-slate-800 sm:max-w-[90px] md:max-w-[100px]"
+              "sm:text-xs md:text-sm sm:text-foreground sm:max-w-[90px] md:max-w-[100px]"
             )}>
               {locale === "bg" ? category.name : category.nameEn}
             </span>
@@ -250,15 +250,14 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
         onClick={() => scroll("left")}
         className={cn(
           "absolute left-1 top-1/2 -translate-y-1/2 z-10",
-          "size-9 bg-white hover:bg-slate-50 rounded-full shadow-lg border border-slate-200",
+          "size-11 bg-white hover:bg-muted rounded-full border border-border shadow-sm",
           "flex items-center justify-center",
-          "transition-all duration-200",
           "hidden sm:flex",
           !canScrollLeft && "opacity-0 pointer-events-none"
         )}
         aria-label="Scroll left"
       >
-        <ChevronLeft className="size-5 text-slate-600" />
+        <ChevronLeft className="size-5 text-muted-foreground" />
       </button>
 
       {/* Right Arrow - Desktop only */}
@@ -266,15 +265,14 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
         onClick={() => scroll("right")}
         className={cn(
           "absolute right-1 top-1/2 -translate-y-1/2 z-10",
-          "size-9 bg-white hover:bg-slate-50 rounded-full shadow-lg border border-slate-200",
+          "size-11 bg-white hover:bg-muted rounded-full border border-border shadow-sm",
           "flex items-center justify-center",
-          "transition-all duration-200",
           "hidden sm:flex",
           !canScrollRight && "opacity-0 pointer-events-none"
         )}
         aria-label="Scroll right"
       >
-        <ChevronRight className="size-5 text-slate-600" />
+        <ChevronRight className="size-5 text-muted-foreground" />
       </button>
 
       {/* Mobile scroll indicator - subtle fade */}

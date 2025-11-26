@@ -49,12 +49,12 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
   const formattedDate = new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'numeric', day: 'numeric' }).format(deliveryDate)
 
   return (
-    <Card className="bg-white overflow-hidden flex flex-col group relative transition-all border border-slate-200 rounded-lg shadow-sm hover:border-blue-400 hover:shadow-md h-full">
+    <Card className="bg-card overflow-hidden flex flex-col group relative border border-border rounded-md hover:border-ring h-full">
       {/* Hit Area for Nav */}
       <Link href={`/product/${id}`} className="absolute inset-0 z-0" aria-label={`View ${title}`} />
 
       {/* Image Container - Fixed square aspect ratio */}
-      <CardContent className="relative bg-slate-50 aspect-square p-3 sm:p-4 flex items-center justify-center overflow-hidden">
+      <CardContent className="relative bg-secondary aspect-square p-2 sm:p-3 md:p-4 flex items-center justify-center overflow-hidden">
         <div className="relative w-full h-full">
           <Image
             src={image || "/placeholder.svg"}
@@ -66,40 +66,40 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
         </div>
       </CardContent>
 
-      <CardFooter className="p-2.5 sm:p-3 flex-1 flex flex-col z-10 pointer-events-none bg-white">
+      <CardFooter className="p-2 sm:p-2.5 md:p-3 flex-1 flex flex-col z-10 pointer-events-none bg-card">
         {/* Title - 2 lines max */}
-        <h3 className="text-xs sm:text-sm font-medium text-slate-900 group-hover:text-blue-600 line-clamp-2 mb-1 sm:mb-1.5 leading-snug transition-colors min-h-8">
+        <h3 className="text-xs sm:text-sm font-medium text-foreground group-hover:text-brand-blue line-clamp-2 mb-1 sm:mb-1.5 leading-snug min-h-8 sm:min-h-10">
           {title}
         </h3>
 
         {/* Rating - Compact */}
         <div className="flex items-center gap-1 mb-1.5">
-          <div className="flex text-amber-500">
+          <div className="flex text-rating">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-3 h-3 ${i < Math.floor(rating) ? "fill-current" : "text-slate-200 fill-current"}`}
+                className={`size-3 ${i < Math.floor(rating) ? "fill-current" : "text-rating-empty fill-current"}`}
               />
             ))}
           </div>
-          <span className="text-[10px] text-blue-600 font-medium">{reviews.toLocaleString()}</span>
+          <span className="text-[10px] text-brand-blue font-medium">{reviews.toLocaleString()}</span>
         </div>
 
         {/* Price & Button */}
         <div className="mt-auto pointer-events-auto">
           <div className="mb-1">
-            <span className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">{formatPrice(price)}</span>
+            <span className="text-sm sm:text-base md:text-lg font-bold text-foreground tracking-tight">{formatPrice(price)}</span>
           </div>
 
           {!compact && (
-            <div className="text-[10px] text-slate-500 mb-2 hidden sm:block">
-              {t('delivery')} <span className="font-semibold text-slate-700">{formattedDate}</span>
+            <div className="text-[10px] text-muted-foreground mb-1.5 sm:mb-2 hidden sm:block">
+              {t('delivery')} <span className="font-semibold text-foreground">{formattedDate}</span>
             </div>
           )}
 
           <Button
             onClick={handleAddToCart}
-            className="w-full min-h-10 sm:min-h-11 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium py-2 rounded transition-colors tap-transparent active-scale"
+            className="w-full min-h-11 bg-brand-blue hover:bg-brand-blue/90 text-white text-xs sm:text-sm font-medium rounded-md transition-colors touch-action-manipulation active:scale-[0.98]"
           >
             {t('addToCart')}
           </Button>

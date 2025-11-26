@@ -243,21 +243,63 @@
     },
     "Footer": {
         "backToTop": "Back to top",
-        "getToKnow": "Get to Know Us",
-        "careers": "Careers",
-        "blog": "Blog",
+        "footerLabel": "Site footer",
+        "newsletterTitle": "Get top deals, latest trends, and more.",
+        "newsletterSubtitle": "Sign up for emails to get deals, new arrivals & more—instantly.",
+        "emailPlaceholder": "Email address",
+        "signUp": "Sign up",
+        "subscribing": "Subscribing...",
+        "promoDisclaimer": "See offer details. Restrictions apply. Pricing, promotions and availability may vary by location.",
+        
         "aboutUs": "About Us",
-        "makeMoney": "Make Money with Us",
-        "sellProducts": "Sell products",
-        "becomeAffiliate": "Become an Affiliate",
-        "payment": "Payment Products",
-        "businessCard": "Business Card",
-        "shopPoints": "Shop with Points",
-        "helpYou": "Let Us Help You",
-        "yourAccount": "Your Account",
-        "yourOrders": "Your Orders",
+        "aboutUsLink": "About AMZN",
+        "careers": "Careers",
+        "newsAndBlog": "News & Blog",
+        "sustainability": "Sustainability & Governance",
+        "pressCenter": "Press Center",
+        "investors": "Investors",
+        "affiliatesPartners": "Affiliates & Partners",
+        "advertise": "Advertise with Us",
+        "suppliers": "Suppliers",
+        
         "help": "Help",
-        "copyright": "© {year} Amazon.com, Inc. or its affiliates"
+        "helpCenter": "AMZN Help",
+        "returns": "Returns",
+        "trackOrders": "Track Orders",
+        "recalls": "Recalls",
+        "contactUs": "Contact Us",
+        "feedback": "Feedback",
+        "accessibility": "Accessibility",
+        "securityFraud": "Security & Fraud",
+        
+        "storesServices": "Stores",
+        "findStore": "Find a Store",
+        "pharmacy": "Pharmacy",
+        "optical": "Optical",
+        "clinic": "Clinic",
+        "moreServices": "More In-Store Services",
+        
+        "services": "Services",
+        "membershipProgram": "Membership Program",
+        "giftCards": "Gift Cards",
+        "giftRegistry": "Registry",
+        "sameDayDelivery": "Same Day Delivery",
+        "orderPickup": "Order Pickup",
+        "freeShipping": "Free Shipping",
+        "sellWithUs": "Sell with Us",
+        
+        "socialMedia": "Follow us on social media",
+        "homePage": "Go to homepage",
+        "legalLinks": "Legal and privacy links",
+        
+        "terms": "Terms",
+        "privacyPolicy": "Privacy Policy",
+        "cookiePolicy": "Cookie Preferences",
+        "caPrivacyRights": "CA Privacy Rights",
+        "yourPrivacyChoices": "Your Privacy Choices",
+        "interestBasedAds": "Interest Based Ads",
+        
+        "copyright": "TM & © {year} AMZN, Inc. or its affiliates"
     },
     "Common": {
         "search": "Search",
@@ -391,5 +433,42 @@
         "resultsFor": "Results for",
         "exploreAllProducts": "Explore All Products",
         "productsFound": "products found"
+    },
+    "Cookies": {
+        "title": "We use cookies",
+        "description": "We use cookies and similar technologies to help personalize content, tailor and measure ads, and provide a better experience. By clicking 'Accept All', you agree to this.",
+        "descriptionShort": "We use cookies to personalize content, tailor ads, and provide a better experience.",
+        "learnMore": "Learn more",
+        "acceptAll": "Accept All Cookies",
+        "declineOptional": "Decline Optional",
+        "managePreferences": "Manage Preferences",
+        "close": "Close"
+    },
+    "CartDropdown": {
+        "title": "Shopping Cart",
+        "empty": "Your cart is empty",
+        "startShopping": "Start shopping",
+        "item": "item",
+        "items": "items",
+        "moreItems": "more items",
+        "subtotal": "Subtotal",
+        "viewCart": "View Cart",
+        "checkout": "Checkout"
+    },
+    "ReturnsDropdown": {
+        "title": "Returns & Orders",
+        "trackOrders": "Track your orders",
+        "trackOrdersDesc": "See order status and delivery updates",
+        "startReturn": "Start a return",
+        "startReturnDesc": "Return items for a refund",
+        "deliveryHelp": "Delivery help",
+        "deliveryHelpDesc": "Get help with delivery issues",
+        "signInToSee": "Sign in to see your orders"
+    },
+    "LocationDropdown": {
+        "chooseLocation": "Choose your location",
+        "deliveryOptions": "Delivery options and speeds may vary based on location",
+        "popularLocations": "Popular locations",
+        "manageAddresses": "Manage addresses"
     }
 }

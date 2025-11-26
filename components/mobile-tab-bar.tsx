@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Home, Search, ShoppingCart, User, Menu } from "lucide-react"
+import { Home, ShoppingCart, User, Menu } from "lucide-react"
 import { Link, usePathname } from "@/i18n/routing"
 import { useCart } from "@/lib/cart-context"
 import { cn } from "@/lib/utils"
@@ -20,28 +20,28 @@ const tabs: TabItem[] = [
     id: "home",
     labelEn: "Home",
     labelBg: "Начало",
-    icon: <Home className="h-5 w-5" />,
+    icon: <Home className="size-6" />,
     href: "/"
   },
   {
     id: "menu",
     labelEn: "Menu",
     labelBg: "Меню",
-    icon: <Menu className="h-5 w-5" />,
+    icon: <Menu className="size-6" />,
     action: "menu"
   },
   {
     id: "cart",
     labelEn: "Cart",
     labelBg: "Кошница",
-    icon: <ShoppingCart className="h-5 w-5" />,
+    icon: <ShoppingCart className="size-6" />,
     href: "/cart"
   },
   {
     id: "account",
     labelEn: "Account",
     labelBg: "Профил",
-    icon: <User className="h-5 w-5" />,
+    icon: <User className="size-6" />,
     href: "/account"
   }
 ]
@@ -79,11 +79,11 @@ export function MobileTabBar({
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 md:hidden pb-safe"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden pb-safe"
       role="navigation"
       aria-label="Mobile navigation"
     >
-      <div className="flex items-center justify-around h-16">
+      <div className="flex items-center justify-around h-[72px]">
         {tabs.map((tab) => {
           const active = isActive(tab)
           
@@ -94,14 +94,14 @@ export function MobileTabBar({
                 key={tab.id}
                 onClick={() => handleTabClick(tab)}
                 className={cn(
-                  "flex flex-col items-center justify-center flex-1 min-h-11 min-w-11 h-full gap-0.5",
-                  "tap-transparent active-scale transition-colors",
-                  active ? "text-amber-600" : "text-slate-600"
+                  "flex flex-col items-center justify-center flex-1 min-h-14 min-w-14 h-full gap-1",
+                  "touch-action-manipulation active:scale-95 transition-all",
+                  active ? "text-brand-blue" : "text-muted-foreground"
                 )}
                 aria-label={locale === "bg" ? tab.labelBg : tab.labelEn}
               >
                 {tab.icon}
-                <span className="text-[10px] font-medium">
+                <span className="text-[11px] font-medium">
                   {locale === "bg" ? tab.labelBg : tab.labelEn}
                 </span>
               </button>
@@ -114,9 +114,9 @@ export function MobileTabBar({
               key={tab.id}
               href={tab.href || "/"}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 min-h-11 min-w-11 h-full gap-0.5 relative",
-                "tap-transparent active-scale transition-colors",
-                active ? "text-amber-600" : "text-slate-600"
+                "flex flex-col items-center justify-center flex-1 min-h-14 min-w-14 h-full gap-1 relative",
+                "touch-action-manipulation active:scale-95 transition-all",
+                active ? "text-brand-blue" : "text-muted-foreground"
               )}
               aria-label={locale === "bg" ? tab.labelBg : tab.labelEn}
               aria-current={active ? "page" : undefined}
@@ -126,14 +126,14 @@ export function MobileTabBar({
                 {/* Cart badge */}
                 {tab.id === "cart" && cartItemCount > 0 && (
                   <span 
-                    className="absolute -top-1.5 -right-2 bg-amber-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1"
+                    className="absolute -top-1 -right-2.5 bg-brand-deal text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1"
                     aria-label={`${cartItemCount} items in cart`}
                   >
                     {cartItemCount > 99 ? "99+" : cartItemCount}
                   </span>
                 )}
               </span>
-              <span className="text-[10px] font-medium">
+              <span className="text-[11px] font-medium">
                 {locale === "bg" ? tab.labelBg : tab.labelEn}
               </span>
             </Link>

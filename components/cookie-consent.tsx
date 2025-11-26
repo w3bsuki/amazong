@@ -1,0 +1,148 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
+import { Link } from "@/i18n/routing"
+import { Button } from "@/components/ui/button"
+import { X, Cookie } from "lucide-react"
+
+const COOKIE_CONSENT_KEY = "cookie-consent"
+
+type ConsentValue = "accepted" | "declined" | null
+
+export function CookieConsent() {
+    const t = useTranslations('Cookies')
+    const [consent, setConsent] = useState<ConsentValue>(null)
+    const [isVisible, setIsVisible] = useState(false)
+
+    useEffect(() => {
+        // Check if consent was already given
+        const storedConsent = localStorage.getItem(COOKIE_CONSENT_KEY)
+        if (!storedConsent) {
+            // Show banner after a short delay for better UX
+            const timer = setTimeout(() => setIsVisible(true), 1000)
+            return () => clearTimeout(timer)
+        } else {
+            setConsent(storedConsent as ConsentValue)
+        }
+    }, [])
+
+    const handleAccept = () => {
+        localStorage.setItem(COOKIE_CONSENT_KEY, "accepted")
+        setConsent("accepted")
+        setIsVisible(false)
+        // Here you would initialize analytics/tracking cookies
+    }
+
+    const handleDecline = () => {
+        localStorage.setItem(COOKIE_CONSENT_KEY, "declined")
+        setConsent("declined")
+        setIsVisible(false)
+        // Here you would disable non-essential cookies
+    }
+
+    const handleManagePreferences = () => {
+        // This could open a modal with granular cookie preferences
+        // For now, we'll just navigate to the cookie policy page
+    }
+
+    if (!isVisible || consent) {
+        return null
+    }
+
+    return (
+        <div 
+            className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom duration-300"
+            role="dialog"
+            aria-labelledby="cookie-consent-title"
+            aria-describedby="cookie-consent-description"
+        >
+            {/* Mobile-optimized bottom sheet */}
+            <div className="md:hidden bg-card border-t border-border shadow-2xl pb-safe">
+                <div className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                        <h2 id="cookie-consent-title" className="text-base font-semibold text-foreground flex items-center gap-2">
+                            <Cookie className="size-4 text-interactive" />
+                            {t('title')}
+                        </h2>
+                        <button
+                            onClick={handleDecline}
+                            className="p-1.5 text-muted-foreground hover:text-foreground tap-transparent rounded-md hover:bg-muted transition-colors"
+                            aria-label={t('close')}
+                        >
+                            <X className="size-5" />
+                        </button>
+                    </div>
+                    <p id="cookie-consent-description" className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                        {t('description')}
+                        <Link href="/cookies" className="text-interactive hover:text-interactive-hover hover:underline underline-offset-2 ml-1">
+                            {t('learnMore')}
+                        </Link>
+                    </p>
+                    <div className="flex flex-col gap-2.5">
+                        <Button 
+                            onClick={handleAccept}
+                            className="w-full h-12 bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md shadow-sm"
+                        >
+                            {t('acceptAll')}
+                        </Button>
+                        <Button 
+                            variant="outline"
+                            onClick={handleDecline}
+                            className="w-full h-12 border-border text-foreground hover:bg-muted rounded-md"
+                        >
+                            {t('declineOptional')}
+                        </Button>
+                    </div>
+                    <button 
+                        onClick={handleManagePreferences}
+                        className="w-full text-center text-sm text-muted-foreground hover:text-foreground mt-3 py-2 transition-colors"
+                    >
+                        {t('managePreferences')}
+                    </button>
+                </div>
+            </div>
+
+            {/* Desktop banner */}
+            <div className="hidden md:block bg-primary text-primary-foreground border-t border-border/30 shadow-lg">
+                <div className="max-w-7xl mx-auto px-6 py-4">
+                    <div className="flex items-center justify-between gap-8">
+                        <div className="flex-1 flex items-center gap-3">
+                            <Cookie className="size-5 text-accent shrink-0" />
+                            <p className="text-sm text-primary-foreground/80">
+                                <span className="font-semibold text-primary-foreground">{t('title')}</span>
+                                {" "}{t('descriptionShort')}
+                                <Link href="/cookies" className="text-accent hover:underline underline-offset-2 ml-1 transition-colors">
+                                    {t('learnMore')}
+                                </Link>
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-4 shrink-0">
+                            <button 
+                                onClick={handleManagePreferences}
+                                className="text-sm text-primary-foreground/60 hover:text-primary-foreground hover:underline underline-offset-2 whitespace-nowrap transition-colors"
+                            >
+                                {t('managePreferences')}
+                            </button>
+                            <Button 
+                                variant="outline"
+                                size="sm"
+                                onClick={handleDecline}
+                                className="border-primary-foreground/30 text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground bg-transparent"
+                            >
+                                {t('declineOptional')}
+                            </Button>
+                            <Button 
+                                size="sm"
+                                onClick={handleAccept}
+                                className="bg-interactive hover:bg-interactive-hover text-white shadow-sm"
+                            >
+                                {t('acceptAll')}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}

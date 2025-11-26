@@ -12,12 +12,12 @@ export function MainNav() {
         <Link
           key={link}
           href={link === "Sell" ? "/sell" : "#"}
-          className="hover:outline outline-1 outline-white p-1 rounded-sm"
+          className="hover:outline outline-1 outline-white p-1 rounded-md"
         >
           {link}
         </Link>
       ))}
-      <div className="ml-auto font-bold hover:outline outline-1 outline-white p-1 rounded-sm hidden md:block">
+      <div className="ml-auto font-bold hover:outline outline-1 outline-white p-1 rounded-md hidden md:block">
         Shop great deals now
       </div>
     </nav>

@@ -12,6 +12,7 @@ interface Category {
   name_bg: string | null
   slug: string
   parent_id: string | null
+  image_url?: string | null
 }
 
 interface Product {
@@ -56,7 +57,7 @@ export default async function SearchPage({
     // Fetch ALL categories (both top-level and subcategories) in one query
     const { data: allCats } = await supabase
       .from("categories")
-      .select("id, name, name_bg, slug, parent_id")
+      .select("id, name, name_bg, slug, parent_id, image_url")
       .order("name")
     
     if (allCats) {
@@ -178,10 +179,10 @@ export default async function SearchPage({
 
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="flex max-w-[1500px] mx-auto">
-        {/* Sidebar Filters */}
-        <div className="w-64 p-4 border-r border-[#eee] hidden lg:block space-y-6">
+    <div className="min-h-screen bg-background">
+      <div className="flex flex-col lg:flex-row max-w-[1500px] mx-auto">
+        {/* Sidebar Filters - Hidden on mobile */}
+        <div className="w-64 p-4 border-r border-border hidden lg:block space-y-6 shrink-0">
           <Suspense>
             <SearchFilters 
               categories={allCategories}
@@ -194,7 +195,7 @@ export default async function SearchPage({
         </div>
 
         {/* Main Results */}
-        <div className="flex-1 p-4">
+        <div className="flex-1 p-4 sm:p-6">
           {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
           {currentCategory ? (
             <Suspense>
@@ -213,22 +214,25 @@ export default async function SearchPage({
             </Suspense>
           )}
 
-          <div className="mb-4 flex items-center justify-between border-b border-[#eee] pb-2">
-            <h1 className="font-bold text-sm">
-              {products.length} results
+          {/* Results count and sort - Same row layout */}
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">{products.length}</span> results
               {query && (
-                <span>
-                  {" "}
-                  for <span className="text-[#c45500]">"{query}"</span>
+                <span className="hidden sm:inline">
+                  {" "}for <span className="font-medium text-brand-deal">"{query}"</span>
                 </span>
               )}
               {currentCategory && !query && (
-                <span className="font-normal text-[#565959]"> in {currentCategory.name}</span>
+                <span className="hidden sm:inline"> in <span className="font-medium">{currentCategory.name}</span></span>
               )}
-            </h1>
+            </p>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-[#555]">Sort by:</span>
-              <select className="text-sm bg-[#f0f2f2] border border-[#d5d9d9] rounded-[8px] px-2 py-1 shadow-sm hover:bg-[#e3e6e6] cursor-pointer focus:ring-[#e77600] focus:border-[#e77600]">
+              <label htmlFor="sort" className="text-sm text-muted-foreground hidden sm:inline">Sort by:</label>
+              <select 
+                id="sort"
+                className="min-h-9 text-sm bg-card border border-border rounded-lg px-3 py-1.5 hover:bg-secondary cursor-pointer focus:ring-2 focus:ring-ring outline-none appearance-none pr-8 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m2%204%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-size-[12px] bg-position-[right_12px_center] bg-no-repeat"
+              >
                 <option>Featured</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
@@ -238,7 +242,8 @@ export default async function SearchPage({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {/* Product Grid */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
@@ -246,28 +251,28 @@ export default async function SearchPage({
                 title={product.title}
                 price={product.price}
                 image={product.image_url}
-                rating={product.rating || 0} // Use actual rating from DB
-                reviews={product.review_count || 0} // Use actual review count from DB
+                rating={product.rating || 0}
+                reviews={product.review_count || 0}
               />
             ))}
           </div>
 
           {products.length === 0 && (
-            <div className="mt-8">
-              <h2 className="text-xl font-medium">No results found.</h2>
-              <p className="text-zinc-600">Try checking your spelling or use more general terms.</p>
+            <div className="mt-12 text-center">
+              <h2 className="text-xl font-semibold text-foreground mb-2">No results found</h2>
+              <p className="text-muted-foreground">Try checking your spelling or use more general terms.</p>
             </div>
           )}
 
-          {/* Pagination Placeholder */}
+          {/* Pagination - Mobile optimized */}
           {products.length > 0 && (
             <div className="mt-8 flex justify-center">
-              <div className="flex items-center gap-1 border border-[#d5d9d9] rounded-[7px] overflow-hidden">
-                <button className="px-3 py-2 text-sm font-medium text-[#0F1111] hover:bg-[#f7f7f7] border-r border-[#d5d9d9] disabled:opacity-50">Previous</button>
-                <button className="px-3 py-2 text-sm font-bold text-[#0F1111] bg-[#f7f7f7] border-r border-[#d5d9d9]">1</button>
-                <button className="px-3 py-2 text-sm font-medium text-[#0F1111] hover:bg-[#f7f7f7] border-r border-[#d5d9d9]">2</button>
-                <button className="px-3 py-2 text-sm font-medium text-[#0F1111] hover:bg-[#f7f7f7] border-r border-[#d5d9d9]">3</button>
-                <button className="px-3 py-2 text-sm font-medium text-[#0F1111] hover:bg-[#f7f7f7]">Next</button>
+              <div className="flex items-center gap-0.5 sm:gap-1 border border-border rounded-lg overflow-hidden overflow-x-auto no-scrollbar">
+                <button className="px-3 sm:px-4 py-2 text-sm font-medium text-foreground hover:bg-muted border-r border-border disabled:opacity-50 min-h-10 whitespace-nowrap">Previous</button>
+                <button className="px-3 sm:px-4 py-2 text-sm font-bold text-foreground bg-muted border-r border-border min-h-10">1</button>
+                <button className="px-3 sm:px-4 py-2 text-sm font-medium text-foreground hover:bg-muted border-r border-border min-h-10">2</button>
+                <button className="px-3 sm:px-4 py-2 text-sm font-medium text-foreground hover:bg-muted border-r border-border min-h-10">3</button>
+                <button className="px-3 sm:px-4 py-2 text-sm font-medium text-foreground hover:bg-muted min-h-10 whitespace-nowrap">Next</button>
               </div>
             </div>
           )}

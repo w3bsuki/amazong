@@ -26,9 +26,9 @@ export function PromoCard({
     <Link 
       href={href} 
       className={cn(
-        "group relative block rounded-lg overflow-hidden",
+        "group relative block rounded-md overflow-hidden",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
-        "transition-shadow hover:shadow-lg",
+        "transition-colors",
         variant === "default" && "aspect-4/3",
         variant === "wide" && "aspect-video col-span-2"
       )}
@@ -39,7 +39,7 @@ export function PromoCard({
         alt="" 
         aria-hidden="true"
         loading="lazy"
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+        className="absolute inset-0 w-full h-full object-cover" 
       />
       
       {/* Gradient overlay for text readability */}
@@ -47,7 +47,7 @@ export function PromoCard({
       
       {/* Badge */}
       {badge && (
-        <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-600 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-lg">
+        <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-600 text-white text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">
           {badge}
         </span>
       )}
@@ -62,7 +62,7 @@ export function PromoCard({
       </div>
       
       {/* Hover indicator */}
-      <div className="absolute inset-0 border-2 border-transparent group-hover:border-white/30 rounded-lg transition-colors" />
+      <div className="absolute inset-0 border-2 border-transparent group-hover:border-white/30 rounded-md transition-colors" />
     </Link>
   )
 }

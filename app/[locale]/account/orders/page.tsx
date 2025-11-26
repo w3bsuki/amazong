@@ -46,9 +46,9 @@ export default async function OrdersPage() {
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-zinc-500" />
           <Input
             placeholder="Search all orders"
-            className="pl-8 w-full md:w-80 rounded-[3px] focus-visible:ring-[#e77600]"
+            className="pl-8 w-full md:w-80 rounded-sm focus-visible:ring-brand-warning"
           />
-          <Button className="absolute right-0 top-0 h-full bg-[#303333] hover:bg-[#1d1f1f] text-white rounded-l-none rounded-r-[3px]">
+          <Button className="absolute right-0 top-0 h-full bg-[#303333] hover:bg-[#1d1f1f] text-white rounded-l-none rounded-r-sm">
             Search Orders
           </Button>
         </div>

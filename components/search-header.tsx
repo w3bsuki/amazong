@@ -3,7 +3,8 @@
 import { Link } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { Home, Search, Sparkles, Percent, Truck, Star, Filter } from "lucide-react"
+import { ChevronRight, Search, Sparkles, Percent, Truck, Star, Filter } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface SearchHeaderProps {
   query?: string
@@ -31,100 +32,121 @@ export function SearchHeader({ query, totalResults }: SearchHeaderProps) {
 
   return (
     <div className="mb-6">
-      {/* Breadcrumb navigation */}
-      <nav className="flex items-center gap-1.5 text-sm text-[#565959] mb-4 py-2 px-3 bg-[#f7f7f7] rounded-lg">
-        <Link href="/" className="hover:text-[#c45500] hover:underline flex items-center gap-1">
-          <Home className="h-3.5 w-3.5" />
-        </Link>
-        <span className="text-[#888]">›</span>
-        <span className="text-[#0F1111] font-medium flex items-center gap-1.5">
-          <Search className="h-3.5 w-3.5" />
-          {query ? t('searchResults') : t('allProducts')}
-        </span>
+      {/* Target-style Breadcrumb - Full width with underlines */}
+      <nav className="w-full border-b border-border py-3 mb-6">
+        <ol className="flex items-center gap-1.5 text-sm">
+          <li>
+            <Link 
+              href="/" 
+              className="text-foreground hover:underline underline-offset-2"
+            >
+              Amazong
+            </Link>
+          </li>
+          <li className="flex items-center gap-1.5">
+            <ChevronRight className="size-3.5 text-muted-foreground/60" />
+            <span className="text-muted-foreground flex items-center gap-1.5">
+              <Search className="size-3.5" />
+              {query ? t('searchResults') : t('allProducts')}
+            </span>
+          </li>
+        </ol>
       </nav>
 
       {/* Page Header */}
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold text-[#0F1111] mb-1">
+      <div className="mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
           {query ? (
             <>
-              {t('resultsFor')} "<span className="text-[#c45500]">{query}</span>"
+              {t('resultsFor')} "<span className="text-brand-deal">{query}</span>"
             </>
           ) : (
             t('exploreAllProducts')
           )}
         </h1>
-        <p className="text-sm text-[#565959]">
+        <p className="text-sm text-muted-foreground">
           {totalResults.toLocaleString()} {t('productsFound')}
         </p>
       </div>
 
-      {/* Quick Filter Chips */}
-      <div className="flex flex-wrap items-center gap-3 pb-4 border-b border-[#e7e7e7]">
-        <span className="text-sm font-medium text-[#0F1111] flex items-center gap-1.5">
-          <Filter className="h-4 w-4" />
-          {t('quickFilters')}:
-        </span>
-        
-        <Link
-          href={buildFilterUrl("prime", "true")}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-            isActive("prime", "true")
-              ? "bg-[#007185] text-white border-[#007185]"
-              : "bg-white text-[#0F1111] border-[#d5d9d9] hover:bg-[#f7fafa] hover:border-[#007185]"
-          }`}
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          {t('primeEligible')}
-        </Link>
-        
-        <Link
-          href={buildFilterUrl("deals", "true")}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-            isActive("deals", "true")
-              ? "bg-[#cc0c39] text-white border-[#cc0c39]"
-              : "bg-white text-[#0F1111] border-[#d5d9d9] hover:bg-[#f7fafa] hover:border-[#cc0c39]"
-          }`}
-        >
-          <Percent className="h-3.5 w-3.5" />
-          {t('deals')}
-        </Link>
-        
-        <Link
-          href={buildFilterUrl("freeShipping", "true")}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-            isActive("freeShipping", "true")
-              ? "bg-[#067D62] text-white border-[#067D62]"
-              : "bg-white text-[#0F1111] border-[#d5d9d9] hover:bg-[#f7fafa] hover:border-[#067D62]"
-          }`}
-        >
-          <Truck className="h-3.5 w-3.5" />
-          {t('freeShipping')}
-        </Link>
-        
-        <Link
-          href={buildFilterUrl("minRating", "4")}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-            isActive("minRating", "4")
-              ? "bg-[#f08804] text-white border-[#f08804]"
-              : "bg-white text-[#0F1111] border-[#d5d9d9] hover:bg-[#f7fafa] hover:border-[#f08804]"
-          }`}
-        >
-          <Star className="h-3.5 w-3.5 fill-current" />
-          {t('fourStarsUp')}
-        </Link>
+      {/* Quick Filter Chips - Target style */}
+      <div className="border-t border-border pt-4">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <span className="text-sm font-medium text-foreground flex items-center gap-1.5 shrink-0">
+            <Filter className="size-4" />
+            {t('quickFilters')}:
+          </span>
+          
+          <Link
+            href={buildFilterUrl("prime", "true")}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-full transition-all shrink-0",
+              "min-h-10 touch-action-manipulation active:scale-95",
+              isActive("prime", "true")
+                ? "bg-brand-blue text-white"
+                : "bg-card text-foreground border border-border hover:bg-secondary hover:border-ring"
+            )}
+          >
+            <Sparkles className="size-3.5" />
+            {t('primeEligible')}
+          </Link>
+          
+          <Link
+            href={buildFilterUrl("deals", "true")}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-full transition-all shrink-0",
+              "min-h-10 touch-action-manipulation active:scale-95",
+              isActive("deals", "true")
+                ? "bg-brand-deal text-white"
+                : "bg-card text-foreground border border-border hover:bg-secondary hover:border-ring"
+            )}
+          >
+            <Percent className="size-3.5" />
+            {t('deals')}
+          </Link>
+          
+          <Link
+            href={buildFilterUrl("freeShipping", "true")}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-full transition-all shrink-0",
+              "min-h-10 touch-action-manipulation active:scale-95",
+              isActive("freeShipping", "true")
+                ? "bg-brand-success text-white"
+                : "bg-card text-foreground border border-border hover:bg-secondary hover:border-ring"
+            )}
+          >
+            <Truck className="size-3.5" />
+            {t('freeShipping')}
+          </Link>
+          
+          <Link
+            href={buildFilterUrl("minRating", "4")}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-full transition-all shrink-0",
+              "min-h-10 touch-action-manipulation active:scale-95",
+              isActive("minRating", "4")
+                ? "bg-rating text-foreground"
+                : "bg-card text-foreground border border-border hover:bg-secondary hover:border-ring"
+            )}
+          >
+            <Star className="size-3.5 fill-current" />
+            {t('fourStarsUp')}
+          </Link>
 
-        <Link
-          href={buildFilterUrl("newArrivals", "30")}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-            isActive("newArrivals", "30")
-              ? "bg-[#232F3E] text-white border-[#232F3E]"
-              : "bg-white text-[#0F1111] border-[#d5d9d9] hover:bg-[#f7fafa] hover:border-[#232F3E]"
-          }`}
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          {t('newArrivals')}
-        </Link>
+          <Link
+            href={buildFilterUrl("newArrivals", "30")}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-full transition-all shrink-0",
+              "min-h-10 touch-action-manipulation active:scale-95",
+              isActive("newArrivals", "30")
+                ? "bg-foreground text-background"
+                : "bg-card text-foreground border border-border hover:bg-secondary hover:border-ring"
+            )}
+          >
+            <Sparkles className="size-3.5" />
+            {t('newArrivals')}
+          </Link>
+        </div>
       </div>
     </div>
   )

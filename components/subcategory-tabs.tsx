@@ -3,7 +3,9 @@
 import { Link } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { ChevronRight, Home } from "lucide-react"
+import { ChevronRight } from "lucide-react"
+import { SubcategoryCircles } from "@/components/subcategory-circles"
+import { cn } from "@/lib/utils"
 
 interface Category {
   id: string
@@ -11,6 +13,7 @@ interface Category {
   name_bg: string | null
   slug: string
   parent_id: string | null
+  image_url?: string | null
 }
 
 interface SubcategoryTabsProps {
@@ -38,82 +41,133 @@ export function SubcategoryTabs({ currentCategory, subcategories, parentCategory
     return `/search?${params.toString()}`
   }
 
+  const buildFilterUrl = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (params.get(key) === value) {
+      params.delete(key)
+    } else {
+      params.set(key, value)
+    }
+    return `/search?${params.toString()}`
+  }
+
+  const isActive = (key: string, value: string) => {
+    return searchParams.get(key) === value
+  }
+
   if (!currentCategory) return null
 
   return (
     <div className="mb-6">
-      {/* Breadcrumb navigation */}
-      <nav className="flex items-center gap-1.5 text-sm text-[#565959] mb-4 py-2 px-3 bg-[#f7f7f7]">
-        <Link href="/" className="hover:text-[#c45500] hover:underline flex items-center gap-1">
-          <Home className="h-3.5 w-3.5" />
-        </Link>
-        <ChevronRight className="h-3 w-3 text-[#888]" />
-        <Link href="/search" className="hover:text-[#c45500] hover:underline">
-          {t('allDepartments')}
-        </Link>
-        {parentCategory && (
-          <>
-            <ChevronRight className="h-3 w-3 text-[#888]" />
+      {/* Target-style Breadcrumb - Full width with underlines */}
+      <nav className="w-full border-b border-border py-3 mb-6 overflow-hidden">
+        <ol className="flex items-center gap-1.5 text-sm overflow-x-auto no-scrollbar">
+          <li className="shrink-0">
             <Link 
-              href={buildUrl(parentCategory.slug)} 
-              className="hover:text-[#c45500] hover:underline"
+              href="/" 
+              className="text-foreground hover:underline underline-offset-2"
             >
-              {getCategoryName(parentCategory)}
+              Amazong
             </Link>
-          </>
-        )}
-        <ChevronRight className="h-3 w-3 text-[#888]" />
-        <span className="text-[#0F1111] font-medium">{getCategoryName(currentCategory)}</span>
+          </li>
+          <li className="flex items-center gap-1.5 shrink-0">
+            <ChevronRight className="size-3.5 text-muted-foreground/60" />
+            <Link 
+              href="/search" 
+              className="text-foreground hover:underline underline-offset-2"
+            >
+              {t('allDepartments')}
+            </Link>
+          </li>
+          {parentCategory && (
+            <li className="flex items-center gap-1.5 shrink-0">
+              <ChevronRight className="size-3.5 text-muted-foreground/60" />
+              <Link 
+                href={buildUrl(parentCategory.slug)} 
+                className="text-foreground hover:underline underline-offset-2 truncate max-w-[120px]"
+              >
+                {getCategoryName(parentCategory)}
+              </Link>
+            </li>
+          )}
+          <li className="flex items-center gap-1.5 shrink-0 min-w-0">
+            <ChevronRight className="size-3.5 text-muted-foreground/60 shrink-0" />
+            <span className="text-muted-foreground truncate">{getCategoryName(currentCategory)}</span>
+          </li>
+        </ol>
       </nav>
 
-      {/* Category Header */}
-      <h1 className="text-2xl font-bold text-[#0F1111] mb-4">
+      {/* Category Header - Target style */}
+      <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">
         {getCategoryName(currentCategory)}
       </h1>
 
-      {/* Subcategory Chips/Tabs */}
+      {/* Subcategory Circles - Target style (only show if there are subcategories) */}
       {subcategories.length > 0 && (
-        <div className="space-y-3">
-          <h2 className="text-sm font-bold text-[#0F1111]">{t('shopBySubcategory')}</h2>
-          <div className="flex flex-wrap gap-2">
-            {/* All items in this category button */}
-            <Link
-              href={buildUrl(currentCategory.slug)}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium rounded border-2 border-[#007185] bg-[#007185] text-white hover:bg-[#005f73] transition-colors"
-            >
-              {t('allIn')} {getCategoryName(currentCategory)}
-            </Link>
-            
-            {/* Subcategory buttons */}
-            {subcategories.map((subcat) => (
-              <Link
-                key={subcat.id}
-                href={buildUrl(subcat.slug)}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded border border-[#d5d9d9] bg-white text-[#0F1111] hover:bg-[#f7fafa] hover:border-[#007185] transition-colors"
-              >
-                {getCategoryName(subcat)}
-              </Link>
-            ))}
-          </div>
+        <div className="mb-6">
+          <SubcategoryCircles
+            subcategories={subcategories}
+            currentCategory={currentCategory}
+          />
         </div>
       )}
 
-      {/* Quick filter bar */}
-      <div className="mt-4 pt-4 border-t border-[#e7e7e7]">
-        <div className="flex flex-wrap items-center gap-3 text-sm">
-          <span className="font-medium text-[#0F1111]">{t('quickFilters')}:</span>
-          <button className="px-3 py-1.5 rounded border border-[#d5d9d9] bg-white hover:bg-[#f7fafa] text-[#0F1111]">
+      {/* Quick Filters - Improved styling with pill buttons */}
+      <div className="border-t border-border pt-4">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar scroll-smooth">
+          <span className="font-medium text-foreground text-sm shrink-0">{t('quickFilters')}:</span>
+          
+          <Link
+            href={buildFilterUrl("prime", "true")}
+            className={cn(
+              "min-h-10 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0",
+              "touch-action-manipulation active:scale-95",
+              isActive("prime", "true")
+                ? "bg-brand-blue text-white border-brand-blue"
+                : "border border-border bg-card hover:bg-secondary hover:border-ring text-foreground"
+            )}
+          >
             {t('primeEligible')}
-          </button>
-          <button className="px-3 py-1.5 rounded border border-[#d5d9d9] bg-white hover:bg-[#f7fafa] text-[#0F1111]">
+          </Link>
+          
+          <Link
+            href={buildFilterUrl("deals", "true")}
+            className={cn(
+              "min-h-10 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0",
+              "touch-action-manipulation active:scale-95",
+              isActive("deals", "true")
+                ? "bg-brand-deal text-white"
+                : "border border-border bg-card hover:bg-secondary hover:border-ring text-foreground"
+            )}
+          >
             {t('deals')}
-          </button>
-          <button className="px-3 py-1.5 rounded border border-[#d5d9d9] bg-white hover:bg-[#f7fafa] text-[#0F1111]">
+          </Link>
+          
+          <Link
+            href={buildFilterUrl("freeShipping", "true")}
+            className={cn(
+              "min-h-10 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0",
+              "touch-action-manipulation active:scale-95",
+              isActive("freeShipping", "true")
+                ? "bg-brand-success text-white"
+                : "border border-border bg-card hover:bg-secondary hover:border-ring text-foreground"
+            )}
+          >
             {t('freeShipping')}
-          </button>
-          <button className="px-3 py-1.5 rounded border border-[#d5d9d9] bg-white hover:bg-[#f7fafa] text-[#0F1111]">
+          </Link>
+          
+          <Link
+            href={buildFilterUrl("minRating", "4")}
+            className={cn(
+              "min-h-10 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0",
+              "touch-action-manipulation active:scale-95",
+              isActive("minRating", "4")
+                ? "bg-rating text-foreground"
+                : "border border-border bg-card hover:bg-secondary hover:border-ring text-foreground"
+            )}
+          >
             {t('fourStarsUp')}
-          </button>
+          </Link>
         </div>
       </div>
     </div>

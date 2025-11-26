@@ -82,8 +82,8 @@ export function SidebarMenu() {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <button className="flex items-center gap-1 font-bold md:hover:outline md:outline-1 md:outline-white p-0 md:p-1 rounded-sm cursor-pointer">
-                    <Menu className="h-6 w-6" />
+                <button className="flex items-center justify-center gap-1 font-bold md:hover:outline md:outline-1 md:outline-white p-2 md:p-1.5 rounded-md cursor-pointer">
+                    <Menu className="size-6" />
                     <span className="text-sm hidden md:inline">{t('all')}</span>
                 </button>
             </SheetTrigger>
@@ -93,7 +93,7 @@ export function SidebarMenu() {
             >
                 {/* Header with Sign In */}
                 <SheetHeader className="bg-[#232f3e] text-white p-4 py-3 flex flex-row items-center gap-3 space-y-0">
-                    <div className="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-zinc-600 flex items-center justify-center">
                         <UserCircle className="h-8 w-8" />
                     </div>
                     <div className="flex-1">
@@ -113,35 +113,35 @@ export function SidebarMenu() {
                 <ScrollArea className="h-[calc(100vh-60px)] pb-4">
                     <div className="flex flex-col">
                         {/* Quick Actions - Mobile Only */}
-                        <div className="md:hidden px-4 py-4 bg-slate-50 border-b border-slate-200">
+                        <div className="md:hidden px-4 py-4 bg-secondary border-b border-border">
                             <div className="grid grid-cols-2 gap-3">
                                 <Link
                                     href="/auth/login"
-                                    className="flex items-center gap-2 p-3 bg-white rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 tap-transparent active-scale"
+                                    className="flex items-center gap-2 p-3 bg-card rounded-md border border-border text-sm font-medium text-foreground hover:bg-muted"
                                     onClick={() => setOpen(false)}
                                 >
-                                    <LogIn className="h-5 w-5 text-slate-500" />
+                                    <LogIn className="size-5 text-muted-foreground" />
                                     {t('signIn')}
                                 </Link>
                                 <Link
                                     href="/account"
-                                    className="flex items-center gap-2 p-3 bg-white rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 tap-transparent active-scale"
+                                    className="flex items-center gap-2 p-3 bg-card rounded-md border border-border text-sm font-medium text-foreground hover:bg-muted"
                                     onClick={() => setOpen(false)}
                                 >
-                                    <User className="h-5 w-5 text-slate-500" />
+                                    <User className="size-5 text-muted-foreground" />
                                     {t('yourAccount')}
                                 </Link>
                             </div>
                             
                             {/* Language Toggle - Mobile */}
-                            <div className="mt-3 flex items-center gap-2 p-3 bg-white rounded-lg border border-slate-200">
-                                <Globe className="h-5 w-5 text-slate-500" />
-                                <span className="text-sm font-medium text-slate-700">{t('language')}</span>
+                            <div className="mt-3 flex items-center gap-2 p-3 bg-card rounded-md border border-border">
+                                <Globe className="size-5 text-muted-foreground" />
+                                <span className="text-sm font-medium text-foreground">{t('language')}</span>
                                 <div className="ml-auto flex gap-1">
                                     <Link
                                         href="/"
                                         locale="en"
-                                        className={`px-3 py-1.5 rounded text-xs font-medium tap-transparent ${locale === 'en' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                        className={`px-3 py-1.5 rounded-md text-xs font-medium ${locale === 'en' ? 'bg-brand-blue text-white' : 'bg-muted text-muted-foreground'}`}
                                         onClick={() => setOpen(false)}
                                     >
                                         EN
@@ -149,7 +149,7 @@ export function SidebarMenu() {
                                     <Link
                                         href="/"
                                         locale="bg"
-                                        className={`px-3 py-1.5 rounded text-xs font-medium tap-transparent ${locale === 'bg' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'}`}
+                                        className={`px-3 py-1.5 rounded-md text-xs font-medium ${locale === 'bg' ? 'bg-brand-blue text-white' : 'bg-muted text-muted-foreground'}`}
                                         onClick={() => setOpen(false)}
                                     >
                                         БГ
@@ -172,11 +172,11 @@ export function SidebarMenu() {
                                                 <li key={i}>
                                                     <Link
                                                         href={item.href}
-                                                        className="flex items-center justify-between py-3.5 md:py-3 text-sm text-[#111111] hover:bg-zinc-100 -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer group tap-transparent touch-action-manipulation"
+                                                        className="flex items-center justify-between py-3 md:py-2.5 text-sm text-[#111111] hover:bg-zinc-100 -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer group"
                                                         onClick={() => setOpen(false)}
                                                     >
                                                         <span>{item.label}</span>
-                                                        <ChevronRight className="h-4 w-4 text-zinc-400 group-hover:text-[#111111]" />
+                                                        <ChevronRight className="size-4 text-zinc-400 group-hover:text-[#111111]" />
                                                     </Link>
                                                 </li>
                                             ))}
@@ -184,10 +184,10 @@ export function SidebarMenu() {
                                                 <li>
                                                     <button
                                                         onClick={() => toggleSection(section.title)}
-                                                        className="flex items-center gap-1 py-3.5 md:py-3 text-sm text-[#111111] hover:bg-zinc-100 -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer w-[calc(100%+2.5rem)] md:w-[calc(100%+4.5rem)] text-left font-medium tap-transparent"
+                                                        className="flex items-center gap-1 py-3 md:py-2.5 text-sm text-[#111111] hover:bg-zinc-100 -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer w-[calc(100%+2.5rem)] md:w-[calc(100%+4.5rem)] text-left font-medium"
                                                     >
                                                         <span>{isExpanded ? t('seeLess') : t('seeAll')}</span>
-                                                        <ChevronRight className={`h-4 w-4 text-zinc-400 transition-transform ${isExpanded ? '-rotate-90' : 'rotate-90'}`} />
+                                                        <ChevronRight className={`size-4 text-zinc-400 transition-transform ${isExpanded ? '-rotate-90' : 'rotate-90'}`} />
                                                     </button>
                                                 </li>
                                             )}

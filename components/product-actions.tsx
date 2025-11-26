@@ -50,7 +50,7 @@ export function ProductActions({ product }: ProductActionsProps) {
       <div className="flex items-center gap-2">
         <span className="text-sm">Quantity:</span>
         <Select value={quantity} onValueChange={setQuantity}>
-          <SelectTrigger className="w-20 h-8 rounded-md bg-white shadow-sm border-zinc-300 focus:ring-[#e77600] focus:ring-offset-0">
+          <SelectTrigger className="w-20 h-8 rounded-md bg-white border-zinc-300 focus:ring-[#e77600] focus:ring-offset-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -64,14 +64,14 @@ export function ProductActions({ product }: ProductActionsProps) {
       </div>
 
       <Button
-        className="w-full bg-[#f7ca00] hover:bg-[#f2bd00] text-black rounded-full h-9 shadow-sm"
+        className="w-full bg-[#f7ca00] hover:bg-[#f2bd00] text-black rounded-full h-9"
         onClick={handleAddToCart}
       >
         Add to Cart
       </Button>
 
       <Button
-        className="w-full bg-[#fa8900] hover:bg-[#ef8000] text-black rounded-full h-9 shadow-sm"
+        className="w-full bg-[#fa8900] hover:bg-[#ef8000] text-black rounded-full h-9"
         onClick={handleBuyNow}
       >
         <Play className="h-3 w-3 fill-current mr-2" />

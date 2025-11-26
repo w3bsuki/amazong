@@ -112,7 +112,7 @@ export function MobileSearch() {
       </SheetTrigger>
       <SheetContent 
         side="top" 
-        className="h-auto max-h-[85vh] w-full p-0 border-b border-slate-200 bg-white rounded-b-2xl overflow-hidden"
+        className="h-auto max-h-[85vh] w-full p-0 border-b border-border bg-white rounded-b-2xl overflow-hidden"
       >
         <SheetTitle className="sr-only">{t('searchPlaceholder')}</SheetTitle>
         
@@ -121,10 +121,10 @@ export function MobileSearch() {
           <form onSubmit={handleSubmit} className="flex items-center gap-2">
             {/* Category Select */}
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="h-11 w-auto min-w-[60px] bg-slate-100 border-none text-xs text-slate-700 rounded-l-lg rounded-r-none focus:ring-0 gap-1 px-2">
+              <SelectTrigger className="h-11 w-auto min-w-[60px] bg-muted border-none text-xs text-foreground rounded-l-lg rounded-r-none focus:ring-0 gap-1 px-2">
                 <SelectValue placeholder={tCat('all')} />
               </SelectTrigger>
-              <SelectContent className="bg-white text-black border-slate-200 max-h-[300px] rounded">
+              <SelectContent className="bg-white text-black border-border max-h-[300px] rounded">
                 <SelectItem value="all">{tCat('all')}</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.slug}>
@@ -139,7 +139,7 @@ export function MobileSearch() {
               <Input
                 type="text"
                 placeholder={t('searchPlaceholder')}
-                className="h-full border-0 rounded-none focus-visible:ring-0 text-slate-900 px-3 text-base placeholder:text-slate-400"
+                className="h-full border-0 rounded-none focus-visible:ring-0 text-foreground px-3 text-base placeholder:text-muted-foreground"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 autoFocus
@@ -171,8 +171,8 @@ export function MobileSearch() {
           {recentSearches.length > 0 && (
             <div className="mb-6">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-slate-500" />
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
                   {locale === 'bg' ? 'Скорошни търсения' : 'Recent Searches'}
                 </h3>
                 <button 
@@ -198,8 +198,8 @@ export function MobileSearch() {
 
           {/* Trending Searches */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2 mb-3">
-              <TrendingUp className="h-4 w-4 text-slate-500" />
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-3">
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
               {locale === 'bg' ? 'Популярни търсения' : 'Trending Searches'}
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -217,7 +217,7 @@ export function MobileSearch() {
 
           {/* Quick Categories */}
           <div className="mt-6">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">
+            <h3 className="text-sm font-semibold text-foreground mb-3">
               {locale === 'bg' ? 'Категории' : 'Categories'}
             </h3>
             <div className="grid grid-cols-2 gap-2">
@@ -228,7 +228,7 @@ export function MobileSearch() {
                     setOpen(false)
                     router.push(`/search?category=${cat.slug}`)
                   }}
-                  className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg text-sm text-slate-700 hover:bg-slate-100 tap-transparent active-scale text-left"
+                  className="flex items-center gap-2 p-3 bg-secondary rounded-md text-sm text-foreground hover:bg-muted tap-transparent active-scale text-left"
                 >
                   {getCategoryName(cat)}
                 </button>

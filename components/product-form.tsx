@@ -51,7 +51,7 @@ export function ProductForm({ userId }: { userId: string }) {
         <Label htmlFor="title" className="font-bold text-sm">
           Product Title
         </Label>
-        <Input id="title" name="title" required className="rounded-[3px] focus-visible:ring-[#e77600]" />
+        <Input id="title" name="title" required className="rounded-md focus-visible:ring-brand-warning" />
       </div>
 
       <div className="space-y-2">
@@ -62,7 +62,7 @@ export function ProductForm({ userId }: { userId: string }) {
           id="description"
           name="description"
           required
-          className="rounded-[3px] min-h-[100px] focus-visible:ring-[#e77600]"
+          className="rounded-md min-h-[100px] focus-visible:ring-brand-warning"
         />
       </div>
 
@@ -78,7 +78,7 @@ export function ProductForm({ userId }: { userId: string }) {
             step="0.01"
             min="0"
             required
-            className="rounded-[3px] focus-visible:ring-[#e77600]"
+            className="rounded-md focus-visible:ring-brand-warning"
           />
         </div>
         <div className="space-y-2">
@@ -92,7 +92,7 @@ export function ProductForm({ userId }: { userId: string }) {
             min="1"
             required
             defaultValue="1"
-            className="rounded-[3px] focus-visible:ring-[#e77600]"
+            className="rounded-md focus-visible:ring-brand-warning"
           />
         </div>
       </div>
@@ -102,7 +102,7 @@ export function ProductForm({ userId }: { userId: string }) {
           Category
         </Label>
         <Select name="category" required>
-          <SelectTrigger className="rounded-[3px] focus:ring-[#e77600]">
+          <SelectTrigger className="rounded-md focus:ring-brand-warning">
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
@@ -125,7 +125,7 @@ export function ProductForm({ userId }: { userId: string }) {
           name="image_url"
           type="url"
           placeholder="https://example.com/image.jpg"
-          className="rounded-[3px] focus-visible:ring-[#e77600]"
+          className="rounded-md focus-visible:ring-brand-warning"
         />
         <p className="text-xs text-zinc-500">For demo purposes, paste a public image URL</p>
       </div>

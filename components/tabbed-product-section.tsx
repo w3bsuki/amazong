@@ -50,10 +50,10 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
 
   return (
     <Link href={`/product/${id}`} className="block h-full group">
-      <div className="bg-white rounded-xl overflow-hidden h-full flex flex-col hover:shadow-lg transition-all duration-200 border border-slate-100 hover:border-slate-200">
+      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col transition-all duration-200 border border-border hover:border-blue-300">
         {/* Square Image Container - Fixed aspect ratio */}
-        <div className="relative w-full aspect-square bg-slate-50 p-4 flex items-center justify-center overflow-hidden">
-          <div className="relative w-full h-full group-hover:scale-105 transition-transform duration-300">
+        <div className="relative w-full aspect-square bg-secondary p-4 flex items-center justify-center overflow-hidden">
+          <div className="relative w-full h-full">
             <Image
               src={image || "/placeholder.svg"}
               alt={title}
@@ -67,32 +67,32 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
         {/* Content - Clean and compact */}
         <div className="p-3 flex-1 flex flex-col bg-white">
           {/* Title - 2 lines max */}
-          <h3 className="text-xs sm:text-sm font-medium text-slate-900 line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-blue-600">
             {title}
           </h3>
 
           {/* Rating - Clean compact style */}
           {reviews > 0 && (
             <div className="flex items-center gap-1.5 mb-2">
-              <div className="flex text-amber-400">
+              <div className="flex text-rating">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     className={cn(
                       "size-3",
-                      i < Math.floor(rating) ? "fill-current" : "text-slate-200 fill-slate-200"
+                      i < Math.floor(rating) ? "fill-current" : "text-rating-empty fill-rating-empty"
                     )}
                   />
                 ))}
               </div>
-              <span className="text-[10px] text-slate-500">{reviews}</span>
+              <span className="text-[10px] text-muted-foreground">{reviews}</span>
             </div>
           )}
 
           {/* Price - Prominent */}
           <div className="mt-auto pt-1">
-            <span className="text-base sm:text-lg font-bold text-slate-900">{formatPrice(price)}</span>
-            <div className="text-[10px] text-slate-500 mt-0.5">
+            <span className="text-base sm:text-lg font-bold text-foreground">{formatPrice(price)}</span>
+            <div className="text-[10px] text-muted-foreground mt-0.5">
               {t('delivery')} {formattedDate}
             </div>
           </div>
@@ -139,7 +139,7 @@ export function TabbedProductSection({
   }
 
   return (
-    <div className={cn("rounded-xl overflow-hidden shadow-sm", bgStyles[variant])}>
+    <div className={cn("rounded-md overflow-hidden", bgStyles[variant])}>
       {/* Header Section - Target style centered */}
       <div className="text-center pt-6 sm:pt-8 pb-3 sm:pb-4 px-4">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1.5 tracking-tight">
@@ -166,12 +166,11 @@ export function TabbedProductSection({
                 key={tab.id}
                 value={tab.id}
                 className={cn(
-                  "px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium rounded-full",
-                  "text-white/70 hover:text-white hover:bg-white/10",
-                  "data-[state=active]:text-slate-900 data-[state=active]:bg-white",
-                  "data-[state=active]:shadow-sm",
+                  "px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium rounded-full",
+                  "text-white/90 hover:text-white hover:bg-white/20",
+                  "data-[state=active]:text-slate-900 data-[state=active]:bg-white data-[state=active]:font-semibold",
                   "transition-all duration-200",
-                  "whitespace-nowrap min-h-9 sm:min-h-10"
+                  "whitespace-nowrap min-h-11 touch-action-manipulation"
                 )}
               >
                 {tab.label}
@@ -187,31 +186,31 @@ export function TabbedProductSection({
             value={tab.id} 
             className="mt-0 pt-4 sm:pt-5 pb-6 sm:pb-8"
           >
-            <div className="relative group">
+            <div className="relative">
               {/* Scroll Buttons - Cleaner design */}
               <button
                 onClick={() => scroll("left")}
                 className={cn(
                   "absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-slate-50 rounded-full shadow-lg",
+                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
                   "transition-all duration-200",
                   canScrollLeft ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="size-5 text-slate-700" />
+                <ChevronLeft className="size-5 text-foreground" />
               </button>
               <button
                 onClick={() => scroll("right")}
                 className={cn(
                   "absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-slate-50 rounded-full shadow-lg",
+                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
                   "transition-all duration-200",
                   canScrollRight ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll right"
               >
-                <ChevronRight className="size-5 text-slate-700" />
+                <ChevronRight className="size-5 text-foreground" />
               </button>
 
               {/* Products Container - Horizontal scroll with exactly 2 visible on mobile */}
@@ -223,7 +222,7 @@ export function TabbedProductSection({
                 {tab.products.map((product) => (
                   <div
                     key={product.id}
-                    className="w-[42vw] min-w-[42vw] shrink-0 snap-start md:w-44 md:min-w-44"
+                    className="w-[42vw] min-w-[42vw] shrink-0 snap-start md:w-44 md:min-w-44 group"
                   >
                     <CompactProductCard {...product} />
                   </div>

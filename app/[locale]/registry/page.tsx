@@ -40,7 +40,7 @@ export default function RegistryPage() {
             <div className="container mx-auto max-w-6xl py-12 px-4">
                 <h2 className="text-3xl font-bold text-center mb-12">Whatever you're celebrating, we've got you covered</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <Card className="hover:shadow-lg transition-shadow cursor-pointer border-none shadow-md">
+                    <Card className="hover:border-blue-400 transition-colors cursor-pointer border border-border">
                         <CardHeader className="text-center">
                             <div className="mx-auto bg-pink-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                                 <Gift className="w-8 h-8 text-pink-600" />
@@ -52,7 +52,7 @@ export default function RegistryPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="hover:shadow-lg transition-shadow cursor-pointer border-none shadow-md">
+                    <Card className="hover:border-blue-400 transition-colors cursor-pointer border border-border">
                         <CardHeader className="text-center">
                             <div className="mx-auto bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                                 <UserPlus className="w-8 h-8 text-blue-600" />
@@ -64,7 +64,7 @@ export default function RegistryPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="hover:shadow-lg transition-shadow cursor-pointer border-none shadow-md">
+                    <Card className="hover:border-blue-400 transition-colors cursor-pointer border border-border">
                         <CardHeader className="text-center">
                             <div className="mx-auto bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                                 <Gift className="w-8 h-8 text-purple-600" />

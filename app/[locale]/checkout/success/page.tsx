@@ -16,7 +16,7 @@ export default function CheckoutSuccessPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-zinc-900 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-zinc-800 p-8 rounded-lg shadow-md max-w-md w-full text-center">
+      <div className="bg-white dark:bg-zinc-800 p-8 rounded-lg border border-border max-w-md w-full text-center">
         <div className="flex justify-center mb-6">
           <CheckCircle2 className="h-20 w-20 text-green-500" />
         </div>

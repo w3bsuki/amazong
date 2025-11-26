@@ -47,15 +47,15 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
 
   return (
     <Link href={`/product/${id}`} className="block h-full group">
-      <div className="bg-white rounded-xl overflow-hidden h-full flex flex-col hover:shadow-lg transition-all duration-200 border border-slate-100 hover:border-rose-200">
+      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col border border-border hover:border-rose-300">
         {/* Square Image Container with Discount Badge */}
-        <div className="relative w-full aspect-square bg-slate-50 p-4 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full aspect-square bg-secondary p-4 flex items-center justify-center overflow-hidden">
           {/* Discount Badge - More prominent */}
-          <div className="absolute top-2 left-2 z-10 bg-rose-600 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-sm flex items-center gap-1">
+          <div className="absolute top-2 left-2 z-10 bg-rose-600 text-white text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
             <Zap className="size-3" />
             -{discountPercent}%
           </div>
-          <div className="relative w-full h-full group-hover:scale-105 transition-transform duration-300">
+          <div className="relative w-full h-full">
             <Image
               src={image || "/placeholder.svg"}
               alt={title}
@@ -76,25 +76,25 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
           </div>
 
           {/* Title - 2 lines max */}
-          <h3 className="text-xs sm:text-sm font-medium text-slate-900 line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-rose-600 transition-colors">
+          <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-rose-600 transition-colors">
             {title}
           </h3>
 
           {/* Rating - Compact */}
           {reviews > 0 && (
             <div className="flex items-center gap-1.5 mb-2">
-              <div className="flex text-amber-400">
+              <div className="flex text-rating">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     className={cn(
                       "size-3",
-                      i < Math.floor(rating) ? "fill-current" : "text-slate-200 fill-slate-200"
+                      i < Math.floor(rating) ? "fill-current" : "text-rating-empty fill-rating-empty"
                     )}
                   />
                 ))}
               </div>
-              <span className="text-[10px] text-slate-500">{reviews}</span>
+              <span className="text-[10px] text-muted-foreground">{reviews}</span>
             </div>
           )}
 
@@ -102,7 +102,7 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
           <div className="mt-auto pt-1">
             <div className="flex items-baseline gap-2">
               <span className="text-base sm:text-lg font-bold text-rose-600">{formatPrice(price)}</span>
-              <span className="text-xs text-slate-400 line-through">{formatPrice(listPrice)}</span>
+              <span className="text-xs text-muted-foreground line-through">{formatPrice(listPrice)}</span>
             </div>
             <div className="text-[10px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
               <Clock className="size-3" />
@@ -144,11 +144,10 @@ export function DealsSection({
   }
 
   return (
-    <div className="rounded-xl overflow-hidden bg-linear-to-br from-rose-600 via-rose-700 to-pink-800 shadow-sm">
+    <div className="rounded-md overflow-hidden bg-linear-to-br from-rose-600 via-rose-700 to-pink-800">
       {/* Header Section - Target style with icon */}
       <div className="text-center pt-6 sm:pt-8 pb-3 sm:pb-4 px-4">
         <div className="inline-flex items-center gap-2 mb-1.5">
-          <Zap className="size-5 sm:size-6 text-yellow-300 fill-yellow-300" />
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
             {title}
           </h2>
@@ -176,12 +175,11 @@ export function DealsSection({
                 key={tab.id}
                 value={tab.id}
                 className={cn(
-                  "px-4 sm:px-5 py-2 text-xs sm:text-sm font-medium rounded-full",
-                  "text-white/70 hover:text-white hover:bg-white/10",
-                  "data-[state=active]:text-rose-700 data-[state=active]:bg-white",
-                  "data-[state=active]:shadow-sm",
+                  "px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium rounded-full",
+                  "text-white/90 hover:text-white hover:bg-white/20",
+                  "data-[state=active]:text-rose-700 data-[state=active]:bg-white data-[state=active]:font-semibold",
                   "transition-all duration-200",
-                  "whitespace-nowrap min-h-9 sm:min-h-10"
+                  "whitespace-nowrap min-h-11 touch-action-manipulation"
                 )}
               >
                 {tab.label}
@@ -197,31 +195,31 @@ export function DealsSection({
             value={tab.id} 
             className="mt-0 pt-4 sm:pt-5 pb-6 sm:pb-8"
           >
-            <div className="relative group">
+            <div className="relative">
               {/* Scroll Buttons */}
               <button
                 onClick={() => scroll("left")}
                 className={cn(
                   "absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-slate-50 rounded-full shadow-lg",
+                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
                   "transition-all duration-200",
                   canScrollLeft ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="size-5 text-slate-700" />
+                <ChevronLeft className="size-5 text-foreground" />
               </button>
               <button
                 onClick={() => scroll("right")}
                 className={cn(
                   "absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-slate-50 rounded-full shadow-lg",
+                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
                   "transition-all duration-200",
                   canScrollRight ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll right"
               >
-                <ChevronRight className="size-5 text-slate-700" />
+                <ChevronRight className="size-5 text-foreground" />
               </button>
 
               {/* Deals Container - Horizontal scroll with exactly 2 visible on mobile */}
@@ -233,7 +231,7 @@ export function DealsSection({
                 {tab.deals.map((deal) => (
                   <div
                     key={deal.id}
-                    className="w-[42vw] min-w-[42vw] shrink-0 snap-start md:w-44 md:min-w-44"
+                    className="w-[42vw] min-w-[42vw] shrink-0 snap-start md:w-44 md:min-w-44 group"
                   >
                     <CompactDealCard {...deal} />
                   </div>

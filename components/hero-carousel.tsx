@@ -43,8 +43,8 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
       cta: locale === "bg" ? "Открий повече" : "Discover more",
       link: "/search?category=home",
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=2158&auto=format&fit=crop",
-      gradient: "from-amber-900/70 via-amber-900/40 to-amber-900/20",
-      accent: "bg-amber-600",
+      gradient: "from-emerald-900/70 via-emerald-900/40 to-emerald-900/20",
+      accent: "bg-emerald-600",
     },
     {
       id: 4,
@@ -69,7 +69,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
   }, [api])
 
   return (
-    <div className="relative w-full max-w-[1500px] mx-auto group">
+    <div className="relative w-full max-w-screen-2xl mx-auto group overflow-hidden hero-carousel">
       <Carousel
         plugins={[plugin.current]}
         className="w-full"
@@ -77,21 +77,25 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
         onMouseLeave={plugin.current.reset}
         opts={{
           loop: true,
+          dragFree: false,
+          watchDrag: true,
+          axis: "x",
         }}
         setApi={setApi}
       >
         <CarouselContent className="ml-0">
           {slides.map((slide) => (
             <CarouselItem key={slide.id} className="pl-0">
-              <div className="relative h-[150px] sm:h-[200px] md:h-[300px] lg:h-[380px] w-full overflow-hidden">
+              <div className="relative h-[150px] sm:h-[200px] md:h-[300px] lg:h-[380px] w-full overflow-hidden select-none">
                 {/* Background Image */}
                 <Image
                   src={slide.image}
                   alt={slide.title}
                   fill
                   priority={slide.id === 1}
-                  className="object-cover object-top"
+                  className="object-cover object-center sm:object-top pointer-events-none"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1500px"
+                  draggable={false}
                 />
 
                 {/* Left gradient overlay for text readability */}
@@ -111,7 +115,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
                   {/* CTA Button */}
                   <Link 
                     href={slide.link}
-                    className={`inline-flex items-center gap-1 sm:gap-2 ${slide.accent} hover:brightness-110 text-white font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded shadow-lg transition-all text-xs sm:text-sm tap-transparent active-scale`}
+                    className={`inline-flex items-center gap-1 sm:gap-2 ${slide.accent} hover:brightness-110 text-white font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded transition-all text-xs sm:text-sm tap-transparent active-scale`}
                   >
                     {slide.cta}
                     <ChevronRight className="size-3.5 sm:size-4" />
@@ -124,10 +128,10 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
         
         {/* Navigation Buttons - Tall transparent buttons on sides */}
         <CarouselPrevious 
-          className="left-1 md:left-2 w-10 md:w-14 lg:w-16 h-20 md:h-32 lg:h-40 rounded-sm border-0 bg-transparent hover:bg-black/20 text-white/60 hover:text-white top-4 md:top-6 translate-y-0 transition-all duration-200 [&>svg]:size-6 md:[&>svg]:size-8 hidden sm:flex"
+          className="left-1 md:left-2 w-10 md:w-14 lg:w-16 h-20 md:h-32 lg:h-40 rounded-md border-0 bg-transparent hover:bg-black/20 text-white/60 hover:text-white top-4 md:top-6 translate-y-0 [&>svg]:size-6 md:[&>svg]:size-8 hidden sm:flex"
         />
         <CarouselNext 
-          className="right-1 md:right-2 w-10 md:w-14 lg:w-16 h-20 md:h-32 lg:h-40 rounded-sm border-0 bg-transparent hover:bg-black/20 text-white/60 hover:text-white top-4 md:top-6 translate-y-0 transition-all duration-200 [&>svg]:size-6 md:[&>svg]:size-8 hidden sm:flex"
+          className="right-1 md:right-2 w-10 md:w-14 lg:w-16 h-20 md:h-32 lg:h-40 rounded-md border-0 bg-transparent hover:bg-black/20 text-white/60 hover:text-white top-4 md:top-6 translate-y-0 [&>svg]:size-6 md:[&>svg]:size-8 hidden sm:flex"
         />
       </Carousel>
 
@@ -138,7 +142,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
             key={index}
             onClick={() => api?.scrollTo(index)}
             className={cn(
-              "size-2 rounded-full transition-all tap-transparent",
+              "size-2 rounded-full tap-transparent",
               current === index 
                 ? "bg-white scale-125" 
                 : "bg-white/50 hover:bg-white/75"

@@ -1,7 +1,8 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { Home, ChevronRight } from "lucide-react"
+import { ChevronRight } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 export interface BreadcrumbItem {
   label: string
@@ -12,35 +13,97 @@ export interface BreadcrumbItem {
 interface BreadcrumbProps {
   items: BreadcrumbItem[]
   className?: string
+  /** Full-width style like Target.com - no background, just underlined links */
+  variant?: "default" | "target"
 }
 
-export function Breadcrumb({ items, className = "" }: BreadcrumbProps) {
+export function Breadcrumb({ items, className = "", variant = "target" }: BreadcrumbProps) {
+  // Target-style: Full-width, clean underlined links
+  if (variant === "target") {
+    return (
+      <nav 
+        aria-label="Breadcrumb"
+        className={cn(
+          "w-full border-b border-border py-3 mb-4",
+          className
+        )}
+      >
+        <ol className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
+          {/* Home/Store link is always first */}
+          <li className="flex items-center">
+            <Link 
+              href="/" 
+              className="text-foreground hover:underline underline-offset-2 transition-colors"
+            >
+              Amazong
+            </Link>
+          </li>
+          
+          {items.map((item, index) => (
+            <li key={index} className="flex items-center gap-1.5">
+              <ChevronRight className="size-3.5 text-muted-foreground/60 shrink-0" aria-hidden="true" />
+              {item.href ? (
+                <Link 
+                  href={item.href} 
+                  className="text-foreground hover:underline underline-offset-2 transition-colors"
+                >
+                  {item.icon && <span className="shrink-0 mr-1">{item.icon}</span>}
+                  <span>{item.label}</span>
+                </Link>
+              ) : (
+                <span className="text-muted-foreground" aria-current="page">
+                  {item.icon && <span className="shrink-0 mr-1">{item.icon}</span>}
+                  <span>{item.label}</span>
+                </span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )
+  }
+
+  // Default style: Background card with rounded corners
   return (
-    <nav className={`flex items-center gap-1.5 text-sm text-[#565959] py-2 px-3 bg-[#f7f7f7] rounded-lg mb-4 ${className}`}>
-      {/* Home link is always first */}
-      <Link href="/" className="hover:text-[#c45500] hover:underline flex items-center">
-        <Home className="h-3.5 w-3.5" />
+    <nav 
+      aria-label="Breadcrumb"
+      className={cn(
+        "flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-muted-foreground",
+        "py-2 sm:py-2.5 px-2.5 sm:px-3 bg-muted rounded-md mb-3 sm:mb-4",
+        "overflow-x-auto no-scrollbar",
+        className
+      )}
+    >
+      {/* Home link */}
+      <Link 
+        href="/" 
+        className="min-h-9 flex items-center hover:text-brand-deal hover:underline shrink-0 transition-colors"
+        aria-label="Home"
+      >
+        Amazong
       </Link>
       
-      {items.map((item, index) => (
-        <span key={index} className="flex items-center gap-1.5">
-          <ChevronRight className="h-3 w-3 text-[#888]" />
-          {item.href ? (
-            <Link 
-              href={item.href} 
-              className="hover:text-[#c45500] hover:underline flex items-center gap-1"
-            >
-              {item.icon}
-              {item.label}
-            </Link>
-          ) : (
-            <span className="text-[#0F1111] font-medium flex items-center gap-1">
-              {item.icon}
-              {item.label}
-            </span>
-          )}
-        </span>
-      ))}
+      <ol className="flex items-center gap-1 sm:gap-1.5">
+        {items.map((item, index) => (
+          <li key={index} className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            <ChevronRight className="size-3 sm:size-3.5 text-muted-foreground/60" aria-hidden="true" />
+            {item.href ? (
+              <Link 
+                href={item.href} 
+                className="min-h-9 flex items-center gap-1 px-1.5 hover:text-brand-deal hover:underline rounded-md hover:bg-background/50 transition-colors"
+              >
+                {item.icon && <span className="shrink-0">{item.icon}</span>}
+                <span className="whitespace-nowrap">{item.label}</span>
+              </Link>
+            ) : (
+              <span className="min-h-9 flex items-center gap-1 px-1.5 text-foreground font-medium" aria-current="page">
+                {item.icon && <span className="shrink-0">{item.icon}</span>}
+                <span className="whitespace-nowrap">{item.label}</span>
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
     </nav>
   )
 }

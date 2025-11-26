@@ -9,6 +9,7 @@ import { CartProvider } from "@/lib/cart-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MobileTabBar } from "@/components/mobile-tab-bar";
+import { CookieConsent } from "@/components/cookie-consent";
 import { Suspense } from "react";
 import { AuthStateListener } from "@/components/auth-state-listener";
 
@@ -48,29 +49,31 @@ export default async function LocaleLayout({
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>
-            <body className={`${inter.className} bg-slate-50 min-h-screen flex flex-col`}>
+            <body className={`${inter.className} bg-secondary min-h-screen flex flex-col overflow-x-hidden`}>
                 <NextIntlClientProvider messages={messages}>
                     <AuthStateListener />
                     <CartProvider>
                         {/* Skip Links - Accessibility */}
                         <a 
                             href="#main-content" 
-                            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-blue-500 focus:font-medium"
+                            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:bg-white focus:text-foreground focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-blue-500 focus:font-medium"
                         >
                             Skip to main content
                         </a>
                         <a 
-                            href="#footer" 
-                            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-52 focus:z-100 focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-blue-500 focus:font-medium"
+                            href="#footerHeader" 
+                            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-52 focus:z-100 focus:bg-white focus:text-foreground focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-blue-500 focus:font-medium"
                         >
                             Skip to footer
                         </a>
-                        <Suspense fallback={<div className="h-[100px] w-full bg-slate-900" />}>
+                        <Suspense fallback={<div className="h-[100px] w-full bg-zinc-900" />}>
                             <SiteHeader user={user} />
                         </Suspense>
-                        <div id="main-content" className="flex-1 pb-16 md:pb-0">{children}</div>
+                        {/* pt-[120px] for fixed header on mobile (56px header + ~48px nav), md:pt-[108px] for tablet+ */}
+                        <div id="main-content" className="flex-1 pt-14 sm:pt-[108px] pb-16 md:pb-0">{children}</div>
                         <SiteFooter />
                         <MobileTabBar locale={locale} />
+                        <CookieConsent />
                         <Toaster />
                     </CartProvider>
                 </NextIntlClientProvider>
