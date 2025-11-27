@@ -65,6 +65,8 @@ export function SidebarMenu() {
             title: t('helpSettings'),
             items: [
                 { label: t('yourAccount'), href: "/account" },
+                { label: t('orders'), href: "/account/orders" },
+                { label: t('messages'), href: "/account/messages" },
                 { label: t('customerService'), href: "/customer-service" },
             ],
         },
@@ -92,17 +94,17 @@ export function SidebarMenu() {
                 className="w-[85vw] max-w-[320px] md:w-[365px] md:max-w-[365px] p-0 border-r-0 bg-white text-black gap-0"
             >
                 {/* Header with Sign In */}
-                <SheetHeader className="bg-[#232f3e] text-white p-4 py-3 flex flex-row items-center gap-3 space-y-0">
-                    <div className="w-10 h-10 rounded-full bg-zinc-600 flex items-center justify-center">
+                <SheetHeader className="bg-header-bg text-header-text p-4 py-3 flex flex-row items-center gap-3 space-y-0">
+                    <div className="w-10 h-10 rounded-full bg-muted-foreground/30 flex items-center justify-center">
                         <UserCircle className="h-8 w-8" />
                     </div>
                     <div className="flex-1">
-                        <SheetTitle className="text-white text-lg md:text-xl font-bold">{t('helloSignIn')}</SheetTitle>
+                        <SheetTitle className="text-header-text text-lg md:text-xl font-bold">{t('helloSignIn')}</SheetTitle>
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute right-2 top-2 text-white hover:bg-transparent hover:text-zinc-300 touch-target"
+                        className="absolute right-2 top-2 text-header-text hover:bg-transparent hover:text-header-text-muted touch-target"
                         onClick={() => setOpen(false)}
                     >
                         <X className="h-7 w-7 md:h-8 md:w-8" />
@@ -141,7 +143,7 @@ export function SidebarMenu() {
                                     <Link
                                         href="/"
                                         locale="en"
-                                        className={`px-3 py-1.5 rounded-md text-xs font-medium ${locale === 'en' ? 'bg-brand-blue text-white' : 'bg-muted text-muted-foreground'}`}
+                                        className={`px-3 py-1.5 rounded-md text-xs font-medium ${locale === 'en' ? 'bg-brand text-white' : 'bg-muted text-muted-foreground'}`}
                                         onClick={() => setOpen(false)}
                                     >
                                         EN
@@ -149,7 +151,7 @@ export function SidebarMenu() {
                                     <Link
                                         href="/"
                                         locale="bg"
-                                        className={`px-3 py-1.5 rounded-md text-xs font-medium ${locale === 'bg' ? 'bg-brand-blue text-white' : 'bg-muted text-muted-foreground'}`}
+                                        className={`px-3 py-1.5 rounded-md text-xs font-medium ${locale === 'bg' ? 'bg-brand text-white' : 'bg-muted text-muted-foreground'}`}
                                         onClick={() => setOpen(false)}
                                     >
                                         БГ
@@ -166,17 +168,17 @@ export function SidebarMenu() {
                             return (
                                 <div key={index}>
                                     <div className="px-5 md:px-9 py-4">
-                                        <h3 className="font-bold text-base md:text-lg mb-2 text-[#111111]">{section.title}</h3>
+                                        <h3 className="font-bold text-base md:text-lg mb-2 text-foreground">{section.title}</h3>
                                         <ul className="space-y-0">
                                             {visibleItems.map((item, i) => (
                                                 <li key={i}>
                                                     <Link
                                                         href={item.href}
-                                                        className="flex items-center justify-between py-3 md:py-2.5 text-sm text-[#111111] hover:bg-zinc-100 -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer group"
+                                                        className="flex items-center justify-between py-3 md:py-2.5 text-sm text-foreground hover:bg-muted -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer group"
                                                         onClick={() => setOpen(false)}
                                                     >
                                                         <span>{item.label}</span>
-                                                        <ChevronRight className="size-4 text-zinc-400 group-hover:text-[#111111]" />
+                                                        <ChevronRight className="size-4 text-muted-foreground group-hover:text-foreground" />
                                                     </Link>
                                                 </li>
                                             ))}
@@ -184,16 +186,16 @@ export function SidebarMenu() {
                                                 <li>
                                                     <button
                                                         onClick={() => toggleSection(section.title)}
-                                                        className="flex items-center gap-1 py-3 md:py-2.5 text-sm text-[#111111] hover:bg-zinc-100 -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer w-[calc(100%+2.5rem)] md:w-[calc(100%+4.5rem)] text-left font-medium"
+                                                        className="flex items-center gap-1 py-3 md:py-2.5 text-sm text-foreground hover:bg-muted -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer w-[calc(100%+2.5rem)] md:w-[calc(100%+4.5rem)] text-left font-medium"
                                                     >
                                                         <span>{isExpanded ? t('seeLess') : t('seeAll')}</span>
-                                                        <ChevronRight className={`size-4 text-zinc-400 transition-transform ${isExpanded ? '-rotate-90' : 'rotate-90'}`} />
+                                                        <ChevronRight className={`size-4 text-muted-foreground transition-transform ${isExpanded ? '-rotate-90' : 'rotate-90'}`} />
                                                     </button>
                                                 </li>
                                             )}
                                         </ul>
                                     </div>
-                                    {index < menuSections.length - 1 && <Separator className="bg-zinc-200" />}
+                                    {index < menuSections.length - 1 && <Separator className="bg-border" />}
                                 </div>
                             )
                         })}

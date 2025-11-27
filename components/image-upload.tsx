@@ -161,12 +161,12 @@ export function ImageUpload({
               <button
                 type="button"
                 onClick={() => removeImage(index)}
-                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <X className="h-4 w-4" />
               </button>
               {index === 0 && (
-                <div className="absolute bottom-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
                   Primary
                 </div>
               )}
@@ -175,7 +175,7 @@ export function ImageUpload({
                   <button
                     type="button"
                     onClick={() => moveImage(index, index - 1)}
-                    className="bg-gray-800 text-white rounded px-2 py-1 text-xs"
+                    className="bg-header-bg text-header-text rounded px-2 py-1 text-xs"
                   >
                     ←
                   </button>
@@ -184,7 +184,7 @@ export function ImageUpload({
                   <button
                     type="button"
                     onClick={() => moveImage(index, index + 1)}
-                    className="bg-gray-800 text-white rounded px-2 py-1 text-xs"
+                    className="bg-header-bg text-header-text rounded px-2 py-1 text-xs"
                   >
                     →
                   </button>

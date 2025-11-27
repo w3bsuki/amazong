@@ -123,7 +123,7 @@ export function SubcategoryTabs({ currentCategory, subcategories, parentCategory
               "min-h-10 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0",
               "touch-action-manipulation active:scale-95",
               isActive("prime", "true")
-                ? "bg-brand-blue text-white border-brand-blue"
+                ? "bg-primary text-primary-foreground"
                 : "border border-border bg-card hover:bg-secondary hover:border-ring text-foreground"
             )}
           >

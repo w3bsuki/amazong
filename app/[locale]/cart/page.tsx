@@ -33,15 +33,15 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="container mx-auto p-4 bg-white dark:bg-zinc-900 min-h-screen">
+      <div className="container mx-auto p-4 bg-background min-h-screen">
         <Breadcrumb items={[{ label: 'Shopping Cart', icon: <ShoppingCart className="h-3.5 w-3.5" /> }]} />
         
-        <div className="bg-white p-8 rounded border border-border mt-4">
+        <div className="bg-card p-8 rounded border border-border mt-4">
           <h1 className="text-2xl font-bold mb-4">Your Amazon Cart is empty.</h1>
           <p className="mb-6">
             Your Shopping Cart lives to serve. Give it purpose — fill it with groceries, clothing, household supplies,
             electronics, and more. Continue shopping on the{" "}
-            <Link href="/" className="text-[#007185] hover:underline">
+            <Link href="/" className="text-link hover:underline">
               Amazon.com homepage
             </Link>
             .
@@ -52,15 +52,15 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 bg-gray-100 dark:bg-zinc-900 min-h-screen">
+    <div className="container mx-auto p-4 bg-muted min-h-screen">
       <Breadcrumb items={[{ label: 'Shopping Cart', icon: <ShoppingCart className="h-3.5 w-3.5" /> }]} />
       
       <div className="flex flex-col lg:flex-row gap-6 mt-4">
         {/* Cart Items */}
-        <div className="flex-1 bg-white p-6 rounded border border-border">
+        <div className="flex-1 bg-card p-6 rounded border border-border">
           <div className="flex justify-between items-end mb-2">
             <h1 className="text-3xl font-normal">Shopping Cart</h1>
-            <span className="text-sm text-gray-500">Price</span>
+            <span className="text-sm text-muted-foreground">Price</span>
           </div>
           <Separator className="mb-4" />
 
@@ -75,15 +75,15 @@ export default function CartPage() {
                     <div>
                       <Link
                         href={`/product/${item.id}`}
-                        className="text-base sm:text-lg font-medium hover:text-[#c7511f] hover:underline line-clamp-2"
+                        className="text-base sm:text-lg font-medium hover:text-link-hover hover:underline line-clamp-2"
                       >
                         {item.title}
                       </Link>
-                      <div className="text-green-700 text-xs my-1">In Stock</div>
-                      <div className="text-xs text-gray-500 mb-2">Eligible for FREE Shipping & FREE Returns</div>
+                      <div className="text-accent-foreground text-xs my-1">In Stock</div>
+                      <div className="text-xs text-muted-foreground mb-2">Eligible for FREE Shipping & FREE Returns</div>
                       <div className="flex flex-wrap items-center gap-2 text-xs">
-                        <div className="flex items-center border rounded bg-[#f0f2f2] hover:bg-[#e3e6e6]">
-                          <span className="px-2 py-1 bg-gray-100 border-r border-gray-300">Qty:</span>
+                        <div className="flex items-center border rounded bg-muted hover:bg-muted/80">
+                          <span className="px-2 py-1 bg-secondary border-r border-border">Qty:</span>
                           <select
                             value={item.quantity}
                             onChange={(e) => updateQuantity(item.id, Number.parseInt(e.target.value))}
@@ -97,11 +97,11 @@ export default function CartPage() {
                           </select>
                         </div>
                         <Separator orientation="vertical" className="h-3 hidden sm:block" />
-                        <button onClick={() => removeFromCart(item.id)} className="text-[#007185] hover:underline">
+                        <button onClick={() => removeFromCart(item.id)} className="text-link hover:underline">
                           Delete
                         </button>
                         <Separator orientation="vertical" className="h-3 hidden sm:block" />
-                        <button className="text-[#007185] hover:underline">Save for later</button>
+                        <button className="text-link hover:underline">Save for later</button>
                       </div>
                     </div>
                     <div className="text-left sm:text-right font-bold text-lg mt-2 sm:mt-0">${(item.price * item.quantity).toFixed(2)}</div>
@@ -118,12 +118,12 @@ export default function CartPage() {
         </div>
 
         {/* Checkout Sidebar */}
-        <div className="w-full lg:w-80 h-fit bg-white p-4 rounded shadow-sm">
-          <div className="flex items-start gap-1 mb-4 text-[#067d62]">
+        <div className="w-full lg:w-80 h-fit bg-card p-4 rounded shadow-sm">
+          <div className="flex items-start gap-1 mb-4 text-accent-foreground">
             <CheckCircle2 className="h-5 w-5 mt-0.5" />
             <span className="text-sm">
               Your order qualifies for FREE Shipping. Choose this option at checkout.{" "}
-              <Link href="#" className="text-[#007185] hover:underline">
+              <Link href="#" className="text-link hover:underline">
                 See details
               </Link>
             </span>
@@ -139,7 +139,7 @@ export default function CartPage() {
           </div>
           <Button
             onClick={handleCheckout}
-            className="w-full bg-[#f7ca00] hover:bg-[#f2bd00] text-black border-none rounded-full shadow-sm"
+            className="w-full bg-brand hover:bg-brand/90 text-foreground border-none rounded-full shadow-sm"
           >
             Proceed to checkout
           </Button>

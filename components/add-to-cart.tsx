@@ -1,7 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useCart, type CartItem } from "@/lib/cart-context"
+import { useCart } from "@/lib/cart-context"
+import { WishlistButton } from "@/components/wishlist-button"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -53,16 +54,21 @@ export function AddToCart({ product }: AddToCartProps) {
             <Button
                 onClick={handleAddToCart}
                 disabled={isPending}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white border-none rounded h-9 text-[13px] font-medium transition-colors"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground border-none rounded h-9 text-[13px] font-medium transition-colors"
             >
                 {isPending ? "Adding..." : t('addToCart')}
             </Button>
             <Button
                 onClick={handleBuyNow}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white border-none rounded h-9 text-[13px] font-medium transition-colors"
+                className="w-full bg-brand hover:bg-brand-dark text-foreground border-none rounded h-9 text-[13px] font-medium transition-colors"
             >
                 {t('buyNow')}
             </Button>
+            <WishlistButton 
+                product={product} 
+                variant="button" 
+                className="w-full"
+            />
         </div>
     )
 }

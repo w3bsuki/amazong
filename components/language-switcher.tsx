@@ -31,21 +31,21 @@ export function LanguageSwitcher() {
             <HoverCardTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="flex items-center gap-1.5 p-2 border border-transparent hover:border-white/20 rounded-md text-white hover:bg-white/10"
+                    className="flex items-center gap-1.5 p-2 border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-text/10"
                 >
                     <Globe className="h-4 w-4" />
                     <span className="text-sm font-medium">{currentLocale.code.toUpperCase()}</span>
                 </Button>
             </HoverCardTrigger>
-            <HoverCardContent align="end" sideOffset={8} className="w-40 p-1 bg-white text-foreground border-none shadow-xl rounded-md">
+            <HoverCardContent align="end" sideOffset={8} className="w-40 p-1 bg-popover text-popover-foreground border-none shadow-xl rounded-md">
                 {locales.map((loc) => (
                     <button
                         key={loc.code}
                         onClick={() => switchLocale(loc.code)}
                         className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors ${
                             loc.code === locale 
-                                ? 'bg-brand-blue/10 text-brand-blue font-medium' 
-                                : 'text-zinc-700 hover:bg-zinc-100'
+                                ? 'bg-brand/10 text-brand font-medium' 
+                                : 'text-foreground hover:bg-muted'
                         }`}
                     >
                         <span>{loc.flag}</span>

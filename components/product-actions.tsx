@@ -50,7 +50,7 @@ export function ProductActions({ product }: ProductActionsProps) {
       <div className="flex items-center gap-2">
         <span className="text-sm">Quantity:</span>
         <Select value={quantity} onValueChange={setQuantity}>
-          <SelectTrigger className="w-20 h-8 rounded-md bg-white border-zinc-300 focus:ring-[#e77600] focus:ring-offset-0">
+          <SelectTrigger className="w-20 h-8 rounded-md bg-background border-border focus:ring-brand focus:ring-offset-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -64,32 +64,32 @@ export function ProductActions({ product }: ProductActionsProps) {
       </div>
 
       <Button
-        className="w-full bg-[#f7ca00] hover:bg-[#f2bd00] text-black rounded-full h-9"
+        className="w-full bg-brand hover:bg-brand/90 text-foreground rounded-full h-9"
         onClick={handleAddToCart}
       >
         Add to Cart
       </Button>
 
       <Button
-        className="w-full bg-[#fa8900] hover:bg-[#ef8000] text-black rounded-full h-9"
+        className="w-full bg-brand-deal hover:bg-brand-deal/90 text-white rounded-full h-9"
         onClick={handleBuyNow}
       >
         <Play className="h-3 w-3 fill-current mr-2" />
         Buy Now
       </Button>
 
-      <div className="text-xs text-zinc-500 mt-2 space-y-1">
+      <div className="text-xs text-muted-foreground mt-2 space-y-1">
         <div className="flex gap-2">
-          <span className="w-20 text-zinc-500">Ships from</span>
-          <span className="text-zinc-900">Amazon</span>
+          <span className="w-20 text-muted-foreground">Ships from</span>
+          <span className="text-foreground">Amazon</span>
         </div>
         <div className="flex gap-2">
-          <span className="w-20 text-zinc-500">Sold by</span>
-          <span className="text-zinc-900 text-[#007185] hover:underline cursor-pointer">Amazon</span>
+          <span className="w-20 text-muted-foreground">Sold by</span>
+          <span className="text-link hover:underline cursor-pointer">Amazon</span>
         </div>
         <div className="flex gap-2">
-          <span className="w-20 text-zinc-500">Returns</span>
-          <span className="text-zinc-900 text-[#007185] hover:underline cursor-pointer">30-day refund/replacement</span>
+          <span className="w-20 text-muted-foreground">Returns</span>
+          <span className="text-link hover:underline cursor-pointer">30-day refund/replacement</span>
         </div>
       </div>
     </div>

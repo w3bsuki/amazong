@@ -217,7 +217,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
                 "size-[72px] bg-muted border-2 border-border",
                 // Desktop: Larger with hover effects
                 "sm:size-20 md:size-24",
-                "group-hover:border-brand-blue"
+                "group-hover:border-primary transition-colors"
               )}
             >
               {category.image ? (
@@ -233,7 +233,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
             
             {/* Category Name */}
             <span className={cn(
-              "font-medium text-center group-hover:text-blue-600 line-clamp-2",
+              "font-medium text-center group-hover:text-primary line-clamp-2 transition-colors",
               // Mobile: Compact text
               "text-[11px] text-muted-foreground max-w-[72px]",
               // Desktop: Standard sizing

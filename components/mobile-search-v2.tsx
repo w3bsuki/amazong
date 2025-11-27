@@ -163,7 +163,7 @@ export function MobileSearchV2() {
                     e.stopPropagation()
                     clearRecentSearches()
                   }}
-                  className="text-xs text-blue-600 hover:text-blue-700"
+                  className="text-xs text-link hover:text-link-hover"
                 >
                   {locale === 'bg' ? 'Изчисти' : 'Clear'}
                 </button>

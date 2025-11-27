@@ -69,7 +69,7 @@ function SearchBar() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <Button type="submit" aria-label={t('searchPlaceholder')} className="h-full w-12 bg-brand-blue hover:bg-brand-blue-dark text-white rounded-none border-none flex items-center justify-center transition-colors">
+        <Button type="submit" aria-label={t('searchPlaceholder')} className="h-full w-12 bg-interactive hover:bg-interactive-hover text-white rounded-none border-none flex items-center justify-center transition-colors">
           <Search className="size-5" />
         </Button>
       </div>
@@ -102,9 +102,9 @@ export function SiteHeader({ user }: SiteHeaderProps) {
   }, [])
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full flex flex-col border-b border-zinc-700 bg-zinc-900">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full flex flex-col border-b border-header-border bg-header-bg">
       {/* Top Header */}
-      <div className="text-white">
+      <div className="text-header-text">
         <div className="flex items-center h-14 md:h-16 px-2 md:px-4 gap-1 md:gap-3">
           {/* Mobile: Hamburger Menu */}
           <div className="md:hidden shrink-0">
@@ -112,9 +112,9 @@ export function SiteHeader({ user }: SiteHeaderProps) {
           </div>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-0.5 md:gap-1.5 shrink-0 hover:opacity-90 transition-opacity outline-none focus:ring-2 focus:ring-white/20 rounded-md px-1.5 md:px-2 py-1 min-h-11">
+          <Link href="/" className="flex items-center gap-0.5 md:gap-1.5 shrink-0 hover:opacity-90 transition-opacity outline-none focus:ring-2 focus:ring-header-text/20 rounded-md px-1.5 md:px-2 py-1 min-h-11">
             <span className="text-lg md:text-2xl font-bold tracking-tight">AMZN</span>
-            <div className="size-1.5 md:size-2 bg-brand-blue-light rounded-full mt-0.5 md:mt-1"></div>
+            <div className="size-1.5 md:size-2 bg-brand rounded-full mt-0.5 md:mt-1"></div>
           </Link>
 
           {/* Deliver to - With Dropdown - Hidden on mobile */}
@@ -156,9 +156,9 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             
             {/* Cart - Simple link on Mobile */}
             <Link href="/cart" aria-label={`${t('cart')} - ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`} className="md:hidden">
-              <Button variant="ghost" className="flex items-center min-h-11 min-w-11 p-2 border border-transparent hover:border-white/20 rounded-md relative hover:bg-white/5 group">
+              <Button variant="ghost" className="flex items-center min-h-11 min-w-11 p-2 border border-transparent hover:border-header-text/20 rounded-md relative hover:bg-header-text/5 group">
                 <div className="relative">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6 text-white" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-6 text-header-text" aria-hidden="true">
                     <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
                   </svg>
                   <span className="absolute -top-1 -right-1.5 bg-brand-deal text-white text-[10px] font-bold min-w-5 h-5 flex items-center justify-center rounded-full px-1" aria-hidden="true">
@@ -172,15 +172,15 @@ export function SiteHeader({ user }: SiteHeaderProps) {
       </div>
 
       {/* Bottom Navigation - Hidden on mobile (use tab bar), visible on tablet+ */}
-      <nav className="hidden sm:block bg-zinc-800 text-sm py-1.5 px-4 border-t border-zinc-700 relative">
-        <div className="flex items-center gap-1 whitespace-nowrap text-white/80">
+      <nav className="hidden sm:block bg-header-bg-secondary text-sm py-1.5 px-4 border-t border-header-border relative">
+        <div className="flex items-center gap-1 whitespace-nowrap text-header-text-muted">
           <SidebarMenu />
           
-          <Link href="/todays-deals" className="hover:text-white hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-white/5">{t('todaysDeals')}</Link>
-          <Link href="/customer-service" className="hover:text-white hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-white/5">{t('customerService')}</Link>
-          <Link href="/registry" className="hover:text-white hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-white/5">{t('registry')}</Link>
-          <Link href="/gift-cards" className="hover:text-white hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-white/5">{t('giftCards')}</Link>
-          <Link href="/sell" className="transition-colors font-medium text-blue-400 hover:text-blue-300 hover:underline min-h-10 px-3 flex items-center rounded-md hover:bg-white/5">{t('sell')}</Link>
+          <Link href="/todays-deals" className="hover:text-header-text hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-header-text/5">{t('todaysDeals')}</Link>
+          <Link href="/customer-service" className="hover:text-header-text hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-header-text/5">{t('customerService')}</Link>
+          <Link href="/registry" className="hover:text-header-text hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-header-text/5">{t('registry')}</Link>
+          <Link href="/gift-cards" className="hover:text-header-text hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-header-text/5">{t('giftCards')}</Link>
+          <Link href="/sell" className="transition-colors font-medium text-brand hover:text-brand-light hover:underline min-h-10 px-3 flex items-center rounded-md hover:bg-header-text/5">{t('sell')}</Link>
         </div>
       </nav>
     </header>

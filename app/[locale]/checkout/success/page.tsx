@@ -15,18 +15,18 @@ export default function CheckoutSuccessPage() {
   }, [clearCart])
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-zinc-900 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-zinc-800 p-8 rounded-lg border border-border max-w-md w-full text-center">
+    <div className="min-h-screen bg-muted flex items-center justify-center p-4">
+      <div className="bg-card p-8 rounded-lg border border-border max-w-md w-full text-center">
         <div className="flex justify-center mb-6">
-          <CheckCircle2 className="h-20 w-20 text-green-500" />
+          <CheckCircle2 className="h-20 w-20 text-accent-foreground" />
         </div>
-        <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Order Placed!</h1>
-        <p className="text-gray-600 dark:text-gray-300 mb-8">
+        <h1 className="text-3xl font-bold mb-4 text-foreground">Order Placed!</h1>
+        <p className="text-muted-foreground mb-8">
           Thank you for your purchase. Your order has been successfully processed and will be shipped soon.
         </p>
         <div className="flex flex-col gap-3">
           <Link href="/">
-            <Button className="w-full bg-[#f7ca00] hover:bg-[#f2bd00] text-black border-none">
+            <Button className="w-full bg-brand hover:bg-brand/90 text-foreground border-none">
               Continue Shopping
             </Button>
           </Link>

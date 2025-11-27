@@ -3,7 +3,10 @@ import { ProductCard } from "@/components/product-card"
 import { SearchFilters } from "@/components/search-filters"
 import { SubcategoryTabs } from "@/components/subcategory-tabs"
 import { SearchHeader } from "@/components/search-header"
+import { MobileFilters } from "@/components/mobile-filters"
+import { FilterChips } from "@/components/filter-chips"
 import { Suspense } from "react"
+import { getLocale } from "next-intl/server"
 
 // Define types for better type safety
 interface Category {
@@ -176,7 +179,7 @@ export default async function SearchPage({
     // brands = [...new Set(products.map(p => p.brand).filter(Boolean))]
   }
 
-
+  const locale = await getLocale()
 
   return (
     <div className="min-h-screen bg-background">
@@ -214,20 +217,39 @@ export default async function SearchPage({
             </Suspense>
           )}
 
-          {/* Results count and sort - Same row layout */}
+          {/* Mobile Filter Chips - Horizontal scroll */}
+          <div className="lg:hidden mb-4">
+            <Suspense>
+              <FilterChips currentCategory={currentCategory} />
+            </Suspense>
+          </div>
+
+          {/* Results count, mobile filter button, and sort - Same row layout */}
           <div className="mb-4 flex items-center justify-between gap-2">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">{products.length}</span> results
-              {query && (
-                <span className="hidden sm:inline">
-                  {" "}for <span className="font-medium text-brand-deal">"{query}"</span>
-                </span>
-              )}
-              {currentCategory && !query && (
-                <span className="hidden sm:inline"> in <span className="font-medium">{currentCategory.name}</span></span>
-              )}
-            </p>
             <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{products.length}</span> results
+                {query && (
+                  <span className="hidden sm:inline">
+                    {" "}for <span className="font-medium text-brand-deal">"{query}"</span>
+                  </span>
+                )}
+                {currentCategory && !query && (
+                  <span className="hidden sm:inline"> in <span className="font-medium">{currentCategory.name}</span></span>
+                )}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* Mobile Filter Button */}
+              <div className="lg:hidden">
+                <Suspense>
+                  <MobileFilters 
+                    categories={allCategories}
+                    currentCategory={currentCategory}
+                    locale={locale}
+                  />
+                </Suspense>
+              </div>
               <label htmlFor="sort" className="text-sm text-muted-foreground hidden sm:inline">Sort by:</label>
               <select 
                 id="sort"

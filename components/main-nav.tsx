@@ -6,18 +6,18 @@ export function MainNav() {
   const links = ["Today's Deals", "Customer Service", "Registry", "Gift Cards", "Sell"]
 
   return (
-    <nav className="bg-[#232f3e] text-white px-4 py-1.5 flex items-center gap-4 text-sm overflow-x-auto whitespace-nowrap">
+    <nav className="bg-header-nav-bg text-header-text px-4 py-1.5 flex items-center gap-4 text-sm overflow-x-auto whitespace-nowrap">
       <SidebarMenu />
       {links.map((link) => (
         <Link
           key={link}
           href={link === "Sell" ? "/sell" : "#"}
-          className="hover:outline outline-1 outline-white p-1 rounded-md"
+          className="hover:outline outline-1 outline-header-text p-1 rounded-md"
         >
           {link}
         </Link>
       ))}
-      <div className="ml-auto font-bold hover:outline outline-1 outline-white p-1 rounded-md hidden md:block">
+      <div className="ml-auto font-bold hover:outline outline-1 outline-header-text p-1 rounded-md hidden md:block">
         Shop great deals now
       </div>
     </nav>

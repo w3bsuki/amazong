@@ -173,8 +173,8 @@ export function SubcategoryCircles({
                 className={cn(
                   "rounded-full flex items-center justify-center overflow-hidden",
                   "size-20 sm:size-[90px] md:size-[100px]",
-                  "bg-linear-to-br from-brand-blue to-brand-blue-dark",
-                  "border-[3px] border-brand-blue"
+                  "bg-linear-to-br from-primary to-primary/80",
+                  "border-[3px] border-primary"
                 )}
               >
                 <span className="text-white text-xs sm:text-sm font-bold text-center px-2">
@@ -184,7 +184,7 @@ export function SubcategoryCircles({
               
               {/* Label */}
               <span className={cn(
-                "text-xs sm:text-sm font-semibold text-center text-brand-blue",
+                "text-xs sm:text-sm font-semibold text-center text-primary",
                 "max-w-[90px] sm:max-w-[100px] line-clamp-2"
               )}>
                 {locale === "bg" ? "Всички продукти" : "All Products"}
@@ -209,7 +209,7 @@ export function SubcategoryCircles({
                   "rounded-full flex items-center justify-center overflow-hidden",
                   "size-20 sm:size-[90px] md:size-[100px]",
                   "bg-muted border-2 border-transparent",
-                  "group-hover:border-brand-blue group-hover:shadow-md"
+                  "group-hover:border-primary group-hover:shadow-md transition-all"
                 )}
               >
                 <img 
@@ -223,7 +223,7 @@ export function SubcategoryCircles({
               {/* Category Name - Target style */}
               <span className={cn(
                 "text-xs sm:text-sm font-medium text-center text-foreground",
-                "group-hover:text-brand-blue group-hover:underline",
+                "group-hover:text-primary group-hover:underline transition-colors",
                 "line-clamp-2",
                 "max-w-[90px] sm:max-w-[100px]"
               )}>

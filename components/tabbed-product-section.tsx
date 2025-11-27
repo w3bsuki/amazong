@@ -50,7 +50,7 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
 
   return (
     <Link href={`/product/${id}`} className="block h-full group">
-      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col transition-all duration-200 border border-border hover:border-blue-300">
+      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col transition-all duration-200 border border-border hover:border-link">
         {/* Square Image Container - Fixed aspect ratio */}
         <div className="relative w-full aspect-square bg-secondary p-4 flex items-center justify-center overflow-hidden">
           <div className="relative w-full h-full">
@@ -67,7 +67,7 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
         {/* Content - Clean and compact */}
         <div className="p-3 flex-1 flex flex-col bg-white">
           {/* Title - 2 lines max */}
-          <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-blue-600">
+          <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-link">
             {title}
           </h3>
 
@@ -131,11 +131,11 @@ export function TabbedProductSection({
     }
   }
 
-  // Background color variants - cleaner gradients
+  // Background color variants - using theme colors
   const bgStyles = {
-    default: "bg-linear-to-b from-slate-800 to-slate-900",
-    featured: "bg-linear-to-br from-blue-600 via-blue-700 to-indigo-800",
-    deals: "bg-linear-to-br from-rose-600 via-rose-700 to-pink-800",
+    default: "bg-linear-to-b from-header-bg to-header-bg-secondary",
+    featured: "bg-linear-to-br from-primary via-primary to-primary/80",
+    deals: "bg-linear-to-br from-brand-deal via-brand-deal to-brand-deal/80",
   }
 
   return (
@@ -167,8 +167,8 @@ export function TabbedProductSection({
                 value={tab.id}
                 className={cn(
                   "px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium rounded-full",
-                  "text-white/90 hover:text-white hover:bg-white/20",
-                  "data-[state=active]:text-slate-900 data-[state=active]:bg-white data-[state=active]:font-semibold",
+                  "text-header-text/90 hover:text-header-text hover:bg-header-text/20",
+                  "data-[state=active]:text-foreground data-[state=active]:bg-background data-[state=active]:font-semibold",
                   "transition-all duration-200",
                   "whitespace-nowrap min-h-11 touch-action-manipulation"
                 )}

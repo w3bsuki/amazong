@@ -53,13 +53,13 @@ export default function Page() {
   }
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-white dark:bg-zinc-900">
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-background">
       <div className="w-full max-w-[350px]">
         <div className="flex flex-col gap-6">
           <div className="flex justify-center mb-4">
             <span className="text-3xl font-bold tracking-tighter">amazon</span>
           </div>
-          <Card className="rounded-sm border-zinc-300 shadow-none">
+          <Card className="rounded-sm border-border shadow-none">
             <CardHeader className="pb-2">
               <CardTitle className="text-2xl font-normal">Create account</CardTitle>
             </CardHeader>
@@ -77,7 +77,7 @@ export default function Page() {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="h-8 rounded-sm border-zinc-400 focus-visible:ring-1 focus-visible:ring-brand-warning focus-visible:border-brand-warning"
+                      className="h-8 rounded-sm border-input focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -91,7 +91,7 @@ export default function Page() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-8 rounded-sm border-zinc-400 focus-visible:ring-1 focus-visible:ring-brand-warning focus-visible:border-brand-warning"
+                      className="h-8 rounded-sm border-input focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -105,10 +105,10 @@ export default function Page() {
                       placeholder="At least 6 characters"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-8 rounded-sm border-zinc-400 focus-visible:ring-1 focus-visible:ring-brand-warning focus-visible:border-brand-warning"
+                      className="h-8 rounded-sm border-input focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand"
                     />
-                    <div className="text-[10px] text-zinc-500 flex items-center gap-1">
-                      <span className="text-[#007185] font-bold">i</span> Passwords must be at least 6 characters.
+                    <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                      <span className="text-link font-bold">i</span> Passwords must be at least 6 characters.
                     </div>
                   </div>
                   <div className="grid gap-2">
@@ -121,35 +121,35 @@ export default function Page() {
                       required
                       value={repeatPassword}
                       onChange={(e) => setRepeatPassword(e.target.value)}
-                      className="h-8 rounded-sm border-zinc-400 focus-visible:ring-1 focus-visible:ring-brand-warning focus-visible:border-brand-warning"
+                      className="h-8 rounded-sm border-input focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand"
                     />
                   </div>
-                  {error && <p className="text-sm text-red-600 font-medium">{error}</p>}
+                  {error && <p className="text-sm text-destructive font-medium">{error}</p>}
                   <Button
                     type="submit"
-                    className="w-full bg-[#f0c14b] hover:bg-[#f4d078] text-black border border-[#a88734] rounded-sm h-8 shadow-[0_1px_0_rgba(255,255,255,0.4)_inset] text-sm font-normal"
+                    className="w-full bg-brand hover:bg-brand/90 text-foreground border border-brand-dark rounded-sm h-8 shadow-[0_1px_0_rgba(255,255,255,0.4)_inset] text-sm font-normal"
                     disabled={isLoading}
                   >
                     {isLoading ? "Creating account..." : "Create your Amazon account"}
                   </Button>
                 </div>
 
-                <div className="mt-4 text-xs text-zinc-600">
+                <div className="mt-4 text-xs text-muted-foreground">
                   By creating an account, you agree to Amazon's{" "}
-                  <Link href="#" className="text-[#007185] hover:underline">
+                  <Link href="#" className="text-link hover:underline">
                     Conditions of Use
                   </Link>{" "}
                   and{" "}
-                  <Link href="#" className="text-[#007185] hover:underline">
+                  <Link href="#" className="text-link hover:underline">
                     Privacy Notice
                   </Link>
                   .
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-zinc-200">
+                <div className="mt-6 pt-6 border-t border-border">
                   <div className="text-xs">
                     Already have an account?{" "}
-                    <Link href="/auth/login" className="text-[#007185] hover:underline hover:text-[#c7511f]">
+                    <Link href="/auth/login" className="text-link hover:underline hover:text-link-hover">
                       Sign in ›
                     </Link>
                   </div>
@@ -159,18 +159,18 @@ export default function Page() {
           </Card>
         </div>
         <div className="mt-8 text-center space-y-2">
-          <div className="flex justify-center gap-8 text-xs text-[#007185]">
-            <Link href="#" className="hover:text-[#c7511f] hover:underline">
+          <div className="flex justify-center gap-8 text-xs text-link">
+            <Link href="#" className="hover:text-link-hover hover:underline">
               Conditions of Use
             </Link>
-            <Link href="#" className="hover:text-[#c7511f] hover:underline">
+            <Link href="#" className="hover:text-link-hover hover:underline">
               Privacy Notice
             </Link>
-            <Link href="#" className="hover:text-[#c7511f] hover:underline">
+            <Link href="#" className="hover:text-link-hover hover:underline">
               Help
             </Link>
           </div>
-          <p className="text-xs text-zinc-500">© 1996-2024, Amazon.com, Inc. or its affiliates</p>
+          <p className="text-xs text-muted-foreground">© 1996-2024, Amazon.com, Inc. or its affiliates</p>
         </div>
       </div>
     </div>

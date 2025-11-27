@@ -117,14 +117,14 @@ export function MobileSearch() {
         <SheetTitle className="sr-only">{t('searchPlaceholder')}</SheetTitle>
         
         {/* Search Header */}
-        <div className="bg-zinc-900 text-white p-4 pt-safe">
+        <div className="bg-header-bg text-header-text p-4 pt-safe">
           <form onSubmit={handleSubmit} className="flex items-center gap-2">
             {/* Category Select */}
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger className="h-11 w-auto min-w-[60px] bg-muted border-none text-xs text-foreground rounded-l-lg rounded-r-none focus:ring-0 gap-1 px-2">
                 <SelectValue placeholder={tCat('all')} />
               </SelectTrigger>
-              <SelectContent className="bg-white text-black border-border max-h-[300px] rounded">
+              <SelectContent className="bg-popover text-popover-foreground border-border max-h-[300px] rounded">
                 <SelectItem value="all">{tCat('all')}</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.slug}>
@@ -146,7 +146,7 @@ export function MobileSearch() {
               />
               <Button 
                 type="submit" 
-                className="h-full w-12 bg-blue-600 hover:bg-blue-700 text-white rounded-none border-none flex items-center justify-center"
+                className="h-full w-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-none border-none flex items-center justify-center"
               >
                 <Search className="h-5 w-5" />
               </Button>
@@ -177,7 +177,7 @@ export function MobileSearch() {
                 </h3>
                 <button 
                   onClick={clearRecentSearches}
-                  className="text-xs text-blue-600 hover:text-blue-700 tap-transparent"
+                  className="text-xs text-link hover:text-link-hover tap-transparent"
                 >
                   {locale === 'bg' ? 'Изчисти' : 'Clear'}
                 </button>

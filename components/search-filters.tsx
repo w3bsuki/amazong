@@ -149,7 +149,7 @@ export function SearchFilters({
               id="prime" 
               checked={currentPrime === "true"}
               onCheckedChange={() => toggleParam("prime")}
-              className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
+              className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
             />
             <span className="text-sm font-medium flex items-center gap-1.5">
               <img src="https://m.media-amazon.com/images/G/01/prime/marketing/slashPrime/amazon-prime-delivery-checkmark._CB611051915_.png" alt="Prime" className="h-3.5" />
@@ -159,7 +159,7 @@ export function SearchFilters({
           <label htmlFor="freeShipping" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
             <Checkbox 
               id="freeShipping" 
-              className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
+              className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
             />
             <span className="text-sm flex items-center gap-1.5">
               <Truck className="size-4 text-muted-foreground" />
@@ -279,7 +279,7 @@ export function SearchFilters({
                   id={`brand-${brand}`}
                   checked={currentBrand === brand}
                   onCheckedChange={() => updateParams("brand", currentBrand === brand ? null : brand)}
-                  className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
+                  className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
                 />
                 <span className="text-sm">{brand}</span>
               </label>
@@ -364,7 +364,7 @@ export function SearchFilters({
               id="deals" 
               checked={currentDeals === "true"}
               onCheckedChange={() => toggleParam("deals")}
-              className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
+              className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
             />
             <span className="text-sm flex items-center gap-1.5">
               <Percent className="size-4 text-brand-deal" />
@@ -374,7 +374,7 @@ export function SearchFilters({
           <label htmlFor="lightning" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
             <Checkbox 
               id="lightning" 
-              className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
+              className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
             />
             <span className="text-sm">{t('lightningDeals')}</span>
           </label>
@@ -390,10 +390,10 @@ export function SearchFilters({
               id="instock" 
               checked={currentAvailability === "instock"}
               onCheckedChange={() => updateParams("availability", currentAvailability === "instock" ? null : "instock")}
-              className="size-5 border-muted-foreground data-[state=checked]:bg-brand-blue data-[state=checked]:border-brand-blue" 
+              className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
             />
             <span className="text-sm flex items-center gap-1.5">
-              <Package className="size-4 text-green-600 dark:text-green-500" />
+              <Package className="size-4 text-brand-success" />
               {t('includeOutOfStock')}
             </span>
           </label>

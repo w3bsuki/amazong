@@ -71,12 +71,12 @@ export default async function AccountPage({ params }: AccountPageProps) {
       title: t('messages.title'),
       description: t('messages.desc'),
       icon: MessageSquare,
-      href: "#",
+      href: "/account/messages",
     },
   ]
 
   return (
-    <div className="container mx-auto p-4 max-w-5xl min-h-screen bg-white dark:bg-zinc-900">
+    <div className="container mx-auto p-4 max-w-5xl min-h-screen bg-background">
       <Breadcrumb items={[{ label: t('title'), icon: <User className="h-3.5 w-3.5" /> }]} />
       
       <h1 className="text-3xl font-normal mb-6">{t('title')}</h1>
@@ -84,10 +84,10 @@ export default async function AccountPage({ params }: AccountPageProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {menuItems.map((item) => (
           <Link href={item.href} key={item.title}>
-            <Card className="h-full hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors border-zinc-200 dark:border-zinc-700 cursor-pointer rounded-lg">
+            <Card className="h-full hover:bg-muted transition-colors border-border cursor-pointer rounded-lg">
               <CardContent className="p-4 flex gap-4 items-start pt-6">
                 <div className="shrink-0">
-                  <item.icon className="h-8 w-8 text-[#007185]" />
+                  <item.icon className="h-8 w-8 text-link" />
                 </div>
                 <div>
                   <h2 className="text-lg font-normal">{item.title}</h2>

@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import { Star, Truck, ShieldCheck, RotateCcw, Package } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { ProductCard } from "@/components/product-card"
 import { ReviewsSection } from "@/components/reviews-section"
@@ -156,7 +155,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           {/* Middle Column: Product Details */}
           <div className="flex flex-col gap-2 order-2">
-            <h1 className="text-xl sm:text-2xl font-medium text-[#0F1111] leading-tight mb-1">{product.title}</h1>
+            <h1 className="text-xl sm:text-2xl font-medium text-foreground leading-tight mb-1">{product.title}</h1>
 
             <div className="flex items-center gap-2 mb-2">
               <div className="flex text-rating text-sm">
@@ -167,7 +166,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   />
                 ))}
               </div>
-              <span className="text-blue-600 hover:text-blue-700 hover:underline cursor-pointer text-sm font-medium">
+              <span className="text-link hover:text-link-hover hover:underline cursor-pointer text-sm font-medium">
                 {t('ratings', { count: product.reviews_count })}
               </span>
             </div>
@@ -176,55 +175,55 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             <div className="flex flex-col gap-1">
               <div className="flex items-baseline gap-1">
-                <span className="text-sm align-top font-medium text-[#0F1111] relative top-1.5">$</span>
-                <span className="text-2xl sm:text-[28px] font-medium text-[#0F1111]">{Math.floor(product.price)}</span>
-                <span className="text-sm align-top font-medium text-[#0F1111] relative top-1.5">{(product.price % 1).toFixed(2).substring(1)}</span>
+                <span className="text-sm align-top font-medium text-foreground relative top-1.5">$</span>
+                <span className="text-2xl sm:text-[28px] font-medium text-foreground">{Math.floor(product.price)}</span>
+                <span className="text-sm align-top font-medium text-foreground relative top-1.5">{(product.price % 1).toFixed(2).substring(1)}</span>
               </div>
               {product.is_prime && (
-                <div className="flex items-center gap-1 text-blue-600 text-sm">
-                  <span className="font-bold text-blue-500">prime</span>
-                  <span className="text-[#565959]">One-Day</span>
+                <div className="flex items-center gap-1 text-link text-sm">
+                  <span className="font-bold text-brand">prime</span>
+                  <span className="text-muted-foreground">One-Day</span>
                 </div>
               )}
-              <span className="text-sm text-[#0F1111]">{t('freeReturns')}</span>
+              <span className="text-sm text-foreground">{t('freeReturns')}</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-xs text-blue-600 my-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-xs text-link my-4">
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
-                <RotateCcw className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-blue-600" />
-                <span className="group-hover:text-blue-700 group-hover:underline text-[10px] sm:text-xs">{t('freeReturns')}</span>
+                <RotateCcw className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground group-hover:text-link" />
+                <span className="group-hover:text-link-hover group-hover:underline text-[10px] sm:text-xs">{t('freeReturns')}</span>
               </div>
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
-                <Truck className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-blue-600" />
-                <span className="group-hover:text-blue-700 group-hover:underline text-[10px] sm:text-xs">{t('freeDelivery')}</span>
+                <Truck className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground group-hover:text-link" />
+                <span className="group-hover:text-link-hover group-hover:underline text-[10px] sm:text-xs">{t('freeDelivery')}</span>
               </div>
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
-                <ShieldCheck className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400 group-hover:text-blue-600" />
-                <span className="group-hover:text-blue-700 group-hover:underline text-[10px] sm:text-xs">{t('secureTransaction')}</span>
+                <ShieldCheck className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground group-hover:text-link" />
+                <span className="group-hover:text-link-hover group-hover:underline text-[10px] sm:text-xs">{t('secureTransaction')}</span>
               </div>
             </div>
 
             <Separator className="my-2" />
 
-            <div className="text-sm text-[#0F1111] leading-relaxed">
+            <div className="text-sm text-foreground leading-relaxed">
               <h3 className="font-bold mb-2 text-[16px]">{t('aboutThisItem')}</h3>
               <p>{product.description || "No description available."}</p>
             </div>
           </div>
 
           {/* Right Column: Buy Box - Full width on mobile, sticky on desktop */}
-          <div className="border border-[#d5d9d9] rounded-lg p-4 h-fit lg:sticky lg:top-4 bg-white order-3">
+          <div className="border border-border rounded-lg p-4 h-fit lg:sticky lg:top-4 bg-card order-3">
             <div className="flex items-baseline gap-1 mb-2">
-              <span className="text-sm align-top font-medium text-[#0F1111]">$</span>
-              <span className="text-2xl sm:text-[28px] font-medium text-[#0F1111]">{Math.floor(product.price)}</span>
-              <span className="text-sm align-top font-medium text-[#0F1111]">{(product.price % 1).toFixed(2).substring(1)}</span>
+              <span className="text-sm align-top font-medium text-foreground">$</span>
+              <span className="text-2xl sm:text-[28px] font-medium text-foreground">{Math.floor(product.price)}</span>
+              <span className="text-sm align-top font-medium text-foreground">{(product.price % 1).toFixed(2).substring(1)}</span>
             </div>
 
-            <div className="text-sm text-[#565959] mb-4">
-              FREE delivery <span className="font-bold text-[#0F1111]">Monday, August 14</span>
+            <div className="text-sm text-muted-foreground mb-4">
+              FREE delivery <span className="font-bold text-foreground">Monday, August 14</span>
             </div>
 
-            <div className="text-[18px] text-emerald-600 font-medium mb-4">{t('inStock')}</div>
+            <div className="text-[18px] text-brand-success font-medium mb-4">{t('inStock')}</div>
 
             <AddToCart
               product={{
@@ -235,14 +234,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
               }}
             />
 
-            <div className="mt-4 text-xs text-[#565959] space-y-2">
+            <div className="mt-4 text-xs text-muted-foreground space-y-2">
               <div className="flex gap-2">
                 <span className="w-20">{t('shipsFrom')}</span>
-                <span className="text-[#0F1111]">Amazon.com</span>
+                <span className="text-foreground">Amazon.com</span>
               </div>
               <div className="flex gap-2">
                 <span className="w-20">{t('soldBy')}</span>
-                <span className="text-[#0F1111]">Amazon.com</span>
+                <span className="text-foreground">Amazon.com</span>
               </div>
             </div>
           </div>
@@ -272,7 +271,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <Separator className="my-6 sm:my-8" />
 
         {/* Reviews Section */}
-        <ReviewsSection rating={product.rating || 0} reviewCount={product.reviews_count || 0} />
+        <ReviewsSection rating={product.rating || 0} reviewCount={product.reviews_count || product.review_count || 0} productId={product.id} />
       </div>
     </div>
   )

@@ -127,15 +127,15 @@ export function ProductForm({ userId }: { userId: string }) {
           placeholder="https://example.com/image.jpg"
           className="rounded-md focus-visible:ring-brand-warning"
         />
-        <p className="text-xs text-zinc-500">For demo purposes, paste a public image URL</p>
+        <p className="text-xs text-muted-foreground">For demo purposes, paste a public image URL</p>
       </div>
 
-      {error && <div className="text-red-600 text-sm font-bold">{error}</div>}
+      {error && <div className="text-destructive text-sm font-bold">{error}</div>}
 
       <Button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-[#f7ca00] hover:bg-[#f2bd00] text-black border-none rounded font-normal"
+        className="w-full bg-brand hover:bg-brand/90 text-foreground border-none rounded font-normal"
       >
         {isLoading ? "Adding Product..." : "Add Product"}
       </Button>

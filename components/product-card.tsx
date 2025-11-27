@@ -6,6 +6,7 @@ import { Star } from "lucide-react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
+import { WishlistButton } from "@/components/wishlist-button"
 import { toast } from "sonner"
 import { useLocale, useTranslations } from "next-intl"
 
@@ -51,10 +52,16 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
   return (
     <Card className="bg-card overflow-hidden flex flex-col group relative border border-border rounded-md hover:border-ring h-full">
       {/* Hit Area for Nav */}
-      <Link href={`/product/${id}`} className="absolute inset-0 z-0" aria-label={`View ${title}`} />
+      <Link href={`/product/${id}`} className="absolute inset-0 z-10" aria-label={`View ${title}`} />
 
       {/* Image Container - Fixed square aspect ratio */}
-      <CardContent className="relative bg-secondary aspect-square p-2 sm:p-3 md:p-4 flex items-center justify-center overflow-hidden">
+      <CardContent className="relative bg-secondary aspect-square p-2 sm:p-3 md:p-4 flex items-center justify-center overflow-hidden pointer-events-none">
+        {/* Wishlist Button */}
+        <div className="absolute top-2 right-2 z-20 pointer-events-auto">
+          <WishlistButton
+            product={{ id, title, price, image }}
+          />
+        </div>
         <div className="relative w-full h-full">
           <Image
             src={image || "/placeholder.svg"}
@@ -66,9 +73,9 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
         </div>
       </CardContent>
 
-      <CardFooter className="p-2 sm:p-2.5 md:p-3 flex-1 flex flex-col z-10 pointer-events-none bg-card">
+      <CardFooter className="p-2 sm:p-2.5 md:p-3 flex-1 flex flex-col z-20 pointer-events-none bg-card">
         {/* Title - 2 lines max */}
-        <h3 className="text-xs sm:text-sm font-medium text-foreground group-hover:text-brand-blue line-clamp-2 mb-1 sm:mb-1.5 leading-snug min-h-8 sm:min-h-10">
+        <h3 className="text-xs sm:text-sm font-medium text-foreground group-hover:text-brand line-clamp-2 mb-1 sm:mb-1.5 leading-snug min-h-8 sm:min-h-10">
           {title}
         </h3>
 
@@ -78,11 +85,11 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`size-3 ${i < Math.floor(rating) ? "fill-current" : "text-rating-empty fill-current"}`}
+                className={`size-3 ${i < Math.floor(rating) ? "fill-current" : "fill-rating-empty"}`}
               />
             ))}
           </div>
-          <span className="text-[10px] text-brand-blue font-medium">{reviews.toLocaleString()}</span>
+          <span className="text-[10px] text-link font-medium">{reviews.toLocaleString()}</span>
         </div>
 
         {/* Price & Button */}
@@ -99,7 +106,7 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
 
           <Button
             onClick={handleAddToCart}
-            className="w-full min-h-11 bg-brand-blue hover:bg-brand-blue/90 text-white text-xs sm:text-sm font-medium rounded-md transition-colors touch-action-manipulation active:scale-[0.98]"
+            className="w-full min-h-11 bg-interactive hover:bg-interactive-hover text-white text-xs sm:text-sm font-medium rounded-md transition-colors touch-action-manipulation active:scale-[0.98]"
           >
             {t('addToCart')}
           </Button>

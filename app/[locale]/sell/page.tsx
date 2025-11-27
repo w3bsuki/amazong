@@ -191,7 +191,7 @@ export default function SellPage() {
                   placeholder="Tell us about your store..."
                 />
               </div>
-              <Button type="submit" className="w-full bg-[#f08804] hover:bg-[#d67904] text-black" disabled={submitting}>
+              <Button type="submit" className="w-full bg-brand-deal hover:bg-brand-deal/90 text-white" disabled={submitting}>
                 {submitting ? "Creating..." : "Create Store"}
               </Button>
             </form>
@@ -288,7 +288,7 @@ export default function SellPage() {
               maxSizeMB={5}
             />
 
-            <Button type="submit" className="w-full bg-[#f08804] hover:bg-[#d67904] text-black" disabled={submitting}>
+            <Button type="submit" className="w-full bg-brand-deal hover:bg-brand-deal/90 text-white" disabled={submitting}>
               {submitting ? "Listing Product..." : "List Product"}
             </Button>
           </form>

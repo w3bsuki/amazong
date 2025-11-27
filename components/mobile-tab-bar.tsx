@@ -96,7 +96,7 @@ export function MobileTabBar({
                 className={cn(
                   "flex flex-col items-center justify-center flex-1 min-h-14 min-w-14 h-full gap-1",
                   "touch-action-manipulation active:scale-95 transition-all",
-                  active ? "text-brand-blue" : "text-muted-foreground"
+                  active ? "text-primary" : "text-muted-foreground"
                 )}
                 aria-label={locale === "bg" ? tab.labelBg : tab.labelEn}
               >
@@ -116,7 +116,7 @@ export function MobileTabBar({
               className={cn(
                 "flex flex-col items-center justify-center flex-1 min-h-14 min-w-14 h-full gap-1 relative",
                 "touch-action-manipulation active:scale-95 transition-all",
-                active ? "text-brand-blue" : "text-muted-foreground"
+                active ? "text-primary" : "text-muted-foreground"
               )}
               aria-label={locale === "bg" ? tab.labelBg : tab.labelEn}
               aria-current={active ? "page" : undefined}

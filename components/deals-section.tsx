@@ -47,11 +47,11 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
 
   return (
     <Link href={`/product/${id}`} className="block h-full group">
-      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col border border-border hover:border-rose-300">
+      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col border border-border hover:border-brand-deal">
         {/* Square Image Container with Discount Badge */}
         <div className="relative w-full aspect-square bg-secondary p-4 flex items-center justify-center overflow-hidden">
           {/* Discount Badge - More prominent */}
-          <div className="absolute top-2 left-2 z-10 bg-rose-600 text-white text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
+          <div className="absolute top-2 left-2 z-10 bg-brand-deal text-white text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
             <Zap className="size-3" />
             -{discountPercent}%
           </div>
@@ -70,13 +70,13 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
         <div className="p-3 flex-1 flex flex-col bg-white">
           {/* Deal Badge */}
           <div className="flex items-center gap-1.5 mb-1.5">
-            <span className="bg-rose-100 text-rose-700 font-bold text-[10px] uppercase px-2 py-0.5 rounded-full">
+            <span className="bg-brand-deal-light text-brand-deal-text font-bold text-[10px] uppercase px-2 py-0.5 rounded-full">
               {t('deal')}
             </span>
           </div>
 
           {/* Title - 2 lines max */}
-          <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-rose-600 transition-colors">
+          <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-brand-deal transition-colors">
             {title}
           </h3>
 
@@ -101,10 +101,10 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
           {/* Price - With strikethrough */}
           <div className="mt-auto pt-1">
             <div className="flex items-baseline gap-2">
-              <span className="text-base sm:text-lg font-bold text-rose-600">{formatPrice(price)}</span>
+              <span className="text-base sm:text-lg font-bold text-brand-deal">{formatPrice(price)}</span>
               <span className="text-xs text-muted-foreground line-through">{formatPrice(listPrice)}</span>
             </div>
-            <div className="text-[10px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+            <div className="text-[10px] text-brand-success font-semibold mt-1 flex items-center gap-1">
               <Clock className="size-3" />
               {locale === 'bg' ? `Спестявате ${formatPrice(listPrice - price)}` : `Save ${formatPrice(listPrice - price)}`}
             </div>
@@ -144,7 +144,7 @@ export function DealsSection({
   }
 
   return (
-    <div className="rounded-md overflow-hidden bg-linear-to-br from-rose-600 via-rose-700 to-pink-800">
+    <div className="rounded-md overflow-hidden bg-linear-to-br from-brand-deal via-brand-deal to-brand-deal/80">
       {/* Header Section - Target style with icon */}
       <div className="text-center pt-6 sm:pt-8 pb-3 sm:pb-4 px-4">
         <div className="inline-flex items-center gap-2 mb-1.5">
@@ -177,7 +177,7 @@ export function DealsSection({
                 className={cn(
                   "px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium rounded-full",
                   "text-white/90 hover:text-white hover:bg-white/20",
-                  "data-[state=active]:text-rose-700 data-[state=active]:bg-white data-[state=active]:font-semibold",
+                  "data-[state=active]:text-brand-deal-text data-[state=active]:bg-white data-[state=active]:font-semibold",
                   "transition-all duration-200",
                   "whitespace-nowrap min-h-11 touch-action-manipulation"
                 )}
