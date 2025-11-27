@@ -69,7 +69,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
   }, [api])
 
   return (
-    <div className="relative w-full max-w-screen-2xl mx-auto group overflow-hidden hero-carousel">
+    <div className="relative w-full container-bleed group overflow-hidden hero-carousel">
       <Carousel
         plugins={[plugin.current]}
         className="w-full"

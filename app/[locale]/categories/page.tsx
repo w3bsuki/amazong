@@ -144,7 +144,7 @@ export default function CategoriesPage() {
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
       {/* Hero Banner */}
       <div className="bg-header-bg text-header-text py-6 sm:py-10">
-        <div className="container mx-auto max-w-7xl px-3 sm:px-4">
+        <div className="container">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-sm text-white/70 mb-4">
             <Link href="/" className="hover:text-white transition-colors">
@@ -174,7 +174,7 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-7xl px-3 sm:px-4 -mt-4 sm:-mt-6">
+      <div className="container -mt-4 sm:-mt-6">
         {/* Quick Links */}
         <div className="bg-card rounded-lg border border-border p-4 mb-6 sm:mb-8">
           <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar snap-x snap-mandatory">

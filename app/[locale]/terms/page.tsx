@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
   Accordion,
@@ -36,11 +36,10 @@ export default async function TermsPage() {
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
       {/* Hero Section */}
       <div className="bg-header-bg text-white">
-        <div className="container mx-auto max-w-5xl px-4 py-10 md:py-14">
-          <Breadcrumb 
-            items={[{ label: t('title'), icon: <FileText className="h-3.5 w-3.5" /> }]} 
-            className="text-white/70 mb-6"
-          />
+        <div className="container py-10 md:py-14">
+          <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+            <AppBreadcrumb items={breadcrumbPresets.terms} />
+          </div>
           <div className="flex items-start gap-4">
             <div className="size-14 bg-white/10 flex items-center justify-center shrink-0">
               <FileText className="size-7 text-white" />
@@ -53,7 +52,7 @@ export default async function TermsPage() {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-7xl px-4 py-8">
+      <div className="container py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar Navigation */}
           <aside className="lg:col-span-1">

@@ -14,7 +14,7 @@ export function MessagesPageClient() {
   return (
     <MessageProvider>
       <div className="min-h-[calc(100vh-120px)] bg-[#EAEDED]">
-        <div className="container max-w-6xl mx-auto py-4 px-4">
+        <div className="container py-4">
           {/* Page header - Amazon style */}
           <div className="mb-4">
             <h1 className="text-xl font-bold text-foreground">{t("pageTitle")}</h1>

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { 
@@ -22,11 +22,10 @@ export default async function ReturnsPage() {
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
       {/* Hero Section */}
       <div className="bg-header-bg text-white">
-        <div className="container mx-auto max-w-7xl px-4 py-10 md:py-16">
-          <Breadcrumb 
-            items={[{ label: t('title'), icon: <RotateCcw className="h-3.5 w-3.5" /> }]} 
-            className="text-white/70 mb-6"
-          />
+        <div className="container py-10 md:py-16">
+          <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+            <AppBreadcrumb items={breadcrumbPresets.returns} />
+          </div>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="max-w-2xl">
               <h1 className="text-2xl md:text-4xl font-bold mb-3">{t('heroTitle')}</h1>
@@ -42,7 +41,7 @@ export default async function ReturnsPage() {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-7xl px-4 py-8">
+      <div className="container py-8">
         {/* Return Policy Highlights */}
         <section className="mb-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -56,7 +56,7 @@ function SearchBar() {
 
   return (
     <form onSubmit={handleSearch} className="flex-1 flex items-center mx-4 h-11">
-      <div className="flex h-full w-full rounded overflow-hidden bg-white border border-border focus-within:ring-2 focus-within:ring-ring focus-within:border-ring transition-colors">
+      <div className="flex h-full w-full rounded-sm overflow-hidden bg-white border border-border focus-within:ring-2 focus-within:ring-ring focus-within:border-ring transition-colors">
         <SearchCategoryDropdown
           categories={categories}
           selectedCategory={category}
@@ -117,8 +117,13 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             <div className="size-1.5 md:size-2 bg-brand rounded-full mt-0.5 md:mt-1"></div>
           </Link>
 
-          {/* Deliver to - With Dropdown - Hidden on mobile */}
+          {/* Deliver to - LEFT side before search */}
           <LocationDropdown country={country} />
+
+          {/* Language Switcher - LEFT of search bar */}
+          <div className="hidden md:block">
+            <LanguageSwitcher />
+          </div>
 
           {/* Search Bar - Desktop only - TAKES ALL AVAILABLE SPACE */}
           <div className="hidden md:block flex-1">
@@ -129,11 +134,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
 
           {/* Right Actions */}
           <div className="flex items-center gap-1 md:gap-1 shrink-0 ml-auto md:ml-0">
-            {/* Language Switcher - Hidden on mobile */}
-            <div className="hidden md:block">
-              <LanguageSwitcher />
-            </div>
-
             {/* Account Dropdown - Hidden on mobile */}
             <div className="hidden md:block">
               <AccountDropdown user={user} />
@@ -142,6 +142,16 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             {/* Returns & Orders - With Dropdown - Hidden on mobile */}
             <div className="hidden lg:block">
               <ReturnsOrdersDropdown user={user} />
+            </div>
+
+            {/* Messages - Hidden on mobile */}
+            <div className="hidden md:block">
+              <Link href="/account/messages">
+                <Button variant="ghost" className="h-12 flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
+                  <span className="text-[10px] text-header-text-muted group-hover:text-brand">{t('messages')}</span>
+                  <span className="text-sm font-bold mt-0.5">{t('messagesLabel')}</span>
+                </Button>
+              </Link>
             </div>
 
             {/* Mobile Search - Next to cart on mobile */}
@@ -176,11 +186,11 @@ export function SiteHeader({ user }: SiteHeaderProps) {
         <div className="flex items-center gap-1 whitespace-nowrap text-header-text-muted">
           <SidebarMenu />
           
-          <Link href="/todays-deals" className="hover:text-header-text hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-header-text/5">{t('todaysDeals')}</Link>
-          <Link href="/customer-service" className="hover:text-header-text hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-header-text/5">{t('customerService')}</Link>
-          <Link href="/registry" className="hover:text-header-text hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-header-text/5">{t('registry')}</Link>
-          <Link href="/gift-cards" className="hover:text-header-text hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md hover:bg-header-text/5">{t('giftCards')}</Link>
-          <Link href="/sell" className="transition-colors font-medium text-brand hover:text-brand-light hover:underline min-h-10 px-3 flex items-center rounded-md hover:bg-header-text/5">{t('sell')}</Link>
+          <Link href="/todays-deals" className="hover:text-brand hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md">{t('todaysDeals')}</Link>
+          <Link href="/customer-service" className="hover:text-brand hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md">{t('customerService')}</Link>
+          <Link href="/registry" className="hover:text-brand hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md">{t('registry')}</Link>
+          <Link href="/gift-cards" className="hover:text-brand hover:underline transition-colors min-h-10 px-3 flex items-center rounded-md">{t('giftCards')}</Link>
+          <Link href="/sell" className="transition-colors font-medium text-brand hover:text-brand-light hover:underline min-h-10 px-3 flex items-center rounded-md">{t('sell')}</Link>
         </div>
       </nav>
     </header>

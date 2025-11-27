@@ -29,13 +29,13 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
         <HoverCard openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
                 <Link href={user ? "/account" : "/auth/login"}>
-                    <Button variant="ghost" className="flex flex-col items-start leading-none gap-0 text-header-text border border-transparent hover:border-header-text/20 rounded-md p-2 px-3 hover:bg-header-text/10 hover:text-header-text">
-                        <span className="text-[10px] text-header-text-muted">
+                    <Button variant="ghost" className="h-12 flex flex-col items-start leading-none gap-0 text-header-text border border-transparent hover:border-header-text/20 rounded-sm p-2 px-3 hover:text-brand group">
+                        <span className="text-[10px] text-header-text-muted group-hover:text-brand">
                             {user ? `${t('hello')}, ${user.email?.split('@')[0]}` : t('helloSignIn')}
                         </span>
                         <span className="font-bold text-sm flex items-center gap-1 mt-0.5">
                             {t('accountAndLists')}
-                            <span className="text-[10px] text-header-text-muted">▼</span>
+                            <span className="text-[10px] text-header-text-muted group-hover:text-brand">▼</span>
                         </span>
                     </Button>
                 </Link>
@@ -116,14 +116,14 @@ export function CartDropdown() {
         <HoverCard openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
                 <Link href="/cart" aria-label={`${tNav('cart')} - ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`}>
-                    <Button variant="ghost" className="flex items-end gap-1 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-md hover:bg-header-text/10 text-header-text">
+                    <Button variant="ghost" className="h-12 flex items-center gap-1.5 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
                         <div className="relative">
-                            <ShoppingCart className="size-6 text-header-text" aria-hidden="true" />
+                            <ShoppingCart className="size-6 group-hover:text-brand" aria-hidden="true" />
                             <span className="absolute -top-1 -right-1.5 bg-brand-deal text-white text-[10px] font-bold min-w-5 h-5 flex items-center justify-center rounded-full px-1" aria-hidden="true">
                                 {totalItems}
                             </span>
                         </div>
-                        <span className="text-sm font-bold">{tNav('cart')}</span>
+                        <span className="text-sm font-bold group-hover:text-brand">{tNav('cart')}</span>
                     </Button>
                 </Link>
             </HoverCardTrigger>
@@ -259,9 +259,9 @@ export function ReturnsOrdersDropdown({ user }: ReturnsOrdersDropdownProps) {
         <HoverCard openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
                 <Link href="/account/orders">
-                    <Button variant="ghost" className="hidden lg:flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-md hover:bg-header-text/10 text-header-text">
-                        <span className="text-[10px] text-header-text/70">{tNav('returns')}</span>
-                        <span className="text-sm font-medium mt-0.5">{tNav('orders')}</span>
+                    <Button variant="ghost" className="h-12 hidden lg:flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
+                        <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('returns')}</span>
+                        <span className="text-sm font-bold mt-0.5 group-hover:text-brand">{tNav('orders')}</span>
                     </Button>
                 </Link>
             </HoverCardTrigger>
@@ -342,9 +342,9 @@ export function LocationDropdown({ country }: LocationDropdownProps) {
     return (
         <HoverCard openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
-                <Button variant="ghost" className="hidden lg:flex flex-col items-start leading-none gap-0 text-header-text/70 hover:text-header-text text-xs ml-2 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-md hover:bg-header-text/10 shrink-0">
-                    <span className="text-header-text/50 font-normal text-[10px]">{tNav('deliverTo')}</span>
-                    <div className="flex items-center gap-1 font-medium text-sm text-header-text mt-0.5">
+                <Button variant="ghost" className="h-12 hidden lg:flex flex-col items-start leading-none gap-0 text-header-text hover:text-brand text-xs p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm shrink-0 group">
+                    <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('deliverTo')}</span>
+                    <div className="flex items-center gap-1 font-bold text-sm text-header-text mt-0.5 group-hover:text-brand">
                         <MapPin className="size-3.5" />
                         <span>{country}</span>
                     </div>

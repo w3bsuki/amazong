@@ -183,7 +183,7 @@ export default async function SearchPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="flex flex-col lg:flex-row max-w-[1500px] mx-auto">
+      <div className="flex flex-col lg:flex-row container !px-0">
         {/* Sidebar Filters - Hidden on mobile */}
         <div className="w-64 p-4 border-r border-border hidden lg:block space-y-6 shrink-0">
           <Suspense>

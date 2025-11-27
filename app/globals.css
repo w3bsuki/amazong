@@ -2,6 +2,33 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ===== CONTAINER CONFIGURATION ===== */
+/* Consistent container for all pages - max 1536px (screen-2xl) with responsive padding */
+/* Mobile-first: minimal padding on mobile (like Target), more on larger screens */
+@utility container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1536px; /* screen-2xl */
+  padding-inline: 0.25rem; /* px-1 (4px) on mobile - edge-to-edge like Target */
+  @media (min-width: 640px) {
+    padding-inline: 1rem; /* sm:px-4 */
+  }
+  @media (min-width: 1024px) {
+    padding-inline: 1.5rem; /* lg:px-6 */
+  }
+}
+
+/* Full-bleed container - no padding for edge-to-edge content like hero banners */
+@utility container-bleed {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1536px; /* screen-2xl */
+  padding-inline: 0; /* No padding on mobile */
+  @media (min-width: 1024px) {
+    padding-inline: 1.5rem; /* lg:px-6 - add padding on desktop only */
+  }
+}
+
 :root {
   /* Tangerine Theme - E-commerce 2025 (Neutral BG + Vibrant CTAs) */
   --background: oklch(0.97 0.002 250);

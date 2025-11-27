@@ -1,13 +1,13 @@
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Image from "next/image"
-import { Star, Truck, ShieldCheck, RotateCcw, Package } from "lucide-react"
+import { Star, Truck, ShieldCheck, RotateCcw } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { ProductCard } from "@/components/product-card"
 import { ReviewsSection } from "@/components/reviews-section"
 import { AddToCart } from "@/components/add-to-cart"
 import { getTranslations } from "next-intl/server"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { AppBreadcrumb } from "@/components/app-breadcrumb"
 
 interface ProductPageProps {
   params: Promise<{
@@ -116,13 +116,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen bg-white pb-10">
-      <div className="max-w-[1500px] mx-auto px-3 sm:px-4 py-4 sm:py-8">
+      <div className="container py-4 sm:py-8">
         {/* Breadcrumb */}
-        <Breadcrumb 
+        <AppBreadcrumb 
           items={[
             ...(parentCategory ? [{ label: parentCategory.name, href: `/search?category=${parentCategory.slug}` }] : []),
             ...(category ? [{ label: category.name, href: `/search?category=${category.slug}` }] : []),
-            { label: product.title?.slice(0, 30) + (product.title?.length > 30 ? '...' : ''), icon: <Package className="h-3.5 w-3.5" /> }
+            { label: product.title?.slice(0, 40) + (product.title?.length > 40 ? '...' : '') }
           ]} 
         />
         

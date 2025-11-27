@@ -84,6 +84,7 @@
         "messages": "Съобщения",
         "language": "Български",
         "country": "България",
+        "deliverTo": "Доставка до",
         "customerService": "Обслужване на клиенти",
         "signIn": "Влез"
     },
@@ -93,8 +94,12 @@
         "returns": "Връщания",
         "orders": "& Поръчки",
         "cart": "Количка",
+        "messages": "Твоите",
+        "messagesLabel": "Съобщения",
+        "inbox": "Кутия",
+        "language": "Език",
         "todaysDeals": "Днешни оферти",
-        "customerService": "Обслужване на клиенти",
+        "customerService": "Обслужване",
         "registry": "Регистър",
         "giftCards": "Подаръчни карти",
         "sell": "Продавай"

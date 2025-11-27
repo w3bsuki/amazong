@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Gift, Mail, Printer, CreditCard } from "lucide-react"
-import Link from "next/link"
 import { getTranslations } from "next-intl/server"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 
 export default async function GiftCardsPage() {
     const t = await getTranslations('GiftCards')
@@ -11,13 +10,13 @@ export default async function GiftCardsPage() {
     return (
         <div className="min-h-screen bg-muted pb-12">
             {/* Breadcrumb */}
-            <div className="container mx-auto max-w-6xl px-4 pt-4">
-                <Breadcrumb items={[{ label: t('title'), icon: <Gift className="h-3.5 w-3.5" /> }]} />
+            <div className="container pt-4">
+                <AppBreadcrumb items={breadcrumbPresets.giftCards} />
             </div>
             
             {/* Hero Banner */}
             <div className="bg-header-bg text-header-text py-8 px-4">
-                <div className="container mx-auto max-w-6xl">
+                <div className="container">
                     <h1 className="text-3xl font-bold mb-4">{t('title')}</h1>
                     <div className="flex gap-4 overflow-x-auto pb-2">
                         <Button variant="secondary" className="bg-background text-foreground hover:bg-muted rounded-full px-6">
@@ -36,7 +35,7 @@ export default async function GiftCardsPage() {
                 </div>
             </div>
 
-            <div className="container mx-auto max-w-6xl px-4 py-8">
+            <div className="container py-8">
                 {/* Quick Actions */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
                     <Card className="hover:border-brand cursor-pointer transition-colors">

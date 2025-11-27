@@ -37,7 +37,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="container py-8">
         {/* Header */}
         <div className="mb-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">

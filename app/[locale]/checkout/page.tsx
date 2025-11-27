@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { AppBreadcrumb } from "@/components/app-breadcrumb"
 import { createCheckoutSession } from "@/app/actions/checkout"
 import { 
   ShoppingCart, 
@@ -86,10 +86,10 @@ export default function CheckoutPage() {
   // Empty cart state
   if (items.length === 0) {
     return (
-      <div className="container mx-auto p-4 bg-background min-h-screen">
-        <Breadcrumb items={[
+      <div className="container py-4 bg-background min-h-screen">
+        <AppBreadcrumb items={[
           { label: locale === 'bg' ? 'Количка' : 'Cart', href: '/cart' },
-          { label: locale === 'bg' ? 'Плащане' : 'Checkout', icon: <CreditCard className="h-3.5 w-3.5" /> }
+          { label: locale === 'bg' ? 'Плащане' : 'Checkout' }
         ]} />
         
         <div className="bg-card p-8 rounded border border-border mt-4 text-center max-w-md mx-auto">
@@ -114,10 +114,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-muted pb-20 sm:pb-12">
-      <div className="container mx-auto p-4 max-w-6xl">
-        <Breadcrumb items={[
+      <div className="container py-4">
+        <AppBreadcrumb items={[
           { label: locale === 'bg' ? 'Количка' : 'Cart', href: '/cart' },
-          { label: locale === 'bg' ? 'Плащане' : 'Checkout', icon: <CreditCard className="h-3.5 w-3.5" /> }
+          { label: locale === 'bg' ? 'Плащане' : 'Checkout' }
         ]} />
 
         <h1 className="text-2xl sm:text-3xl font-bold mt-4 mb-6">

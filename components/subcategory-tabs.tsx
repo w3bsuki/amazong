@@ -3,8 +3,8 @@
 import { Link } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { ChevronRight } from "lucide-react"
 import { SubcategoryCircles } from "@/components/subcategory-circles"
+import { AppBreadcrumb, type BreadcrumbItemData } from "@/components/app-breadcrumb"
 import { cn } from "@/lib/utils"
 
 interface Category {
@@ -57,45 +57,17 @@ export function SubcategoryTabs({ currentCategory, subcategories, parentCategory
 
   if (!currentCategory) return null
 
+  // Build breadcrumb items dynamically
+  const breadcrumbItems: BreadcrumbItemData[] = [
+    { label: t('allDepartments'), href: "/search" },
+    ...(parentCategory ? [{ label: getCategoryName(parentCategory), href: buildUrl(parentCategory.slug) }] : []),
+    { label: getCategoryName(currentCategory) } // No href = current page
+  ]
+
   return (
     <div className="mb-6">
-      {/* Target-style Breadcrumb - Full width with underlines */}
-      <nav className="w-full border-b border-border py-3 mb-6 overflow-hidden">
-        <ol className="flex items-center gap-1.5 text-sm overflow-x-auto no-scrollbar">
-          <li className="shrink-0">
-            <Link 
-              href="/" 
-              className="text-foreground hover:underline underline-offset-2"
-            >
-              Amazong
-            </Link>
-          </li>
-          <li className="flex items-center gap-1.5 shrink-0">
-            <ChevronRight className="size-3.5 text-muted-foreground/60" />
-            <Link 
-              href="/search" 
-              className="text-foreground hover:underline underline-offset-2"
-            >
-              {t('allDepartments')}
-            </Link>
-          </li>
-          {parentCategory && (
-            <li className="flex items-center gap-1.5 shrink-0">
-              <ChevronRight className="size-3.5 text-muted-foreground/60" />
-              <Link 
-                href={buildUrl(parentCategory.slug)} 
-                className="text-foreground hover:underline underline-offset-2 truncate max-w-[120px]"
-              >
-                {getCategoryName(parentCategory)}
-              </Link>
-            </li>
-          )}
-          <li className="flex items-center gap-1.5 shrink-0 min-w-0">
-            <ChevronRight className="size-3.5 text-muted-foreground/60 shrink-0" />
-            <span className="text-muted-foreground truncate">{getCategoryName(currentCategory)}</span>
-          </li>
-        </ol>
-      </nav>
+      {/* Unified Breadcrumb */}
+      <AppBreadcrumb items={breadcrumbItems} className="mb-6" />
 
       {/* Category Header - Target style */}
       <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">

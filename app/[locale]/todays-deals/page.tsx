@@ -2,10 +2,10 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Star, Percent, ChevronRight, Clock, Zap } from "lucide-react"
+import { Star, Percent, Clock, Zap } from "lucide-react"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 import { useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
-import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 
 // Deal categories with icons for circle filters
@@ -129,15 +129,14 @@ export default function TodaysDealsPage() {
         <div className="min-h-screen bg-background pb-20 sm:pb-12">
             {/* Hero Banner */}
             <div className="bg-linear-to-r from-brand-deal via-brand-deal to-brand-deal/90 text-white py-6 sm:py-10">
-                <div className="container mx-auto max-w-7xl px-3 sm:px-4">
+                <div className="container">
                     {/* Breadcrumb */}
-                    <nav className="flex items-center gap-1.5 text-sm text-white/70 mb-4">
-                        <Link href="/" className="hover:text-white transition-colors">
-                            {locale === "bg" ? "Начало" : "Home"}
-                        </Link>
-                        <ChevronRight className="size-3.5" />
-                        <span className="text-white">{t('title')}</span>
-                    </nav>
+                    <div className="[&_nav]:border-white/20 [&_nav]:mb-2 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+                        <AppBreadcrumb 
+                            items={breadcrumbPresets.todaysDeals}
+                            homeLabel={locale === "bg" ? "Начало" : "Amazong"}
+                        />
+                    </div>
                     
                     <div className="flex items-center gap-3 mb-2">
                         <div className="size-12 sm:size-14 bg-white/10 rounded-full flex items-center justify-center">
@@ -153,7 +152,7 @@ export default function TodaysDealsPage() {
                 </div>
             </div>
 
-            <div className="container mx-auto max-w-7xl px-3 sm:px-4 -mt-4 sm:-mt-6">
+            <div className="container -mt-4 sm:-mt-6">
                 {/* Category Circles - Filter by deal category */}
                 <div className="bg-card rounded-lg border border-border p-4 mb-4 sm:mb-6">
                     <h2 className="text-sm font-semibold text-foreground mb-3">

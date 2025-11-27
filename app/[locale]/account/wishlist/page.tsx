@@ -30,8 +30,8 @@ export default function WishlistPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-secondary py-6 px-4">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-secondary py-6">
+        <div className="container">
           <div className="animate-pulse">
             <div className="h-8 bg-muted rounded w-48 mb-6"></div>
             <div className="space-y-4">
@@ -47,8 +47,8 @@ export default function WishlistPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-secondary py-6 px-4">
-        <div className="max-w-4xl mx-auto">
+      <div className="min-h-screen bg-secondary py-6">
+        <div className="container">
           <h1 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
             <Heart className="h-6 w-6" />
             {t("title")}
@@ -77,8 +77,8 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-secondary py-6 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-secondary py-6">
+      <div className="container">
         <h1 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
           <Heart className="h-6 w-6 text-brand-deal" />
           {t("title")} ({items.length})

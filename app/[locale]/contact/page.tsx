@@ -1,12 +1,12 @@
 import { getTranslations } from "next-intl/server"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { 
-  Mail, Phone, MapPin, Clock, MessageSquare, 
+  Mail, Phone, MapPin, Clock, 
   Headphones, Package, CreditCard, HelpCircle,
   ChevronRight, Send, ShieldCheck
 } from "lucide-react"
@@ -25,11 +25,10 @@ export default async function ContactPage() {
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
       {/* Hero Section */}
       <div className="bg-header-bg text-white">
-        <div className="container mx-auto max-w-7xl px-4 py-10 md:py-16">
-          <Breadcrumb 
-            items={[{ label: t('title'), icon: <MessageSquare className="h-3.5 w-3.5" /> }]} 
-            className="text-white/70 mb-6"
-          />
+        <div className="container py-10 md:py-16">
+          <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+            <AppBreadcrumb items={breadcrumbPresets.contact} />
+          </div>
           <div className="max-w-2xl">
             <h1 className="text-2xl md:text-4xl font-bold mb-3">{t('heroTitle')}</h1>
             <p className="text-white/80 text-lg">{t('heroSubtitle')}</p>
@@ -37,7 +36,7 @@ export default async function ContactPage() {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-7xl px-4 py-8">
+      <div className="container py-8">
         {/* Quick Help Section */}
         <section className="mb-12">
           <h2 className="text-xl font-bold mb-6">{t('quickHelp')}</h2>

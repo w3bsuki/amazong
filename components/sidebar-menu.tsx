@@ -1,7 +1,7 @@
 "use client"
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, UserCircle, ChevronRight, X, Globe, LogIn, User } from "lucide-react"
+import { Menu, UserCircle, ChevronRight, X, Globe, LogIn, User, MapPin, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -158,6 +158,27 @@ export function SidebarMenu() {
                                     </Link>
                                 </div>
                             </div>
+
+                            {/* Delivery Location Toggle - Mobile */}
+                            <div className="mt-3 flex items-center gap-2 p-3 bg-card rounded-md border border-border">
+                                <MapPin className="size-5 text-muted-foreground" />
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] text-muted-foreground">{t('deliverTo')}</span>
+                                    <span className="text-sm font-medium text-foreground">Bulgaria</span>
+                                </div>
+                                <ChevronRight className="ml-auto size-4 text-muted-foreground" />
+                            </div>
+                            
+                            {/* Messages - Mobile */}
+                            <Link
+                                href="/account/messages"
+                                className="mt-3 flex items-center gap-2 p-3 bg-card rounded-md border border-border"
+                                onClick={() => setOpen(false)}
+                            >
+                                <MessageCircle className="size-5 text-muted-foreground" />
+                                <span className="text-sm font-medium text-foreground">{t('messages')}</span>
+                                <ChevronRight className="ml-auto size-4 text-muted-foreground" />
+                            </Link>
                         </div>
 
                         {menuSections.map((section, index) => {

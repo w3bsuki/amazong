@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 import { 
-  Building2, Users, Globe, Heart, Shield, Truck, 
+  Users, Globe, Heart, Shield, Truck, 
   Award, Target, Leaf, Headphones,
   CheckCircle, Star, TrendingUp, Zap, Package
 } from "lucide-react"
@@ -15,11 +15,10 @@ export default async function AboutPage() {
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-header-bg to-header-bg-secondary text-white">
-        <div className="container mx-auto max-w-7xl px-4 py-12 md:py-20">
-          <Breadcrumb 
-            items={[{ label: t('title'), icon: <Building2 className="h-3.5 w-3.5" /> }]} 
-            className="text-white/70 mb-6"
-          />
+        <div className="container py-12 md:py-20">
+          <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
+            <AppBreadcrumb items={breadcrumbPresets.about} />
+          </div>
           <div className="max-w-3xl">
             <h1 className="text-3xl md:text-5xl font-bold mb-4">{t('heroTitle')}</h1>
             <p className="text-lg md:text-xl text-white/80 leading-relaxed">
@@ -29,7 +28,7 @@ export default async function AboutPage() {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="container">
         {/* Mission Section */}
         <section className="py-12 md:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">

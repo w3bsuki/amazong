@@ -1,19 +1,18 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Gift, Search, UserPlus } from "lucide-react"
-import Link from "next/link"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { Gift, UserPlus } from "lucide-react"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 
 export default function RegistryPage() {
     return (
         <div className="min-h-screen bg-background">
-            <div className="container mx-auto max-w-6xl px-4 pt-4">
-                <Breadcrumb items={[{ label: 'Registry & Gift Lists', icon: <Gift className="h-3.5 w-3.5" /> }]} />
+            <div className="container pt-4">
+                <AppBreadcrumb items={breadcrumbPresets.registry} />
             </div>
             
             {/* Hero Section */}
             <div className="relative bg-header-bg text-header-text py-16 px-4">
-                <div className="container mx-auto max-w-6xl flex flex-col md:flex-row items-center justify-between">
+                <div className="container flex flex-col md:flex-row items-center justify-between">
                     <div className="space-y-6 max-w-xl">
                         <h1 className="text-4xl md:text-5xl font-bold">
                             Celebrate every milestone with Amazon Registry
@@ -37,7 +36,7 @@ export default function RegistryPage() {
             </div>
 
             {/* Registry Types */}
-            <div className="container mx-auto max-w-6xl py-12 px-4">
+            <div className="container py-12">
                 <h2 className="text-3xl font-bold text-center mb-12">Whatever you're celebrating, we've got you covered</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <Card className="hover:border-brand transition-colors cursor-pointer border border-border">
@@ -80,7 +79,7 @@ export default function RegistryPage() {
 
             {/* Benefits Section */}
             <div className="bg-muted py-16 px-4">
-                <div className="container mx-auto max-w-6xl">
+                <div className="container">
                     <h2 className="text-3xl font-bold text-center mb-12">Why create a registry on Amazon?</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         <div className="text-center space-y-2">

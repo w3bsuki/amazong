@@ -2,9 +2,9 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
-import { Package, User, CreditCard, Lock, MapPin, MessageSquare, Headphones } from "lucide-react"
+import { Package, CreditCard, Lock, MapPin, MessageSquare, Headphones } from "lucide-react"
 import { getTranslations } from "next-intl/server"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 
 interface AccountPageProps {
   params: Promise<{
@@ -76,8 +76,8 @@ export default async function AccountPage({ params }: AccountPageProps) {
   ]
 
   return (
-    <div className="container mx-auto p-4 max-w-5xl min-h-screen bg-background">
-      <Breadcrumb items={[{ label: t('title'), icon: <User className="h-3.5 w-3.5" /> }]} />
+    <div className="container py-4 min-h-screen bg-background">
+      <AppBreadcrumb items={breadcrumbPresets.account} />
       
       <h1 className="text-3xl font-normal mb-6">{t('title')}</h1>
 

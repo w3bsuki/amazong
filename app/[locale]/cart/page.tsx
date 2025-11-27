@@ -5,9 +5,9 @@ import Link from "next/link"
 import { useCart } from "@/lib/cart-context"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle2, ShoppingCart } from "lucide-react"
+import { CheckCircle2 } from "lucide-react"
 import { createCheckoutSession } from "@/app/actions/checkout"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
@@ -33,8 +33,8 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="container mx-auto p-4 bg-background min-h-screen">
-        <Breadcrumb items={[{ label: 'Shopping Cart', icon: <ShoppingCart className="h-3.5 w-3.5" /> }]} />
+      <div className="container py-4 bg-background min-h-screen">
+        <AppBreadcrumb items={breadcrumbPresets.cart} />
         
         <div className="bg-card p-8 rounded border border-border mt-4">
           <h1 className="text-2xl font-bold mb-4">Your Amazon Cart is empty.</h1>
@@ -52,8 +52,8 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 bg-muted min-h-screen">
-      <Breadcrumb items={[{ label: 'Shopping Cart', icon: <ShoppingCart className="h-3.5 w-3.5" /> }]} />
+    <div className="container py-4 bg-muted min-h-screen">
+      <AppBreadcrumb items={breadcrumbPresets.cart} />
       
       <div className="flex flex-col lg:flex-row gap-6 mt-4">
         {/* Cart Items */}

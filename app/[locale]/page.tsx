@@ -98,7 +98,7 @@ export default async function Home() {
       <HeroCarousel locale={locale} />
 
       {/* Main Content Container - overlaps hero like Amazon */}
-      <div className="w-full max-w-screen-2xl relative z-10 mb-6 px-0 sm:px-3 -mt-6 sm:-mt-28 md:-mt-32">
+      <div className="container relative z-10 mb-6 -mt-6 sm:-mt-28 md:-mt-32">
         
         {/* Category Circles - Horizontal scrollable categories */}
         <div className="mb-2 sm:mb-4">
@@ -106,12 +106,12 @@ export default async function Home() {
         </div>
 
         {/* Daily Deals Banner */}
-        <div className="mb-4 px-3 sm:px-0">
+        <div className="mb-4 px-1 sm:px-0">
           <DailyDealsBanner locale={locale} />
         </div>
 
         {/* Category Grid with Subcategories */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 px-3 sm:px-0">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-4 px-1 sm:px-0">
           {/* Computers Card */}
           <div className="bg-card rounded-lg border border-border p-2.5 sm:p-3">
             <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
@@ -258,7 +258,7 @@ export default async function Home() {
         </div>
 
         {/* Promo Cards Grid - Target Style */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 px-3 sm:px-0 mt-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-3 px-1 sm:px-0 mt-4">
           <PromoCard
             bgImage="https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=800&q=80"
             dealText={locale === "bg" ? "Спести до" : "Save up to"}
@@ -291,7 +291,7 @@ export default async function Home() {
         </div>
 
         {/* Trending Products - Target-Style Tabbed Section */}
-        <div className="mt-4 sm:mt-6 mx-3 sm:mx-0">
+        <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
           <TabbedProductSection
             title={locale === "bg" ? "Открийте популярни продукти" : "Explore trending picks"}
             tabs={[
@@ -323,7 +323,7 @@ export default async function Home() {
         </div>
 
         {/* Deals of the Day - Target Style Tabbed Section */}
-        <div className="mt-4 sm:mt-6 mx-3 sm:mx-0">
+        <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
           <DealsSection
             title={locale === "bg" ? "Оферти на деня" : "Deals of the Day"}
             tabs={[
@@ -354,7 +354,7 @@ export default async function Home() {
         </div>
 
         {/* Featured Categories - Target Style with circular images */}
-        <div className="mt-6 sm:mt-8 px-3 sm:px-0">
+        <div className="mt-6 sm:mt-8 px-1 sm:px-0">
           <div className="bg-card rounded-lg border border-border p-4 sm:p-6">
             {/* Section Header */}
             <div className="flex items-center justify-between mb-4 sm:mb-6">
@@ -427,7 +427,7 @@ export default async function Home() {
         </div>
 
         {/* More Ways to Shop - Horizontal scroll on mobile, Bento grid on desktop */}
-        <div className="mt-4 sm:mt-6 px-3 sm:px-0">
+        <div className="mt-4 sm:mt-6 px-1 sm:px-0">
           {/* Section Title */}
           <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">
             {locale === "bg" ? "Още начини за пазаруване" : "More ways to shop"}
@@ -565,7 +565,7 @@ export default async function Home() {
 
         {/* Sign In CTA - Only for non-logged in users */}
         {!user && (
-          <div className="mt-4 sm:mt-6 px-3 sm:px-0">
+          <div className="mt-4 sm:mt-6 px-1 sm:px-0">
             <div className="bg-linear-to-r from-primary to-primary/90 rounded-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-center sm:text-left">
                 <h3 className="text-lg sm:text-xl font-bold text-primary-foreground mb-1">

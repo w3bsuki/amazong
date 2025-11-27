@@ -5,8 +5,8 @@ import Image from "next/image"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Package } from "lucide-react"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { Search } from "lucide-react"
+import { AppBreadcrumb } from "@/components/app-breadcrumb"
 
 export default async function OrdersPage() {
   const supabase = await createClient()
@@ -32,11 +32,11 @@ export default async function OrdersPage() {
     .order("created_at", { ascending: false })
 
   return (
-    <div className="container mx-auto p-4 max-w-5xl min-h-screen bg-background">
-      <Breadcrumb 
+    <div className="container py-4 min-h-screen bg-background">
+      <AppBreadcrumb 
         items={[
           { label: 'Your Account', href: '/account' },
-          { label: 'Your Orders', icon: <Package className="h-3.5 w-3.5" /> }
+          { label: 'Your Orders' }
         ]} 
       />
 

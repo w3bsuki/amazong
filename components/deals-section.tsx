@@ -167,19 +167,19 @@ export function DealsSection({
 
       {/* Tabs */}
       <Tabs defaultValue={tabs[0]?.id} className="w-full">
-        {/* Tab List - Pill style */}
-        <div className="flex justify-center px-4 pb-2">
-          <TabsList className="bg-white/10 backdrop-blur-sm h-auto p-1 gap-1 rounded-full border border-white/10 overflow-x-auto no-scrollbar flex-nowrap">
+        {/* Tab List - Responsive pills */}
+        <div className="flex justify-center px-3 sm:px-4 pb-2">
+          <TabsList className="bg-white/20 backdrop-blur-sm h-auto p-1 sm:p-1.5 gap-0.5 sm:gap-1 rounded-full border border-white/25 flex flex-wrap justify-center sm:flex-nowrap sm:overflow-x-auto no-scrollbar shadow-lg max-w-full">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
                 className={cn(
-                  "px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-medium rounded-full",
-                  "text-white/90 hover:text-white hover:bg-white/20",
-                  "data-[state=active]:text-brand-deal-text data-[state=active]:bg-white data-[state=active]:font-semibold",
+                  "px-3 sm:px-5 py-2 sm:py-2.5 text-[11px] sm:text-sm font-semibold rounded-full",
+                  "text-white/90 hover:text-white hover:bg-white/25",
+                  "data-[state=active]:text-brand-deal data-[state=active]:bg-white data-[state=active]:shadow-md",
                   "transition-all duration-200",
-                  "whitespace-nowrap min-h-11 touch-action-manipulation"
+                  "whitespace-nowrap min-h-9 sm:min-h-11 touch-action-manipulation"
                 )}
               >
                 {tab.label}

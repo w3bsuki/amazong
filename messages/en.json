@@ -84,6 +84,7 @@
         "messages": "Messages",
         "language": "English",
         "country": "United States",
+        "deliverTo": "Deliver to",
         "customerService": "Customer Service",
         "signIn": "Sign In"
     },
@@ -93,6 +94,10 @@
         "returns": "Returns",
         "orders": "& Orders",
         "cart": "Cart",
+        "messages": "Your",
+        "messagesLabel": "Messages",
+        "inbox": "Inbox",
+        "language": "Language",
         "todaysDeals": "Today's Deals",
         "customerService": "Customer Service",
         "registry": "Registry",
