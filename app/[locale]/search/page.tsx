@@ -249,10 +249,11 @@ export default async function SearchPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="flex flex-col lg:flex-row container px-0!">
-        {/* Sidebar Filters - Hidden on mobile, Trust Blue background */}
-        <aside className="w-64 hidden lg:block shrink-0 border-r border-sidebar-border bg-sidebar">
-          <div className="sticky top-0 p-4 space-y-5 max-h-screen overflow-y-auto">
+      <div className="container">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Sidebar Filters - Hidden on mobile */}
+          <aside className="w-64 hidden lg:block shrink-0">
+            <div className="sticky top-28 pr-4 py-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto border-r border-sidebar-border bg-sidebar">
             <Suspense>
               <SearchFilters 
                 categories={allCategories}
@@ -266,7 +267,7 @@ export default async function SearchPage({
         </aside>
 
         {/* Main Results */}
-        <div className="flex-1 p-4 sm:p-6">
+        <div className="flex-1 py-4 sm:py-6">
           {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
           {currentCategory ? (
             <Suspense>
@@ -426,6 +427,7 @@ export default async function SearchPage({
           )}
         </div>
       </div>
+    </div>
     </div>
   )
 }

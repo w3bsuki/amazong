@@ -168,7 +168,7 @@ async function seed() {
             price: 199.50,
             list_price: 250.00,
             stock: 30,
-            images: ['https://images.unsplash.com/photo-1551028919-ac7bcb7d7162?w=500&q=80'],
+            images: ['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=80'],
             rating: 4.6,
             review_count: 45,
             is_prime: false

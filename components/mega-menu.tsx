@@ -42,7 +42,8 @@ import {
   Trophy,
   Hammer,
   Flower,
-  PaintBrush
+  PaintBrush,
+  Tag
 } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -60,6 +61,8 @@ interface Category {
   image_url?: string | null
   children?: Category[]
 }
+
+
 
 // Map category slugs to Lucide icons - expanded list
 const categoryIconMap: Record<string, React.ReactNode> = {
@@ -292,12 +295,17 @@ function getCategoryIcon(slug: string): React.ReactNode {
 // Maximum visible categories before showing "View more"
 const MAX_VISIBLE_CATEGORIES = 25
 
+// Cache categories globally to prevent refetching
+let categoriesCache: Category[] | null = null
+let categoriesFetching = false
+let categoriesCallbacks: Array<(cats: Category[]) => void> = []
+
 export function MegaMenu() {
   const locale = useLocale()
   const [isOpen, setIsOpen] = useState(false)
-  const [categories, setCategories] = useState<Category[]>([])
+  const [categories, setCategories] = useState<Category[]>(categoriesCache || [])
   const [activeCategory, setActiveCategory] = useState<Category | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(!categoriesCache)
   const [showAllCategories, setShowAllCategories] = useState(false)
   const [headerHeight, setHeaderHeight] = useState(118) // Default fallback
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -317,20 +325,48 @@ export function MegaMenu() {
     return () => window.removeEventListener('resize', updateHeaderHeight)
   }, [])
 
-  // Fetch categories with children
+  // Fetch categories with children - with global caching
   useEffect(() => {
+    // Use cached data if available
+    if (categoriesCache) {
+      setCategories(categoriesCache)
+      if (categoriesCache.length > 0) {
+        setActiveCategory(categoriesCache[0])
+      }
+      setIsLoading(false)
+      return
+    }
+
+    // If already fetching, wait for result
+    if (categoriesFetching) {
+      categoriesCallbacks.push((cats) => {
+        setCategories(cats)
+        if (cats.length > 0) setActiveCategory(cats[0])
+        setIsLoading(false)
+      })
+      return
+    }
+
+    // Fetch and cache
+    categoriesFetching = true
     fetch("/api/categories?children=true")
       .then((res) => res.json())
       .then((data) => {
-        setCategories(data.categories || [])
-        if (data.categories && data.categories.length > 0) {
-          setActiveCategory(data.categories[0])
+        const cats = data.categories || []
+        categoriesCache = cats
+        setCategories(cats)
+        if (cats.length > 0) {
+          setActiveCategory(cats[0])
         }
+        // Notify waiting callbacks
+        categoriesCallbacks.forEach(cb => cb(cats))
+        categoriesCallbacks = []
       })
       .catch((err) => {
         console.error("Failed to fetch categories:", err)
       })
       .finally(() => {
+        categoriesFetching = false
         setIsLoading(false)
       })
   }, [])
@@ -347,11 +383,15 @@ export function MegaMenu() {
       clearTimeout(timeoutRef.current)
     }
     setIsOpen(true)
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = 'hidden'
   }, [])
 
   const handleMouseLeave = useCallback(() => {
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false)
+      // Restore body scroll when menu closes
+      document.body.style.overflow = ''
     }, 150)
   }, [])
 
@@ -359,11 +399,19 @@ export function MegaMenu() {
     setActiveCategory(category)
   }, [])
 
+  // Helper to close menu and restore body scroll
+  const closeMenu = useCallback(() => {
+    setIsOpen(false)
+    document.body.style.overflow = ''
+  }, [])
+
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
+      // Ensure body scroll is restored on unmount
+      document.body.style.overflow = ''
     }
   }, [])
 
@@ -375,36 +423,39 @@ export function MegaMenu() {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Trigger Button */}
+        {/* Trigger Button - uses negative margin to align icon with content edge, no hover bg to avoid overflow */}
         <Button
           variant="ghost"
           className={cn(
-            "flex items-center gap-2 mega-menu-text font-medium px-4 py-2 h-10",
-            "text-header-text hover:text-brand hover:bg-header-text/5",
+            "flex items-center gap-2 mega-menu-text font-normal px-3 py-2.5 h-10 -ml-3",
+            "text-header-text hover:text-brand hover:bg-transparent",
             "rounded-sm",
-            isOpen && "bg-header-text/10 text-brand"
+            isOpen && "text-brand"
           )}
         >
-          <List size={20} weight="regular" className="mega-menu-icon" />
+          <List size={18} weight="bold" />
           <span>{locale === "bg" ? "Всички категории" : "All categories"}</span>
         </Button>
+      </div>
 
-        {/* Mega Menu Panel - Clean styling, positioned below header */}
-        <div
-          className={cn(
-            "fixed left-0 right-0 z-50",
-            "bg-background",
-            "border-b border-border shadow-lg",
-            "transition-all duration-150 ease-out origin-top",
-            isOpen 
-              ? "opacity-100 scale-y-100 pointer-events-auto" 
-              : "opacity-0 scale-y-95 pointer-events-none"
-          )}
-          style={{ top: `${headerHeight}px` }}
-        >
-          <div className="container flex max-h-[calc(100vh-120px)]">
-            {/* Left Sidebar - Clean Categories List with scroll */}
-            <div className="w-64 border-r border-border py-2 shrink-0 overflow-y-auto">
+      {/* Mega Menu Panel - Full width, positioned below header */}
+      <div
+        className={cn(
+          "fixed left-0 right-0 z-50",
+          "bg-background",
+          "border-b border-border",
+          "transition-opacity duration-150 ease-out",
+          isOpen 
+            ? "opacity-100 pointer-events-auto" 
+            : "opacity-0 pointer-events-none"
+        )}
+        style={{ top: `${headerHeight}px` }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="container flex max-h-(--mega-menu-max-height)">
+          {/* Left Sidebar - Clean Categories List with scroll */}
+          <div className="w-64 border-r border-border py-2 shrink-0 overflow-y-auto overscroll-contain">
               {isLoading ? (
                 <div className="px-4 py-12 text-center">
                   <div className="size-5 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin mx-auto" />
@@ -413,7 +464,7 @@ export function MegaMenu() {
                   </p>
                 </div>
               ) : (
-                <nav>
+                <nav className="pb-2">
                   {/* Show categories with dynamic limit */}
                   {(showAllCategories ? categories : categories.slice(0, MAX_VISIBLE_CATEGORIES)).map((category) => {
                     const categoryName = getCategoryName(category)
@@ -431,7 +482,7 @@ export function MegaMenu() {
                             : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                         )}
                         onMouseEnter={() => handleCategoryHover(category)}
-                        onClick={() => setIsOpen(false)}
+                        onClick={closeMenu}
                       >
                         <span className={cn(
                           "shrink-0 transition-colors duration-100",
@@ -468,14 +519,23 @@ export function MegaMenu() {
                   )}
                   
                   {/* See All Categories Link */}
-                  <div className="border-t border-border mt-2 pt-2">
+                  <div className="border-t border-border mt-2 pt-1">
                     <Link
                       href="/categories"
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-2.5 px-3 py-2.5 mega-menu-text font-medium text-brand hover:text-brand/80 hover:bg-accent/50 transition-colors duration-100"
+                      onClick={closeMenu}
+                      className="flex items-center gap-2.5 px-3 py-2 mega-menu-text font-medium text-brand hover:text-brand/80 hover:bg-accent/50 transition-colors duration-100"
                     >
                       <ShoppingBag size={20} weight="regular" />
-                      <span>{locale === "bg" ? "Виж всички категории" : "See All Categories"}</span>
+                      <span>{locale === "bg" ? "Всички категории" : "See All Categories"}</span>
+                      <CaretRight size={16} weight="regular" className="ml-auto" />
+                    </Link>
+                    <Link
+                      href="/deals"
+                      onClick={closeMenu}
+                      className="flex items-center gap-2.5 px-3 py-2 mega-menu-text font-medium text-red-500 hover:text-red-600 hover:bg-accent/50 transition-colors duration-100"
+                    >
+                      <Tag size={20} weight="fill" />
+                      <span>{locale === "bg" ? "Промоции" : "Deals"}</span>
                       <CaretRight size={16} weight="regular" className="ml-auto" />
                     </Link>
                   </div>
@@ -484,54 +544,54 @@ export function MegaMenu() {
             </div>
 
             {/* Right Panel - Subcategories */}
-            <div className="flex-1 p-6 bg-background min-h-[380px] max-h-[calc(100vh-180px)] overflow-y-auto">
+            <div className="flex-1 p-5 bg-background overflow-y-auto overscroll-contain">
               {activeCategory && (
                 <div>
                   {/* Category Header - Simplified */}
-                  <div className="flex items-center justify-between mb-5 pb-3 border-b border-border">
+                  <div className="flex items-center justify-between mb-4 pb-2 border-b border-border">
                     <div className="flex items-center gap-2.5">
                       <span className="text-brand">
                         {getCategoryIcon(activeCategory.slug)}
                       </span>
-                      <h3 className="text-lg font-semibold text-foreground">
+                      <h3 className="text-lg font-medium text-foreground">
                         {getCategoryName(activeCategory)}
                       </h3>
                     </div>
                     <Link
                       href={`/categories/${activeCategory.slug}`}
-                      onClick={() => setIsOpen(false)}
-                      className="mega-menu-text font-medium text-brand hover:text-brand/80 transition-colors flex items-center gap-1"
+                      onClick={closeMenu}
+                      className="mega-menu-text font-normal text-brand hover:text-brand/80 transition-colors flex items-center gap-1"
                     >
                       {locale === "bg" ? "Виж всички" : "Browse all"}
                       <CaretRight size={16} weight="regular" />
                     </Link>
                   </div>
 
-                  {/* Subcategory Cards Grid */}
+                  {/* Subcategory Cards Grid - Large cards */}
                   {activeCategory.children && activeCategory.children.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                      {activeCategory.children.slice(0, 10).map((subcat) => (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                      {activeCategory.children.slice(0, 16).map((subcat) => (
                         <Link
                           key={subcat.id}
                           href={`/search?category=${subcat.slug}`}
-                          onClick={() => setIsOpen(false)}
-                          className="group flex flex-col items-center"
+                          onClick={closeMenu}
+                          className="group flex flex-col items-center gap-2"
                         >
-                          {/* Square Image Card */}
-                          <div className="w-full aspect-square rounded-lg overflow-hidden bg-muted mb-2 ring-1 ring-border/50 group-hover:ring-2 group-hover:ring-brand/50 transition-all duration-150">
+                          {/* Square Image */}
+                          <div className="w-full aspect-square rounded-lg overflow-hidden bg-muted ring-1 ring-border/40 group-hover:ring-brand/60 transition-all duration-150">
                             <Image
                               src={getSubcategoryImage(subcat.slug, subcat.image_url)}
                               alt={getCategoryName(subcat)}
-                              width={140}
-                              height={140}
-                              className="w-full h-full object-cover"
+                              width={200}
+                              height={200}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                               placeholder="blur"
                               blurDataURL={categoryBlurDataURL()}
                               loading="lazy"
                             />
                           </div>
                           {/* Label */}
-                          <span className="mega-menu-text text-center text-muted-foreground group-hover:text-foreground font-medium line-clamp-2 px-1 transition-colors duration-100">
+                          <span className="text-sm text-center text-muted-foreground group-hover:text-foreground font-normal line-clamp-2 leading-tight transition-colors">
                             {getCategoryName(subcat)}
                           </span>
                         </Link>
@@ -547,7 +607,7 @@ export function MegaMenu() {
                       </p>
                       <Link
                         href={`/categories/${activeCategory.slug}`}
-                        onClick={() => setIsOpen(false)}
+                        onClick={closeMenu}
                         className="mt-2 mega-menu-text text-brand hover:text-brand/80 transition-colors"
                       >
                         {locale === "bg" ? "Отиди към категорията" : "Go to category"}
@@ -555,17 +615,17 @@ export function MegaMenu() {
                     </div>
                   )}
 
-                  {/* Show more link if more than 10 subcategories */}
-                  {activeCategory.children && activeCategory.children.length > 10 && (
-                    <div className="mt-5 pt-3 border-t border-border">
+                  {/* Show more link if more than 16 subcategories */}
+                  {activeCategory.children && activeCategory.children.length > 16 && (
+                    <div className="mt-4 pt-2 border-t border-border">
                       <Link
                         href={`/categories/${activeCategory.slug}`}
-                        onClick={() => setIsOpen(false)}
-                        className="inline-flex items-center gap-1 mega-menu-text font-medium text-brand hover:text-brand/80 transition-colors"
+                        onClick={closeMenu}
+                        className="inline-flex items-center gap-1 mega-menu-text font-normal text-brand hover:text-brand/80 transition-colors"
                       >
                         {locale === "bg" 
-                          ? `Виж всички ${activeCategory.children.length} подкатегории` 
-                          : `View all ${activeCategory.children.length} subcategories`}
+                          ? `Виж всички ${activeCategory.children.length}` 
+                          : `View all ${activeCategory.children.length}`}
                         <CaretRight size={16} weight="regular" />
                       </Link>
                     </div>
@@ -575,7 +635,6 @@ export function MegaMenu() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Backdrop overlay - Subtle */}
       <div 
@@ -584,7 +643,7 @@ export function MegaMenu() {
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
         style={{ top: `${headerHeight}px` }}
-        onClick={() => setIsOpen(false)}
+        onClick={closeMenu}
         aria-hidden="true"
       />
     </>

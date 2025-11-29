@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/hover-card"
 
 const locales = [
-    { code: 'bg', name: 'Български', flag: '🇧🇬' },
-    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'bg', name: 'Български', flag: 'https://flagcdn.com/w40/bg.png' },
+    { code: 'en', name: 'English', flag: 'https://flagcdn.com/w40/gb.png' },
 ] as const
 
 export function LanguageSwitcher() {
@@ -34,10 +34,19 @@ export function LanguageSwitcher() {
                     className="h-12 flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group"
                 >
                     <span className="text-[10px] text-header-text-muted group-hover:text-brand">{t('language')}</span>
-                    <span className="text-sm font-bold mt-0.5">{currentLocale.name}</span>
+                    <span className="text-sm font-bold mt-0.5 flex items-center gap-1.5">
+                        <span>{currentLocale.code === 'bg' ? 'BG' : 'EN'}</span>
+                        <img 
+                            src={currentLocale.flag} 
+                            alt={currentLocale.name} 
+                            width={20} 
+                            height={14} 
+                            className="rounded-sm"
+                        />
+                    </span>
                 </Button>
             </HoverCardTrigger>
-            <HoverCardContent align="start" sideOffset={8} className="w-44 p-1 bg-popover text-popover-foreground border-none shadow-xl rounded-sm">
+            <HoverCardContent align="start" sideOffset={8} className="w-44 p-1 bg-popover text-popover-foreground border border-border rounded-sm">
                 {locales.map((loc) => (
                     <button
                         key={loc.code}
@@ -48,7 +57,13 @@ export function LanguageSwitcher() {
                                 : 'text-foreground hover:bg-muted'
                         }`}
                     >
-                        <span>{loc.flag}</span>
+                        <img 
+                            src={loc.flag} 
+                            alt={loc.name} 
+                            width={20} 
+                            height={14} 
+                            className="rounded-sm"
+                        />
                         <span>{loc.name}</span>
                         {loc.code === locale && (
                             <span className="ml-auto text-verified">✓</span>

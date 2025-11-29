@@ -210,15 +210,54 @@ export function BrandCircles({ locale = "en" }: BrandCirclesProps) {
       // Desktop: Card styling with rounded corners
       "sm:py-5 sm:border sm:border-border sm:rounded-md"
     )}>
-      <h2 className={cn(
-        "font-bold text-foreground mb-3",
-        // Mobile: Clean styling
-        "text-base px-4",
-        // Desktop: Larger with proper padding
-        "sm:text-lg sm:mb-4 sm:px-5"
-      )}>
-        {locale === "bg" ? "Популярни марки" : "Popular Brands"}
-      </h2>
+      {/* Header with title, scroll buttons, and See more link */}
+      <div className="flex items-center justify-between mb-3 sm:mb-4 px-4 sm:px-5">
+        <div className="flex items-center gap-3">
+          <h2 className="font-bold text-foreground text-base sm:text-lg">
+            {locale === "bg" ? "Популярни марки" : "Popular Brands"}
+          </h2>
+          {/* See all - Desktop: next to title */}
+          <Link 
+            href="/brands" 
+            className="hidden sm:flex text-brand-blue hover:underline text-sm font-medium items-center gap-0.5"
+          >
+            {locale === "bg" ? "Виж всички" : "See all"}
+          </Link>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* Scroll buttons - Desktop only */}
+          <div className="hidden sm:flex items-center gap-1">
+            <button
+              onClick={() => scroll("left")}
+              className={cn(
+                "size-8 flex items-center justify-center rounded-full border border-border bg-white hover:bg-muted",
+                !canScrollLeft && "opacity-40 pointer-events-none"
+              )}
+              aria-label="Scroll left"
+            >
+              <CaretLeft size={16} weight="regular" className="text-foreground" />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              className={cn(
+                "size-8 flex items-center justify-center rounded-full border border-border bg-white hover:bg-muted",
+                !canScrollRight && "opacity-40 pointer-events-none"
+              )}
+              aria-label="Scroll right"
+            >
+              <CaretRight size={16} weight="regular" className="text-foreground" />
+            </button>
+          </div>
+          {/* See all - Mobile only */}
+          <Link 
+            href="/brands" 
+            className="sm:hidden text-brand-blue hover:underline text-xs font-medium flex items-center gap-0.5"
+          >
+            {locale === "bg" ? "Виж всички" : "See all"}
+            <CaretRight size={14} weight="regular" />
+          </Link>
+        </div>
+      </div>
       
       {/* Scrollable Container */}
       <div
@@ -237,8 +276,7 @@ export function BrandCircles({ locale = "en" }: BrandCirclesProps) {
             key={brand.slug}
             href={`/search?brand=${brand.slug}`}
             className={cn(
-              "flex flex-col items-center gap-1.5 sm:gap-2.5 min-w-[76px] sm:min-w-[90px] md:min-w-[100px] group snap-start shrink-0",
-              "touch-action-manipulation active:scale-95 transition-transform",
+              "flex flex-col items-center gap-1.5 sm:gap-2 min-w-[72px] sm:min-w-[88px] md:min-w-[96px] group snap-start shrink-0",
               // Add right padding to last item
               index === brands.length - 1 && "mr-4 sm:mr-5"
             )}
@@ -247,10 +285,10 @@ export function BrandCircles({ locale = "en" }: BrandCirclesProps) {
             <div
               className={cn(
                 "rounded-full flex items-center justify-center p-3 sm:p-4",
-                // Mobile: 72px for proper touch target
-                "size-[72px] bg-white border border-border",
+                // Mobile: Clean circle
+                "size-16 bg-white border border-border",
                 // Desktop: Larger
-                "sm:size-20 md:size-24"
+                "sm:size-20 md:size-[88px]"
               )}
             >
               <img 
@@ -273,44 +311,14 @@ export function BrandCircles({ locale = "en" }: BrandCirclesProps) {
               // Mobile: Compact text
               "text-[11px] text-muted-foreground max-w-[72px]",
               // Desktop: Standard sizing with hover underline
-              "sm:text-xs md:text-sm sm:text-foreground sm:max-w-[90px] md:max-w-[100px]",
-              "group-hover:text-primary group-hover:underline"
+              "sm:text-xs md:text-sm sm:text-foreground sm:max-w-[88px] md:max-w-[96px]",
+              "group-hover:text-link group-hover:underline"
             )}>
               {brand.name}
             </span>
           </Link>
         ))}
       </div>
-
-      {/* Left Arrow - Desktop only */}
-      <button
-        onClick={() => scroll("left")}
-        className={cn(
-          "absolute left-1 top-1/2 -translate-y-1/2 z-10",
-          "size-11 bg-white hover:bg-muted rounded-full border border-border shadow-sm",
-          "flex items-center justify-center",
-          "hidden sm:flex",
-          !canScrollLeft && "opacity-0 pointer-events-none"
-        )}
-        aria-label="Scroll left"
-      >
-        <CaretLeft size={20} weight="regular" className="text-muted-foreground" />
-      </button>
-
-      {/* Right Arrow - Desktop only */}
-      <button
-        onClick={() => scroll("right")}
-        className={cn(
-          "absolute right-1 top-1/2 -translate-y-1/2 z-10",
-          "size-11 bg-white hover:bg-muted rounded-full border border-border shadow-sm",
-          "flex items-center justify-center",
-          "hidden sm:flex",
-          !canScrollRight && "opacity-0 pointer-events-none"
-        )}
-        aria-label="Scroll right"
-      >
-        <CaretRight size={20} weight="regular" className="text-muted-foreground" />
-      </button>
 
       {/* Mobile scroll indicator - subtle fade */}
       <div 

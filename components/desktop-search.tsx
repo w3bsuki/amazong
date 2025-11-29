@@ -164,13 +164,13 @@ export function DesktopSearch() {
   }
 
   return (
-    <div className="flex-1 flex items-center mx-4 h-11">
+    <div className="w-full h-11">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverAnchor asChild>
           <form 
             ref={formRef}
             onSubmit={handleSearch}
-            className="flex h-full w-full rounded-md overflow-visible bg-white border border-border focus-within:ring-2 focus-within:ring-brand focus-within:border-brand shadow-sm hover:shadow-md"
+            className="flex h-full w-full rounded-md overflow-visible bg-white border border-border focus-within:ring-2 focus-within:ring-brand focus-within:border-brand"
           >
             {/* Search Input */}
             <div className="relative flex-1 flex items-center">
@@ -216,7 +216,7 @@ export function DesktopSearch() {
         </PopoverAnchor>
 
         <PopoverContent
-          className="p-0 shadow-xl border-border rounded-lg overflow-hidden"
+          className="p-0 border border-border rounded-lg overflow-hidden"
           style={{ width: popoverWidth }}
           align="start"
           sideOffset={4}

@@ -50,35 +50,35 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
 
   return (
     <Link href={`/product/${id}`} className="block h-full group">
-      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col border border-border hover:border-link">
+      <div className="bg-card rounded-md overflow-hidden h-full flex flex-col border border-border">
         {/* Square Image Container - Fixed aspect ratio */}
-        <div className="relative w-full aspect-square bg-secondary p-4 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full aspect-square bg-secondary p-3 flex items-center justify-center overflow-hidden">
           <div className="relative w-full h-full">
             <Image
               src={image || "/placeholder.svg"}
               alt={title}
               fill
-              className="object-contain mix-blend-multiply"
+              className="object-contain"
               sizes="180px"
             />
           </div>
         </div>
 
         {/* Content - Clean and compact */}
-        <div className="p-3 flex-1 flex flex-col bg-white">
+        <div className="p-2.5 flex-1 flex flex-col">
           {/* Title - 2 lines max */}
-          <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-link">
+          <h3 className="text-xs sm:text-sm font-normal text-foreground line-clamp-2 mb-1.5 leading-snug min-h-9 group-hover:underline">
             {title}
           </h3>
 
           {/* Rating - Clean compact style */}
           {reviews > 0 && (
-            <div className="flex items-center gap-1.5 mb-2">
+            <div className="flex items-center gap-1.5 mb-1.5">
               <div className="flex text-rating">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    size={12}
+                    size={11}
                     weight={i < Math.floor(rating) ? "fill" : "regular"}
                     className={cn(
                       i < Math.floor(rating) ? "" : "text-rating-empty"
@@ -92,7 +92,7 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
 
           {/* Price - Prominent */}
           <div className="mt-auto pt-1">
-            <span className="text-base sm:text-lg font-bold text-foreground">{formatPrice(price)}</span>
+            <span className="text-sm sm:text-base font-medium text-foreground">{formatPrice(price)}</span>
             <div className="text-[10px] text-muted-foreground mt-0.5">
               {t('delivery')} {formattedDate}
             </div>
@@ -132,25 +132,31 @@ export function TabbedProductSection({
     }
   }
 
-  // Background color variants - using theme colors
-  // Featured uses dark header-bg, Deals uses RED
+  // Background color variants - Clean eBay-style
+  // Featured/Default use clean white card, Deals uses RED
   const bgStyles = {
-    default: "bg-linear-to-b from-header-bg to-header-bg-secondary",
-    featured: "bg-linear-to-b from-header-bg to-header-bg-secondary",
+    default: "bg-card border border-border",
+    featured: "bg-card border border-border",
     deals: "bg-deal",
   }
 
   return (
     <div className={cn("rounded-md overflow-hidden", bgStyles[variant])}>
-      {/* Header Section - Target style centered */}
-      <div className="text-center pt-6 sm:pt-8 pb-3 sm:pb-4 px-4">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1.5 tracking-tight">
+      {/* Header Section - eBay style clean */}
+      <div className="text-center pt-5 sm:pt-6 pb-3 sm:pb-4 px-4">
+        <h2 className={cn(
+          "text-lg sm:text-xl md:text-2xl font-semibold mb-1.5 tracking-tight",
+          variant === "deals" ? "text-white" : "text-foreground"
+        )}>
           {title}
         </h2>
         {ctaText && ctaHref && (
           <Link 
             href={ctaHref} 
-            className="text-white/70 hover:text-white text-xs sm:text-sm underline underline-offset-4 inline-flex items-center gap-1"
+            className={cn(
+              "text-xs sm:text-sm font-normal hover:underline underline-offset-4 inline-flex items-center gap-1",
+              variant === "deals" ? "text-white/80 hover:text-white" : "text-brand-blue hover:text-brand-blue-dark"
+            )}
           >
             {ctaText}
             <CaretRight size={12} weight="regular" />
@@ -160,20 +166,24 @@ export function TabbedProductSection({
 
       {/* Tabs */}
       <Tabs defaultValue={tabs[0]?.id} className="w-full">
-        {/* Tab List - Responsive pills */}
+        {/* Tab List - Clean eBay-style pills */}
         <div className="flex justify-center px-3 sm:px-4 pb-2">
-          <TabsList className="bg-white/15 backdrop-blur-sm h-auto p-1 sm:p-1.5 gap-0.5 sm:gap-1 rounded-full border border-white/20 flex flex-wrap justify-center sm:flex-nowrap sm:overflow-x-auto no-scrollbar shadow-lg max-w-full">
+          <TabsList className={cn(
+            "h-auto p-1 gap-0.5 sm:gap-1 rounded-full flex flex-wrap justify-center sm:flex-nowrap sm:overflow-x-auto no-scrollbar max-w-full",
+            variant === "deals" 
+              ? "bg-white/20 border border-white/25" 
+              : "bg-muted border border-border"
+          )}>
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
                 className={cn(
-                  "px-3 sm:px-5 py-2 sm:py-2.5 text-[11px] sm:text-sm font-semibold rounded-full",
-                  "text-white/80 hover:text-white hover:bg-white/20",
+                  "px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-normal rounded-full",
                   variant === "deals" 
-                    ? "data-[state=active]:text-deal data-[state=active]:bg-white data-[state=active]:shadow-md"
-                    : "data-[state=active]:text-header-bg data-[state=active]:bg-white data-[state=active]:shadow-md",
-                  "whitespace-nowrap min-h-9 sm:min-h-11 touch-action-manipulation"
+                    ? "text-white/80 hover:text-white hover:bg-white/20 data-[state=active]:text-deal data-[state=active]:bg-white"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
+                  "whitespace-nowrap min-h-8 sm:min-h-10"
                 )}
               >
                 {tab.label}
@@ -187,7 +197,7 @@ export function TabbedProductSection({
           <TabsContent 
             key={tab.id} 
             value={tab.id} 
-            className="mt-0 pt-4 sm:pt-5 pb-6 sm:pb-8"
+            className="mt-0 pt-3 sm:pt-4 pb-4 sm:pb-6"
           >
             <div className="relative">
               {/* Scroll Buttons - Cleaner design */}

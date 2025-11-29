@@ -86,8 +86,8 @@
     "Navigation": {
         "deliverTo": "Deliver to",
         "searchPlaceholder": "Search products, brands, and more...",
-        "returns": "Returns",
-        "orders": "& Orders",
+        "yourOrders": "Your",
+        "ordersLabel": "Orders",
         "cart": "Cart",
         "messages": "Your",
         "messagesLabel": "Messages",
@@ -97,7 +97,8 @@
         "customerService": "Customer Service",
         "registry": "Registry",
         "giftCards": "Gift Cards",
-        "sell": "Sell"
+        "sell": "Selling",
+        "startSelling": "Your"
     },
     "Home": {
         "title": "Welcome to Amazon",
@@ -508,14 +509,28 @@
         "viewAllMessages": "View All Messages"
     },
     "ReturnsDropdown": {
-        "title": "Returns & Orders",
+        "title": "Your Orders",
         "trackOrders": "Track your orders",
         "trackOrdersDesc": "See order status and delivery updates",
         "startReturn": "Start a return",
         "startReturnDesc": "Return items for a refund",
         "deliveryHelp": "Delivery help",
         "deliveryHelpDesc": "Get help with delivery issues",
-        "signInToSee": "Sign in to see your orders"
+        "signInToSee": "Sign in to see your orders",
+        "viewAllOrders": "View All Orders"
+    },
+    "SellingDropdown": {
+        "title": "Your Selling",
+        "createListing": "Create a Listing",
+        "createListingDesc": "List an item for sale",
+        "myListings": "My Listings",
+        "myListingsDesc": "View and manage your active listings",
+        "sellerOrders": "Seller Orders",
+        "sellerOrdersDesc": "Orders from your buyers",
+        "dashboard": "Seller Dashboard",
+        "dashboardDesc": "Sales analytics and insights",
+        "signInToSell": "Sign in to start selling",
+        "viewAllListings": "View All Listings"
     },
     "LocationDropdown": {
         "chooseLocation": "Choose your location",

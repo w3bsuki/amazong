@@ -154,29 +154,29 @@ export default async function Home() {
               {locale === "bg" ? "Компютри" : "Computers"}
             </h3>
             <div className="grid grid-cols-2 gap-2">
-              <Link href="/search?category=laptops" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=laptops" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&q=80" alt="Laptops" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Лаптопи" : "Laptops"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Лаптопи" : "Laptops"}</span>
               </Link>
-              <Link href="/search?category=desktops" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=desktops" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1593062096033-9a26b09da705?w=300&q=80" alt="Desktops" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Настолни" : "Desktops"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Настолни" : "Desktops"}</span>
               </Link>
-              <Link href="/search?category=monitors" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=monitors" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300&q=80" alt="Monitors" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Монитори" : "Monitors"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Монитори" : "Monitors"}</span>
               </Link>
-              <Link href="/search?category=accessories" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=accessories" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1625723044792-44de16ccb4e9?w=300&q=80" alt="Accessories" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Аксесоари" : "Accessories"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Аксесоари" : "Accessories"}</span>
               </Link>
             </div>
             <Link href="/search?category=computers" className="text-brand-blue hover:underline text-xs mt-2.5 min-h-10 flex items-center font-medium">
@@ -190,29 +190,29 @@ export default async function Home() {
               {locale === "bg" ? "Дом и кухня" : "Home"}
             </h3>
             <div className="grid grid-cols-2 gap-2">
-              <Link href="/search?category=kitchen" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=kitchen" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&q=80" alt="Kitchen" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Кухня" : "Kitchen"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Кухня" : "Kitchen"}</span>
               </Link>
-              <Link href="/search?category=furniture" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=furniture" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&q=80" alt="Furniture" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Мебели" : "Furniture"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Мебели" : "Furniture"}</span>
               </Link>
-              <Link href="/search?category=bedding" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=bedding" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=300&q=80" alt="Bedding" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Спално бельо" : "Bedding"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Спално бельо" : "Bedding"}</span>
               </Link>
-              <Link href="/search?category=decor" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=decor" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300&q=80" alt="Decor" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Декорация" : "Decor"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Декорация" : "Decor"}</span>
               </Link>
             </div>
             <Link href="/search?category=home" className="text-brand-blue hover:underline text-xs mt-2.5 min-h-10 flex items-center font-medium">
@@ -226,29 +226,29 @@ export default async function Home() {
               {locale === "bg" ? "Мода" : "Fashion"}
             </h3>
             <div className="grid grid-cols-2 gap-2">
-              <Link href="/search?category=women" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=women" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=300&q=80" alt="Women" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Дамски" : "Women"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Дамски" : "Women"}</span>
               </Link>
-              <Link href="/search?category=men" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=men" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=300&q=80" alt="Men" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Мъжки" : "Men"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Мъжки" : "Men"}</span>
               </Link>
-              <Link href="/search?category=shoes" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=shoes" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&q=80" alt="Shoes" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Обувки" : "Shoes"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Обувки" : "Shoes"}</span>
               </Link>
-              <Link href="/search?category=bags" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=bags" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=300&q=80" alt="Bags" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Чанти" : "Bags"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Чанти" : "Bags"}</span>
               </Link>
             </div>
             <Link href="/search?category=fashion" className="text-brand-blue hover:underline text-xs mt-2.5 min-h-10 flex items-center font-medium">
@@ -262,29 +262,29 @@ export default async function Home() {
               {locale === "bg" ? "Красота" : "Beauty"}
             </h3>
             <div className="grid grid-cols-2 gap-2">
-              <Link href="/search?category=skincare" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=skincare" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=300&q=80" alt="Skincare" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Грижа" : "Skincare"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Грижа" : "Skincare"}</span>
               </Link>
-              <Link href="/search?category=makeup" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=makeup" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=300&q=80" alt="Makeup" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Грим" : "Makeup"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Грим" : "Makeup"}</span>
               </Link>
-              <Link href="/search?category=haircare" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=haircare" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&q=80" alt="Haircare" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Коса" : "Haircare"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Коса" : "Haircare"}</span>
               </Link>
-              <Link href="/search?category=fragrance" className="group touch-action-manipulation active:scale-95 transition-transform">
+              <Link href="/search?category=fragrance" className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
                   <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&q=80" alt="Fragrance" className="size-full object-cover" />
                 </div>
-                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-primary block mt-1.5 font-medium">{locale === "bg" ? "Парфюми" : "Fragrance"}</span>
+                <span className="text-[11px] sm:text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Парфюми" : "Fragrance"}</span>
               </Link>
             </div>
             <Link href="/search?category=beauty" className="text-brand-blue hover:underline text-xs mt-2.5 min-h-10 flex items-center font-medium">
@@ -433,7 +433,7 @@ export default async function Home() {
                   className="group flex flex-col items-center gap-1.5 sm:gap-2"
                 >
                   <div className={cn(
-                    "relative size-14 sm:size-16 md:size-20 rounded-full overflow-hidden flex items-center justify-center",
+                    "relative size-14 sm:size-16 md:size-20 rounded-full flex items-center justify-center",
                     cat.highlight ? "bg-deal-light" : "bg-secondary"
                   )}>
                     <cat.icon className={cn(
@@ -444,7 +444,7 @@ export default async function Home() {
                   <span className={cn(
                     "text-[10px] sm:text-xs font-medium text-center line-clamp-1",
                     cat.highlight ? "text-deal" : "text-foreground",
-                    "group-hover:text-primary group-hover:underline"
+                    "group-hover:text-link group-hover:underline"
                   )}>
                     {cat.name}
                   </span>
@@ -594,7 +594,7 @@ export default async function Home() {
         {/* Sign In CTA - Only for non-logged in users */}
         {!user && (
           <div className="mt-4 sm:mt-6 px-1 sm:px-0">
-            <div className="bg-linear-to-r from-primary to-primary/90 rounded-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="bg-primary rounded-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-center sm:text-left">
                 <h3 className="text-lg sm:text-xl font-bold text-primary-foreground mb-1">
                   {locale === "bg" ? "Влез в акаунта си" : "Sign in for the best experience"}
@@ -604,7 +604,7 @@ export default async function Home() {
                 </p>
               </div>
               <Link href="/auth/login">
-                <Button className="min-h-12 px-8 bg-white hover:bg-muted text-primary text-sm font-semibold rounded-full touch-action-manipulation active:scale-95 transition-transform">
+                <Button className="min-h-11 px-6 bg-white hover:bg-muted text-primary text-sm font-semibold rounded-full">
                   {t('sections.signInSecurely')}
                 </Button>
               </Link>

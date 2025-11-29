@@ -70,7 +70,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
   }, [api])
 
   return (
-    <div className="relative w-full container-bleed group overflow-hidden hero-carousel">
+    <div className="relative w-full container group overflow-hidden hero-carousel">
       <Carousel
         plugins={[plugin.current]}
         className="w-full"
@@ -113,14 +113,14 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
                 {/* Text Content - centered on mobile, left-positioned on desktop */}
                 <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-4 sm:px-0 sm:translate-y-0 sm:top-8 md:top-12 lg:top-16 sm:left-16 md:left-20 lg:left-24 z-10 flex flex-col items-center sm:items-start text-center sm:text-left">
                   {/* Title */}
-                  <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-3 drop-shadow-lg leading-tight">
+                  <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-semibold text-white mb-2 md:mb-3 leading-tight">
                     {slide.title}
                   </h2>
                   
                   {/* CTA Button */}
                   <Link 
                     href={slide.link}
-                    className={`inline-flex items-center gap-1 sm:gap-2 ${slide.accent} hover:brightness-110 text-white font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded text-xs sm:text-sm tap-transparent active-scale`}
+                    className={`inline-flex items-center gap-1 sm:gap-2 ${slide.accent} hover:brightness-110 text-white font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-sm text-xs sm:text-sm tap-transparent`}
                   >
                     {slide.cta}
                     <CaretRight size={14} weight="regular" className="sm:size-4" />

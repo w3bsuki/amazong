@@ -1,8 +1,9 @@
 "use client"
 
-import { AccountDropdown, CartDropdown, ReturnsOrdersDropdown, LocationDropdown, MessagesDropdown } from "@/components/header-dropdowns"
+import { AccountDropdown, CartDropdown, OrdersDropdown, SellingDropdown, LocationDropdown, MessagesDropdown } from "@/components/header-dropdowns"
 import { SidebarMenu } from "@/components/sidebar-menu"
 import { MegaMenu } from "@/components/mega-menu"
+import { CategorySubheader } from "@/components/category-subheader"
 import { MobileSearchV2 } from "@/components/mobile-search-v2"
 import { MobileCartDropdown } from "@/components/mobile-cart-dropdown"
 import { DesktopSearch } from "@/components/desktop-search"
@@ -41,7 +42,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
       <div className="md:hidden bg-header-bg text-header-text px-2 py-2 flex items-center">
         <SidebarMenu user={user} />
         <Link href="/" className="flex items-center gap-0.5 shrink-0">
-          <span className="text-lg font-bold tracking-tight">AMZN</span>
+          <span className="text-lg font-semibold tracking-tight text-foreground">AMZN</span>
           <div className="size-1.5 bg-brand rounded-full"></div>
         </Link>
         <div className="flex-1" />
@@ -51,86 +52,89 @@ export function SiteHeader({ user }: SiteHeaderProps) {
         </div>
       </div>
 
-      {/* Desktop Top Header */}
+      {/* Desktop Top Header - Light/White like eBay */}
       <div className="hidden md:block text-header-text">
-        <div className="flex items-center h-14 md:h-16 px-2 md:px-4 gap-1 md:gap-3">
-          {/* Mobile: Hamburger Menu */}
-          <div className="md:hidden shrink-0">
-            <SidebarMenu user={user} />
-          </div>
-
-          {/* Logo - Prefetch homepage on hover */}
-          <Link href="/" prefetch={true} className="flex items-center gap-0.5 md:gap-1.5 shrink-0 hover:opacity-90 outline-none focus:ring-2 focus:ring-header-text/20 rounded-md px-1.5 md:px-2 py-1 min-h-11">
-            <span className="text-lg md:text-2xl font-bold tracking-tight">AMZN</span>
+        <div className="container flex items-center h-14 md:h-16 gap-3">
+          {/* Logo - Dark text on light background */}
+          <Link href="/" prefetch={true} className="flex items-center gap-0.5 md:gap-1 shrink-0 hover:opacity-80 outline-none focus:ring-2 focus:ring-brand/30 rounded-sm py-1 min-h-11">
+            <span className="text-lg md:text-2xl font-semibold tracking-tight text-foreground">AMZN</span>
             <div className="size-1.5 md:size-2 bg-brand rounded-full mt-0.5 md:mt-1"></div>
           </Link>
 
-          {/* Deliver to - LEFT side before search */}
+          {/* Deliver to */}
           <LocationDropdown country={country} />
 
-          {/* Language Switcher - LEFT of search bar */}
+          {/* Language Switcher */}
           <div className="hidden md:block">
             <LanguageSwitcher />
           </div>
 
-          {/* Search Bar - Desktop only - TAKES ALL AVAILABLE SPACE */}
-          <div className="hidden md:flex flex-1">
-            <DesktopSearch />
+          {/* Account Dropdown - LEFT of search bar */}
+          <div className="hidden md:block">
+            <AccountDropdown user={user} />
+          </div>
+
+          {/* Search Bar - Desktop only - CENTERED, TAKES REMAINING SPACE */}
+          <div className="hidden md:flex flex-1 justify-center">
+            <div className="w-full max-w-2xl">
+              <DesktopSearch />
+            </div>
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-1 md:gap-1 shrink-0 ml-auto md:ml-0">
-            {/* Account Dropdown - Hidden on mobile */}
-            <div className="hidden md:block">
-              <AccountDropdown user={user} />
-            </div>
-
-            {/* Returns & Orders - With Dropdown - Hidden on mobile */}
+          <div className="flex items-center gap-1 shrink-0">
+            {/* Orders - With Dropdown */}
             <div className="hidden lg:block">
-              <ReturnsOrdersDropdown user={user} />
+              <OrdersDropdown user={user} />
             </div>
 
-            {/* Messages - With Dropdown - Hidden on mobile */}
+            {/* Selling - With Dropdown */}
+            <div className="hidden lg:block">
+              <SellingDropdown user={user} />
+            </div>
+
+            {/* Messages - With Dropdown */}
             <div className="hidden md:block">
               <MessagesDropdown user={user} />
-            </div>
-
-            {/* Mobile Search - Next to cart on mobile */}
-            <div className="md:hidden">
-              <MobileSearchV2 />
             </div>
 
             {/* Cart - With Dropdown on Desktop */}
             <div className="hidden md:block">
               <CartDropdown />
             </div>
-            
-            {/* Cart - With Sheet Dropdown on Mobile */}
-            <div className="md:hidden">
-              <MobileCartDropdown />
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Navigation - Hidden on mobile (use tab bar), visible on tablet+ */}
-      <nav className="hidden sm:block bg-header-bg-secondary text-sm py-1.5 px-4 border-t border-header-border relative">
-        <div className="flex items-center gap-1 whitespace-nowrap text-header-text-muted">
+      {/* Category Subheader - eBay style with mega menus */}
+      <nav className="hidden sm:block bg-subheader-bg text-sm border-t border-header-border relative">
+        <div className="container flex items-center text-subheader-text">
           {/* Mobile/Tablet: Sidebar Menu (Sheet) */}
-          <div className="md:hidden">
+          <div className="md:hidden shrink-0">
             <SidebarMenu user={user} />
           </div>
           
-          {/* Desktop: Mega Menu (Hover) */}
-          <div className="hidden md:block">
+          {/* Desktop: All Categories Mega Menu (Hover) */}
+          <div className="hidden md:block shrink-0">
             <MegaMenu />
           </div>
+
+          {/* Separator */}
+          <div className="hidden md:block w-px h-5 bg-border/60 mx-1 shrink-0" />
           
-          <Link href="/todays-deals" prefetch={true} className="hover:text-brand hover:underline min-h-10 px-3 flex items-center rounded-md">{t('todaysDeals')}</Link>
-          <Link href="/customer-service" className="hover:text-brand hover:underline min-h-10 px-3 flex items-center rounded-md">{t('customerService')}</Link>
-          <Link href="/registry" className="hover:text-brand hover:underline min-h-10 px-3 flex items-center rounded-md">{t('registry')}</Link>
-          <Link href="/gift-cards" className="hover:text-brand hover:underline min-h-10 px-3 flex items-center rounded-md">{t('giftCards')}</Link>
-          <Link href="/sell" className="font-medium text-brand hover:text-brand-light hover:underline min-h-10 px-3 flex items-center rounded-md">{t('sell')}</Link>
+          {/* Category Links with Mega Menus - flex-1 to take remaining space */}
+          <div className="hidden lg:flex flex-1 min-w-0">
+            <CategorySubheader />
+          </div>
+
+          {/* Quick Links - Show on smaller screens */}
+          <div className="lg:hidden flex items-center gap-0.5 min-w-0 flex-1">
+            <Link href="/todays-deals" prefetch={true} className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('todaysDeals')}</Link>
+            <Link href="/customer-service" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('customerService')}</Link>
+            <Link href="/registry" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('registry')}</Link>
+            <Link href="/gift-cards" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('giftCards')}</Link>
+            <Link href="/sell" className="font-normal text-brand hover:text-brand-dark hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
+          </div>
         </div>
       </nav>
     </header>

@@ -86,8 +86,8 @@
     "Navigation": {
         "deliverTo": "Доставка до",
         "searchPlaceholder": "Търсене в продукти, марки и още...",
-        "returns": "Връщания",
-        "orders": "& Поръчки",
+        "yourOrders": "Твоите",
+        "ordersLabel": "Поръчки",
         "cart": "Количка",
         "messages": "Твоите",
         "messagesLabel": "Съобщения",
@@ -97,7 +97,8 @@
         "customerService": "Обслужване",
         "registry": "Регистър",
         "giftCards": "Подаръчни карти",
-        "sell": "Продавай"
+        "sell": "Продажби",
+        "startSelling": "Твоите"
     },
     "Home": {
         "title": "Добре дошли в Amazon",
@@ -508,14 +509,28 @@
         "viewAllMessages": "Виж всички съобщения"
     },
     "ReturnsDropdown": {
-        "title": "Връщания и поръчки",
+        "title": "Твоите поръчки",
         "trackOrders": "Проследи поръчките си",
         "trackOrdersDesc": "Виж статуса и актуализации за доставка",
         "startReturn": "Започни връщане",
         "startReturnDesc": "Върни артикули за възстановяване на сума",
         "deliveryHelp": "Помощ с доставка",
         "deliveryHelpDesc": "Получи помощ с проблеми при доставка",
-        "signInToSee": "Влез, за да видиш поръчките си"
+        "signInToSee": "Влез, за да видиш поръчките си",
+        "viewAllOrders": "Виж всички поръчки"
+    },
+    "SellingDropdown": {
+        "title": "Твоите продажби",
+        "createListing": "Създай обява",
+        "createListingDesc": "Обяви артикул за продажба",
+        "myListings": "Моите обяви",
+        "myListingsDesc": "Виж и управлявай активните си обяви",
+        "sellerOrders": "Поръчки от купувачи",
+        "sellerOrdersDesc": "Поръчки от твоите купувачи",
+        "dashboard": "Табло за продавачи",
+        "dashboardDesc": "Анализи и статистики за продажби",
+        "signInToSell": "Влез, за да започнеш да продаваш",
+        "viewAllListings": "Виж всички обяви"
     },
     "LocationDropdown": {
         "chooseLocation": "Избери местоположение",

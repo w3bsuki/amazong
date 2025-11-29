@@ -22,6 +22,7 @@ interface SearchFiltersProps {
   currentCategory: Category | null
   allCategoriesWithSubs?: { category: Category; subs: Category[] }[]
   brands?: string[]
+  basePath?: string // e.g., "/categories/electronics" or undefined for "/search"
 }
 
 export function SearchFilters({ 
@@ -29,7 +30,8 @@ export function SearchFilters({
   subcategories, 
   currentCategory,
   allCategoriesWithSubs = [],
-  brands = []
+  brands = [],
+  basePath
 }: SearchFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -87,7 +89,11 @@ export function SearchFilters({
     } else {
       params.set(key, value)
     }
-    router.push(`/search?${params.toString()}`)
+    if (basePath) {
+      router.push(`${basePath}?${params.toString()}`)
+    } else {
+      router.push(`/search?${params.toString()}`)
+    }
   }
 
   const toggleParam = (key: string) => {
@@ -97,7 +103,11 @@ export function SearchFilters({
     } else {
       params.set(key, "true")
     }
-    router.push(`/search?${params.toString()}`)
+    if (basePath) {
+      router.push(`${basePath}?${params.toString()}`)
+    } else {
+      router.push(`/search?${params.toString()}`)
+    }
   }
 
   const handlePriceClick = (min: string | null, max: string | null) => {
@@ -108,16 +118,24 @@ export function SearchFilters({
     if (max) params.set("maxPrice", max)
     else params.delete("maxPrice")
 
-    router.push(`/search?${params.toString()}`)
+    if (basePath) {
+      router.push(`${basePath}?${params.toString()}`)
+    } else {
+      router.push(`/search?${params.toString()}`)
+    }
   }
 
   const clearAllFilters = () => {
-    const params = new URLSearchParams()
-    const category = searchParams.get("category")
-    const q = searchParams.get("q")
-    if (category) params.set("category", category)
-    if (q) params.set("q", q)
-    router.push(`/search?${params.toString()}`)
+    if (basePath) {
+      router.push(basePath)
+    } else {
+      const params = new URLSearchParams()
+      const category = searchParams.get("category")
+      const q = searchParams.get("q")
+      if (category) params.set("category", category)
+      if (q) params.set("q", q)
+      router.push(`/search?${params.toString()}`)
+    }
   }
 
   const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentPrime || currentDeals || currentBrand || currentAvailability
@@ -187,7 +205,7 @@ export function SearchFilters({
               <div key={cat.id}>
                 <div className="flex items-center justify-between group">
                   <Link
-                    href={`/search?category=${cat.slug}`}
+                    href={`/categories/${cat.slug}`}
                     className={`text-sm cursor-pointer hover:text-primary flex-1 min-h-9 flex items-center ${
                       isCurrentCategory ? 'font-bold text-primary' : 'text-foreground'
                     }`}
@@ -217,7 +235,7 @@ export function SearchFilters({
                     {catSubs.map((subcat) => (
                       <Link
                         key={subcat.id}
-                        href={`/search?category=${subcat.slug}`}
+                        href={`/categories/${subcat.slug}`}
                         className={`text-sm cursor-pointer hover:text-primary min-h-9 flex items-center ${
                           currentCategory?.slug === subcat.slug ? 'font-bold text-primary' : 'text-muted-foreground'
                         }`}

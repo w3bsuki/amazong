@@ -203,7 +203,7 @@ export function ChatInterface({
                     "max-w-[75%] rounded px-3 py-2",
                     isOwn 
                       ? "bg-[#067D68] text-white" 
-                      : "bg-white border shadow-sm"
+                      : "bg-white border"
                   )}>
                     {/* Sender name for received messages */}
                     {!isOwn && (

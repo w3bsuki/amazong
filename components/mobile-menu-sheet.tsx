@@ -299,11 +299,11 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                       {locale === 'bg' ? 'Език' : 'Language'}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {locale === 'bg' ? 'Български' : 'English'}
+                      {locale === 'bg' ? 'BG' : 'EN'}
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-1 p-1 bg-background rounded-lg shadow-sm">
+                <div className="flex gap-1 p-1 bg-background rounded-lg border border-border">
                   <Link
                     href="/"
                     locale="en"
@@ -311,7 +311,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                     className={cn(
                       "flex items-center justify-center min-w-[40px] h-9 rounded-md text-xs font-semibold transition-colors touch-action-manipulation tap-transparent",
                       locale === 'en' 
-                        ? 'bg-brand text-white shadow-sm' 
+                        ? 'bg-brand text-white' 
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                     )}
                   >
@@ -324,7 +324,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                     className={cn(
                       "flex items-center justify-center min-w-[40px] h-9 rounded-md text-xs font-semibold transition-colors touch-action-manipulation tap-transparent",
                       locale === 'bg' 
-                        ? 'bg-brand text-white shadow-sm' 
+                        ? 'bg-brand text-white' 
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                     )}
                   >

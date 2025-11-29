@@ -7,9 +7,10 @@ import { useTranslations } from "next-intl"
 
 interface FilterChipsProps {
   currentCategory?: { name: string; slug: string } | null
+  basePath?: string // e.g., "/categories/electronics" or undefined for "/search"
 }
 
-export function FilterChips({ currentCategory: _currentCategory }: FilterChipsProps) {
+export function FilterChips({ currentCategory: _currentCategory, basePath }: FilterChipsProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations('SearchFilters')
@@ -26,7 +27,12 @@ export function FilterChips({ currentCategory: _currentCategory }: FilterChipsPr
     const params = new URLSearchParams(searchParams.toString())
     params.delete(key)
     if (key2) params.delete(key2)
-    router.push(`/search?${params.toString()}`)
+    const queryString = params.toString()
+    if (basePath) {
+      router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
+    } else {
+      router.push(`/search?${queryString}`)
+    }
   }
 
   const chips: Array<{
@@ -138,12 +144,16 @@ export function FilterChips({ currentCategory: _currentCategory }: FilterChipsPr
       {chips.length > 1 && (
         <button
           onClick={() => {
-            const params = new URLSearchParams()
-            const q = searchParams.get("q")
-            const category = searchParams.get("category")
-            if (q) params.set("q", q)
-            if (category) params.set("category", category)
-            router.push(`/search?${params.toString()}`)
+            if (basePath) {
+              router.push(basePath)
+            } else {
+              const params = new URLSearchParams()
+              const q = searchParams.get("q")
+              const category = searchParams.get("category")
+              if (q) params.set("q", q)
+              if (category) params.set("category", category)
+              router.push(`/search?${params.toString()}`)
+            }
           }}
           className={cn(
             "inline-flex items-center gap-1 px-3 h-8 rounded-full text-sm whitespace-nowrap",

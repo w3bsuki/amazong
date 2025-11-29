@@ -80,7 +80,7 @@ export function ProductCard({
 
   return (
     <Card className={cn(
-      "bg-product-card-bg overflow-hidden flex flex-col group relative border border-product-card-border h-full hover:border-brand",
+      "bg-product-card-bg overflow-hidden flex flex-col group relative border border-product-card-border h-full",
       isGrid && "rounded-sm" // Sharper corners for grid
     )}>
       {/* Hit Area for Nav - Prefetch first 4 products for instant navigation */}
@@ -121,9 +121,9 @@ export function ProductCard({
         "flex-1 flex flex-col z-20 pointer-events-none bg-card",
         isGrid ? "p-2 sm:p-2.5" : "p-2 sm:p-2.5 md:p-3"
       )}>
-        {/* Title - 2 lines max */}
+        {/* Title - 2 lines max - eBay style: normal weight, underline on hover */}
         <h3 className={cn(
-          "font-medium text-foreground group-hover:text-brand line-clamp-2 leading-snug",
+          "font-normal text-foreground group-hover:underline line-clamp-2 leading-snug",
           isGrid ? "text-xs mb-1 min-h-8" : "text-xs sm:text-sm mb-1 sm:mb-1.5 min-h-8 sm:min-h-10"
         )}>
           {title}
@@ -141,14 +141,14 @@ export function ProductCard({
               />
             ))}
           </div>
-          <span className="text-[10px] text-link font-medium">{reviews.toLocaleString()}</span>
+          <span className="text-[10px] text-muted-foreground font-normal">{reviews.toLocaleString()}</span>
         </div>
 
         {/* Price & Button */}
         <div className="mt-auto pointer-events-auto">
           <div className="mb-1">
             <span className={cn(
-              "font-bold text-foreground tracking-tight",
+              "font-medium text-foreground tracking-tight",
               isGrid ? "text-sm" : "text-sm sm:text-base md:text-lg"
             )}>{formatPrice(price)}</span>
           </div>
@@ -165,7 +165,7 @@ export function ProductCard({
           <Button
             onClick={handleAddToCart}
             className={cn(
-              "w-full bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md touch-action-manipulation active:scale-[0.98]",
+              "w-full bg-interactive hover:bg-interactive-hover text-white font-normal rounded-sm touch-action-manipulation",
               isGrid ? "min-h-9 text-xs" : "min-h-11 text-xs sm:text-sm"
             )}
           >

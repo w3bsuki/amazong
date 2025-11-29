@@ -35,7 +35,7 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                         <span className="text-[10px] text-header-text-muted group-hover:text-brand">
                             {user ? `${t('hello')}, ${user.email?.split('@')[0]}` : t('helloSignIn')}
                         </span>
-                        <span className="font-bold text-sm flex items-center gap-1 mt-0.5">
+                        <span className="font-medium text-sm flex items-center gap-1 mt-0.5">
                             {t('accountAndLists')}
                             <span className="text-[10px] text-header-text-muted group-hover:text-brand">▼</span>
                         </span>
@@ -47,7 +47,7 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                     {!user ? (
                         <>
                             <Link href="/auth/login" className="w-56">
-                                <Button className="w-full bg-cta-buy-now hover:bg-cta-buy-now/90 text-foreground border border-cta-buy-now/50 rounded-md h-[30px] font-normal text-[13px]">
+                                <Button className="w-full bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text rounded-md h-[30px] font-normal text-[13px]">
                                     {t('signIn')}
                                 </Button>
                             </Link>
@@ -60,8 +60,7 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                             <p className="text-sm font-medium">{t('hello')}, {user.email}</p>
                             <Button
                                 onClick={handleSignOut}
-                                variant="outline"
-                                className="w-56 h-[30px] text-xs"
+                                className="w-56 h-[30px] text-xs bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text"
                             >
                                 {t('signOut')}
                             </Button>
@@ -70,14 +69,14 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                 </div>
                 <div className="flex p-5">
                     <div className="flex-1 border-r border-border pr-5">
-                        <h3 className="font-bold text-[16px] mb-2 text-foreground">{t('yourLists')}</h3>
+                        <h3 className="font-semibold text-[16px] mb-2 text-foreground">{t('yourLists')}</h3>
                         <ul className="space-y-1.5 text-[13px] text-muted-foreground">
                             <li><Link href="#" className="hover:text-link-hover hover:underline">{t('createList')}</Link></li>
                             <li><Link href="#" className="hover:text-link-hover hover:underline">{t('findList')}</Link></li>
                         </ul>
                     </div>
                     <div className="flex-1 pl-5">
-                        <h3 className="font-bold text-[16px] mb-2 text-foreground">{t('yourAccount')}</h3>
+                        <h3 className="font-semibold text-[16px] mb-2 text-foreground">{t('yourAccount')}</h3>
                         <ul className="space-y-1.5 text-[13px] text-muted-foreground">
                             <li><Link href="/account" className="hover:text-link-hover hover:underline">{t('account')}</Link></li>
                             <li><Link href="/account/orders" className="hover:text-link-hover hover:underline">{t('orders')}</Link></li>
@@ -121,11 +120,14 @@ export function CartDropdown() {
                     <Button variant="ghost" className="h-12 flex items-center gap-1.5 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
                         <div className="relative">
                             <ShoppingCart size={24} weight="regular" className="group-hover:text-brand" aria-hidden="true" />
-                            <span className="absolute -top-1 -right-1.5 bg-badge-deal text-white text-[10px] font-bold min-w-5 h-5 flex items-center justify-center rounded-full px-1" aria-hidden="true">
+                            <span className="absolute -top-0.5 -right-1 bg-badge-deal text-white text-[9px] font-medium min-w-4 h-4 flex items-center justify-center rounded-full px-0.5" aria-hidden="true">
                                 {totalItems}
                             </span>
                         </div>
-                        <span className="text-sm font-bold group-hover:text-brand">{tNav('cart')}</span>
+                        <div className="flex flex-col items-start leading-none gap-0">
+                            <span className="text-[10px] text-header-text-muted group-hover:text-brand">{totalItems} {totalItems === 1 ? (locale === 'bg' ? 'артикул' : 'item') : (locale === 'bg' ? 'артикула' : 'items')}</span>
+                            <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('cart')}</span>
+                        </div>
                     </Button>
                 </Link>
             </HoverCardTrigger>
@@ -134,7 +136,7 @@ export function CartDropdown() {
                 <div className="flex items-center justify-between p-4 bg-muted border-b border-border">
                     <div className="flex items-center gap-2">
                         <ShoppingCart size={20} weight="regular" className="text-muted-foreground" />
-                        <h3 className="font-bold text-base text-foreground">{t('title')}</h3>
+                        <h3 className="font-semibold text-base text-foreground">{t('title')}</h3>
                         <span className="text-sm text-muted-foreground">({totalItems} {totalItems === 1 ? t('item') : t('items')})</span>
                     </div>
                 </div>
@@ -171,11 +173,11 @@ export function CartDropdown() {
                                         </div>
                                     </Link>
                                     <div className="flex-1 min-w-0">
-                                        <Link href={`/product/${item.id}`} className="text-sm font-medium text-foreground hover:text-brand line-clamp-2">
+                                        <Link href={`/product/${item.id}`} className="text-sm font-normal text-foreground hover:text-brand line-clamp-2">
                                             {item.title}
                                         </Link>
                                         <div className="flex items-center gap-2 mt-1">
-                                            <span className="text-sm font-bold text-foreground">{formatPrice(item.price)}</span>
+                                            <span className="text-sm font-medium text-foreground">{formatPrice(item.price)}</span>
                                             <span className="text-xs text-muted-foreground">× {item.quantity}</span>
                                         </div>
                                         <div className="flex items-center gap-2 mt-2">
@@ -226,7 +228,7 @@ export function CartDropdown() {
                         <div className="p-4 bg-muted border-t border-border">
                             <div className="flex items-center justify-between mb-3">
                                 <span className="text-sm text-muted-foreground">{t('subtotal')}</span>
-                                <span className="text-lg font-bold text-foreground">{formatPrice(subtotal)}</span>
+                                <span className="text-lg font-medium text-foreground">{formatPrice(subtotal)}</span>
                             </div>
                             <div className="flex gap-2">
                                 <Link href="/cart" className="flex-1">
@@ -248,12 +250,12 @@ export function CartDropdown() {
     )
 }
 
-// Returns & Orders Dropdown
-interface ReturnsOrdersDropdownProps {
+// Orders Dropdown (for buyers - track orders, returns)
+interface OrdersDropdownProps {
     user: User | null
 }
 
-export function ReturnsOrdersDropdown({ user }: ReturnsOrdersDropdownProps) {
+export function OrdersDropdown({ user }: OrdersDropdownProps) {
     const t = useTranslations('ReturnsDropdown')
     const tNav = useTranslations('Navigation')
 
@@ -262,8 +264,8 @@ export function ReturnsOrdersDropdown({ user }: ReturnsOrdersDropdownProps) {
             <HoverCardTrigger asChild>
                 <Link href="/account/orders">
                     <Button variant="ghost" className="h-12 hidden lg:flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
-                        <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('returns')}</span>
-                        <span className="text-sm font-bold mt-0.5 group-hover:text-brand">{tNav('orders')}</span>
+                        <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('yourOrders')}</span>
+                        <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('ordersLabel')}</span>
                     </Button>
                 </Link>
             </HoverCardTrigger>
@@ -310,11 +312,120 @@ export function ReturnsOrdersDropdown({ user }: ReturnsOrdersDropdownProps) {
                     </div>
                 </div>
 
+                {/* Footer with View All CTA */}
+                {user && (
+                    <div className="p-3 bg-muted border-t border-border">
+                        <Link href="/account/orders">
+                            <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+                                {t('viewAllOrders')}
+                            </Button>
+                        </Link>
+                    </div>
+                )}
+
                 {!user && (
                     <div className="p-4 bg-muted border-t border-border">
                         <Link href="/auth/login">
-                            <Button className="w-full h-10 text-sm bg-interactive hover:bg-interactive-hover text-white">
+                            <Button className="w-full h-10 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
                                 {t('signInToSee')}
+                            </Button>
+                        </Link>
+                    </div>
+                )}
+            </HoverCardContent>
+        </HoverCard>
+    )
+}
+
+// Selling Dropdown (for sellers)
+interface SellingDropdownProps {
+    user: User | null
+}
+
+export function SellingDropdown({ user }: SellingDropdownProps) {
+    const t = useTranslations('SellingDropdown')
+    const tNav = useTranslations('Navigation')
+
+    return (
+        <HoverCard openDelay={50} closeDelay={100}>
+            <HoverCardTrigger asChild>
+                <Link href="/sell">
+                    <Button variant="ghost" className="h-12 hidden lg:flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
+                        <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('startSelling')}</span>
+                        <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('sell')}</span>
+                    </Button>
+                </Link>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden" align="end" sideOffset={8}>
+                <div className="p-4 bg-muted border-b border-border">
+                    <h3 className="font-semibold text-base text-foreground">{t('title')}</h3>
+                </div>
+                
+                <div className="p-3">
+                    {/* Seller Actions */}
+                    <div className="space-y-1">
+                        <Link href="/sell/create" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+                            <div className="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center">
+                                <Plus size={20} weight="duotone" className="text-brand" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-foreground group-hover:text-brand">{t('createListing')}</p>
+                                <p className="text-xs text-muted-foreground">{t('createListingDesc')}</p>
+                            </div>
+                            <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+                        </Link>
+
+                        <Link href="/sell/listings" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+                            <div className="w-10 h-10 bg-brand/20 rounded-full flex items-center justify-center">
+                                <Package size={20} weight="duotone" className="text-brand" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-foreground group-hover:text-brand">{t('myListings')}</p>
+                                <p className="text-xs text-muted-foreground">{t('myListingsDesc')}</p>
+                            </div>
+                            <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+                        </Link>
+
+                        <Link href="/sell/orders" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+                            <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                                <Truck size={20} weight="duotone" className="text-accent-foreground" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-foreground group-hover:text-brand">{t('sellerOrders')}</p>
+                                <p className="text-xs text-muted-foreground">{t('sellerOrdersDesc')}</p>
+                            </div>
+                            <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+                        </Link>
+
+                        <Link href="/sell/dashboard" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+                            <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
+                                <TrendUp size={20} weight="duotone" className="text-secondary-foreground" />
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-foreground group-hover:text-brand">{t('dashboard')}</p>
+                                <p className="text-xs text-muted-foreground">{t('dashboardDesc')}</p>
+                            </div>
+                            <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Footer with View All CTA */}
+                {user && (
+                    <div className="p-3 bg-muted border-t border-border">
+                        <Link href="/sell/listings">
+                            <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+                                {t('viewAllListings')}
+                            </Button>
+                        </Link>
+                    </div>
+                )}
+
+                {!user && (
+                    <div className="p-4 bg-muted border-t border-border">
+                        <Link href="/auth/login">
+                            <Button className="w-full h-10 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+                                {t('signInToSell')}
                             </Button>
                         </Link>
                     </div>
@@ -334,11 +445,11 @@ export function LocationDropdown({ country }: LocationDropdownProps) {
     const tNav = useTranslations('Navigation')
 
     const popularLocations = [
-        { code: 'BG', name: 'Bulgaria', nameLocal: 'България' },
-        { code: 'US', name: 'United States', nameLocal: 'САЩ' },
-        { code: 'DE', name: 'Germany', nameLocal: 'Германия' },
-        { code: 'UK', name: 'United Kingdom', nameLocal: 'Великобритания' },
-        { code: 'FR', name: 'France', nameLocal: 'Франция' },
+        { code: 'BG', name: 'Bulgaria', nameLocal: 'България', flag: 'https://flagcdn.com/w40/bg.png' },
+        { code: 'US', name: 'United States', nameLocal: 'САЩ', flag: 'https://flagcdn.com/w40/us.png' },
+        { code: 'DE', name: 'Germany', nameLocal: 'Германия', flag: 'https://flagcdn.com/w40/de.png' },
+        { code: 'GB', name: 'United Kingdom', nameLocal: 'Великобритания', flag: 'https://flagcdn.com/w40/gb.png' },
+        { code: 'FR', name: 'France', nameLocal: 'Франция', flag: 'https://flagcdn.com/w40/fr.png' },
     ]
 
     return (
@@ -346,7 +457,7 @@ export function LocationDropdown({ country }: LocationDropdownProps) {
             <HoverCardTrigger asChild>
                 <Button variant="ghost" className="h-12 hidden lg:flex flex-col items-start leading-none gap-0 text-header-text hover:text-brand text-xs p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm shrink-0 group">
                     <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('deliverTo')}</span>
-                    <div className="flex items-center gap-1 font-bold text-sm text-header-text mt-0.5 group-hover:text-brand">
+                    <div className="flex items-center gap-1 font-medium text-sm text-header-text mt-0.5 group-hover:text-brand">
                         <MapPin size={14} weight="fill" />
                         <span>{country}</span>
                     </div>
@@ -354,7 +465,7 @@ export function LocationDropdown({ country }: LocationDropdownProps) {
             </HoverCardTrigger>
             <HoverCardContent className="w-[300px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden" align="start" sideOffset={8}>
                 <div className="p-4 bg-muted border-b border-border">
-                    <h3 className="font-bold text-base text-foreground">{t('chooseLocation')}</h3>
+                    <h3 className="font-semibold text-base text-foreground">{t('chooseLocation')}</h3>
                     <p className="text-xs text-muted-foreground mt-1">{t('deliveryOptions')}</p>
                 </div>
                 
@@ -365,9 +476,13 @@ export function LocationDropdown({ country }: LocationDropdownProps) {
                             key={loc.code}
                             className={`w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted text-left ${country === loc.name ? 'bg-brand/10' : ''}`}
                         >
-                            <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-xs font-bold text-secondary-foreground">
-                                {loc.code}
-                            </div>
+                            <img 
+                                src={loc.flag} 
+                                alt={loc.name} 
+                                width={32} 
+                                height={22} 
+                                className="rounded-sm border border-border"
+                            />
                             <div className="flex-1">
                                 <p className="text-sm font-medium text-foreground">{loc.name}</p>
                                 <p className="text-xs text-muted-foreground">{loc.nameLocal}</p>
@@ -380,9 +495,11 @@ export function LocationDropdown({ country }: LocationDropdownProps) {
                 </div>
 
                 <div className="p-3 bg-muted border-t border-border">
-                    <Button variant="outline" className="w-full h-9 text-sm">
-                        {t('manageAddresses')}
-                    </Button>
+                    <Link href="/account/addresses">
+                        <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+                            {t('manageAddresses')}
+                        </Button>
+                    </Link>
                 </div>
             </HoverCardContent>
         </HoverCard>
@@ -425,7 +542,7 @@ export function SearchCategoryDropdown({ categories, selectedCategory, onCategor
             <HoverCardTrigger asChild>
                 <button
                     type="button"
-                    className="h-full px-4 bg-interactive hover:bg-interactive-hover flex items-center gap-1.5 text-sm font-semibold text-white cursor-pointer border-r border-interactive-hover whitespace-nowrap rounded-l-sm transition-colors"
+                    className="h-full px-4 bg-interactive hover:bg-interactive-hover flex items-center gap-1.5 text-sm font-medium text-white cursor-pointer border-r border-interactive-hover whitespace-nowrap rounded-l-sm"
                 >
                     <span>{getSelectedLabel()}</span>
                     <CaretRight size={14} weight="regular" className="opacity-80 rotate-90 shrink-0" />
@@ -471,7 +588,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
                 <Link href="/account/messages">
                     <Button variant="ghost" className="h-12 flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
                         <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('messages')}</span>
-                        <span className="text-sm font-bold mt-0.5">{tNav('messagesLabel')}</span>
+                        <span className="text-sm font-medium mt-0.5">{tNav('messagesLabel')}</span>
                     </Button>
                 </Link>
             </HoverCardTrigger>
@@ -480,7 +597,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
                 <div className="flex items-center justify-between p-4 bg-muted border-b border-border">
                     <div className="flex items-center gap-2">
                         <ChatCircle size={20} weight="regular" className="text-muted-foreground" />
-                        <h3 className="font-bold text-base text-foreground">{t('title')}</h3>
+                        <h3 className="font-semibold text-base text-foreground">{t('title')}</h3>
                     </div>
                 </div>
 
@@ -489,7 +606,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
                         <ChatCircle size={48} weight="light" className="text-muted-foreground/30 mx-auto mb-3" />
                         <p className="text-muted-foreground text-sm mb-4">{t('signInToView')}</p>
                         <Link href="/auth/login">
-                            <Button className="w-full h-10 text-sm bg-interactive hover:bg-interactive-hover text-white">
+                            <Button className="w-full h-10 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
                                 {t('signIn')}
                             </Button>
                         </Link>
@@ -537,7 +654,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
                         {/* Footer */}
                         <div className="p-3 bg-muted border-t border-border">
                             <Link href="/account/messages">
-                                <Button variant="outline" className="w-full h-9 text-sm">
+                                <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
                                     {t('viewAllMessages')}
                                 </Button>
                             </Link>

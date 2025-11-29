@@ -104,7 +104,7 @@ export default function CategoriesPage() {
               return (
                 <Link
                   key={category.slug}
-                  href={`/search?category=${category.slug}`}
+                  href={`/categories/${category.slug}`}
                   className="group"
                 >
                   <Card className="border-border hover:border-primary transition-colors">

@@ -142,7 +142,7 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
                             <span className="w-10 sm:w-12 text-foreground group-hover:text-link-hover group-hover:underline text-xs sm:text-sm">{star} {t('star')}</span>
                             <Progress 
                                 value={getPercentage(ratingDistribution[star])} 
-                                className="h-4 sm:h-5 flex-1 rounded-md bg-muted [&>div]:bg-rating border border-border shadow-inner" 
+                                className="h-4 sm:h-5 flex-1 rounded-md bg-muted [&>div]:bg-rating border border-border" 
                                 aria-label={`${star} ${t('star')}: ${getPercentage(ratingDistribution[star])}%`}
                             />
                             <span className="w-8 text-right text-xs sm:text-sm" aria-hidden="true">{getPercentage(ratingDistribution[star])}%</span>

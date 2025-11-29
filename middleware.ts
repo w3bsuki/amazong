@@ -3,6 +3,7 @@ import { routing } from './i18n/routing';
 import { NextRequest } from 'next/server';
 import { updateSession } from "@/lib/supabase/middleware"
 
+// Note: next-intl still requires the function to be named 'middleware' even in proxy.ts
 export async function middleware(request: NextRequest) {
   const handleI18nRouting = createMiddleware(routing);
   const response = handleI18nRouting(request);

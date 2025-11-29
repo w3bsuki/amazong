@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
 
 export async function createClient() {
@@ -25,4 +26,20 @@ export async function createClient() {
       },
     },
   })
+}
+
+/**
+ * Create a Supabase client for use in static generation contexts (generateStaticParams, generateMetadata at build time)
+ * This client doesn't use cookies and is safe to use outside of request scope.
+ */
+export function createStaticClient() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    console.warn("Missing Supabase environment variables. Returning null client.")
+    return null
+  }
+
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 }

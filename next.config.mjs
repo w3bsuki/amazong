@@ -31,6 +31,11 @@ const nextConfig = {
         hostname: 'cdn.simpleicons.org',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
+        pathname: '/**',
+      },
     ],
   },
 

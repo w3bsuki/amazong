@@ -18,9 +18,10 @@ interface SubcategoryTabsProps {
   currentCategory: Category | null
   subcategories: Category[]
   parentCategory?: Category | null
+  basePath?: string // "/categories" or undefined for "/search?category="
 }
 
-export function SubcategoryTabs({ currentCategory, subcategories, parentCategory }: SubcategoryTabsProps) {
+export function SubcategoryTabs({ currentCategory, subcategories, parentCategory, basePath }: SubcategoryTabsProps) {
   const locale = useLocale()
   const searchParams = useSearchParams()
   const t = useTranslations('SearchFilters')
@@ -32,8 +33,16 @@ export function SubcategoryTabs({ currentCategory, subcategories, parentCategory
     return cat.name
   }
 
-  // Build URL with existing params
+  // Build URL - supports both /categories/slug and /search?category=slug
   const buildUrl = (categorySlug: string) => {
+    if (basePath) {
+      // Clean category routes: /categories/electronics
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete("category") // Remove category from query params
+      const queryString = params.toString()
+      return `${basePath}/${categorySlug}${queryString ? `?${queryString}` : ''}`
+    }
+    // Legacy search routes: /search?category=electronics
     const params = new URLSearchParams(searchParams.toString())
     params.set("category", categorySlug)
     return `/search?${params.toString()}`
@@ -42,8 +51,9 @@ export function SubcategoryTabs({ currentCategory, subcategories, parentCategory
   if (!currentCategory) return null
 
   // Build breadcrumb items dynamically
+  const allDeptHref = basePath ? "/categories" : "/search"
   const breadcrumbItems: BreadcrumbItemData[] = [
-    { label: t('allDepartments'), href: "/search" },
+    { label: t('allDepartments'), href: allDeptHref },
     ...(parentCategory ? [{ label: getCategoryName(parentCategory), href: buildUrl(parentCategory.slug) }] : []),
     { label: getCategoryName(currentCategory) } // No href = current page
   ]
@@ -63,6 +73,7 @@ export function SubcategoryTabs({ currentCategory, subcategories, parentCategory
         <SubcategoryCircles
           subcategories={subcategories}
           currentCategory={currentCategory}
+          basePath={basePath}
         />
       )}
     </div>

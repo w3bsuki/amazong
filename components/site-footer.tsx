@@ -171,7 +171,7 @@ export function SiteFooter() {
                 onClick={scrollToTop}
                 aria-label={t('backToTop')}
             >
-                <span className="text-sm font-medium text-primary-foreground inline-flex items-center gap-1.5">
+                <span className="text-sm font-normal text-primary-foreground inline-flex items-center gap-1.5">
                     <CaretUp size={16} weight="regular" className="group-hover:-translate-y-0.5 transition-transform" />
                     {t('backToTop')}
                 </span>
@@ -182,7 +182,7 @@ export function SiteFooter() {
                 <div className="max-w-7xl mx-auto px-4 py-8 md:py-10">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                         <div className="text-center md:text-left">
-                            <h3 className="text-primary-foreground font-semibold text-lg md:text-xl flex items-center justify-center md:justify-start gap-2">
+                            <h3 className="text-primary-foreground font-medium text-lg md:text-xl flex items-center justify-center md:justify-start gap-2">
                                 <Envelope size={20} weight="regular" className="text-accent" />
                                 {t('newsletterTitle')}
                             </h3>
@@ -200,7 +200,7 @@ export function SiteFooter() {
                                     placeholder={t('emailPlaceholder')}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="bg-card text-card-foreground border-0 h-12 pl-4 pr-4 rounded-md focus-visible:ring-2 focus-visible:ring-ring w-full shadow-sm"
+                                    className="bg-card text-card-foreground border border-border h-12 pl-4 pr-4 rounded-md focus-visible:ring-2 focus-visible:ring-ring w-full"
                                     aria-label={t('emailPlaceholder')}
                                     required
                                 />
@@ -208,7 +208,7 @@ export function SiteFooter() {
                             <Button 
                                 type="submit"
                                 disabled={isSubscribing}
-                                className="h-12 px-8 bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md shadow-sm hover:shadow-md disabled:opacity-70"
+                                className="h-12 px-8 bg-interactive hover:bg-interactive-hover text-white font-normal rounded-sm border border-transparent disabled:opacity-70"
                             >
                                 {isSubscribing ? t('subscribing') : t('signUp')}
                             </Button>
@@ -242,7 +242,7 @@ export function SiteFooter() {
                 <Accordion type="single" collapsible className="w-full">
                     {footerSections.map((section) => (
                         <AccordionItem key={section.id} value={section.id} className="border-border/20">
-                            <AccordionTrigger className="text-sm font-semibold text-primary-foreground hover:no-underline py-4 hover:text-accent">
+                            <AccordionTrigger className="text-sm font-medium text-primary-foreground hover:no-underline py-4 hover:text-accent">
                                 {section.title}
                             </AccordionTrigger>
                             <AccordionContent>
@@ -272,7 +272,7 @@ export function SiteFooter() {
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
                         {footerSections.map((section) => (
                             <div key={section.id}>
-                                <h4 className="font-semibold text-primary-foreground text-sm mb-4 pb-2 border-b border-border/10">
+                                <h4 className="font-medium text-primary-foreground text-sm mb-4 pb-2 border-b border-border/10">
                                     {section.title}
                                 </h4>
                                 <nav aria-label={section.title}>
@@ -300,7 +300,7 @@ export function SiteFooter() {
                 {/* Logo */}
                 <div className="flex justify-center mb-8">
                     <Link href="/" className="inline-block group" aria-label={t('homePage')}>
-                        <span className="text-3xl font-bold text-primary-foreground tracking-tight group-hover:text-accent transition-colors">
+                        <span className="text-3xl font-semibold text-primary-foreground tracking-tight group-hover:text-accent transition-colors">
                             AMZN
                         </span>
                     </Link>

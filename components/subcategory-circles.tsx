@@ -21,6 +21,7 @@ interface SubcategoryCirclesProps {
   currentCategory?: Category | null
   title?: string
   className?: string
+  basePath?: string // "/categories" or undefined for "/search?category="
 }
 
 // Map category slugs to placeholder images (these would ideally come from the database)
@@ -88,7 +89,8 @@ export function SubcategoryCircles({
   subcategories, 
   currentCategory,
   title,
-  className 
+  className,
+  basePath
 }: SubcategoryCirclesProps) {
   const locale = useLocale()
   const searchParams = useSearchParams()
@@ -103,8 +105,14 @@ export function SubcategoryCircles({
     return cat.name
   }
 
-  // Build URL with existing params
+  // Build URL - supports both /categories/slug and /search?category=slug
   const buildUrl = (categorySlug: string) => {
+    if (basePath) {
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete("category")
+      const queryString = params.toString()
+      return `${basePath}/${categorySlug}${queryString ? `?${queryString}` : ''}`
+    }
     const params = new URLSearchParams(searchParams.toString())
     params.set("category", categorySlug)
     return `/search?${params.toString()}`
@@ -165,7 +173,7 @@ export function SubcategoryCircles({
               href={buildUrl(currentCategory.slug)}
               className={cn(
                 "flex flex-col items-center gap-2 min-w-[90px] sm:min-w-[100px] group snap-start shrink-0",
-                "touch-action-manipulation active:scale-95 transition-transform"
+                "touch-action-manipulation"
               )}
             >
               {/* Circle with gradient/icon */}
@@ -174,17 +182,17 @@ export function SubcategoryCircles({
                   "rounded-full flex items-center justify-center overflow-hidden",
                   "size-20 sm:size-[90px] md:size-[100px]",
                   "bg-linear-to-br from-primary to-primary/80",
-                  "border-[3px] border-primary"
+                  "border-2 border-primary"
                 )}
               >
-                <span className="text-white text-xs sm:text-sm font-bold text-center px-2">
+                <span className="text-white text-xs sm:text-sm font-medium text-center px-2">
                   {locale === "bg" ? "Всички" : "All"}
                 </span>
               </div>
               
               {/* Label */}
               <span className={cn(
-                "text-xs sm:text-sm font-semibold text-center text-primary",
+                "text-xs sm:text-sm font-medium text-center text-primary",
                 "max-w-[90px] sm:max-w-[100px] line-clamp-2"
               )}>
                 {locale === "bg" ? "Всички продукти" : "All Products"}
@@ -199,7 +207,7 @@ export function SubcategoryCircles({
               href={buildUrl(subcat.slug)}
               className={cn(
                 "flex flex-col items-center gap-2 min-w-[90px] sm:min-w-[100px] group snap-start shrink-0",
-                "touch-action-manipulation active:scale-95 transition-transform",
+                "touch-action-manipulation",
                 index === subcategories.length - 1 && "mr-4"
               )}
             >
@@ -237,7 +245,7 @@ export function SubcategoryCircles({
           onClick={() => scroll("left")}
           className={cn(
             "absolute left-0 top-10 sm:top-[45px] -translate-y-1/2 z-10",
-            "size-10 bg-white hover:bg-muted rounded-full border border-border shadow-md",
+            "size-10 bg-white hover:bg-muted rounded-full border border-border",
             "flex items-center justify-center",
             "hidden md:flex",
             !canScrollLeft && "opacity-0 pointer-events-none"
@@ -252,7 +260,7 @@ export function SubcategoryCircles({
           onClick={() => scroll("right")}
           className={cn(
             "absolute right-0 top-10 sm:top-[45px] -translate-y-1/2 z-10",
-            "size-10 bg-white hover:bg-muted rounded-full border border-border shadow-md",
+            "size-10 bg-white hover:bg-muted rounded-full border border-border",
             "flex items-center justify-center",
             "hidden md:flex",
             !canScrollRight && "opacity-0 pointer-events-none"

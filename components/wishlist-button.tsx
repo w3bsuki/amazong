@@ -65,7 +65,7 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
       onClick={handleClick}
       disabled={isPending}
       className={cn(
-        "p-2 rounded-full bg-white/90 hover:bg-white shadow-sm",
+        "p-2 rounded-full bg-white/90 hover:bg-white border border-border",
         "focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2",
         "disabled:opacity-50",
         className

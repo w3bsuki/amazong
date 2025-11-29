@@ -52,7 +52,7 @@ export function StickyAddToCart({ product, locale }: StickyAddToCartProps) {
     <div 
       className={cn(
         "fixed bottom-0 left-0 right-0 bg-card border-t border-border p-3 z-40",
-        "lg:hidden transform transition-transform duration-200 shadow-lg",
+        "lg:hidden transform transition-transform duration-200 border-t border-border",
         isVisible ? "translate-y-0" : "translate-y-full"
       )}
       aria-hidden={!isVisible}

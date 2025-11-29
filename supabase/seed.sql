@@ -117,7 +117,7 @@ VALUES
     199.50,
     250.00,
     30,
-    ARRAY['https://images.unsplash.com/photo-1551028919-ac7bcb7d7162?w=500&q=80'],
+    ARRAY['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=80'],
     4.6,
     45,
     false

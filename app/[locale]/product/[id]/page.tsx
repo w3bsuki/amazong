@@ -190,7 +190,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {(product.images || [product.image]).slice(0, 6).map((img: string, i: number) => (
                 <div key={i} className="border border-product-card-border rounded-sm p-1 cursor-pointer hover:shadow-product transition-shadow shrink-0 w-14 sm:w-full">
                   <div className="relative w-full aspect-square">
-                    <Image src={img || "/placeholder.svg"} alt="Thumbnail" fill className="object-contain" />
+                    <Image src={img || "/placeholder.svg"} alt="Thumbnail" fill className="object-contain" sizes="60px" />
                   </div>
                 </div>
               ))}
@@ -202,6 +202,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 alt={product.title}
                 fill
                 className="object-contain object-top"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
                 priority
               />
             </div>
