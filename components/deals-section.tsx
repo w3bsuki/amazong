@@ -145,16 +145,16 @@ export function DealsSection({
   }
 
   return (
-    <div className="sm:rounded-md overflow-hidden sm:bg-card sm:border sm:border-border">
-      {/* Header Section - Amazon style: left-aligned with right CTA */}
-      <div className="flex items-center justify-between pt-4 sm:pt-6 pb-2 sm:pb-4 px-4">
-        <h2 className="text-base sm:text-lg md:text-xl font-semibold tracking-tight text-foreground">
+    <div className="rounded-md overflow-hidden bg-card border border-border">
+      {/* Header Section - Clean eBay-style */}
+      <div className="text-center pt-5 sm:pt-6 pb-3 sm:pb-4 px-4">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-1.5 tracking-tight text-foreground">
           {title}
         </h2>
         {ctaText && ctaHref && (
           <Link 
             href={ctaHref} 
-            className="text-xs sm:text-sm font-medium hover:underline underline-offset-4 inline-flex items-center gap-1 text-brand-blue hover:text-brand-blue-dark"
+            className="text-xs sm:text-sm font-normal hover:underline underline-offset-4 inline-flex items-center gap-1 text-brand-blue hover:text-brand-blue-dark"
           >
             {ctaText}
             <CaretRight size={12} weight="regular" />

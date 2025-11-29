@@ -16,7 +16,7 @@ import {
     Question,
     FireSimple,
     Trophy,
-    Newspaper,
+    Sparkle,
     // Category icons
     Monitor, 
     Laptop, 
@@ -453,7 +453,7 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                             className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
                                         >
                                             <span className="text-brand">
-                                                <Newspaper size={20} weight="fill" />
+                                                <Sparkle size={20} weight="fill" />
                                             </span>
                                             <span className="flex-1 font-medium">{locale === 'bg' ? 'Нови обяви' : 'Newest Listings'}</span>
                                         </Link>

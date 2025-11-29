@@ -87,7 +87,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
         <CarouselContent className="ml-0">
           {slides.map((slide) => (
             <CarouselItem key={slide.id} className="pl-0">
-              <div className="relative h-[180px] sm:h-[200px] md:h-[300px] lg:h-[380px] w-full overflow-hidden select-none">
+              <div className="relative h-[150px] sm:h-[200px] md:h-[300px] lg:h-[380px] w-full overflow-hidden select-none">
                 {/* Background Image */}
                 <Image
                   src={slide.image}

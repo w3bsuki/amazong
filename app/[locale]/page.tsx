@@ -15,10 +15,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 import { BrandCircles } from "@/components/brand-circles"
+import { DailyDealsBanner } from "@/components/daily-deals-banner"
 import { PromoCard } from "@/components/promo-card"
-import { Separator } from "@/components/ui/separator"
-import { ProductRow } from "@/components/product-row"
-
+import { TabbedProductSection } from "@/components/tabbed-product-section"
+import { DealsSection } from "@/components/deals-section"
 import { WelcomeToast } from "@/components/welcome-toast"
 import { getTranslations, getLocale } from "next-intl/server"
 
@@ -110,15 +110,15 @@ export default async function Home() {
       {/* Main Content Container - overlaps hero like Amazon */}
       <div className="container relative z-10 mb-6 -mt-6 sm:-mt-28 md:-mt-32">
         
-        {/* Category Circles - Horizontal scrollable categories */}
-        <div className="mb-4">
+        {/* 1. Category Circles - Horizontal scrollable categories */}
+        <div className="mt-3 sm:mt-4">
           <CategoryCircles locale={locale} />
         </div>
 
-        {/* Category Grid with Subcategories - 2x2 Amazon style */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-4 px-1 sm:px-0">
+        {/* 2. Category Grid with Subcategories - Scrollable on mobile */}
+        <div className="flex gap-2 overflow-x-auto snap-x snap-mandatory pb-2 px-1 mt-3 sm:mt-4 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 sm:overflow-visible sm:pb-0 no-scrollbar">
           {/* Computers Card */}
-          <div className="bg-card rounded-lg border border-border p-2.5 sm:p-3">
+          <div className="w-[60vw] min-w-[60vw] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3">
             <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
               {locale === "bg" ? "Компютри" : "Computers"}
             </h3>
@@ -154,7 +154,7 @@ export default async function Home() {
           </div>
 
           {/* Home & Kitchen Card */}
-          <div className="bg-card rounded-lg border border-border p-2.5 sm:p-3">
+          <div className="w-[60vw] min-w-[60vw] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3">
             <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
               {locale === "bg" ? "Дом и кухня" : "Home"}
             </h3>
@@ -190,7 +190,7 @@ export default async function Home() {
           </div>
 
           {/* Fashion Card */}
-          <div className="bg-card rounded-lg border border-border p-2.5 sm:p-3">
+          <div className="w-[60vw] min-w-[60vw] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3">
             <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
               {locale === "bg" ? "Мода" : "Fashion"}
             </h3>
@@ -226,7 +226,7 @@ export default async function Home() {
           </div>
 
           {/* Beauty Card */}
-          <div className="bg-card rounded-lg border border-border p-2.5 sm:p-3">
+          <div className="w-[60vw] min-w-[60vw] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3 mr-1 sm:mr-0">
             <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
               {locale === "bg" ? "Красота" : "Beauty"}
             </h3>
@@ -262,74 +262,121 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* Mobile Separator */}
-        <Separator className="my-4 sm:hidden" />
-
-        {/* Promo Cards Grid - Target Style */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-3 px-1 sm:px-0 mt-4">
-          <PromoCard
-            bgImage="https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=800&q=80"
-            dealText={locale === "bg" ? "Спести до" : "Save up to"}
-            highlight="$200"
-            subtitle={locale === "bg" ? "Apple устройства*" : "Apple devices*"}
-            href="/search?category=electronics&brand=apple"
-          />
-          <PromoCard
-            bgImage="https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=800&q=80"
-            dealText={locale === "bg" ? "До" : "Up to"}
-            highlight="50%"
-            subtitle={locale === "bg" ? "избрани играчки*" : "select toys*"}
-            href="/todays-deals?category=toys"
-            badge={locale === "bg" ? "🔥 Гореща" : "🔥 Hot"}
-          />
-          <PromoCard
-            bgImage="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
-            dealText={locale === "bg" ? "До" : "Up to"}
-            highlight="40%"
-            subtitle={locale === "bg" ? "електроника*" : "electronics*"}
-            href="/search?category=electronics"
-          />
-          <PromoCard
-            bgImage="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80"
-            dealText={locale === "bg" ? "До" : "Up to"}
-            highlight="30%"
-            subtitle={locale === "bg" ? "мода*" : "fashion*"}
-            href="/search?category=fashion"
-          />
-        </div>
-
-        {/* Trending Products - Amazon-style simple horizontal scroll */}
-        <div className="mt-6 mx-1 sm:mx-0">
-          <ProductRow
-            title={locale === "bg" ? "Популярни продукти" : "Trending products"}
-            products={featuredProducts}
-            ctaText={locale === "bg" ? "Виж всички" : "See all"}
-            ctaHref="/search?q=featured"
-            variant="products"
-          />
-        </div>
-
-        <Separator className="mx-4" />
-
-        {/* Deals - Amazon-style simple horizontal scroll */}
-        <div className="mx-1 sm:mx-0">
-          <ProductRow
-            title={locale === "bg" ? "Оферти на деня" : "Today's deals"}
-            deals={deals}
-            ctaText={locale === "bg" ? "Виж всички" : "See all"}
-            ctaHref="/todays-deals"
-            variant="deals"
-          />
-        </div>
-
-        <Separator className="mx-4" />
-
-        {/* Brand Circles - Moved lower in the page */}
-        <div className="py-4">
+        {/* 3. Brand Circles - Popular brands */}
+        <div className="mt-3 sm:mt-4">
           <BrandCircles locale={locale} />
         </div>
 
-        {/* More Ways to Shop - Horizontal scroll on mobile, Bento grid on desktop */}
+        {/* 4. Daily Deals Banner */}
+        <div className="mt-4 px-1 sm:px-0">
+          <DailyDealsBanner locale={locale} />
+        </div>
+
+        {/* 5. Trending Products - Target-Style Tabbed Section */}
+        <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
+          <TabbedProductSection
+            title={locale === "bg" ? "Открийте популярни продукти" : "Explore trending picks"}
+            tabs={[
+              {
+                id: "featured",
+                label: locale === "bg" ? "Избрани" : "Featured",
+                products: featuredProducts,
+              },
+              {
+                id: "electronics",
+                label: locale === "bg" ? "Техника" : "Tech",
+                products: featuredProducts, // In production, fetch different products
+              },
+              {
+                id: "home",
+                label: locale === "bg" ? "За дома" : "Home",
+                products: featuredProducts,
+              },
+              {
+                id: "fashion",
+                label: locale === "bg" ? "Мода" : "Fashion",
+                products: featuredProducts,
+              },
+            ]}
+            ctaText={locale === "bg" ? "Виж всички" : "Shop all"}
+            ctaHref="/search?q=featured"
+            variant="featured"
+          />
+        </div>
+
+        {/* 6. Promo Cards - Special offers */}
+        <div className="flex gap-2 overflow-x-auto snap-x snap-mandatory pb-2 px-1 mt-4 sm:mt-6 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-3 sm:overflow-visible sm:pb-0 no-scrollbar">
+          <div className="w-[45vw] min-w-[45vw] shrink-0 snap-start sm:w-auto sm:min-w-0">
+            <PromoCard
+              bgImage="https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=800&q=80"
+              dealText={locale === "bg" ? "Спести до" : "Save up to"}
+              highlight="$200"
+              subtitle={locale === "bg" ? "Apple устройства*" : "Apple devices*"}
+              href="/search?category=electronics&brand=apple"
+            />
+          </div>
+          <div className="w-[45vw] min-w-[45vw] shrink-0 snap-start sm:w-auto sm:min-w-0">
+            <PromoCard
+              bgImage="https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=800&q=80"
+              dealText={locale === "bg" ? "До" : "Up to"}
+              highlight="50%"
+              subtitle={locale === "bg" ? "избрани играчки*" : "select toys*"}
+              href="/todays-deals?category=toys"
+              badge={locale === "bg" ? "🔥 Гореща" : "🔥 Hot"}
+            />
+          </div>
+          <div className="w-[45vw] min-w-[45vw] shrink-0 snap-start sm:w-auto sm:min-w-0">
+            <PromoCard
+              bgImage="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
+              dealText={locale === "bg" ? "До" : "Up to"}
+              highlight="40%"
+              subtitle={locale === "bg" ? "електроника*" : "electronics*"}
+              href="/search?category=electronics"
+            />
+          </div>
+          <div className="w-[45vw] min-w-[45vw] shrink-0 snap-start sm:w-auto sm:min-w-0 mr-1 sm:mr-0">
+            <PromoCard
+              bgImage="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80"
+              dealText={locale === "bg" ? "До" : "Up to"}
+              highlight="30%"
+              subtitle={locale === "bg" ? "мода*" : "fashion*"}
+              href="/search?category=fashion"
+            />
+          </div>
+        </div>
+
+        {/* 7. Deals of the Day - Target Style Tabbed Section */}
+        <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
+          <DealsSection
+            title={locale === "bg" ? "Оферти на деня" : "Deals of the Day"}
+            tabs={[
+              {
+                id: "all",
+                label: locale === "bg" ? "Всички" : "All Deals",
+                deals: deals,
+              },
+              {
+                id: "electronics",
+                label: locale === "bg" ? "Техника" : "Tech",
+                deals: deals, // In production, filter by category
+              },
+              {
+                id: "home",
+                label: locale === "bg" ? "За дома" : "Home",
+                deals: deals,
+              },
+              {
+                id: "fashion",
+                label: locale === "bg" ? "Мода" : "Fashion",
+                deals: deals,
+              },
+            ]}
+            ctaText={locale === "bg" ? "Виж всички" : "Shop all"}
+            ctaHref="/todays-deals"
+          />
+        </div>
+
+        {/* 8. More Ways to Shop - Horizontal scroll on mobile, Bento grid on desktop */}
         <div className="mt-4 sm:mt-6 px-1 sm:px-0">
           {/* Section Title */}
           <h2 className="text-lg sm:text-xl font-bold text-foreground mb-3 sm:mb-4">
