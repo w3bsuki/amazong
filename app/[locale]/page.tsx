@@ -17,8 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 import { BrandCircles } from "@/components/brand-circles"
 import { PromoCard } from "@/components/promo-card"
 import { Separator } from "@/components/ui/separator"
-import { TabbedProductSection } from "@/components/tabbed-product-section"
-import { DealsSection } from "@/components/deals-section"
+import { ProductRow } from "@/components/product-row"
 import { cn } from "@/lib/utils"
 import { 
   Star, 
@@ -132,19 +131,11 @@ export default async function Home() {
       <div className="container relative z-10 mb-6 -mt-6 sm:-mt-28 md:-mt-32">
         
         {/* Category Circles - Horizontal scrollable categories */}
-        <div className="mb-2 sm:mb-4">
+        <div className="mb-4">
           <CategoryCircles locale={locale} />
         </div>
 
-        {/* Brand Circles - Popular brands like Alibaba */}
-        <div className="mb-2 sm:mb-4">
-          <BrandCircles locale={locale} />
-        </div>
-
-        {/* Mobile Separator */}
-        <Separator className="my-4 sm:hidden" />
-
-        {/* Category Grid with Subcategories */}
+        {/* Category Grid with Subcategories - 2x2 Amazon style */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-4 px-1 sm:px-0">
           {/* Computers Card */}
           <div className="bg-card rounded-lg border border-border p-2.5 sm:p-3">
@@ -327,77 +318,38 @@ export default async function Home() {
           />
         </div>
 
-        {/* Mobile Separator */}
-        <Separator className="my-4 sm:hidden" />
-
-        {/* Trending Products - Target-Style Tabbed Section */}
-        <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
-          <TabbedProductSection
-            title={locale === "bg" ? "Открийте популярни продукти" : "Explore trending picks"}
-            tabs={[
-              {
-                id: "featured",
-                label: locale === "bg" ? "Избрани" : "Featured",
-                products: featuredProducts,
-              },
-              {
-                id: "electronics",
-                label: locale === "bg" ? "Техника" : "Tech",
-                products: featuredProducts, // In production, fetch different products
-              },
-              {
-                id: "home",
-                label: locale === "bg" ? "За дома" : "Home",
-                products: featuredProducts,
-              },
-              {
-                id: "fashion",
-                label: locale === "bg" ? "Мода" : "Fashion",
-                products: featuredProducts,
-              },
-            ]}
-            ctaText={locale === "bg" ? "Виж всички" : "Shop all"}
+        {/* Trending Products - Amazon-style simple horizontal scroll */}
+        <div className="mt-6 mx-1 sm:mx-0">
+          <ProductRow
+            title={locale === "bg" ? "Популярни продукти" : "Trending products"}
+            products={featuredProducts}
+            ctaText={locale === "bg" ? "Виж всички" : "See all"}
             ctaHref="/search?q=featured"
-            variant="featured"
+            variant="products"
           />
         </div>
 
-        {/* Mobile Separator */}
-        <Separator className="my-4 sm:hidden" />
+        <Separator className="mx-4" />
 
-        {/* Deals of the Day - Target Style Tabbed Section */}
-        <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
-          <DealsSection
-            title={locale === "bg" ? "Оферти на деня" : "Deals of the Day"}
-            tabs={[
-              {
-                id: "all",
-                label: locale === "bg" ? "Всички" : "All Deals",
-                deals: deals,
-              },
-              {
-                id: "electronics",
-                label: locale === "bg" ? "Техника" : "Tech",
-                deals: deals, // In production, filter by category
-              },
-              {
-                id: "home",
-                label: locale === "bg" ? "За дома" : "Home",
-                deals: deals,
-              },
-              {
-                id: "fashion",
-                label: locale === "bg" ? "Мода" : "Fashion",
-                deals: deals,
-              },
-            ]}
-            ctaText={locale === "bg" ? "Виж всички" : "Shop all"}
+        {/* Deals - Amazon-style simple horizontal scroll */}
+        <div className="mx-1 sm:mx-0">
+          <ProductRow
+            title={locale === "bg" ? "Оферти на деня" : "Today's deals"}
+            deals={deals}
+            ctaText={locale === "bg" ? "Виж всички" : "See all"}
             ctaHref="/todays-deals"
+            variant="deals"
           />
         </div>
 
-        {/* Mobile Separator */}
-        <Separator className="my-4 sm:hidden" />
+        <Separator className="mx-4" />
+
+        {/* Brand Circles - Moved lower in the page */}
+        <div className="py-4">
+          <BrandCircles locale={locale} />
+        </div>
+
+        <Separator className="mx-4 sm:hidden" />
 
         {/* Featured Categories - Target Style with circular images */}
         <div className="mt-6 sm:mt-8 px-1 sm:px-0">
