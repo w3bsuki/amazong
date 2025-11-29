@@ -66,6 +66,7 @@ async function searchProducts(
     minRating?: string
     prime?: string
     availability?: string
+    sort?: string
   }
 ): Promise<Product[]> {
   // Build base query
@@ -94,6 +95,25 @@ async function searchProducts(
   }
   if (filters.availability === "instock") {
     dbQuery = dbQuery.gt("stock", 0)
+  }
+  
+  // Apply sorting
+  switch (filters.sort) {
+    case 'newest':
+      dbQuery = dbQuery.order("created_at", { ascending: false })
+      break
+    case 'price-asc':
+      dbQuery = dbQuery.order("price", { ascending: true })
+      break
+    case 'price-desc':
+      dbQuery = dbQuery.order("price", { ascending: false })
+      break
+    case 'rating':
+      dbQuery = dbQuery.order("rating", { ascending: false, nullsFirst: false })
+      break
+    default:
+      // 'featured' or no sort - default ordering (could be by popularity, featured flag, etc.)
+      dbQuery = dbQuery.order("rating", { ascending: false, nullsFirst: false })
   }
   
   // If no query, just return products with filters
@@ -143,6 +163,24 @@ async function searchProducts(
     fallbackQuery = fallbackQuery.gt("stock", 0)
   }
   
+  // Apply sorting to fallback query
+  switch (filters.sort) {
+    case 'newest':
+      fallbackQuery = fallbackQuery.order("created_at", { ascending: false })
+      break
+    case 'price-asc':
+      fallbackQuery = fallbackQuery.order("price", { ascending: true })
+      break
+    case 'price-desc':
+      fallbackQuery = fallbackQuery.order("price", { ascending: false })
+      break
+    case 'rating':
+      fallbackQuery = fallbackQuery.order("rating", { ascending: false, nullsFirst: false })
+      break
+    default:
+      fallbackQuery = fallbackQuery.order("rating", { ascending: false, nullsFirst: false })
+  }
+  
   // Use ILIKE for partial matching on title and description
   fallbackQuery = fallbackQuery.or(`title.ilike.%${query}%,description.ilike.%${query}%`)
   
@@ -165,6 +203,7 @@ export default async function SearchPage({
     deals?: string
     brand?: string
     availability?: string
+    sort?: string
   }>
 }) {
   const searchParams = await searchParamsPromise
@@ -226,6 +265,7 @@ export default async function SearchPage({
           minRating: searchParams.minRating,
           prime: searchParams.prime,
           availability: searchParams.availability,
+          sort: searchParams.sort,
         })
       }
     } else {
@@ -237,6 +277,7 @@ export default async function SearchPage({
         minRating: searchParams.minRating,
         prime: searchParams.prime,
         availability: searchParams.availability,
+        sort: searchParams.sort,
       })
     }
 

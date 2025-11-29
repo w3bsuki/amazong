@@ -45,7 +45,7 @@ export function MobileCartDropdown() {
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <button 
-                    className="flex items-center justify-center size-10 p-0 rounded-md relative"
+                    className="flex items-center justify-center size-11 p-0 rounded-lg relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
                     aria-label={`${tNav('cart')} - ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`}
                 >
                     <ShoppingCart size={24} weight="regular" className="text-header-text" aria-hidden="true" />
@@ -66,7 +66,7 @@ export function MobileCartDropdown() {
                         </div>
                         <DrawerClose asChild>
                             <button 
-                                className="text-sm text-muted-foreground hover:text-foreground transition-colors py-1 px-2"
+                                className="text-sm text-muted-foreground hover:text-foreground transition-colors min-h-11 px-3 rounded-lg hover:bg-muted touch-action-manipulation tap-transparent"
                                 aria-label="Close"
                             >
                                 {locale === 'bg' ? 'Затвори' : 'Close'}
@@ -133,14 +133,14 @@ export function MobileCartDropdown() {
                                             <span className="text-base font-bold text-foreground">{formatPrice(item.price)}</span>
                                             <button
                                                 onClick={() => removeFromCart(item.id)}
-                                                className="p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                                                className="flex items-center justify-center size-9 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors touch-action-manipulation tap-transparent"
                                                 aria-label="Remove item"
                                             >
-                                                <Trash size={16} weight="regular" />
+                                                <Trash size={18} weight="regular" />
                                             </button>
                                         </div>
                                         <div className="flex items-center mt-2">
-                                            <div className="flex items-center gap-0.5 bg-muted rounded-full">
+                                            <div className="flex items-center gap-0 bg-muted rounded-full">
                                                 <button
                                                     onClick={() => {
                                                         if (item.quantity > 1) {
@@ -149,20 +149,20 @@ export function MobileCartDropdown() {
                                                             removeFromCart(item.id)
                                                         }
                                                     }}
-                                                    className="p-1.5 rounded-full hover:bg-background text-muted-foreground hover:text-foreground transition-colors"
+                                                    className="flex items-center justify-center size-9 rounded-full hover:bg-background text-muted-foreground hover:text-foreground transition-colors touch-action-manipulation tap-transparent"
                                                     aria-label="Decrease quantity"
                                                 >
-                                                    <Minus size={14} weight="regular" />
+                                                    <Minus size={16} weight="regular" />
                                                 </button>
-                                                <span className="text-sm font-medium text-foreground min-w-6 text-center">
+                                                <span className="text-sm font-medium text-foreground min-w-8 text-center">
                                                     {item.quantity}
                                                 </span>
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                    className="p-1.5 rounded-full hover:bg-background text-muted-foreground hover:text-foreground transition-colors"
+                                                    className="flex items-center justify-center size-9 rounded-full hover:bg-background text-muted-foreground hover:text-foreground transition-colors touch-action-manipulation tap-transparent"
                                                     aria-label="Increase quantity"
                                                 >
-                                                    <Plus size={14} weight="regular" />
+                                                    <Plus size={16} weight="regular" />
                                                 </button>
                                             </div>
                                         </div>

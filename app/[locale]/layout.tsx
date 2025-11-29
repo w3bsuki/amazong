@@ -44,7 +44,6 @@ import { CartProvider } from "@/lib/cart-context";
 import { WishlistProvider } from "@/lib/wishlist-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { MobileNavigation } from "@/components/mobile-navigation";
 import { CookieConsent } from "@/components/cookie-consent";
 import { Suspense } from "react";
 import { AuthStateListener } from "@/components/auth-state-listener";
@@ -102,10 +101,9 @@ export default async function LocaleLayout({
                             <Suspense fallback={<div className="h-[100px] w-full bg-header-bg" />}>
                                 <SiteHeader user={user} />
                             </Suspense>
-                            {/* pt-[120px] for fixed header on mobile (56px header + ~48px nav), md:pt-[108px] for tablet+ */}
-                            <main id="main-content" role="main" className="flex-1 pt-14 sm:pt-[108px] pb-16 md:pb-0 animate-page-fade-in">{children}</main>
+                            {/* pt-14 for mobile header, sm:pt-[108px] for tablet+ with subheader */}
+                            <main id="main-content" role="main" className="flex-1 pt-14 sm:pt-[108px] animate-page-fade-in">{children}</main>
                             <SiteFooter />
-                            <MobileNavigation locale={locale} />
                             <CookieConsent />
                             <Toaster />
                         </WishlistProvider>

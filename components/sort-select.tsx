@@ -2,6 +2,8 @@
 
 import { CaretDown, ArrowsDownUp } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useCallback } from "react"
 import { cn } from "@/lib/utils"
 import {
   Select,
@@ -13,9 +15,29 @@ import {
 
 export function SortSelect() {
   const t = useTranslations('SearchFilters')
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  
+  // Get current sort from URL, default to "featured"
+  const currentSort = searchParams.get('sort') || 'featured'
+  
+  // Handle sort change
+  const handleSortChange = useCallback((value: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    
+    if (value === 'featured') {
+      params.delete('sort')
+    } else {
+      params.set('sort', value)
+    }
+    
+    const queryString = params.toString()
+    router.push(queryString ? `${pathname}?${queryString}` : pathname)
+  }, [router, pathname, searchParams])
 
   return (
-    <Select defaultValue="featured">
+    <Select value={currentSort} onValueChange={handleSortChange}>
       <SelectTrigger 
         className={cn(
           "w-full h-11 px-4 rounded-full",

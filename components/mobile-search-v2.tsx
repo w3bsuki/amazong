@@ -183,7 +183,7 @@ export function MobileSearchV2() {
       {/* Search trigger */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center size-10 p-0 text-white md:hidden"
+        className="flex items-center justify-center size-11 p-0 rounded-lg text-header-text hover:bg-header-hover active:bg-header-active transition-colors md:hidden touch-action-manipulation tap-transparent"
         aria-label="Search"
       >
         <MagnifyingGlass size={24} weight="regular" />

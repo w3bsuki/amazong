@@ -1,14 +1,130 @@
 "use client"
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { List, UserCircle, CaretRight, X, Globe, SignIn, User, MapPin, Chat } from "@phosphor-icons/react"
+import { 
+    List, 
+    UserCircle, 
+    CaretRight, 
+    CaretDown,
+    X, 
+    SignIn as SignInIcon, 
+    Chat, 
+    Heart,
+    Clock,
+    Percent,
+    ShoppingBag,
+    Question,
+    FireSimple,
+    Trophy,
+    Sparkle,
+    // Category icons
+    Monitor, 
+    Laptop, 
+    House, 
+    GameController, 
+    TShirt, 
+    Baby, 
+    Wrench, 
+    Car, 
+    Gift, 
+    BookOpen, 
+    Barbell, 
+    Dog, 
+    Lightbulb,
+    DeviceMobile,
+    Watch,
+    Headphones,
+    Camera,
+    Television,
+    MusicNotes,
+    Briefcase,
+    ForkKnife,
+    Leaf,
+    Code,
+    ShoppingCart,
+    Diamond,
+    Palette,
+    Pill,
+    GraduationCap,
+    Guitar,
+    FilmStrip,
+    Flask,
+    Hammer,
+    Flower,
+    PaintBrush,
+    SignOut,
+    Storefront
+} from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Link } from "@/i18n/routing"
-import { useState } from "react"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Link, useRouter } from "@/i18n/routing"
+import { useState, useEffect } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { User as SupabaseUser } from "@supabase/supabase-js"
+import { cn } from "@/lib/utils"
+
+interface Category {
+    id: string
+    name: string
+    name_bg: string | null
+    slug: string
+    children?: Category[]
+}
+
+// Category icon mapping (same as mega-menu)
+const categoryIconMap: Record<string, React.ReactNode> = {
+    "electronics": <Monitor size={20} weight="regular" />,
+    "computers": <Laptop size={20} weight="regular" />,
+    "smart-home": <Lightbulb size={20} weight="regular" />,
+    "gaming": <GameController size={20} weight="regular" />,
+    "fashion": <TShirt size={20} weight="regular" />,
+    "home": <House size={20} weight="regular" />,
+    "home-kitchen": <ForkKnife size={20} weight="regular" />,
+    "sports": <Barbell size={20} weight="regular" />,
+    "sports-outdoors": <Barbell size={20} weight="regular" />,
+    "beauty": <PaintBrush size={20} weight="regular" />,
+    "toys": <Gift size={20} weight="regular" />,
+    "books": <BookOpen size={20} weight="regular" />,
+    "automotive": <Car size={20} weight="regular" />,
+    "health": <Heart size={20} weight="regular" />,
+    "baby": <Baby size={20} weight="regular" />,
+    "pets": <Dog size={20} weight="regular" />,
+    "pet-supplies": <Dog size={20} weight="regular" />,
+    "tools": <Wrench size={20} weight="regular" />,
+    "lighting": <Lightbulb size={20} weight="regular" />,
+    "phones": <DeviceMobile size={20} weight="regular" />,
+    "watches": <Watch size={20} weight="regular" />,
+    "audio": <Headphones size={20} weight="regular" />,
+    "cameras": <Camera size={20} weight="regular" />,
+    "tv": <Television size={20} weight="regular" />,
+    "music": <MusicNotes size={20} weight="regular" />,
+    "office": <Briefcase size={20} weight="regular" />,
+    "garden": <Leaf size={20} weight="regular" />,
+    "software-services": <Code size={20} weight="regular" />,
+    "grocery": <ShoppingCart size={20} weight="regular" />,
+    "jewelry-watches": <Diamond size={20} weight="regular" />,
+    "handmade": <Palette size={20} weight="regular" />,
+    "health-wellness": <Pill size={20} weight="regular" />,
+    "office-school": <GraduationCap size={20} weight="regular" />,
+    "musical-instruments": <Guitar size={20} weight="regular" />,
+    "movies-music": <FilmStrip size={20} weight="regular" />,
+    "industrial-scientific": <Flask size={20} weight="regular" />,
+    "collectibles": <Trophy size={20} weight="regular" />,
+    "baby-kids": <Baby size={20} weight="regular" />,
+    "tools-home": <Hammer size={20} weight="regular" />,
+    "garden-outdoor": <Flower size={20} weight="regular" />,
+}
+
+function getCategoryIcon(slug: string): React.ReactNode {
+    return categoryIconMap[slug] || <ShoppingBag size={20} weight="regular" />
+}
 
 interface SidebarMenuProps {
     user?: SupabaseUser | null
@@ -16,8 +132,12 @@ interface SidebarMenuProps {
 
 export function SidebarMenu({ user }: SidebarMenuProps) {
     const [open, setOpen] = useState(false)
+    const [categories, setCategories] = useState<Category[]>([])
+    const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({})
+    const [isLoading, setIsLoading] = useState(true)
     const t = useTranslations('Sidebar')
     const locale = useLocale()
+    const router = useRouter()
 
     // Get display name from user metadata or email
     const getUserDisplayName = () => {
@@ -31,209 +151,432 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
     const displayName = getUserDisplayName()
     const isLoggedIn = !!user
 
-    const menuSections = [
-        {
-            title: t('digitalContent'),
-            items: [
-                { label: t('amazonMusic'), href: "/search?q=Amazon+Music" },
-                { label: t('kindleBooks'), href: "/search?q=Kindle" },
-                { label: t('amazonAppstore'), href: "/search?q=Appstore" },
-            ],
-        },
-        {
-            title: t('shopByDepartment'),
-            items: [
-                { label: t('electronics'), href: "/search?category=electronics" },
-                { label: t('computers'), href: "/search?category=computers" },
-                { label: t('gaming'), href: "/search?category=gaming" },
-                { label: t('smartHome'), href: "/search?category=smart-home" },
-                { label: t('homeKitchen'), href: "/search?category=home" },
-                { label: t('fashion'), href: "/search?category=fashion" },
-                { label: t('beauty'), href: "/search?category=beauty" },
-                { label: t('toys'), href: "/search?category=toys" },
-                { label: t('sports'), href: "/search?category=sports" },
-                { label: t('books'), href: "/search?category=books" },
-                { label: t('automotive'), href: "/search?category=automotive" },
-                { label: t('garden'), href: "/search?category=garden" },
-                { label: t('health'), href: "/search?category=health" },
-                { label: t('baby'), href: "/search?category=baby" },
-                { label: t('pets'), href: "/search?category=pets" },
-                { label: t('office'), href: "/search?category=office" },
-            ],
-        },
-        {
-            title: t('programsFeatures'),
-            items: [
-                { label: t('giftCards'), href: "/gift-cards" },
-                { label: t('shopByInterest'), href: "/search?q=Shop+By+Interest" },
-                { label: t('amazonLive'), href: "/search?q=Amazon+Live" },
-                { label: t('internationalShopping'), href: "/search?q=International+Shopping" },
-                { label: t('registry'), href: "/registry" },
-                { label: t('todaysDeals'), href: "/todays-deals" },
-            ],
-        },
-        {
-            title: t('helpSettings'),
-            items: [
-                { label: t('yourAccount'), href: "/account" },
-                { label: t('orders'), href: "/account/orders" },
-                { label: t('messages'), href: "/account/messages" },
-                { label: t('customerService'), href: "/customer-service" },
-            ],
-        },
-    ]
+    // Fetch categories with children (like mega-menu)
+    useEffect(() => {
+        if (open && categories.length === 0) {
+            fetch('/api/categories?children=true')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.categories) {
+                        setCategories(data.categories)
+                    }
+                })
+                .catch(err => console.error('Failed to fetch categories:', err))
+                .finally(() => setIsLoading(false))
+        }
+    }, [open, categories.length])
 
-    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
+    const getCategoryName = (cat: Category) => {
+        if (locale === 'bg' && cat.name_bg) {
+            return cat.name_bg
+        }
+        return cat.name
+    }
 
-    const toggleSection = (title: string) => {
-        setExpandedSections(prev => ({
+    const toggleCategory = (categoryId: string) => {
+        setExpandedCategories(prev => ({
             ...prev,
-            [title]: !prev[title]
+            [categoryId]: !prev[categoryId]
         }))
     }
+
+    const handleSignOut = async () => {
+        setOpen(false)
+        router.push('/api/auth/sign-out')
+    }
+
+    const quickLinks = [
+        {
+            icon: <Percent size={20} weight="fill" />,
+            label: locale === 'bg' ? 'Оферти' : 'Deals',
+            href: '/todays-deals',
+            highlight: true,
+        },
+        {
+            icon: <FireSimple size={20} weight="fill" />,
+            label: locale === 'bg' ? 'Нови' : 'New',
+            href: '/search?sort=newest',
+            highlight: false,
+        },
+        {
+            icon: <Gift size={20} weight="regular" />,
+            label: locale === 'bg' ? 'Подаръци' : 'Gifts',
+            href: '/gift-cards',
+            highlight: false,
+        },
+        {
+            icon: <Question size={20} weight="regular" />,
+            label: locale === 'bg' ? 'Помощ' : 'Help',
+            href: '/customer-service',
+            highlight: false,
+        },
+    ]
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <button className="flex items-center justify-center gap-1 font-bold md:hover:outline md:outline-1 md:outline-white size-10 p-1.5 md:p-1.5 rounded-md cursor-pointer">
-                    <List size={22} weight="regular" />
-                    <span className="text-sm hidden md:inline">{t('all')}</span>
+                <button 
+                    className="flex items-center justify-center size-11 rounded-lg text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
+                    aria-label={t('all')}
+                >
+                    <List size={24} weight="regular" />
                 </button>
             </SheetTrigger>
             <SheetContent 
                 side="left" 
-                className="w-[85vw] max-w-xs md:w-[365px] md:max-w-[365px] p-0 border-r-0 bg-white text-black gap-0"
+                className="w-full max-w-full sm:max-w-[380px] p-0 border-r-0 bg-background text-foreground gap-0"
             >
-                {/* Header with Sign In / User Name - matches mobile header exactly */}
-                <SheetHeader className="bg-header-bg text-header-text px-2 py-2 md:p-4 md:py-3 flex flex-row items-center gap-1 md:gap-3 space-y-0">
-                    <div className="size-10 rounded-full bg-muted-foreground/30 flex items-center justify-center shrink-0">
-                        <UserCircle size={24} weight="regular" />
+                {/* Header - Profile with Language + Close */}
+                <SheetHeader className="bg-header-bg text-header-text px-3 py-2 space-y-0">
+                    <div className="flex items-center gap-2">
+                        {/* Profile area */}
+                        <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                            <Link 
+                                href={isLoggedIn ? "/account" : "/auth/login"}
+                                onClick={() => setOpen(false)}
+                                className="flex items-center gap-2.5 min-w-0 min-h-11 px-1.5 -mx-1.5 rounded-xl hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
+                            >
+                                <div className="size-9 shrink-0 rounded-full bg-muted/80 flex items-center justify-center">
+                                    <UserCircle size={24} weight="fill" className="text-muted-foreground" />
+                                </div>
+                                <div className="min-w-0">
+                                    <SheetTitle className="text-header-text text-base font-semibold truncate text-left">
+                                        {isLoggedIn 
+                                            ? displayName
+                                            : (locale === 'bg' ? 'Влез в акаунта' : 'Sign in')
+                                        }
+                                    </SheetTitle>
+                                    {isLoggedIn && (
+                                        <p className="text-xs text-header-text-muted flex items-center gap-0.5">
+                                            {locale === 'bg' ? 'Моят акаунт' : 'My account'}
+                                            <CaretRight size={12} weight="bold" />
+                                        </p>
+                                    )}
+                                </div>
+                            </Link>
+                            {/* Language dropdown - right next to profile */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button
+                                        className="flex items-center gap-1 min-h-9 px-1.5 rounded-lg hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent shrink-0"
+                                    >
+                                        <img 
+                                            src={locale === 'bg' ? 'https://flagcdn.com/w40/bg.png' : 'https://flagcdn.com/w40/gb.png'}
+                                            alt={locale === 'bg' ? 'BG' : 'EN'}
+                                            className="w-6 h-7 rounded-sm object-cover shadow-sm"
+                                        />
+                                        <CaretDown size={10} weight="bold" className="text-header-text-muted" />
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start" className="min-w-[140px]">
+                                    <DropdownMenuItem asChild>
+                                        <Link
+                                            href="/"
+                                            locale="en"
+                                            onClick={() => setOpen(false)}
+                                            className="flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <img 
+                                                src="https://flagcdn.com/w40/gb.png" 
+                                                alt="EN" 
+                                                className="size-5 rounded-sm object-cover"
+                                            />
+                                            <span>English</span>
+                                            {locale === 'en' && <span className="ml-auto text-brand">✓</span>}
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link
+                                            href="/"
+                                            locale="bg"
+                                            onClick={() => setOpen(false)}
+                                            className="flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <img 
+                                                src="https://flagcdn.com/w40/bg.png" 
+                                                alt="BG" 
+                                                className="size-5 rounded-sm object-cover"
+                                            />
+                                            <span>Български</span>
+                                            {locale === 'bg' && <span className="ml-auto text-brand">✓</span>}
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                        {/* Close button */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-9 text-header-text hover:bg-header-hover active:bg-header-active rounded-full touch-action-manipulation tap-transparent shrink-0"
+                            onClick={() => setOpen(false)}
+                        >
+                            <X size={20} weight="regular" />
+                            <span className="sr-only">{t('close')}</span>
+                        </Button>
                     </div>
-                    <div className="flex-1 min-w-0">
-                        <SheetTitle className="text-header-text text-lg md:text-xl font-bold truncate">
-                            {isLoggedIn 
-                                ? `${locale === 'bg' ? 'Здравей' : 'Hello'}, ${displayName}`
-                                : t('helloSignIn')
-                            }
-                        </SheetTitle>
-                    </div>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-1 top-1 md:right-2 md:top-2 size-10 text-header-text hover:bg-transparent hover:text-header-text-muted"
-                        onClick={() => setOpen(false)}
-                    >
-                        <X size={24} weight="regular" />
-                        <span className="sr-only">{t('close')}</span>
-                    </Button>
                 </SheetHeader>
 
-                <ScrollArea className="h-[calc(100vh-60px)] pb-4">
-                    <div className="flex flex-col">
-                        {/* Quick Actions - Mobile Only */}
-                        <div className="md:hidden px-4 py-3 bg-secondary border-b border-border">
-                            <div className="grid grid-cols-2 gap-2">
-                                <Link
-                                    href="/auth/login"
-                                    className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-card rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted active:scale-[0.98] transition-transform"
-                                    onClick={() => setOpen(false)}
-                                >
-                                    <SignIn size={16} weight="regular" className="text-muted-foreground" />
-                                    {t('signIn')}
-                                </Link>
-                                <Link
-                                    href="/account"
-                                    className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-card rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted active:scale-[0.98] transition-transform"
-                                    onClick={() => setOpen(false)}
-                                >
-                                    <User size={16} weight="regular" className="text-muted-foreground" />
-                                    {t('account')}
-                                </Link>
-                            </div>
-                            
-                            {/* Language Toggle - Mobile */}
-                            <div className="mt-2.5 flex items-center gap-2 py-2 px-3 bg-card rounded-lg border border-border">
-                                <Globe size={16} weight="regular" className="text-muted-foreground" />
-                                <span className="text-sm font-medium text-foreground">{t('language')}</span>
-                                <div className="ml-auto flex gap-1">
+                <ScrollArea className="h-[calc(100vh-64px)]">
+                    <div className="flex flex-col pb-6">
+                        {/* Auth Actions - Only when not logged in */}
+                        {!isLoggedIn && (
+                            <div className="px-4 py-3 bg-muted/50 border-b border-border">
+                                <div className="flex gap-2">
                                     <Link
-                                        href="/"
-                                        locale="en"
-                                        className={`px-2.5 py-1 rounded-md text-xs font-medium ${locale === 'en' ? 'bg-brand text-white' : 'bg-muted text-muted-foreground'}`}
+                                        href="/auth/login"
+                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand/90 active:scale-[0.98] transition-all"
                                         onClick={() => setOpen(false)}
                                     >
-                                        EN
+                                        <SignInIcon size={18} weight="regular" />
+                                        {locale === 'bg' ? 'Влез' : 'Sign In'}
                                     </Link>
                                     <Link
-                                        href="/"
-                                        locale="bg"
-                                        className={`px-2.5 py-1 rounded-md text-xs font-medium ${locale === 'bg' ? 'bg-brand text-white' : 'bg-muted text-muted-foreground'}`}
+                                        href="/auth/sign-up"
+                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-card border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted active:scale-[0.98] transition-all"
                                         onClick={() => setOpen(false)}
                                     >
-                                        БГ
+                                        {locale === 'bg' ? 'Регистрация' : 'Sign Up'}
                                     </Link>
                                 </div>
                             </div>
+                        )}
 
-                            {/* Delivery Location Toggle - Mobile */}
-                            <div className="mt-2 flex items-center gap-2 py-2 px-3 bg-card rounded-lg border border-border">
-                                <MapPin size={16} weight="regular" className="text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">{t('deliverTo')}</span>
-                                <span className="text-sm font-medium text-foreground">Bulgaria</span>
-                                <CaretRight size={16} weight="regular" className="ml-auto text-muted-foreground" />
+                        {/* Quick Actions - Unified row for logged in users */}
+                        <div className="px-4 py-2 border-b border-border">
+                            <div className="flex items-center justify-between gap-1">
+                                {isLoggedIn ? (
+                                    <>
+                                        <Link
+                                            href="/account/orders"
+                                            onClick={() => setOpen(false)}
+                                            className="flex flex-col items-center justify-center gap-1 flex-1 min-h-11 py-1.5 rounded-lg hover:bg-muted active:scale-[0.97] transition-all touch-action-manipulation tap-transparent"
+                                        >
+                                            <Clock size={20} weight="regular" className="text-muted-foreground" />
+                                            <span className="text-2xs font-medium text-center text-foreground">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
+                                        </Link>
+                                        <Link
+                                            href="/account/selling"
+                                            onClick={() => setOpen(false)}
+                                            className="flex flex-col items-center justify-center gap-1 flex-1 min-h-11 py-1.5 rounded-lg hover:bg-muted active:scale-[0.97] transition-all touch-action-manipulation tap-transparent"
+                                        >
+                                            <Storefront size={20} weight="regular" className="text-muted-foreground" />
+                                            <span className="text-2xs font-medium text-center text-foreground">{locale === 'bg' ? 'Продажби' : 'Selling'}</span>
+                                        </Link>
+                                        <Link
+                                            href="/wishlist"
+                                            onClick={() => setOpen(false)}
+                                            className="flex flex-col items-center justify-center gap-1 flex-1 min-h-11 py-1.5 rounded-lg hover:bg-muted active:scale-[0.97] transition-all touch-action-manipulation tap-transparent"
+                                        >
+                                            <Heart size={20} weight="regular" className="text-muted-foreground" />
+                                            <span className="text-2xs font-medium text-center text-foreground">{locale === 'bg' ? 'Любими' : 'Wishlist'}</span>
+                                        </Link>
+                                        <Link
+                                            href="/account/messages"
+                                            onClick={() => setOpen(false)}
+                                            className="flex flex-col items-center justify-center gap-1 flex-1 min-h-11 py-1.5 rounded-lg hover:bg-muted active:scale-[0.97] transition-all touch-action-manipulation tap-transparent"
+                                        >
+                                            <Chat size={20} weight="regular" className="text-muted-foreground" />
+                                            <span className="text-2xs font-medium text-center text-foreground">{locale === 'bg' ? 'Съобщения' : 'Messages'}</span>
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <>
+                                        {quickLinks.map((link, i) => (
+                                            <Link
+                                                key={i}
+                                                href={link.href}
+                                                onClick={() => setOpen(false)}
+                                                className={cn(
+                                                    "flex flex-col items-center justify-center gap-1 flex-1 min-h-11 py-1.5 rounded-lg transition-all active:scale-[0.95] touch-action-manipulation tap-transparent",
+                                                    link.highlight 
+                                                        ? "text-deal" 
+                                                        : "text-foreground hover:bg-muted"
+                                                )}
+                                            >
+                                                {link.icon}
+                                                <span className="text-2xs font-medium text-center leading-tight">
+                                                    {link.label}
+                                                </span>
+                                            </Link>
+                                        ))}
+                                    </>
+                                )}
                             </div>
-                            
-                            {/* Messages - Mobile */}
-                            <Link
-                                href="/account/messages"
-                                className="mt-2 flex items-center gap-2 py-2 px-3 bg-card rounded-lg border border-border"
-                                onClick={() => setOpen(false)}
-                            >
-                                <Chat size={20} weight="regular" className="text-muted-foreground" />
-                                <span className="text-sm font-medium text-foreground">{t('messages')}</span>
-                                <CaretRight size={16} weight="regular" className="ml-auto text-muted-foreground" />
-                            </Link>
                         </div>
 
-                        {menuSections.map((section, index) => {
-                            const isExpandable = section.items.length > 4;
-                            const isExpanded = expandedSections[section.title];
-                            const visibleItems = isExpandable && !isExpanded ? section.items.slice(0, 4) : section.items;
+                        {/* Categories Section */}
+                        <div className="pt-3 pb-2">
+                            <div className="flex items-center justify-between px-4 py-2">
+                                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                    {locale === 'bg' ? 'Категории' : 'Categories'}
+                                </h3>
+                                <Link 
+                                    href="/categories" 
+                                    onClick={() => setOpen(false)}
+                                    className="text-xs text-brand font-medium hover:text-brand/80 transition-colors"
+                                >
+                                    {locale === 'bg' ? 'Виж всички' : 'View All'}
+                                </Link>
+                            </div>
 
-                            return (
-                                <div key={index}>
-                                    <div className="px-5 md:px-9 py-4">
-                                        <h3 className="font-bold text-base md:text-lg mb-2 text-foreground">{section.title}</h3>
-                                        <ul className="space-y-0">
-                                            {visibleItems.map((item, i) => (
-                                                <li key={i}>
-                                                    <Link
-                                                        href={item.href}
-                                                        className="flex items-center justify-between py-3 md:py-2.5 text-sm text-foreground hover:bg-muted -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer group"
-                                                        onClick={() => setOpen(false)}
-                                                    >
-                                                        <span>{item.label}</span>
-                                                        <CaretRight size={16} weight="regular" className="text-muted-foreground group-hover:text-foreground" />
-                                                    </Link>
-                                                </li>
-                                            ))}
-                                            {isExpandable && (
-                                                <li>
-                                                    <button
-                                                        onClick={() => toggleSection(section.title)}
-                                                        className="flex items-center gap-1 py-3 md:py-2.5 text-sm text-foreground hover:bg-muted -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer w-[calc(100%+2.5rem)] md:w-[calc(100%+4.5rem)] text-left font-medium"
-                                                    >
-                                                        <span>{isExpanded ? t('seeLess') : t('seeAll')}</span>
-                                                        <CaretRight size={16} weight="regular" className={`text-muted-foreground transition-transform ${isExpanded ? '-rotate-90' : 'rotate-90'}`} />
-                                                    </button>
-                                                </li>
-                                            )}
-                                        </ul>
-                                    </div>
-                                    {index < menuSections.length - 1 && <Separator className="bg-border" />}
+                            {isLoading ? (
+                                <div className="px-4 py-8 text-center">
+                                    <div className="size-5 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin mx-auto" />
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        {locale === 'bg' ? 'Зареждане...' : 'Loading...'}
+                                    </p>
                                 </div>
-                            )
-                        })}
+                            ) : (
+                                <div className="space-y-0.5">
+                                    {/* Featured Links - Same styling as categories */}
+                                    <div className="flex items-center">
+                                        <Link
+                                            href="/todays-deals"
+                                            onClick={() => setOpen(false)}
+                                            className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
+                                        >
+                                            <span className="text-deal">
+                                                <Percent size={20} weight="fill" />
+                                            </span>
+                                            <span className="flex-1 font-medium">{locale === 'bg' ? 'Оферти на деня' : "Today's Deals"}</span>
+                                        </Link>
+                                        <div className="flex items-center justify-center size-11">
+                                            <CaretRight size={16} weight="regular" className="text-muted-foreground/50" />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center">
+                                        <Link
+                                            href="/search?sort=newest"
+                                            onClick={() => setOpen(false)}
+                                            className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
+                                        >
+                                            <span className="text-brand">
+                                                <Sparkle size={20} weight="fill" />
+                                            </span>
+                                            <span className="flex-1 font-medium">{locale === 'bg' ? 'Нови обяви' : 'Newest Listings'}</span>
+                                        </Link>
+                                        <div className="flex items-center justify-center size-11">
+                                            <CaretRight size={16} weight="regular" className="text-muted-foreground/50" />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center">
+                                        <Link
+                                            href="/sellers"
+                                            onClick={() => setOpen(false)}
+                                            className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
+                                        >
+                                            <span className="text-amber-500">
+                                                <Trophy size={20} weight="fill" />
+                                            </span>
+                                            <span className="flex-1 font-medium">{locale === 'bg' ? 'Топ продавачи' : 'Top Sellers'}</span>
+                                        </Link>
+                                        <div className="flex items-center justify-center size-11">
+                                            <CaretRight size={16} weight="regular" className="text-muted-foreground/50" />
+                                        </div>
+                                    </div>
+
+                                    <Separator className="my-1" />
+
+                                    {categories.map((category) => {
+                                        const hasChildren = category.children && category.children.length > 0
+                                        const isExpanded = expandedCategories[category.id]
+                                        
+                                        return (
+                                            <div key={category.id}>
+                                                {/* Category Row */}
+                                                <div className="flex items-center">
+                                                    <Link
+                                                        href={`/categories/${category.slug}`}
+                                                        onClick={() => setOpen(false)}
+                                                        className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
+                                                    >
+                                                        <span className="text-muted-foreground">
+                                                            {getCategoryIcon(category.slug)}
+                                                        </span>
+                                                        <span className="flex-1 font-medium">{getCategoryName(category)}</span>
+                                                    </Link>
+                                                    {hasChildren && (
+                                                        <button
+                                                            onClick={() => toggleCategory(category.id)}
+                                                            className="flex items-center justify-center size-11 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors touch-action-manipulation tap-transparent"
+                                                            aria-label={isExpanded ? 'Collapse' : 'Expand'}
+                                                        >
+                                                            <CaretDown 
+                                                                size={18} 
+                                                                weight="regular" 
+                                                                className={cn(
+                                                                    "transition-transform duration-200",
+                                                                    isExpanded && "rotate-180"
+                                                                )}
+                                                            />
+                                                        </button>
+                                                    )}
+                                                    {!hasChildren && (
+                                                        <div className="flex items-center justify-center size-11">
+                                                            <CaretRight size={16} weight="regular" className="text-muted-foreground/50" />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Subcategories */}
+                                                {hasChildren && isExpanded && (
+                                                    <div className="bg-muted/30">
+                                                        {category.children!.slice(0, 8).map((sub) => (
+                                                            <Link
+                                                                key={sub.id}
+                                                                href={`/search?category=${sub.slug}`}
+                                                                onClick={() => setOpen(false)}
+                                                                className="flex items-center gap-3 px-4 pl-12 min-h-11 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 active:bg-muted transition-colors touch-action-manipulation tap-transparent"
+                                                            >
+                                                                <span>{getCategoryName(sub)}</span>
+                                                            </Link>
+                                                        ))}
+                                                        {category.children!.length > 8 && (
+                                                            <Link
+                                                                href={`/categories/${category.slug}`}
+                                                                onClick={() => setOpen(false)}
+                                                                className="flex items-center gap-2 px-4 pl-12 min-h-11 text-sm text-brand font-medium hover:text-brand/80 active:text-brand-dark transition-colors touch-action-manipulation tap-transparent"
+                                                            >
+                                                                {locale === 'bg' 
+                                                                    ? `Виж всички ${category.children!.length}` 
+                                                                    : `View all ${category.children!.length}`
+                                                                }
+                                                                <CaretRight size={14} weight="regular" />
+                                                            </Link>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Help & Sign Out */}
+                        <Separator className="my-1" />
+                        <div className="px-4 py-2 space-y-1">
+                            <Link
+                                href="/customer-service"
+                                onClick={() => setOpen(false)}
+                                className="w-full flex items-center justify-center gap-2 min-h-11 text-sm font-medium text-muted-foreground hover:bg-muted active:bg-muted/80 rounded-lg transition-colors touch-action-manipulation tap-transparent"
+                            >
+                                <Question size={18} weight="regular" />
+                                {locale === 'bg' ? 'Помощ' : 'Help'}
+                            </Link>
+                            {isLoggedIn && (
+                                <button
+                                    onClick={handleSignOut}
+                                    className="w-full flex items-center justify-center gap-2 min-h-11 text-sm font-medium text-destructive hover:bg-destructive/10 active:bg-destructive/15 rounded-lg transition-colors touch-action-manipulation tap-transparent"
+                                >
+                                    <SignOut size={18} weight="regular" />
+                                    {locale === 'bg' ? 'Излез' : 'Sign Out'}
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </ScrollArea>
             </SheetContent>
