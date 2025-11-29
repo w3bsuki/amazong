@@ -63,10 +63,10 @@ function ProductCard({ id, title, price, image, rating = 4.5, reviews = 0 }: Pro
         </div>
 
         {/* Price */}
-        <span className="text-sm font-medium text-foreground">{formatPrice(price)}</span>
+        <span className="text-sm sm:text-base font-medium text-foreground">{formatPrice(price)}</span>
         
         {/* Title - 2 lines */}
-        <h3 className="text-xs text-muted-foreground line-clamp-2 mt-0.5 group-hover:text-link group-hover:underline">
+        <h3 className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mt-0.5 group-hover:text-link group-hover:underline">
           {title}
         </h3>
 
@@ -117,19 +117,19 @@ function DealCard({ id, title, price, listPrice, image, rating = 4.5, reviews = 
             src={image || "/placeholder.svg"}
             alt={title}
             fill
-            className="object-contain p-2"
-            sizes="150px"
+            className="object-contain p-2 sm:p-3"
+            sizes="(max-width: 640px) 45vw, (max-width: 1024px) 192px, 224px"
           />
         </div>
 
         {/* Prices */}
         <div className="flex items-baseline gap-1.5">
-          <span className="text-sm font-medium text-price-sale">{formatPrice(price)}</span>
-          <span className="text-[10px] text-muted-foreground line-through">{formatPrice(listPrice)}</span>
+          <span className="text-sm sm:text-base font-medium text-price-sale">{formatPrice(price)}</span>
+          <span className="text-[10px] sm:text-xs text-muted-foreground line-through">{formatPrice(listPrice)}</span>
         </div>
         
         {/* Title - 2 lines */}
-        <h3 className="text-xs text-muted-foreground line-clamp-2 mt-0.5 group-hover:text-link group-hover:underline">
+        <h3 className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mt-0.5 group-hover:text-link group-hover:underline">
           {title}
         </h3>
 
@@ -224,16 +224,16 @@ export function ProductRow({
         <div
           ref={scrollContainerRef}
           onScroll={checkScrollability}
-          className="flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-pl-4 px-4 pb-2 no-scrollbar scroll-smooth"
+          className="flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-pl-4 px-4 pb-2 no-scrollbar scroll-smooth"
         >
           {variant === "deals" 
             ? deals?.map((deal) => (
-                <div key={deal.id} className="w-32 min-w-32 shrink-0 snap-start">
+                <div key={deal.id} className="w-[45%] min-w-[45%] sm:w-48 sm:min-w-48 lg:w-56 lg:min-w-56 shrink-0 snap-start">
                   <DealCard {...deal} />
                 </div>
               ))
             : products?.map((product) => (
-                <div key={product.id} className="w-32 min-w-32 shrink-0 snap-start">
+                <div key={product.id} className="w-[45%] min-w-[45%] sm:w-48 sm:min-w-48 lg:w-56 lg:min-w-56 shrink-0 snap-start">
                   <ProductCard {...product} />
                 </div>
               ))
