@@ -132,20 +132,20 @@ export function TabbedProductSection({
     }
   }
 
-  // Background color variants - Clean eBay-style
-  // Featured/Default use clean white card, Deals uses RED
+  // Background color variants - Amazon-style: no containers on mobile
+  // Featured/Default use clean white card on desktop only, Deals uses RED
   const bgStyles = {
-    default: "bg-card border border-border",
-    featured: "bg-card border border-border",
+    default: "sm:bg-card sm:border sm:border-border",
+    featured: "sm:bg-card sm:border sm:border-border",
     deals: "bg-deal",
   }
 
   return (
-    <div className={cn("rounded-md overflow-hidden", bgStyles[variant])}>
-      {/* Header Section - eBay style clean */}
-      <div className="text-center pt-5 sm:pt-6 pb-3 sm:pb-4 px-4">
+    <div className={cn("sm:rounded-md overflow-hidden", bgStyles[variant])}>
+      {/* Header Section - Amazon style: left-aligned with right CTA */}
+      <div className="flex items-center justify-between pt-4 sm:pt-6 pb-2 sm:pb-4 px-4">
         <h2 className={cn(
-          "text-lg sm:text-xl md:text-2xl font-semibold mb-1.5 tracking-tight",
+          "text-base sm:text-lg md:text-xl font-semibold tracking-tight",
           variant === "deals" ? "text-white" : "text-foreground"
         )}>
           {title}
@@ -154,7 +154,7 @@ export function TabbedProductSection({
           <Link 
             href={ctaHref} 
             className={cn(
-              "text-xs sm:text-sm font-normal hover:underline underline-offset-4 inline-flex items-center gap-1",
+              "text-xs sm:text-sm font-medium hover:underline underline-offset-4 inline-flex items-center gap-1",
               variant === "deals" ? "text-white/80 hover:text-white" : "text-brand-blue hover:text-brand-blue-dark"
             )}
           >

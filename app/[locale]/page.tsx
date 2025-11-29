@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 import { BrandCircles } from "@/components/brand-circles"
-import { DailyDealsBanner } from "@/components/daily-deals-banner"
 import { PromoCard } from "@/components/promo-card"
+import { Separator } from "@/components/ui/separator"
 import { TabbedProductSection } from "@/components/tabbed-product-section"
 import { DealsSection } from "@/components/deals-section"
 import { cn } from "@/lib/utils"
@@ -141,10 +141,8 @@ export default async function Home() {
           <BrandCircles locale={locale} />
         </div>
 
-        {/* Daily Deals Banner */}
-        <div className="mb-4 px-1 sm:px-0">
-          <DailyDealsBanner locale={locale} />
-        </div>
+        {/* Mobile Separator */}
+        <Separator className="my-4 sm:hidden" />
 
         {/* Category Grid with Subcategories */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-4 px-1 sm:px-0">
@@ -293,6 +291,9 @@ export default async function Home() {
           </div>
         </div>
 
+        {/* Mobile Separator */}
+        <Separator className="my-4 sm:hidden" />
+
         {/* Promo Cards Grid - Target Style */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-3 px-1 sm:px-0 mt-4">
           <PromoCard
@@ -326,6 +327,9 @@ export default async function Home() {
           />
         </div>
 
+        {/* Mobile Separator */}
+        <Separator className="my-4 sm:hidden" />
+
         {/* Trending Products - Target-Style Tabbed Section */}
         <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
           <TabbedProductSection
@@ -358,6 +362,9 @@ export default async function Home() {
           />
         </div>
 
+        {/* Mobile Separator */}
+        <Separator className="my-4 sm:hidden" />
+
         {/* Deals of the Day - Target Style Tabbed Section */}
         <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
           <DealsSection
@@ -389,9 +396,12 @@ export default async function Home() {
           />
         </div>
 
+        {/* Mobile Separator */}
+        <Separator className="my-4 sm:hidden" />
+
         {/* Featured Categories - Target Style with circular images */}
         <div className="mt-6 sm:mt-8 px-1 sm:px-0">
-          <div className="bg-card rounded-lg border border-border p-4 sm:p-6">
+          <div className="sm:bg-card sm:rounded-lg sm:border sm:border-border p-4 sm:p-6">
             {/* Section Header */}
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h2 className="text-lg sm:text-xl font-bold text-foreground">
