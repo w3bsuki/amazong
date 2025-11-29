@@ -18,7 +18,7 @@ const badgeVariants = cva(
         outline:
           'text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
         deal:
-          'border-transparent bg-brand-deal text-white [a&]:hover:bg-brand-deal/90',
+          'border-transparent bg-badge-deal text-white [a&]:hover:bg-badge-deal/90',
       },
     },
     defaultVariants: {

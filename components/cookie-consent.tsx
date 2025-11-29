@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { X, Cookie } from "lucide-react"
+import { X, Cookie } from "@phosphor-icons/react"
 
 const COOKIE_CONSENT_KEY = "cookie-consent"
 
@@ -58,11 +58,11 @@ export function CookieConsent() {
             aria-describedby="cookie-consent-description"
         >
             {/* Mobile-optimized bottom sheet */}
-            <div className="md:hidden bg-card border-t border-border shadow-2xl pb-safe">
+            <div className="md:hidden bg-card border-t border-border pb-safe">
                 <div className="p-4">
                     <div className="flex items-start justify-between mb-3">
                         <h2 id="cookie-consent-title" className="text-base font-semibold text-foreground flex items-center gap-2">
-                            <Cookie className="size-4 text-interactive" />
+                            <Cookie size={16} weight="regular" className="text-interactive" />
                             {t('title')}
                         </h2>
                         <button
@@ -70,7 +70,7 @@ export function CookieConsent() {
                             className="p-1.5 text-muted-foreground hover:text-foreground tap-transparent rounded-md hover:bg-muted transition-colors"
                             aria-label={t('close')}
                         >
-                            <X className="size-5" />
+                            <X size={20} weight="regular" />
                         </button>
                     </div>
                     <p id="cookie-consent-description" className="text-sm text-muted-foreground mb-4 leading-relaxed">
@@ -82,7 +82,7 @@ export function CookieConsent() {
                     <div className="flex flex-col gap-2.5">
                         <Button 
                             onClick={handleAccept}
-                            className="w-full h-12 bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md shadow-sm"
+                            className="w-full h-12 bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md"
                         >
                             {t('acceptAll')}
                         </Button>
@@ -104,11 +104,11 @@ export function CookieConsent() {
             </div>
 
             {/* Desktop banner */}
-            <div className="hidden md:block bg-primary text-primary-foreground border-t border-border/30 shadow-lg">
+            <div className="hidden md:block bg-primary text-primary-foreground border-t border-border/30">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="flex items-center justify-between gap-8">
                         <div className="flex-1 flex items-center gap-3">
-                            <Cookie className="size-5 text-accent shrink-0" />
+                            <Cookie size={20} weight="regular" className="text-accent shrink-0" />
                             <p className="text-sm text-primary-foreground/80">
                                 <span className="font-semibold text-primary-foreground">{t('title')}</span>
                                 {" "}{t('descriptionShort')}
@@ -135,7 +135,7 @@ export function CookieConsent() {
                             <Button 
                                 size="sm"
                                 onClick={handleAccept}
-                                className="bg-interactive hover:bg-interactive-hover text-white shadow-sm"
+                                className="bg-interactive hover:bg-interactive-hover text-white"
                             >
                                 {t('acceptAll')}
                             </Button>

@@ -1,12 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Play } from "lucide-react"
+import { Play } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCart } from "@/lib/cart-context"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 
 interface ProductActionsProps {
   product: {
@@ -22,6 +23,7 @@ export function ProductActions({ product }: ProductActionsProps) {
   const [quantity, setQuantity] = useState("1")
   const { addToCart } = useCart()
   const router = useRouter()
+  const t = useTranslations('Product')
 
   const handleAddToCart = () => {
     addToCart({
@@ -31,7 +33,7 @@ export function ProductActions({ product }: ProductActionsProps) {
       image: product.image_url,
       quantity: Number.parseInt(quantity),
     })
-    toast.success("Added to Cart")
+    toast.success(t('addedToCart'))
   }
 
   const handleBuyNow = () => {
@@ -48,9 +50,9 @@ export function ProductActions({ product }: ProductActionsProps) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        <span className="text-sm">Quantity:</span>
+        <span className="text-sm">{t('quantity')}:</span>
         <Select value={quantity} onValueChange={setQuantity}>
-          <SelectTrigger className="w-20 h-8 rounded-md bg-background border-border focus:ring-brand focus:ring-offset-0">
+          <SelectTrigger className="w-20 h-9 rounded-sm bg-background border-border focus:ring-brand focus:ring-offset-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -64,32 +66,32 @@ export function ProductActions({ product }: ProductActionsProps) {
       </div>
 
       <Button
-        className="w-full bg-brand hover:bg-brand/90 text-foreground rounded-full h-9"
+        className="w-full bg-cta-add-cart hover:bg-cta-add-cart-hover text-foreground rounded-sm h-9"
         onClick={handleAddToCart}
       >
-        Add to Cart
+        {t('addToCart')}
       </Button>
 
       <Button
-        className="w-full bg-brand-deal hover:bg-brand-deal/90 text-white rounded-full h-9"
+        className="w-full bg-cta-buy-now hover:bg-cta-buy-now/90 text-white rounded-sm h-9"
         onClick={handleBuyNow}
       >
-        <Play className="h-3 w-3 fill-current mr-2" />
-        Buy Now
+        <Play size={12} weight="fill" className="mr-2" />
+        {t('buyNow')}
       </Button>
 
       <div className="text-xs text-muted-foreground mt-2 space-y-1">
         <div className="flex gap-2">
-          <span className="w-20 text-muted-foreground">Ships from</span>
-          <span className="text-foreground">Amazon</span>
+          <span className="w-20 text-muted-foreground">{t('shipsFrom')}</span>
+          <span className="text-foreground">{t('amazonStore')}</span>
         </div>
         <div className="flex gap-2">
-          <span className="w-20 text-muted-foreground">Sold by</span>
-          <span className="text-link hover:underline cursor-pointer">Amazon</span>
+          <span className="w-20 text-muted-foreground">{t('soldBy')}</span>
+          <span className="text-link hover:underline cursor-pointer">{t('amazonStore')}</span>
         </div>
         <div className="flex gap-2">
-          <span className="w-20 text-muted-foreground">Returns</span>
-          <span className="text-link hover:underline cursor-pointer">30-day refund/replacement</span>
+          <span className="w-20 text-muted-foreground">{t('returns')}</span>
+          <span className="text-link hover:underline cursor-pointer">{t('returnsPolicy')}</span>
         </div>
       </div>
     </div>

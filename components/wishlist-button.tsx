@@ -1,6 +1,6 @@
 "use client"
 
-import { Heart } from "lucide-react"
+import { Heart } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { useWishlist } from "@/lib/wishlist-context"
 import { cn } from "@/lib/utils"
@@ -43,14 +43,15 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
         disabled={isPending}
         className={cn(
           "gap-2 min-h-11",
-          inWishlist && "text-brand-deal border-brand-deal hover:text-brand-deal/80 hover:border-brand-deal/80",
+          inWishlist && "text-deal border-deal hover:text-deal/80 hover:border-deal/80",
           className
         )}
       >
         <Heart
+          size={16}
+          weight={inWishlist ? "fill" : "regular"}
           className={cn(
-            "h-4 w-4 transition-all",
-            inWishlist && "fill-current",
+            "transition-all",
             isPending && "animate-pulse"
           )}
         />
@@ -64,7 +65,7 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
       onClick={handleClick}
       disabled={isPending}
       className={cn(
-        "p-2 rounded-full bg-white/90 hover:bg-white shadow-sm transition-all",
+        "p-2 rounded-full bg-white/90 hover:bg-white shadow-sm",
         "focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2",
         "disabled:opacity-50",
         className
@@ -72,9 +73,10 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
       aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
     >
       <Heart
+        size={20}
+        weight={inWishlist ? "fill" : "regular"}
         className={cn(
-          "h-5 w-5 transition-all",
-          inWishlist ? "fill-brand-deal text-brand-deal" : "text-muted-foreground hover:text-brand-deal",
+          inWishlist ? "text-deal" : "text-muted-foreground hover:text-deal",
           isPending && "animate-pulse"
         )}
       />

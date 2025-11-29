@@ -16,10 +16,10 @@ import {
   Truck, 
   Shield, 
   MapPin,
-  Loader2,
+  SpinnerGap,
   Lock,
   Package
-} from "lucide-react"
+} from "@phosphor-icons/react"
 import Image from "next/image"
 import Link from "next/link"
 import { useLocale } from "next-intl"
@@ -78,7 +78,7 @@ export default function CheckoutPage() {
   if (!mounted) {
     return (
       <div className="min-h-screen bg-muted flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <SpinnerGap className="size-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
@@ -332,7 +332,7 @@ export default function CheckoutPage() {
                 >
                   {isProcessing ? (
                     <>
-                      <Loader2 className="size-4 mr-2 animate-spin" />
+                      <SpinnerGap className="size-4 mr-2 animate-spin" />
                       {locale === 'bg' ? 'Обработка...' : 'Processing...'}
                     </>
                   ) : (

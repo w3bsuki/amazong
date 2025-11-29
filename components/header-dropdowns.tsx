@@ -10,8 +10,10 @@ import { Link, useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { User } from "@supabase/supabase-js"
 import { useCart } from "@/lib/cart-context"
-import { ShoppingCart, Package, RotateCcw, Truck, MapPin, ChevronRight, Minus, Plus, Trash2 } from "lucide-react"
+import { ShoppingCart, Package, ArrowCounterClockwise, Truck, MapPin, Minus, Plus, Trash, ChatCircle, PaperPlaneTilt, Bell, Clock, TrendUp, X, CaretRight } from "@phosphor-icons/react"
 import Image from "next/image"
+import { useState } from "react"
+import { Input } from "@/components/ui/input"
 
 interface AccountDropdownProps {
     user: User | null
@@ -40,12 +42,12 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                     </Button>
                 </Link>
             </HoverCardTrigger>
-            <HoverCardContent className="w-[500px] p-0 bg-popover text-popover-foreground border-none shadow-xl z-50 rounded-md overflow-hidden" align="end" sideOffset={8}>
+            <HoverCardContent className="w-[500px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden" align="end" sideOffset={8}>
                 <div className="flex flex-col items-center p-4 bg-muted border-b border-border">
                     {!user ? (
                         <>
                             <Link href="/auth/login" className="w-56">
-                                <Button className="w-full bg-brand-warning hover:bg-brand-warning/90 text-foreground border border-brand-warning/50 rounded-md h-[30px] font-normal text-[13px]">
+                                <Button className="w-full bg-cta-buy-now hover:bg-cta-buy-now/90 text-foreground border border-cta-buy-now/50 rounded-md h-[30px] font-normal text-[13px]">
                                     {t('signIn')}
                                 </Button>
                             </Link>
@@ -100,7 +102,7 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
 
 // Cart Dropdown with mini cart preview
 export function CartDropdown() {
-    const { items, totalItems, totalPrice, removeFromCart, updateQuantity } = useCart()
+    const { items, totalItems, subtotal, removeFromCart, updateQuantity } = useCart()
     const t = useTranslations('CartDropdown')
     const tNav = useTranslations('Navigation')
     const locale = useLocale()
@@ -118,8 +120,8 @@ export function CartDropdown() {
                 <Link href="/cart" aria-label={`${tNav('cart')} - ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`}>
                     <Button variant="ghost" className="h-12 flex items-center gap-1.5 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
                         <div className="relative">
-                            <ShoppingCart className="size-6 group-hover:text-brand" aria-hidden="true" />
-                            <span className="absolute -top-1 -right-1.5 bg-brand-deal text-white text-[10px] font-bold min-w-5 h-5 flex items-center justify-center rounded-full px-1" aria-hidden="true">
+                            <ShoppingCart size={24} weight="regular" className="group-hover:text-brand" aria-hidden="true" />
+                            <span className="absolute -top-1 -right-1.5 bg-badge-deal text-white text-[10px] font-bold min-w-5 h-5 flex items-center justify-center rounded-full px-1" aria-hidden="true">
                                 {totalItems}
                             </span>
                         </div>
@@ -127,11 +129,11 @@ export function CartDropdown() {
                     </Button>
                 </Link>
             </HoverCardTrigger>
-            <HoverCardContent className="w-[380px] p-0 bg-popover text-popover-foreground border-none shadow-xl z-50 rounded-md overflow-hidden" align="end" sideOffset={8}>
+            <HoverCardContent className="w-[380px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden" align="end" sideOffset={8}>
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 bg-muted border-b border-border">
                     <div className="flex items-center gap-2">
-                        <ShoppingCart className="size-5 text-muted-foreground" />
+                        <ShoppingCart size={20} weight="regular" className="text-muted-foreground" />
                         <h3 className="font-bold text-base text-foreground">{t('title')}</h3>
                         <span className="text-sm text-muted-foreground">({totalItems} {totalItems === 1 ? t('item') : t('items')})</span>
                     </div>
@@ -139,7 +141,7 @@ export function CartDropdown() {
 
                 {items.length === 0 ? (
                     <div className="p-8 text-center">
-                        <ShoppingCart className="size-12 text-muted-foreground/30 mx-auto mb-3" />
+                        <ShoppingCart size={48} weight="light" className="text-muted-foreground/30 mx-auto mb-3" />
                         <p className="text-muted-foreground text-sm">{t('empty')}</p>
                         <Link href="/search" className="text-link hover:underline text-sm mt-2 block">
                             {t('startShopping')}
@@ -156,21 +158,21 @@ export function CartDropdown() {
                                             {item.image ? (
                                                 <Image
                                                     src={item.image}
-                                                    alt={item.name}
+                                                    alt={item.title}
                                                     width={64}
                                                     height={64}
                                                     className="w-full h-full object-cover"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                                                    <Package className="size-6" />
+                                                    <Package size={24} weight="regular" />
                                                 </div>
                                             )}
                                         </div>
                                     </Link>
                                     <div className="flex-1 min-w-0">
                                         <Link href={`/product/${item.id}`} className="text-sm font-medium text-foreground hover:text-brand line-clamp-2">
-                                            {item.name}
+                                            {item.title}
                                         </Link>
                                         <div className="flex items-center gap-2 mt-1">
                                             <span className="text-sm font-bold text-foreground">{formatPrice(item.price)}</span>
@@ -188,7 +190,7 @@ export function CartDropdown() {
                                                 }}
                                                 className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                                             >
-                                                <Minus className="size-3" />
+                                                <Minus size={12} weight="bold" />
                                             </button>
                                             <span className="text-xs font-medium text-foreground min-w-5 text-center">{item.quantity}</span>
                                             <button
@@ -198,7 +200,7 @@ export function CartDropdown() {
                                                 }}
                                                 className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                                             >
-                                                <Plus className="size-3" />
+                                                <Plus size={12} weight="bold" />
                                             </button>
                                             <button
                                                 onClick={(e) => {
@@ -207,7 +209,7 @@ export function CartDropdown() {
                                                 }}
                                                 className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive ml-auto"
                                             >
-                                                <Trash2 className="size-3.5" />
+                                                <Trash size={14} weight="regular" />
                                             </button>
                                         </div>
                                     </div>
@@ -224,7 +226,7 @@ export function CartDropdown() {
                         <div className="p-4 bg-muted border-t border-border">
                             <div className="flex items-center justify-between mb-3">
                                 <span className="text-sm text-muted-foreground">{t('subtotal')}</span>
-                                <span className="text-lg font-bold text-foreground">{formatPrice(totalPrice)}</span>
+                                <span className="text-lg font-bold text-foreground">{formatPrice(subtotal)}</span>
                             </div>
                             <div className="flex gap-2">
                                 <Link href="/cart" className="flex-1">
@@ -233,7 +235,7 @@ export function CartDropdown() {
                                     </Button>
                                 </Link>
                                 <Link href="/checkout" className="flex-1">
-                                    <Button className="w-full h-10 text-sm bg-brand-deal hover:bg-brand-deal/90 text-white">
+                                    <Button className="w-full h-10 text-sm bg-cta-buy-now hover:bg-cta-buy-now/90 text-foreground">
                                         {t('checkout')}
                                     </Button>
                                 </Link>
@@ -265,7 +267,7 @@ export function ReturnsOrdersDropdown({ user }: ReturnsOrdersDropdownProps) {
                     </Button>
                 </Link>
             </HoverCardTrigger>
-            <HoverCardContent className="w-[320px] p-0 bg-popover text-popover-foreground border-none shadow-xl z-50 rounded-md overflow-hidden" align="end" sideOffset={8}>
+            <HoverCardContent className="w-80 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden" align="end" sideOffset={8}>
                 <div className="p-4 bg-muted border-b border-border">
                     <h3 className="font-bold text-base text-foreground">{t('title')}</h3>
                 </div>
@@ -275,35 +277,35 @@ export function ReturnsOrdersDropdown({ user }: ReturnsOrdersDropdownProps) {
                     <div className="space-y-1">
                         <Link href="/account/orders" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
                             <div className="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center">
-                                <Package className="size-5 text-brand" />
+                                <Package size={20} weight="duotone" className="text-brand" />
                             </div>
                             <div className="flex-1">
                                 <p className="text-sm font-medium text-foreground group-hover:text-brand">{t('trackOrders')}</p>
                                 <p className="text-xs text-muted-foreground">{t('trackOrdersDesc')}</p>
                             </div>
-                            <ChevronRight className="size-4 text-muted-foreground" />
+                            <CaretRight size={16} weight="regular" className="text-muted-foreground" />
                         </Link>
 
                         <Link href="/returns" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
                             <div className="w-10 h-10 bg-brand/20 rounded-full flex items-center justify-center">
-                                <RotateCcw className="size-5 text-brand" />
+                                <ArrowCounterClockwise size={20} weight="duotone" className="text-brand" />
                             </div>
                             <div className="flex-1">
                                 <p className="text-sm font-medium text-foreground group-hover:text-brand">{t('startReturn')}</p>
                                 <p className="text-xs text-muted-foreground">{t('startReturnDesc')}</p>
                             </div>
-                            <ChevronRight className="size-4 text-muted-foreground" />
+                            <CaretRight size={16} weight="regular" className="text-muted-foreground" />
                         </Link>
 
                         <Link href="/customer-service" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
                             <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
-                                <Truck className="size-5 text-accent-foreground" />
+                                <Truck size={20} weight="duotone" className="text-accent-foreground" />
                             </div>
                             <div className="flex-1">
                                 <p className="text-sm font-medium text-foreground group-hover:text-brand">{t('deliveryHelp')}</p>
                                 <p className="text-xs text-muted-foreground">{t('deliveryHelpDesc')}</p>
                             </div>
-                            <ChevronRight className="size-4 text-muted-foreground" />
+                            <CaretRight size={16} weight="regular" className="text-muted-foreground" />
                         </Link>
                     </div>
                 </div>
@@ -311,7 +313,7 @@ export function ReturnsOrdersDropdown({ user }: ReturnsOrdersDropdownProps) {
                 {!user && (
                     <div className="p-4 bg-muted border-t border-border">
                         <Link href="/auth/login">
-                            <Button className="w-full h-10 text-sm bg-brand-deal hover:bg-brand-deal/90 text-white">
+                            <Button className="w-full h-10 text-sm bg-interactive hover:bg-interactive-hover text-white">
                                 {t('signInToSee')}
                             </Button>
                         </Link>
@@ -345,12 +347,12 @@ export function LocationDropdown({ country }: LocationDropdownProps) {
                 <Button variant="ghost" className="h-12 hidden lg:flex flex-col items-start leading-none gap-0 text-header-text hover:text-brand text-xs p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm shrink-0 group">
                     <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('deliverTo')}</span>
                     <div className="flex items-center gap-1 font-bold text-sm text-header-text mt-0.5 group-hover:text-brand">
-                        <MapPin className="size-3.5" />
+                        <MapPin size={14} weight="fill" />
                         <span>{country}</span>
                     </div>
                 </Button>
             </HoverCardTrigger>
-            <HoverCardContent className="w-[300px] p-0 bg-popover text-popover-foreground border-none shadow-xl z-50 rounded-md overflow-hidden" align="start" sideOffset={8}>
+            <HoverCardContent className="w-[300px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden" align="start" sideOffset={8}>
                 <div className="p-4 bg-muted border-b border-border">
                     <h3 className="font-bold text-base text-foreground">{t('chooseLocation')}</h3>
                     <p className="text-xs text-muted-foreground mt-1">{t('deliveryOptions')}</p>
@@ -423,18 +425,18 @@ export function SearchCategoryDropdown({ categories, selectedCategory, onCategor
             <HoverCardTrigger asChild>
                 <button
                     type="button"
-                    className="h-full px-3 bg-secondary hover:bg-muted flex items-center gap-1 text-xs text-muted-foreground cursor-pointer border-r border-border whitespace-nowrap"
+                    className="h-full px-4 bg-interactive hover:bg-interactive-hover flex items-center gap-1.5 text-sm font-semibold text-white cursor-pointer border-r border-interactive-hover whitespace-nowrap rounded-l-sm transition-colors"
                 >
                     <span>{getSelectedLabel()}</span>
-                    <ChevronRight className="size-3 opacity-50 rotate-90 shrink-0" />
+                    <CaretRight size={14} weight="regular" className="opacity-80 rotate-90 shrink-0" />
                 </button>
             </HoverCardTrigger>
-            <HoverCardContent className="w-[200px] p-0 bg-popover text-popover-foreground border border-border shadow-lg z-50 rounded-md overflow-hidden" align="start" sideOffset={4}>
+            <HoverCardContent className="w-[220px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden" align="start" sideOffset={4}>
                 <div className="max-h-[350px] overflow-y-auto">
                     <button
                         type="button"
                         onClick={() => onCategoryChange('all')}
-                        className={`w-full text-left px-3 py-2 text-sm hover:bg-muted ${selectedCategory === 'all' ? 'bg-brand/10 text-brand font-medium' : 'text-foreground'}`}
+                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-muted ${selectedCategory === 'all' ? 'bg-brand/10 text-brand font-medium' : 'text-foreground'}`}
                     >
                         {tCat('all')}
                     </button>
@@ -443,7 +445,7 @@ export function SearchCategoryDropdown({ categories, selectedCategory, onCategor
                             key={cat.id}
                             type="button"
                             onClick={() => onCategoryChange(cat.slug)}
-                            className={`w-full text-left px-3 py-2 text-sm hover:bg-muted ${selectedCategory === cat.slug ? 'bg-brand/10 text-brand font-medium' : 'text-foreground'}`}
+                            className={`w-full text-left px-4 py-2.5 text-sm hover:bg-muted ${selectedCategory === cat.slug ? 'bg-brand/10 text-brand font-medium' : 'text-foreground'}`}
                         >
                             {getCategoryName(cat)}
                         </button>
@@ -451,5 +453,270 @@ export function SearchCategoryDropdown({ categories, selectedCategory, onCategor
                 </div>
             </HoverCardContent>
         </HoverCard>
+    )
+}
+
+// Messages Dropdown
+interface MessagesDropdownProps {
+    user: User | null
+}
+
+export function MessagesDropdown({ user }: MessagesDropdownProps) {
+    const t = useTranslations('MessagesDropdown')
+    const tNav = useTranslations('Navigation')
+
+    return (
+        <HoverCard openDelay={50} closeDelay={100}>
+            <HoverCardTrigger asChild>
+                <Link href="/account/messages">
+                    <Button variant="ghost" className="h-12 flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
+                        <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('messages')}</span>
+                        <span className="text-sm font-bold mt-0.5">{tNav('messagesLabel')}</span>
+                    </Button>
+                </Link>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden" align="end" sideOffset={8}>
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 bg-muted border-b border-border">
+                    <div className="flex items-center gap-2">
+                        <ChatCircle size={20} weight="regular" className="text-muted-foreground" />
+                        <h3 className="font-bold text-base text-foreground">{t('title')}</h3>
+                    </div>
+                </div>
+
+                {!user ? (
+                    <div className="p-6 text-center">
+                        <ChatCircle size={48} weight="light" className="text-muted-foreground/30 mx-auto mb-3" />
+                        <p className="text-muted-foreground text-sm mb-4">{t('signInToView')}</p>
+                        <Link href="/auth/login">
+                            <Button className="w-full h-10 text-sm bg-interactive hover:bg-interactive-hover text-white">
+                                {t('signIn')}
+                            </Button>
+                        </Link>
+                    </div>
+                ) : (
+                    <>
+                        {/* Quick Actions */}
+                        <div className="p-3">
+                            <div className="space-y-1">
+                                <Link href="/account/messages" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+                                    <div className="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center">
+                                        <ChatCircle size={20} weight="duotone" className="text-brand" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-foreground group-hover:text-brand">{t('inbox')}</p>
+                                        <p className="text-xs text-muted-foreground">{t('inboxDesc')}</p>
+                                    </div>
+                                    <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+                                </Link>
+
+                                <Link href="/account/messages?filter=sellers" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+                                    <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                                        <PaperPlaneTilt size={20} weight="duotone" className="text-accent-foreground" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-foreground group-hover:text-brand">{t('sellerMessages')}</p>
+                                        <p className="text-xs text-muted-foreground">{t('sellerMessagesDesc')}</p>
+                                    </div>
+                                    <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+                                </Link>
+
+                                <Link href="/account/messages?filter=notifications" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+                                    <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
+                                        <Bell size={20} weight="duotone" className="text-secondary-foreground" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-foreground group-hover:text-brand">{t('notifications')}</p>
+                                        <p className="text-xs text-muted-foreground">{t('notificationsDesc')}</p>
+                                    </div>
+                                    <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-3 bg-muted border-t border-border">
+                            <Link href="/account/messages">
+                                <Button variant="outline" className="w-full h-9 text-sm">
+                                    {t('viewAllMessages')}
+                                </Button>
+                            </Link>
+                        </div>
+                    </>
+                )}
+            </HoverCardContent>
+        </HoverCard>
+    )
+}
+
+// Desktop Search Dropdown with recent/trending searches
+interface SearchDropdownProps {
+    query: string
+    setQuery: (value: string) => void
+    onSearch: (e: React.FormEvent) => void
+    recentSearches: string[]
+    onClearRecent: () => void
+    onSelectSearch: (search: string) => void
+    products: SearchProduct[]
+    isSearching: boolean
+}
+
+interface SearchProduct {
+    id: string
+    title: string
+    price: number
+    images: string[]
+    slug: string
+}
+
+export function SearchDropdown({ 
+    query, 
+    setQuery, 
+    onSearch, 
+    recentSearches, 
+    onClearRecent, 
+    onSelectSearch,
+    products,
+    isSearching
+}: SearchDropdownProps) {
+    const locale = useLocale()
+    const [isFocused, setIsFocused] = useState(false)
+    
+    const trendingSearches = [
+        locale === 'bg' ? 'Черен петък оферти' : 'Black Friday deals',
+        'iPhone 15',
+        locale === 'bg' ? 'Коледни подаръци' : 'Christmas gifts',
+        'PlayStation 5',
+    ]
+
+    const formatPrice = (price: number) => {
+        return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
+            style: 'currency',
+            currency: locale === 'bg' ? 'BGN' : 'USD',
+        }).format(price)
+    }
+
+    const showDropdown = isFocused && (recentSearches.length > 0 || products.length > 0 || query.length === 0)
+
+    return (
+        <div className="relative flex-1">
+            <form onSubmit={onSearch} className="relative">
+                <Input
+                    type="text"
+                    placeholder={locale === 'bg' ? 'Търси продукти, марки и още...' : 'Search products, brands, and more...'}
+                    className="h-full border-0 rounded-none focus-visible:ring-0 text-foreground px-4 text-sm placeholder:text-muted-foreground pr-10"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+                />
+                {query && (
+                    <button
+                        type="button"
+                        onClick={() => setQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                        <X className="size-4" />
+                    </button>
+                )}
+            </form>
+
+            {/* Dropdown */}
+            {showDropdown && (
+                <div className="absolute top-full left-0 right-0 bg-popover border border-border rounded-b-md overflow-hidden z-50 max-h-[400px] overflow-y-auto">
+                    {/* Live Product Results */}
+                    {products.length > 0 && (
+                        <div className="p-2 border-b border-border">
+                            <div className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase">
+                                <Package className="size-3.5" />
+                                {locale === 'bg' ? 'Продукти' : 'Products'}
+                            </div>
+                            {products.slice(0, 5).map((product) => (
+                                <button
+                                    key={product.id}
+                                    onClick={() => {
+                                        window.location.href = `/${locale}/product/${product.slug}`
+                                    }}
+                                    className="w-full flex items-center gap-3 p-2 hover:bg-muted rounded-md text-left"
+                                >
+                                    {product.images?.[0] ? (
+                                        <Image 
+                                            src={product.images[0]} 
+                                            alt={product.title}
+                                            width={40}
+                                            height={40}
+                                            className="object-cover rounded-md bg-muted"
+                                        />
+                                    ) : (
+                                        <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center">
+                                            <Package className="size-5 text-muted-foreground" />
+                                        </div>
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium truncate text-foreground">{product.title}</p>
+                                        <p className="text-sm text-price-sale font-semibold">{formatPrice(product.price)}</p>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Recent Searches */}
+                    {recentSearches.length > 0 && !query && (
+                        <div className="p-2 border-b border-border">
+                            <div className="flex items-center justify-between px-2 py-1.5">
+                                <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase">
+                                    <Clock className="size-3.5" />
+                                    {locale === 'bg' ? 'Скорошни' : 'Recent'}
+                                </span>
+                                <button
+                                    onClick={onClearRecent}
+                                    className="text-xs text-link hover:text-link-hover"
+                                >
+                                    {locale === 'bg' ? 'Изчисти' : 'Clear'}
+                                </button>
+                            </div>
+                            {recentSearches.map((search, i) => (
+                                <button
+                                    key={`recent-${i}`}
+                                    onClick={() => onSelectSearch(search)}
+                                    className="w-full flex items-center gap-3 p-2 hover:bg-muted rounded-md text-left"
+                                >
+                                    <Clock className="size-4 text-muted-foreground" />
+                                    <span className="text-sm text-foreground">{search}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Trending Searches */}
+                    {!query && (
+                        <div className="p-2">
+                            <div className="flex items-center gap-2 px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase">
+                                <TrendUp size={14} weight="regular" />
+                                {locale === 'bg' ? 'Популярни' : 'Trending'}
+                            </div>
+                            {trendingSearches.map((search, i) => (
+                                <button
+                                    key={`trending-${i}`}
+                                    onClick={() => onSelectSearch(search)}
+                                    className="w-full flex items-center gap-3 p-2 hover:bg-muted rounded-md text-left"
+                                >
+                                    <TrendUp size={16} weight="fill" className="text-deal" />
+                                    <span className="text-sm text-foreground">{search}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Loading state */}
+                    {isSearching && query && (
+                        <div className="p-4 text-center text-sm text-muted-foreground">
+                            {locale === 'bg' ? 'Търсене...' : 'Searching...'}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
     )
 }

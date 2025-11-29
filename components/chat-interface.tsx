@@ -10,17 +10,17 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Skeleton } from "@/components/ui/skeleton"
 import { 
-  Send,
+  PaperPlaneTilt,
   ArrowLeft,
   Package,
-  MoreVertical,
+  DotsThreeVertical,
   X,
   Archive,
-  Loader2,
-  MessageSquare,
-  CheckCheck,
+  CircleNotch,
+  ChatCircle,
+  Checks,
   Check
-} from "lucide-react"
+} from "@phosphor-icons/react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -102,7 +102,7 @@ export function ChatInterface({
   if (!currentConversation) {
     return (
       <div className={cn("flex flex-col items-center justify-center h-full bg-secondary/30", className)}>
-        <MessageSquare className="h-12 w-12 text-muted-foreground mb-3" />
+        <ChatCircle size={48} weight="regular" className="text-muted-foreground mb-3" />
         <p className="text-muted-foreground text-sm">{t("selectConversation")}</p>
       </div>
     )
@@ -129,7 +129,7 @@ export function ChatInterface({
                 className="md:hidden -ml-2"
                 onClick={onBack}
               >
-                <ArrowLeft className="h-4 w-4 mr-1" />
+                <ArrowLeft size={16} weight="regular" className="mr-1" />
                 {t("back")}
               </Button>
             )}
@@ -147,7 +147,7 @@ export function ChatInterface({
                   href={`/product/${currentConversation.product.id}`}
                   className="flex items-center gap-1 text-xs text-brand-blue hover:underline"
                 >
-                  <Package className="h-3 w-3" />
+                  <Package size={12} weight="regular" />
                   <span className="truncate">{currentConversation.product.title}</span>
                 </Link>
               )}
@@ -157,18 +157,18 @@ export function ChatInterface({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
+                  <DotsThreeVertical size={16} weight="regular" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {!isClosed && (
                   <DropdownMenuItem onClick={() => closeConversation(currentConversation.id)}>
-                    <X className="h-4 w-4 mr-2" />
+                    <X size={16} weight="regular" className="mr-2" />
                     {t("closeConversation")}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem>
-                  <Archive className="h-4 w-4 mr-2" />
+                  <Archive size={16} weight="regular" className="mr-2" />
                   {t("archiveConversation")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -189,7 +189,7 @@ export function ChatInterface({
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-            <MessageSquare className="h-10 w-10 text-muted-foreground mb-2" />
+            <ChatCircle size={40} weight="regular" className="text-muted-foreground mb-2" />
             <p className="text-sm text-muted-foreground">{t("noMessagesYet")}</p>
             <p className="text-xs text-muted-foreground mt-1">{t("startConversationHint")}</p>
           </div>
@@ -230,9 +230,9 @@ export function ChatInterface({
                       </span>
                       {isOwn && (
                         message.is_read ? (
-                          <CheckCheck className="h-3 w-3 text-white/70" />
+                          <Checks size={12} weight="regular" className="text-white/70" />
                         ) : (
-                          <Check className="h-3 w-3 text-white/70" />
+                          <Check size={12} weight="regular" className="text-white/70" />
                         )
                       )}
                     </div>
@@ -265,9 +265,9 @@ export function ChatInterface({
               className="shrink-0 bg-[#067D68] hover:bg-[#056654] text-white px-4"
             >
               {isSending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <CircleNotch size={16} weight="regular" className="animate-spin" />
               ) : (
-                <Send className="h-4 w-4" />
+                <PaperPlaneTilt size={16} weight="regular" />
               )}
             </Button>
           </div>

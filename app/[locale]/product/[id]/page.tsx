@@ -1,24 +1,67 @@
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Image from "next/image"
-import { Star, Truck, ShieldCheck, RotateCcw } from "lucide-react"
+import { Star, Truck, ShieldCheck, ArrowCounterClockwise } from "@phosphor-icons/react/dist/ssr"
 import { Separator } from "@/components/ui/separator"
 import { ProductCard } from "@/components/product-card"
 import { ReviewsSection } from "@/components/reviews-section"
 import { AddToCart } from "@/components/add-to-cart"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, getLocale } from "next-intl/server"
 import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
+import { ProductPrice } from "@/components/product-price"
+import { formatDeliveryDate, getEstimatedDeliveryDate } from "@/lib/currency"
+import { StickyAddToCart } from "@/components/sticky-add-to-cart"
+import type { Metadata } from 'next'
 
 interface ProductPageProps {
   params: Promise<{
     id: string
+    locale: string
   }>
+}
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const { id, locale } = await params;
+  const supabase = await createClient();
+  
+  let product: any = null;
+  if (supabase) {
+    const { data } = await supabase
+      .from("products")
+      .select("title, description, price, images")
+      .eq("id", id)
+      .single();
+    product = data;
+  }
+  
+  if (!product) {
+    return {
+      title: locale === 'bg' ? 'Продукт не е намерен' : 'Product Not Found',
+    };
+  }
+  
+  return {
+    title: product.title,
+    description: product.description?.slice(0, 160) || `Shop ${product.title} at AMZN`,
+    openGraph: {
+      title: product.title,
+      description: product.description?.slice(0, 160),
+      images: product.images?.[0] ? [product.images[0]] : [],
+      type: 'website',
+    },
+  };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params
   const supabase = await createClient()
   const t = await getTranslations('Product')
+  const locale = await getLocale()
+
+  // Get estimated delivery date
+  const deliveryDate = getEstimatedDeliveryDate(1)
+  const formattedDeliveryDate = formatDeliveryDate(deliveryDate, locale)
 
   // Fetch product data
   let product: any = null
@@ -115,7 +158,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-10">
+    <div className="min-h-screen bg-background pb-10">
+      {/* Track this product as recently viewed */}
+      <RecentlyViewedTracker 
+        product={{
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          image: product.images?.[0] || product.image || null,
+          slug: product.id
+        }}
+      />
+      
       <div className="container py-4 sm:py-8">
         {/* Breadcrumb */}
         <AppBreadcrumb 
@@ -127,14 +181,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
         />
         
         {/* Mobile-first responsive grid layout */}
-        <div className="flex flex-col lg:grid lg:grid-cols-[1fr_400px_300px] gap-4 sm:gap-6 lg:gap-8 mt-4">
+        <div className="flex flex-col lg:grid lg:grid-cols-[1fr_400px_300px] gap-4 sm:gap-6 lg:gap-8 mt-4 items-start">
 
-          {/* Images Section - Stacked on mobile, side-by-side on desktop */}
-          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 lg:sticky lg:top-4 h-fit order-1">
+          {/* Images Section - Thumbnails left, main image right on desktop */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 h-fit order-1 items-start">
             {/* Thumbnails - horizontal scroll on mobile, vertical on desktop */}
-            <div className="flex sm:flex-col gap-2 sm:gap-3 overflow-x-auto sm:overflow-visible no-scrollbar sm:w-[60px] pb-2 sm:pb-0">
+            <div className="flex sm:flex-col gap-2 sm:gap-3 overflow-x-auto sm:overflow-visible no-scrollbar sm:w-[60px] pb-2 sm:pb-0 order-2 sm:order-1">
               {(product.images || [product.image]).slice(0, 6).map((img: string, i: number) => (
-                <div key={i} className="border border-gray-300 rounded p-1 cursor-pointer hover:border-blue-600 transition-colors shrink-0 w-14 sm:w-full">
+                <div key={i} className="border border-product-card-border rounded-sm p-1 cursor-pointer hover:shadow-product transition-shadow shrink-0 w-14 sm:w-full">
                   <div className="relative w-full aspect-square">
                     <Image src={img || "/placeholder.svg"} alt="Thumbnail" fill className="object-contain" />
                   </div>
@@ -142,12 +196,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
               ))}
             </div>
             {/* Main image */}
-            <div className="flex-1 relative aspect-square max-h-[400px] sm:max-h-[500px] lg:max-h-[600px] min-h-[280px] sm:min-h-[400px]">
+            <div className="relative w-full sm:w-[calc(100%-76px)] h-[400px] sm:h-[500px] lg:h-[600px] order-1 sm:order-2">
               <Image
                 src={product.images?.[0] || product.image || "/placeholder.svg"}
                 alt={product.title}
                 fill
-                className="object-contain"
+                className="object-contain object-top"
                 priority
               />
             </div>
@@ -158,11 +212,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <h1 className="text-xl sm:text-2xl font-medium text-foreground leading-tight mb-1">{product.title}</h1>
 
             <div className="flex items-center gap-2 mb-2">
-              <div className="flex text-rating text-sm">
+              <div 
+                role="img" 
+                aria-label={t('ratingLabel', { rating: product.rating || 0, max: 5 })}
+                className="flex text-rating text-sm"
+              >
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 ${i < Math.floor(product.rating || 0) ? "fill-current" : "text-rating-empty fill-rating-empty"}`}
+                    aria-hidden="true"
+                    weight={i < Math.floor(product.rating || 0) ? "fill" : "regular"}
+                    className="h-4 w-4"
                   />
                 ))}
               </div>
@@ -174,15 +234,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <Separator className="my-2" />
 
             <div className="flex flex-col gap-1">
-              <div className="flex items-baseline gap-1">
-                <span className="text-sm align-top font-medium text-foreground relative top-1.5">$</span>
-                <span className="text-2xl sm:text-[28px] font-medium text-foreground">{Math.floor(product.price)}</span>
-                <span className="text-sm align-top font-medium text-foreground relative top-1.5">{(product.price % 1).toFixed(2).substring(1)}</span>
-              </div>
+              <ProductPrice 
+                price={product.price} 
+                originalPrice={product.original_price}
+                locale={locale} 
+                size="md"
+              />
               {product.is_prime && (
                 <div className="flex items-center gap-1 text-link text-sm">
-                  <span className="font-bold text-brand">prime</span>
-                  <span className="text-muted-foreground">One-Day</span>
+                  <span className="font-bold text-shipping-prime">prime</span>
+                  <span className="text-muted-foreground">{t('primeOneDay')}</span>
                 </div>
               )}
               <span className="text-sm text-foreground">{t('freeReturns')}</span>
@@ -190,7 +251,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             <div className="grid grid-cols-3 gap-2 sm:gap-4 text-xs text-link my-4">
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
-                <RotateCcw className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground group-hover:text-link" />
+                <ArrowCounterClockwise className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground group-hover:text-link" />
                 <span className="group-hover:text-link-hover group-hover:underline text-[10px] sm:text-xs">{t('freeReturns')}</span>
               </div>
               <div className="flex flex-col items-center text-center gap-1 group cursor-pointer">
@@ -213,17 +274,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           {/* Right Column: Buy Box - Full width on mobile, sticky on desktop */}
           <div className="border border-border rounded-lg p-4 h-fit lg:sticky lg:top-4 bg-card order-3">
-            <div className="flex items-baseline gap-1 mb-2">
-              <span className="text-sm align-top font-medium text-foreground">$</span>
-              <span className="text-2xl sm:text-[28px] font-medium text-foreground">{Math.floor(product.price)}</span>
-              <span className="text-sm align-top font-medium text-foreground">{(product.price % 1).toFixed(2).substring(1)}</span>
+            <ProductPrice 
+              price={product.price} 
+              originalPrice={product.original_price}
+              locale={locale} 
+              size="md"
+            />
+
+            <div className="text-sm text-muted-foreground mb-4 mt-2">
+              {t('freeDeliveryDate', { date: formattedDeliveryDate })}
             </div>
 
-            <div className="text-sm text-muted-foreground mb-4">
-              FREE delivery <span className="font-bold text-foreground">Monday, August 14</span>
-            </div>
-
-            <div className="text-[18px] text-brand-success font-medium mb-4">{t('inStock')}</div>
+            <div className="text-[18px] text-stock-available font-medium mb-4">{t('inStock')}</div>
 
             <AddToCart
               product={{
@@ -236,12 +298,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             <div className="mt-4 text-xs text-muted-foreground space-y-2">
               <div className="flex gap-2">
-                <span className="w-20">{t('shipsFrom')}</span>
-                <span className="text-foreground">Amazon.com</span>
+                <span className="w-24">{t('shipsFrom')}</span>
+                <span className="text-foreground">{t('amazonStore')}</span>
               </div>
               <div className="flex gap-2">
-                <span className="w-20">{t('soldBy')}</span>
-                <span className="text-foreground">Amazon.com</span>
+                <span className="w-24">{t('soldBy')}</span>
+                <span className="text-foreground">{t('amazonStore')}</span>
               </div>
             </div>
           </div>
@@ -251,7 +313,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div className="mt-8 sm:mt-12">
-            <h2 className="text-xl sm:text-2xl font-bold text-black mb-4">{t('relatedProducts')}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-4">{t('relatedProducts')}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
               {relatedProducts.map((p: any) => (
                 <ProductCard
@@ -273,6 +335,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Reviews Section */}
         <ReviewsSection rating={product.rating || 0} reviewCount={product.reviews_count || product.review_count || 0} productId={product.id} />
       </div>
+
+      {/* Sticky Add to Cart for Mobile */}
+      <StickyAddToCart 
+        product={{
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          image: product.images?.[0] || product.image || "/placeholder.svg"
+        }}
+        locale={locale}
+      />
     </div>
   )
 }

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { useMessages, type Conversation } from "@/lib/message-context"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Package, MessageSquare } from "lucide-react"
+import { Package, ChatCircle } from "@phosphor-icons/react"
 
 interface ConversationListProps {
   className?: string
@@ -52,7 +52,7 @@ export function ConversationList({
   if (conversations.length === 0) {
     return (
       <div className={cn("flex flex-col items-center justify-center h-full p-6", className)}>
-        <MessageSquare className="h-8 w-8 text-muted-foreground mb-2" />
+        <ChatCircle size={32} weight="regular" className="text-muted-foreground mb-2" />
         <p className="text-sm text-muted-foreground text-center">{t("noConversations")}</p>
       </div>
     )
@@ -124,7 +124,7 @@ function ConversationItem({ conversation, isSelected, onClick }: ConversationIte
       {/* Product reference */}
       {conversation.product && (
         <div className="flex items-center gap-1 text-xs text-brand-blue mb-1">
-          <Package className="h-3 w-3" />
+          <Package size={12} weight="regular" />
           <span className="truncate">{conversation.product.title}</span>
         </div>
       )}

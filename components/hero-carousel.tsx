@@ -3,10 +3,11 @@
 import * as React from "react"
 import Image from "next/image"
 import Autoplay from "embla-carousel-autoplay"
-import { ChevronRight } from "lucide-react"
+import { CaretRight } from "@phosphor-icons/react"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
+import { heroBlurDataURL } from "@/lib/image-utils"
 
 interface HeroCarouselProps {
   locale?: string
@@ -26,7 +27,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
       link: "/todays-deals",
       image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=2070&auto=format&fit=crop",
       gradient: "from-black/70 via-black/40 to-black/20",
-      accent: "bg-rose-600",
+      accent: "bg-badge-deal",
     },
     {
       id: 2,
@@ -35,7 +36,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
       link: "/search?category=electronics",
       image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop",
       gradient: "from-slate-900/80 via-slate-900/50 to-slate-900/20",
-      accent: "bg-blue-600",
+      accent: "bg-interactive",
     },
     {
       id: 3,
@@ -44,7 +45,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
       link: "/search?category=home",
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=2158&auto=format&fit=crop",
       gradient: "from-emerald-900/70 via-emerald-900/40 to-emerald-900/20",
-      accent: "bg-emerald-600",
+      accent: "bg-interactive",
     },
     {
       id: 4,
@@ -53,7 +54,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
       link: "/customer-service",
       image: "https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=2070&auto=format&fit=crop",
       gradient: "from-indigo-900/75 via-indigo-900/45 to-indigo-900/20",
-      accent: "bg-indigo-600",
+      accent: "bg-interactive",
     },
   ]
 
@@ -92,10 +93,14 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
                   src={slide.image}
                   alt={slide.title}
                   fill
-                  priority={slide.id === 1}
+                  priority={slide.id <= 2}
+                  fetchPriority={slide.id === 1 ? "high" : undefined}
+                  loading={slide.id <= 2 ? "eager" : "lazy"}
                   className="object-cover object-center sm:object-top pointer-events-none"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1500px"
                   draggable={false}
+                  placeholder="blur"
+                  blurDataURL={heroBlurDataURL()}
                 />
 
                 {/* Left gradient overlay for text readability */}
@@ -115,10 +120,10 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
                   {/* CTA Button */}
                   <Link 
                     href={slide.link}
-                    className={`inline-flex items-center gap-1 sm:gap-2 ${slide.accent} hover:brightness-110 text-white font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded transition-all text-xs sm:text-sm tap-transparent active-scale`}
+                    className={`inline-flex items-center gap-1 sm:gap-2 ${slide.accent} hover:brightness-110 text-white font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded text-xs sm:text-sm tap-transparent active-scale`}
                   >
                     {slide.cta}
-                    <ChevronRight className="size-3.5 sm:size-4" />
+                    <CaretRight size={14} weight="regular" className="sm:size-4" />
                   </Link>
                 </div>
               </div>

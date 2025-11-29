@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Clock, TrendingUp } from "lucide-react"
+import { MagnifyingGlass, Clock, TrendUp, Package } from "@phosphor-icons/react"
 import {
   CommandDialog,
   CommandEmpty,
@@ -11,7 +11,7 @@ import {
   CommandList,
 } from "@/components/ui/command"
 import { useRouter } from "@/i18n/routing"
-import { useTranslations, useLocale } from "next-intl"
+import { useLocale } from "next-intl"
 
 interface Category {
   id: string
@@ -20,13 +20,61 @@ interface Category {
   slug: string
 }
 
+interface Product {
+  id: string
+  title: string
+  price: number
+  images: string[]
+  slug: string
+}
+
+// Debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+    
+    return () => clearTimeout(timer)
+  }, [value, delay])
+  
+  return debouncedValue
+}
+
 export function MobileSearchV2() {
   const [open, setOpen] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const [recentSearches, setRecentSearches] = useState<string[]>([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [products, setProducts] = useState<Product[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const debouncedQuery = useDebounce(searchQuery, 300)
   const router = useRouter()
-  const t = useTranslations('Navigation')
   const locale = useLocale()
+
+  // Fetch products when debounced query changes
+  useEffect(() => {
+    if (!debouncedQuery || debouncedQuery.length < 2) {
+      setProducts([])
+      return
+    }
+
+    setIsSearching(true)
+    fetch(`/api/products/search?q=${encodeURIComponent(debouncedQuery)}&limit=8`)
+      .then(res => res.json())
+      .then(data => {
+        setProducts(data.products || [])
+      })
+      .catch(err => {
+        console.error('Failed to search products:', err)
+        setProducts([])
+      })
+      .finally(() => {
+        setIsSearching(false)
+      })
+  }, [debouncedQuery])
 
   // Keyboard shortcut (Cmd/Ctrl + K)
   useEffect(() => {
@@ -90,6 +138,19 @@ export function MobileSearchV2() {
     router.push(`/search?category=${slug}`)
   }
 
+  const handleProductSelect = (slug: string) => {
+    setOpen(false)
+    setSearchQuery("")
+    router.push(`/product/${slug}`)
+  }
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
+      style: 'currency',
+      currency: locale === 'bg' ? 'BGN' : 'USD',
+    }).format(price)
+  }
+
   const clearRecentSearches = () => {
     setRecentSearches([])
     if (typeof window !== 'undefined') {
@@ -119,13 +180,13 @@ export function MobileSearchV2() {
 
   return (
     <>
-      {/* Search icon trigger for mobile */}
+      {/* Search trigger */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center p-2 text-white hover:bg-white/5 rounded-md md:hidden"
-        aria-label={t('searchPlaceholder')}
+        className="flex items-center justify-center size-10 p-0 text-white md:hidden"
+        aria-label="Search"
       >
-        <Search className="size-6" />
+        <MagnifyingGlass size={24} weight="regular" />
       </button>
 
       <CommandDialog 
@@ -133,9 +194,12 @@ export function MobileSearchV2() {
         onOpenChange={setOpen}
         title={locale === 'bg' ? 'Търсене' : 'Search'}
         description={locale === 'bg' ? 'Търсене в продукти, категории и още...' : 'Search products, categories, and more...'}
+        shouldFilter={false}
       >
         <CommandInput 
           placeholder={locale === 'bg' ? 'Търсене в продукти...' : 'Search products...'} 
+          value={searchQuery}
+          onValueChange={setSearchQuery}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               const value = e.currentTarget.value
@@ -147,23 +211,60 @@ export function MobileSearchV2() {
         />
         <CommandList className="max-h-[60vh]">
           <CommandEmpty>
-            {locale === 'bg' ? 'Няма резултати.' : 'No results found.'}
+            {isSearching 
+              ? (locale === 'bg' ? 'Търсене...' : 'Searching...')
+              : (locale === 'bg' ? 'Няма резултати.' : 'No results found.')
+            }
           </CommandEmpty>
+          
+          {/* Live Product Search Results */}
+          {products.length > 0 && (
+            <CommandGroup heading={
+              <span className="flex items-center gap-2">
+                <Package size={14} weight="regular" />
+                {locale === 'bg' ? 'Продукти' : 'Products'}
+              </span>
+            }>
+              {products.map((product) => (
+                <CommandItem 
+                  key={product.id} 
+                  onSelect={() => handleProductSelect(product.slug)}
+                  className="flex items-center gap-3 py-2"
+                >
+                  {product.images?.[0] ? (
+                    <img 
+                      src={product.images[0]} 
+                      alt={product.title}
+                      className="w-10 h-10 object-cover rounded bg-muted"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
+                      <Package size={20} weight="regular" className="text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{product.title}</p>
+                    <p className="text-sm text-price-sale font-semibold">{formatPrice(product.price)}</p>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
           
           {/* Recent Searches */}
           {recentSearches.length > 0 && (
             <CommandGroup heading={
               <div className="flex items-center justify-between w-full">
                 <span className="flex items-center gap-2">
-                  <Clock className="h-3.5 w-3.5" />
-                  {locale === 'bg' ? 'Скорошни търсения' : 'Recent Searches'}
+                  <Clock size={14} weight="regular" />
+                  {locale === 'bg' ? 'Скорошни търсения' : 'Recent'}
                 </span>
                 <button 
                   onClick={(e) => {
                     e.stopPropagation()
                     clearRecentSearches()
                   }}
-                  className="text-xs text-link hover:text-link-hover"
+                  className="text-xs text-link hover:underline"
                 >
                   {locale === 'bg' ? 'Изчисти' : 'Clear'}
                 </button>
@@ -171,23 +272,23 @@ export function MobileSearchV2() {
             }>
               {recentSearches.map((search, i) => (
                 <CommandItem key={`recent-${i}`} onSelect={() => handleSearch(search)}>
-                  <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <Clock size={16} weight="regular" className="mr-2 text-muted-foreground" />
                   {search}
                 </CommandItem>
               ))}
             </CommandGroup>
           )}
 
-          {/* Trending Searches */}
+          {/* Trending */}
           <CommandGroup heading={
             <span className="flex items-center gap-2">
-              <TrendingUp className="h-3.5 w-3.5" />
-              {locale === 'bg' ? 'Популярни търсения' : 'Trending'}
+              <TrendUp size={14} weight="regular" />
+              {locale === 'bg' ? 'Популярни' : 'Trending'}
             </span>
           }>
             {trendingSearches.map((search, i) => (
               <CommandItem key={`trending-${i}`} onSelect={() => handleSearch(search)}>
-                <TrendingUp className="mr-2 h-4 w-4 text-brand-deal" />
+                <TrendUp size={16} weight="regular" className="mr-2 text-deal" />
                 {search}
               </CommandItem>
             ))}
@@ -195,7 +296,7 @@ export function MobileSearchV2() {
 
           {/* Categories */}
           <CommandGroup heading={locale === 'bg' ? 'Категории' : 'Categories'}>
-            {categories.slice(0, 8).map((cat) => (
+            {categories.slice(0, 6).map((cat) => (
               <CommandItem key={cat.id} onSelect={() => handleCategorySelect(cat.slug)}>
                 <span className="mr-2">{categoryIcons[cat.slug] || '📦'}</span>
                 {getCategoryName(cat)}

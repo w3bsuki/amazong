@@ -9,9 +9,20 @@ import {
 } from "@/components/ui/accordion"
 import { 
   Shield, Eye, Lock, FileText, Database, Bell, 
-  Cookie, UserCheck, Globe, AlertCircle, Settings, Mail
-} from "lucide-react"
+  Cookie, UserCheck, Globe, WarningCircle, Gear, Envelope
+} from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'bg' ? 'Политика за поверителност' : 'Privacy Policy',
+    description: locale === 'bg' 
+      ? 'Научете как защитаваме вашите лични данни и гарантираме сигурността ви.'
+      : 'Learn how we protect your personal data and ensure your privacy.',
+  };
+}
 
 export default async function PrivacyPage() {
   const t = await getTranslations('Privacy')
@@ -76,7 +87,7 @@ export default async function PrivacyPage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-start gap-4 p-4 bg-brand/5 border-l-4 border-brand mb-4">
-                  <AlertCircle className="size-5 text-brand shrink-0 mt-0.5" />
+                  <WarningCircle className="size-5 text-brand shrink-0 mt-0.5" />
                   <p className="text-sm text-muted-foreground">{t('introNotice')}</p>
                 </div>
                 <p className="text-muted-foreground leading-relaxed">{t('introText')}</p>
@@ -115,7 +126,7 @@ export default async function PrivacyPage() {
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">
-                <Mail className="size-6 text-brand" />
+                <Envelope className="size-6 text-brand" />
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-2">{t('questionsTitle')}</h3>
@@ -147,7 +158,7 @@ export default async function PrivacyPage() {
             <p className="text-sm text-muted-foreground">{t('termsLinkDesc')}</p>
           </Link>
           <Link href="/returns" className="block p-4 border border-border hover:border-brand/50 hover:bg-brand/5 transition-colors">
-            <Settings className="size-5 text-brand mb-2" />
+            <Gear className="size-5 text-brand mb-2" />
             <h4 className="font-medium">{t('returnsLink')}</h4>
             <p className="text-sm text-muted-foreground">{t('returnsLinkDesc')}</p>
           </Link>

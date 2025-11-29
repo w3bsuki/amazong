@@ -1,24 +1,35 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Package, RefreshCw, CreditCard, User, Shield, HelpCircle, Search } from "lucide-react"
+import { Package, ArrowsClockwise, CreditCard, User, Shield, Question } from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'bg' ? 'Обслужване на клиенти' : 'Customer Service',
+    description: locale === 'bg' 
+      ? 'Получете помощ с вашите поръчки, връщания и акаунт.'
+      : 'Get help with your orders, returns, and account.',
+  };
+}
 
 export default async function CustomerServicePage() {
     const t = await getTranslations('CustomerService')
 
     const helpTopics = [
         { icon: Package, title: t('delivery') },
-        { icon: RefreshCw, title: t('prime') },
+        { icon: ArrowsClockwise, title: t('prime') },
         { icon: CreditCard, title: t('payment') },
         { icon: User, title: t('address') },
         { icon: Shield, title: t('memberships') },
-        { icon: HelpCircle, title: t('accessibility') },
-        { icon: HelpCircle, title: t('somethingElse') },
-        { icon: HelpCircle, title: t('loginPassword') },
-        { icon: HelpCircle, title: t('ebooks') },
+        { icon: Question, title: t('accessibility') },
+        { icon: Question, title: t('somethingElse') },
+        { icon: Question, title: t('loginPassword') },
+        { icon: Question, title: t('ebooks') },
     ]
 
     return (

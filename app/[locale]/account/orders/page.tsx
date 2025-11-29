@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr"
 import { AppBreadcrumb } from "@/components/app-breadcrumb"
 
 export default async function OrdersPage() {
@@ -19,7 +19,7 @@ export default async function OrdersPage() {
   }
 
   // Fetch orders from Supabase
-  const { data: orders, error } = await supabase
+  const { data: orders, error: _error } = await supabase
     .from("orders")
     .select(`
         *,
@@ -43,7 +43,7 @@ export default async function OrdersPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 mt-4">
         <h1 className="text-3xl font-normal">Your Orders</h1>
         <div className="relative w-full md:w-auto">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <MagnifyingGlass className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search all orders"
             className="pl-8 w-full md:w-80 rounded-sm focus-visible:ring-brand"

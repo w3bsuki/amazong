@@ -51,7 +51,7 @@ export function ProductForm({ userId }: { userId: string }) {
         <Label htmlFor="title" className="font-bold text-sm">
           Product Title
         </Label>
-        <Input id="title" name="title" required className="rounded-md focus-visible:ring-brand-warning" />
+        <Input id="title" name="title" required className="rounded-md focus-visible:ring-ring" />
       </div>
 
       <div className="space-y-2">
@@ -62,7 +62,7 @@ export function ProductForm({ userId }: { userId: string }) {
           id="description"
           name="description"
           required
-          className="rounded-md min-h-[100px] focus-visible:ring-brand-warning"
+          className="rounded-md min-h-[100px] focus-visible:ring-ring"
         />
       </div>
 
@@ -78,7 +78,7 @@ export function ProductForm({ userId }: { userId: string }) {
             step="0.01"
             min="0"
             required
-            className="rounded-md focus-visible:ring-brand-warning"
+            className="rounded-md focus-visible:ring-ring"
           />
         </div>
         <div className="space-y-2">
@@ -92,7 +92,7 @@ export function ProductForm({ userId }: { userId: string }) {
             min="1"
             required
             defaultValue="1"
-            className="rounded-md focus-visible:ring-brand-warning"
+            className="rounded-md focus-visible:ring-ring"
           />
         </div>
       </div>
@@ -102,7 +102,7 @@ export function ProductForm({ userId }: { userId: string }) {
           Category
         </Label>
         <Select name="category" required>
-          <SelectTrigger className="rounded-md focus:ring-brand-warning">
+          <SelectTrigger className="rounded-md focus:ring-ring">
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
@@ -125,7 +125,7 @@ export function ProductForm({ userId }: { userId: string }) {
           name="image_url"
           type="url"
           placeholder="https://example.com/image.jpg"
-          className="rounded-md focus-visible:ring-brand-warning"
+          className="rounded-md focus-visible:ring-ring"
         />
         <p className="text-xs text-muted-foreground">For demo purposes, paste a public image URL</p>
       </div>
@@ -135,7 +135,7 @@ export function ProductForm({ userId }: { userId: string }) {
       <Button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-brand hover:bg-brand/90 text-foreground border-none rounded font-normal"
+        className="w-full bg-interactive hover:bg-interactive-hover text-white border-none rounded font-normal"
       >
         {isLoading ? "Adding Product..." : "Add Product"}
       </Button>

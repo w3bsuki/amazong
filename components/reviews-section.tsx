@@ -1,15 +1,25 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
-import { Star } from "lucide-react"
+import { useEffect, useState, useCallback, lazy, Suspense } from "react"
+import { Star } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ReviewForm } from "@/components/review-form"
+import { Skeleton } from "@/components/ui/skeleton"
 import { createClient } from "@/lib/supabase/client"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
+
+// Dynamic import for ReviewForm - loaded only when needed
+const ReviewForm = lazy(() => import("@/components/review-form").then(mod => ({ default: mod.ReviewForm })))
+
+// Loading skeleton for ReviewForm
+function ReviewFormSkeleton() {
+  return (
+    <Skeleton className="h-11 w-full rounded-md" />
+  )
+}
 
 interface Review {
     id: string
@@ -103,11 +113,18 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
             <div>
                 <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">{t('customerReviews')}</h2>
                 <div className="flex items-center gap-2 mb-2">
-                    <div className="flex text-rating">
+                    <div 
+                        role="img" 
+                        aria-label={`${rating.toFixed(1)} ${t('outOf5')}`}
+                        className="flex text-rating"
+                    >
                         {[...Array(5)].map((_, i) => (
                             <Star
                                 key={i}
-                                className={`h-4 w-4 sm:h-5 sm:w-5 ${i < Math.floor(rating) ? "fill-current" : "fill-rating-empty stroke-rating stroke-1"}`}
+                                size={18}
+                                weight={i < Math.floor(rating) ? "fill" : "regular"}
+                                className="sm:size-5"
+                                aria-hidden="true"
                             />
                         ))}
                     </div>
@@ -115,15 +132,20 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
                 </div>
                 <div className="text-muted-foreground text-sm mb-4 sm:mb-6">{t('globalRatings', { count: reviewCount })}</div>
 
-                <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8" role="list" aria-label="Rating distribution">
                     {[5, 4, 3, 2, 1].map((star) => (
-                        <div key={star} className="flex items-center gap-2 sm:gap-3 text-sm text-link hover:text-link-hover hover:underline cursor-pointer group">
+                        <div 
+                            key={star} 
+                            role="listitem"
+                            className="flex items-center gap-2 sm:gap-3 text-sm text-link hover:text-link-hover hover:underline cursor-pointer group"
+                        >
                             <span className="w-10 sm:w-12 text-foreground group-hover:text-link-hover group-hover:underline text-xs sm:text-sm">{star} {t('star')}</span>
                             <Progress 
                                 value={getPercentage(ratingDistribution[star])} 
                                 className="h-4 sm:h-5 flex-1 rounded-md bg-muted [&>div]:bg-rating border border-border shadow-inner" 
+                                aria-label={`${star} ${t('star')}: ${getPercentage(ratingDistribution[star])}%`}
                             />
-                            <span className="w-8 text-right text-xs sm:text-sm">{getPercentage(ratingDistribution[star])}%</span>
+                            <span className="w-8 text-right text-xs sm:text-sm" aria-hidden="true">{getPercentage(ratingDistribution[star])}%</span>
                         </div>
                     ))}
                 </div>
@@ -132,7 +154,9 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
 
                 <h3 className="font-bold text-base sm:text-lg mb-2">{t('reviewThisProduct')}</h3>
                 <p className="text-sm text-foreground mb-4">{t('shareThoughts')}</p>
-                <ReviewForm productId={productId} onReviewSubmitted={fetchReviews} />
+                <Suspense fallback={<ReviewFormSkeleton />}>
+                  <ReviewForm productId={productId} onReviewSubmitted={fetchReviews} />
+                </Suspense>
             </div>
 
             {/* Right Column: Individual Reviews */}
@@ -170,11 +194,17 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="flex text-rating">
+                                    <div 
+                                        role="img" 
+                                        aria-label={`${review.rating} ${t('outOf5')}`}
+                                        className="flex text-rating"
+                                    >
                                         {[...Array(5)].map((_, i) => (
                                             <Star 
                                                 key={i} 
-                                                className={`h-4 w-4 ${i < review.rating ? "fill-current" : "fill-rating-empty stroke-rating stroke-1"}`} 
+                                                size={16}
+                                                weight={i < review.rating ? "fill" : "regular"}
+                                                aria-hidden="true"
                                             />
                                         ))}
                                     </div>
@@ -189,7 +219,7 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
                                         day: 'numeric'
                                     })}
                                 </div>
-                                <div className="text-sm text-brand-deal font-bold">{t('verifiedPurchase')}</div>
+                                <div className="text-sm text-verified font-bold">{t('verifiedPurchase')}</div>
                                 {review.comment && (
                                     <p className="text-sm text-foreground leading-relaxed">
                                         {review.comment}

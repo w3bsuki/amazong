@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { ChevronUp, Mail } from "lucide-react"
+import { CaretUp, Envelope } from "@phosphor-icons/react"
 
 // Social Media Icons (inline SVGs for better performance)
 const FacebookIcon = () => (
@@ -172,7 +172,7 @@ export function SiteFooter() {
                 aria-label={t('backToTop')}
             >
                 <span className="text-sm font-medium text-primary-foreground inline-flex items-center gap-1.5">
-                    <ChevronUp className="size-4 group-hover:-translate-y-0.5 transition-transform" />
+                    <CaretUp size={16} weight="regular" className="group-hover:-translate-y-0.5 transition-transform" />
                     {t('backToTop')}
                 </span>
             </button>
@@ -183,7 +183,7 @@ export function SiteFooter() {
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                         <div className="text-center md:text-left">
                             <h3 className="text-primary-foreground font-semibold text-lg md:text-xl flex items-center justify-center md:justify-start gap-2">
-                                <Mail className="size-5 text-accent" />
+                                <Envelope size={20} weight="regular" className="text-accent" />
                                 {t('newsletterTitle')}
                             </h3>
                             <p className="text-primary-foreground/60 text-sm mt-1.5 max-w-md">
@@ -208,14 +208,14 @@ export function SiteFooter() {
                             <Button 
                                 type="submit"
                                 disabled={isSubscribing}
-                                className="h-12 px-8 bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md transition-all shadow-sm hover:shadow-md disabled:opacity-70"
+                                className="h-12 px-8 bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md shadow-sm hover:shadow-md disabled:opacity-70"
                             >
                                 {isSubscribing ? t('subscribing') : t('signUp')}
                             </Button>
                         </form>
                     </div>
                     {subscribeSuccess && (
-                        <p className="text-brand-success text-sm mt-3 text-center md:text-left animate-in fade-in slide-in-from-bottom-2">
+                        <p className="text-stock-available text-sm mt-3 text-center md:text-left animate-in fade-in slide-in-from-bottom-2">
                             ✓ Successfully subscribed!
                         </p>
                     )}
@@ -314,7 +314,7 @@ export function SiteFooter() {
                             href={social.href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="size-11 rounded-full bg-primary-foreground/10 hover:bg-accent/20 flex items-center justify-center text-primary-foreground/70 hover:text-accent transition-all tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:scale-105"
+                            className="size-11 rounded-full bg-primary-foreground/10 hover:bg-accent/20 flex items-center justify-center text-primary-foreground/70 hover:text-accent tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             aria-label={social.name}
                         >
                             <social.icon />

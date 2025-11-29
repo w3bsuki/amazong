@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Star } from "lucide-react"
+import { Star } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
@@ -115,9 +115,11 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
                     className={cn(
                       "h-8 w-8 transition-colors",
                       (hoverRating || rating) >= star
-                        ? "fill-rating text-rating"
-                        : "fill-muted text-muted-foreground"
+                        ? "text-rating"
+                        : "text-muted-foreground"
                     )}
+                    size={32}
+                    weight={(hoverRating || rating) >= star ? "fill" : "regular"}
                   />
                 </button>
               ))}

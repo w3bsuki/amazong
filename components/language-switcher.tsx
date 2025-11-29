@@ -51,7 +51,7 @@ export function LanguageSwitcher() {
                         <span>{loc.flag}</span>
                         <span>{loc.name}</span>
                         {loc.code === locale && (
-                            <span className="ml-auto text-brand-success">✓</span>
+                            <span className="ml-auto text-verified">✓</span>
                         )}
                     </button>
                 ))}

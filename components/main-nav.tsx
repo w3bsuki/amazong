@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { Menu } from "lucide-react"
 import { SidebarMenu } from "@/components/sidebar-menu"
 
 export function MainNav() {

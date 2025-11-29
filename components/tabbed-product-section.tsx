@@ -4,7 +4,7 @@ import * as React from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { ChevronLeft, ChevronRight, Star } from "lucide-react"
+import { CaretLeft, CaretRight, Star } from "@phosphor-icons/react"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 
@@ -50,7 +50,7 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
 
   return (
     <Link href={`/product/${id}`} className="block h-full group">
-      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col transition-all duration-200 border border-border hover:border-link">
+      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col border border-border hover:border-link">
         {/* Square Image Container - Fixed aspect ratio */}
         <div className="relative w-full aspect-square bg-secondary p-4 flex items-center justify-center overflow-hidden">
           <div className="relative w-full h-full">
@@ -78,9 +78,10 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
+                    size={12}
+                    weight={i < Math.floor(rating) ? "fill" : "regular"}
                     className={cn(
-                      "size-3",
-                      i < Math.floor(rating) ? "fill-current" : "text-rating-empty fill-rating-empty"
+                      i < Math.floor(rating) ? "" : "text-rating-empty"
                     )}
                   />
                 ))}
@@ -132,11 +133,11 @@ export function TabbedProductSection({
   }
 
   // Background color variants - using theme colors
-  // Featured uses dark header-bg for better contrast (avoids orange->red clash with DealsSection)
+  // Featured uses dark header-bg, Deals uses RED
   const bgStyles = {
     default: "bg-linear-to-b from-header-bg to-header-bg-secondary",
     featured: "bg-linear-to-b from-header-bg to-header-bg-secondary",
-    deals: "bg-linear-to-br from-brand-deal via-brand-deal to-brand-deal/80",
+    deals: "bg-deal",
   }
 
   return (
@@ -149,10 +150,10 @@ export function TabbedProductSection({
         {ctaText && ctaHref && (
           <Link 
             href={ctaHref} 
-            className="text-white/70 hover:text-white text-xs sm:text-sm underline underline-offset-4 transition-colors inline-flex items-center gap-1"
+            className="text-white/70 hover:text-white text-xs sm:text-sm underline underline-offset-4 inline-flex items-center gap-1"
           >
             {ctaText}
-            <ChevronRight className="size-3" />
+            <CaretRight size={12} weight="regular" />
           </Link>
         )}
       </div>
@@ -169,8 +170,9 @@ export function TabbedProductSection({
                 className={cn(
                   "px-3 sm:px-5 py-2 sm:py-2.5 text-[11px] sm:text-sm font-semibold rounded-full",
                   "text-white/80 hover:text-white hover:bg-white/20",
-                  "data-[state=active]:text-header-bg data-[state=active]:bg-white data-[state=active]:shadow-md",
-                  "transition-all duration-200",
+                  variant === "deals" 
+                    ? "data-[state=active]:text-deal data-[state=active]:bg-white data-[state=active]:shadow-md"
+                    : "data-[state=active]:text-header-bg data-[state=active]:bg-white data-[state=active]:shadow-md",
                   "whitespace-nowrap min-h-9 sm:min-h-11 touch-action-manipulation"
                 )}
               >
@@ -194,24 +196,22 @@ export function TabbedProductSection({
                 className={cn(
                   "absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
                   "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
-                  "transition-all duration-200",
                   canScrollLeft ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="size-5 text-foreground" />
+                <CaretLeft size={20} weight="regular" className="text-foreground" />
               </button>
               <button
                 onClick={() => scroll("right")}
                 className={cn(
                   "absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
                   "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
-                  "transition-all duration-200",
                   canScrollRight ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll right"
               >
-                <ChevronRight className="size-5 text-foreground" />
+                <CaretRight size={20} weight="regular" className="text-foreground" />
               </button>
 
               {/* Products Container - Horizontal scroll with exactly 2 visible on mobile */}

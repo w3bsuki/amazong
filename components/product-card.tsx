@@ -2,13 +2,15 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Star } from "lucide-react"
+import { Star } from "@phosphor-icons/react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
 import { WishlistButton } from "@/components/wishlist-button"
 import { toast } from "sonner"
 import { useLocale, useTranslations } from "next-intl"
+import { cn } from "@/lib/utils"
+import { productBlurDataURL, imageSizes, getImageLoadingStrategy } from "@/lib/image-utils"
 
 interface ProductCardProps {
   id: string
@@ -17,14 +19,37 @@ interface ProductCardProps {
   image: string
   rating?: number
   reviews?: number
-  compact?: boolean // Add compact mode for grid displays
+  compact?: boolean // Legacy prop - use variant instead
+  variant?: "default" | "grid" | "compact" | "carousel"
+  /** Index in list for determining loading priority (0-based) */
+  index?: number
 }
 
-export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 120, compact = false }: ProductCardProps) {
+export function ProductCard({ 
+  id, 
+  title, 
+  price, 
+  image, 
+  rating = 4.5, 
+  reviews = 120, 
+  compact = false,
+  variant = "default",
+  index = 0
+}: ProductCardProps) {
   const { addToCart } = useCart()
   const t = useTranslations('Product')
   const tCart = useTranslations('Cart')
   const locale = useLocale()
+
+  // Resolve variant from legacy compact prop
+  const resolvedVariant = compact ? "compact" : variant
+
+  // Get optimized loading strategy based on position in list
+  const loadingStrategy = getImageLoadingStrategy(index, 4)
+  
+  // Get appropriate sizes based on variant
+  const sizeKey = resolvedVariant as keyof typeof imageSizes.productCard
+  const sizes = imageSizes.productCard[sizeKey] || imageSizes.productCard.default
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation when clicking the button
@@ -49,13 +74,28 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
   deliveryDate.setDate(deliveryDate.getDate() + 2)
   const formattedDate = new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'numeric', day: 'numeric' }).format(deliveryDate)
 
-  return (
-    <Card className="bg-card overflow-hidden flex flex-col group relative border border-border rounded-md hover:border-ring h-full">
-      {/* Hit Area for Nav */}
-      <Link href={`/product/${id}`} className="absolute inset-0 z-10" aria-label={`View ${title}`} />
+  // Variant-specific styles
+  const isCompact = resolvedVariant === "compact" || resolvedVariant === "carousel"
+  const isGrid = resolvedVariant === "grid"
 
-      {/* Image Container - Fixed square aspect ratio */}
-      <CardContent className="relative bg-secondary aspect-square p-2 sm:p-3 md:p-4 flex items-center justify-center overflow-hidden pointer-events-none">
+  return (
+    <Card className={cn(
+      "bg-product-card-bg overflow-hidden flex flex-col group relative border border-product-card-border h-full hover:border-brand",
+      isGrid && "rounded-sm" // Sharper corners for grid
+    )}>
+      {/* Hit Area for Nav - Prefetch first 4 products for instant navigation */}
+      <Link 
+        href={`/product/${id}`} 
+        className="absolute inset-0 z-10" 
+        aria-label={`View ${title}`}
+        prefetch={index < 4}
+      />
+
+      {/* Image Container - Consistent square aspect ratio */}
+      <CardContent className={cn(
+        "relative bg-secondary aspect-square flex items-center justify-center overflow-hidden pointer-events-none",
+        isGrid ? "p-2" : "p-2 sm:p-3 md:p-4"
+      )}>
         {/* Wishlist Button */}
         <div className="absolute top-2 right-2 z-20 pointer-events-auto">
           <WishlistButton
@@ -68,14 +108,24 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
             alt={title}
             fill
             className="object-contain mix-blend-multiply"
-            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+            sizes={sizes}
+            placeholder="blur"
+            blurDataURL={productBlurDataURL()}
+            loading={loadingStrategy.loading}
+            priority={loadingStrategy.priority}
           />
         </div>
       </CardContent>
 
-      <CardFooter className="p-2 sm:p-2.5 md:p-3 flex-1 flex flex-col z-20 pointer-events-none bg-card">
+      <CardFooter className={cn(
+        "flex-1 flex flex-col z-20 pointer-events-none bg-card",
+        isGrid ? "p-2 sm:p-2.5" : "p-2 sm:p-2.5 md:p-3"
+      )}>
         {/* Title - 2 lines max */}
-        <h3 className="text-xs sm:text-sm font-medium text-foreground group-hover:text-brand line-clamp-2 mb-1 sm:mb-1.5 leading-snug min-h-8 sm:min-h-10">
+        <h3 className={cn(
+          "font-medium text-foreground group-hover:text-brand line-clamp-2 leading-snug",
+          isGrid ? "text-xs mb-1 min-h-8" : "text-xs sm:text-sm mb-1 sm:mb-1.5 min-h-8 sm:min-h-10"
+        )}>
           {title}
         </h3>
 
@@ -85,7 +135,9 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`size-3 ${i < Math.floor(rating) ? "fill-current" : "fill-rating-empty"}`}
+                size={12}
+                weight={i < Math.floor(rating) ? "fill" : "regular"}
+                className="text-rating"
               />
             ))}
           </div>
@@ -95,18 +147,27 @@ export function ProductCard({ id, title, price, image, rating = 4.5, reviews = 1
         {/* Price & Button */}
         <div className="mt-auto pointer-events-auto">
           <div className="mb-1">
-            <span className="text-sm sm:text-base md:text-lg font-bold text-foreground tracking-tight">{formatPrice(price)}</span>
+            <span className={cn(
+              "font-bold text-foreground tracking-tight",
+              isGrid ? "text-sm" : "text-sm sm:text-base md:text-lg"
+            )}>{formatPrice(price)}</span>
           </div>
 
-          {!compact && (
-            <div className="text-[10px] text-muted-foreground mb-1.5 sm:mb-2 hidden sm:block">
+          {!isCompact && (
+            <div className={cn(
+              "text-[10px] text-muted-foreground mb-1.5",
+              isGrid ? "hidden" : "hidden sm:block sm:mb-2"
+            )}>
               {t('delivery')} <span className="font-semibold text-foreground">{formattedDate}</span>
             </div>
           )}
 
           <Button
             onClick={handleAddToCart}
-            className="w-full min-h-11 bg-interactive hover:bg-interactive-hover text-white text-xs sm:text-sm font-medium rounded-md transition-colors touch-action-manipulation active:scale-[0.98]"
+            className={cn(
+              "w-full bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md touch-action-manipulation active:scale-[0.98]",
+              isGrid ? "min-h-9 text-xs" : "min-h-11 text-xs sm:text-sm"
+            )}
           >
             {t('addToCart')}
           </Button>

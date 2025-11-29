@@ -3,10 +3,21 @@ import { Card, CardContent } from "@/components/ui/card"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 import { 
   Users, Globe, Heart, Shield, Truck, 
-  Award, Target, Leaf, Headphones,
-  CheckCircle, Star, TrendingUp, Zap, Package
-} from "lucide-react"
+  Trophy, Target, Leaf, Headphones,
+  CheckCircle, Star, TrendUp, Lightning, Package
+} from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'bg' ? 'За нас' : 'About Us',
+    description: locale === 'bg' 
+      ? 'Научете повече за AMZN - вашият доверен партньор за онлайн пазаруване в България.'
+      : 'Learn more about AMZN - your trusted partner for online shopping in Bulgaria.',
+  };
+}
 
 export default async function AboutPage() {
   const t = await getTranslations('About')
@@ -64,7 +75,7 @@ export default async function AboutPage() {
               <div className="aspect-video bg-gradient-to-br from-brand/20 to-brand/5 flex items-center justify-center">
                 <div className="grid grid-cols-2 gap-4 p-8">
                   <div className="bg-white shadow-lg p-6 text-center">
-                    <TrendingUp className="size-8 text-brand mx-auto mb-2" />
+                    <TrendUp className="size-8 text-brand mx-auto mb-2" />
                     <div className="text-2xl font-bold text-brand">15+</div>
                     <div className="text-xs text-muted-foreground">{t('yearsExperience')}</div>
                   </div>
@@ -120,7 +131,7 @@ export default async function AboutPage() {
             <Card className="group hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="size-12 bg-brand/10 flex items-center justify-center mb-4 group-hover:bg-brand/20 transition-colors">
-                  <Zap className="size-6 text-brand" />
+                  <Lightning className="size-6 text-brand" />
                 </div>
                 <h3 className="font-bold text-lg mb-2">{t('valueInnovation')}</h3>
                 <p className="text-muted-foreground text-sm">{t('valueInnovationDesc')}</p>
@@ -157,7 +168,7 @@ export default async function AboutPage() {
             
             <div className="text-center p-6">
               <div className="size-16 bg-brand/10 text-brand flex items-center justify-center mx-auto mb-4">
-                <Award className="size-8" />
+                <Trophy className="size-8" />
               </div>
               <h3 className="font-bold text-lg mb-2">{t('offerQuality')}</h3>
               <p className="text-muted-foreground text-sm">{t('offerQualityDesc')}</p>

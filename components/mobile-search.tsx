@@ -1,7 +1,7 @@
 "use client"
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
-import { Search, X, Clock, TrendingUp } from "lucide-react"
+import { MagnifyingGlass, X, Clock, TrendUp } from "@phosphor-icons/react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
@@ -106,7 +106,7 @@ export function MobileSearch() {
           size="icon" 
           className="md:hidden h-11 w-11 touch-target tap-transparent"
         >
-          <Search className="h-5 w-5" />
+          <MagnifyingGlass size={20} weight="regular" />
           <span className="sr-only">{t('searchPlaceholder')}</span>
         </Button>
       </SheetTrigger>
@@ -148,7 +148,7 @@ export function MobileSearch() {
                 type="submit" 
                 className="h-full w-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-none border-none flex items-center justify-center"
               >
-                <Search className="h-5 w-5" />
+                <MagnifyingGlass size={20} weight="regular" />
               </Button>
             </div>
 
@@ -160,7 +160,7 @@ export function MobileSearch() {
               className="h-11 w-11 text-white hover:bg-white/10"
               onClick={() => setOpen(false)}
             >
-              <X className="h-5 w-5" />
+              <X size={20} weight="regular" />
             </Button>
           </form>
         </div>
@@ -172,7 +172,7 @@ export function MobileSearch() {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <Clock size={16} weight="regular" className="text-muted-foreground" />
                   {locale === 'bg' ? 'Скорошни търсения' : 'Recent Searches'}
                 </h3>
                 <button 
@@ -199,7 +199,7 @@ export function MobileSearch() {
           {/* Trending Searches */}
           <div>
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-3">
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <TrendUp size={16} weight="regular" className="text-muted-foreground" />
               {locale === 'bg' ? 'Популярни търсения' : 'Trending Searches'}
             </h3>
             <div className="flex flex-wrap gap-2">

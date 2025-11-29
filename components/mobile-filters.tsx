@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { X, SlidersHorizontal, Star, Check, ChevronDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { X, Sliders, Star, Check, CaretDown } from "@phosphor-icons/react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
@@ -20,9 +19,10 @@ interface MobileFiltersProps {
   categories: Category[]
   currentCategory: Category | null
   locale: string
+  resultsCount?: number
 }
 
-export function MobileFilters({ categories, currentCategory, locale }: MobileFiltersProps) {
+export function MobileFilters({ categories, currentCategory, locale, resultsCount = 0 }: MobileFiltersProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [activeSection, setActiveSection] = useState<string | null>(null)
   const router = useRouter()
@@ -115,26 +115,34 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
 
   return (
     <>
-      {/* Filter Button */}
-      <Button
-        variant="outline"
-        size="sm"
+      {/* Filter Button - Amazon/Target style */}
+      <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 min-h-10 px-3 border-border"
+        className={cn(
+          "w-full inline-flex items-center justify-center gap-2 h-11 px-4 rounded-full",
+          "bg-card border border-border",
+          "hover:bg-muted hover:border-ring",
+          "active:bg-muted/80 active:scale-[0.98]",
+          "text-sm font-medium text-foreground",
+          "outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-blue",
+          filterCount > 0 && "border-brand-blue bg-brand-blue/5"
+        )}
       >
-        <SlidersHorizontal className="h-4 w-4" />
+        <Sliders size={16} weight="regular" className={cn(
+          filterCount > 0 ? "text-brand-blue" : "text-muted-foreground"
+        )} />
         <span>{t('filters')}</span>
         {filterCount > 0 && (
-          <span className="bg-brand-deal text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <span className="bg-brand-blue text-white text-[11px] font-bold rounded-full min-w-[20px] h-5 px-1.5 flex items-center justify-center">
             {filterCount}
           </span>
         )}
-      </Button>
+      </button>
 
       {/* Backdrop */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-50 lg:hidden"
+          className="fixed inset-0 bg-foreground/40 z-50 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -142,51 +150,54 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
       {/* Bottom Sheet */}
       <div
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 bg-background rounded-t-2xl transition-transform duration-300 ease-out lg:hidden",
-          "max-h-[85vh] flex flex-col",
+          "fixed inset-x-0 bottom-0 z-50 bg-card lg:hidden",
+          "max-h-[85vh] flex flex-col rounded-t-2xl border-t border-border",
+          "transition-transform duration-200 ease-out",
           isOpen ? "translate-y-0" : "translate-y-full"
         )}
       >
         {/* Handle */}
-        <div className="flex justify-center pt-2 pb-1">
-          <div className="w-10 h-1 bg-muted-foreground/30 rounded-full" />
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full" />
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <h2 className="text-lg font-bold">{t('filters')}</h2>
+          <h2 className="text-lg font-bold text-foreground">{t('filters')}</h2>
           <div className="flex items-center gap-3">
             {hasActiveFilters && (
               <button
                 onClick={clearAllFilters}
-                className="text-sm text-brand-blue hover:underline"
+                className="text-sm font-medium text-brand-blue hover:text-brand-blue-dark hover:underline transition-colors"
               >
                 {t('clearAllFilters')}
               </button>
             )}
             <button
               onClick={() => setIsOpen(false)}
-              className="p-2 hover:bg-muted rounded-full min-h-10 min-w-10 flex items-center justify-center"
+              className="p-2 hover:bg-muted rounded-full min-h-10 min-w-10 flex items-center justify-center transition-colors"
             >
-              <X className="h-5 w-5" />
+              <X size={20} weight="regular" className="text-muted-foreground" />
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-muted/30">
           {/* Filter Sections */}
           <div className="divide-y divide-border">
             {filterSections.map((section) => (
-              <div key={section.id} className="py-1">
+              <div key={section.id} className="bg-card">
                 <button
                   onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
-                  className="w-full flex items-center justify-between px-4 py-3 min-h-12"
+                  className="w-full flex items-center justify-between px-4 py-3.5 min-h-12 hover:bg-muted transition-colors"
                 >
-                  <span className="font-medium">{section.label}</span>
-                  <ChevronDown 
+                  <span className="font-medium text-foreground">{section.label}</span>
+                  <CaretDown 
+                    size={20}
+                    weight="regular"
                     className={cn(
-                      "h-5 w-5 text-muted-foreground transition-transform",
+                      "text-muted-foreground",
                       activeSection === section.id && "rotate-180"
                     )} 
                   />
@@ -194,28 +205,28 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
 
                 {/* Section Content */}
                 {activeSection === section.id && (
-                  <div className="px-4 pb-4 space-y-2">
+                  <div className="px-4 pb-4 space-y-2 bg-muted/30">
                     {/* Prime/Delivery */}
                     {section.id === 'prime' && (
                       <>
-                        <label className="flex items-center gap-3 min-h-11 cursor-pointer">
+                        <label className="flex items-center gap-3 min-h-11 cursor-pointer hover:bg-muted rounded-lg px-2 -mx-2 transition-colors">
                           <Checkbox
                             checked={currentPrime === "true"}
                             onCheckedChange={() => toggleParam("prime")}
                             className="size-5"
                           />
-                          <span className="text-sm">{t('getPrimeDelivery')}</span>
+                          <span className="text-sm text-foreground">{t('getPrimeDelivery')}</span>
                         </label>
-                        <label className="flex items-center gap-3 min-h-11 cursor-pointer">
+                        <label className="flex items-center gap-3 min-h-11 cursor-pointer hover:bg-muted rounded-lg px-2 -mx-2 transition-colors">
                           <Checkbox className="size-5" />
-                          <span className="text-sm">{t('freeShipping')}</span>
+                          <span className="text-sm text-foreground">{t('freeShipping')}</span>
                         </label>
                       </>
                     )}
 
                     {/* Categories */}
                     {section.id === 'category' && (
-                      <div className="space-y-1 max-h-60 overflow-y-auto">
+                      <div className="space-y-0.5 max-h-60 overflow-y-auto">
                         {categories.map((cat) => (
                           <button
                             key={cat.id}
@@ -226,10 +237,10 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
                               setIsOpen(false)
                             }}
                             className={cn(
-                              "w-full text-left px-2 py-2.5 min-h-11 rounded-md text-sm",
+                              "w-full text-left px-3 py-2.5 min-h-11 rounded-lg text-sm transition-colors",
                               currentCategory?.slug === cat.slug
                                 ? "bg-brand-blue/10 text-brand-blue font-medium"
-                                : "hover:bg-muted"
+                                : "text-foreground hover:bg-muted"
                             )}
                           >
                             {getCategoryName(cat)}
@@ -243,7 +254,7 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
 
                     {/* Ratings */}
                     {section.id === 'rating' && (
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         {[4, 3, 2, 1].map((stars) => (
                           <button
                             key={stars}
@@ -251,7 +262,7 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
                               updateParams("minRating", currentRating === stars.toString() ? null : stars.toString())
                             }}
                             className={cn(
-                              "w-full flex items-center gap-2 px-2 py-2.5 min-h-11 rounded-md",
+                              "w-full flex items-center gap-2 px-3 py-2.5 min-h-11 rounded-lg transition-colors",
                               currentRating === stars.toString()
                                 ? "bg-brand-blue/10"
                                 : "hover:bg-muted"
@@ -261,13 +272,14 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
                               {[...Array(5)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className={`h-4 w-4 ${i < stars ? "fill-current" : "fill-none stroke-current stroke-1"}`}
+                                  size={16}
+                                  weight={i < stars ? "fill" : "regular"}
                                 />
                               ))}
                             </div>
-                            <span className="text-sm">{t('andUp')}</span>
+                            <span className="text-sm text-foreground">{t('andUp')}</span>
                             {currentRating === stars.toString() && (
-                              <Check className="ml-auto h-4 w-4 text-brand-blue" />
+                              <Check size={16} weight="regular" className="ml-auto text-brand-blue" />
                             )}
                           </button>
                         ))}
@@ -276,7 +288,7 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
 
                     {/* Price */}
                     {section.id === 'price' && (
-                      <div className="space-y-1">
+                      <div className="space-y-0.5">
                         {priceRanges.map(({ label, min, max }) => {
                           const isActive = currentMinPrice === min && currentMaxPrice === max
                           return (
@@ -284,10 +296,10 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
                               key={label}
                               onClick={() => handlePriceClick(min, max)}
                               className={cn(
-                                "w-full text-left px-2 py-2.5 min-h-11 rounded-md text-sm flex items-center justify-between",
+                                "w-full text-left px-3 py-2.5 min-h-11 rounded-lg text-sm flex items-center justify-between transition-colors",
                                 isActive
                                   ? "bg-brand-blue/10 text-brand-blue font-medium"
-                                  : "hover:bg-muted"
+                                  : "text-foreground hover:bg-muted"
                               )}
                             >
                               {label}
@@ -300,13 +312,13 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
 
                     {/* Availability */}
                     {section.id === 'availability' && (
-                      <label className="flex items-center gap-3 min-h-11 cursor-pointer">
+                      <label className="flex items-center gap-3 min-h-11 cursor-pointer hover:bg-muted rounded-lg px-2 -mx-2 transition-colors">
                         <Checkbox
                           checked={currentAvailability === "instock"}
                           onCheckedChange={() => updateParams("availability", currentAvailability === "instock" ? null : "instock")}
                           className="size-5"
                         />
-                        <span className="text-sm">{t('includeOutOfStock')}</span>
+                        <span className="text-sm text-foreground">{t('includeOutOfStock')}</span>
                       </label>
                     )}
                   </div>
@@ -317,13 +329,16 @@ export function MobileFilters({ categories, currentCategory, locale }: MobileFil
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border bg-background">
-          <Button 
+        <div className="p-4 border-t border-border bg-card pb-safe">
+          <button 
             onClick={() => setIsOpen(false)}
-            className="w-full min-h-12 bg-brand-blue hover:bg-brand-blue-dark text-white font-medium"
+            className="w-full h-12 bg-brand-blue text-white font-semibold rounded-full"
           >
-            {t('showResults')}
-          </Button>
+            {resultsCount > 0 
+              ? (locale === 'bg' ? `Покажи ${resultsCount}` : `Show ${resultsCount} results`)
+              : t('showResults')
+            }
+          </button>
         </div>
       </div>
     </>

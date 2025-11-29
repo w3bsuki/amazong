@@ -32,7 +32,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (savedCart) {
       try {
         setItems(JSON.parse(savedCart))
-      } catch (e) {
+      } catch {
         console.error("Failed to parse cart from local storage")
       }
     }
@@ -44,14 +44,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [items])
 
   const addToCart = (newItem: CartItem) => {
+    // Ensure price is a valid number
+    const itemWithValidPrice = {
+      ...newItem,
+      price: typeof newItem.price === 'string' ? parseFloat(newItem.price) : newItem.price,
+      quantity: newItem.quantity || 1
+    }
+    
+    // Guard against NaN
+    if (isNaN(itemWithValidPrice.price)) {
+      console.error('Invalid price for cart item:', newItem)
+      itemWithValidPrice.price = 0
+    }
+    
     setItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === newItem.id)
+      const existingItem = prevItems.find((item) => item.id === itemWithValidPrice.id)
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === newItem.id ? { ...item, quantity: item.quantity + newItem.quantity } : item,
+          item.id === itemWithValidPrice.id ? { ...item, quantity: item.quantity + itemWithValidPrice.quantity } : item,
         )
       }
-      return [...prevItems, newItem]
+      return [...prevItems, itemWithValidPrice]
     })
   }
 
@@ -72,7 +85,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }
 
   const totalItems = items.reduce((total, item) => total + item.quantity, 0)
-  const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0)
+  const subtotal = items.reduce((total, item) => {
+    const price = typeof item.price === 'number' ? item.price : parseFloat(String(item.price)) || 0
+    const quantity = typeof item.quantity === 'number' ? item.quantity : parseInt(String(item.quantity)) || 0
+    return total + price * quantity
+  }, 0)
 
   return (
     <CartContext.Provider

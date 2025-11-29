@@ -1,11 +1,9 @@
 "use client"
 
-import { Link } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
 import { SubcategoryCircles } from "@/components/subcategory-circles"
 import { AppBreadcrumb, type BreadcrumbItemData } from "@/components/app-breadcrumb"
-import { cn } from "@/lib/utils"
 
 interface Category {
   id: string
@@ -41,20 +39,6 @@ export function SubcategoryTabs({ currentCategory, subcategories, parentCategory
     return `/search?${params.toString()}`
   }
 
-  const buildFilterUrl = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (params.get(key) === value) {
-      params.delete(key)
-    } else {
-      params.set(key, value)
-    }
-    return `/search?${params.toString()}`
-  }
-
-  const isActive = (key: string, value: string) => {
-    return searchParams.get(key) === value
-  }
-
   if (!currentCategory) return null
 
   // Build breadcrumb items dynamically
@@ -76,72 +60,11 @@ export function SubcategoryTabs({ currentCategory, subcategories, parentCategory
 
       {/* Subcategory Circles - Target style (only show if there are subcategories) */}
       {subcategories.length > 0 && (
-        <div className="mb-6">
-          <SubcategoryCircles
-            subcategories={subcategories}
-            currentCategory={currentCategory}
-          />
-        </div>
+        <SubcategoryCircles
+          subcategories={subcategories}
+          currentCategory={currentCategory}
+        />
       )}
-
-      {/* Quick Filters - Improved styling with pill buttons */}
-      <div className="border-t border-border pt-4">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar scroll-smooth">
-          <span className="font-medium text-foreground text-sm shrink-0">{t('quickFilters')}:</span>
-          
-          <Link
-            href={buildFilterUrl("prime", "true")}
-            className={cn(
-              "min-h-10 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0",
-              "touch-action-manipulation active:scale-95",
-              isActive("prime", "true")
-                ? "bg-primary text-primary-foreground"
-                : "border border-border bg-card hover:bg-secondary hover:border-ring text-foreground"
-            )}
-          >
-            {t('primeEligible')}
-          </Link>
-          
-          <Link
-            href={buildFilterUrl("deals", "true")}
-            className={cn(
-              "min-h-10 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0",
-              "touch-action-manipulation active:scale-95",
-              isActive("deals", "true")
-                ? "bg-brand-deal text-white"
-                : "border border-border bg-card hover:bg-secondary hover:border-ring text-foreground"
-            )}
-          >
-            {t('deals')}
-          </Link>
-          
-          <Link
-            href={buildFilterUrl("freeShipping", "true")}
-            className={cn(
-              "min-h-10 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0",
-              "touch-action-manipulation active:scale-95",
-              isActive("freeShipping", "true")
-                ? "bg-brand-success text-white"
-                : "border border-border bg-card hover:bg-secondary hover:border-ring text-foreground"
-            )}
-          >
-            {t('freeShipping')}
-          </Link>
-          
-          <Link
-            href={buildFilterUrl("minRating", "4")}
-            className={cn(
-              "min-h-10 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all shrink-0",
-              "touch-action-manipulation active:scale-95",
-              isActive("minRating", "4")
-                ? "bg-rating text-foreground"
-                : "border border-border bg-card hover:bg-secondary hover:border-ring text-foreground"
-            )}
-          >
-            {t('fourStarsUp')}
-          </Link>
-        </div>
-      </div>
     </div>
   )
 }

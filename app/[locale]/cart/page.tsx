@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useCart } from "@/lib/cart-context"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle2 } from "lucide-react"
+import { CheckCircle as CheckCircle2 } from "@phosphor-icons/react"
 import { createCheckoutSession } from "@/app/actions/checkout"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 
@@ -36,16 +36,47 @@ export default function CartPage() {
       <div className="container py-4 bg-background min-h-screen">
         <AppBreadcrumb items={breadcrumbPresets.cart} />
         
-        <div className="bg-card p-8 rounded border border-border mt-4">
-          <h1 className="text-2xl font-bold mb-4">Your Amazon Cart is empty.</h1>
-          <p className="mb-6">
+        <div className="bg-card p-8 rounded border border-border mt-4 max-w-2xl mx-auto text-center">
+          <div className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg 
+              className="size-10 text-muted-foreground" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={1.5} 
+                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" 
+              />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold mb-2">Your Amazon Cart is empty</h1>
+          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
             Your Shopping Cart lives to serve. Give it purpose — fill it with groceries, clothing, household supplies,
-            electronics, and more. Continue shopping on the{" "}
-            <Link href="/" className="text-link hover:underline">
-              Amazon.com homepage
-            </Link>
-            .
+            electronics, and more.
           </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/">
+              <Button className="bg-brand hover:bg-brand/90 text-foreground gap-2 w-full sm:w-auto">
+                Continue Shopping
+              </Button>
+            </Link>
+            <Link href="/todays-deals">
+              <Button variant="outline" className="gap-2 w-full sm:w-auto">
+                View Today's Deals
+              </Button>
+            </Link>
+          </div>
+          <div className="mt-8 pt-6 border-t border-border">
+            <p className="text-sm text-muted-foreground mb-3">
+              Have an account? Your cart items are saved for you.
+            </p>
+            <Link href="/auth/login" className="text-sm text-link hover:underline">
+              Sign in to see your cart
+            </Link>
+          </div>
         </div>
       </div>
     )

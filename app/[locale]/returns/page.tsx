@@ -9,11 +9,22 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { 
-  RotateCcw, Package, Clock, CheckCircle, HelpCircle,
-  Truck, CreditCard, AlertCircle, FileText, 
-  ChevronRight, Printer, MapPin, ShieldCheck, Ban
-} from "lucide-react"
+  ArrowCounterClockwise, Package, Clock, CheckCircle, Question,
+  Truck, CreditCard, WarningCircle, FileText, 
+  CaretRight, Printer, MapPin, ShieldCheck, Prohibit
+} from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'bg' ? 'Връщания и възстановявания' : 'Returns & Refunds',
+    description: locale === 'bg' 
+      ? 'Лесни връщания и бързи възстановявания. 30-дневна политика за връщане.'
+      : 'Easy returns and fast refunds. 30-day return policy.',
+  };
+}
 
 export default async function ReturnsPage() {
   const t = await getTranslations('Returns')
@@ -33,7 +44,7 @@ export default async function ReturnsPage() {
             </div>
             <Link href="/account/orders">
               <Button size="lg" className="bg-brand hover:bg-brand-dark whitespace-nowrap">
-                <RotateCcw className="size-5 mr-2" />
+                <ArrowCounterClockwise className="size-5 mr-2" />
                 {t('startReturn')}
               </Button>
             </Link>
@@ -159,14 +170,14 @@ export default async function ReturnsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="size-10 bg-brand-deal-light flex items-center justify-center">
-                    <Ban className="size-5 text-brand-deal" />
+                    <Prohibit className="size-5 text-brand-deal" />
                   </div>
                   <h3 className="text-lg font-bold">{t('nonReturnable')}</h3>
                 </div>
                 <ul className="space-y-3">
                   {t.raw('nonReturnableList').map((item: string, index: number) => (
                     <li key={index} className="flex items-start gap-2 text-sm">
-                      <Ban className="size-4 text-brand-deal shrink-0 mt-0.5" />
+                      <Prohibit className="size-4 text-brand-deal shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -205,7 +216,7 @@ export default async function ReturnsPage() {
             {/* Start Return CTA */}
             <Card className="border-brand/30 bg-brand/5">
               <CardContent className="p-6 text-center">
-                <RotateCcw className="size-12 text-brand mx-auto mb-4" />
+                <ArrowCounterClockwise className="size-12 text-brand mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">{t('readyToReturn')}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{t('readyToReturnDesc')}</p>
                 <Link href="/account/orders" className="block">
@@ -220,7 +231,7 @@ export default async function ReturnsPage() {
             <Card>
               <CardContent className="p-5">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="size-5 text-brand-warning shrink-0 mt-0.5" />
+                  <WarningCircle className="size-5 text-brand-warning shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-medium mb-1">{t('importantNotice')}</h4>
                     <p className="text-sm text-muted-foreground">{t('importantNoticeText')}</p>
@@ -233,7 +244,7 @@ export default async function ReturnsPage() {
             <Card className="bg-muted">
               <CardContent className="p-5">
                 <div className="flex items-start gap-3">
-                  <HelpCircle className="size-5 text-brand shrink-0 mt-0.5" />
+                  <Question className="size-5 text-brand shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-medium mb-1">{t('needHelp')}</h4>
                     <p className="text-sm text-muted-foreground mb-3">{t('needHelpDesc')}</p>
@@ -241,13 +252,13 @@ export default async function ReturnsPage() {
                       <Link href="/customer-service">
                         <Button variant="outline" size="sm" className="w-full justify-between">
                           {t('customerService')}
-                          <ChevronRight className="size-4" />
+                          <CaretRight className="size-4" />
                         </Button>
                       </Link>
                       <Link href="/contact">
                         <Button variant="outline" size="sm" className="w-full justify-between">
                           {t('contactUs')}
-                          <ChevronRight className="size-4" />
+                          <CaretRight className="size-4" />
                         </Button>
                       </Link>
                     </div>
@@ -268,7 +279,7 @@ export default async function ReturnsPage() {
                   <AccordionItem key={index} value={`faq-${index}`}>
                     <AccordionTrigger className="hover:no-underline">
                       <div className="flex items-center gap-3 text-left">
-                        <HelpCircle className="size-5 text-brand shrink-0" />
+                        <Question className="size-5 text-brand shrink-0" />
                         <span className="font-medium">{faq.q}</span>
                       </div>
                     </AccordionTrigger>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
-import { X, Star, Truck, Package, Percent } from "lucide-react"
+import { X, Star, Truck, Package, Percent } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
@@ -9,7 +9,7 @@ interface FilterChipsProps {
   currentCategory?: { name: string; slug: string } | null
 }
 
-export function FilterChips({ currentCategory }: FilterChipsProps) {
+export function FilterChips({ currentCategory: _currentCategory }: FilterChipsProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations('SearchFilters')
@@ -20,6 +20,7 @@ export function FilterChips({ currentCategory }: FilterChipsProps) {
   const currentPrime = searchParams.get("prime")
   const currentDeals = searchParams.get("deals")
   const currentAvailability = searchParams.get("availability")
+  const currentFreeShipping = searchParams.get("freeShipping")
 
   const removeParam = (key: string, key2?: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -33,23 +34,26 @@ export function FilterChips({ currentCategory }: FilterChipsProps) {
     key2?: string
     label: string
     icon?: React.ReactNode
+    color?: string
   }> = []
-
-  // Category chip
-  if (currentCategory) {
-    chips.push({
-      key: 'category',
-      label: currentCategory.name,
-      icon: null
-    })
-  }
 
   // Prime chip
   if (currentPrime === "true") {
     chips.push({
       key: 'prime',
       label: 'Prime',
-      icon: <Truck className="h-3.5 w-3.5" />
+      icon: <Truck size={14} weight="regular" />,
+      color: 'bg-brand-blue/10 text-brand-blue border-brand-blue/20'
+    })
+  }
+
+  // Free Shipping chip
+  if (currentFreeShipping === "true") {
+    chips.push({
+      key: 'freeShipping',
+      label: t('freeShipping'),
+      icon: <Truck size={14} weight="regular" />,
+      color: 'bg-shipping-free/10 text-shipping-free border-shipping-free/20'
     })
   }
 
@@ -58,7 +62,8 @@ export function FilterChips({ currentCategory }: FilterChipsProps) {
     chips.push({
       key: 'minRating',
       label: `${currentRating}+ ${t('stars')}`,
-      icon: <Star className="h-3.5 w-3.5 fill-current text-rating" />
+      icon: <Star size={14} weight="fill" className="text-rating" />,
+      color: 'bg-rating/10 text-rating border-rating/20'
     })
   }
 
@@ -75,7 +80,8 @@ export function FilterChips({ currentCategory }: FilterChipsProps) {
     chips.push({
       key: 'minPrice',
       key2: 'maxPrice',
-      label: priceLabel
+      label: priceLabel,
+      color: 'bg-muted text-foreground border-border'
     })
   }
 
@@ -84,7 +90,8 @@ export function FilterChips({ currentCategory }: FilterChipsProps) {
     chips.push({
       key: 'deals',
       label: t('todaysDeals'),
-      icon: <Percent className="h-3.5 w-3.5 text-brand-deal" />
+      icon: <Percent size={14} weight="regular" />,
+      color: 'bg-deal/10 text-deal border-deal/20'
     })
   }
 
@@ -93,43 +100,54 @@ export function FilterChips({ currentCategory }: FilterChipsProps) {
     chips.push({
       key: 'availability',
       label: t('inStock'),
-      icon: <Package className="h-3.5 w-3.5 text-brand-success" />
+      icon: <Package size={14} weight="regular" />,
+      color: 'bg-stock-available/10 text-stock-available border-stock-available/20'
     })
   }
 
+  // Don't render if no active filters
   if (chips.length === 0) return null
 
   return (
-    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap">
+    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap">
+      {/* Active filters label */}
+      <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0 py-1.5 hidden sm:flex items-center">
+        {t('activeFilters')}:
+      </span>
+      
       {chips.map((chip) => (
         <button
           key={chip.key}
           onClick={() => removeParam(chip.key, chip.key2)}
           className={cn(
-            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm whitespace-nowrap",
-            "bg-brand-blue/10 text-brand-blue border border-brand-blue/20",
-            "hover:bg-brand-blue/20 transition-colors min-h-8",
-            "group"
+            "inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-sm whitespace-nowrap",
+            "border group",
+            "hover:bg-red-50 hover:border-red-200 hover:text-red-600",
+            "dark:hover:bg-red-950/30 dark:hover:border-red-800 dark:hover:text-red-400",
+            "active:scale-[0.97]",
+            chip.color || "bg-brand-blue/10 text-brand-blue border-brand-blue/20"
           )}
         >
           {chip.icon}
-          <span>{chip.label}</span>
-          <X className="h-3.5 w-3.5 opacity-60 group-hover:opacity-100" />
+          <span className="font-medium">{chip.label}</span>
+          <X size={14} weight="regular" className="opacity-60 group-hover:opacity-100 transition-opacity" />
         </button>
       ))}
 
-      {/* Clear All button when multiple chips */}
+      {/* Clear All button when multiple filters */}
       {chips.length > 1 && (
         <button
           onClick={() => {
             const params = new URLSearchParams()
             const q = searchParams.get("q")
+            const category = searchParams.get("category")
             if (q) params.set("q", q)
+            if (category) params.set("category", category)
             router.push(`/search?${params.toString()}`)
           }}
           className={cn(
-            "inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm whitespace-nowrap",
-            "text-muted-foreground hover:text-foreground transition-colors min-h-8"
+            "inline-flex items-center gap-1 px-3 h-8 rounded-full text-sm whitespace-nowrap",
+            "text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 font-medium"
           )}
         >
           {t('clearAllFilters')}

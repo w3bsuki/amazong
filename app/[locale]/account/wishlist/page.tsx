@@ -5,7 +5,7 @@ import { useCart } from "@/lib/cart-context"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Heart, ShoppingCart, Trash2, ArrowRight } from "lucide-react"
+import { Heart, ShoppingCart, Trash, ArrowRight } from "@phosphor-icons/react"
 import Image from "next/image"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
@@ -135,7 +135,7 @@ export default function WishlistPage() {
                         onClick={() => removeFromWishlist(item.product_id)}
                         className="text-muted-foreground hover:text-brand-deal hover:border-brand-deal text-xs"
                       >
-                        <Trash2 className="h-3.5 w-3.5 mr-1" />
+                        <Trash className="h-3.5 w-3.5 mr-1" />
                         {t("remove")}
                       </Button>
                     </div>

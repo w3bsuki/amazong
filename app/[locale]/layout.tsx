@@ -4,21 +4,52 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Inter } from "next/font/google";
 import "../globals.css";
+import type { Metadata } from 'next';
+
+// Optimized font loading with display: swap for better LCP
+// Subset limited to Latin for smaller bundle size
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+  preload: true
+});
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  
+  return {
+    title: {
+      template: '%s | AMZN',
+      default: locale === 'bg' ? 'AMZN - Онлайн магазин' : 'AMZN - Online Shopping'
+    },
+    description: locale === 'bg' 
+      ? 'Открийте най-добрите продукти на достъпни цени. Бърза доставка в България.'
+      : 'Discover the best products at affordable prices. Fast delivery.',
+    keywords: locale === 'bg' 
+      ? ['онлайн магазин', 'пазаруване', 'електроника', 'мода', 'дом']
+      : ['online shopping', 'e-commerce', 'electronics', 'fashion', 'home'],
+    openGraph: {
+      title: locale === 'bg' ? 'AMZN - Онлайн магазин' : 'AMZN - Online Shopping',
+      description: locale === 'bg' 
+        ? 'Открийте най-добрите продукти на достъпни цени.'
+        : 'Discover the best products at affordable prices.',
+      type: 'website',
+      locale: locale === 'bg' ? 'bg_BG' : 'en_US',
+    },
+  };
+}
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/lib/cart-context";
 import { WishlistProvider } from "@/lib/wishlist-context";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { MobileTabBar } from "@/components/mobile-tab-bar";
+import { MobileNavigation } from "@/components/mobile-navigation";
 import { CookieConsent } from "@/components/cookie-consent";
 import { Suspense } from "react";
 import { AuthStateListener } from "@/components/auth-state-listener";
 
-const inter = Inter({ subsets: ["latin"] });
-
 import { createClient } from "@/lib/supabase/server";
-
-// ... imports
 
 export default async function LocaleLayout({
     children,
@@ -50,31 +81,31 @@ export default async function LocaleLayout({
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>
-            <body className={`${inter.className} bg-secondary min-h-screen flex flex-col overflow-x-hidden`}>
+            <body className={`${inter.className} ${inter.variable} bg-secondary min-h-screen flex flex-col overflow-x-hidden`}>
                 <NextIntlClientProvider messages={messages}>
                     <AuthStateListener />
                     <CartProvider>
                         <WishlistProvider>
-                            {/* Skip Links - Accessibility */}
+                            {/* Skip Links - Accessibility (Phase 4: Enhanced focus states) */}
                             <a 
                                 href="#main-content" 
-                                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:bg-white focus:text-foreground focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-blue-500 focus:font-medium"
+                                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:bg-white focus:text-foreground focus:px-4 focus:py-3 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-ring focus:font-semibold focus:outline-none transition-all"
                             >
-                                Skip to main content
+                                {locale === 'bg' ? 'Преминете към основното съдържание' : 'Skip to main content'}
                             </a>
                             <a 
                                 href="#footerHeader" 
-                                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-52 focus:z-100 focus:bg-white focus:text-foreground focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-blue-500 focus:font-medium"
+                                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-60 focus:z-100 focus:bg-white focus:text-foreground focus:px-4 focus:py-3 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-ring focus:font-semibold focus:outline-none transition-all"
                             >
-                                Skip to footer
+                                {locale === 'bg' ? 'Преминете към футъра' : 'Skip to footer'}
                             </a>
                             <Suspense fallback={<div className="h-[100px] w-full bg-header-bg" />}>
                                 <SiteHeader user={user} />
                             </Suspense>
                             {/* pt-[120px] for fixed header on mobile (56px header + ~48px nav), md:pt-[108px] for tablet+ */}
-                            <div id="main-content" className="flex-1 pt-14 sm:pt-[108px] pb-16 md:pb-0">{children}</div>
+                            <main id="main-content" role="main" className="flex-1 pt-14 sm:pt-[108px] pb-16 md:pb-0 animate-page-fade-in">{children}</main>
                             <SiteFooter />
-                            <MobileTabBar locale={locale} />
+                            <MobileNavigation locale={locale} />
                             <CookieConsent />
                             <Toaster />
                         </WishlistProvider>

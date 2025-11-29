@@ -2,131 +2,42 @@
 
 import * as React from "react"
 import { Link } from "@/i18n/routing"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface Category {
+  id: string
   name: string
-  nameEn: string
+  name_bg: string | null
   slug: string
-  icon: string
-  image?: string
+  image_url?: string | null
 }
 
-const categories: Category[] = [
-  {
-    name: "Електроника",
-    nameEn: "Electronics",
-    slug: "electronics",
-    icon: "📱",
-    image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=150&q=80"
-  },
-  {
-    name: "Компютри",
-    nameEn: "Computers",
-    slug: "computers",
-    icon: "💻",
-    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=150&q=80"
-  },
-  {
-    name: "Gaming",
-    nameEn: "Gaming",
-    slug: "gaming",
-    icon: "🎮",
-    image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=150&q=80"
-  },
-  {
-    name: "Умен дом",
-    nameEn: "Smart Home",
-    slug: "smart-home",
-    icon: "🏠",
-    image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=150&q=80"
-  },
-  {
-    name: "Дом и кухня",
-    nameEn: "Home & Kitchen",
-    slug: "home",
-    icon: "🍳",
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=150&q=80"
-  },
-  {
-    name: "Мода",
-    nameEn: "Fashion",
-    slug: "fashion",
-    icon: "👗",
-    image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=150&q=80"
-  },
-  {
-    name: "Красота",
-    nameEn: "Beauty",
-    slug: "beauty",
-    icon: "💄",
-    image: "https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=150&q=80"
-  },
-  {
-    name: "Играчки",
-    nameEn: "Toys",
-    slug: "toys",
-    icon: "🧸",
-    image: "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=150&q=80"
-  },
-  {
-    name: "Спорт",
-    nameEn: "Sports",
-    slug: "sports",
-    icon: "⚽",
-    image: "https://images.unsplash.com/photo-1461896836934-afa09e87b19e?w=150&q=80"
-  },
-  {
-    name: "Книги",
-    nameEn: "Books",
-    slug: "books",
-    icon: "📚",
-    image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=150&q=80"
-  },
-  {
-    name: "Автомобили",
-    nameEn: "Automotive",
-    slug: "automotive",
-    icon: "🚗",
-    image: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=150&q=80"
-  },
-  {
-    name: "Градина",
-    nameEn: "Garden",
-    slug: "garden",
-    icon: "🌱",
-    image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=150&q=80"
-  },
-  {
-    name: "Здраве",
-    nameEn: "Health",
-    slug: "health",
-    icon: "💊",
-    image: "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=150&q=80"
-  },
-  {
-    name: "Бебета",
-    nameEn: "Baby",
-    slug: "baby",
-    icon: "👶",
-    image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=150&q=80"
-  },
-  {
-    name: "Домашни любимци",
-    nameEn: "Pets",
-    slug: "pets",
-    icon: "🐕",
-    image: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=150&q=80"
-  },
-  {
-    name: "Офис",
-    nameEn: "Office",
-    slug: "office",
-    icon: "🖨️",
-    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=150&q=80"
-  }
-]
+// Fallback images for categories
+const categoryImages: Record<string, string> = {
+  electronics: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=200&q=80",
+  computers: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&q=80",
+  gaming: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=200&q=80",
+  "smart-home": "https://images.unsplash.com/photo-1558002038-1055907df827?w=200&q=80",
+  home: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=80",
+  fashion: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=200&q=80",
+  beauty: "https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=200&q=80",
+  toys: "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=200&q=80",
+  sports: "https://images.unsplash.com/photo-1461896836934-afa09e87b19e?w=200&q=80",
+  books: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=200&q=80",
+  automotive: "https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=200&q=80",
+  garden: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=200&q=80",
+  health: "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=200&q=80",
+  baby: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=200&q=80",
+  pets: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=200&q=80",
+  office: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&q=80",
+  default: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=200&q=80"
+}
+
+function getCategoryImage(slug: string, imageUrl?: string | null): string {
+  if (imageUrl) return imageUrl
+  return categoryImages[slug] || categoryImages.default
+}
 
 interface CategoryCirclesProps {
   locale?: string
@@ -136,6 +47,26 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = React.useState(false)
   const [canScrollRight, setCanScrollRight] = React.useState(true)
+  const [categories, setCategories] = React.useState<Category[]>([])
+
+  // Fetch categories from Supabase
+  React.useEffect(() => {
+    fetch('/api/categories')
+      .then(res => res.json())
+      .then(data => {
+        if (data.categories) {
+          setCategories(data.categories)
+        }
+      })
+      .catch(err => console.error('Failed to fetch categories:', err))
+  }, [])
+
+  const getCategoryName = (cat: Category) => {
+    if (locale === 'bg' && cat.name_bg) {
+      return cat.name_bg
+    }
+    return cat.name
+  }
 
   const checkScroll = React.useCallback(() => {
     if (scrollRef.current) {
@@ -191,10 +122,10 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
         ref={scrollRef}
         className={cn(
           "flex overflow-x-auto scrollbar-hide snap-x-mandatory scroll-smooth",
-          // Mobile: Safe area padding
-          "gap-4 pl-4 pb-2 scroll-pl-4",
+          // Mobile: Safe area padding + top padding for ring
+          "gap-4 pl-4 py-2 scroll-pl-4",
           // Desktop: Better spacing
-          "sm:gap-5 sm:pl-5 sm:pb-3 sm:scroll-pl-5"
+          "sm:gap-5 sm:pl-5 sm:py-3 sm:scroll-pl-5"
         )}
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
@@ -209,37 +140,34 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
               index === categories.length - 1 && "mr-4 sm:mr-5"
             )}
           >
-            {/* Circle with image - Target style */}
+            {/* Circle with image */}
             <div
               className={cn(
                 "rounded-full flex items-center justify-center overflow-hidden",
-                // Mobile: 72px for proper touch target (close to 44px minimum when tapping)
+                // Mobile: 72px for proper touch target
                 "size-[72px] bg-muted border-2 border-border",
-                // Desktop: Larger with hover effects
+                // Desktop: Larger with hover effect
                 "sm:size-20 md:size-24",
                 "group-hover:border-primary transition-colors"
               )}
             >
-              {category.image ? (
-                <img 
-                  src={category.image} 
-                  alt={locale === "bg" ? category.name : category.nameEn}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-2xl sm:text-3xl md:text-4xl">{category.icon}</span>
-              )}
+              <img 
+                src={getCategoryImage(category.slug, category.image_url)} 
+                alt={getCategoryName(category)}
+                className="w-full h-full object-cover"
+              />
             </div>
             
             {/* Category Name */}
             <span className={cn(
-              "font-medium text-center group-hover:text-primary line-clamp-2 transition-colors",
+              "font-medium text-center line-clamp-2",
               // Mobile: Compact text
               "text-[11px] text-muted-foreground max-w-[72px]",
-              // Desktop: Standard sizing
-              "sm:text-xs md:text-sm sm:text-foreground sm:max-w-[90px] md:max-w-[100px]"
+              // Desktop: Standard sizing with hover underline
+              "sm:text-xs md:text-sm sm:text-foreground sm:max-w-[90px] md:max-w-[100px]",
+              "group-hover:text-primary group-hover:underline"
             )}>
-              {locale === "bg" ? category.name : category.nameEn}
+              {getCategoryName(category)}
             </span>
           </Link>
         ))}
@@ -257,7 +185,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
         )}
         aria-label="Scroll left"
       >
-        <ChevronLeft className="size-5 text-muted-foreground" />
+        <CaretLeft size={20} weight="regular" className="text-muted-foreground" />
       </button>
 
       {/* Right Arrow - Desktop only */}
@@ -272,7 +200,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
         )}
         aria-label="Scroll right"
       >
-        <ChevronRight className="size-5 text-muted-foreground" />
+        <CaretRight size={20} weight="regular" className="text-muted-foreground" />
       </button>
 
       {/* Mobile scroll indicator - subtle fade */}

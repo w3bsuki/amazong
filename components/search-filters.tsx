@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Star, ChevronDown, ChevronRight, Check, Package, Percent, Truck } from "lucide-react"
+import { Star, CaretDown, CaretRight, Check, Package, Percent, Truck } from "@phosphor-icons/react"
 import { useLocale, useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { useState, useEffect } from "react"
@@ -134,7 +134,7 @@ export function SearchFilters({
       {hasActiveFilters && (
         <button
           onClick={clearAllFilters}
-          className="w-full text-left text-sm text-brand-blue hover:text-brand-deal hover:underline font-medium min-h-10 flex items-center"
+          className="w-full text-left text-sm text-link hover:text-primary hover:underline font-medium min-h-10 flex items-center"
         >
           {t('clearAllFilters')}
         </button>
@@ -162,7 +162,7 @@ export function SearchFilters({
               className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
             />
             <span className="text-sm flex items-center gap-1.5">
-              <Truck className="size-4 text-muted-foreground" />
+              <Truck size={16} weight="regular" className="text-muted-foreground" />
               {t('freeShipping')}
             </span>
           </label>
@@ -188,8 +188,8 @@ export function SearchFilters({
                 <div className="flex items-center justify-between group">
                   <Link
                     href={`/search?category=${cat.slug}`}
-                    className={`text-sm cursor-pointer hover:text-brand-deal flex-1 min-h-9 flex items-center ${
-                      isCurrentCategory ? 'font-bold text-brand-deal' : 'text-foreground'
+                    className={`text-sm cursor-pointer hover:text-primary flex-1 min-h-9 flex items-center ${
+                      isCurrentCategory ? 'font-bold text-primary' : 'text-foreground'
                     }`}
                   >
                     {getCategoryName(cat)}
@@ -203,9 +203,9 @@ export function SearchFilters({
                       className="min-h-9 min-w-9 flex items-center justify-center hover:bg-muted rounded-md"
                     >
                       {isExpanded ? (
-                        <ChevronDown className="size-4 text-muted-foreground" />
+                        <CaretDown size={16} weight="regular" className="text-muted-foreground" />
                       ) : (
-                        <ChevronRight className="size-4 text-muted-foreground" />
+                        <CaretRight size={16} weight="regular" className="text-muted-foreground" />
                       )}
                     </button>
                   )}
@@ -218,8 +218,8 @@ export function SearchFilters({
                       <Link
                         key={subcat.id}
                         href={`/search?category=${subcat.slug}`}
-                        className={`text-sm cursor-pointer hover:text-brand-deal min-h-9 flex items-center ${
-                          currentCategory?.slug === subcat.slug ? 'font-bold text-brand-deal' : 'text-muted-foreground'
+                        className={`text-sm cursor-pointer hover:text-primary min-h-9 flex items-center ${
+                          currentCategory?.slug === subcat.slug ? 'font-bold text-primary' : 'text-muted-foreground'
                         }`}
                       >
                         {getCategoryName(subcat)}
@@ -248,13 +248,14 @@ export function SearchFilters({
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className={`size-4 ${i < stars ? "fill-current" : "fill-none stroke-current stroke-1"}`}
+                  size={16}
+                  weight={i < stars ? "fill" : "regular"}
                 />
               ))}
             </div>
-            <span className="text-sm text-brand-blue group-hover:text-brand-deal group-hover:underline">{t('andUp')}</span>
+            <span className="text-sm text-link group-hover:text-primary group-hover:underline">{t('andUp')}</span>
             {currentRating === stars.toString() && (
-              <Check className="size-4 text-brand-blue ml-1" />
+              <Check size={16} weight="regular" className="text-brand-blue ml-1" />
             )}
           </button>
         ))}
@@ -311,11 +312,11 @@ export function SearchFilters({
             return (
               <button
                 key={label}
-                className={`min-h-10 w-full text-left cursor-pointer hover:text-brand-deal hover:underline flex items-center gap-1.5 px-1 -mx-1 hover:bg-muted/50 rounded-md ${isActive ? 'font-bold text-brand-deal' : ''}`}
+                className={`min-h-10 w-full text-left cursor-pointer hover:text-primary hover:underline flex items-center gap-1.5 px-1 -mx-1 hover:bg-muted/50 rounded-md ${isActive ? 'font-bold text-primary' : ''}`}
                 onClick={() => handlePriceClick(min, max)}
               >
                 {label}
-                {isActive && <Check className="size-4" />}
+                {isActive && <Check size={16} weight="regular" />}
               </button>
             )
           })}
@@ -367,7 +368,7 @@ export function SearchFilters({
               className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
             />
             <span className="text-sm flex items-center gap-1.5">
-              <Percent className="size-4 text-brand-deal" />
+              <Percent size={16} weight="regular" className="text-deal" />
               {t('todaysDeals')}
             </span>
           </label>
@@ -393,7 +394,7 @@ export function SearchFilters({
               className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
             />
             <span className="text-sm flex items-center gap-1.5">
-              <Package className="size-4 text-brand-success" />
+              <Package size={16} weight="regular" className="text-stock-available" />
               {t('includeOutOfStock')}
             </span>
           </label>
@@ -404,10 +405,10 @@ export function SearchFilters({
       <div>
         <h3 className="font-bold text-sm mb-3">{t('newArrivals')}</h3>
         <div className="space-y-0.5 text-sm">
-          <button className="min-h-10 w-full text-left cursor-pointer text-foreground hover:text-brand-deal hover:underline px-1 -mx-1 hover:bg-muted/50 rounded-md flex items-center">
+          <button className="min-h-10 w-full text-left cursor-pointer text-foreground hover:text-primary hover:underline px-1 -mx-1 hover:bg-muted/50 rounded-md flex items-center">
             {t('last30Days')}
           </button>
-          <button className="min-h-10 w-full text-left cursor-pointer text-foreground hover:text-brand-deal hover:underline px-1 -mx-1 hover:bg-muted/50 rounded-md flex items-center">
+          <button className="min-h-10 w-full text-left cursor-pointer text-foreground hover:text-primary hover:underline px-1 -mx-1 hover:bg-muted/50 rounded-md flex items-center">
             {t('last90Days')}
           </button>
         </div>

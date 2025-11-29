@@ -8,11 +8,22 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { 
-  FileText, ShoppingBag, CreditCard, Truck, Scale,
-  AlertTriangle, Users, Ban, RefreshCcw, Shield, 
-  Gavel, Mail, CheckCircle
-} from "lucide-react"
+  FileText, ShoppingBag, CreditCard, Truck, Scales,
+  Warning, Users, Prohibit, ArrowCounterClockwise, Shield, 
+  Gavel, Envelope, CheckCircle
+} from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'bg' ? 'Условия за ползване' : 'Terms of Service',
+    description: locale === 'bg' 
+      ? 'Условия за ползване на услугите на AMZN.'
+      : 'Terms of Service for using AMZN services.',
+  };
+}
 
 export default async function TermsPage() {
   const t = await getTranslations('Terms')
@@ -24,12 +35,12 @@ export default async function TermsPage() {
     { id: 'orders', icon: ShoppingBag, title: t('orders'), desc: t('ordersDesc') },
     { id: 'payments', icon: CreditCard, title: t('payments'), desc: t('paymentsDesc') },
     { id: 'shipping', icon: Truck, title: t('shipping'), desc: t('shippingDesc') },
-    { id: 'returns', icon: RefreshCcw, title: t('returnsPolicy'), desc: t('returnsPolicyDesc') },
-    { id: 'prohibited', icon: Ban, title: t('prohibited'), desc: t('prohibitedDesc') },
+    { id: 'returns', icon: ArrowCounterClockwise, title: t('returnsPolicy'), desc: t('returnsPolicyDesc') },
+    { id: 'prohibited', icon: Prohibit, title: t('prohibited'), desc: t('prohibitedDesc') },
     { id: 'intellectual', icon: Shield, title: t('intellectual'), desc: t('intellectualDesc') },
-    { id: 'liability', icon: Scale, title: t('liability'), desc: t('liabilityDesc') },
+    { id: 'liability', icon: Scales, title: t('liability'), desc: t('liabilityDesc') },
     { id: 'disputes', icon: Gavel, title: t('disputes'), desc: t('disputesDesc') },
-    { id: 'changes', icon: AlertTriangle, title: t('changes'), desc: t('changesDesc') },
+    { id: 'changes', icon: Warning, title: t('changes'), desc: t('changesDesc') },
   ]
   
   return (
@@ -81,7 +92,7 @@ export default async function TermsPage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-start gap-4 p-4 bg-brand-warning/10 border-l-4 border-brand-warning mb-4">
-                  <AlertTriangle className="size-5 text-brand-warning shrink-0 mt-0.5" />
+                  <Warning className="size-5 text-brand-warning shrink-0 mt-0.5" />
                   <p className="text-sm">{t('importantNotice')}</p>
                 </div>
                 <p className="text-muted-foreground leading-relaxed">{t('introText')}</p>
@@ -120,7 +131,7 @@ export default async function TermsPage() {
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">
-                <Mail className="size-6 text-brand" />
+                <Envelope className="size-6 text-brand" />
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-2">{t('questionsTitle')}</h3>
@@ -152,7 +163,7 @@ export default async function TermsPage() {
             <p className="text-sm text-muted-foreground">{t('privacyLinkDesc')}</p>
           </Link>
           <Link href="/returns" className="block p-4 border border-border hover:border-brand/50 hover:bg-brand/5 transition-colors">
-            <RefreshCcw className="size-5 text-brand mb-2" />
+            <ArrowCounterClockwise className="size-5 text-brand mb-2" />
             <h4 className="font-medium">{t('returnsLink')}</h4>
             <p className="text-sm text-muted-foreground">{t('returnsLinkDesc')}</p>
           </Link>

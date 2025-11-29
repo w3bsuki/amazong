@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Gift, Mail, Printer, CreditCard } from "lucide-react"
+import { Gift, Envelope, Printer, CreditCard } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 

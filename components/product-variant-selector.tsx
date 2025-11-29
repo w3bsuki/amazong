@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
-import { Check } from "lucide-react"
+import { Check } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
 
 interface Variant {
@@ -185,8 +185,10 @@ export function ProductVariantSelector({
                 >
                   {selectedColor === color && (
                     <Check 
+                      size={20}
+                      weight="bold"
                       className={cn(
-                        "absolute inset-0 m-auto h-5 w-5",
+                        "absolute inset-0 m-auto",
                         hex === '#FFFFFF' || hex === '#FFCC00' || hex === '#F5DEB3'
                           ? "text-gray-800"
                           : "text-white"
@@ -214,11 +216,11 @@ export function ProductVariantSelector({
               selectedColor || undefined
             )
             if (stock === 0) {
-              return <span className="text-brand-deal font-medium">{t('outOfStock')}</span>
+              return <span className="text-stock-out font-medium">{t('outOfStock')}</span>
             } else if (stock <= 5) {
-              return <span className="text-brand-deal font-medium">{t('onlyXLeft', { count: stock })}</span>
+              return <span className="text-stock-low font-medium">{t('onlyXLeft', { count: stock })}</span>
             } else {
-              return <span className="text-brand-success font-medium">{t('inStock')}</span>
+              return <span className="text-stock-available font-medium">{t('inStock')}</span>
             }
           })()}
         </div>

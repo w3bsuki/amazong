@@ -4,7 +4,7 @@ import * as React from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { ChevronLeft, ChevronRight, Star, Clock, Zap } from "lucide-react"
+import { CaretLeft, CaretRight, Star, Clock, Lightning } from "@phosphor-icons/react"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 
@@ -47,12 +47,12 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
 
   return (
     <Link href={`/product/${id}`} className="block h-full group">
-      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col border border-border hover:border-brand-deal">
+      <div className="bg-white rounded-md overflow-hidden h-full flex flex-col border border-border hover:border-deal">
         {/* Square Image Container with Discount Badge */}
         <div className="relative w-full aspect-square bg-secondary p-4 flex items-center justify-center overflow-hidden">
           {/* Discount Badge - More prominent */}
-          <div className="absolute top-2 left-2 z-10 bg-brand-deal text-white text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
-            <Zap className="size-3" />
+          <div className="absolute top-2 left-2 z-10 bg-badge-deal text-white text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
+            <Lightning size={12} weight="fill" />
             -{discountPercent}%
           </div>
           <div className="relative w-full h-full">
@@ -70,13 +70,13 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
         <div className="p-3 flex-1 flex flex-col bg-white">
           {/* Deal Badge */}
           <div className="flex items-center gap-1.5 mb-1.5">
-            <span className="bg-brand-deal-light text-brand-deal-text font-bold text-[10px] uppercase px-2 py-0.5 rounded-full">
+            <span className="bg-deal-light text-deal font-bold text-[10px] uppercase px-2 py-0.5 rounded-full">
               {t('deal')}
             </span>
           </div>
 
           {/* Title - 2 lines max */}
-          <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-brand-deal transition-colors">
+          <h3 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 mb-2 leading-snug min-h-10 group-hover:text-deal">
             {title}
           </h3>
 
@@ -87,9 +87,10 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
+                    size={12}
+                    weight={i < Math.floor(rating) ? "fill" : "regular"}
                     className={cn(
-                      "size-3",
-                      i < Math.floor(rating) ? "fill-current" : "text-rating-empty fill-rating-empty"
+                      i < Math.floor(rating) ? "" : "text-rating-empty"
                     )}
                   />
                 ))}
@@ -100,13 +101,13 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
 
           {/* Price - With strikethrough */}
           <div className="mt-auto pt-1">
-            <div className="flex items-baseline gap-2">
-              <span className="text-base sm:text-lg font-bold text-brand-deal">{formatPrice(price)}</span>
-              <span className="text-xs text-muted-foreground line-through">{formatPrice(listPrice)}</span>
+            <div className="flex flex-col">
+              <span className="text-sm sm:text-base font-bold text-price-sale">{formatPrice(price)}</span>
+              <span className="text-[10px] text-muted-foreground line-through">{formatPrice(listPrice)}</span>
             </div>
-            <div className="text-[10px] text-brand-success font-semibold mt-1 flex items-center gap-1">
-              <Clock className="size-3" />
-              {locale === 'bg' ? `Спестявате ${formatPrice(listPrice - price)}` : `Save ${formatPrice(listPrice - price)}`}
+            <div className="text-[10px] text-stock-available font-semibold mt-1 flex items-center gap-1">
+              <Clock size={12} weight="regular" />
+              <span className="truncate">{locale === 'bg' ? `Спести ${formatPrice(listPrice - price)}` : `Save ${formatPrice(listPrice - price)}`}</span>
             </div>
           </div>
         </div>
@@ -144,8 +145,8 @@ export function DealsSection({
   }
 
   return (
-    <div className="rounded-md overflow-hidden bg-linear-to-br from-brand-deal via-brand-deal to-brand-deal/80">
-      {/* Header Section - Target style with icon */}
+    <div className="rounded-md overflow-hidden bg-deal">
+      {/* Header Section - Red deal theme */}
       <div className="text-center pt-6 sm:pt-8 pb-3 sm:pb-4 px-4">
         <div className="inline-flex items-center gap-2 mb-1.5">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
@@ -156,10 +157,10 @@ export function DealsSection({
           <div>
             <Link 
               href={ctaHref} 
-              className="text-white/70 hover:text-white text-xs sm:text-sm underline underline-offset-4 transition-colors inline-flex items-center gap-1"
+              className="text-white/70 hover:text-white text-xs sm:text-sm underline underline-offset-4 inline-flex items-center gap-1"
             >
               {ctaText}
-              <ChevronRight className="size-3" />
+              <CaretRight size={12} weight="regular" />
             </Link>
           </div>
         )}
@@ -169,7 +170,7 @@ export function DealsSection({
       <Tabs defaultValue={tabs[0]?.id} className="w-full">
         {/* Tab List - Responsive pills */}
         <div className="flex justify-center px-3 sm:px-4 pb-2">
-          <TabsList className="bg-white/20 backdrop-blur-sm h-auto p-1 sm:p-1.5 gap-0.5 sm:gap-1 rounded-full border border-white/25 flex flex-wrap justify-center sm:flex-nowrap sm:overflow-x-auto no-scrollbar shadow-lg max-w-full">
+          <TabsList className="bg-white/20 backdrop-blur-sm h-auto p-1 sm:p-1.5 gap-0.5 sm:gap-1 rounded-full border border-white/25 flex flex-wrap justify-center sm:flex-nowrap sm:overflow-x-auto no-scrollbar max-w-full">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}
@@ -177,8 +178,7 @@ export function DealsSection({
                 className={cn(
                   "px-3 sm:px-5 py-2 sm:py-2.5 text-[11px] sm:text-sm font-semibold rounded-full",
                   "text-white/90 hover:text-white hover:bg-white/25",
-                  "data-[state=active]:text-brand-deal data-[state=active]:bg-white data-[state=active]:shadow-md",
-                  "transition-all duration-200",
+                  "data-[state=active]:text-deal data-[state=active]:bg-white",
                   "whitespace-nowrap min-h-9 sm:min-h-11 touch-action-manipulation"
                 )}
               >
@@ -202,24 +202,22 @@ export function DealsSection({
                 className={cn(
                   "absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
                   "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
-                  "transition-all duration-200",
                   canScrollLeft ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll left"
               >
-                <ChevronLeft className="size-5 text-foreground" />
+                <CaretLeft size={20} weight="regular" className="text-foreground" />
               </button>
               <button
                 onClick={() => scroll("right")}
                 className={cn(
                   "absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
                   "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
-                  "transition-all duration-200",
                   canScrollRight ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll right"
               >
-                <ChevronRight className="size-5 text-foreground" />
+                <CaretRight size={20} weight="regular" className="text-foreground" />
               </button>
 
               {/* Deals Container - Horizontal scroll with exactly 2 visible on mobile */}

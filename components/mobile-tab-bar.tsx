@@ -1,7 +1,6 @@
 "use client"
 
-import * as React from "react"
-import { Home, ShoppingCart, User, Menu } from "lucide-react"
+import { House, ShoppingCart, User, List } from "@phosphor-icons/react"
 import { Link, usePathname } from "@/i18n/routing"
 import { useCart } from "@/lib/cart-context"
 import { cn } from "@/lib/utils"
@@ -12,7 +11,7 @@ interface TabItem {
   labelBg: string
   icon: React.ReactNode
   href?: string
-  action?: "menu" | "search"
+  action?: "menu"
 }
 
 const tabs: TabItem[] = [
@@ -20,28 +19,28 @@ const tabs: TabItem[] = [
     id: "home",
     labelEn: "Home",
     labelBg: "Начало",
-    icon: <Home className="size-6" />,
+    icon: <House size={24} weight="regular" />,
     href: "/"
   },
   {
     id: "menu",
     labelEn: "Menu",
     labelBg: "Меню",
-    icon: <Menu className="size-6" />,
+    icon: <List size={24} weight="regular" />,
     action: "menu"
   },
   {
     id: "cart",
     labelEn: "Cart",
     labelBg: "Кошница",
-    icon: <ShoppingCart className="size-6" />,
+    icon: <ShoppingCart size={24} weight="regular" />,
     href: "/cart"
   },
   {
     id: "account",
     labelEn: "Account",
     labelBg: "Профил",
-    icon: <User className="size-6" />,
+    icon: <User size={24} weight="regular" />,
     href: "/account"
   }
 ]
@@ -49,14 +48,9 @@ const tabs: TabItem[] = [
 interface MobileTabBarProps {
   locale?: string
   onMenuClick?: () => void
-  onSearchClick?: () => void
 }
 
-export function MobileTabBar({ 
-  locale = "en", 
-  onMenuClick,
-  onSearchClick 
-}: MobileTabBarProps) {
+export function MobileTabBar({ locale = "en", onMenuClick }: MobileTabBarProps) {
   const pathname = usePathname()
   const { items } = useCart()
   
@@ -69,71 +63,55 @@ export function MobileTabBar({
     return tab.href && pathname.includes(tab.href)
   }
 
-  const handleTabClick = (tab: TabItem) => {
-    if (tab.action === "menu" && onMenuClick) {
-      onMenuClick()
-    } else if (tab.action === "search" && onSearchClick) {
-      onSearchClick()
-    }
-  }
-
   return (
     <nav 
       className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden pb-safe"
       role="navigation"
       aria-label="Mobile navigation"
     >
-      <div className="flex items-center justify-around h-[72px]">
+      <div className="flex items-center justify-around h-14">
         {tabs.map((tab) => {
           const active = isActive(tab)
           
-          if (tab.action) {
-            // Button for actions (menu, search)
+          if (tab.action === "menu") {
             return (
               <button
                 key={tab.id}
-                onClick={() => handleTabClick(tab)}
+                onClick={onMenuClick}
                 className={cn(
-                  "flex flex-col items-center justify-center flex-1 min-h-14 min-w-14 h-full gap-1",
-                  "touch-action-manipulation active:scale-95 transition-all",
+                  "flex flex-col items-center justify-center flex-1 h-full gap-0.5",
+                  "touch-action-manipulation tap-transparent",
                   active ? "text-primary" : "text-muted-foreground"
                 )}
-                aria-label={locale === "bg" ? tab.labelBg : tab.labelEn}
               >
                 {tab.icon}
-                <span className="text-[11px] font-medium">
+                <span className="text-[10px] font-medium">
                   {locale === "bg" ? tab.labelBg : tab.labelEn}
                 </span>
               </button>
             )
           }
           
-          // Link for navigation
           return (
             <Link
               key={tab.id}
               href={tab.href || "/"}
+              prefetch={tab.id === "home" || tab.id === "cart"}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 min-h-14 min-w-14 h-full gap-1 relative",
-                "touch-action-manipulation active:scale-95 transition-all",
+                "flex flex-col items-center justify-center flex-1 h-full gap-0.5 relative",
+                "touch-action-manipulation tap-transparent",
                 active ? "text-primary" : "text-muted-foreground"
               )}
-              aria-label={locale === "bg" ? tab.labelBg : tab.labelEn}
-              aria-current={active ? "page" : undefined}
             >
               <span className="relative">
                 {tab.icon}
-                {/* Cart badge */}
                 {tab.id === "cart" && cartItemCount > 0 && (
-                  <span 
-                    className="absolute -top-1 -right-2.5 bg-brand-deal text-white text-[10px] font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1"
-                    aria-label={`${cartItemCount} items in cart`}
-                  >
+                  <span className="absolute -top-1 -right-2 bg-badge-deal text-white text-[10px] font-bold rounded-full min-w-4 h-4 flex items-center justify-center px-1">
                     {cartItemCount > 99 ? "99+" : cartItemCount}
                   </span>
                 )}
               </span>
-              <span className="text-[11px] font-medium">
+              <span className="text-[10px] font-medium">
                 {locale === "bg" ? tab.labelBg : tab.labelEn}
               </span>
             </Link>

@@ -1,7 +1,8 @@
 "use client"
 
+import * as React from "react"
 import { Link } from "@/i18n/routing"
-import { Home } from "lucide-react"
+import { House } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import {
   Breadcrumb,
@@ -48,11 +49,14 @@ interface AppBreadcrumbProps {
  * ```
  */
 export function AppBreadcrumb({ 
-  items, 
+  items = [], 
   className,
   showHome = true,
   homeLabel = "Amazong"
 }: AppBreadcrumbProps) {
+  // Defensive null check for items
+  const safeItems = items || []
+  
   return (
     <Breadcrumb
       className={cn(
@@ -62,7 +66,7 @@ export function AppBreadcrumb({
     >
       <BreadcrumbList className="text-sm text-muted-foreground flex-wrap">
         {/* Home link */}
-        {showHome && (
+          {showHome && (
           <>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
@@ -70,41 +74,42 @@ export function AppBreadcrumb({
                   href="/" 
                   className="inline-flex items-center gap-1.5 text-foreground hover:text-brand hover:underline underline-offset-2 transition-colors min-h-9 px-1"
                 >
-                  <Home className="size-3.5" aria-hidden="true" />
+                  <House size={14} weight="regular" aria-hidden="true" />
                   <span>{homeLabel}</span>
                 </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {items.length > 0 && <BreadcrumbSeparator />}
+            {safeItems.length > 0 && <BreadcrumbSeparator />}
           </>
         )}
 
         {/* Dynamic items */}
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1
+        {safeItems.map((item, index) => {
+          const isLast = index === safeItems.length - 1
           const isCurrentPage = isLast && !item.href
 
           return (
-            <BreadcrumbItem key={index} className="min-w-0">
-              {index > 0 && <BreadcrumbSeparator className="mr-1.5" />}
-              
-              {isCurrentPage ? (
-                <BreadcrumbPage className="inline-flex items-center gap-1.5 text-muted-foreground font-normal truncate max-w-[200px] sm:max-w-[300px]">
-                  {item.icon && <span className="shrink-0">{item.icon}</span>}
-                  <span className="truncate">{item.label}</span>
-                </BreadcrumbPage>
-              ) : (
-                <BreadcrumbLink asChild>
-                  <Link 
-                    href={item.href || "#"} 
-                    className="inline-flex items-center gap-1.5 text-foreground hover:text-brand hover:underline underline-offset-2 transition-colors min-h-9 px-1 truncate max-w-[150px] sm:max-w-[200px]"
-                  >
+            <React.Fragment key={index}>
+              {index > 0 && <BreadcrumbSeparator />}
+              <BreadcrumbItem className="min-w-0">
+                {isCurrentPage ? (
+                  <BreadcrumbPage className="inline-flex items-center gap-1.5 text-muted-foreground font-normal truncate max-w-[200px] sm:max-w-[300px]">
                     {item.icon && <span className="shrink-0">{item.icon}</span>}
                     <span className="truncate">{item.label}</span>
-                  </Link>
-                </BreadcrumbLink>
-              )}
-            </BreadcrumbItem>
+                  </BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink asChild>
+                    <Link 
+                      href={item.href || "#"} 
+                      className="inline-flex items-center gap-1.5 text-foreground hover:text-brand hover:underline underline-offset-2 transition-colors min-h-9 px-1 truncate max-w-[150px] sm:max-w-[200px]"
+                    >
+                      {item.icon && <span className="shrink-0">{item.icon}</span>}
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </React.Fragment>
           )
         })}
       </BreadcrumbList>

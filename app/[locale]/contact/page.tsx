@@ -6,11 +6,22 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { 
-  Mail, Phone, MapPin, Clock, 
-  Headphones, Package, CreditCard, HelpCircle,
-  ChevronRight, Send, ShieldCheck
-} from "lucide-react"
+  Envelope, Phone, MapPin, Clock, 
+  Headphones, Package, CreditCard, Question,
+  CaretRight, PaperPlaneTilt, ShieldCheck
+} from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'bg' ? 'Свържете се с нас' : 'Contact Us',
+    description: locale === 'bg' 
+      ? 'Свържете се с екипа на AMZN. Ние сме тук да ви помогнем 24/7.'
+      : 'Get in touch with the AMZN team. We are here to help you 24/7.',
+  };
+}
 
 export default async function ContactPage() {
   const t = await getTranslations('Contact')
@@ -18,7 +29,7 @@ export default async function ContactPage() {
   const quickHelp = [
     { icon: Package, title: t('trackOrder'), desc: t('trackOrderDesc'), href: '/account/orders' },
     { icon: CreditCard, title: t('paymentIssues'), desc: t('paymentIssuesDesc'), href: '/customer-service' },
-    { icon: HelpCircle, title: t('productQuestions'), desc: t('productQuestionsDesc'), href: '/customer-service' },
+    { icon: Question, title: t('productQuestions'), desc: t('productQuestionsDesc'), href: '/customer-service' },
   ]
   
   return (
@@ -52,7 +63,7 @@ export default async function ContactPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <h3 className="font-semibold">{item.title}</h3>
-                          <ChevronRight className="size-4 text-muted-foreground group-hover:text-brand transition-colors" />
+                          <CaretRight className="size-4 text-muted-foreground group-hover:text-brand transition-colors" />
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">{item.desc}</p>
                       </div>
@@ -71,7 +82,7 @@ export default async function ContactPage() {
               <CardContent className="p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="size-10 bg-brand/10 flex items-center justify-center">
-                    <Send className="size-5 text-brand" />
+                    <PaperPlaneTilt className="size-5 text-brand" />
                   </div>
                   <div>
                     <h2 className="text-xl font-bold">{t('sendMessage')}</h2>
@@ -136,7 +147,7 @@ export default async function ContactPage() {
                   </div>
                   
                   <Button type="submit" className="w-full sm:w-auto bg-brand hover:bg-brand-dark">
-                    <Send className="size-4 mr-2" />
+                    <PaperPlaneTilt className="size-4 mr-2" />
                     {t('send')}
                   </Button>
                 </form>
@@ -171,7 +182,7 @@ export default async function ContactPage() {
               <CardContent className="p-5">
                 <div className="flex items-center gap-4">
                   <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">
-                    <Mail className="size-6 text-brand" />
+                    <Envelope className="size-6 text-brand" />
                   </div>
                   <div>
                     <h3 className="font-bold">{t('emailUs')}</h3>
@@ -249,7 +260,7 @@ export default async function ContactPage() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-start gap-4">
                   <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">
-                    <HelpCircle className="size-6 text-brand" />
+                    <Question className="size-6 text-brand" />
                   </div>
                   <div>
                     <h3 className="font-bold text-lg">{t('faqTitle')}</h3>
@@ -259,7 +270,7 @@ export default async function ContactPage() {
                 <Link href="/customer-service">
                   <Button variant="outline" className="whitespace-nowrap">
                     {t('viewFaq')}
-                    <ChevronRight className="size-4 ml-2" />
+                    <CaretRight className="size-4 ml-2" />
                   </Button>
                 </Link>
               </div>

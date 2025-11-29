@@ -2,21 +2,33 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Star, Percent, Clock, Zap } from "lucide-react"
+import {
+    Star,
+    Percent,
+    Clock,
+    Fire,
+    DeviceMobile,
+    House,
+    TShirt,
+    PaintBrush,
+    PuzzlePiece, 
+    Barbell,
+    type Icon
+} from "@phosphor-icons/react"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 import { useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 
-// Deal categories with icons for circle filters
-const dealCategories = [
-    { id: "all", icon: "🔥", slug: "all" },
-    { id: "electronics", icon: "📱", slug: "electronics" },
-    { id: "home", icon: "🏠", slug: "home" },
-    { id: "fashion", icon: "👗", slug: "fashion" },
-    { id: "beauty", icon: "💄", slug: "beauty" },
-    { id: "toys", icon: "🧸", slug: "toys" },
-    { id: "sports", icon: "⚽", slug: "sports" },
+// Deal categories with Phosphor icons for circle filters
+const dealCategories: { id: string; icon: Icon; slug: string }[] = [
+    { id: "all", icon: Fire, slug: "all" },
+    { id: "electronics", icon: DeviceMobile, slug: "electronics" },
+    { id: "home", icon: House, slug: "home" },
+    { id: "fashion", icon: TShirt, slug: "fashion" },
+    { id: "beauty", icon: PaintBrush, slug: "beauty" },
+    { id: "toys", icon: PuzzlePiece, slug: "toys" },
+    { id: "sports", icon: Barbell, slug: "sports" },
 ]
 
 export default function TodaysDealsPage() {
@@ -169,13 +181,16 @@ export default function TodaysDealsPage() {
                                 )}
                             >
                                 <div className={cn(
-                                    "size-14 sm:size-16 rounded-full flex items-center justify-center text-2xl sm:text-3xl",
+                                    "size-14 sm:size-16 rounded-full flex items-center justify-center",
                                     "border-2 transition-all",
                                     activeCategory === cat.id 
                                         ? "bg-primary/10 border-primary" 
-                                        : "bg-muted border-transparent hover:border-primary/50"
+                                        : "bg-muted border-transparent hover:shadow-sm"
                                 )}>
-                                    {cat.icon}
+                                    <cat.icon className={cn(
+                                        "size-6 sm:size-7 transition-colors",
+                                        activeCategory === cat.id ? "text-primary" : "text-muted-foreground"
+                                    )} />
                                 </div>
                                 <span className={cn(
                                     "text-[11px] sm:text-xs font-medium text-center transition-colors",
@@ -218,7 +233,7 @@ export default function TodaysDealsPage() {
                     {filteredDeals.map((deal) => (
                         <Card 
                             key={deal.id} 
-                            className="h-full hover:border-primary transition-colors cursor-pointer border-border rounded-lg overflow-hidden group"
+                            className="h-full hover:shadow-product-hover transition-shadow cursor-pointer border-border rounded-lg overflow-hidden group"
                         >
                             <CardContent className="p-2 sm:p-3 md:p-4">
                                 {/* Image with discount badge */}

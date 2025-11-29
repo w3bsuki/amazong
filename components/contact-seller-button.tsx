@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import { MessageCircle, Loader2 } from "lucide-react"
+import { Chat, CircleNotch } from "@phosphor-icons/react"
 import { useToast } from "@/hooks/use-toast"
 
 interface ContactSellerButtonProps {
@@ -103,10 +103,10 @@ export function ContactSellerButton({
       disabled={isLoading}
     >
       {isLoading ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
+        <CircleNotch size={16} weight="regular" className="animate-spin" />
       ) : (
         <>
-          {showIcon && <MessageCircle className="h-4 w-4" />}
+          {showIcon && <Chat size={16} weight="regular" />}
           {showLabel && <span className={showIcon ? "ml-2" : ""}>{t("contactSeller")}</span>}
         </>
       )}

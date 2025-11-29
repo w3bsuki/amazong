@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Link } from "@/i18n/routing"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useLocale } from "next-intl"
 import { useSearchParams } from "next/navigation"
@@ -203,13 +203,12 @@ export function SubcategoryCircles({
                 index === subcategories.length - 1 && "mr-4"
               )}
             >
-              {/* Circle with image - Target style */}
+              {/* Circle with image */}
               <div
                 className={cn(
                   "rounded-full flex items-center justify-center overflow-hidden",
                   "size-20 sm:size-[90px] md:size-[100px]",
-                  "bg-muted border-2 border-transparent",
-                  "group-hover:border-primary group-hover:shadow-md transition-all"
+                  "bg-muted"
                 )}
               >
                 <img 
@@ -223,7 +222,7 @@ export function SubcategoryCircles({
               {/* Category Name - Target style */}
               <span className={cn(
                 "text-xs sm:text-sm font-medium text-center text-foreground",
-                "group-hover:text-primary group-hover:underline transition-colors",
+                "group-hover:text-primary group-hover:underline",
                 "line-clamp-2",
                 "max-w-[90px] sm:max-w-[100px]"
               )}>
@@ -245,7 +244,7 @@ export function SubcategoryCircles({
           )}
           aria-label="Scroll left"
         >
-          <ChevronLeft className="size-5 text-muted-foreground" />
+          <CaretLeft size={20} weight="regular" className="text-muted-foreground" />
         </button>
 
         {/* Right Arrow - Desktop only */}
@@ -260,7 +259,7 @@ export function SubcategoryCircles({
           )}
           aria-label="Scroll right"
         >
-          <ChevronRight className="size-5 text-muted-foreground" />
+          <CaretRight size={20} weight="regular" className="text-muted-foreground" />
         </button>
 
         {/* Mobile scroll indicator - subtle fade */}

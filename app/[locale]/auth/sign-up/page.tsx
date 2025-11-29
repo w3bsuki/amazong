@@ -9,7 +9,44 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useMemo } from "react"
+import { cn } from "@/lib/utils"
+
+// Password strength indicator component
+function PasswordStrengthIndicator({ password }: { password: string }) {
+  const strength = useMemo(() => {
+    let score = 0;
+    if (password.length >= 6) score++;
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+    
+    if (score <= 2) return { label: 'Weak', color: 'bg-destructive', width: 'w-1/4' };
+    if (score <= 4) return { label: 'Fair', color: 'bg-brand-warning', width: 'w-2/4' };
+    if (score <= 5) return { label: 'Good', color: 'bg-brand-success', width: 'w-3/4' };
+    return { label: 'Strong', color: 'bg-brand-success', width: 'w-full' };
+  }, [password]);
+  
+  if (!password) return null;
+  
+  return (
+    <div className="mt-2 space-y-1">
+      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
+        <div className={cn("h-full transition-all duration-300", strength.color, strength.width)} />
+      </div>
+      <p className={cn(
+        "text-[10px]",
+        strength.label === 'Weak' && 'text-destructive',
+        strength.label === 'Fair' && 'text-brand-warning',
+        (strength.label === 'Good' || strength.label === 'Strong') && 'text-brand-success'
+      )}>
+        Password strength: {strength.label}
+      </p>
+    </div>
+  );
+}
 
 export default function Page() {
   const [name, setName] = useState("")
@@ -75,6 +112,7 @@ export default function Page() {
                       type="text"
                       placeholder="First and last name"
                       required
+                      autoComplete="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="h-8 rounded-sm border-input focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand"
@@ -89,6 +127,7 @@ export default function Page() {
                       type="email"
                       placeholder="m@example.com"
                       required
+                      autoComplete="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="h-8 rounded-sm border-input focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand"
@@ -102,11 +141,13 @@ export default function Page() {
                       id="password"
                       type="password"
                       required
+                      autoComplete="new-password"
                       placeholder="At least 6 characters"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="h-8 rounded-sm border-input focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand"
                     />
+                    <PasswordStrengthIndicator password={password} />
                     <div className="text-[10px] text-muted-foreground flex items-center gap-1">
                       <span className="text-link font-bold">i</span> Passwords must be at least 6 characters.
                     </div>
@@ -119,6 +160,7 @@ export default function Page() {
                       id="repeat-password"
                       type="password"
                       required
+                      autoComplete="new-password"
                       value={repeatPassword}
                       onChange={(e) => setRepeatPassword(e.target.value)}
                       className="h-8 rounded-sm border-input focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand"

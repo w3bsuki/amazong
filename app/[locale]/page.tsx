@@ -3,11 +3,42 @@ import { HeroCarousel } from "@/components/hero-carousel"
 import { Link } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { CategoryCircles } from "@/components/category-circles"
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'bg' ? 'Начало' : 'Home',
+    description: locale === 'bg' 
+      ? 'Добре дошли в AMZN - вашият онлайн магазин за електроника, мода, дом и много други.'
+      : 'Welcome to AMZN - your online store for electronics, fashion, home and much more.',
+  };
+}
+import { BrandCircles } from "@/components/brand-circles"
 import { DailyDealsBanner } from "@/components/daily-deals-banner"
 import { PromoCard } from "@/components/promo-card"
 import { TabbedProductSection } from "@/components/tabbed-product-section"
 import { DealsSection } from "@/components/deals-section"
 import { cn } from "@/lib/utils"
+import { 
+  Star, 
+  TreeEvergreen, 
+  Gift, 
+  PuzzlePiece, 
+  DeviceMobile, 
+  User, 
+  UserCircle, 
+  Baby,
+  House,
+  CookingPot,
+  AppleLogo,
+  HeartHalf,
+  Basket,
+  Package,
+  Barbell,
+  Tag,
+  PaintBrush
+} from "@phosphor-icons/react/dist/ssr"
 
 import { WelcomeToast } from "@/components/welcome-toast"
 import { getTranslations, getLocale } from "next-intl/server"
@@ -103,6 +134,11 @@ export default async function Home() {
         {/* Category Circles - Horizontal scrollable categories */}
         <div className="mb-2 sm:mb-4">
           <CategoryCircles locale={locale} />
+        </div>
+
+        {/* Brand Circles - Popular brands like Alibaba */}
+        <div className="mb-2 sm:mb-4">
+          <BrandCircles locale={locale} />
         </div>
 
         {/* Daily Deals Banner */}
@@ -369,57 +405,49 @@ export default async function Home() {
               </Link>
             </div>
             
-            {/* Category Grid - Target style circular images */}
+            {/* Category Grid - Target style with Phosphor icons */}
             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-9 gap-3 sm:gap-4 md:gap-5">
               {[
-                { name: locale === "bg" ? "Ново" : "New Arrivals", image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=200&q=80", href: "/search?sort=newest" },
-                { name: locale === "bg" ? "Празници" : "Holiday", image: "https://images.unsplash.com/photo-1512389142860-9c449e58a814?w=200&q=80", href: "/search?category=holiday" },
-                { name: locale === "bg" ? "Подаръци" : "Gifts", image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=200&q=80", href: "/gift-cards" },
-                { name: locale === "bg" ? "Играчки" : "Toys", image: "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=200&q=80", href: "/search?category=toys" },
-                { name: locale === "bg" ? "Техника" : "Electronics", image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=200&q=80", href: "/search?category=electronics" },
-                { name: locale === "bg" ? "Дамско" : "Women's", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=200&q=80", href: "/search?category=women" },
-                { name: locale === "bg" ? "Мъжко" : "Men's", image: "https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=200&q=80", href: "/search?category=men" },
-                { name: locale === "bg" ? "Детско" : "Kids'", image: "https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=200&q=80", href: "/search?category=kids" },
-                { name: locale === "bg" ? "Бебета" : "Baby", image: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=200&q=80", href: "/search?category=baby" },
-                { name: locale === "bg" ? "Дом" : "Home", image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=200&q=80", href: "/search?category=home" },
-                { name: locale === "bg" ? "Кухня" : "Kitchen", image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=80", href: "/search?category=kitchen" },
-                { name: locale === "bg" ? "Apple" : "Apple", image: "https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=200&q=80", href: "/search?brand=apple" },
-                { name: locale === "bg" ? "Красота" : "Beauty", image: "https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=200&q=80", href: "/search?category=beauty" },
-                { name: locale === "bg" ? "Здраве" : "Health", image: "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=200&q=80", href: "/search?category=health" },
-                { name: locale === "bg" ? "Храна" : "Grocery", image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&q=80", href: "/search?category=grocery" },
-                { name: locale === "bg" ? "Домашно" : "Essentials", image: "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=200&q=80", href: "/search?category=essentials" },
-                { name: locale === "bg" ? "Спорт" : "Sports", image: "https://images.unsplash.com/photo-1461896836934-afa09e87b19e?w=200&q=80", href: "/search?category=sports" },
-                { name: locale === "bg" ? "Разпродажба" : "Clearance", image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=200&q=80", href: "/todays-deals", highlight: true },
+                { name: locale === "bg" ? "Ново" : "New Arrivals", icon: Star, href: "/search?sort=newest" },
+                { name: locale === "bg" ? "Празници" : "Holiday", icon: TreeEvergreen, href: "/search?category=holiday" },
+                { name: locale === "bg" ? "Подаръци" : "Gifts", icon: Gift, href: "/gift-cards" },
+                { name: locale === "bg" ? "Играчки" : "Toys", icon: PuzzlePiece, href: "/search?category=toys" },
+                { name: locale === "bg" ? "Техника" : "Electronics", icon: DeviceMobile, href: "/search?category=electronics" },
+                { name: locale === "bg" ? "Дамско" : "Women's", icon: User, href: "/search?category=women" },
+                { name: locale === "bg" ? "Мъжко" : "Men's", icon: UserCircle, href: "/search?category=men" },
+                { name: locale === "bg" ? "Детско" : "Kids'", icon: PuzzlePiece, href: "/search?category=kids" },
+                { name: locale === "bg" ? "Бебета" : "Baby", icon: Baby, href: "/search?category=baby" },
+                { name: locale === "bg" ? "Дом" : "Home", icon: House, href: "/search?category=home" },
+                { name: locale === "bg" ? "Кухня" : "Kitchen", icon: CookingPot, href: "/search?category=kitchen" },
+                { name: locale === "bg" ? "Apple" : "Apple", icon: AppleLogo, href: "/search?brand=apple" },
+                { name: locale === "bg" ? "Красота" : "Beauty", icon: PaintBrush, href: "/search?category=beauty" },
+                { name: locale === "bg" ? "Здраве" : "Health", icon: HeartHalf, href: "/search?category=health" },
+                { name: locale === "bg" ? "Храна" : "Grocery", icon: Basket, href: "/search?category=grocery" },
+                { name: locale === "bg" ? "Домашно" : "Essentials", icon: Package, href: "/search?category=essentials" },
+                { name: locale === "bg" ? "Спорт" : "Sports", icon: Barbell, href: "/search?category=sports" },
+                { name: locale === "bg" ? "Разпродажба" : "Clearance", icon: Tag, href: "/todays-deals", highlight: true },
               ].map((cat, idx) => (
                 <Link 
                   key={idx} 
                   href={cat.href}
-                  className="group flex flex-col items-center gap-1.5 sm:gap-2 touch-action-manipulation active:scale-95 transition-transform"
+                  className="group flex flex-col items-center gap-1.5 sm:gap-2"
                 >
                   <div className={cn(
-                    "relative size-14 sm:size-16 md:size-20 rounded-full overflow-hidden",
-                    "border-2 border-border group-hover:border-primary transition-all duration-200",
-                    cat.highlight && "bg-brand-warning border-brand-warning group-hover:border-brand-warning"
+                    "relative size-14 sm:size-16 md:size-20 rounded-full overflow-hidden flex items-center justify-center",
+                    cat.highlight ? "bg-deal-light" : "bg-secondary"
                   )}>
-                    {!cat.highlight ? (
-                      <img 
-                        src={cat.image} 
-                        alt={cat.name}
-                        className="size-full object-cover"
-                      />
-                    ) : (
-                      <div className="size-full flex items-center justify-center bg-brand-warning">
-                        <span className="text-brand-deal font-black text-[9px] sm:text-[10px] md:text-xs text-center leading-tight px-1">
-                          {cat.name}
-                        </span>
-                      </div>
-                    )}
+                    <cat.icon className={cn(
+                      "size-6 sm:size-7 md:size-9",
+                      cat.highlight ? "text-deal" : "text-foreground"
+                    )} />
                   </div>
-                  {!cat.highlight && (
-                    <span className="text-[10px] sm:text-xs text-foreground group-hover:text-primary font-medium text-center transition-colors line-clamp-1">
-                      {cat.name}
-                    </span>
-                  )}
+                  <span className={cn(
+                    "text-[10px] sm:text-xs font-medium text-center line-clamp-1",
+                    cat.highlight ? "text-deal" : "text-foreground",
+                    "group-hover:text-primary group-hover:underline"
+                  )}>
+                    {cat.name}
+                  </span>
                 </Link>
               ))}
             </div>
@@ -441,14 +469,14 @@ export default async function Home() {
             {/* New Arrivals Card - Large Feature */}
             <Link 
               href="/search?sort=newest" 
-              className="group relative w-[42vw] min-w-[42vw] h-44 shrink-0 snap-start rounded-lg overflow-hidden bg-linear-to-br from-rose-500 to-rose-600 sm:w-auto sm:min-w-0 sm:col-span-2 lg:col-span-1 lg:row-span-2 sm:h-auto sm:min-h-80 lg:min-h-full"
+              className="group relative w-[42vw] min-w-[42vw] h-44 shrink-0 snap-start rounded-lg overflow-hidden sm:w-auto sm:min-w-0 sm:col-span-2 lg:col-span-1 lg:row-span-2 sm:h-auto sm:min-h-80 lg:min-h-full"
             >
               <img 
                 src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=800&q=80" 
                 alt={locale === "bg" ? "Нови продукти" : "New Arrivals"}
-                className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60"
+                className="absolute inset-0 w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/20" />
               <div className="relative h-full flex flex-col justify-end p-3 sm:p-6">
                 <span className="inline-block bg-white/20 text-white text-[10px] sm:text-xs font-medium px-2 py-0.5 sm:py-1 rounded-full w-fit mb-1.5 sm:mb-2 backdrop-blur-sm">
                   {locale === "bg" ? "Ново" : "New"}
@@ -492,14 +520,14 @@ export default async function Home() {
             {/* Holiday Gifts Card */}
             <Link 
               href="/gift-cards" 
-              className="group relative w-[42vw] min-w-[42vw] h-44 shrink-0 snap-start rounded-lg overflow-hidden bg-brand-success sm:w-auto sm:min-w-0 sm:h-auto sm:min-h-60"
+              className="group relative w-[42vw] min-w-[42vw] h-44 shrink-0 snap-start rounded-lg overflow-hidden sm:w-auto sm:min-w-0 sm:h-auto sm:min-h-60"
             >
               <img 
                 src="https://images.unsplash.com/photo-1512389142860-9c449e58a814?w=600&q=80" 
                 alt={locale === "bg" ? "Празнични подаръци" : "Holiday Gifts"}
-                className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50"
+                className="absolute inset-0 w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-linear-to-t from-foreground/80 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/20" />
               <div className="relative h-full flex flex-col justify-end p-3 sm:p-5">
                 <h3 className="text-base sm:text-xl font-bold text-white mb-0.5 sm:mb-1 line-clamp-1">
                   {locale === "bg" ? "Празнични подаръци" : "Holiday gifts"}
@@ -516,14 +544,14 @@ export default async function Home() {
             {/* Home Essentials Card */}
             <Link 
               href="/search?category=home" 
-              className="group relative w-[42vw] min-w-[42vw] h-44 shrink-0 snap-start rounded-lg overflow-hidden bg-brand-warning sm:w-auto sm:min-w-0 sm:h-auto sm:min-h-60"
+              className="group relative w-[42vw] min-w-[42vw] h-44 shrink-0 snap-start rounded-lg overflow-hidden sm:w-auto sm:min-w-0 sm:h-auto sm:min-h-60"
             >
               <img 
                 src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=600&q=80" 
                 alt={locale === "bg" ? "За дома" : "Home Essentials"}
-                className="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-60"
+                className="absolute inset-0 w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-linear-to-t from-foreground/70 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/20" />
               <div className="relative h-full flex flex-col justify-end p-3 sm:p-5">
                 <h3 className="text-base sm:text-xl font-bold text-white mb-0.5 sm:mb-1 line-clamp-1">
                   {locale === "bg" ? "За уютен дом" : "Home essentials"}
@@ -540,14 +568,14 @@ export default async function Home() {
             {/* Beauty Card */}
             <Link 
               href="/search?category=beauty" 
-              className="group relative w-[42vw] min-w-[42vw] h-44 shrink-0 snap-start rounded-lg overflow-hidden bg-primary sm:w-auto sm:min-w-0 sm:h-auto sm:min-h-60"
+              className="group relative w-[42vw] min-w-[42vw] h-44 shrink-0 snap-start rounded-lg overflow-hidden sm:w-auto sm:min-w-0 sm:h-auto sm:min-h-60"
             >
               <img 
                 src="https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=600&q=80" 
                 alt={locale === "bg" ? "Красота" : "Beauty"}
-                className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60"
+                className="absolute inset-0 w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-linear-to-t from-foreground/70 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/20" />
               <div className="relative h-full flex flex-col justify-end p-3 sm:p-5">
                 <h3 className="text-base sm:text-xl font-bold text-white mb-0.5 sm:mb-1 line-clamp-1">
                   {locale === "bg" ? "Красота и грижа" : "Beauty favorites"}

@@ -1,7 +1,7 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { ChevronRight } from "lucide-react"
+import { CaretRight } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 export interface BreadcrumbItem {
@@ -41,7 +41,7 @@ export function Breadcrumb({ items, className = "", variant = "target" }: Breadc
           
           {items.map((item, index) => (
             <li key={index} className="flex items-center gap-1.5">
-              <ChevronRight className="size-3.5 text-muted-foreground/60 shrink-0" aria-hidden="true" />
+              <CaretRight size={14} weight="regular" className="text-muted-foreground/60 shrink-0" aria-hidden="true" />
               {item.href ? (
                 <Link 
                   href={item.href} 
@@ -77,7 +77,7 @@ export function Breadcrumb({ items, className = "", variant = "target" }: Breadc
       {/* Home link */}
       <Link 
         href="/" 
-        className="min-h-9 flex items-center hover:text-brand-deal hover:underline shrink-0 transition-colors"
+        className="min-h-9 flex items-center hover:text-primary hover:underline shrink-0 transition-colors"
         aria-label="Home"
       >
         Amazong
@@ -86,11 +86,11 @@ export function Breadcrumb({ items, className = "", variant = "target" }: Breadc
       <ol className="flex items-center gap-1 sm:gap-1.5">
         {items.map((item, index) => (
           <li key={index} className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-            <ChevronRight className="size-3 sm:size-3.5 text-muted-foreground/60" aria-hidden="true" />
+            <CaretRight size={12} weight="regular" className="sm:size-3.5 text-muted-foreground/60" aria-hidden="true" />
             {item.href ? (
               <Link 
                 href={item.href} 
-                className="min-h-9 flex items-center gap-1 px-1.5 hover:text-brand-deal hover:underline rounded-md hover:bg-background/50 transition-colors"
+                className="min-h-9 flex items-center gap-1 px-1.5 hover:text-primary hover:underline rounded-md hover:bg-background/50 transition-colors"
               >
                 {item.icon && <span className="shrink-0">{item.icon}</span>}
                 <span className="whitespace-nowrap">{item.label}</span>

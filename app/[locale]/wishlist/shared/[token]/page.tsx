@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Gift, ShoppingCart } from "lucide-react"
+import { Gift, ShoppingCart } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations } from "next-intl/server"
 
 interface SharedWishlistPageProps {

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card } from "@/components/ui/card"
 import { toast } from "sonner"
-import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react"
+import { Upload, X, CircleNotch, Image as ImageIcon } from "@phosphor-icons/react"
 
 interface UploadedImage {
   url: string
@@ -128,12 +128,12 @@ export function ImageUpload({
         >
           {uploading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <CircleNotch size={16} weight="regular" className="mr-2 animate-spin" />
               Uploading...
             </>
           ) : (
             <>
-              <Upload className="mr-2 h-4 w-4" />
+              <Upload size={16} weight="regular" className="mr-2" />
               Add Images
             </>
           )}
@@ -163,7 +163,7 @@ export function ImageUpload({
                 onClick={() => removeImage(index)}
                 className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <X className="h-4 w-4" />
+                <X size={16} weight="regular" />
               </button>
               {index === 0 && (
                 <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
@@ -195,7 +195,7 @@ export function ImageUpload({
         </div>
       ) : (
         <Card className="border-dashed border-2 p-8 text-center">
-          <ImageIcon className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
+          <ImageIcon size={48} weight="regular" className="mx-auto text-muted-foreground mb-2" />
           <p className="text-sm text-muted-foreground">
             No images yet. Click "Add Images" to upload.
           </p>

@@ -1,7 +1,7 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight } from "@phosphor-icons/react"
 
 interface DailyDealsBannerProps {
   locale?: string
@@ -29,12 +29,12 @@ export function DailyDealsBanner({ locale = "en" }: DailyDealsBannerProps) {
   const seconds = 45
 
   return (
-    <div className="relative w-full overflow-hidden rounded-md bg-brand-deal">
+    <div className="relative w-full overflow-hidden rounded-md bg-deal">
       <div className="relative px-3 py-2.5 sm:px-6 sm:py-4 md:px-8 md:py-5 flex items-center justify-between gap-2 sm:gap-4">
         {/* Left side - Title with timer inline on mobile */}
         <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
           {/* Discount badge - desktop only, before title */}
-          <div className="hidden md:flex items-center justify-center bg-brand-warning text-brand-deal font-bold text-lg px-4 py-2 rounded-full">
+          <div className="hidden md:flex items-center justify-center bg-badge-deal text-white font-bold text-lg px-4 py-2 rounded-full">
             {t.badge}
           </div>
           
@@ -55,10 +55,10 @@ export function DailyDealsBanner({ locale = "en" }: DailyDealsBannerProps) {
         {/* Right side - CTA */}
         <Link
           href="/todays-deals"
-          className="flex items-center justify-center gap-1 sm:gap-2 bg-white hover:bg-secondary text-brand-deal font-bold min-h-11 px-4 sm:px-6 rounded-full border border-transparent hover:border-brand-deal text-xs sm:text-base transition-colors whitespace-nowrap touch-action-manipulation active:scale-95"
+          className="flex items-center justify-center gap-1 sm:gap-2 bg-white hover:bg-white/90 text-deal font-bold min-h-11 px-4 sm:px-6 rounded-full text-xs sm:text-base whitespace-nowrap touch-action-manipulation active:scale-95"
         >
           {t.cta}
-          <ArrowRight className="size-4 sm:size-5" />
+          <ArrowRight size={16} weight="regular" className="sm:size-5" />
         </Link>
       </div>
     </div>

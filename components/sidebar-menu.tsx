@@ -1,18 +1,35 @@
 "use client"
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, UserCircle, ChevronRight, X, Globe, LogIn, User, MapPin, MessageCircle } from "lucide-react"
+import { List, UserCircle, CaretRight, X, Globe, SignIn, User, MapPin, Chat } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Link } from "@/i18n/routing"
 import { useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
+import { User as SupabaseUser } from "@supabase/supabase-js"
 
-export function SidebarMenu() {
+interface SidebarMenuProps {
+    user?: SupabaseUser | null
+}
+
+export function SidebarMenu({ user }: SidebarMenuProps) {
     const [open, setOpen] = useState(false)
     const t = useTranslations('Sidebar')
     const locale = useLocale()
+
+    // Get display name from user metadata or email
+    const getUserDisplayName = () => {
+        if (!user) return null
+        if (user.user_metadata?.full_name) return user.user_metadata.full_name
+        if (user.user_metadata?.name) return user.user_metadata.name
+        if (user.email) return user.email.split('@')[0]
+        return null
+    }
+
+    const displayName = getUserDisplayName()
+    const isLoggedIn = !!user
 
     const menuSections = [
         {
@@ -28,26 +45,20 @@ export function SidebarMenu() {
             items: [
                 { label: t('electronics'), href: "/search?category=electronics" },
                 { label: t('computers'), href: "/search?category=computers" },
-                { label: t('smartHome'), href: "/search?q=Smart+Home" },
-                { label: t('artsCrafts'), href: "/search?category=arts" },
-                { label: t('automotive'), href: "/search?category=automotive" },
-                { label: t('baby'), href: "/search?category=baby" },
-                { label: t('beauty'), href: "/search?category=beauty" },
-                { label: t('womensFashion'), href: "/search?category=fashion" },
-                { label: t('mensFashion'), href: "/search?category=fashion" },
-                { label: t('girlsFashion'), href: "/search?category=fashion" },
-                { label: t('boysFashion'), href: "/search?category=fashion" },
-                { label: t('healthHousehold'), href: "/search?category=health" },
+                { label: t('gaming'), href: "/search?category=gaming" },
+                { label: t('smartHome'), href: "/search?category=smart-home" },
                 { label: t('homeKitchen'), href: "/search?category=home" },
-                { label: t('industrialScientific'), href: "/search?category=industrial" },
-                { label: t('luggage'), href: "/search?category=luggage" },
-                { label: t('moviesTV'), href: "/search?category=movies" },
-                { label: t('petSupplies'), href: "/search?category=pets" },
-                { label: t('software'), href: "/search?category=software" },
-                { label: t('sportsOutdoors'), href: "/search?category=sports" },
-                { label: t('toolsHome'), href: "/search?category=tools" },
-                { label: t('toysGames'), href: "/search?category=toys" },
-                { label: t('videoGames'), href: "/search?category=videogames" },
+                { label: t('fashion'), href: "/search?category=fashion" },
+                { label: t('beauty'), href: "/search?category=beauty" },
+                { label: t('toys'), href: "/search?category=toys" },
+                { label: t('sports'), href: "/search?category=sports" },
+                { label: t('books'), href: "/search?category=books" },
+                { label: t('automotive'), href: "/search?category=automotive" },
+                { label: t('garden'), href: "/search?category=garden" },
+                { label: t('health'), href: "/search?category=health" },
+                { label: t('baby'), href: "/search?category=baby" },
+                { label: t('pets'), href: "/search?category=pets" },
+                { label: t('office'), href: "/search?category=office" },
             ],
         },
         {
@@ -84,30 +95,35 @@ export function SidebarMenu() {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <button className="flex items-center justify-center gap-1 font-bold md:hover:outline md:outline-1 md:outline-white p-2 md:p-1.5 rounded-md cursor-pointer">
-                    <Menu className="size-6" />
+                <button className="flex items-center justify-center gap-1 font-bold md:hover:outline md:outline-1 md:outline-white size-10 p-1.5 md:p-1.5 rounded-md cursor-pointer">
+                    <List size={22} weight="regular" />
                     <span className="text-sm hidden md:inline">{t('all')}</span>
                 </button>
             </SheetTrigger>
             <SheetContent 
                 side="left" 
-                className="w-[85vw] max-w-[320px] md:w-[365px] md:max-w-[365px] p-0 border-r-0 bg-white text-black gap-0"
+                className="w-[85vw] max-w-xs md:w-[365px] md:max-w-[365px] p-0 border-r-0 bg-white text-black gap-0"
             >
-                {/* Header with Sign In */}
-                <SheetHeader className="bg-header-bg text-header-text p-4 py-3 flex flex-row items-center gap-3 space-y-0">
-                    <div className="w-10 h-10 rounded-full bg-muted-foreground/30 flex items-center justify-center">
-                        <UserCircle className="h-8 w-8" />
+                {/* Header with Sign In / User Name - matches mobile header exactly */}
+                <SheetHeader className="bg-header-bg text-header-text px-2 py-2 md:p-4 md:py-3 flex flex-row items-center gap-1 md:gap-3 space-y-0">
+                    <div className="size-10 rounded-full bg-muted-foreground/30 flex items-center justify-center shrink-0">
+                        <UserCircle size={24} weight="regular" />
                     </div>
-                    <div className="flex-1">
-                        <SheetTitle className="text-header-text text-lg md:text-xl font-bold">{t('helloSignIn')}</SheetTitle>
+                    <div className="flex-1 min-w-0">
+                        <SheetTitle className="text-header-text text-lg md:text-xl font-bold truncate">
+                            {isLoggedIn 
+                                ? `${locale === 'bg' ? 'Здравей' : 'Hello'}, ${displayName}`
+                                : t('helloSignIn')
+                            }
+                        </SheetTitle>
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute right-2 top-2 text-header-text hover:bg-transparent hover:text-header-text-muted touch-target"
+                        className="absolute right-1 top-1 md:right-2 md:top-2 size-10 text-header-text hover:bg-transparent hover:text-header-text-muted"
                         onClick={() => setOpen(false)}
                     >
-                        <X className="h-7 w-7 md:h-8 md:w-8" />
+                        <X size={24} weight="regular" />
                         <span className="sr-only">{t('close')}</span>
                     </Button>
                 </SheetHeader>
@@ -115,35 +131,35 @@ export function SidebarMenu() {
                 <ScrollArea className="h-[calc(100vh-60px)] pb-4">
                     <div className="flex flex-col">
                         {/* Quick Actions - Mobile Only */}
-                        <div className="md:hidden px-4 py-4 bg-secondary border-b border-border">
-                            <div className="grid grid-cols-2 gap-3">
+                        <div className="md:hidden px-4 py-3 bg-secondary border-b border-border">
+                            <div className="grid grid-cols-2 gap-2">
                                 <Link
                                     href="/auth/login"
-                                    className="flex items-center gap-2 p-3 bg-card rounded-md border border-border text-sm font-medium text-foreground hover:bg-muted"
+                                    className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-card rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted active:scale-[0.98] transition-transform"
                                     onClick={() => setOpen(false)}
                                 >
-                                    <LogIn className="size-5 text-muted-foreground" />
+                                    <SignIn size={16} weight="regular" className="text-muted-foreground" />
                                     {t('signIn')}
                                 </Link>
                                 <Link
                                     href="/account"
-                                    className="flex items-center gap-2 p-3 bg-card rounded-md border border-border text-sm font-medium text-foreground hover:bg-muted"
+                                    className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-card rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted active:scale-[0.98] transition-transform"
                                     onClick={() => setOpen(false)}
                                 >
-                                    <User className="size-5 text-muted-foreground" />
-                                    {t('yourAccount')}
+                                    <User size={16} weight="regular" className="text-muted-foreground" />
+                                    {t('account')}
                                 </Link>
                             </div>
                             
                             {/* Language Toggle - Mobile */}
-                            <div className="mt-3 flex items-center gap-2 p-3 bg-card rounded-md border border-border">
-                                <Globe className="size-5 text-muted-foreground" />
+                            <div className="mt-2.5 flex items-center gap-2 py-2 px-3 bg-card rounded-lg border border-border">
+                                <Globe size={16} weight="regular" className="text-muted-foreground" />
                                 <span className="text-sm font-medium text-foreground">{t('language')}</span>
                                 <div className="ml-auto flex gap-1">
                                     <Link
                                         href="/"
                                         locale="en"
-                                        className={`px-3 py-1.5 rounded-md text-xs font-medium ${locale === 'en' ? 'bg-brand text-white' : 'bg-muted text-muted-foreground'}`}
+                                        className={`px-2.5 py-1 rounded-md text-xs font-medium ${locale === 'en' ? 'bg-brand text-white' : 'bg-muted text-muted-foreground'}`}
                                         onClick={() => setOpen(false)}
                                     >
                                         EN
@@ -151,7 +167,7 @@ export function SidebarMenu() {
                                     <Link
                                         href="/"
                                         locale="bg"
-                                        className={`px-3 py-1.5 rounded-md text-xs font-medium ${locale === 'bg' ? 'bg-brand text-white' : 'bg-muted text-muted-foreground'}`}
+                                        className={`px-2.5 py-1 rounded-md text-xs font-medium ${locale === 'bg' ? 'bg-brand text-white' : 'bg-muted text-muted-foreground'}`}
                                         onClick={() => setOpen(false)}
                                     >
                                         БГ
@@ -160,24 +176,22 @@ export function SidebarMenu() {
                             </div>
 
                             {/* Delivery Location Toggle - Mobile */}
-                            <div className="mt-3 flex items-center gap-2 p-3 bg-card rounded-md border border-border">
-                                <MapPin className="size-5 text-muted-foreground" />
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] text-muted-foreground">{t('deliverTo')}</span>
-                                    <span className="text-sm font-medium text-foreground">Bulgaria</span>
-                                </div>
-                                <ChevronRight className="ml-auto size-4 text-muted-foreground" />
+                            <div className="mt-2 flex items-center gap-2 py-2 px-3 bg-card rounded-lg border border-border">
+                                <MapPin size={16} weight="regular" className="text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">{t('deliverTo')}</span>
+                                <span className="text-sm font-medium text-foreground">Bulgaria</span>
+                                <CaretRight size={16} weight="regular" className="ml-auto text-muted-foreground" />
                             </div>
                             
                             {/* Messages - Mobile */}
                             <Link
                                 href="/account/messages"
-                                className="mt-3 flex items-center gap-2 p-3 bg-card rounded-md border border-border"
+                                className="mt-2 flex items-center gap-2 py-2 px-3 bg-card rounded-lg border border-border"
                                 onClick={() => setOpen(false)}
                             >
-                                <MessageCircle className="size-5 text-muted-foreground" />
+                                <Chat size={20} weight="regular" className="text-muted-foreground" />
                                 <span className="text-sm font-medium text-foreground">{t('messages')}</span>
-                                <ChevronRight className="ml-auto size-4 text-muted-foreground" />
+                                <CaretRight size={16} weight="regular" className="ml-auto text-muted-foreground" />
                             </Link>
                         </div>
 
@@ -199,7 +213,7 @@ export function SidebarMenu() {
                                                         onClick={() => setOpen(false)}
                                                     >
                                                         <span>{item.label}</span>
-                                                        <ChevronRight className="size-4 text-muted-foreground group-hover:text-foreground" />
+                                                        <CaretRight size={16} weight="regular" className="text-muted-foreground group-hover:text-foreground" />
                                                     </Link>
                                                 </li>
                                             ))}
@@ -210,7 +224,7 @@ export function SidebarMenu() {
                                                         className="flex items-center gap-1 py-3 md:py-2.5 text-sm text-foreground hover:bg-muted -mx-5 md:-mx-9 px-5 md:px-9 cursor-pointer w-[calc(100%+2.5rem)] md:w-[calc(100%+4.5rem)] text-left font-medium"
                                                     >
                                                         <span>{isExpanded ? t('seeLess') : t('seeAll')}</span>
-                                                        <ChevronRight className={`size-4 text-muted-foreground transition-transform ${isExpanded ? '-rotate-90' : 'rotate-90'}`} />
+                                                        <CaretRight size={16} weight="regular" className={`text-muted-foreground transition-transform ${isExpanded ? '-rotate-90' : 'rotate-90'}`} />
                                                     </button>
                                                 </li>
                                             )}

@@ -29,129 +29,275 @@
   }
 }
 
+/* ===== MEGA MENU TYPOGRAPHY ===== */
+/* Consistent typography for mega menu - slightly larger than text-sm for readability */
+@utility mega-menu-text {
+  font-size: var(--mega-menu-font-size);
+  line-height: var(--mega-menu-line-height);
+}
+
+@utility mega-menu-icon {
+  width: var(--mega-menu-icon-size);
+  height: var(--mega-menu-icon-size);
+}
+
 :root {
-  /* Tangerine Theme - E-commerce 2025 (Neutral BG + Vibrant CTAs) */
+  /* =====================================================
+     TRUST BLUE THEME - E-commerce 2025
+     Amazon/Alibaba Clone Design System
+     ===================================================== */
+
+  /* === CORE SHADCN TOKENS === */
   --background: oklch(0.97 0.002 250);
-  /* Clean neutral gray-white - industry standard */
   --foreground: oklch(0.15 0.01 250);
-  /* Dark charcoal text for max readability */
   --card: oklch(1.0000 0 0);
-  /* Pure white cards */
   --card-foreground: oklch(0.15 0.01 250);
   --popover: oklch(1.0000 0 0);
   --popover-foreground: oklch(0.15 0.01 250);
-  --primary: oklch(0.65 0.22 45);
-  /* Vibrant Tangerine orange - punchy CTAs */
+  --primary: oklch(0.50 0.18 250);
   --primary-foreground: oklch(1.0000 0 0);
-  /* White text on orange */
   --secondary: oklch(0.96 0.005 250);
-  /* Light neutral gray */
   --secondary-foreground: oklch(0.35 0.01 250);
   --muted: oklch(0.96 0.003 250);
-  /* Very light gray for muted areas */
   --muted-foreground: oklch(0.50 0.01 250);
   --accent: oklch(0.95 0.01 250);
-  /* Light neutral accent */
   --accent-foreground: oklch(0.25 0.01 250);
   --destructive: oklch(0.55 0.25 27);
-  /* Red for errors/sales */
   --destructive-foreground: oklch(1.0000 0 0);
   --border: oklch(0.90 0.005 250);
-  /* Subtle gray borders */
   --input: oklch(0.97 0.003 250);
-  --ring: oklch(0.65 0.22 45);
-  /* Orange focus ring */
+  --ring: oklch(0.50 0.18 250);
+  
+  /* Chart colors */
   --chart-1: oklch(0.7156 0.0605 248.6845);
   --chart-2: oklch(0.7875 0.0917 35.9616);
   --chart-3: oklch(0.5778 0.0759 254.1573);
   --chart-4: oklch(0.5016 0.0849 259.4902);
   --chart-5: oklch(0.4241 0.0952 264.0306);
+  
   --radius: 0rem;
-  /* SHARP - no rounding for utilitarian e-commerce look */
 
-  /* Custom brand colors - Vibrant Tangerine CTAs on Neutral BG */
-  --brand: oklch(0.65 0.22 45);
-  /* Vibrant orange - main CTA color */
-  --brand-light: oklch(0.75 0.18 45);
-  /* Lighter orange for hovers */
-  --brand-dark: oklch(0.55 0.24 42);
-  /* Deeper orange for pressed states */
-  --brand-success: oklch(0.60 0.18 145);
-  /* Green - in stock indicators */
-  --brand-success-light: oklch(0.94 0.06 145);
-  /* Light green background */
-  --brand-warning: oklch(0.75 0.16 85);
-  /* Amber for warnings */
-  --brand-deal: oklch(0.55 0.25 27);
-  /* Deep red for deals/sales */
-  --brand-deal-light: oklch(0.96 0.03 27);
-  /* Light red background */
-  --brand-deal-text: oklch(0.45 0.22 27);
-  /* Dark red text */
+  /* === BRAND CORE (Trust Blue) === */
+  --brand: oklch(0.50 0.18 250);
+  --brand-light: oklch(0.60 0.16 250);
+  --brand-dark: oklch(0.40 0.20 250);
+  --brand-muted: oklch(0.95 0.02 250);
 
-  /* Header/Navigation - Professional dark with orange accents */
-  --header-bg: oklch(0.22 0.015 250);
-  /* Dark charcoal - clean, professional */
-  --header-bg-secondary: oklch(0.20 0.015 250);
-  /* Slightly darker for secondary nav */
-  --header-border: oklch(0.30 0.02 250);
-  /* Border in header */
-  --header-text: oklch(1 0 0);
-  /* White text */
-  --header-text-muted: oklch(0.85 0 0);
-  /* Light gray text */
-
-  /* Link colors */
-  --link: oklch(0.55 0.18 240);
-  /* Blue links */
-  --link-hover: oklch(0.65 0.20 55);
-  /* Tangerine on hover */
-  --link-visited: oklch(0.50 0.15 280);
-  /* Purple visited */
-
-  /* Brand Blue - For secondary actions, links, reviews count etc. */
-  --brand-blue: oklch(0.50 0.16 250);
-  /* Professional blue for text links */
-  --brand-blue-light: oklch(0.60 0.14 250);
-  /* Lighter blue for hover */
-  --brand-blue-dark: oklch(0.40 0.18 250);
-  /* Darker blue for active */
-
-  /* Semantic tokens for ratings, notifications, and interactive states */
+  /* === PRICE & DEAL TOKENS (Critical for e-commerce) === */
+  --price-regular: oklch(0.15 0.01 250);
+  --price-sale: oklch(0.50 0.22 27);
+  --price-original: oklch(0.55 0.01 250);
+  --price-savings: oklch(0.50 0.18 145);
+  
+  /* Deal/Sale colors - RED for urgency */
+  --deal: oklch(0.55 0.25 27);
+  --deal-light: oklch(0.96 0.03 27);
+  --deal-dark: oklch(0.45 0.22 27);
+  --deal-text: oklch(0.45 0.22 27);
+  --deal-badge: oklch(0.55 0.25 27);
+  
+  /* Flash sale / Limited time */
+  --flash-sale: oklch(0.65 0.28 30);
+  --flash-sale-bg: oklch(0.55 0.25 27);
+  --flash-sale-text: oklch(1.0000 0 0);
+  
+  /* === STOCK STATUS TOKENS === */
+  --stock-available: oklch(0.60 0.18 145);
+  --stock-available-bg: oklch(0.95 0.04 145);
+  --stock-low: oklch(0.70 0.18 65);
+  --stock-low-bg: oklch(0.95 0.04 65);
+  --stock-out: oklch(0.50 0.20 27);
+  --stock-out-bg: oklch(0.95 0.02 27);
+  
+  /* === SHIPPING & FULFILLMENT === */
+  --shipping-free: oklch(0.50 0.18 250);
+  --shipping-free-bg: oklch(0.95 0.02 250);
+  --shipping-prime: oklch(0.50 0.18 250);
+  --shipping-prime-bg: oklch(0.22 0.015 250);
+  --shipping-express: oklch(0.60 0.20 145);
+  --shipping-standard: oklch(0.55 0.01 250);
+  
+  /* === TRUST & VERIFICATION === */
+  --verified: oklch(0.55 0.18 250);
+  --verified-bg: oklch(0.95 0.02 250);
+  --top-rated: oklch(0.75 0.18 65);
+  --top-rated-bg: oklch(0.95 0.04 65);
+  --trusted-seller: oklch(0.50 0.18 145);
+  --trusted-seller-bg: oklch(0.95 0.03 145);
+  
+  /* === BADGE TOKENS === */
+  --badge-new: oklch(0.50 0.18 250);
+  --badge-new-bg: oklch(0.95 0.02 250);
+  --badge-bestseller: oklch(0.70 0.18 65);
+  --badge-bestseller-bg: oklch(0.95 0.04 65);
+  --badge-sponsored: oklch(0.55 0.01 250);
+  --badge-sponsored-bg: oklch(0.96 0.003 250);
+  --badge-choice: oklch(0.22 0.015 250);
+  --badge-choice-bg: oklch(0.22 0.015 250);
+  --badge-choice-text: oklch(1.0000 0 0);
+  
+  /* === RATING TOKENS === */
   --rating: oklch(0.78 0.18 90);
-  /* Star ratings - golden */
   --rating-empty: oklch(0.88 0.03 90);
-  /* Empty stars */
-  --notification: oklch(0.58 0.22 27);
-  /* Cart badges, alerts - red */
+  --rating-half: oklch(0.78 0.14 90);
+  --review-positive: oklch(0.55 0.18 145);
+  --review-neutral: oklch(0.55 0.01 250);
+  --review-negative: oklch(0.55 0.20 27);
+  --review-count: oklch(0.45 0.14 250);
+  
+  /* === SECTION BACKGROUNDS === */
+  --section-default: oklch(1.0000 0 0);
+  --section-muted: oklch(0.97 0.003 250);
+  --section-accent: oklch(0.98 0.01 250);
+  --section-highlight: oklch(0.95 0.02 250);
+  --section-dark: oklch(0.22 0.015 250);
+  --section-deal: oklch(0.97 0.01 27);
+  --section-deals: oklch(0.22 0.015 250);  /* Dark background for deals carousel */
+  --badge-deal: oklch(0.55 0.25 27);  /* Red badge for deals */
+  
+  /* === HEADER/NAVIGATION === */
+  --header-bg: oklch(0.22 0.015 250);
+  --header-bg-secondary: oklch(0.20 0.015 250);
+  --header-border: oklch(0.30 0.02 250);
+  --header-text: oklch(1 0 0);
+  --header-text-muted: oklch(0.85 0 0);
+  --header-hover: oklch(0.30 0.02 250);
+  --header-active: oklch(0.35 0.03 250);
+  
+  /* === CATEGORY NAV TOKENS === */
+  --category-bg: oklch(0.97 0.003 250);
+  --category-hover: oklch(0.95 0.01 250);
+  --category-active: oklch(0.50 0.18 250);
+  --category-active-text: oklch(1.0000 0 0);
+  --category-border: oklch(0.90 0.005 250);
+  
+  /* === LINK COLORS === */
+  --link: oklch(0.45 0.16 250);
+  --link-hover: oklch(0.55 0.18 250);
+  --link-visited: oklch(0.50 0.15 280);
+  --link-muted: oklch(0.50 0.10 250);
+  
+  /* === BRAND BLUE (Secondary actions) === */
+  --brand-blue: oklch(0.50 0.16 250);
+  --brand-blue-light: oklch(0.60 0.14 250);
+  --brand-blue-dark: oklch(0.40 0.18 250);
+  
+  /* === SUCCESS/WARNING/ERROR SEMANTIC === */
+  --success: oklch(0.60 0.18 145);
+  --success-light: oklch(0.94 0.06 145);
+  --success-dark: oklch(0.45 0.16 145);
+  --warning: oklch(0.75 0.16 85);
+  --warning-light: oklch(0.95 0.04 85);
+  --warning-dark: oklch(0.60 0.16 85);
+  --error: oklch(0.55 0.25 27);
+  --error-light: oklch(0.96 0.03 27);
+  --error-dark: oklch(0.45 0.22 27);
+  --info: oklch(0.55 0.18 250);
+  --info-light: oklch(0.95 0.02 250);
+  --info-dark: oklch(0.40 0.18 250);
+  
+  /* === INTERACTIVE STATES === */
   --interactive: var(--brand);
-  /* Interactive elements - tangerine */
   --interactive-hover: var(--brand-dark);
-  /* Interactive hover state */
+  --interactive-active: oklch(0.35 0.22 250);
+  --interactive-disabled: oklch(0.85 0.005 250);
+  
+  /* === CTA TOKENS (Semantic usage) === */
+  --cta-primary: var(--brand);
+  --cta-primary-hover: var(--brand-dark);
+  --cta-primary-text: oklch(1.0000 0 0);
+  --cta-secondary: var(--secondary);
+  --cta-secondary-hover: oklch(0.92 0.008 250);
+  --cta-secondary-text: var(--foreground);
+  --cta-buy-now: var(--brand);
+  --cta-add-cart: oklch(0.75 0.18 85);
+  --cta-add-cart-hover: oklch(0.68 0.18 85);
+  
+  /* === SEARCH === */
+  --search-bg: oklch(1.0000 0 0);
+  --search-border: oklch(0.85 0.01 250);
+  --search-focus: var(--brand);
   --search-button: var(--brand);
-  /* Search button - tangerine */
   --search-button-hover: var(--brand-dark);
-  /* Search button hover */
-
-  --sidebar: oklch(0.97 0.02 55);
-  --sidebar-foreground: oklch(0.25 0.02 45);
-  --sidebar-primary: oklch(0.70 0.20 55);
-  --sidebar-primary-foreground: oklch(0.15 0.02 45);
-  --sidebar-accent: oklch(0.92 0.06 55);
-  --sidebar-accent-foreground: oklch(0.35 0.10 55);
-  --sidebar-border: oklch(0.90 0.03 55);
-  --sidebar-ring: oklch(0.70 0.20 55);
+  --search-placeholder: oklch(0.60 0.01 250);
+  
+  /* === NOTIFICATION/BADGE === */
+  --notification: oklch(0.58 0.22 27);
+  --notification-bg: oklch(0.58 0.22 27);
+  --notification-text: oklch(1.0000 0 0);
+  --cart-badge: oklch(0.58 0.22 27);
+  --wishlist-badge: oklch(0.55 0.25 350);
+  
+  /* === OVERLAY/GRADIENT TOKENS === */
+  --overlay-dark: oklch(0 0 0 / 50%);
+  --overlay-light: oklch(1 0 0 / 80%);
+  --overlay-blur: oklch(0.97 0.002 250 / 85%);
+  --gradient-hero-start: oklch(0 0 0 / 0%);
+  --gradient-hero-end: oklch(0 0 0 / 70%);
+  --gradient-card-start: oklch(1 0 0 / 0%);
+  --gradient-card-end: oklch(0 0 0 / 60%);
+  
+  /* === PRODUCT CARD TOKENS === */
+  --product-card-bg: oklch(1.0000 0 0);
+  --product-card-hover: oklch(0.99 0.002 250);
+  --product-card-border: oklch(0.92 0.005 250);
+  --product-card-shadow: oklch(0 0 0 / 5%);
+  --product-image-bg: oklch(0.98 0.003 250);
+  --product-wishlist: oklch(0.50 0.20 350);
+  --product-wishlist-active: oklch(0.58 0.25 350);
+  
+  /* === FILTER/FACET TOKENS === */
+  --filter-bg: oklch(1.0000 0 0);
+  --filter-border: oklch(0.90 0.005 250);
+  --filter-active: oklch(0.50 0.18 250);
+  --filter-active-bg: oklch(0.95 0.02 250);
+  --filter-checkbox: oklch(0.50 0.18 250);
+  --filter-range: oklch(0.50 0.18 250);
+  
+  /* === BREADCRUMB TOKENS === */
+  --breadcrumb-text: oklch(0.50 0.01 250);
+  --breadcrumb-link: oklch(0.45 0.14 250);
+  --breadcrumb-separator: oklch(0.70 0.01 250);
+  --breadcrumb-current: oklch(0.30 0.01 250);
+  
+  /* === FOOTER TOKENS === */
+  --footer-bg: oklch(0.22 0.015 250);
+  --footer-text: oklch(0.85 0 0);
+  --footer-link: oklch(0.75 0.08 250);
+  --footer-link-hover: oklch(1 0 0);
+  --footer-border: oklch(0.30 0.02 250);
+  --footer-muted: oklch(0.60 0.01 250);
+  
+  /* === SIDEBAR === */
+  --sidebar: oklch(0.97 0.01 250);
+  --sidebar-foreground: oklch(0.25 0.02 250);
+  --sidebar-primary: oklch(0.50 0.18 250);
+  --sidebar-primary-foreground: oklch(1.0000 0 0);
+  --sidebar-accent: oklch(0.95 0.02 250);
+  --sidebar-accent-foreground: oklch(0.35 0.05 250);
+  --sidebar-border: oklch(0.90 0.01 250);
+  --sidebar-ring: oklch(0.50 0.18 250);
+  
+  /* === TYPOGRAPHY === */
   --font-sans: Inter, sans-serif;
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
+  --mega-menu-font-size: 1rem;
+  --mega-menu-line-height: 1.5;
+  --mega-menu-icon-size: 1.375rem;
+  
+  /* === SPACING & SIZING === */
+  --spacing: 0.25rem;
+  --letter-spacing: 0em;
+  --tracking-normal: 0em;
+  
+  /* === SHADOWS === */
   --shadow-color: hsl(0 0% 0%);
   --shadow-opacity: 0.1;
   --shadow-blur: 3px;
   --shadow-spread: 0px;
   --shadow-offset-x: 0px;
   --shadow-offset-y: 1px;
-  --letter-spacing: 0em;
-  --spacing: 0.25rem;
   --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
   --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
@@ -160,57 +306,263 @@
   --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.10);
   --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.10);
   --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.25);
-  --tracking-normal: 0em;
+  --shadow-product: 0 2px 8px 0 hsl(0 0% 0% / 0.08);
+  --shadow-product-hover: 0 8px 24px 0 hsl(0 0% 0% / 0.12);
+  --shadow-dropdown: 0 4px 16px 0 hsl(0 0% 0% / 0.12);
+  --shadow-modal: 0 16px 48px 0 hsl(0 0% 0% / 0.20);
 }
 
 .dark {
-  /* Dark Mode with Tangerine accents */
+  /* =====================================================
+     DARK MODE - Trust Blue Theme
+     ===================================================== */
+  
+  /* === CORE SHADCN TOKENS === */
   --background: oklch(0.18 0.02 250);
-  /* Deep dark blue-gray */
   --foreground: oklch(0.95 0 0);
   --card: oklch(0.22 0.02 250);
   --card-foreground: oklch(0.95 0 0);
   --popover: oklch(0.20 0.02 250);
   --popover-foreground: oklch(0.95 0 0);
-  --primary: oklch(0.72 0.18 55);
-  /* Tangerine in dark mode - slightly brighter */
-  --primary-foreground: oklch(0.15 0.02 45);
+  --primary: oklch(0.60 0.16 250);
+  --primary-foreground: oklch(1.0000 0 0);
   --secondary: oklch(0.28 0.02 250);
   --secondary-foreground: oklch(0.90 0 0);
   --muted: oklch(0.28 0.02 250);
   --muted-foreground: oklch(0.70 0 0);
-  --accent: oklch(0.32 0.04 55);
-  --accent-foreground: oklch(0.85 0.08 55);
+  --accent: oklch(0.32 0.04 250);
+  --accent-foreground: oklch(0.85 0.06 250);
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(1.0000 0 0);
   --border: oklch(0.35 0.02 250);
   --input: oklch(0.35 0.02 250);
-  --ring: oklch(0.72 0.18 55);
+  --ring: oklch(0.60 0.16 250);
+  
+  /* Chart colors */
   --chart-1: oklch(0.72 0.08 250);
-  --chart-2: oklch(0.75 0.14 55);
+  --chart-2: oklch(0.65 0.14 250);
   --chart-3: oklch(0.60 0.10 250);
   --chart-4: oklch(0.52 0.10 250);
   --chart-5: oklch(0.45 0.12 250);
+  
+  --radius: 0.75rem;
+  
+  /* === BRAND CORE (Trust Blue - Dark) === */
+  --brand: oklch(0.60 0.16 250);
+  --brand-light: oklch(0.70 0.14 250);
+  --brand-dark: oklch(0.50 0.18 250);
+  --brand-muted: oklch(0.30 0.03 250);
+  
+  /* === PRICE & DEAL TOKENS === */
+  --price-regular: oklch(0.95 0 0);
+  --price-sale: oklch(0.65 0.22 27);
+  --price-original: oklch(0.55 0 0);
+  --price-savings: oklch(0.65 0.18 145);
+  
+  --deal: oklch(0.65 0.22 27);
+  --deal-light: oklch(0.30 0.05 27);
+  --deal-dark: oklch(0.55 0.22 27);
+  --deal-text: oklch(0.75 0.18 27);
+  --deal-badge: oklch(0.60 0.22 27);
+  
+  --flash-sale: oklch(0.70 0.25 30);
+  --flash-sale-bg: oklch(0.55 0.22 27);
+  --flash-sale-text: oklch(1.0000 0 0);
+  
+  /* === STOCK STATUS === */
+  --stock-available: oklch(0.70 0.16 145);
+  --stock-available-bg: oklch(0.28 0.04 145);
+  --stock-low: oklch(0.75 0.16 65);
+  --stock-low-bg: oklch(0.28 0.04 65);
+  --stock-out: oklch(0.60 0.18 27);
+  --stock-out-bg: oklch(0.28 0.03 27);
+  
+  /* === SHIPPING & FULFILLMENT === */
+  --shipping-free: oklch(0.60 0.16 250);
+  --shipping-free-bg: oklch(0.28 0.03 250);
+  --shipping-prime: oklch(0.60 0.16 250);
+  --shipping-prime-bg: oklch(0.18 0.02 250);
+  --shipping-express: oklch(0.70 0.18 145);
+  --shipping-standard: oklch(0.55 0 0);
+  
+  /* === TRUST & VERIFICATION === */
+  --verified: oklch(0.65 0.16 250);
+  --verified-bg: oklch(0.28 0.03 250);
+  --top-rated: oklch(0.80 0.16 65);
+  --top-rated-bg: oklch(0.28 0.04 65);
+  --trusted-seller: oklch(0.65 0.16 145);
+  --trusted-seller-bg: oklch(0.28 0.03 145);
+  
+  /* === BADGE TOKENS === */
+  --badge-new: oklch(0.60 0.16 250);
+  --badge-new-bg: oklch(0.28 0.03 250);
+  --badge-bestseller: oklch(0.80 0.16 65);
+  --badge-bestseller-bg: oklch(0.28 0.04 65);
+  --badge-sponsored: oklch(0.60 0 0);
+  --badge-sponsored-bg: oklch(0.28 0.02 250);
+  --badge-choice: oklch(0.18 0.02 250);
+  --badge-choice-bg: oklch(0.60 0.16 250);
+  --badge-choice-text: oklch(1.0000 0 0);
+  
+  /* === RATING TOKENS === */
+  --rating: oklch(0.82 0.16 90);
+  --rating-empty: oklch(0.40 0.04 90);
+  --rating-half: oklch(0.75 0.14 90);
+  --review-positive: oklch(0.65 0.16 145);
+  --review-neutral: oklch(0.55 0 0);
+  --review-negative: oklch(0.60 0.18 27);
+  --review-count: oklch(0.55 0.12 250);
+  
+  /* === SECTION BACKGROUNDS === */
+  --section-default: oklch(0.22 0.02 250);
+  --section-muted: oklch(0.20 0.02 250);
+  --section-accent: oklch(0.25 0.02 250);
+  --section-highlight: oklch(0.28 0.03 250);
+  --section-dark: oklch(0.15 0.015 250);
+  --section-deal: oklch(0.25 0.03 27);
+  --section-deals: oklch(0.15 0.015 250);  /* Dark background for deals carousel */
+  --badge-deal: oklch(0.60 0.22 27);  /* Red badge for deals */
+  
+  /* === HEADER/NAVIGATION === */
+  --header-bg: oklch(0.15 0.015 250);
+  --header-bg-secondary: oklch(0.12 0.01 250);
+  --header-border: oklch(0.28 0.02 250);
+  --header-text: oklch(0.95 0 0);
+  --header-text-muted: oklch(0.75 0 0);
+  --header-hover: oklch(0.25 0.02 250);
+  --header-active: oklch(0.30 0.03 250);
+  
+  /* === CATEGORY NAV === */
+  --category-bg: oklch(0.22 0.02 250);
+  --category-hover: oklch(0.28 0.02 250);
+  --category-active: oklch(0.60 0.16 250);
+  --category-active-text: oklch(1.0000 0 0);
+  --category-border: oklch(0.35 0.02 250);
+  
+  /* === LINK COLORS === */
+  --link: oklch(0.60 0.14 250);
+  --link-hover: oklch(0.70 0.12 250);
+  --link-visited: oklch(0.65 0.12 280);
+  --link-muted: oklch(0.55 0.08 250);
+  
+  /* === BRAND BLUE === */
+  --brand-blue: oklch(0.60 0.14 250);
+  --brand-blue-light: oklch(0.70 0.12 250);
+  --brand-blue-dark: oklch(0.50 0.16 250);
+  
+  /* === SUCCESS/WARNING/ERROR === */
+  --success: oklch(0.70 0.16 145);
+  --success-light: oklch(0.28 0.04 145);
+  --success-dark: oklch(0.55 0.14 145);
+  --warning: oklch(0.80 0.14 85);
+  --warning-light: oklch(0.28 0.04 85);
+  --warning-dark: oklch(0.65 0.14 85);
+  --error: oklch(0.60 0.22 27);
+  --error-light: oklch(0.28 0.04 27);
+  --error-dark: oklch(0.50 0.20 27);
+  --info: oklch(0.60 0.16 250);
+  --info-light: oklch(0.28 0.03 250);
+  --info-dark: oklch(0.50 0.16 250);
+  
+  /* === INTERACTIVE STATES === */
+  --interactive: var(--brand);
+  --interactive-hover: var(--brand-light);
+  --interactive-active: oklch(0.55 0.18 250);
+  --interactive-disabled: oklch(0.35 0.02 250);
+  
+  /* === CTA TOKENS === */
+  --cta-primary: var(--brand);
+  --cta-primary-hover: var(--brand-light);
+  --cta-primary-text: oklch(1.0000 0 0);
+  --cta-secondary: var(--secondary);
+  --cta-secondary-hover: oklch(0.32 0.02 250);
+  --cta-secondary-text: oklch(0.95 0 0);
+  --cta-buy-now: var(--brand);
+  --cta-add-cart: oklch(0.80 0.16 85);
+  --cta-add-cart-hover: oklch(0.75 0.16 85);
+  
+  /* === SEARCH === */
+  --search-bg: oklch(0.28 0.02 250);
+  --search-border: oklch(0.40 0.02 250);
+  --search-focus: var(--brand);
+  --search-button: var(--brand);
+  --search-button-hover: var(--brand-light);
+  --search-placeholder: oklch(0.55 0 0);
+  
+  /* === NOTIFICATION/BADGE === */
+  --notification: oklch(0.65 0.20 27);
+  --notification-bg: oklch(0.60 0.20 27);
+  --notification-text: oklch(1.0000 0 0);
+  --cart-badge: oklch(0.60 0.20 27);
+  --wishlist-badge: oklch(0.60 0.22 350);
+  
+  /* === OVERLAY/GRADIENT === */
+  --overlay-dark: oklch(0 0 0 / 70%);
+  --overlay-light: oklch(0.2 0.02 250 / 80%);
+  --overlay-blur: oklch(0.18 0.02 250 / 85%);
+  --gradient-hero-start: oklch(0 0 0 / 0%);
+  --gradient-hero-end: oklch(0 0 0 / 80%);
+  --gradient-card-start: oklch(0 0 0 / 0%);
+  --gradient-card-end: oklch(0 0 0 / 70%);
+  
+  /* === PRODUCT CARD === */
+  --product-card-bg: oklch(0.22 0.02 250);
+  --product-card-hover: oklch(0.25 0.02 250);
+  --product-card-border: oklch(0.35 0.02 250);
+  --product-card-shadow: oklch(0 0 0 / 20%);
+  --product-image-bg: oklch(0.25 0.02 250);
+  --product-wishlist: oklch(0.60 0.18 350);
+  --product-wishlist-active: oklch(0.65 0.22 350);
+  
+  /* === FILTER/FACET === */
+  --filter-bg: oklch(0.22 0.02 250);
+  --filter-border: oklch(0.35 0.02 250);
+  --filter-active: oklch(0.60 0.16 250);
+  --filter-active-bg: oklch(0.28 0.03 250);
+  --filter-checkbox: oklch(0.60 0.16 250);
+  --filter-range: oklch(0.60 0.16 250);
+  
+  /* === BREADCRUMB === */
+  --breadcrumb-text: oklch(0.55 0 0);
+  --breadcrumb-link: oklch(0.60 0.12 250);
+  --breadcrumb-separator: oklch(0.45 0 0);
+  --breadcrumb-current: oklch(0.80 0 0);
+  
+  /* === FOOTER === */
+  --footer-bg: oklch(0.15 0.015 250);
+  --footer-text: oklch(0.75 0 0);
+  --footer-link: oklch(0.65 0.08 250);
+  --footer-link-hover: oklch(0.85 0 0);
+  --footer-border: oklch(0.28 0.02 250);
+  --footer-muted: oklch(0.50 0 0);
+  
+  /* === SIDEBAR === */
   --sidebar: oklch(0.22 0.02 250);
   --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.72 0.18 55);
-  --sidebar-primary-foreground: oklch(0.15 0.02 45);
-  --sidebar-accent: oklch(0.32 0.04 55);
-  --sidebar-accent-foreground: oklch(0.85 0.08 55);
+  --sidebar-primary: oklch(0.60 0.16 250);
+  --sidebar-primary-foreground: oklch(1.0000 0 0);
+  --sidebar-accent: oklch(0.32 0.04 250);
+  --sidebar-accent-foreground: oklch(0.85 0.06 250);
   --sidebar-border: oklch(0.35 0.02 250);
-  --sidebar-ring: oklch(0.72 0.18 55);
-  --radius: 0.75rem;
+  --sidebar-ring: oklch(0.60 0.16 250);
+  
+  /* === TYPOGRAPHY === */
   --font-sans: Inter, sans-serif;
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
+  
+  /* === SPACING & SIZING === */
+  --spacing: 0.25rem;
+  --letter-spacing: 0em;
+  --tracking-normal: 0em;
+  
+  /* === SHADOWS === */
   --shadow-color: hsl(0 0% 0%);
   --shadow-opacity: 0.1;
   --shadow-blur: 3px;
   --shadow-spread: 0px;
   --shadow-offset-x: 0px;
   --shadow-offset-y: 1px;
-  --letter-spacing: 0em;
-  --spacing: 0.25rem;
   --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);
   --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
@@ -219,12 +571,24 @@
   --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.10);
   --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.10);
   --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.25);
+  --shadow-product: 0 2px 8px 0 hsl(0 0% 0% / 0.15);
+  --shadow-product-hover: 0 8px 24px 0 hsl(0 0% 0% / 0.25);
+  --shadow-dropdown: 0 4px 16px 0 hsl(0 0% 0% / 0.25);
+  --shadow-modal: 0 16px 48px 0 hsl(0 0% 0% / 0.35);
 }
 
 @theme inline {
-  /* Updated to use the CSS variables defined in layout.tsx */
+  /* =====================================================
+     TAILWIND V4 THEME MAPPING
+     All CSS variables exposed for utility class usage
+     ===================================================== */
+  
+  /* === FONTS === */
   --font-sans: Inter, sans-serif;
+  --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
+  
+  /* === CORE SHADCN COLORS === */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -244,43 +608,208 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  
+  /* === CHART COLORS === */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  /* Brand colors */
+  
+  /* === BRAND COLORS === */
   --color-brand: var(--brand);
   --color-brand-light: var(--brand-light);
   --color-brand-dark: var(--brand-dark);
-  --color-brand-success: var(--brand-success);
-  --color-brand-success-light: var(--brand-success-light);
-  --color-brand-warning: var(--brand-warning);
-  --color-brand-deal: var(--brand-deal);
-  --color-brand-deal-light: var(--brand-deal-light);
-  --color-brand-deal-text: var(--brand-deal-text);
-  /* Header tokens */
+  --color-brand-muted: var(--brand-muted);
+  
+  /* === PRICE TOKENS (E-commerce critical) === */
+  --color-price-regular: var(--price-regular);
+  --color-price-sale: var(--price-sale);
+  --color-price-original: var(--price-original);
+  --color-price-savings: var(--price-savings);
+  
+  /* === DEAL/SALE TOKENS === */
+  --color-deal: var(--deal);
+  --color-deal-light: var(--deal-light);
+  --color-deal-dark: var(--deal-dark);
+  --color-deal-text: var(--deal-text);
+  --color-deal-badge: var(--deal-badge);
+  --color-flash-sale: var(--flash-sale);
+  --color-flash-sale-bg: var(--flash-sale-bg);
+  --color-flash-sale-text: var(--flash-sale-text);
+  
+  /* === STOCK STATUS === */
+  --color-stock-available: var(--stock-available);
+  --color-stock-available-bg: var(--stock-available-bg);
+  --color-stock-low: var(--stock-low);
+  --color-stock-low-bg: var(--stock-low-bg);
+  --color-stock-out: var(--stock-out);
+  --color-stock-out-bg: var(--stock-out-bg);
+  
+  /* === SHIPPING & FULFILLMENT === */
+  --color-shipping-free: var(--shipping-free);
+  --color-shipping-free-bg: var(--shipping-free-bg);
+  --color-shipping-prime: var(--shipping-prime);
+  --color-shipping-prime-bg: var(--shipping-prime-bg);
+  --color-shipping-express: var(--shipping-express);
+  --color-shipping-standard: var(--shipping-standard);
+  
+  /* === TRUST & VERIFICATION === */
+  --color-verified: var(--verified);
+  --color-verified-bg: var(--verified-bg);
+  --color-top-rated: var(--top-rated);
+  --color-top-rated-bg: var(--top-rated-bg);
+  --color-trusted-seller: var(--trusted-seller);
+  --color-trusted-seller-bg: var(--trusted-seller-bg);
+  
+  /* === BADGE TOKENS === */
+  --color-badge-new: var(--badge-new);
+  --color-badge-new-bg: var(--badge-new-bg);
+  --color-badge-bestseller: var(--badge-bestseller);
+  --color-badge-bestseller-bg: var(--badge-bestseller-bg);
+  --color-badge-sponsored: var(--badge-sponsored);
+  --color-badge-sponsored-bg: var(--badge-sponsored-bg);
+  --color-badge-choice: var(--badge-choice);
+  --color-badge-choice-bg: var(--badge-choice-bg);
+  --color-badge-choice-text: var(--badge-choice-text);
+  
+  /* === RATING TOKENS === */
+  --color-rating: var(--rating);
+  --color-rating-empty: var(--rating-empty);
+  --color-rating-half: var(--rating-half);
+  --color-review-positive: var(--review-positive);
+  --color-review-neutral: var(--review-neutral);
+  --color-review-negative: var(--review-negative);
+  --color-review-count: var(--review-count);
+  
+  /* === SECTION BACKGROUNDS === */
+  --color-section-default: var(--section-default);
+  --color-section-muted: var(--section-muted);
+  --color-section-accent: var(--section-accent);
+  --color-section-highlight: var(--section-highlight);
+  --color-section-dark: var(--section-dark);
+  --color-section-deal: var(--section-deal);
+  --color-section-deals: var(--section-deals);
+  --color-badge-deal: var(--badge-deal);
+  
+  /* === HEADER/NAVIGATION === */
   --color-header-bg: var(--header-bg);
   --color-header-bg-secondary: var(--header-bg-secondary);
   --color-header-border: var(--header-border);
   --color-header-text: var(--header-text);
   --color-header-text-muted: var(--header-text-muted);
-  /* Link colors */
+  --color-header-hover: var(--header-hover);
+  --color-header-active: var(--header-active);
+  
+  /* === CATEGORY NAV === */
+  --color-category-bg: var(--category-bg);
+  --color-category-hover: var(--category-hover);
+  --color-category-active: var(--category-active);
+  --color-category-active-text: var(--category-active-text);
+  --color-category-border: var(--category-border);
+  
+  /* === LINK COLORS === */
   --color-link: var(--link);
   --color-link-hover: var(--link-hover);
-  /* Brand Blue tokens */
+  --color-link-visited: var(--link-visited);
+  --color-link-muted: var(--link-muted);
+  
+  /* === BRAND BLUE === */
   --color-brand-blue: var(--brand-blue);
   --color-brand-blue-light: var(--brand-blue-light);
   --color-brand-blue-dark: var(--brand-blue-dark);
-  /* Semantic tokens */
-  --color-rating: var(--rating);
-  --color-rating-empty: var(--rating-empty);
-  --color-notification: var(--notification);
+  
+  /* === SEMANTIC COLORS === */
+  --color-success: var(--success);
+  --color-success-light: var(--success-light);
+  --color-success-dark: var(--success-dark);
+  --color-warning: var(--warning);
+  --color-warning-light: var(--warning-light);
+  --color-warning-dark: var(--warning-dark);
+  --color-error: var(--error);
+  --color-error-light: var(--error-light);
+  --color-error-dark: var(--error-dark);
+  --color-info: var(--info);
+  --color-info-light: var(--info-light);
+  --color-info-dark: var(--info-dark);
+  
+  /* === INTERACTIVE STATES === */
   --color-interactive: var(--interactive);
   --color-interactive-hover: var(--interactive-hover);
+  --color-interactive-active: var(--interactive-active);
+  --color-interactive-disabled: var(--interactive-disabled);
+  
+  /* === CTA TOKENS === */
+  --color-cta-primary: var(--cta-primary);
+  --color-cta-primary-hover: var(--cta-primary-hover);
+  --color-cta-primary-text: var(--cta-primary-text);
+  --color-cta-secondary: var(--cta-secondary);
+  --color-cta-secondary-hover: var(--cta-secondary-hover);
+  --color-cta-secondary-text: var(--cta-secondary-text);
+  --color-cta-buy-now: var(--cta-buy-now);
+  --color-cta-add-cart: var(--cta-add-cart);
+  --color-cta-add-cart-hover: var(--cta-add-cart-hover);
+  
+  /* === SEARCH === */
+  --color-search-bg: var(--search-bg);
+  --color-search-border: var(--search-border);
+  --color-search-focus: var(--search-focus);
   --color-search-button: var(--search-button);
   --color-search-button-hover: var(--search-button-hover);
-
+  --color-search-placeholder: var(--search-placeholder);
+  
+  /* === NOTIFICATION/BADGE === */
+  --color-notification: var(--notification);
+  --color-notification-bg: var(--notification-bg);
+  --color-notification-text: var(--notification-text);
+  --color-cart-badge: var(--cart-badge);
+  --color-wishlist-badge: var(--wishlist-badge);
+  
+  /* === OVERLAY/GRADIENT === */
+  --color-overlay-dark: var(--overlay-dark);
+  --color-overlay-light: var(--overlay-light);
+  --color-overlay-blur: var(--overlay-blur);
+  
+  /* === PRODUCT CARD === */
+  --color-product-card-bg: var(--product-card-bg);
+  --color-product-card-hover: var(--product-card-hover);
+  --color-product-card-border: var(--product-card-border);
+  --color-product-image-bg: var(--product-image-bg);
+  --color-product-wishlist: var(--product-wishlist);
+  --color-product-wishlist-active: var(--product-wishlist-active);
+  
+  /* === FILTER/FACET === */
+  --color-filter-bg: var(--filter-bg);
+  --color-filter-border: var(--filter-border);
+  --color-filter-active: var(--filter-active);
+  --color-filter-active-bg: var(--filter-active-bg);
+  --color-filter-checkbox: var(--filter-checkbox);
+  --color-filter-range: var(--filter-range);
+  
+  /* === BREADCRUMB === */
+  --color-breadcrumb-text: var(--breadcrumb-text);
+  --color-breadcrumb-link: var(--breadcrumb-link);
+  --color-breadcrumb-separator: var(--breadcrumb-separator);
+  --color-breadcrumb-current: var(--breadcrumb-current);
+  
+  /* === FOOTER === */
+  --color-footer-bg: var(--footer-bg);
+  --color-footer-text: var(--footer-text);
+  --color-footer-link: var(--footer-link);
+  --color-footer-link-hover: var(--footer-link-hover);
+  --color-footer-border: var(--footer-border);
+  --color-footer-muted: var(--footer-muted);
+  
+  /* === SIDEBAR === */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  
   /* ===== STANDARDIZED SIZING SCALE (Tailwind v4) ===== */
   /* Touch target sizes - WCAG 2.1 AA compliant */
   --size-touch-xs: 2.25rem;   /* 36px - small icons */
@@ -298,28 +827,22 @@
   --radius-xl: 0.5rem;        /* 8px - large containers */
   --radius-2xl: 0.75rem;      /* 12px - hero sections */
   --radius-full: 9999px;      /* pills, badges */
+  --radius: 0.75rem;
 
   /* Container breakpoints for responsive grids */
   --container-3xs: 16rem;   /* 256px */
   --container-2xs: 18rem;   /* 288px */
   --container-xs: 20rem;    /* 320px */
-
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --font-serif: Source Serif 4, serif;
-  --radius: 0.75rem;
+  
+  /* === TYPOGRAPHY/TRACKING === */
   --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
   --tracking-tight: calc(var(--tracking-normal) - 0.025em);
   --tracking-wide: calc(var(--tracking-normal) + 0.025em);
   --tracking-wider: calc(var(--tracking-normal) + 0.05em);
   --tracking-widest: calc(var(--tracking-normal) + 0.1em);
   --tracking-normal: var(--tracking-normal);
+  
+  /* === SHADOWS === */
   --shadow-2xl: var(--shadow-2xl);
   --shadow-xl: var(--shadow-xl);
   --shadow-lg: var(--shadow-lg);
@@ -328,6 +851,12 @@
   --shadow-sm: var(--shadow-sm);
   --shadow-xs: var(--shadow-xs);
   --shadow-2xs: var(--shadow-2xs);
+  --shadow-product: var(--shadow-product);
+  --shadow-product-hover: var(--shadow-product-hover);
+  --shadow-dropdown: var(--shadow-dropdown);
+  --shadow-modal: var(--shadow-modal);
+  
+  /* === SPACING === */
   --spacing: var(--spacing);
   --letter-spacing: var(--letter-spacing);
   --shadow-offset-y: var(--shadow-offset-y);
@@ -674,6 +1203,93 @@
   to { opacity: 1; }
 }
 
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideInFromLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideOutToLeft {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes slideInFromRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideOutToRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+/* Tailwind animate classes for Sheet/Dialog */
+.animate-in {
+  animation-duration: var(--tw-animate-duration, 200ms);
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.animate-out {
+  animation-duration: var(--tw-animate-duration, 150ms);
+  animation-timing-function: ease-in;
+  animation-fill-mode: both;
+}
+
+/* Duration utilities */
+.duration-100 { --tw-animate-duration: 100ms; }
+.duration-150 { --tw-animate-duration: 150ms; }
+.duration-200 { --tw-animate-duration: 200ms; }
+.duration-300 { --tw-animate-duration: 300ms; }
+
+.fade-in-0 { animation-name: fadeIn; }
+.fade-out-0 { animation-name: fadeOut; }
+.slide-in-from-left { animation-name: slideInFromLeft; }
+.slide-out-to-left { animation-name: slideOutToLeft; }
+.slide-in-from-right { animation-name: slideInFromRight; }
+.slide-out-to-right { animation-name: slideOutToRight; }
+
+/* Sheet animations - class-based for Tailwind v4 compatibility */
+.sheet-overlay[data-state="open"] {
+  animation: fadeIn 200ms ease-out both;
+}
+.sheet-overlay[data-state="closed"] {
+  animation: fadeOut 150ms ease-in both;
+}
+
+.sheet-content[data-side="left"][data-state="open"] {
+  animation: slideInFromLeft 150ms ease-out both;
+}
+.sheet-content[data-side="left"][data-state="closed"] {
+  animation: slideOutToLeft 100ms ease-in both;
+}
+
+.sheet-content[data-side="right"][data-state="open"] {
+  animation: slideInFromRight 150ms ease-out both;
+}
+.sheet-content[data-side="right"][data-state="closed"] {
+  animation: slideOutToRight 100ms ease-in both;
+}
+
+.sheet-content[data-side="top"][data-state="open"] {
+  animation: slideDown 150ms ease-out both;
+}
+.sheet-content[data-side="top"][data-state="closed"] {
+  animation: slideUp 100ms ease-in both;
+}
+
+.sheet-content[data-side="bottom"][data-state="open"] {
+  animation: slideUp 150ms ease-out both;
+}
+.sheet-content[data-side="bottom"][data-state="closed"] {
+  animation: slideDown 100ms ease-in both;
+}
+
 @keyframes slideUp {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
@@ -684,12 +1300,127 @@
   to { transform: translateY(0); }
 }
 
+/* Phase 4: Page Fade-in Animation (200ms) */
+@keyframes pageFadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(4px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
+}
+
+/* Phase 4: Dropdown slide + fade (150ms) */
+@keyframes dropdownEnter {
+  from { 
+    opacity: 0; 
+    transform: translateY(-8px) scale(0.98);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Phase 4: Modal scale + fade (200ms) */
+@keyframes modalEnter {
+  from { 
+    opacity: 0; 
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+}
+
+@keyframes modalExit {
+  from { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  to { 
+    opacity: 0; 
+    transform: scale(0.95);
+  }
+}
+
+/* Phase 4: Cart add bounce effect (300ms) */
+@keyframes cartBounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.15); }
+  50% { transform: scale(0.95); }
+  70% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Phase 4: Toast enter animation (200ms) */
+@keyframes toastEnter {
+  from { 
+    opacity: 0; 
+    transform: translateY(16px) scale(0.96);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Phase 4: Heart/Wishlist pulse */
+@keyframes heartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Phase 4: Underline animation for nav links */
+@keyframes underlineGrow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 .animate-slide-up {
   animation: slideUp 0.3s ease;
 }
 
 .animate-slide-down {
   animation: slideDown 0.3s ease;
+}
+
+/* Phase 4 Animation Utility Classes */
+.animate-page-fade-in {
+  animation: pageFadeIn 0.2s ease-out;
+}
+
+.animate-dropdown-enter {
+  animation: dropdownEnter 0.15s ease-out;
+}
+
+.animate-modal-enter {
+  animation: modalEnter 0.2s ease-out;
+}
+
+.animate-modal-exit {
+  animation: modalExit 0.15s ease-out;
+}
+
+.animate-cart-bounce {
+  animation: cartBounce 0.3s ease-out;
+}
+
+.animate-toast-enter {
+  animation: toastEnter 0.2s ease-out;
+}
+
+.animate-heart-pulse {
+  animation: heartPulse 0.3s ease-out;
+}
+
+/* Phase 4: Footer link color transition */
+.footer-link-animated {
+  transition: color 0.2s ease-out;
 }
 
 @layer base {

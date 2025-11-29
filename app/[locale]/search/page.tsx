@@ -4,9 +4,34 @@ import { SearchFilters } from "@/components/search-filters"
 import { SubcategoryTabs } from "@/components/subcategory-tabs"
 import { SearchHeader } from "@/components/search-header"
 import { MobileFilters } from "@/components/mobile-filters"
+import { DesktopFilters } from "@/components/desktop-filters"
 import { FilterChips } from "@/components/filter-chips"
+import { SortSelect } from "@/components/sort-select"
 import { Suspense } from "react"
 import { getLocale } from "next-intl/server"
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ searchParams }: {
+  searchParams: Promise<{ q?: string; category?: string }>
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const query = params.q || '';
+  const category = params.category || '';
+  
+  let title = 'Search Results';
+  if (query) {
+    title = `"${query}" - Search Results`;
+  } else if (category) {
+    title = `${category.charAt(0).toUpperCase() + category.slice(1)} - Shop`;
+  }
+  
+  return {
+    title,
+    description: query 
+      ? `Find the best deals on "${query}" at AMZN. Fast shipping and great prices.`
+      : 'Browse our wide selection of products. Find electronics, fashion, home goods and more.',
+  };
+}
 
 // Define types for better type safety
 interface Category {
@@ -26,6 +51,103 @@ interface Product {
   rating: number | null
   review_count: number | null
   category_id: string | null
+  image_url?: string | null
+}
+
+// Helper function to search products with ILIKE fallback
+async function searchProducts(
+  supabase: any, 
+  query: string, 
+  categoryIds: string[] | null,
+  filters: {
+    minPrice?: string
+    maxPrice?: string
+    tag?: string
+    minRating?: string
+    prime?: string
+    availability?: string
+  }
+): Promise<Product[]> {
+  // Build base query
+  let dbQuery = supabase.from("products").select("*")
+  
+  // Apply category filter if provided
+  if (categoryIds && categoryIds.length > 0) {
+    dbQuery = dbQuery.in("category_id", categoryIds)
+  }
+  
+  // Apply other filters
+  if (filters.minPrice) {
+    dbQuery = dbQuery.gte("price", Number(filters.minPrice))
+  }
+  if (filters.maxPrice) {
+    dbQuery = dbQuery.lte("price", Number(filters.maxPrice))
+  }
+  if (filters.tag) {
+    dbQuery = dbQuery.contains("tags", [filters.tag])
+  }
+  if (filters.minRating) {
+    dbQuery = dbQuery.gte("rating", Number(filters.minRating))
+  }
+  if (filters.prime === "true") {
+    dbQuery = dbQuery.eq("is_prime", true)
+  }
+  if (filters.availability === "instock") {
+    dbQuery = dbQuery.gt("stock", 0)
+  }
+  
+  // If no query, just return products with filters
+  if (!query) {
+    const { data } = await dbQuery
+    return data || []
+  }
+  
+  // First try with full-text search
+  const textSearchQuery = dbQuery.textSearch("search_vector", query, {
+    type: "websearch",
+    config: "english"
+  })
+  
+  const { data: textSearchResults } = await textSearchQuery
+  
+  // If text search returns results, use them
+  if (textSearchResults && textSearchResults.length > 0) {
+    return textSearchResults
+  }
+  
+  // Fallback to ILIKE search for partial matches
+  // We need to rebuild the query since textSearch modifies it
+  let fallbackQuery = supabase.from("products").select("*")
+  
+  if (categoryIds && categoryIds.length > 0) {
+    fallbackQuery = fallbackQuery.in("category_id", categoryIds)
+  }
+  
+  // Apply other filters again
+  if (filters.minPrice) {
+    fallbackQuery = fallbackQuery.gte("price", Number(filters.minPrice))
+  }
+  if (filters.maxPrice) {
+    fallbackQuery = fallbackQuery.lte("price", Number(filters.maxPrice))
+  }
+  if (filters.tag) {
+    fallbackQuery = fallbackQuery.contains("tags", [filters.tag])
+  }
+  if (filters.minRating) {
+    fallbackQuery = fallbackQuery.gte("rating", Number(filters.minRating))
+  }
+  if (filters.prime === "true") {
+    fallbackQuery = fallbackQuery.eq("is_prime", true)
+  }
+  if (filters.availability === "instock") {
+    fallbackQuery = fallbackQuery.gt("stock", 0)
+  }
+  
+  // Use ILIKE for partial matching on title and description
+  fallbackQuery = fallbackQuery.or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+  
+  const { data: ilikResults } = await fallbackQuery
+  return ilikResults || []
 }
 
 export default async function SearchPage({
@@ -96,82 +218,26 @@ export default async function SearchPage({
         // Get products from this category AND all its subcategories
         const categoryIds = [categoryData.id, ...subcategories.map(s => s.id)]
 
-        let dbQuery = supabase
-          .from("products")
-          .select("*")
-          .in("category_id", categoryIds)
-
-        if (query) {
-          dbQuery = dbQuery.textSearch("search_vector", query, {
-            type: "websearch",
-            config: "english"
-          })
-        }
-
-        if (searchParams.minPrice) {
-          dbQuery = dbQuery.gte("price", Number(searchParams.minPrice))
-        }
-
-        if (searchParams.maxPrice) {
-          dbQuery = dbQuery.lte("price", Number(searchParams.maxPrice))
-        }
-
-        if (searchParams.tag) {
-          dbQuery = dbQuery.contains("tags", [searchParams.tag])
-        }
-
-        if (searchParams.minRating) {
-          dbQuery = dbQuery.gte("rating", Number(searchParams.minRating))
-        }
-
-        if (searchParams.prime === "true") {
-          dbQuery = dbQuery.eq("is_prime", true)
-        }
-
-        if (searchParams.availability === "instock") {
-          dbQuery = dbQuery.gt("stock", 0)
-        }
-
-        const { data } = await dbQuery
-        products = data || []
+        // Use the helper function with ILIKE fallback
+        products = await searchProducts(supabase, query, categoryIds, {
+          minPrice: searchParams.minPrice,
+          maxPrice: searchParams.maxPrice,
+          tag: searchParams.tag,
+          minRating: searchParams.minRating,
+          prime: searchParams.prime,
+          availability: searchParams.availability,
+        })
       }
     } else {
       // No category filter - get all products
-      let dbQuery = supabase.from("products").select("*")
-
-      if (query) {
-        dbQuery = dbQuery.textSearch("search_vector", query, {
-          type: "websearch",
-          config: "english"
-        })
-      }
-
-      if (searchParams.minPrice) {
-        dbQuery = dbQuery.gte("price", Number(searchParams.minPrice))
-      }
-
-      if (searchParams.maxPrice) {
-        dbQuery = dbQuery.lte("price", Number(searchParams.maxPrice))
-      }
-
-      if (searchParams.tag) {
-        dbQuery = dbQuery.contains("tags", [searchParams.tag])
-      }
-
-      if (searchParams.minRating) {
-        dbQuery = dbQuery.gte("rating", Number(searchParams.minRating))
-      }
-
-      if (searchParams.prime === "true") {
-        dbQuery = dbQuery.eq("is_prime", true)
-      }
-
-      if (searchParams.availability === "instock") {
-        dbQuery = dbQuery.gt("stock", 0)
-      }
-
-      const { data } = await dbQuery
-      products = data || []
+      products = await searchProducts(supabase, query, null, {
+        minPrice: searchParams.minPrice,
+        maxPrice: searchParams.maxPrice,
+        tag: searchParams.tag,
+        minRating: searchParams.minRating,
+        prime: searchParams.prime,
+        availability: searchParams.availability,
+      })
     }
 
     // Extract unique brands from products for the filter
@@ -183,19 +249,21 @@ export default async function SearchPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="flex flex-col lg:flex-row container !px-0">
-        {/* Sidebar Filters - Hidden on mobile */}
-        <div className="w-64 p-4 border-r border-border hidden lg:block space-y-6 shrink-0">
-          <Suspense>
-            <SearchFilters 
-              categories={allCategories}
-              subcategories={subcategories}
-              currentCategory={currentCategory}
-              allCategoriesWithSubs={allCategoriesWithSubs}
-              brands={brands}
-            />
-          </Suspense>
-        </div>
+      <div className="flex flex-col lg:flex-row container px-0!">
+        {/* Sidebar Filters - Hidden on mobile, Trust Blue background */}
+        <aside className="w-64 hidden lg:block shrink-0 border-r border-sidebar-border bg-sidebar">
+          <div className="sticky top-0 p-4 space-y-5 max-h-screen overflow-y-auto">
+            <Suspense>
+              <SearchFilters 
+                categories={allCategories}
+                subcategories={subcategories}
+                currentCategory={currentCategory}
+                allCategoriesWithSubs={allCategoriesWithSubs}
+                brands={brands}
+              />
+            </Suspense>
+          </div>
+        </aside>
 
         {/* Main Results */}
         <div className="flex-1 p-4 sm:p-6">
@@ -217,55 +285,68 @@ export default async function SearchPage({
             </Suspense>
           )}
 
-          {/* Mobile Filter Chips - Horizontal scroll */}
-          <div className="lg:hidden mb-4">
+          {/* Active Filter Pills - Show on all devices, only when filters are active */}
+          <div className="mb-4">
             <Suspense>
               <FilterChips currentCategory={currentCategory} />
             </Suspense>
           </div>
 
-          {/* Results count, mobile filter button, and sort - Same row layout */}
-          <div className="mb-4 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{products.length}</span> results
-                {query && (
-                  <span className="hidden sm:inline">
-                    {" "}for <span className="font-medium text-brand-deal">"{query}"</span>
-                  </span>
-                )}
-                {currentCategory && !query && (
-                  <span className="hidden sm:inline"> in <span className="font-medium">{currentCategory.name}</span></span>
-                )}
-              </p>
+          {/* Filter & Sort Row - Amazon/Target style toolbar */}
+          <div className="mb-3 sm:mb-5 flex items-center gap-2 sm:gap-2.5">
+            {/* Mobile Filter Button - Larger on mobile */}
+            <div className="flex-1 lg:hidden">
+              <Suspense>
+                <MobileFilters 
+                  categories={allCategories}
+                  currentCategory={currentCategory}
+                  locale={locale}
+                  resultsCount={products.length}
+                />
+              </Suspense>
             </div>
-            <div className="flex items-center gap-2">
-              {/* Mobile Filter Button */}
-              <div className="lg:hidden">
-                <Suspense>
-                  <MobileFilters 
-                    categories={allCategories}
-                    currentCategory={currentCategory}
-                    locale={locale}
-                  />
-                </Suspense>
-              </div>
-              <label htmlFor="sort" className="text-sm text-muted-foreground hidden sm:inline">Sort by:</label>
-              <select 
-                id="sort"
-                className="min-h-9 text-sm bg-card border border-border rounded-lg px-3 py-1.5 hover:bg-secondary cursor-pointer focus:ring-2 focus:ring-ring outline-none appearance-none pr-8 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22m2%204%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-size-[12px] bg-position-[right_12px_center] bg-no-repeat"
-              >
-                <option>Featured</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
-                <option>Avg. Customer Review</option>
-                <option>Newest Arrivals</option>
-              </select>
+            
+            {/* Sort Dropdown - Left aligned on all devices, larger on mobile */}
+            <div className="flex-1 lg:max-w-[180px] lg:flex-initial">
+              <SortSelect />
             </div>
+            
+            {/* Desktop Quick Filters */}
+            <div className="hidden lg:flex items-center gap-2">
+              <Suspense>
+                <DesktopFilters />
+              </Suspense>
+            </div>
+            
+            {/* Results count - right aligned, hidden on mobile since it clutters the UI */}
+            <p className="hidden sm:block text-sm text-muted-foreground ml-auto whitespace-nowrap">
+              <span className="font-semibold text-foreground">{products.length}</span>
+              <span> results</span>
+              {query && (
+                <span className="hidden lg:inline">
+                  {" "}for <span className="font-medium text-brand-deal">"{query}"</span>
+                </span>
+              )}
+              {currentCategory && !query && (
+                <span className="hidden lg:inline"> in <span className="font-medium">{currentCategory.name}</span></span>
+              )}
+            </p>
+          </div>
+          
+          {/* Mobile Results Info Strip */}
+          <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2.5">
+            <span>
+              <span className="font-semibold text-foreground">{products.length}</span> {products.length === 1 ? 'product' : 'products'}
+            </span>
+            {currentCategory && (
+              <span className="text-xs bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded-full font-medium">
+                {locale === 'bg' && currentCategory.name_bg ? currentCategory.name_bg : currentCategory.name}
+              </span>
+            )}
           </div>
 
-          {/* Product Grid */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+          {/* Product Grid - Optimized for search results */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
@@ -275,14 +356,59 @@ export default async function SearchPage({
                 image={product.image_url}
                 rating={product.rating || 0}
                 reviews={product.review_count || 0}
+                variant="grid"
               />
             ))}
           </div>
 
           {products.length === 0 && (
-            <div className="mt-12 text-center">
-              <h2 className="text-xl font-semibold text-foreground mb-2">No results found</h2>
-              <p className="text-muted-foreground">Try checking your spelling or use more general terms.</p>
+            <div className="mt-12 text-center py-12 px-4">
+              <div className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg 
+                  className="size-10 text-muted-foreground" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={1.5} 
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" 
+                  />
+                </svg>
+              </div>
+              <h2 className="text-xl font-semibold text-foreground mb-2">No products found</h2>
+              <p className="text-muted-foreground max-w-md mx-auto mb-6">
+                {query 
+                  ? `We couldn't find any results for "${query}". Try checking your spelling or use more general terms.`
+                  : "We couldn't find any products matching your filters. Try adjusting your search criteria."
+                }
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <a href="/search">
+                  <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-brand hover:bg-brand/90 text-foreground h-10 px-4 py-2 gap-2">
+                    Clear All Filters
+                  </button>
+                </a>
+                <a href="/">
+                  <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
+                    Browse All Products
+                  </button>
+                </a>
+              </div>
+              <div className="mt-8 pt-6 border-t border-border max-w-md mx-auto">
+                <p className="text-sm text-muted-foreground mb-3">Popular categories:</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  <a href="/search?category=electronics" className="text-sm text-link hover:underline">Electronics</a>
+                  <span className="text-muted-foreground">•</span>
+                  <a href="/search?category=fashion" className="text-sm text-link hover:underline">Fashion</a>
+                  <span className="text-muted-foreground">•</span>
+                  <a href="/search?category=home" className="text-sm text-link hover:underline">Home</a>
+                  <span className="text-muted-foreground">•</span>
+                  <a href="/todays-deals" className="text-sm text-link hover:underline">Today's Deals</a>
+                </div>
+              </div>
             </div>
           )}
 
