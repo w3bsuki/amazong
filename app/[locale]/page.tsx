@@ -18,26 +18,6 @@ import { BrandCircles } from "@/components/brand-circles"
 import { PromoCard } from "@/components/promo-card"
 import { Separator } from "@/components/ui/separator"
 import { ProductRow } from "@/components/product-row"
-import { cn } from "@/lib/utils"
-import { 
-  Star, 
-  TreeEvergreen, 
-  Gift, 
-  PuzzlePiece, 
-  DeviceMobile, 
-  User, 
-  UserCircle, 
-  Baby,
-  House,
-  CookingPot,
-  AppleLogo,
-  HeartHalf,
-  Basket,
-  Package,
-  Barbell,
-  Tag,
-  PaintBrush
-} from "@phosphor-icons/react/dist/ssr"
 
 import { WelcomeToast } from "@/components/welcome-toast"
 import { getTranslations, getLocale } from "next-intl/server"
@@ -347,73 +327,6 @@ export default async function Home() {
         {/* Brand Circles - Moved lower in the page */}
         <div className="py-4">
           <BrandCircles locale={locale} />
-        </div>
-
-        <Separator className="mx-4 sm:hidden" />
-
-        {/* Featured Categories - Target Style with circular images */}
-        <div className="mt-6 sm:mt-8 px-1 sm:px-0">
-          <div className="sm:bg-card sm:rounded-lg sm:border sm:border-border p-4 sm:p-6">
-            {/* Section Header */}
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                {locale === "bg" ? "Избрани категории" : "Featured categories"}
-              </h2>
-              <Link 
-                href="/search" 
-                className="text-brand-blue hover:text-brand-blue/80 text-sm font-medium hover:underline transition-colors min-h-10 flex items-center"
-              >
-                {t('sections.seeMore')}
-              </Link>
-            </div>
-            
-            {/* Category Grid - Target style with Phosphor icons */}
-            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-9 gap-3 sm:gap-4 md:gap-5">
-              {[
-                { name: locale === "bg" ? "Ново" : "New Arrivals", icon: Star, href: "/search?sort=newest" },
-                { name: locale === "bg" ? "Празници" : "Holiday", icon: TreeEvergreen, href: "/search?category=holiday" },
-                { name: locale === "bg" ? "Подаръци" : "Gifts", icon: Gift, href: "/gift-cards" },
-                { name: locale === "bg" ? "Играчки" : "Toys", icon: PuzzlePiece, href: "/search?category=toys" },
-                { name: locale === "bg" ? "Техника" : "Electronics", icon: DeviceMobile, href: "/search?category=electronics" },
-                { name: locale === "bg" ? "Дамско" : "Women's", icon: User, href: "/search?category=women" },
-                { name: locale === "bg" ? "Мъжко" : "Men's", icon: UserCircle, href: "/search?category=men" },
-                { name: locale === "bg" ? "Детско" : "Kids'", icon: PuzzlePiece, href: "/search?category=kids" },
-                { name: locale === "bg" ? "Бебета" : "Baby", icon: Baby, href: "/search?category=baby" },
-                { name: locale === "bg" ? "Дом" : "Home", icon: House, href: "/search?category=home" },
-                { name: locale === "bg" ? "Кухня" : "Kitchen", icon: CookingPot, href: "/search?category=kitchen" },
-                { name: locale === "bg" ? "Apple" : "Apple", icon: AppleLogo, href: "/search?brand=apple" },
-                { name: locale === "bg" ? "Красота" : "Beauty", icon: PaintBrush, href: "/search?category=beauty" },
-                { name: locale === "bg" ? "Здраве" : "Health", icon: HeartHalf, href: "/search?category=health" },
-                { name: locale === "bg" ? "Храна" : "Grocery", icon: Basket, href: "/search?category=grocery" },
-                { name: locale === "bg" ? "Домашно" : "Essentials", icon: Package, href: "/search?category=essentials" },
-                { name: locale === "bg" ? "Спорт" : "Sports", icon: Barbell, href: "/search?category=sports" },
-                { name: locale === "bg" ? "Разпродажба" : "Clearance", icon: Tag, href: "/todays-deals", highlight: true },
-              ].map((cat, idx) => (
-                <Link 
-                  key={idx} 
-                  href={cat.href}
-                  className="group flex flex-col items-center gap-1.5 sm:gap-2"
-                >
-                  <div className={cn(
-                    "relative size-14 sm:size-16 md:size-20 rounded-full flex items-center justify-center",
-                    cat.highlight ? "bg-deal-light" : "bg-secondary"
-                  )}>
-                    <cat.icon className={cn(
-                      "size-6 sm:size-7 md:size-9",
-                      cat.highlight ? "text-deal" : "text-foreground"
-                    )} />
-                  </div>
-                  <span className={cn(
-                    "text-[10px] sm:text-xs font-medium text-center line-clamp-1",
-                    cat.highlight ? "text-deal" : "text-foreground",
-                    "group-hover:text-link group-hover:underline"
-                  )}>
-                    {cat.name}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* More Ways to Shop - Horizontal scroll on mobile, Bento grid on desktop */}
