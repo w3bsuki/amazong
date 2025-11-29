@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
-import { Package, CreditCard, Lock, MapPin, ChatCircle, Headphones } from "@phosphor-icons/react/dist/ssr"
+import { Package, CreditCard, Lock, MapPin, Headphones, User, ChatCircle as MessageSquare } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 

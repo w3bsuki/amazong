@@ -1,13 +1,14 @@
 import createNextIntlPlugin from 'next-intl/plugin';
+import bundleAnalyzer from '@next/bundle-analyzer';
 
 const withNextIntl = createNextIntlPlugin();
 
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  
   // Image optimization configuration
   images: {
     // Enable image optimization (removed unoptimized: true)
@@ -43,6 +44,8 @@ const nextConfig = {
   experimental: {
     // Enable optimistic updates for faster navigation
     optimisticClientCache: true,
+    // Optimize package imports for smaller bundles
+    optimizePackageImports: ['@phosphor-icons/react'],
   },
 
   // Compression for production builds
@@ -55,4 +58,4 @@ const nextConfig = {
   reactStrictMode: true,
 }
 
-export default withNextIntl(nextConfig);
+export default withBundleAnalyzer(withNextIntl(nextConfig));

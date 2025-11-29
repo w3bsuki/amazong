@@ -80,6 +80,7 @@
   },
   "trustedDependencies": [],
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.0.5",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/node": "24.10.1",
     "dotenv": "^17.2.3",

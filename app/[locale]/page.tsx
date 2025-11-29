@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 import { BrandCircles } from "@/components/brand-circles"
 import { DailyDealsBanner } from "@/components/daily-deals-banner"
 import { PromoCard } from "@/components/promo-card"
-import { TabbedProductSection } from "@/components/tabbed-product-section"
+import { TrendingProductsSection } from "@/components/trending-products-section"
 import { DealsSection } from "@/components/deals-section"
 import { WelcomeToast } from "@/components/welcome-toast"
 import { getTranslations, getLocale } from "next-intl/server"
@@ -30,11 +30,13 @@ export default async function Home() {
     id: string
     title: string
     price: number
+    listPrice?: number
     image: string
     rating?: number
     reviews?: number
     reviews_count?: number
     isPrime?: boolean
+    createdAt?: string
   }
 
   interface Deal {
@@ -49,7 +51,9 @@ export default async function Home() {
   let user = null
   const t = await getTranslations('Home')
 
-  let featuredProducts: Product[] = []
+  let newestProducts: Product[] = []
+  let promoProducts: Product[] = []
+  let bestSellersProducts: Product[] = []
 
   let deals: Deal[] = []
 
@@ -57,24 +61,6 @@ export default async function Home() {
     if (supabase) {
       const { data: authData } = await supabase.auth.getUser()
       user = authData?.user || null
-
-      // Fetch Featured Products (random or specific logic)
-      const { data: productsData } = await supabase
-        .from('products')
-        .select('*')
-        .limit(4)
-
-      if (productsData && productsData.length > 0) {
-        featuredProducts = productsData.map((p: any) => ({
-          id: p.id,
-          title: p.title,
-          price: p.price,
-          rating: p.rating || 0,
-          reviews: p.review_count || 0,
-          image: p.images?.[0] || "/placeholder.svg",
-          isPrime: p.is_prime
-        }))
-      }
 
       // Fetch Deals (products where list_price > price)
       const { data: dealsData } = await supabase
@@ -96,6 +82,71 @@ export default async function Home() {
             image: p.images?.[0] || "/placeholder.svg"
           }))
         }
+      }
+
+      // === TRENDING SECTION DATA ===
+      
+      // 1. Newest Products - sorted by created_at DESC
+      const { data: newestData } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(12)
+
+      if (newestData && newestData.length > 0) {
+        newestProducts = newestData.map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          price: p.price,
+          listPrice: p.list_price || undefined,
+          rating: p.rating || 0,
+          reviews: p.review_count || 0,
+          image: p.images?.[0] || "/placeholder.svg",
+          isPrime: p.is_prime,
+          createdAt: p.created_at
+        }))
+      }
+
+      // 2. Promo Products - products with discounts (list_price > price)
+      const { data: promoData } = await supabase
+        .from('products')
+        .select('*')
+        .not('list_price', 'is', null)
+        .gt('list_price', 0)
+        .limit(12)
+
+      if (promoData && promoData.length > 0) {
+        const validPromos = promoData.filter((p: any) => p.list_price > p.price)
+        promoProducts = validPromos.map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          price: p.price,
+          listPrice: p.list_price,
+          rating: p.rating || 0,
+          reviews: p.review_count || 0,
+          image: p.images?.[0] || "/placeholder.svg",
+          isPrime: p.is_prime
+        }))
+      }
+
+      // 3. Best Sellers - sorted by review_count DESC (popularity indicator)
+      const { data: bestSellersData } = await supabase
+        .from('products')
+        .select('*')
+        .order('review_count', { ascending: false })
+        .limit(12)
+
+      if (bestSellersData && bestSellersData.length > 0) {
+        bestSellersProducts = bestSellersData.map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          price: p.price,
+          listPrice: p.list_price || undefined,
+          rating: p.rating || 0,
+          reviews: p.review_count || 0,
+          image: p.images?.[0] || "/placeholder.svg",
+          isPrime: p.is_prime
+        }))
       }
     }
   } catch (e) {
@@ -272,35 +323,15 @@ export default async function Home() {
           <DailyDealsBanner locale={locale} />
         </div>
 
-        {/* 5. Trending Products - Target-Style Tabbed Section */}
+        {/* 5. Trending Products - Behavior-Based Tabs (Newest, Promo, Best Sellers) */}
         <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
-          <TabbedProductSection
+          <TrendingProductsSection
             title={locale === "bg" ? "Открийте популярни продукти" : "Explore trending picks"}
-            tabs={[
-              {
-                id: "featured",
-                label: locale === "bg" ? "Избрани" : "Featured",
-                products: featuredProducts,
-              },
-              {
-                id: "electronics",
-                label: locale === "bg" ? "Техника" : "Tech",
-                products: featuredProducts, // In production, fetch different products
-              },
-              {
-                id: "home",
-                label: locale === "bg" ? "За дома" : "Home",
-                products: featuredProducts,
-              },
-              {
-                id: "fashion",
-                label: locale === "bg" ? "Мода" : "Fashion",
-                products: featuredProducts,
-              },
-            ]}
+            newestProducts={newestProducts}
+            promoProducts={promoProducts}
+            bestSellersProducts={bestSellersProducts}
             ctaText={locale === "bg" ? "Виж всички" : "Shop all"}
-            ctaHref="/search?q=featured"
-            variant="featured"
+            ctaHref="/search"
           />
         </div>
 

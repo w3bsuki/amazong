@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner"
 import { ImageUpload } from "@/components/image-upload"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
+import { CircleNotch as Loader2 } from "@phosphor-icons/react"
 
 interface UploadedImage {
   url: string

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Package, ArrowsClockwise, CreditCard, User, Shield, Question } from "@phosphor-icons/react/dist/ssr"
+import { Package, ArrowsClockwise, CreditCard, User, Shield, Question, MagnifyingGlass as Search } from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"

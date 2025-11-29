@@ -197,9 +197,9 @@ export function TabbedProductSection({
           <TabsContent 
             key={tab.id} 
             value={tab.id} 
-            className="mt-0 pt-3 sm:pt-4 pb-4 sm:pb-6"
+            className="mt-0 pt-3 sm:pt-4 pb-4 sm:pb-6 overflow-hidden"
           >
-            <div className="relative">
+            <div className="relative overflow-hidden">
               {/* Scroll Buttons - Cleaner design */}
               <button
                 onClick={() => scroll("left")}
@@ -228,12 +228,12 @@ export function TabbedProductSection({
               <div
                 ref={scrollContainerRef}
                 onScroll={checkScrollability}
-                className="flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-pl-4 px-4 pb-2 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
+                className="flex flex-row flex-nowrap gap-3 overflow-x-auto snap-x snap-mandatory scroll-pl-4 px-4 pb-2 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
               >
                 {tab.products.map((product) => (
                   <div
                     key={product.id}
-                    className="w-[42vw] min-w-[42vw] shrink-0 snap-start md:w-44 md:min-w-44 group"
+                    className="w-[45%] min-w-[45%] shrink-0 snap-start md:w-44 md:min-w-44 group"
                   >
                     <CompactProductCard {...product} />
                   </div>

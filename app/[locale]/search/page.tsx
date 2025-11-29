@@ -395,7 +395,7 @@ export default async function SearchPage({
                 id={product.id}
                 title={product.title}
                 price={product.price}
-                image={product.image_url}
+                image={product.image_url || "/placeholder.svg"}
                 rating={product.rating || 0}
                 reviews={product.review_count || 0}
                 variant="grid"

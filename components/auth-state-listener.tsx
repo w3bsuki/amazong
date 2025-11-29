@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 
 export function AuthStateListener() {
     const router = useRouter()
@@ -12,7 +13,7 @@ export function AuthStateListener() {
 
         const {
             data: { subscription },
-        } = supabase.auth.onAuthStateChange((event, session) => {
+        } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, _session: Session | null) => {
             if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
                 router.refresh()
             }

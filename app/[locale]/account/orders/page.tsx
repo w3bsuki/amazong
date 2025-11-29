@@ -10,6 +10,11 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb"
 
 export default async function OrdersPage() {
   const supabase = await createClient()
+
+  if (!supabase) {
+    redirect("/auth/login")
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser()

@@ -13,6 +13,7 @@ import {
     PaintBrush,
     PuzzlePiece, 
     Barbell,
+    Lightning as Zap,
     type Icon
 } from "@phosphor-icons/react"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"

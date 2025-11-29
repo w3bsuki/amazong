@@ -59,6 +59,40 @@ export interface Message {
   }
 }
 
+// Raw conversation from Supabase
+interface RawConversation {
+  id: string
+  buyer_id: string
+  seller_id: string
+  product_id: string | null
+  order_id: string | null
+  subject: string | null
+  status: "open" | "closed" | "archived"
+  last_message_at: string
+  buyer_unread_count: number
+  seller_unread_count: number
+  created_at: string
+  updated_at: string
+  product?: {
+    id: string
+    title: string
+    images: string[]
+  } | null
+}
+
+// Raw message from Supabase
+interface RawMessage {
+  id: string
+  conversation_id: string
+  sender_id: string
+  content: string
+  message_type: "text" | "image" | "order_update" | "system"
+  attachment_url: string | null
+  is_read: boolean
+  read_at: string | null
+  created_at: string
+}
+
 interface MessageContextValue {
   // State
   conversations: Conversation[]
@@ -171,7 +205,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
 
       // Fetch profiles and seller info for each conversation
       const conversationsWithProfiles = await Promise.all(
-        (data || []).map(async (conv) => {
+        (data || []).map(async (conv: RawConversation) => {
           // Get buyer profile
           const { data: buyerProfile } = await supabase
             .from("profiles")
@@ -247,7 +281,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
 
       // Fetch sender profiles for each message
       const messagesWithSenders = await Promise.all(
-        (messagesData || []).map(async (msg) => {
+        (messagesData || []).map(async (msg: RawMessage) => {
           const { data: senderProfile } = await supabase
             .from("profiles")
             .select("id, full_name, avatar_url")
@@ -432,8 +466,8 @@ export function MessageProvider({ children }: MessageProviderProps) {
             schema: "public",
             table: "messages"
           },
-          async (payload) => {
-            const newMessage = payload.new as Message
+          async (payload: { new: Record<string, unknown> }) => {
+            const newMessage = payload.new as unknown as Message
 
             // Only handle if it's in the current conversation
             if (currentConversation && newMessage.conversation_id === currentConversation.id) {
