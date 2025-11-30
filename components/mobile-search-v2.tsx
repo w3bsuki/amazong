@@ -144,10 +144,11 @@ export function MobileSearchV2() {
     router.push(`/search?category=${slug}`)
   }
 
-  const handleProductSelect = (slug: string) => {
+  const handleProductSelect = (slugOrId: string) => {
+    if (!slugOrId) return // Guard against null/undefined
     setOpen(false)
     setSearchQuery("")
-    router.push(`/product/${slug}`)
+    router.push(`/product/${slugOrId}`)
   }
 
   const formatPrice = (price: number) => {
@@ -244,7 +245,7 @@ export function MobileSearchV2() {
                   {products.map((product) => (
                     <CommandItem 
                       key={product.id} 
-                      onSelect={() => handleProductSelect(product.slug)}
+                      onSelect={() => handleProductSelect(product.slug || product.id)}
                       className="flex items-center gap-3 min-h-[56px] py-3 touch-action-manipulation"
                     >
                       {product.images?.[0] ? (
