@@ -4,7 +4,7 @@ import { AccountDropdown, CartDropdown, OrdersDropdown, SellingDropdown, Locatio
 import { SidebarMenu } from "@/components/sidebar-menu"
 import { MegaMenu } from "@/components/mega-menu"
 import { CategorySubheader } from "@/components/category-subheader"
-import { MobileSearchV2 } from "@/components/mobile-search-v2"
+import { MobileSearchOverlay } from "@/components/mobile-search-overlay"
 import { MobileCartDropdown } from "@/components/mobile-cart-dropdown"
 import { DesktopSearch } from "@/components/desktop-search"
 import { getCountryName } from "@/lib/geolocation"
@@ -48,7 +48,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
         </Link>
         <div className="flex-1" />
         <div className="flex items-center gap-0">
-          <MobileSearchV2 />
+          <MobileSearchOverlay />
           {/* Sell/List Button */}
           <Link 
             href="/sell/create" 
