@@ -16,7 +16,8 @@ import {
     Question,
     FireSimple,
     Trophy,
-    Sparkle,
+    Tag,
+    Lightning,
     // Category icons
     Monitor, 
     Laptop, 
@@ -328,7 +329,7 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                 <div className="flex gap-2">
                                     <Link
                                         href="/auth/login"
-                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand/90 active:scale-[0.98] transition-all"
+                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 active:bg-primary/80 transition-colors"
                                         onClick={() => setOpen(false)}
                                     >
                                         <SignInIcon size={18} weight="regular" />
@@ -336,7 +337,7 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                     </Link>
                                     <Link
                                         href="/auth/sign-up"
-                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-card border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted active:scale-[0.98] transition-all"
+                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-secondary border border-border rounded-lg text-sm font-medium text-secondary-foreground hover:bg-accent active:bg-accent/80 transition-colors"
                                         onClick={() => setOpen(false)}
                                     >
                                         {locale === 'bg' ? 'Регистрация' : 'Sign Up'}
@@ -346,66 +347,77 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                         )}
 
                         {/* Quick Actions - Unified row for logged in users */}
-                        <div className="px-4 py-2 border-b border-border">
-                            <div className="flex items-center justify-between gap-1">
-                                {isLoggedIn ? (
-                                    <>
+                        <div className="px-3 py-3 border-b border-border">
+                            {isLoggedIn ? (
+                                <div className="grid grid-cols-4 gap-2">
+                                    <Link
+                                        href="/account/orders"
+                                        onClick={() => setOpen(false)}
+                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted hover:bg-muted/80 active:bg-accent transition-colors touch-action-manipulation"
+                                    >
+                                        <div className="size-9 rounded-full bg-background flex items-center justify-center">
+                                            <Clock size={20} weight="regular" className="text-foreground" />
+                                        </div>
+                                        <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
+                                    </Link>
+                                    <Link
+                                        href="/account/selling"
+                                        onClick={() => setOpen(false)}
+                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted hover:bg-muted/80 active:bg-accent transition-colors touch-action-manipulation"
+                                    >
+                                        <div className="size-9 rounded-full bg-background flex items-center justify-center">
+                                            <Storefront size={20} weight="regular" className="text-foreground" />
+                                        </div>
+                                        <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Продажби' : 'Selling'}</span>
+                                    </Link>
+                                    <Link
+                                        href="/wishlist"
+                                        onClick={() => setOpen(false)}
+                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted hover:bg-muted/80 active:bg-accent transition-colors touch-action-manipulation"
+                                    >
+                                        <div className="size-9 rounded-full bg-background flex items-center justify-center">
+                                            <Heart size={20} weight="regular" className="text-foreground" />
+                                        </div>
+                                        <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Любими' : 'Saved'}</span>
+                                    </Link>
+                                    <Link
+                                        href="/account/messages"
+                                        onClick={() => setOpen(false)}
+                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted hover:bg-muted/80 active:bg-accent transition-colors touch-action-manipulation"
+                                    >
+                                        <div className="size-9 rounded-full bg-background flex items-center justify-center">
+                                            <Chat size={20} weight="regular" className="text-foreground" />
+                                        </div>
+                                        <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Чат' : 'Messages'}</span>
+                                    </Link>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-4 gap-2">
+                                    {quickLinks.map((link, i) => (
                                         <Link
-                                            href="/account/orders"
+                                            key={i}
+                                            href={link.href}
                                             onClick={() => setOpen(false)}
-                                            className="flex flex-col items-center justify-center gap-1 flex-1 min-h-11 py-1.5 rounded-lg hover:bg-muted active:scale-[0.97] transition-all touch-action-manipulation tap-transparent"
+                                            className={cn(
+                                                "flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl transition-colors touch-action-manipulation",
+                                                link.highlight 
+                                                    ? "bg-deal/10 text-deal" 
+                                                    : "bg-muted hover:bg-muted/80 text-foreground"
+                                            )}
                                         >
-                                            <Clock size={20} weight="regular" className="text-muted-foreground" />
-                                            <span className="text-2xs font-medium text-center text-foreground">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
-                                        </Link>
-                                        <Link
-                                            href="/account/selling"
-                                            onClick={() => setOpen(false)}
-                                            className="flex flex-col items-center justify-center gap-1 flex-1 min-h-11 py-1.5 rounded-lg hover:bg-muted active:scale-[0.97] transition-all touch-action-manipulation tap-transparent"
-                                        >
-                                            <Storefront size={20} weight="regular" className="text-muted-foreground" />
-                                            <span className="text-2xs font-medium text-center text-foreground">{locale === 'bg' ? 'Продажби' : 'Selling'}</span>
-                                        </Link>
-                                        <Link
-                                            href="/wishlist"
-                                            onClick={() => setOpen(false)}
-                                            className="flex flex-col items-center justify-center gap-1 flex-1 min-h-11 py-1.5 rounded-lg hover:bg-muted active:scale-[0.97] transition-all touch-action-manipulation tap-transparent"
-                                        >
-                                            <Heart size={20} weight="regular" className="text-muted-foreground" />
-                                            <span className="text-2xs font-medium text-center text-foreground">{locale === 'bg' ? 'Любими' : 'Wishlist'}</span>
-                                        </Link>
-                                        <Link
-                                            href="/account/messages"
-                                            onClick={() => setOpen(false)}
-                                            className="flex flex-col items-center justify-center gap-1 flex-1 min-h-11 py-1.5 rounded-lg hover:bg-muted active:scale-[0.97] transition-all touch-action-manipulation tap-transparent"
-                                        >
-                                            <Chat size={20} weight="regular" className="text-muted-foreground" />
-                                            <span className="text-2xs font-medium text-center text-foreground">{locale === 'bg' ? 'Съобщения' : 'Messages'}</span>
-                                        </Link>
-                                    </>
-                                ) : (
-                                    <>
-                                        {quickLinks.map((link, i) => (
-                                            <Link
-                                                key={i}
-                                                href={link.href}
-                                                onClick={() => setOpen(false)}
-                                                className={cn(
-                                                    "flex flex-col items-center justify-center gap-1 flex-1 min-h-11 py-1.5 rounded-lg transition-all active:scale-[0.95] touch-action-manipulation tap-transparent",
-                                                    link.highlight 
-                                                        ? "text-deal" 
-                                                        : "text-foreground hover:bg-muted"
-                                                )}
-                                            >
+                                            <div className={cn(
+                                                "size-9 rounded-full flex items-center justify-center",
+                                                link.highlight ? "bg-deal/15" : "bg-background"
+                                            )}>
                                                 {link.icon}
-                                                <span className="text-2xs font-medium text-center leading-tight">
-                                                    {link.label}
-                                                </span>
-                                            </Link>
-                                        ))}
-                                    </>
-                                )}
-                            </div>
+                                            </div>
+                                            <span className="text-xs font-medium text-center leading-tight">
+                                                {link.label}
+                                            </span>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* Categories Section */}
@@ -440,7 +452,7 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                             className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
                                         >
                                             <span className="text-deal">
-                                                <Percent size={20} weight="fill" />
+                                                <Lightning size={20} weight="fill" />
                                             </span>
                                             <span className="flex-1 font-medium">{locale === 'bg' ? 'Оферти на деня' : "Today's Deals"}</span>
                                         </Link>
@@ -456,9 +468,9 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                             className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
                                         >
                                             <span className="text-brand">
-                                                <Sparkle size={20} weight="fill" />
+                                                <Tag size={20} weight="fill" />
                                             </span>
-                                            <span className="flex-1 font-medium">{locale === 'bg' ? 'Нови обяви' : 'Newest Listings'}</span>
+                                            <span className="flex-1 font-medium">{locale === 'bg' ? 'Нови обяви' : 'New Listings'}</span>
                                         </Link>
                                         <div className="flex items-center justify-center size-11">
                                             <CaretRight size={16} weight="regular" className="text-muted-foreground/50" />
@@ -471,7 +483,7 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                             onClick={() => setOpen(false)}
                                             className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
                                         >
-                                            <span className="text-amber-500">
+                                            <span className="text-warning">
                                                 <Trophy size={20} weight="fill" />
                                             </span>
                                             <span className="flex-1 font-medium">{locale === 'bg' ? 'Топ продавачи' : 'Top Sellers'}</span>

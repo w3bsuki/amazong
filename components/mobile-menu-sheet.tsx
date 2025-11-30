@@ -13,12 +13,9 @@ import { Link } from "@/i18n/routing"
 import { 
   X, 
   CaretRight, 
-  ShoppingBag, 
   Tag, 
-  Gift, 
   Heart, 
-  Clock, 
-  Percent,
+  Package,
   User,
   Question,
   Gear,
@@ -37,8 +34,12 @@ import {
   FirstAidKit,
   PawPrint,
   Briefcase,
-  Package,
   List,
+  Lightning,
+  Medal,
+  ChatCircle,
+  Storefront,
+  ClockCounterClockwise,
 } from "@phosphor-icons/react"
 import { useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
@@ -110,22 +111,37 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
     }
 
     const quickLinks = [
+      // Deals row - highlighted
       {
-        icon: <Percent size={20} weight="fill" />,
-        label: locale === 'bg' ? 'Оферти' : 'Deals',
+        icon: <Lightning size={20} weight="fill" />,
+        label: locale === 'bg' ? 'Оферти на деня' : 'Daily Deals',
         href: '/todays-deals',
         highlight: true,
       },
       {
         icon: <Tag size={20} weight="fill" />,
-        label: locale === 'bg' ? 'Разпродажби' : 'Sale',
-        href: '/search?deals=true',
+        label: locale === 'bg' ? 'Нови обяви' : 'New Listings',
+        href: '/search?sort=newest',
         highlight: true,
       },
       {
-        icon: <Gift size={20} weight="regular" />,
-        label: locale === 'bg' ? 'Подаръци' : 'Gift Cards',
-        href: '/gift-cards',
+        icon: <Medal size={20} weight="fill" />,
+        label: locale === 'bg' ? 'Топ продавачи' : 'Top Sellers',
+        href: '/top-sellers',
+        highlight: true,
+      },
+    ]
+
+    const userLinks = [
+      {
+        icon: <ClockCounterClockwise size={20} weight="regular" />,
+        label: locale === 'bg' ? 'Поръчки' : 'Orders',
+        href: '/account/orders',
+      },
+      {
+        icon: <Storefront size={20} weight="regular" />,
+        label: locale === 'bg' ? 'Продажби' : 'Selling',
+        href: '/account/selling',
       },
       {
         icon: <Heart size={20} weight="regular" />,
@@ -133,14 +149,9 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
         href: '/wishlist',
       },
       {
-        icon: <Clock size={20} weight="regular" />,
-        label: locale === 'bg' ? 'Поръчки' : 'Orders',
-        href: '/account/orders',
-      },
-      {
-        icon: <ShoppingBag size={20} weight="regular" />,
-        label: locale === 'bg' ? 'Продай' : 'Sell',
-        href: '/sell',
+        icon: <ChatCircle size={20} weight="regular" />,
+        label: locale === 'bg' ? 'Съобщения' : 'Messages',
+        href: '/account/messages',
       },
     ]
 
@@ -194,10 +205,10 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
 
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-8 max-h-[calc(85dvh-80px)]">
-            {/* Quick Actions Grid - 44px touch targets */}
-            <section className="pt-4 pb-5">
+            {/* Deals Row - Highlighted */}
+            <section className="pt-4 pb-4">
               <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
-                {locale === 'bg' ? 'Бързи действия' : 'Quick Actions'}
+                {locale === 'bg' ? 'Открий' : 'Discover'}
               </h3>
               <div className="grid grid-cols-3 gap-2">
                 {quickLinks.map((link, i) => (
@@ -205,22 +216,36 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                     key={i}
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className={cn(
-                      "flex flex-col items-center justify-center gap-1.5 min-h-[72px] p-3 rounded-xl transition-all active:scale-95 touch-action-manipulation tap-transparent",
-                      link.highlight 
-                        ? "bg-deal/10 border border-deal/20 text-deal" 
-                        : "bg-muted/50 hover:bg-muted text-foreground"
-                    )}
+                    className="flex flex-col items-center justify-center gap-1.5 min-h-[72px] p-3 rounded-xl bg-deal/10 border border-deal/20 text-deal transition-all active:scale-95 touch-action-manipulation tap-transparent"
                   >
-                    <div className={cn(
-                      "size-9 rounded-lg flex items-center justify-center",
-                      link.highlight 
-                        ? "bg-deal/15 text-deal" 
-                        : "bg-background text-muted-foreground"
-                    )}>
+                    <div className="size-9 rounded-lg flex items-center justify-center bg-deal/15 text-deal">
                       {link.icon}
                     </div>
                     <span className="text-[11px] font-medium text-center leading-tight">
+                      {link.label}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            {/* User Links - Orders, Selling, Wishlist, Messages */}
+            <section className="pb-4">
+              <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+                {locale === 'bg' ? 'Моят профил' : 'My Activity'}
+              </h3>
+              <div className="grid grid-cols-4 gap-2">
+                {userLinks.map((link, i) => (
+                  <Link
+                    key={i}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted/50 hover:bg-muted transition-all active:scale-95 touch-action-manipulation tap-transparent"
+                  >
+                    <div className="size-8 rounded-lg flex items-center justify-center bg-background text-muted-foreground">
+                      {link.icon}
+                    </div>
+                    <span className="text-[10px] font-medium text-center leading-tight text-foreground">
                       {link.label}
                     </span>
                   </Link>

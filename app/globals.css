@@ -235,7 +235,7 @@
   --tracking-wide: 0.025em;
 
   /* === CORE SHADCN TOKENS (Neutral) === */
-  --background: oklch(0.97 0 0);
+  --background: oklch(1 0 0);
   --foreground: oklch(0.12 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.12 0 0);
@@ -247,7 +247,7 @@
   --secondary-foreground: oklch(0.30 0 0);
   --muted: oklch(0.96 0 0);
   --muted-foreground: oklch(0.45 0 0);
-  --accent: oklch(0.95 0 0);
+  --accent: oklch(0.96 0 0);
   --accent-foreground: oklch(0.20 0 0);
   --destructive: oklch(0.55 0.25 27);
   --destructive-foreground: oklch(1 0 0);
