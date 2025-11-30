@@ -197,8 +197,11 @@ export function MobileSearchV2() {
       </button>
 
       {/* Mobile-optimized search drawer (bottom sheet) */}
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="max-h-[85dvh] flex flex-col">
+      <Drawer open={open} onOpenChange={setOpen} handleOnly>
+        <DrawerContent className="max-h-[85dvh] flex flex-col [&>[data-slot=drawer-content]>div:first-child]:hidden">
+          {/* Drag handle - explicit for handleOnly mode */}
+          <div className="mx-auto mt-4 h-1.5 w-12 shrink-0 rounded-full bg-muted" />
+          
           {/* Accessible title and description (hidden but present for screen readers) */}
           <DrawerTitle className="sr-only">
             {locale === 'bg' ? 'Търсене' : 'Search'}
@@ -208,23 +211,23 @@ export function MobileSearchV2() {
           </DrawerDescription>
           
           <Command shouldFilter={false} className="flex flex-col h-full">
-            {/* Larger search input for mobile touch */}
-            <div className="border-b px-3 py-2">
-              <CommandInput 
-                placeholder={locale === 'bg' ? 'Търсене в продукти...' : 'Search products...'} 
-                value={searchQuery}
-                onValueChange={setSearchQuery}
-                className="h-12 text-base"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    const value = e.currentTarget.value
-                    if (value.trim()) {
-                      handleSearch(value)
-                    }
+            {/* Search input - text-base (16px) prevents iOS zoom */}
+            <CommandInput 
+              placeholder={locale === 'bg' ? 'Търсене в продукти...' : 'Search products...'} 
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+              autoFocus
+              wrapperClassName="border-b-0 h-14"
+              className="h-12 text-[16px]"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const value = e.currentTarget.value
+                  if (value.trim()) {
+                    handleSearch(value)
                   }
-                }}
-              />
-            </div>
+                }
+              }}
+            />
             
             <CommandList className="flex-1 overflow-y-auto px-1 pb-safe">
               <CommandEmpty>

@@ -2,6 +2,23 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ===== iOS ZOOM PREVENTION ===== */
+/* Prevent iOS from zooming on input focus - inputs must be 16px+ */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="password"],
+  input[type="number"],
+  input:not([type]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
 /* ===== CONTAINER CONFIGURATION ===== */
 /* eBay-style contained layout - wider containers for modern displays */
 @utility container {
