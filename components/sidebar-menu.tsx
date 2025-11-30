@@ -1,6 +1,6 @@
 "use client"
 
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
 import { 
     List, 
     UserCircle, 
@@ -246,6 +246,9 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                             : (locale === 'bg' ? 'Влез в акаунта' : 'Sign in')
                                         }
                                     </SheetTitle>
+                                    <SheetDescription className="sr-only">
+                                        {locale === 'bg' ? 'Навигационно меню с категории и настройки на акаунта' : 'Navigation menu with categories and account settings'}
+                                    </SheetDescription>
                                     {isLoggedIn && (
                                         <p className="text-xs text-header-text-muted flex items-center gap-0.5">
                                             {locale === 'bg' ? 'Моят акаунт' : 'My account'}

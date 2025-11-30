@@ -29,6 +29,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     keywords: locale === 'bg' 
       ? ['онлайн магазин', 'пазаруване', 'електроника', 'мода', 'дом']
       : ['online shopping', 'e-commerce', 'electronics', 'fashion', 'home'],
+    icons: {
+      icon: [
+        { url: '/icon.svg', type: 'image/svg+xml' },
+        { url: '/icon-dark-32x32.png', sizes: '32x32', type: 'image/png' },
+      ],
+      apple: '/apple-icon.png',
+    },
     openGraph: {
       title: locale === 'bg' ? 'AMZN - Онлайн магазин' : 'AMZN - Online Shopping',
       description: locale === 'bg' 

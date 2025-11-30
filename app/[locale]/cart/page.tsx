@@ -99,7 +99,15 @@ export default function CartPage() {
             {items.map((item) => (
               <div key={item.id} className="flex flex-col sm:flex-row gap-4">
                 <div className="w-full sm:w-32 md:w-48 h-32 sm:h-32 md:h-48 relative shrink-0">
-                  <Image src={item.image || "/placeholder.svg"} alt={item.title} fill className="object-contain" sizes="(max-width: 640px) 100vw, (max-width: 768px) 128px, 192px" />
+                  <Image 
+                    src={item.image || "/placeholder.svg"} 
+                    alt={item.title} 
+                    fill 
+                    className="object-contain" 
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 128px, 192px"
+                    priority={items.indexOf(item) === 0}
+                    loading={items.indexOf(item) === 0 ? "eager" : "lazy"}
+                  />
                 </div>
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-2">

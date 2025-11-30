@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { ShoppingCart, Package, Minus, Plus, Trash } from "@phosphor-icons/react"
 import {
     Drawer,
@@ -21,10 +21,16 @@ import { cn } from "@/lib/utils"
 
 export function MobileCartDropdown() {
     const [open, setOpen] = useState(false)
+    const [mounted, setMounted] = useState(false)
     const { items, totalItems, subtotal, removeFromCart, updateQuantity } = useCart()
     const t = useTranslations('CartDropdown')
     const tNav = useTranslations('Navigation')
     const locale = useLocale()
+
+    // Prevent hydration mismatch by only rendering cart count after mount
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
@@ -46,12 +52,17 @@ export function MobileCartDropdown() {
             <DrawerTrigger asChild>
                 <button 
                     className="flex items-center justify-center size-11 p-0 rounded-lg relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
-                    aria-label={`${tNav('cart')} - ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`}
+                    aria-label={tNav('cart')}
                 >
                     <ShoppingCart size={24} weight="regular" className="text-header-text" aria-hidden="true" />
-                    <span className="absolute top-0.5 right-0 bg-badge-deal text-white text-[9px] font-bold min-w-4 h-4 flex items-center justify-center rounded-full px-0.5" aria-hidden="true">
-                        {totalItems}
-                    </span>
+                    {mounted && totalItems > 0 && (
+                        <span 
+                            className="absolute top-0.5 right-0 bg-badge-deal text-white text-[9px] font-bold min-w-4 h-4 flex items-center justify-center rounded-full px-0.5" 
+                            aria-hidden="true"
+                        >
+                            {totalItems}
+                        </span>
+                    )}
                 </button>
             </DrawerTrigger>
             <DrawerContent className="rounded-t-3xl">
@@ -60,8 +71,8 @@ export function MobileCartDropdown() {
                         <div className="flex items-center gap-2">
                             <ShoppingCart size={20} weight="regular" className="text-muted-foreground" />
                             <DrawerTitle className="text-lg">{t('title')}</DrawerTitle>
-                            <span className="text-sm text-muted-foreground font-normal">
-                                ({totalItems} {totalItems === 1 ? t('item') : t('items')})
+                            <span className="text-sm text-muted-foreground font-normal" suppressHydrationWarning>
+                                ({mounted ? totalItems : 0} {(mounted ? totalItems : 0) === 1 ? t('item') : t('items')})
                             </span>
                         </div>
                         <DrawerClose asChild>
@@ -113,6 +124,8 @@ export function MobileCartDropdown() {
                                                     width={64}
                                                     height={64}
                                                     className="w-full h-full object-cover"
+                                                    priority={index === 0}
+                                                    loading={index === 0 ? "eager" : "lazy"}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">

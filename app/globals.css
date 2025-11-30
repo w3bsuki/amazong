@@ -1452,41 +1452,8 @@
 .slide-in-from-right { animation-name: slideInFromRight; }
 .slide-out-to-right { animation-name: slideOutToRight; }
 
-/* Sheet animations - class-based for Tailwind v4 compatibility */
-.sheet-overlay[data-state="open"] {
-  animation: fadeIn 200ms ease-out both;
-}
-.sheet-overlay[data-state="closed"] {
-  animation: fadeOut 150ms ease-in both;
-}
-
-.sheet-content[data-side="left"][data-state="open"] {
-  animation: slideInFromLeft 150ms ease-out both;
-}
-.sheet-content[data-side="left"][data-state="closed"] {
-  animation: slideOutToLeft 100ms ease-in both;
-}
-
-.sheet-content[data-side="right"][data-state="open"] {
-  animation: slideInFromRight 150ms ease-out both;
-}
-.sheet-content[data-side="right"][data-state="closed"] {
-  animation: slideOutToRight 100ms ease-in both;
-}
-
-.sheet-content[data-side="top"][data-state="open"] {
-  animation: slideDown 150ms ease-out both;
-}
-.sheet-content[data-side="top"][data-state="closed"] {
-  animation: slideUp 100ms ease-in both;
-}
-
-.sheet-content[data-side="bottom"][data-state="open"] {
-  animation: slideUp 150ms ease-out both;
-}
-.sheet-content[data-side="bottom"][data-state="closed"] {
-  animation: slideDown 100ms ease-in both;
-}
+/* Sheet/Drawer animations now handled by Tailwind v4 animate-in/animate-out utilities */
+/* See: components/ui/sheet.tsx and components/ui/drawer.tsx */
 
 @keyframes slideUp {
   from { transform: translateY(100%); }

@@ -25,14 +25,16 @@ export default async function AboutPage() {
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-header-bg to-header-bg-secondary text-white">
-        <div className="container py-12 md:py-20">
+      <div className="bg-linear-to-b from-header-bg to-header-bg-secondary text-white relative">
+        {/* Overlay for better text contrast */}
+        <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
+        <div className="container py-12 md:py-20 relative z-10">
           <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
             <AppBreadcrumb items={breadcrumbPresets.about} />
           </div>
           <div className="max-w-3xl">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">{t('heroTitle')}</h1>
-            <p className="text-lg md:text-xl text-white/80 leading-relaxed">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg [text-shadow:0_2px_10px_rgba(0,0,0,0.5)]">{t('heroTitle')}</h1>
+            <p className="text-lg md:text-xl text-white/90 leading-relaxed drop-shadow-md [text-shadow:0_1px_5px_rgba(0,0,0,0.4)]">
               {t('heroSubtitle')}
             </p>
           </div>
@@ -72,7 +74,7 @@ export default async function AboutPage() {
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-video bg-gradient-to-br from-brand/20 to-brand/5 flex items-center justify-center">
+              <div className="aspect-video bg-linear-to-br from-brand/20 to-brand/5 flex items-center justify-center">
                 <div className="grid grid-cols-2 gap-4 p-8">
                   <div className="bg-white shadow-lg p-6 text-center">
                     <TrendUp className="size-8 text-brand mx-auto mb-2" />

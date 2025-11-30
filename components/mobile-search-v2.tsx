@@ -3,13 +3,19 @@
 import { useState, useEffect } from "react"
 import { MagnifyingGlass, Clock, TrendUp, Package } from "@phosphor-icons/react"
 import {
-  CommandDialog,
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerDescription,
+} from "@/components/ui/drawer"
 import { useRouter } from "@/i18n/routing"
 import { useLocale } from "next-intl"
 
@@ -189,122 +195,146 @@ export function MobileSearchV2() {
         <MagnifyingGlass size={24} weight="regular" />
       </button>
 
-      <CommandDialog 
-        open={open} 
-        onOpenChange={setOpen}
-        title={locale === 'bg' ? 'Търсене' : 'Search'}
-        description={locale === 'bg' ? 'Търсене в продукти, категории и още...' : 'Search products, categories, and more...'}
-        shouldFilter={false}
-      >
-        <CommandInput 
-          placeholder={locale === 'bg' ? 'Търсене в продукти...' : 'Search products...'} 
-          value={searchQuery}
-          onValueChange={setSearchQuery}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              const value = e.currentTarget.value
-              if (value.trim()) {
-                handleSearch(value)
-              }
-            }
-          }}
-        />
-        <CommandList className="max-h-[60vh]">
-          <CommandEmpty>
-            {isSearching 
-              ? (locale === 'bg' ? 'Търсене...' : 'Searching...')
-              : (locale === 'bg' ? 'Няма резултати.' : 'No results found.')
-            }
-          </CommandEmpty>
+      {/* Mobile-optimized search drawer (bottom sheet) */}
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerContent className="max-h-[85dvh] flex flex-col">
+          {/* Accessible title and description (hidden but present for screen readers) */}
+          <DrawerTitle className="sr-only">
+            {locale === 'bg' ? 'Търсене' : 'Search'}
+          </DrawerTitle>
+          <DrawerDescription className="sr-only">
+            {locale === 'bg' ? 'Търсене в продукти, категории и още...' : 'Search products, categories, and more...'}
+          </DrawerDescription>
           
-          {/* Live Product Search Results */}
-          {products.length > 0 && (
-            <CommandGroup heading={
-              <span className="flex items-center gap-2">
-                <Package size={14} weight="regular" />
-                {locale === 'bg' ? 'Продукти' : 'Products'}
-              </span>
-            }>
-              {products.map((product) => (
-                <CommandItem 
-                  key={product.id} 
-                  onSelect={() => handleProductSelect(product.slug)}
-                  className="flex items-center gap-3 py-2"
-                >
-                  {product.images?.[0] ? (
-                    <img 
-                      src={product.images[0]} 
-                      alt={product.title}
-                      className="w-10 h-10 object-cover rounded bg-muted"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 bg-muted rounded flex items-center justify-center">
-                      <Package size={20} weight="regular" className="text-muted-foreground" />
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{product.title}</p>
-                    <p className="text-sm text-price-sale font-semibold">{formatPrice(product.price)}</p>
+          <Command shouldFilter={false} className="flex flex-col h-full">
+            {/* Larger search input for mobile touch */}
+            <div className="border-b px-3 py-2">
+              <CommandInput 
+                placeholder={locale === 'bg' ? 'Търсене в продукти...' : 'Search products...'} 
+                value={searchQuery}
+                onValueChange={setSearchQuery}
+                className="h-12 text-base"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const value = e.currentTarget.value
+                    if (value.trim()) {
+                      handleSearch(value)
+                    }
+                  }
+                }}
+              />
+            </div>
+            
+            <CommandList className="flex-1 overflow-y-auto px-1 pb-safe">
+              <CommandEmpty>
+                {isSearching 
+                  ? (locale === 'bg' ? 'Търсене...' : 'Searching...')
+                  : (locale === 'bg' ? 'Няма резултати.' : 'No results found.')
+                }
+              </CommandEmpty>
+              
+              {/* Live Product Search Results */}
+              {products.length > 0 && (
+                <CommandGroup heading={
+                  <span className="flex items-center gap-2">
+                    <Package size={14} weight="regular" />
+                    {locale === 'bg' ? 'Продукти' : 'Products'}
+                  </span>
+                }>
+                  {products.map((product) => (
+                    <CommandItem 
+                      key={product.id} 
+                      onSelect={() => handleProductSelect(product.slug)}
+                      className="flex items-center gap-3 min-h-[56px] py-3 touch-action-manipulation"
+                    >
+                      {product.images?.[0] ? (
+                        <img 
+                          src={product.images[0]} 
+                          alt={product.title}
+                          className="w-12 h-12 object-cover rounded bg-muted"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
+                          <Package size={24} weight="regular" className="text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{product.title}</p>
+                        <p className="text-sm text-price-sale font-semibold">{formatPrice(product.price)}</p>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+              
+              {/* Recent Searches */}
+              {recentSearches.length > 0 && (
+                <CommandGroup heading={
+                  <div className="flex items-center justify-between w-full">
+                    <span className="flex items-center gap-2">
+                      <Clock size={14} weight="regular" />
+                      {locale === 'bg' ? 'Скорошни търсения' : 'Recent'}
+                    </span>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        clearRecentSearches()
+                      }}
+                      className="text-xs text-link hover:underline min-h-[44px] flex items-center px-2"
+                    >
+                      {locale === 'bg' ? 'Изчисти' : 'Clear'}
+                    </button>
                   </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-          
-          {/* Recent Searches */}
-          {recentSearches.length > 0 && (
-            <CommandGroup heading={
-              <div className="flex items-center justify-between w-full">
+                }>
+                  {recentSearches.map((search, i) => (
+                    <CommandItem 
+                      key={`recent-${i}`} 
+                      onSelect={() => handleSearch(search)}
+                      className="min-h-[48px] py-3 touch-action-manipulation"
+                    >
+                      <Clock size={18} weight="regular" className="mr-3 text-muted-foreground" />
+                      <span className="text-base">{search}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+
+              {/* Trending */}
+              <CommandGroup heading={
                 <span className="flex items-center gap-2">
-                  <Clock size={14} weight="regular" />
-                  {locale === 'bg' ? 'Скорошни търсения' : 'Recent'}
+                  <TrendUp size={14} weight="regular" />
+                  {locale === 'bg' ? 'Популярни' : 'Trending'}
                 </span>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    clearRecentSearches()
-                  }}
-                  className="text-xs text-link hover:underline"
-                >
-                  {locale === 'bg' ? 'Изчисти' : 'Clear'}
-                </button>
-              </div>
-            }>
-              {recentSearches.map((search, i) => (
-                <CommandItem key={`recent-${i}`} onSelect={() => handleSearch(search)}>
-                  <Clock size={16} weight="regular" className="mr-2 text-muted-foreground" />
-                  {search}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
+              }>
+                {trendingSearches.map((search, i) => (
+                  <CommandItem 
+                    key={`trending-${i}`} 
+                    onSelect={() => handleSearch(search)}
+                    className="min-h-[48px] py-3 touch-action-manipulation"
+                  >
+                    <TrendUp size={18} weight="regular" className="mr-3 text-deal" />
+                    <span className="text-base">{search}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
 
-          {/* Trending */}
-          <CommandGroup heading={
-            <span className="flex items-center gap-2">
-              <TrendUp size={14} weight="regular" />
-              {locale === 'bg' ? 'Популярни' : 'Trending'}
-            </span>
-          }>
-            {trendingSearches.map((search, i) => (
-              <CommandItem key={`trending-${i}`} onSelect={() => handleSearch(search)}>
-                <TrendUp size={16} weight="regular" className="mr-2 text-deal" />
-                {search}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-
-          {/* Categories */}
-          <CommandGroup heading={locale === 'bg' ? 'Категории' : 'Categories'}>
-            {categories.slice(0, 6).map((cat) => (
-              <CommandItem key={cat.id} onSelect={() => handleCategorySelect(cat.slug)}>
-                <span className="mr-2">{categoryIcons[cat.slug] || '📦'}</span>
-                {getCategoryName(cat)}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
+              {/* Categories */}
+              <CommandGroup heading={locale === 'bg' ? 'Категории' : 'Categories'}>
+                {categories.slice(0, 6).map((cat) => (
+                  <CommandItem 
+                    key={cat.id} 
+                    onSelect={() => handleCategorySelect(cat.slug)}
+                    className="min-h-[48px] py-3 touch-action-manipulation"
+                  >
+                    <span className="mr-3 text-lg">{categoryIcons[cat.slug] || '📦'}</span>
+                    <span className="text-base">{getCategoryName(cat)}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </DrawerContent>
+      </Drawer>
     </>
   )
 }

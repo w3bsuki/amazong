@@ -12,7 +12,7 @@ import { User } from "@supabase/supabase-js"
 import { useCart } from "@/lib/cart-context"
 import { ShoppingCart, Package, ArrowCounterClockwise, Truck, MapPin, Minus, Plus, Trash, ChatCircle, PaperPlaneTilt, Bell, Clock, TrendUp, X, CaretRight } from "@phosphor-icons/react"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 
 interface AccountDropdownProps {
@@ -105,6 +105,15 @@ export function CartDropdown() {
     const t = useTranslations('CartDropdown')
     const tNav = useTranslations('Navigation')
     const locale = useLocale()
+    
+    // Prevent hydration mismatch - totalItems comes from localStorage
+    const [mounted, setMounted] = useState(false)
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+    
+    // Use 0 for SSR, actual value after mount
+    const displayItems = mounted ? totalItems : 0
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
@@ -116,16 +125,20 @@ export function CartDropdown() {
     return (
         <HoverCard openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
-                <Link href="/cart" aria-label={`${tNav('cart')} - ${totalItems} ${totalItems === 1 ? 'item' : 'items'}`}>
+                <Link href="/cart" aria-label={tNav('cart')}>
                     <Button variant="ghost" className="h-12 flex items-center gap-1.5 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
                         <div className="relative">
                             <ShoppingCart size={24} weight="regular" className="group-hover:text-brand" aria-hidden="true" />
-                            <span className="absolute -top-0.5 -right-1 bg-badge-deal text-white text-[9px] font-medium min-w-4 h-4 flex items-center justify-center rounded-full px-0.5" aria-hidden="true">
-                                {totalItems}
-                            </span>
+                            {mounted && displayItems > 0 && (
+                                <span className="absolute -top-0.5 -right-1 bg-badge-deal text-white text-[9px] font-medium min-w-4 h-4 flex items-center justify-center rounded-full px-0.5" aria-hidden="true">
+                                    {displayItems}
+                                </span>
+                            )}
                         </div>
                         <div className="flex flex-col items-start leading-none gap-0">
-                            <span className="text-[10px] text-header-text-muted group-hover:text-brand">{totalItems} {totalItems === 1 ? (locale === 'bg' ? 'артикул' : 'item') : (locale === 'bg' ? 'артикула' : 'items')}</span>
+                            <span className="text-[10px] text-header-text-muted group-hover:text-brand">
+                                {mounted ? `${displayItems} ${displayItems === 1 ? (locale === 'bg' ? 'артикул' : 'item') : (locale === 'bg' ? 'артикула' : 'items')}` : (locale === 'bg' ? 'Количка' : 'Cart')}
+                            </span>
                             <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('cart')}</span>
                         </div>
                     </Button>
