@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Star, Lightning } from "@phosphor-icons/react"
+import { Star, Lightning, Truck } from "@phosphor-icons/react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,6 +12,7 @@ import { toast } from "sonner"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { productBlurDataURL, imageSizes, getImageLoadingStrategy } from "@/lib/image-utils"
+import { getDeliveryEstimate, type ShippingRegion } from "@/lib/shipping"
 
 // Tag configuration for badges
 const TAG_CONFIG: Record<string, { color: string; label: string; labelBg: string }> = {
@@ -48,6 +49,10 @@ interface ProductCardProps {
   sellerId?: string
   /** Current user ID to check if this is their own product */
   currentUserId?: string | null
+  /** Seller's country code for delivery time calculation */
+  sellerCountryCode?: string
+  /** Buyer's shipping region for delivery time calculation */
+  buyerRegion?: ShippingRegion
 }
 
 export function ProductCard({ 
@@ -64,7 +69,9 @@ export function ProductCard({
   variant = "default",
   index = 0,
   sellerId,
-  currentUserId
+  currentUserId,
+  sellerCountryCode = 'BG',
+  buyerRegion = 'BG'
 }: ProductCardProps) {
   const { addToCart } = useCart()
   const t = useTranslations('Product')
@@ -131,9 +138,12 @@ export function ProductCard({
     }).format(price)
   }
 
+  // Calculate delivery estimate based on seller location → buyer region
+  const deliveryEstimate = getDeliveryEstimate(sellerCountryCode, buyerRegion)
   const deliveryDate = new Date()
-  deliveryDate.setDate(deliveryDate.getDate() + 2)
+  deliveryDate.setDate(deliveryDate.getDate() + deliveryEstimate.minDays)
   const formattedDate = new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'numeric', day: 'numeric' }).format(deliveryDate)
+  const deliveryLabel = locale === 'bg' ? deliveryEstimate.labelBg : deliveryEstimate.label
 
   // Variant-specific styles
   const isCompact = resolvedVariant === "compact" || resolvedVariant === "carousel"
@@ -236,10 +246,12 @@ export function ProductCard({
 
           {!isCompact && (
             <div className={cn(
-              "text-[10px] text-muted-foreground mb-1.5",
-              isGrid ? "hidden" : "hidden sm:block sm:mb-2"
+              "text-[10px] text-muted-foreground mb-1.5 flex items-center gap-1",
+              isGrid ? "hidden" : "hidden sm:flex sm:mb-2"
             )}>
-              {t('delivery')} <span className="font-semibold text-foreground">{formattedDate}</span>
+              <Truck size={12} className="text-green-600" />
+              <span>{formattedDate}</span>
+              <span className="text-muted-foreground/70">({deliveryLabel})</span>
             </div>
           )}
 

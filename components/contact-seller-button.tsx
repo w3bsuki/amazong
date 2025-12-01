@@ -50,14 +50,8 @@ export function ContactSellerButton({
       }
 
       // Check if user is trying to contact themselves
-      // First get the seller's user_id
-      const { data: sellerData } = await supabase
-        .from("sellers")
-        .select("user_id")
-        .eq("id", sellerId)
-        .single()
-
-      if (sellerData?.user_id === userData.user.id) {
+      // sellers.id is the user_id (FK to profiles.id/auth.users.id)
+      if (sellerId === userData.user.id) {
         toast({
           title: t("cannotContactSelf"),
           description: t("cannotContactSelfDescription"),

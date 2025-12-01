@@ -11,6 +11,8 @@ import { SearchPagination } from "@/components/search-pagination"
 import { Suspense } from "react"
 import { getLocale } from "next-intl/server"
 import type { Metadata } from 'next'
+import { cookies } from 'next/headers'
+import { getShippingFilter, parseShippingRegion } from '@/lib/shipping'
 
 const ITEMS_PER_PAGE = 20
 
@@ -74,13 +76,20 @@ async function searchProducts(
     sort?: string
   },
   page: number = 1,
-  limit: number = ITEMS_PER_PAGE
+  limit: number = ITEMS_PER_PAGE,
+  shippingFilter?: string
 ): Promise<{ products: Product[]; total: number }> {
   const offset = (page - 1) * limit
   
   // Build base query with count
   let countQuery = supabase.from("products").select("*", { count: "exact", head: true })
   let dbQuery = supabase.from("products").select("*")
+  
+  // Apply shipping zone filter if provided
+  if (shippingFilter) {
+    countQuery = countQuery.or(shippingFilter)
+    dbQuery = dbQuery.or(shippingFilter)
+  }
   
   // Apply category filter if provided
   if (categoryIds && categoryIds.length > 0) {
@@ -171,6 +180,12 @@ export default async function SearchPage({
   const supabase = await createClient()
   const query = searchParams.q || ""
   const currentPage = Math.max(1, parseInt(searchParams.page || "1", 10))
+  
+  // Get user's shipping zone from cookie for filtering
+  const cookieStore = await cookies()
+  const userZone = parseShippingRegion(cookieStore.get('user-zone')?.value)
+  const shippingFilter = getShippingFilter(userZone)
+  
   let products: Product[] = []
   let totalProducts = 0
   let currentCategory: Category | null = null
@@ -220,7 +235,7 @@ export default async function SearchPage({
         // Get products from this category AND all its subcategories
         const categoryIds = [categoryData.id, ...subcategories.map(s => s.id)]
 
-        // Use the helper function with pagination
+        // Use the helper function with pagination and shipping filter
         const result = await searchProducts(supabase, query, categoryIds, {
           minPrice: searchParams.minPrice,
           maxPrice: searchParams.maxPrice,
@@ -229,12 +244,12 @@ export default async function SearchPage({
           prime: searchParams.prime,
           availability: searchParams.availability,
           sort: searchParams.sort,
-        }, currentPage, ITEMS_PER_PAGE)
+        }, currentPage, ITEMS_PER_PAGE, shippingFilter)
         products = result.products
         totalProducts = result.total
       }
     } else {
-      // No category filter - get all products
+      // No category filter - get all products filtered by shipping zone
       const result = await searchProducts(supabase, query, null, {
         minPrice: searchParams.minPrice,
         maxPrice: searchParams.maxPrice,
@@ -243,7 +258,7 @@ export default async function SearchPage({
         prime: searchParams.prime,
         availability: searchParams.availability,
         sort: searchParams.sort,
-      }, currentPage, ITEMS_PER_PAGE)
+      }, currentPage, ITEMS_PER_PAGE, shippingFilter)
       products = result.products
       totalProducts = result.total
     }

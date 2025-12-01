@@ -10,7 +10,7 @@ import { DesktopSearch } from "@/components/desktop-search"
 import { getCountryName } from "@/lib/geolocation"
 import { useEffect, useState } from "react"
 import { Link } from "@/i18n/routing"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { Plus } from "@phosphor-icons/react"
 
@@ -21,8 +21,10 @@ interface SiteHeaderProps {
 }
 
 export function SiteHeader({ user }: SiteHeaderProps) {
-  const [country, setCountry] = useState("USA")
+  const [country, setCountry] = useState("Bulgaria")
+  const [, setCountryCode] = useState("BG") // Used for shipping zone filtering
   const t = useTranslations('Navigation')
+  const locale = useLocale()
 
   useEffect(() => {
     // Simple cookie parser
@@ -31,11 +33,12 @@ export function SiteHeader({ user }: SiteHeaderProps) {
       const parts = value.split(`; ${name}=`)
       if (parts.length === 2) return parts.pop()?.split(";").shift()
     }
-    const countryCode = getCookie("user-country")
-    if (countryCode) {
-      setCountry(getCountryName(countryCode))
+    const code = getCookie("user-country")
+    if (code) {
+      setCountryCode(code)
+      setCountry(getCountryName(code, locale))
     }
-  }, [])
+  }, [locale])
 
   return (
     <header className="sticky top-0 z-50 w-full flex flex-col border-b border-header-border bg-header-bg">
@@ -69,7 +72,13 @@ export function SiteHeader({ user }: SiteHeaderProps) {
           </Link>
 
           {/* Deliver to */}
-          <LocationDropdown country={country} />
+          <LocationDropdown 
+            country={country} 
+            onCountryChange={(code, name) => {
+              setCountryCode(code)
+              setCountry(name)
+            }}
+          />
 
           {/* Language Switcher */}
           <div className="hidden md:block">

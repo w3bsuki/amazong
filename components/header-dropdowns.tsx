@@ -451,22 +451,39 @@ export function SellingDropdown({ user }: SellingDropdownProps) {
 // Deliver to Location Dropdown
 interface LocationDropdownProps {
     country: string
+    onCountryChange?: (code: string, name: string) => void
 }
 
-export function LocationDropdown({ country }: LocationDropdownProps) {
+export function LocationDropdown({ country, onCountryChange }: LocationDropdownProps) {
     const t = useTranslations('LocationDropdown')
     const tNav = useTranslations('Navigation')
+    const locale = useLocale()
+    const [isOpen, setIsOpen] = useState(false)
 
-    const popularLocations = [
-        { code: 'BG', name: 'Bulgaria', nameLocal: 'България', flag: 'https://flagcdn.com/w40/bg.png' },
-        { code: 'US', name: 'United States', nameLocal: 'САЩ', flag: 'https://flagcdn.com/w40/us.png' },
-        { code: 'DE', name: 'Germany', nameLocal: 'Германия', flag: 'https://flagcdn.com/w40/de.png' },
-        { code: 'GB', name: 'United Kingdom', nameLocal: 'Великобритания', flag: 'https://flagcdn.com/w40/gb.png' },
-        { code: 'FR', name: 'France', nameLocal: 'Франция', flag: 'https://flagcdn.com/w40/fr.png' },
+    // Shipping zones instead of individual countries
+    const shippingZones = [
+        { code: 'BG', zone: 'BG', name: 'Bulgaria', nameLocal: 'България', flag: 'https://flagcdn.com/w40/bg.png', icon: '🇧🇬' },
+        { code: 'EU', zone: 'EU', name: 'Europe', nameLocal: 'Европа', flag: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/40px-Flag_of_Europe.svg.png', icon: '🇪🇺' },
+        { code: 'US', zone: 'US', name: 'USA', nameLocal: 'САЩ', flag: 'https://flagcdn.com/w40/us.png', icon: '🇺🇸' },
+        { code: 'WW', zone: 'WW', name: 'Worldwide', nameLocal: 'По целия свят', flag: null, icon: '🌍' },
     ]
 
+    const handleLocationSelect = (loc: typeof shippingZones[0]) => {
+        // Set cookies for 1 year
+        document.cookie = `user-country=${loc.code}; max-age=${60 * 60 * 24 * 365}; path=/; samesite=lax`
+        document.cookie = `user-zone=${loc.zone}; max-age=${60 * 60 * 24 * 365}; path=/; samesite=lax`
+        
+        // Notify parent
+        const displayName = locale === 'bg' ? loc.nameLocal : loc.name
+        onCountryChange?.(loc.code, displayName)
+        setIsOpen(false)
+        
+        // Refresh page to apply new shipping zone filter
+        window.location.reload()
+    }
+
     return (
-        <HoverCard openDelay={50} closeDelay={100}>
+        <HoverCard open={isOpen} onOpenChange={setIsOpen} openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
                 <Button variant="ghost" className="h-12 hidden lg:flex flex-col items-start leading-none gap-0 text-header-text hover:text-brand text-xs p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm shrink-0 group">
                     <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('deliverTo')}</span>
@@ -483,28 +500,37 @@ export function LocationDropdown({ country }: LocationDropdownProps) {
                 </div>
                 
                 <div className="p-2">
-                    <p className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase">{t('popularLocations')}</p>
-                    {popularLocations.map((loc) => (
-                        <button
-                            key={loc.code}
-                            className={`w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted text-left ${country === loc.name ? 'bg-brand/10' : ''}`}
-                        >
-                            <img 
-                                src={loc.flag} 
-                                alt={loc.name} 
-                                width={32} 
-                                height={22} 
-                                className="rounded-sm border border-border"
-                            />
-                            <div className="flex-1">
-                                <p className="text-sm font-medium text-foreground">{loc.name}</p>
-                                <p className="text-xs text-muted-foreground">{loc.nameLocal}</p>
-                            </div>
-                            {country === loc.name && (
-                                <div className="w-2 h-2 bg-brand rounded-full" />
-                            )}
-                        </button>
-                    ))}
+                    <p className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase">{t('shippingZones')}</p>
+                    {shippingZones.map((loc) => {
+                        const displayName = locale === 'bg' ? loc.nameLocal : loc.name
+                        const isSelected = country === displayName || country === loc.name || country === loc.nameLocal
+                        return (
+                            <button
+                                key={loc.code}
+                                onClick={() => handleLocationSelect(loc)}
+                                className={`w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted text-left transition-colors ${isSelected ? 'bg-brand/10' : ''}`}
+                            >
+                                {loc.flag ? (
+                                    <img 
+                                        src={loc.flag} 
+                                        alt={loc.name} 
+                                        width={32} 
+                                        height={22} 
+                                        className="rounded-sm border border-border"
+                                    />
+                                ) : (
+                                    <span className="text-2xl w-8 text-center">{loc.icon}</span>
+                                )}
+                                <div className="flex-1">
+                                    <p className="text-sm font-medium text-foreground">{loc.name}</p>
+                                    <p className="text-xs text-muted-foreground">{loc.nameLocal}</p>
+                                </div>
+                                {isSelected && (
+                                    <div className="w-2 h-2 bg-brand rounded-full" />
+                                )}
+                            </button>
+                        )
+                    })}
                 </div>
 
                 <div className="p-3 bg-muted border-t border-border">

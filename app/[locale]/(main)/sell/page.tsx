@@ -1285,7 +1285,8 @@ export default function SellPage() {
     };
 
     // Listen for auth changes - this fires immediately with current state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: any, session: any) => {
       console.log("[SellPage] Auth state changed:", session?.user?.email ?? "no user");
       const currentUser = session?.user ?? null;
       setUser(currentUser);

@@ -13,6 +13,8 @@ import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
 import { Link } from "@/i18n/routing"
 import { CaretRight, House } from "@phosphor-icons/react/dist/ssr"
+import { cookies } from "next/headers"
+import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
 
 const ITEMS_PER_PAGE = 20
 
@@ -106,7 +108,8 @@ async function searchProducts(
     sort?: string
   },
   page: number = 1,
-  limit: number = ITEMS_PER_PAGE
+  limit: number = ITEMS_PER_PAGE,
+  shippingFilter: string = ''
 ): Promise<{ products: Product[]; total: number }> {
   const offset = (page - 1) * limit
   
@@ -117,6 +120,12 @@ async function searchProducts(
   if (categoryIds.length > 0) {
     countQuery = countQuery.in("category_id", categoryIds)
     dbQuery = dbQuery.in("category_id", categoryIds)
+  }
+  
+  // Apply shipping zone filter
+  if (shippingFilter) {
+    countQuery = countQuery.or(shippingFilter)
+    dbQuery = dbQuery.or(shippingFilter)
   }
   
   if (filters.minPrice) {
@@ -199,6 +208,12 @@ export default async function CategoryPage({
   const supabase = await createClient()
   const locale = await getLocale()
   
+  // Get shipping zone from cookie for filtering
+  const cookieStore = await cookies()
+  const userZoneCookie = cookieStore.get('user-zone')?.value
+  const userZone = parseShippingRegion(userZoneCookie)
+  const shippingFilter = getShippingFilter(userZone)
+  
   if (!supabase) {
     notFound()
   }
@@ -254,7 +269,7 @@ export default async function CategoryPage({
     prime: searchParams.prime,
     availability: searchParams.availability,
     sort: searchParams.sort,
-  }, currentPage, ITEMS_PER_PAGE)
+  }, currentPage, ITEMS_PER_PAGE, shippingFilter)
   products = result.products
   totalProducts = result.total
 

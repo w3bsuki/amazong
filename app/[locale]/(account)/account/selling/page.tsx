@@ -18,6 +18,7 @@ import {
   Star,
   TrendUp,
   Clock,
+  Tag,
 } from "@phosphor-icons/react/dist/ssr"
 
 interface SellingPageProps {
@@ -31,6 +32,7 @@ interface Product {
   title: string
   description: string | null
   price: number
+  list_price: number | null
   stock: number
   images: string[]
   rating: number | null
@@ -76,6 +78,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
       title,
       description,
       price,
+      list_price,
       stock,
       images,
       rating,
@@ -269,14 +272,31 @@ export default async function SellingPage({ params }: SellingPageProps) {
 
                     {/* Product Info */}
                     <div className="flex-1 min-w-0">
-                      <Link 
-                        href={`/${locale}/product/${product.id}`}
-                        className="font-medium text-foreground hover:text-brand hover:underline line-clamp-1 text-sm sm:text-base"
-                      >
-                        {product.title}
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link 
+                          href={`/${locale}/product/${product.id}`}
+                          className="font-medium text-foreground hover:text-brand hover:underline line-clamp-1 text-sm sm:text-base"
+                        >
+                          {product.title}
+                        </Link>
+                        {product.list_price && product.list_price > product.price && (
+                          <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-[10px] shrink-0">
+                            <Tag weight="fill" className="size-3 mr-0.5" />
+                            -{Math.round(((product.list_price - product.price) / product.list_price) * 100)}%
+                          </Badge>
+                        )}
+                      </div>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-muted-foreground mt-1">
-                        <span className="font-medium text-foreground">{formatCurrency(Number(product.price))}</span>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className={`font-medium ${product.list_price && product.list_price > product.price ? 'text-deal' : 'text-foreground'}`}>
+                            {formatCurrency(Number(product.price))}
+                          </span>
+                          {product.list_price && product.list_price > product.price && (
+                            <span className="text-muted-foreground line-through text-xs">
+                              {formatCurrency(Number(product.list_price))}
+                            </span>
+                          )}
+                        </div>
                         <span className={product.stock < 5 ? "text-amber-600 dark:text-amber-400 font-medium" : ""}>
                           {product.stock === 0 
                             ? (locale === 'bg' ? 'Изчерпан' : 'Out of stock')
@@ -313,9 +333,11 @@ export default async function SellingPage({ params }: SellingPageProps) {
                           <span className="sr-only">View</span>
                         </Link>
                       </Button>
-                      <Button variant="ghost" size="icon" className="size-8 sm:size-9">
-                        <Pencil className="size-4" />
-                        <span className="sr-only">Edit</span>
+                      <Button asChild variant="ghost" size="icon" className="size-8 sm:size-9">
+                        <Link href={`/${locale}/account/selling/${product.id}/edit`}>
+                          <Pencil className="size-4" />
+                          <span className="sr-only">Edit</span>
+                        </Link>
                       </Button>
                     </div>
                   </div>

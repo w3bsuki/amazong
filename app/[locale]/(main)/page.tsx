@@ -4,6 +4,8 @@ import { Link } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { CategoryCircles } from "@/components/category-circles"
 import type { Metadata } from 'next'
+import { cookies } from 'next/headers'
+import { getShippingFilter, parseShippingRegion } from '@/lib/shipping'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -46,6 +48,7 @@ export default async function Home() {
     listPrice: number
     list_price?: number
     image: string
+    categorySlug?: string
   }
 
   let user = null
@@ -56,41 +59,71 @@ export default async function Home() {
   let bestSellersProducts: Product[] = []
   let featuredProducts: Product[] = []
 
-  let deals: Deal[] = []
+  let allDeals: Deal[] = []
+  let techDeals: Deal[] = []
+  let homeDeals: Deal[] = []
+  let fashionDeals: Deal[] = []
 
   try {
     if (supabase) {
       const { data: authData } = await supabase.auth.getUser()
       user = authData?.user || null
 
-      // Fetch Deals (products where list_price > price)
+      // Get user's shipping zone from cookie (set by proxy/middleware)
+      const cookieStore = await cookies()
+      const userZone = parseShippingRegion(cookieStore.get('user-zone')?.value)
+      const shippingFilter = getShippingFilter(userZone)
+
+      // Fetch Deals (products where list_price > price) with category info - filtered by shipping zone
       const { data: dealsData } = await supabase
         .from('products')
-        .select('*')
+        .select('*, categories(slug)')
         .not('list_price', 'is', null)
-        .gt('list_price', 0) // Ensure list_price is valid
-        .limit(10)
+        .gt('list_price', 0)
+        .or(shippingFilter) // Only show products that ship to user's zone
+        .limit(30)
 
       if (dealsData && dealsData.length > 0) {
-        // Filter in JS to be safe if DB constraint isn't perfect, or rely on query
+        // Filter in JS to be safe if DB constraint isn't perfect
         const validDeals = dealsData.filter((p: any) => p.list_price > p.price)
-        if (validDeals.length > 0) {
-          deals = validDeals.map((p: any) => ({
-            id: p.id,
-            title: p.title,
-            price: p.price,
-            listPrice: p.list_price,
-            image: p.images?.[0] || "/placeholder.svg"
-          }))
-        }
+        
+        // Map deals with category info
+        const mappedDeals = validDeals.map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          price: p.price,
+          listPrice: p.list_price,
+          image: p.images?.[0] || "/placeholder.svg",
+          categorySlug: p.categories?.slug || null
+        }))
+        
+        // All deals
+        allDeals = mappedDeals
+        
+        // Filter by category
+        // Tech: electronics, computers, gaming, smart-home
+        techDeals = mappedDeals.filter((d: Deal) => 
+          ['electronics', 'computers', 'gaming', 'smart-home', 'phones-tablets', 'audio'].includes(d.categorySlug || '')
+        )
+        
+        // Home: home, kitchen, furniture, bedding, decor
+        homeDeals = mappedDeals.filter((d: Deal) => 
+          ['home', 'home-kitchen', 'kitchen', 'furniture', 'bedding', 'decor', 'garden'].includes(d.categorySlug || '')
+        )
+        
+        // Fashion: fashion, women, men, shoes, bags
+        fashionDeals = mappedDeals.filter((d: Deal) => 
+          ['fashion', 'women', 'men', 'shoes', 'bags', 'accessories'].includes(d.categorySlug || '')
+        )
       }
 
       // === TRENDING SECTION DATA ===
       
-      // 1. Newest Products - sorted by created_at DESC
+      // 1. Newest Products - sorted by created_at DESC, filtered by shipping zone
       const { data: newestData } = await supabase
         .from('products')
         .select('*')
+        .or(shippingFilter)
         .order('created_at', { ascending: false })
         .limit(12)
 
@@ -108,12 +141,13 @@ export default async function Home() {
         }))
       }
 
-      // 2. Promo Products - products with discounts (list_price > price)
+      // 2. Promo Products - products with discounts (list_price > price), filtered by shipping zone
       const { data: promoData } = await supabase
         .from('products')
         .select('*')
         .not('list_price', 'is', null)
         .gt('list_price', 0)
+        .or(shippingFilter)
         .limit(12)
 
       if (promoData && promoData.length > 0) {
@@ -130,10 +164,11 @@ export default async function Home() {
         }))
       }
 
-      // 3. Best Sellers - sorted by review_count DESC (popularity indicator)
+      // 3. Best Sellers - sorted by review_count DESC (popularity indicator), filtered by shipping zone
       const { data: bestSellersData } = await supabase
         .from('products')
         .select('*')
+        .or(shippingFilter)
         .order('review_count', { ascending: false })
         .limit(12)
 
@@ -151,8 +186,8 @@ export default async function Home() {
       }
 
       // 4. Featured Products - Boosted listings + products from premium/business sellers
-      // Try to get boosted products first
-      const { data: featuredData } = await supabase
+      // For complex queries, we filter in JS after fetching
+      const { data: featuredDataRaw } = await supabase
         .from('products')
         .select(`
           *,
@@ -167,7 +202,15 @@ export default async function Home() {
         .gte('rating', 4.0)
         .order('is_boosted', { ascending: false })
         .order('rating', { ascending: false })
-        .limit(12)
+        .limit(50) // Fetch more, then filter by shipping
+
+      // Filter by shipping zone
+      const featuredData = featuredDataRaw?.filter((p: any) => {
+        if (userZone === 'BG') return p.ships_to_bulgaria || p.ships_to_europe || p.ships_to_worldwide
+        if (userZone === 'EU') return p.ships_to_europe || p.ships_to_worldwide
+        if (userZone === 'US') return p.ships_to_usa || p.ships_to_worldwide
+        return p.ships_to_worldwide
+      }).slice(0, 12)
 
       if (featuredData && featuredData.length > 0) {
         featuredProducts = featuredData.map((p: any) => ({
@@ -182,10 +225,11 @@ export default async function Home() {
           isBoosted: p.is_boosted
         }))
       } else {
-        // Fallback: If no featured products, show highest rated products
+        // Fallback: If no featured products, show highest rated products filtered by shipping zone
         const { data: topRatedData } = await supabase
           .from('products')
           .select('*')
+          .or(shippingFilter)
           .gte('rating', 4.0)
           .order('rating', { ascending: false })
           .order('review_count', { ascending: false })
@@ -434,7 +478,7 @@ export default async function Home() {
           </div>
         </div>
 
-        {/* 5. Deals of the Day - Target Style Tabbed Section */}
+        {/* 5. Deals of the Day - Target Style Tabbed Section with Category Filtering */}
         <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
           <DealsSection
             title={locale === "bg" ? "Оферти на деня" : "Deals of the Day"}
@@ -442,22 +486,22 @@ export default async function Home() {
               {
                 id: "all",
                 label: locale === "bg" ? "Всички" : "All Deals",
-                deals: deals,
+                deals: allDeals,
               },
               {
                 id: "electronics",
                 label: locale === "bg" ? "Техника" : "Tech",
-                deals: deals, // In production, filter by category
+                deals: techDeals.length > 0 ? techDeals : allDeals.slice(0, 4),
               },
               {
                 id: "home",
                 label: locale === "bg" ? "За дома" : "Home",
-                deals: deals,
+                deals: homeDeals.length > 0 ? homeDeals : allDeals.slice(0, 4),
               },
               {
                 id: "fashion",
                 label: locale === "bg" ? "Мода" : "Fashion",
-                deals: deals,
+                deals: fashionDeals.length > 0 ? fashionDeals : allDeals.slice(0, 4),
               },
             ]}
             ctaText={locale === "bg" ? "Виж всички" : "Shop all"}

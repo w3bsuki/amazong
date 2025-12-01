@@ -105,7 +105,8 @@ export default function SellerDashboard() {
     };
 
     // Listen for auth state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       if (session?.user) {
         fetchData();
       } else {
