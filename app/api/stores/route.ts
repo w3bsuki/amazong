@@ -44,21 +44,23 @@ export async function POST(request: Request) {
             throw profileError
         }
 
-        // 4. Create seller record
-        const { error: sellerError } = await supabaseAdmin
+        // 4. Create or update seller record
+        const { data: seller, error: sellerError } = await supabaseAdmin
             .from("sellers")
-            .insert({
+            .upsert({
                 id: user.id,
                 store_name: storeName,
                 description: description
-            })
+            }, { onConflict: 'id' })
+            .select()
+            .single()
 
         if (sellerError) {
             console.error("Seller Error:", sellerError)
             throw sellerError
         }
 
-        return NextResponse.json({ success: true })
+        return NextResponse.json(seller)
     } catch (error: any) {
         console.error("Store Creation Error:", error)
         return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 })

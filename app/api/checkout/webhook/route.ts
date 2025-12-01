@@ -89,23 +89,45 @@ export async function POST(req: Request) {
           console.warn('Could not parse items_json from metadata');
         }
 
-        const orderItems = lineItems.data.map((item, index) => ({
-          order_id: order.id,
-          product_id: itemsData[index]?.id || null,
-          quantity: item.quantity || 1,
-          price: (item.amount_total || 0) / 100 / (item.quantity || 1),
-        }));
+        // Get product details including seller_id for each item
+        const productIds = itemsData.map(item => item.id).filter(Boolean);
+        
+        if (productIds.length > 0) {
+          const { data: products, error: productsError } = await supabase
+            .from('products')
+            .select('id, seller_id')
+            .in('id', productIds);
 
-        // Filter out items without valid product_id
-        const validItems = orderItems.filter(item => item.product_id);
+          if (productsError) {
+            console.error('Error fetching products:', productsError);
+          }
 
-        if (validItems.length > 0) {
-          const { error: itemsError } = await supabase
-            .from('order_items')
-            .insert(validItems);
+          // Create a map of product_id to seller_id
+          const productSellerMap = new Map(
+            products?.map(p => [p.id, p.seller_id]) || []
+          );
 
-          if (itemsError) {
-            console.error('Error creating order items:', itemsError);
+          const orderItems = itemsData.map((item) => ({
+            order_id: order.id,
+            product_id: item.id,
+            seller_id: productSellerMap.get(item.id),
+            quantity: item.qty || 1,
+            price_at_purchase: item.price,
+          }));
+
+          // Filter out items without valid product_id or seller_id
+          const validItems = orderItems.filter(item => item.product_id && item.seller_id);
+
+          if (validItems.length > 0) {
+            const { error: itemsError } = await supabase
+              .from('order_items')
+              .insert(validItems);
+
+            if (itemsError) {
+              console.error('Error creating order items:', itemsError);
+            } else {
+              console.log('Order items created:', validItems.length);
+            }
           }
         }
       }

@@ -1,32 +1,55 @@
 "use client"
 
-import { useState, useRef } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useRef, useEffect } from "react"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card } from "@/components/ui/card"
 import { toast } from "sonner"
-import { Upload, X, CircleNotch, Image as ImageIcon } from "@phosphor-icons/react"
+import { Upload, X, CircleNotch, Image as ImageIcon, ArrowLeft, ArrowRight } from "@phosphor-icons/react"
 
 interface UploadedImage {
   url: string
-  thumbnailUrl: string
+  thumbnailUrl?: string
+  position?: number
 }
 
 interface ImageUploadProps {
-  onImagesChange: (images: UploadedImage[]) => void
+  value?: UploadedImage[]
+  onChange?: (images: UploadedImage[]) => void
+  onImagesChange?: (images: UploadedImage[]) => void
   maxImages?: number
   maxSizeMB?: number
 }
 
 export function ImageUpload({ 
+  value = [],
+  onChange,
   onImagesChange, 
   maxImages = 5,
   maxSizeMB = 5 
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
-  const [images, setImages] = useState<UploadedImage[]>([])
+  const [images, setImages] = useState<UploadedImage[]>(value)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // Sync with external value
+  useEffect(() => {
+    if (value && JSON.stringify(value) !== JSON.stringify(images)) {
+      setImages(value)
+    }
+  }, [value])
+  
+  // Notify parent of changes - schedule for next tick to avoid render conflicts
+  const notifyChange = (newImages: UploadedImage[]) => {
+    // Add position to each image
+    const imagesWithPosition = newImages.map((img, idx) => ({
+      ...img,
+      position: idx
+    }))
+    // Use setTimeout to schedule the update outside of React's render phase
+    setTimeout(() => {
+      onChange?.(imagesWithPosition)
+      onImagesChange?.(imagesWithPosition)
+    }, 0)
+  }
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -73,12 +96,12 @@ export function ImageUpload({
           thumbnailUrl: data.thumbnailUrl
         })
 
-        toast.success(`${file.name} uploaded (${data.compression} smaller)`)
+        toast.success(`${file.name} uploaded`)
       }
 
       setImages(prev => {
         const newImages = [...prev, ...uploadedImages]
-        onImagesChange(newImages)
+        notifyChange(newImages)
         return newImages
       })
 
@@ -95,7 +118,7 @@ export function ImageUpload({
   const removeImage = (index: number) => {
     setImages(prev => {
       const newImages = prev.filter((_, i) => i !== index)
-      onImagesChange(newImages)
+      notifyChange(newImages)
       return newImages
     })
   }
@@ -105,41 +128,13 @@ export function ImageUpload({
       const newImages = [...prev]
       const [movedImage] = newImages.splice(fromIndex, 1)
       newImages.splice(toIndex, 0, movedImage)
-      onImagesChange(newImages)
+      notifyChange(newImages)
       return newImages
     })
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <Label>Product Images ({images.length}/{maxImages})</Label>
-          <p className="text-xs text-muted-foreground mt-1">
-            First image will be the primary image. Max {maxSizeMB}MB each.
-          </p>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading || images.length >= maxImages}
-        >
-          {uploading ? (
-            <>
-              <CircleNotch size={16} weight="regular" className="mr-2 animate-spin" />
-              Uploading...
-            </>
-          ) : (
-            <>
-              <Upload size={16} weight="regular" className="mr-2" />
-              Add Images
-            </>
-          )}
-        </Button>
-      </div>
-
+    <div className="space-y-3">
       <Input
         ref={fileInputRef}
         type="file"
@@ -150,59 +145,97 @@ export function ImageUpload({
       />
 
       {images.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
           {images.map((image, index) => (
-            <Card key={index} className="relative group overflow-hidden">
+            <div 
+              key={index} 
+              className="relative aspect-square bg-muted border border-border rounded-sm overflow-hidden group"
+            >
               <img
-                src={image.thumbnailUrl}
+                src={image.thumbnailUrl || image.url}
                 alt={`Product ${index + 1}`}
-                className="w-full h-40 object-cover"
+                className="w-full h-full object-cover"
               />
+              
+              {/* Remove button */}
               <button
                 type="button"
                 onClick={() => removeImage(index)}
-                className="absolute top-2 right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-1 right-1 size-6 bg-background/90 hover:bg-destructive hover:text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <X size={16} weight="regular" />
+                <X size={14} weight="bold" />
               </button>
+              
+              {/* Primary badge */}
               {index === 0 && (
-                <div className="absolute bottom-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
-                  Primary
+                <div className="absolute bottom-0 left-0 right-0 bg-foreground/80 text-background text-[10px] font-medium text-center py-0.5">
+                  Main
                 </div>
               )}
-              <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+              
+              {/* Reorder buttons */}
+              <div className="absolute bottom-1 right-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                 {index > 0 && (
                   <button
                     type="button"
                     onClick={() => moveImage(index, index - 1)}
-                    className="bg-header-bg text-header-text rounded px-2 py-1 text-xs"
+                    className="size-5 bg-background/90 hover:bg-background rounded flex items-center justify-center"
                   >
-                    ←
+                    <ArrowLeft size={12} weight="bold" />
                   </button>
                 )}
                 {index < images.length - 1 && (
                   <button
                     type="button"
                     onClick={() => moveImage(index, index + 1)}
-                    className="bg-header-bg text-header-text rounded px-2 py-1 text-xs"
+                    className="size-5 bg-background/90 hover:bg-background rounded flex items-center justify-center"
                   >
-                    →
+                    <ArrowRight size={12} weight="bold" />
                   </button>
                 )}
               </div>
-            </Card>
+            </div>
           ))}
+          
+          {/* Add more button */}
+          {images.length < maxImages && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="aspect-square border-2 border-dashed border-border hover:border-muted-foreground rounded-sm flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+            >
+              {uploading ? (
+                <CircleNotch size={20} className="animate-spin" />
+              ) : (
+                <>
+                  <Upload size={20} />
+                  <span className="text-[10px]">Add</span>
+                </>
+              )}
+            </button>
+          )}
         </div>
       ) : (
-        <Card className="border-dashed border-2 p-8 text-center">
-          <ImageIcon size={48} weight="regular" className="mx-auto text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground">
-            No images yet. Click "Add Images" to upload.
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Supported: JPEG, PNG, WebP (auto-optimized)
-          </p>
-        </Card>
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          className="w-full border-2 border-dashed border-border hover:border-muted-foreground rounded-sm p-6 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+        >
+          {uploading ? (
+            <>
+              <CircleNotch size={32} className="animate-spin" />
+              <span className="text-sm">Uploading...</span>
+            </>
+          ) : (
+            <>
+              <ImageIcon size={32} weight="duotone" />
+              <span className="text-sm font-medium">Add photos</span>
+              <span className="text-xs">JPEG, PNG, WebP • Max {maxSizeMB}MB</span>
+            </>
+          )}
+        </button>
       )}
     </div>
   )

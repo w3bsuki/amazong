@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useRef, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Sparkle } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -14,29 +14,7 @@ import {
 import { Link, useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
-
-interface SearchProduct {
-  id: string
-  title: string
-  price: number
-  images: string[]
-  slug: string
-}
-
-// Debounce hook
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedValue(value)
-    }, delay)
-
-    return () => clearTimeout(timer)
-  }, [value, delay])
-
-  return debouncedValue
-}
+import { useProductSearch } from "@/hooks/use-product-search"
 
 export function DesktopSearch() {
   const router = useRouter()
@@ -45,45 +23,24 @@ export function DesktopSearch() {
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   
-  const [query, setQuery] = useState("")
-  const [isOpen, setIsOpen] = useState(false)
-  const [recentSearches, setRecentSearches] = useState<string[]>([])
-  const [products, setProducts] = useState<SearchProduct[]>([])
-  const [isSearching, setIsSearching] = useState(false)
-  const [popoverWidth, setPopoverWidth] = useState<number>(500)
+  const [isOpen, setIsOpen] = React.useState(false)
+  const [popoverWidth, setPopoverWidth] = React.useState<number>(500)
   
-  const debouncedQuery = useDebounce(query, 300)
   const { products: recentlyViewed, clearProducts: clearRecentlyViewed } = useRecentlyViewed()
-
-  const trendingSearches = [
-    locale === "bg" ? "Черен петък оферти" : "Black Friday deals",
-    "iPhone 15 Pro",
-    locale === "bg" ? "Коледни подаръци" : "Christmas gifts",
-    "PlayStation 5",
-    "AirPods Pro",
-  ]
-
-  // Fetch products when debounced query changes
-  useEffect(() => {
-    if (!debouncedQuery || debouncedQuery.length < 2) {
-      setProducts([])
-      return
-    }
-
-    setIsSearching(true)
-    fetch(`/api/products/search?q=${encodeURIComponent(debouncedQuery)}&limit=6`)
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data.products || [])
-      })
-      .catch((err) => {
-        console.error("Failed to search products:", err)
-        setProducts([])
-      })
-      .finally(() => {
-        setIsSearching(false)
-      })
-  }, [debouncedQuery])
+  
+  // Use shared search hook
+  const {
+    query,
+    setQuery,
+    products,
+    isSearching,
+    recentSearches,
+    trendingSearches,
+    formatPrice,
+    saveSearch,
+    clearRecentSearches,
+    minSearchLength,
+  } = useProductSearch(6)
 
   // Measure form width for popover
   useEffect(() => {
@@ -97,71 +54,39 @@ export function DesktopSearch() {
     return () => window.removeEventListener("resize", updateWidth)
   }, [])
 
-  // Load recent searches from localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("recentSearches")
-      if (saved) {
-        try {
-          setRecentSearches(JSON.parse(saved).slice(0, 5))
-        } catch (e) {
-          console.error("Failed to parse recent searches:", e)
-        }
-      }
-    }
-  }, [])
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-US", {
-      style: "currency",
-      currency: locale === "bg" ? "BGN" : "USD",
-    }).format(price)
-  }
-
-  const saveSearch = useCallback((search: string) => {
-    const updated = [search, ...recentSearches.filter((s) => s !== search)].slice(0, 5)
-    setRecentSearches(updated)
-    if (typeof window !== "undefined") {
-      localStorage.setItem("recentSearches", JSON.stringify(updated))
-    }
-  }, [recentSearches])
-
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     if (!query.trim()) return
     
     saveSearch(query)
     setIsOpen(false)
     router.push(`/search?q=${encodeURIComponent(query)}`)
-  }
+  }, [query, saveSearch, router])
 
-  const handleSelectSearch = (search: string) => {
+  const handleSelectSearch = useCallback((search: string) => {
     setQuery(search)
     saveSearch(search)
     setIsOpen(false)
     router.push(`/search?q=${encodeURIComponent(search)}`)
-  }
+  }, [setQuery, saveSearch, router])
 
-  const handleSelectProduct = (slug: string) => {
+  const handleSelectProduct = useCallback((slug: string) => {
     setIsOpen(false)
     setQuery("")
     router.push(`/product/${slug}`)
-  }
+  }, [setQuery, router])
 
-  const handleClearRecent = () => {
-    setRecentSearches([])
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("recentSearches")
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Handle keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       setIsOpen(false)
       inputRef.current?.blur()
     }
-  }
+  }, [])
+
+  const handleClearInput = useCallback(() => {
+    setQuery("")
+    inputRef.current?.focus()
+  }, [setQuery])
 
   return (
     <div className="w-full h-11">
@@ -193,10 +118,7 @@ export function DesktopSearch() {
               {query && (
                 <button
                   type="button"
-                  onClick={() => {
-                    setQuery("")
-                    inputRef.current?.focus()
-                  }}
+                  onClick={handleClearInput}
                   className="absolute right-3 text-muted-foreground hover:text-foreground"
                 >
                   <X size={16} weight="regular" />
@@ -338,7 +260,7 @@ export function DesktopSearch() {
                     {locale === "bg" ? "Скорошни търсения" : "Recent Searches"}
                   </span>
                   <button
-                    onClick={handleClearRecent}
+                    onClick={clearRecentSearches}
                     className="text-xs text-muted-foreground hover:text-foreground"
                   >
                     {locale === "bg" ? "Изчисти" : "Clear"}
@@ -403,7 +325,7 @@ export function DesktopSearch() {
             )}
 
             {/* No Results */}
-            {!isSearching && query && query.length >= 2 && products.length === 0 && (
+            {!isSearching && query && query.length >= minSearchLength && products.length === 0 && (
               <div className="px-4 py-8 text-center">
                 <Package size={40} weight="regular" className="text-muted-foreground/30 mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">

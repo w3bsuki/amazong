@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Star } from "@phosphor-icons/react"
+import { useState, useEffect } from "react"
+import { Star, ShoppingBag } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
@@ -31,13 +31,68 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
   const [title, setTitle] = useState("")
   const [comment, setComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [hasPurchased, setHasPurchased] = useState<boolean | null>(null)
+  const [isCheckingPurchase, setIsCheckingPurchase] = useState(false)
   const t = useTranslations("Reviews")
+
+  // Check if user has purchased this product when dialog opens
+  useEffect(() => {
+    if (open) {
+      checkPurchaseStatus()
+    }
+  }, [open, productId])
+
+  const checkPurchaseStatus = async () => {
+    setIsCheckingPurchase(true)
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) {
+        setHasPurchased(false)
+        return
+      }
+
+      // Check if user has purchased this product via order_items
+      const { data, error } = await supabase
+        .from("order_items")
+        .select(`
+          id,
+          orders!inner (
+            id,
+            user_id,
+            status
+          )
+        `)
+        .eq("product_id", productId)
+        .eq("orders.user_id", user.id)
+        .in("orders.status", ["delivered", "shipped", "processing"])
+        .limit(1)
+
+      if (error) {
+        console.error("Error checking purchase status:", error)
+        setHasPurchased(false)
+      } else {
+        setHasPurchased(data && data.length > 0)
+      }
+    } catch (error) {
+      console.error("Error checking purchase:", error)
+      setHasPurchased(false)
+    } finally {
+      setIsCheckingPurchase(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (rating === 0) {
-      toast.error("Please select a rating")
+      toast.error(t("selectRating") || "Please select a rating")
+      return
+    }
+
+    if (!hasPurchased) {
+      toast.error(t("purchaseRequired") || "You must purchase this product before reviewing")
       return
     }
 
@@ -48,7 +103,7 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
       const { data: { user } } = await supabase.auth.getUser()
 
       if (!user) {
-        toast.error("Please sign in to write a review")
+        toast.error(t("signInRequired") || "Please sign in to write a review")
         setIsSubmitting(false)
         return
       }
@@ -63,12 +118,12 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
 
       if (error) {
         if (error.code === "23505") {
-          toast.error("You have already reviewed this product")
+          toast.error(t("alreadyReviewed") || "You have already reviewed this product")
         } else {
           throw error
         }
       } else {
-        toast.success("Review submitted successfully!")
+        toast.success(t("reviewSuccess") || "Review submitted successfully!")
         setOpen(false)
         setRating(0)
         setTitle("")
@@ -77,7 +132,7 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
       }
     } catch (error) {
       console.error("Error submitting review:", error)
-      toast.error("Failed to submit review")
+      toast.error(t("reviewFailed") || "Failed to submit review")
     } finally {
       setIsSubmitting(false)
     }
@@ -97,82 +152,110 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
             {t("shareThoughts")}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          {/* Star Rating */}
-          <div className="space-y-2">
-            <Label>{t("overallRating")}</Label>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setRating(star)}
-                  onMouseEnter={() => setHoverRating(star)}
-                  onMouseLeave={() => setHoverRating(0)}
-                  className="focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2 rounded"
-                >
-                  <Star
-                    className={cn(
-                      "h-8 w-8 transition-colors",
-                      (hoverRating || rating) >= star
-                        ? "text-rating"
-                        : "text-muted-foreground"
-                    )}
-                    size={32}
-                    weight={(hoverRating || rating) >= star ? "fill" : "regular"}
-                  />
-                </button>
-              ))}
+
+        {isCheckingPurchase ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : hasPurchased === false ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+              <ShoppingBag className="w-8 h-8 text-muted-foreground" />
             </div>
-          </div>
-
-          {/* Review Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">{t("reviewTitle")}</Label>
-            <Input
-              id="title"
-              placeholder={t("reviewTitlePlaceholder")}
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              maxLength={100}
-            />
-          </div>
-
-          {/* Review Comment */}
-          <div className="space-y-2">
-            <Label htmlFor="comment">{t("reviewComment")}</Label>
-            <Textarea
-              id="comment"
-              placeholder={t("reviewCommentPlaceholder")}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              rows={5}
-              maxLength={2000}
-            />
-            <p className="text-xs text-muted-foreground">
-              {comment.length}/2000
-            </p>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isSubmitting}
-            >
-              {t("cancel")}
-            </Button>
-            <Button
-              type="submit"
-              className="bg-brand-blue hover:bg-brand-blue-dark text-white"
-              disabled={isSubmitting || rating === 0}
-            >
-              {isSubmitting ? t("submitting") : t("submitReview")}
+            <div className="space-y-2">
+              <h3 className="font-semibold text-lg">{t("purchaseRequiredTitle") || "Purchase Required"}</h3>
+              <p className="text-muted-foreground text-sm max-w-xs">
+                {t("purchaseRequiredDescription") || "You need to purchase this product before you can leave a review. This helps ensure authentic feedback from real customers."}
+              </p>
+            </div>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("close") || "Close"}
             </Button>
           </div>
-        </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            {/* Verified Purchase Badge */}
+            <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 dark:bg-green-950/30 dark:text-green-400 px-3 py-2 rounded-md">
+              <ShoppingBag weight="fill" className="w-4 h-4" />
+              <span>{t("verifiedPurchase") || "Verified Purchase"}</span>
+            </div>
+
+            {/* Star Rating */}
+            <div className="space-y-2">
+              <Label>{t("overallRating")}</Label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    className="focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2 rounded"
+                  >
+                    <Star
+                      className={cn(
+                        "h-8 w-8 transition-colors",
+                        (hoverRating || rating) >= star
+                          ? "text-rating"
+                          : "text-muted-foreground"
+                      )}
+                      size={32}
+                      weight={(hoverRating || rating) >= star ? "fill" : "regular"}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Review Title */}
+            <div className="space-y-2">
+              <Label htmlFor="title">{t("reviewTitle")}</Label>
+              <Input
+                id="title"
+                placeholder={t("reviewTitlePlaceholder")}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={100}
+              />
+            </div>
+
+            {/* Review Comment */}
+            <div className="space-y-2">
+              <Label htmlFor="comment">{t("reviewComment")}</Label>
+              <Textarea
+                id="comment"
+                placeholder={t("reviewCommentPlaceholder")}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                rows={5}
+                maxLength={2000}
+              />
+              <p className="text-xs text-muted-foreground">
+                {comment.length}/2000
+              </p>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={isSubmitting}
+              >
+                {t("cancel")}
+              </Button>
+              <Button
+                type="submit"
+                className="bg-brand-blue hover:bg-brand-blue-dark text-white"
+                disabled={isSubmitting || rating === 0}
+              >
+                {isSubmitting ? t("submitting") : t("submitReview")}
+              </Button>
+            </div>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   )

@@ -2,16 +2,13 @@
 
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { CaretUp, Envelope } from "@phosphor-icons/react"
+import { CaretUp } from "@phosphor-icons/react"
 
 // Social Media Icons (inline SVGs for better performance)
 const FacebookIcon = () => (
@@ -62,24 +59,9 @@ const PrivacyIcon = () => (
 
 export function SiteFooter() {
     const t = useTranslations('Footer')
-    const [email, setEmail] = useState("")
-    const [isSubscribing, setIsSubscribing] = useState(false)
-    const [subscribeSuccess, setSubscribeSuccess] = useState(false)
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" })
-    }
-
-    const handleNewsletterSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!email) return
-        setIsSubscribing(true)
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        setIsSubscribing(false)
-        setEmail("")
-        setSubscribeSuccess(true)
-        setTimeout(() => setSubscribeSuccess(false), 3000)
     }
 
     const currentYear = new Date().getFullYear()
@@ -165,77 +147,17 @@ export function SiteFooter() {
             role="contentinfo"
             aria-label={t('footerLabel')}
         >
-            {/* Back to Top - Using primary colors */}
+            {/* Back to Top */}
             <button
                 className="w-full bg-primary/90 hover:bg-primary/80 py-3.5 text-center transition-colors tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-primary group"
                 onClick={scrollToTop}
                 aria-label={t('backToTop')}
             >
                 <span className="text-sm font-normal text-primary-foreground inline-flex items-center gap-1.5">
-                    <CaretUp size={16} weight="regular" className="group-hover:-translate-y-0.5 transition-transform" />
+                    <CaretUp size={16} weight="regular" />
                     {t('backToTop')}
                 </span>
             </button>
-
-            {/* Newsletter Subscription Section - Using accent colors */}
-            <div className="bg-primary/95 border-b border-border/20">
-                <div className="max-w-7xl mx-auto px-4 py-8 md:py-10">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                        <div className="text-center md:text-left">
-                            <h3 className="text-primary-foreground font-medium text-lg md:text-xl flex items-center justify-center md:justify-start gap-2">
-                                <Envelope size={20} weight="regular" className="text-accent" />
-                                {t('newsletterTitle')}
-                            </h3>
-                            <p className="text-primary-foreground/60 text-sm mt-1.5 max-w-md">
-                                {t('newsletterSubtitle')}
-                            </p>
-                        </div>
-                        <form 
-                            onSubmit={handleNewsletterSubmit}
-                            className="flex flex-col sm:flex-row gap-2.5 max-w-md w-full md:w-auto"
-                        >
-                            <div className="relative flex-1">
-                                <Input
-                                    type="email"
-                                    placeholder={t('emailPlaceholder')}
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="bg-card text-card-foreground border border-border h-12 pl-4 pr-4 rounded-md focus-visible:ring-2 focus-visible:ring-ring w-full"
-                                    aria-label={t('emailPlaceholder')}
-                                    required
-                                />
-                            </div>
-                            <Button 
-                                type="submit"
-                                disabled={isSubscribing}
-                                className="h-12 px-8 bg-interactive hover:bg-interactive-hover text-white font-normal rounded-sm border border-transparent disabled:opacity-70"
-                            >
-                                {isSubscribing ? t('subscribing') : t('signUp')}
-                            </Button>
-                        </form>
-                    </div>
-                    {subscribeSuccess && (
-                        <p className="text-stock-available text-sm mt-3 text-center md:text-left animate-in fade-in slide-in-from-bottom-2">
-                            ✓ Successfully subscribed!
-                        </p>
-                    )}
-                    <p className="text-xs text-primary-foreground/40 mt-4 text-center md:text-left">
-                        <Link href="/privacy" className="hover:text-primary-foreground/70 underline underline-offset-2 transition-colors">
-                            {t('privacyPolicy')}
-                        </Link>
-                    </p>
-                </div>
-            </div>
-
-            {/* Promo/Disclaimer Banner */}
-            <Link 
-                href="/promotions"
-                className="block bg-primary/90 border-b border-border/20 py-3 px-4 text-center hover:bg-primary/85 transition-colors"
-            >
-                <p className="text-xs text-primary-foreground/50">
-                    <sup>*</sup>{t('promoDisclaimer')}
-                </p>
-            </Link>
 
             {/* Mobile Footer - Accordion */}
             <div className="md:hidden px-4 py-6">

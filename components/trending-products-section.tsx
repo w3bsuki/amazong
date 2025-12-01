@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { useRef, useState, useCallback } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
@@ -86,24 +86,22 @@ function CompactProductCard({
             {title}
           </h3>
 
-          {/* Rating */}
-          {reviews > 0 && (
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="flex text-rating">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    size={11}
-                    weight={i < Math.floor(rating) ? "fill" : "regular"}
-                    className={cn(
-                      i < Math.floor(rating) ? "" : "text-rating-empty"
-                    )}
-                  />
-                ))}
-              </div>
-              <span className="text-[10px] text-muted-foreground">{reviews}</span>
+          {/* Rating - Always show even when 0 */}
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <div className="flex text-rating">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  size={11}
+                  weight={i < Math.floor(rating) ? "fill" : "regular"}
+                  className={cn(
+                    i < Math.floor(rating) ? "" : "text-rating-empty"
+                  )}
+                />
+              ))}
             </div>
-          )}
+            <span className="text-[10px] text-muted-foreground">{reviews}</span>
+          </div>
 
           {/* Price */}
           <div className="mt-auto pt-1">
@@ -139,53 +137,36 @@ export function TrendingProductsSection({
   ctaHref,
 }: TrendingProductsSectionProps) {
   const locale = useLocale()
-  const scrollContainerRefs = React.useRef<{ [key: string]: HTMLDivElement | null }>({})
-  const [scrollStates, setScrollStates] = React.useState<{ [key: string]: { left: boolean; right: boolean } }>({
+  const scrollContainerRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const [scrollStates, setScrollStates] = useState<Record<string, { left: boolean; right: boolean }>>({
     newest: { left: false, right: true },
     promo: { left: false, right: true },
     bestsellers: { left: false, right: true },
   })
 
   const tabs = [
-    {
-      id: "newest",
-      label: locale === "bg" ? "Нови" : "Newest",
-      icon: TrendUp,
-      products: newestProducts,
-    },
-    {
-      id: "promo",
-      label: locale === "bg" ? "Промоции" : "Deals",
-      icon: Tag,
-      products: promoProducts,
-    },
-    {
-      id: "bestsellers",
-      label: locale === "bg" ? "Топ продажби" : "Best Sellers",
-      icon: CurrencyCircleDollar,
-      products: bestSellersProducts,
-    },
+    { id: "newest", label: locale === "bg" ? "Нови" : "Newest", icon: TrendUp, products: newestProducts },
+    { id: "promo", label: locale === "bg" ? "Промоции" : "Deals", icon: Tag, products: promoProducts },
+    { id: "bestsellers", label: locale === "bg" ? "Топ продажби" : "Best Sellers", icon: CurrencyCircleDollar, products: bestSellersProducts },
   ]
 
-  const checkScrollability = React.useCallback((tabId: string) => {
+  const checkScrollability = useCallback((tabId: string) => {
     const container = scrollContainerRefs.current[tabId]
-    if (container) {
-      setScrollStates(prev => ({
-        ...prev,
-        [tabId]: {
-          left: container.scrollLeft > 0,
-          right: container.scrollLeft < container.scrollWidth - container.clientWidth - 10,
-        }
-      }))
-    }
+    if (!container) return
+    setScrollStates(prev => ({
+      ...prev,
+      [tabId]: {
+        left: container.scrollLeft > 0,
+        right: container.scrollLeft < container.scrollWidth - container.clientWidth - 10,
+      }
+    }))
   }, [])
 
   const scroll = (tabId: string, direction: "left" | "right") => {
-    const container = scrollContainerRefs.current[tabId]
-    if (container) {
-      const scrollAmount = direction === "left" ? -250 : 250
-      container.scrollBy({ left: scrollAmount, behavior: "smooth" })
-    }
+    scrollContainerRefs.current[tabId]?.scrollBy({ 
+      left: direction === "left" ? -250 : 250, 
+      behavior: "smooth" 
+    })
   }
 
   return (

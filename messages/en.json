@@ -98,7 +98,10 @@
         "registry": "Registry",
         "giftCards": "Gift Cards",
         "sell": "Selling",
-        "startSelling": "Your"
+        "startSelling": "Your",
+        "home": "Home",
+        "menu": "Menu",
+        "account": "Account"
     },
     "Home": {
         "title": "Welcome to Amazon",
@@ -418,7 +421,16 @@
         "submitReview": "Submit",
         "submitting": "Submitting...",
         "noReviews": "No reviews yet",
-        "beFirst": "Be the first to review this product"
+        "beFirst": "Be the first to review this product",
+        "purchaseRequiredTitle": "Purchase Required",
+        "purchaseRequiredDescription": "You must purchase this product before you can write a review. Only verified buyers can leave reviews to ensure authenticity.",
+        "selectRating": "Please select a rating",
+        "purchaseRequired": "You must purchase this product to leave a review",
+        "signInRequired": "Please sign in to leave a review",
+        "alreadyReviewed": "You have already reviewed this product",
+        "reviewSuccess": "Review submitted successfully!",
+        "reviewFailed": "Failed to submit review",
+        "close": "Close"
     },
     "SearchFilters": {
         "department": "Department",

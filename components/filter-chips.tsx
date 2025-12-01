@@ -49,7 +49,7 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
       key: 'prime',
       label: 'Prime',
       icon: <Truck size={14} weight="regular" />,
-      color: 'bg-brand-blue/10 text-brand-blue border-brand-blue/20'
+      color: 'bg-primary/10 text-primary border-primary/20'
     })
   }
 
@@ -117,7 +117,7 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
   return (
     <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap">
       {/* Active filters label */}
-      <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0 py-1.5 hidden sm:flex items-center">
+      <span className="text-sm text-muted-foreground shrink-0 py-1.5 hidden sm:flex items-center">
         {t('activeFilters')}:
       </span>
       
@@ -128,10 +128,9 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
           className={cn(
             "inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-sm whitespace-nowrap",
             "border group",
-            "hover:bg-red-50 hover:border-red-200 hover:text-red-600",
-            "dark:hover:bg-red-950/30 dark:hover:border-red-800 dark:hover:text-red-400",
+            "hover:bg-destructive/10 hover:border-destructive/20 hover:text-destructive",
             "active:scale-[0.97]",
-            chip.color || "bg-brand-blue/10 text-brand-blue border-brand-blue/20"
+            chip.color || "bg-primary/10 text-primary border-primary/20"
           )}
         >
           {chip.icon}
@@ -157,7 +156,7 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
           }}
           className={cn(
             "inline-flex items-center gap-1 px-3 h-8 rounded-full text-sm whitespace-nowrap",
-            "text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 font-medium"
+            "text-muted-foreground hover:text-destructive font-medium"
           )}
         >
           {t('clearAllFilters')}

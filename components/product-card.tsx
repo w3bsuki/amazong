@@ -2,15 +2,33 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { Star } from "@phosphor-icons/react"
+import { Star, Lightning } from "@phosphor-icons/react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/lib/cart-context"
 import { WishlistButton } from "@/components/wishlist-button"
 import { toast } from "sonner"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { productBlurDataURL, imageSizes, getImageLoadingStrategy } from "@/lib/image-utils"
+
+// Tag configuration for badges
+const TAG_CONFIG: Record<string, { color: string; label: string; labelBg: string }> = {
+  new: { color: "bg-green-500", label: "NEW", labelBg: "НОВО" },
+  sale: { color: "bg-red-500", label: "SALE", labelBg: "РАЗПРОДАЖБА" },
+  limited: { color: "bg-purple-500", label: "LIMITED", labelBg: "ЛИМИТИРАНО" },
+  trending: { color: "bg-orange-500", label: "TRENDING", labelBg: "ПОПУЛЯРНО" },
+  bestseller: { color: "bg-yellow-500", label: "BESTSELLER", labelBg: "ТОП" },
+  premium: { color: "bg-blue-600", label: "PREMIUM", labelBg: "ПРЕМИУМ" },
+  handmade: { color: "bg-amber-600", label: "HANDMADE", labelBg: "РЪЧНА" },
+  "eco-friendly": { color: "bg-emerald-500", label: "ECO", labelBg: "ЕКО" },
+}
+
+// Helper to get tag config
+function getTagConfig(tag: string) {
+  return TAG_CONFIG[tag] || null
+}
 
 interface ProductCardProps {
   id: string
@@ -19,10 +37,17 @@ interface ProductCardProps {
   image: string
   rating?: number
   reviews?: number
+  originalPrice?: number | null
+  tags?: string[]
+  isBoosted?: boolean
   compact?: boolean // Legacy prop - use variant instead
   variant?: "default" | "grid" | "compact" | "carousel"
   /** Index in list for determining loading priority (0-based) */
   index?: number
+  /** Seller ID of the product */
+  sellerId?: string
+  /** Current user ID to check if this is their own product */
+  currentUserId?: string | null
 }
 
 export function ProductCard({ 
@@ -30,19 +55,51 @@ export function ProductCard({
   title, 
   price, 
   image, 
-  rating = 4.5, 
-  reviews = 120, 
+  rating = 0, 
+  reviews = 0,
+  originalPrice,
+  tags = [],
+  isBoosted = false,
   compact = false,
   variant = "default",
-  index = 0
+  index = 0,
+  sellerId,
+  currentUserId
 }: ProductCardProps) {
   const { addToCart } = useCart()
   const t = useTranslations('Product')
   const tCart = useTranslations('Cart')
   const locale = useLocale()
 
+  // Check if user is trying to buy their own product
+  const isOwnProduct = currentUserId && sellerId && currentUserId === sellerId
+
   // Resolve variant from legacy compact prop
   const resolvedVariant = compact ? "compact" : variant
+
+  // Get the primary badge to display (priority order)
+  const getPrimaryBadge = () => {
+    // Check tags in priority order
+    const priorityTags = ['sale', 'new', 'limited', 'trending', 'premium', 'bestseller', 'handmade', 'eco-friendly']
+    for (const tag of priorityTags) {
+      if (tags.includes(tag)) {
+        const config = getTagConfig(tag)
+        if (config) {
+          return { 
+            text: locale === 'bg' ? config.labelBg : config.label, 
+            color: config.color 
+          }
+        }
+      }
+    }
+    // Fallback for discount without sale tag
+    if (originalPrice && originalPrice > price && !tags.includes('sale')) {
+      return { text: locale === 'bg' ? 'РАЗПРОДАЖБА' : 'SALE', color: 'bg-red-500' }
+    }
+    return null
+  }
+
+  const primaryBadge = getPrimaryBadge()
 
   // Get optimized loading strategy based on position in list
   const loadingStrategy = getImageLoadingStrategy(index, 4)
@@ -53,6 +110,10 @@ export function ProductCard({
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault() // Prevent navigation when clicking the button
+    if (isOwnProduct) {
+      toast.error("You cannot purchase your own products")
+      return
+    }
     addToCart({
       id,
       title,
@@ -96,6 +157,26 @@ export function ProductCard({
         "relative bg-secondary aspect-square flex items-center justify-center overflow-hidden pointer-events-none",
         isGrid ? "p-2" : "p-2 sm:p-3 md:p-4"
       )}>
+        {/* Boosted indicator */}
+        {isBoosted && (
+          <div className="absolute top-2 left-2 z-20">
+            <Badge className="bg-amber-500 text-white border-0 text-[10px] px-1.5 py-0.5 font-semibold flex items-center gap-0.5">
+              <Lightning weight="fill" className="w-3 h-3" />
+              BOOST
+            </Badge>
+          </div>
+        )}
+        {/* Primary Badge (Sale/New/Limited/etc) */}
+        {primaryBadge && !isBoosted && (
+          <div className="absolute top-2 left-2 z-20">
+            <Badge className={cn(
+              "text-white border-0 text-[10px] px-1.5 py-0.5 font-semibold",
+              primaryBadge.color
+            )}>
+              {primaryBadge.text}
+            </Badge>
+          </div>
+        )}
         {/* Wishlist Button */}
         <div className="absolute top-2 right-2 z-20 pointer-events-auto">
           <WishlistButton
@@ -164,12 +245,14 @@ export function ProductCard({
 
           <Button
             onClick={handleAddToCart}
+            disabled={isOwnProduct}
             className={cn(
-              "w-full bg-interactive hover:bg-interactive-hover text-white font-normal rounded-sm touch-action-manipulation",
+              "w-full bg-interactive hover:bg-interactive-hover text-white font-normal rounded-sm touch-action-manipulation disabled:opacity-50",
               isGrid ? "min-h-9 text-xs" : "min-h-11 text-xs sm:text-sm"
             )}
+            title={isOwnProduct ? "You cannot purchase your own products" : undefined}
           >
-            {t('addToCart')}
+            {isOwnProduct ? "Your Product" : t('addToCart')}
           </Button>
         </div>
       </CardFooter>

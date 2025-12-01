@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { useState, useEffect } from "react"
 import { Link } from "@/i18n/routing"
 import { 
   CaretLeft,
@@ -24,6 +24,7 @@ import {
   type Icon
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
+import { useHorizontalScroll } from "@/hooks/use-horizontal-scroll"
 
 interface Category {
   id: string
@@ -63,13 +64,11 @@ interface CategoryCirclesProps {
 }
 
 export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
-  const scrollRef = React.useRef<HTMLDivElement>(null)
-  const [canScrollLeft, setCanScrollLeft] = React.useState(false)
-  const [canScrollRight, setCanScrollRight] = React.useState(true)
-  const [categories, setCategories] = React.useState<Category[]>([])
+  const { scrollRef, canScrollLeft, canScrollRight, scrollTo } = useHorizontalScroll()
+  const [categories, setCategories] = useState<Category[]>([])
 
   // Fetch categories from Supabase
-  React.useEffect(() => {
+  useEffect(() => {
     fetch('/api/categories')
       .then(res => res.json())
       .then(data => {
@@ -81,42 +80,8 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
   }, [])
 
   const getCategoryName = (cat: Category) => {
-    if (locale === 'bg' && cat.name_bg) {
-      return cat.name_bg
-    }
-    return cat.name
+    return locale === 'bg' && cat.name_bg ? cat.name_bg : cat.name
   }
-
-  const checkScroll = React.useCallback(() => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
-      setCanScrollLeft(scrollLeft > 0)
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10)
-    }
-  }, [])
-
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const scrollAmount = 300
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth"
-      })
-    }
-  }
-
-  React.useEffect(() => {
-    checkScroll()
-    const scrollElement = scrollRef.current
-    if (scrollElement) {
-      scrollElement.addEventListener("scroll", checkScroll)
-      window.addEventListener("resize", checkScroll)
-      return () => {
-        scrollElement.removeEventListener("scroll", checkScroll)
-        window.removeEventListener("resize", checkScroll)
-      }
-    }
-  }, [checkScroll, categories])
 
   return (
     <div className={cn(
@@ -144,9 +109,9 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
           {/* Scroll buttons - Desktop only */}
           <div className="hidden sm:flex items-center gap-1">
             <button
-              onClick={() => scroll("left")}
+              onClick={() => scrollTo("left")}
               className={cn(
-                "size-8 flex items-center justify-center rounded-full border border-border bg-white hover:bg-muted",
+                "size-8 flex items-center justify-center rounded-full border border-border bg-white hover:bg-muted transition-opacity",
                 !canScrollLeft && "opacity-40 pointer-events-none"
               )}
               aria-label="Scroll left"
@@ -154,9 +119,9 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
               <CaretLeft size={16} weight="regular" className="text-foreground" />
             </button>
             <button
-              onClick={() => scroll("right")}
+              onClick={() => scrollTo("right")}
               className={cn(
-                "size-8 flex items-center justify-center rounded-full border border-border bg-white hover:bg-muted",
+                "size-8 flex items-center justify-center rounded-full border border-border bg-white hover:bg-muted transition-opacity",
                 !canScrollRight && "opacity-40 pointer-events-none"
               )}
               aria-label="Scroll right"

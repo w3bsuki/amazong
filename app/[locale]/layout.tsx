@@ -49,14 +49,20 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/lib/cart-context";
 import { WishlistProvider } from "@/lib/wishlist-context";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { CookieConsent } from "@/components/cookie-consent";
-import { Suspense } from "react";
 import { AuthStateListener } from "@/components/auth-state-listener";
 
-import { createClient } from "@/lib/supabase/server";
-
+/**
+ * Root Locale Layout
+ * 
+ * This is the base layout for all locale routes. It provides:
+ * - HTML document structure
+ * - Font configuration
+ * - Global providers (i18n, cart, wishlist)
+ * 
+ * Route groups handle specific layouts:
+ * - (main)/ - Full e-commerce layout with header, footer, mega menus
+ * - (account)/ - Minimal account layout with sidebar navigation
+ */
 export default async function LocaleLayout({
     children,
     params
@@ -70,16 +76,8 @@ export default async function LocaleLayout({
         notFound();
     }
 
-    // Providing all messages to the client
-    // side is the easiest way to get started
+    // Providing all messages to the client side
     const messages = await getMessages();
-
-    const supabase = await createClient();
-    let user = null;
-    if (supabase) {
-        const { data } = await supabase.auth.getUser();
-        user = data.user;
-    }
 
     return (
         <html lang={locale}>
@@ -87,31 +85,12 @@ export default async function LocaleLayout({
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>
-            <body className={`${inter.className} ${inter.variable} bg-secondary min-h-screen flex flex-col overflow-x-hidden`}>
+            <body className={`${inter.className} ${inter.variable} bg-background min-h-screen overflow-x-hidden`}>
                 <NextIntlClientProvider messages={messages}>
                     <AuthStateListener />
                     <CartProvider>
                         <WishlistProvider>
-                            {/* Skip Links - Accessibility (Phase 4: Enhanced focus states) */}
-                            <a 
-                                href="#main-content" 
-                                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:bg-white focus:text-foreground focus:px-4 focus:py-3 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-ring focus:font-semibold focus:outline-none transition-all"
-                            >
-                                {locale === 'bg' ? 'Преминете към основното съдържание' : 'Skip to main content'}
-                            </a>
-                            <a 
-                                href="#footerHeader" 
-                                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-60 focus:z-100 focus:bg-white focus:text-foreground focus:px-4 focus:py-3 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-ring focus:font-semibold focus:outline-none transition-all"
-                            >
-                                {locale === 'bg' ? 'Преминете към футъра' : 'Skip to footer'}
-                            </a>
-                            <Suspense fallback={<div className="h-[100px] w-full bg-header-bg" />}>
-                                <SiteHeader user={user} />
-                            </Suspense>
-                            {/* pt-14 for mobile header, sm:pt-[108px] for tablet+ with subheader */}
-                            <main id="main-content" role="main" className="flex-1 pt-14 sm:pt-[108px] animate-page-fade-in">{children}</main>
-                            <SiteFooter />
-                            <CookieConsent />
+                            {children}
                             <Toaster />
                         </WishlistProvider>
                     </CartProvider>

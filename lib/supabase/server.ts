@@ -29,6 +29,23 @@ export async function createClient() {
 }
 
 /**
+ * Create a Supabase admin client with service role key.
+ * This bypasses RLS and should only be used in server-side code
+ * where we've already verified user authentication.
+ */
+export function createAdminClient() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.warn("Missing Supabase admin environment variables.")
+    return null
+  }
+
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
+
+/**
  * Create a Supabase client for use in static generation contexts (generateStaticParams, generateMetadata at build time)
  * This client doesn't use cookies and is safe to use outside of request scope.
  */

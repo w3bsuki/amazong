@@ -1,7 +1,7 @@
 "use server"
 
 import { stripe } from "@/lib/stripe"
-import { createClient } from "@/lib/supabase/server"
+import { createClient, createAdminClient } from "@/lib/supabase/server"
 import type { CartItem } from "@/lib/cart-context"
 
 export async function createCheckoutSession(items: CartItem[]) {
@@ -18,6 +18,24 @@ export async function createCheckoutSession(items: CartItem[]) {
     if (supabase) {
       const { data: { user } } = await supabase.auth.getUser();
       userId = user?.id;
+
+      // Check if user is trying to buy their own products
+      if (userId && items.length > 0) {
+        const productIds = items.map(item => item.id).filter(Boolean)
+        
+        if (productIds.length > 0) {
+          const { data: products } = await supabase
+            .from('products')
+            .select('id, seller_id, title')
+            .in('id', productIds)
+            .eq('seller_id', userId)
+
+          if (products && products.length > 0) {
+            const ownProductTitles = products.map(p => p.title).join(', ')
+            return { error: `You cannot purchase your own products: ${ownProductTitles}` }
+          }
+        }
+      }
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -51,5 +69,150 @@ export async function createCheckoutSession(items: CartItem[]) {
   } catch (error) {
     console.error("Error creating checkout session:", error)
     return { error: "Failed to create checkout session. Please try again." }
+  }
+}
+
+// Verify checkout session and create order if not already created (fallback for when webhooks don't work)
+export async function verifyAndCreateOrder(sessionId: string) {
+  if (!sessionId) {
+    return { error: "No session ID provided" }
+  }
+
+  try {
+    // Use regular client to verify user authentication
+    const supabase = await createClient()
+    if (!supabase) {
+      console.error('Supabase client creation failed')
+      return { error: "Failed to connect to database" }
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError) {
+      console.error('Auth error:', authError)
+      return { error: "Authentication error" }
+    }
+    if (!user) {
+      console.error('No user found in session')
+      return { error: "User not authenticated" }
+    }
+
+    console.log('Processing order for user:', user.id)
+
+    // Retrieve the checkout session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['line_items']
+    })
+
+    console.log('Stripe session status:', session.payment_status)
+
+    // Only process completed payments
+    if (session.payment_status !== 'paid') {
+      return { error: "Payment not completed" }
+    }
+
+    // Use admin client for database operations to bypass RLS
+    const adminClient = createAdminClient()
+    if (!adminClient) {
+      console.error('Admin client creation failed - check SUPABASE_SERVICE_ROLE_KEY')
+      return { error: "Database configuration error" }
+    }
+
+    // Check if order already exists (created by webhook)
+    const { data: existingOrder } = await adminClient
+      .from('orders')
+      .select('id')
+      .eq('stripe_payment_intent_id', session.payment_intent as string)
+      .single()
+
+    if (existingOrder) {
+      console.log('Order already exists:', existingOrder.id)
+      return { success: true, orderId: existingOrder.id, message: "Order already exists" }
+    }
+
+    // Parse items from metadata
+    let itemsData: { id: string; qty: number; price: number }[] = []
+    try {
+      if (session.metadata?.items_json) {
+        itemsData = JSON.parse(session.metadata.items_json)
+        console.log('Parsed items:', itemsData.length)
+      }
+    } catch (e) {
+      console.warn('Could not parse items_json from metadata:', e)
+    }
+
+    // Create the order using admin client
+    const orderData = {
+      user_id: user.id,
+      total_amount: (session.amount_total || 0) / 100,
+      status: 'paid',
+      shipping_address: session.customer_details?.address ? {
+        name: session.customer_details.name,
+        email: session.customer_details.email,
+        address: session.customer_details.address,
+      } : null,
+      stripe_payment_intent_id: session.payment_intent as string,
+    }
+    
+    console.log('Creating order:', orderData)
+
+    const { data: order, error: orderError } = await adminClient
+      .from('orders')
+      .insert(orderData)
+      .select()
+      .single()
+
+    if (orderError) {
+      console.error('Error creating order:', orderError)
+      return { error: `Failed to create order: ${orderError.message}` }
+    }
+
+    console.log('Order created:', order.id)
+
+    // Get product details including seller_id for each item
+    const productIds = itemsData.map(item => item.id).filter(Boolean)
+    
+    if (productIds.length > 0) {
+      const { data: products, error: productsError } = await adminClient
+        .from('products')
+        .select('id, seller_id')
+        .in('id', productIds)
+
+      if (productsError) {
+        console.error('Error fetching products:', productsError)
+      }
+
+      // Create a map of product_id to seller_id
+      const productSellerMap = new Map(
+        products?.map(p => [p.id, p.seller_id]) || []
+      )
+
+      const orderItems = itemsData.map((item) => ({
+        order_id: order.id,
+        product_id: item.id,
+        seller_id: productSellerMap.get(item.id),
+        quantity: item.qty || 1,
+        price_at_purchase: item.price,
+      }))
+
+      // Filter out items without valid product_id or seller_id
+      const validItems = orderItems.filter(item => item.product_id && item.seller_id)
+
+      console.log('Creating order items:', validItems.length)
+
+      if (validItems.length > 0) {
+        const { error: itemsError } = await adminClient
+          .from('order_items')
+          .insert(validItems)
+
+        if (itemsError) {
+          console.error('Error creating order items:', itemsError)
+        }
+      }
+    }
+
+    return { success: true, orderId: order.id }
+  } catch (error) {
+    console.error("Error verifying checkout session:", error)
+    return { error: `Failed to verify checkout session: ${error instanceof Error ? error.message : 'Unknown error'}` }
   }
 }

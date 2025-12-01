@@ -74,19 +74,17 @@ export function DesktopFilters() {
         onClick={() => updateParams("prime", currentPrime === "true" ? null : "true")}
         className={cn(
           "inline-flex items-center gap-2 h-[38px] px-4 rounded-full",
-          "border",
-          "text-sm font-medium",
-          "hover:bg-gray-50 hover:border-gray-400",
-          "dark:hover:bg-zinc-700 dark:hover:border-zinc-500",
+          "border text-sm font-medium",
+          "hover:bg-muted hover:border-ring",
           currentPrime === "true"
-            ? "bg-brand-blue/10 border-brand-blue text-brand-blue dark:bg-brand-blue/20"
-            : "bg-white border-gray-300 text-gray-800 dark:bg-zinc-800 dark:border-zinc-600 dark:text-gray-100"
+            ? "bg-primary/10 border-primary text-primary"
+            : "bg-card border-border text-foreground"
         )}
       >
         <Truck size={16} weight="regular" />
         <span>Prime</span>
         {currentPrime === "true" && (
-          <X size={14} weight="regular" className="ml-0.5 hover:text-red-500" onClick={(e) => {
+          <X size={14} weight="regular" className="ml-0.5 hover:text-destructive" onClick={(e) => {
             e.stopPropagation()
             updateParams("prime", null)
           }} />
@@ -99,13 +97,11 @@ export function DesktopFilters() {
           <button
             className={cn(
               "inline-flex items-center gap-2 h-[38px] px-4 rounded-full",
-              "border",
-              "text-sm font-medium",
-              "hover:bg-gray-50 hover:border-gray-400",
-              "dark:hover:bg-zinc-700 dark:hover:border-zinc-500",
+              "border text-sm font-medium",
+              "hover:bg-muted hover:border-ring",
               hasPriceFilter
-                ? "bg-brand-blue/10 border-brand-blue text-brand-blue dark:bg-brand-blue/20"
-                : "bg-white border-gray-300 text-gray-800 dark:bg-zinc-800 dark:border-zinc-600 dark:text-gray-100"
+                ? "bg-primary/10 border-primary text-primary"
+                : "bg-card border-border text-foreground"
             )}
           >
             <span>{getPriceLabel()}</span>
@@ -122,8 +118,8 @@ export function DesktopFilters() {
                 className={cn(
                   "w-full text-left px-3 py-2 rounded-md text-sm flex items-center justify-between transition-colors",
                   isActive
-                    ? "bg-brand-blue/10 text-brand-blue font-medium"
-                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                    ? "bg-primary/10 text-primary font-medium"
+                    : "text-foreground hover:bg-muted"
                 )}
               >
                 {label}
@@ -133,10 +129,10 @@ export function DesktopFilters() {
           })}
           {hasPriceFilter && (
             <>
-              <div className="h-px bg-gray-200 dark:bg-zinc-700 my-1" />
+              <div className="h-px bg-border my-1" />
               <button
                 onClick={() => handlePriceClick(null, null)}
-                className="w-full text-left px-3 py-2 rounded-md text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                className="w-full text-left px-3 py-2 rounded-md text-sm text-destructive hover:bg-destructive/10"
               >
                 {t('clearPrice')}
               </button>
@@ -151,13 +147,11 @@ export function DesktopFilters() {
           <button
             className={cn(
               "inline-flex items-center gap-2 h-[38px] px-4 rounded-full",
-              "border",
-              "text-sm font-medium",
-              "hover:bg-gray-50 hover:border-gray-400",
-              "dark:hover:bg-zinc-700 dark:hover:border-zinc-500",
+              "border text-sm font-medium",
+              "hover:bg-muted hover:border-ring",
               hasRatingFilter
-                ? "bg-brand-blue/10 border-brand-blue text-brand-blue dark:bg-brand-blue/20"
-                : "bg-white border-gray-300 text-gray-800 dark:bg-zinc-800 dark:border-zinc-600 dark:text-gray-100"
+                ? "bg-primary/10 border-primary text-primary"
+                : "bg-card border-border text-foreground"
             )}
           >
             <Star size={16} weight={hasRatingFilter ? "fill" : "regular"} className={hasRatingFilter ? "text-current" : ""} />
@@ -178,8 +172,8 @@ export function DesktopFilters() {
                 className={cn(
                   "w-full flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
                   isActive
-                    ? "bg-brand-blue/10"
-                    : "hover:bg-gray-100 dark:hover:bg-zinc-800"
+                    ? "bg-primary/10"
+                    : "hover:bg-muted"
                 )}
               >
                 <div className="flex text-rating">
@@ -191,22 +185,22 @@ export function DesktopFilters() {
                     />
                   ))}
                 </div>
-                <span className="text-sm text-gray-700 dark:text-gray-200">{t('andUp')}</span>
-                {isActive && <Check size={16} weight="regular" className="ml-auto text-brand-blue" />}
+                <span className="text-sm text-foreground">{t('andUp')}</span>
+                {isActive && <Check size={16} weight="regular" className="ml-auto text-primary" />}
               </button>
             )
           })}
           {hasRatingFilter && (
             <>
-              <div className="h-px bg-gray-200 dark:bg-zinc-700 my-1" />
+              <div className="h-px bg-border my-1" />
               <button
                 onClick={() => {
                   updateParams("minRating", null)
                   setRatingOpen(false)
                 }}
-                className="w-full text-left px-3 py-2 rounded-md text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                className="w-full text-left px-3 py-2 rounded-md text-sm text-destructive hover:bg-destructive/10"
               >
-                Clear rating
+                {t('clearRating')}
               </button>
             </>
           )}

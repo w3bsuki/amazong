@@ -171,7 +171,7 @@ export function SearchFilters({
             />
             <span className="text-sm font-medium flex items-center gap-1.5">
               <img src="https://m.media-amazon.com/images/G/01/prime/marketing/slashPrime/amazon-prime-delivery-checkmark._CB611051915_.png" alt="Prime" className="h-3.5" />
-              <span className="text-brand-blue">{t('getPrimeDelivery')}</span>
+              <span className="text-primary">{t('getPrimeDelivery')}</span>
             </span>
           </label>
           <label htmlFor="freeShipping" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
@@ -273,13 +273,13 @@ export function SearchFilters({
             </div>
             <span className="text-sm text-link group-hover:text-primary group-hover:underline">{t('andUp')}</span>
             {currentRating === stars.toString() && (
-              <Check size={16} weight="regular" className="text-brand-blue ml-1" />
+              <Check size={16} weight="regular" className="text-primary ml-1" />
             )}
           </button>
         ))}
         {currentRating && (
           <button
-            className="pt-1 text-brand-blue text-xs hover:underline min-h-8 flex items-center"
+            className="pt-1 text-primary text-xs hover:underline min-h-8 flex items-center"
             onClick={() => updateParams("minRating", null)}
           >
             {t('clearRating')}
@@ -306,7 +306,7 @@ export function SearchFilters({
           </div>
           {currentBrand && (
             <button
-              className="pt-2 text-brand-blue text-xs hover:underline min-h-8 flex items-center"
+              className="pt-2 text-primary text-xs hover:underline min-h-8 flex items-center"
               onClick={() => updateParams("brand", null)}
             >
               {t('clearBrand')}
@@ -366,7 +366,7 @@ export function SearchFilters({
         
         {(currentMinPrice || currentMaxPrice) && (
           <button
-            className="pt-2 text-brand-blue text-xs hover:underline min-h-8 flex items-center"
+            className="pt-2 text-primary text-xs hover:underline min-h-8 flex items-center"
             onClick={() => handlePriceClick(null, null)}
           >
             {t('clearPrice')}

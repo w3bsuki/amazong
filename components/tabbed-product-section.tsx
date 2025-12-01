@@ -71,24 +71,22 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
             {title}
           </h3>
 
-          {/* Rating - Clean compact style */}
-          {reviews > 0 && (
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="flex text-rating">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    size={11}
-                    weight={i < Math.floor(rating) ? "fill" : "regular"}
-                    className={cn(
-                      i < Math.floor(rating) ? "" : "text-rating-empty"
-                    )}
-                  />
-                ))}
-              </div>
-              <span className="text-[10px] text-muted-foreground">{reviews}</span>
+          {/* Rating - Always show even when 0 */}
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <div className="flex text-rating">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  size={11}
+                  weight={i < Math.floor(rating) ? "fill" : "regular"}
+                  className={cn(
+                    i < Math.floor(rating) ? "" : "text-rating-empty"
+                  )}
+                />
+              ))}
             </div>
-          )}
+            <span className="text-[10px] text-muted-foreground">{reviews}</span>
+          </div>
 
           {/* Price - Prominent */}
           <div className="mt-auto pt-1">

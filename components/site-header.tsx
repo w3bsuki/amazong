@@ -38,20 +38,19 @@ export function SiteHeader({ user }: SiteHeaderProps) {
   }, [])
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full flex flex-col border-b border-header-border bg-header-bg">
+    <header className="sticky top-0 z-50 w-full flex flex-col border-b border-header-border bg-header-bg">
       {/* Mobile Header - Shows only on mobile */}
       <div className="md:hidden bg-header-bg text-header-text px-2 py-1.5 flex items-center">
         <SidebarMenu user={user} />
-        <Link href="/" className="flex items-center gap-0.5 shrink-0 min-h-11">
+        <Link href="/" className="flex items-center shrink-0 min-h-11">
           <span className="text-xl font-semibold tracking-tight text-foreground">AMZN</span>
-          <div className="size-1.5 bg-brand rounded-full"></div>
         </Link>
         <div className="flex-1" />
         <div className="flex items-center gap-0">
           <MobileSearchOverlay />
           {/* Sell/List Button */}
           <Link 
-            href="/sell/create" 
+            href="/sell" 
             className="flex items-center justify-center size-11 rounded-lg text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
             aria-label={t('sell')}
           >
@@ -65,9 +64,8 @@ export function SiteHeader({ user }: SiteHeaderProps) {
       <div className="hidden md:block text-header-text">
         <div className="container flex items-center h-14 md:h-16 gap-3">
           {/* Logo - Dark text on light background */}
-          <Link href="/" prefetch={true} className="flex items-center gap-0.5 md:gap-1 shrink-0 hover:opacity-80 outline-none focus:ring-2 focus:ring-brand/30 rounded-sm py-1 min-h-11">
+          <Link href="/" prefetch={true} className="flex items-center shrink-0 hover:opacity-80 outline-none focus:ring-2 focus:ring-brand/30 rounded-sm py-1 min-h-11">
             <span className="text-lg md:text-2xl font-semibold tracking-tight text-foreground">AMZN</span>
-            <div className="size-1.5 md:size-2 bg-brand rounded-full mt-0.5 md:mt-1"></div>
           </Link>
 
           {/* Deliver to */}

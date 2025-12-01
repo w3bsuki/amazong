@@ -17,19 +17,21 @@ export function createClient() {
       "Some features may not work correctly."
     )
     // Return a mock client that won't crash but won't work either
-    // This prevents the sell page from crashing on initial load
+    const mockQueryBuilder = {
+      select: () => mockQueryBuilder,
+      eq: () => mockQueryBuilder,
+      single: () => Promise.resolve({ data: null, error: null }),
+      order: () => mockQueryBuilder,
+      insert: () => Promise.resolve({ data: null, error: null }),
+      update: () => Promise.resolve({ data: null, error: null }),
+      delete: () => Promise.resolve({ data: null, error: null }),
+    }
     return {
       auth: {
         getUser: async () => ({ data: { user: null }, error: null }),
         onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
       },
-      from: () => ({
-        select: () => ({ order: () => ({ data: null, error: null }), single: () => ({ data: null, error: null }) }),
-        insert: () => ({ data: null, error: null }),
-        update: () => ({ data: null, error: null }),
-        delete: () => ({ data: null, error: null }),
-        eq: () => ({ single: () => ({ data: null, error: null }) }),
-      }),
+      from: () => mockQueryBuilder,
     } as any
   }
 

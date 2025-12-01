@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { useRef, useState, useCallback } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
@@ -80,24 +80,22 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
             {title}
           </h3>
 
-          {/* Rating - Compact */}
-          {reviews > 0 && (
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="flex text-rating">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    size={11}
-                    weight={i < Math.floor(rating) ? "fill" : "regular"}
-                    className={cn(
-                      i < Math.floor(rating) ? "" : "text-rating-empty"
-                    )}
-                  />
-                ))}
-              </div>
-              <span className="text-[10px] text-muted-foreground">{reviews}</span>
+          {/* Rating - Always show even when 0 */}
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <div className="flex text-rating">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  size={11}
+                  weight={i < Math.floor(rating) ? "fill" : "regular"}
+                  className={cn(
+                    i < Math.floor(rating) ? "" : "text-rating-empty"
+                  )}
+                />
+              ))}
             </div>
-          )}
+            <span className="text-[10px] text-muted-foreground">{reviews}</span>
+          </div>
 
           {/* Price - With strikethrough */}
           <div className="mt-auto pt-1">
@@ -122,26 +120,28 @@ export function DealsSection({
   ctaText,
   ctaHref,
 }: DealsSectionProps) {
-  const scrollContainerRef = React.useRef<HTMLDivElement>(null)
-  const [canScrollLeft, setCanScrollLeft] = React.useState(false)
-  const [canScrollRight, setCanScrollRight] = React.useState(true)
+  const scrollContainerRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const [scrollStates, setScrollStates] = useState<Record<string, { left: boolean; right: boolean }>>(() => 
+    Object.fromEntries(tabs.map(tab => [tab.id, { left: false, right: true }]))
+  )
 
-  const checkScrollability = React.useCallback(() => {
-    const container = scrollContainerRef.current
-    if (container) {
-      setCanScrollLeft(container.scrollLeft > 0)
-      setCanScrollRight(
-        container.scrollLeft < container.scrollWidth - container.clientWidth - 10
-      )
-    }
+  const checkScrollability = useCallback((tabId: string) => {
+    const container = scrollContainerRefs.current[tabId]
+    if (!container) return
+    setScrollStates(prev => ({
+      ...prev,
+      [tabId]: {
+        left: container.scrollLeft > 0,
+        right: container.scrollLeft < container.scrollWidth - container.clientWidth - 10,
+      }
+    }))
   }, [])
 
-  const scroll = (direction: "left" | "right") => {
-    const container = scrollContainerRef.current
-    if (container) {
-      const scrollAmount = direction === "left" ? -250 : 250
-      container.scrollBy({ left: scrollAmount, behavior: "smooth" })
-    }
+  const scroll = (tabId: string, direction: "left" | "right") => {
+    scrollContainerRefs.current[tabId]?.scrollBy({
+      left: direction === "left" ? -250 : 250,
+      behavior: "smooth"
+    })
   }
 
   return (
@@ -194,22 +194,22 @@ export function DealsSection({
             <div className="relative overflow-hidden">
               {/* Scroll Buttons */}
               <button
-                onClick={() => scroll("left")}
+                onClick={() => scroll(tab.id, "left")}
                 className={cn(
                   "absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
-                  canScrollLeft ? "opacity-100" : "opacity-0 pointer-events-none"
+                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border transition-opacity",
+                  scrollStates[tab.id]?.left ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll left"
               >
                 <CaretLeft size={20} weight="regular" className="text-foreground" />
               </button>
               <button
-                onClick={() => scroll("right")}
+                onClick={() => scroll(tab.id, "right")}
                 className={cn(
                   "absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
-                  canScrollRight ? "opacity-100" : "opacity-0 pointer-events-none"
+                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border transition-opacity",
+                  scrollStates[tab.id]?.right ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll right"
               >
@@ -218,8 +218,8 @@ export function DealsSection({
 
               {/* Deals Container - Horizontal scroll with exactly 2 visible on mobile */}
               <div
-                ref={scrollContainerRef}
-                onScroll={checkScrollability}
+                ref={(el) => { scrollContainerRefs.current[tab.id] = el }}
+                onScroll={() => checkScrollability(tab.id)}
                 className="flex flex-row flex-nowrap gap-3 overflow-x-auto snap-x snap-mandatory scroll-pl-4 px-4 pb-2 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
               >
                 {tab.deals.map((deal) => (

@@ -86,10 +86,10 @@
     "Navigation": {
         "deliverTo": "Доставка до",
         "searchPlaceholder": "Търсене в продукти, марки и още...",
-        "yourOrders": "Твоите",
+        "yourOrders": "Моите",
         "ordersLabel": "Поръчки",
-        "cart": "Количка",
-        "messages": "Твоите",
+        "cart": "Кошница",
+        "messages": "Моите",
         "messagesLabel": "Съобщения",
         "inbox": "Кутия",
         "language": "Език",
@@ -98,7 +98,10 @@
         "registry": "Регистър",
         "giftCards": "Подаръчни карти",
         "sell": "Продажби",
-        "startSelling": "Твоите"
+        "startSelling": "Моите",
+        "home": "Начало",
+        "menu": "Меню",
+        "account": "Профил"
     },
     "Home": {
         "title": "Добре дошли в Amazon",
@@ -418,7 +421,16 @@
         "submitReview": "Изпрати",
         "submitting": "Изпращане...",
         "noReviews": "Все още няма отзиви",
-        "beFirst": "Бъди първият, който ще оцени този продукт"
+        "beFirst": "Бъди първият, който ще оцени този продукт",
+        "purchaseRequiredTitle": "Изисква се покупка",
+        "purchaseRequiredDescription": "Трябва да закупите този продукт, преди да можете да напишете отзив. Само потвърдени купувачи могат да оставят отзиви, за да се гарантира автентичност.",
+        "selectRating": "Моля, изберете оценка",
+        "purchaseRequired": "Трябва да закупите този продукт, за да оставите отзив",
+        "signInRequired": "Моля, влезте в профила си, за да оставите отзив",
+        "alreadyReviewed": "Вече сте оставили отзив за този продукт",
+        "reviewSuccess": "Отзивът е изпратен успешно!",
+        "reviewFailed": "Неуспешно изпращане на отзив",
+        "close": "Затвори"
     },
     "SearchFilters": {
         "department": "Отдел",

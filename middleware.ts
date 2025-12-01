@@ -8,6 +8,9 @@ export async function middleware(request: NextRequest) {
   const handleI18nRouting = createMiddleware(routing);
   const response = handleI18nRouting(request);
 
+  // Pass pathname to layout for conditional rendering
+  response.headers.set('x-pathname', request.nextUrl.pathname);
+
   return await updateSession(request, response);
 }
 
