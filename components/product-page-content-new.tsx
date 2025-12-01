@@ -220,36 +220,40 @@ export function ProductPageContent({
           </div>
         )}
 
-        {/* ===== MAIN PRODUCT GRID - eBay 3-Column Layout ===== */}
-        <div className="grid grid-cols-1 lg:grid-cols-[70px_1fr_340px] xl:grid-cols-[70px_1fr_380px] 2xl:grid-cols-[76px_1fr_400px] gap-3 lg:gap-4">
+        {/* ===== MAIN PRODUCT GRID - eBay 2-Column Layout with Thumbnails inside Image Container ===== */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] 2xl:grid-cols-[1fr_400px] gap-3 lg:gap-4">
           
-          {/* === LEFT: Vertical Thumbnails (Desktop) === */}
-          <div className="hidden lg:flex flex-col gap-1">
-            {images.slice(0, 7).map((img, index) => (
-              <button
-                key={index}
-                onMouseEnter={() => setSelectedImage(index)}
-                onClick={() => setSelectedImage(index)}
-                className={cn(
-                  "w-full aspect-square border-2 overflow-hidden bg-white transition-colors",
-                  selectedImage === index 
-                    ? "border-foreground" 
-                    : "border-border hover:border-foreground/50"
-                )}
-              >
-                <Image 
-                  src={img} 
-                  alt={`View ${index + 1}`} 
-                  width={80}
-                  height={80}
-                  className="object-contain w-full h-full p-0.5" 
-                />
-              </button>
-            ))}
-          </div>
-
-          {/* === CENTER: Main Image === */}
+          {/* === CENTER: Main Image with Thumbnails Inside === */}
           <div className="relative lg:border lg:border-border lg:rounded-lg lg:overflow-hidden lg:bg-white dark:lg:bg-muted/20">
+            {/* Container for thumbnails + main image */}
+            <div className="flex">
+              {/* Vertical Thumbnails (Desktop) - Inside the container */}
+              <div className="hidden lg:flex flex-col gap-1 p-2 border-r border-border bg-muted/10">
+                {images.slice(0, 7).map((img, index) => (
+                  <button
+                    key={index}
+                    onMouseEnter={() => setSelectedImage(index)}
+                    onClick={() => setSelectedImage(index)}
+                    className={cn(
+                      "w-16 aspect-square border-2 overflow-hidden bg-white transition-colors rounded",
+                      selectedImage === index 
+                        ? "border-foreground" 
+                        : "border-border/50 hover:border-foreground/50"
+                    )}
+                  >
+                    <Image 
+                      src={img} 
+                      alt={`View ${index + 1}`} 
+                      width={64}
+                      height={64}
+                      className="object-contain w-full h-full p-0.5" 
+                    />
+                  </button>
+                ))}
+              </div>
+              
+              {/* Main Image Area */}
+              <div className="flex-1 relative">
             {/* Viewed badge - eBay style red banner */}
             {viewedLast24h > 5 && (
               <div className="absolute top-0 left-0 right-0 z-10">
@@ -345,6 +349,8 @@ export function ProductPageContent({
                 </button>
               ))}
             </div>
+              </div>{/* End Main Image Area */}
+            </div>{/* End flex container */}
 
             {/* Zoom Modal - eBay style fullscreen gallery */}
             <Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
