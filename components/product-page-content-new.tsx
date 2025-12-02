@@ -857,18 +857,16 @@ export function ProductPageContent({
         )}
       </div>
 
-      {/* ===== MOBILE STICKY BAR - Always visible, 48px min touch targets ===== */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg lg:hidden pb-safe">
-        <div className="px-3 py-3 flex items-center gap-3">
-          {/* Price - Prominent */}
+      {/* ===== MOBILE STICKY BAR - Compact, 44px min touch targets ===== */}
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-background/95 backdrop-blur-sm border-t shadow-[0_-2px_10px_rgba(0,0,0,0.08)] lg:hidden pb-safe">
+        <div className="px-3 py-2.5 flex items-center gap-2.5">
+          {/* Price - Compact */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-baseline gap-0.5">
-              <span className="text-2xl font-bold text-foreground">US ${product.price.toFixed(2)}</span>
-            </div>
+            <span className="text-lg font-bold text-foreground tracking-tight">US ${product.price.toFixed(2)}</span>
             {product.original_price && discountPercentage > 0 && (
-              <div className="flex items-center gap-1.5 text-sm">
+              <div className="flex items-center gap-1 text-xs">
                 <span className="text-muted-foreground line-through">US ${product.original_price.toFixed(2)}</span>
-                <span className="text-deal-text font-semibold">-{discountPercentage}%</span>
+                <span className="text-destructive font-semibold">-{discountPercentage}%</span>
               </div>
             )}
           </div>
@@ -876,15 +874,20 @@ export function ProductPageContent({
           <button 
             onClick={() => setIsWatching(!isWatching)}
             className={cn(
-              "shrink-0 w-12 h-12 flex items-center justify-center rounded-full border-2 transition-colors touch-manipulation active:scale-95",
-              isWatching ? "bg-primary/10 border-primary text-primary" : "border-border text-muted-foreground hover:text-foreground"
+              "shrink-0 size-11 flex items-center justify-center rounded-full border transition-all duration-200 touch-manipulation active:scale-95",
+              isWatching 
+                ? "bg-primary/10 border-primary text-primary" 
+                : "border-input bg-background text-muted-foreground hover:text-foreground hover:border-foreground/20"
             )}
             aria-label={isWatching ? (locale === 'bg' ? 'В списъка' : 'Watching') : (locale === 'bg' ? 'Добави' : 'Watch')}
           >
-            <Heart className={cn("w-6 h-6", isWatching && "fill-current")} weight={isWatching ? "fill" : "regular"} />
+            <Heart className={cn("size-5", isWatching && "fill-current")} weight={isWatching ? "fill" : "regular"} />
           </button>
           {/* Buy Now button */}
-          <Button className="shrink-0 h-12 px-8 rounded-full bg-primary hover:bg-primary/90 font-semibold text-base touch-manipulation active:scale-[0.98]">
+          <Button 
+            size="lg"
+            className="shrink-0 h-11 px-6 rounded-full bg-primary hover:bg-primary/90 font-semibold text-sm shadow-sm touch-manipulation active:scale-[0.98] transition-transform"
+          >
             {locale === 'bg' ? 'Купи' : 'Buy Now'}
           </Button>
         </div>
