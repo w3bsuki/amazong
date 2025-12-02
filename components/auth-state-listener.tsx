@@ -24,7 +24,7 @@ export function AuthStateListener() {
             setTimeout(() => {
                 // Check if we need to update the UI by fetching fresh auth state
                 const supabase = createClient()
-                supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+                supabase.auth.getSession().then(({ data: { session: currentSession } }: { data: { session: Session | null } }) => {
                     if (currentSession && !document.hidden) {
                         // Session exists but page might not have updated - trigger another refresh
                         router.refresh()

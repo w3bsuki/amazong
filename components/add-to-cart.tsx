@@ -37,7 +37,7 @@ export function AddToCart({
     const [isPending, setIsPending] = useState(false)
 
     // Check if user is trying to buy their own product
-    const isOwnProduct = currentUserId && product.seller_id && currentUserId === product.seller_id
+    const isOwnProduct = !!(currentUserId && product.seller_id && currentUserId === product.seller_id)
 
     const handleAddToCart = () => {
         if (isOwnProduct) {

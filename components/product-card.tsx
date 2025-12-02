@@ -79,7 +79,7 @@ export function ProductCard({
   const locale = useLocale()
 
   // Check if user is trying to buy their own product
-  const isOwnProduct = currentUserId && sellerId && currentUserId === sellerId
+  const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
 
   // Resolve variant from legacy compact prop
   const resolvedVariant = compact ? "compact" : variant
