@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { CaretRight, DotsThree } from '@phosphor-icons/react'
@@ -13,7 +15,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<'ol'>) {
     <ol
       data-slot="breadcrumb-list"
       className={cn(
-        'text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5',
+        'text-muted-foreground flex items-center gap-1.5 text-sm overflow-x-auto no-scrollbar',
         className,
       )}
       {...props}
@@ -25,7 +27,7 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<'li'>) {
   return (
     <li
       data-slot="breadcrumb-item"
-      className={cn('inline-flex items-center gap-1.5', className)}
+      className={cn('inline-flex items-center gap-1 shrink-0 last:shrink min-h-[28px]', className)}
       {...props}
     />
   )
@@ -56,7 +58,7 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<'span'>) {
       role="link"
       aria-disabled="true"
       aria-current="page"
-      className={cn('text-foreground font-normal', className)}
+      className={cn('text-foreground font-medium truncate max-w-[180px] sm:max-w-[240px] lg:max-w-none', className)}
       {...props}
     />
   )
@@ -72,10 +74,10 @@ function BreadcrumbSeparator({
       data-slot="breadcrumb-separator"
       role="presentation"
       aria-hidden="true"
-      className={cn('[&>svg]:size-3.5', className)}
+      className={cn('text-muted-foreground/50 shrink-0', className)}
       {...props}
     >
-      {children ?? <CaretRight />}
+      {children ?? <CaretRight size={14} weight="bold" />}
     </li>
   )
 }

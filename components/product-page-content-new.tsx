@@ -5,14 +5,12 @@ import Image from "next/image"
 import Link from "next/link"
 import {
   Heart,
-  Share,
   Lightning,
   CaretLeft,
   CaretRight,
   Info,
   CaretRight as ChevronRight,
   ShieldCheck,
-  Eye,
   CheckCircle,
   MagnifyingGlassPlus,
   X,
@@ -94,7 +92,7 @@ export function ProductPageContent({
   locale,
   currentUserId,
   formattedDeliveryDate,
-  t: _t,
+  t: _t, // TODO: Replace inline locale checks with t.* translations
 }: ProductPageContentProps) {
   const [selectedImage, setSelectedImage] = useState(0)
   const [isWatching, setIsWatching] = useState(false)
@@ -122,18 +120,17 @@ export function ProductPageContent({
     ? Math.round((1 - product.price / product.original_price) * 100)
     : 0
 
-  // Social proof data
-  const soldCount = product.reviews_count ? product.reviews_count * 12 : Math.floor(Math.random() * 500) + 100
-  const viewedLast24h = Math.floor(Math.random() * 30) + 10
+  // Social proof data - deterministic values based on product data for SSR hydration
+  const soldCount = product.reviews_count ? product.reviews_count * 12 : 150
   const watchCount = Math.floor(soldCount * 0.15)
 
-  // Enhanced seller data
+  // Enhanced seller data - deterministic values for SSR
   const sellerData = seller ? {
     ...seller,
     positive_feedback_percentage: 100,
     total_items_sold: 505000,
     response_time_hours: 24,
-    feedback_score: Math.floor(Math.random() * 1000) + 500,
+    feedback_score: 798,
     feedback_count: 746,
     member_since: new Date(seller.created_at).getFullYear().toString(),
     ratings: {
@@ -181,8 +178,29 @@ export function ProductPageContent({
         
         {/* Similar Items Banner - eBay style - full width within container */}
         {sellerData && (
-          <div className="bg-[#f7f7f7] dark:bg-muted/30 py-2.5 px-4 mb-4 rounded-lg">
-            <div className="flex items-center gap-3 text-sm overflow-x-auto">
+          <div className="bg-[#f7f7f7] dark:bg-muted/30 py-1.5 lg:py-2.5 px-2 sm:px-3 lg:px-4 mb-2 lg:mb-4 rounded-md">
+            {/* Mobile: Single row compact layout with truncation */}
+            <div className="flex items-center gap-2 lg:hidden text-sm overflow-hidden">
+              <span className="text-muted-foreground shrink-0">
+                {locale === 'bg' ? 'Подобни артикули от' : 'Similar from'}
+              </span>
+              <Avatar className="h-4 w-4 shrink-0">
+                <AvatarFallback className="bg-primary/10 text-primary text-[8px] font-semibold">
+                  {sellerData.store_name?.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <Link href={`/store/${sellerData.id}`} className="font-medium text-primary hover:underline truncate">
+                {sellerData.store_name}
+              </Link>
+              <span className="text-muted-foreground shrink-0">
+                ({(sellerData.total_items_sold / 1000).toFixed(0)}K)
+              </span>
+              <span className="text-muted-foreground/60 text-xs shrink-0 ml-auto">
+                {locale === 'bg' ? 'Спонсорирано' : 'Ad'}
+              </span>
+            </div>
+            {/* Desktop: Single row layout */}
+            <div className="hidden lg:flex items-center gap-3 text-sm">
               <span className="text-muted-foreground shrink-0">
                 {locale === 'bg' ? 'Подобни артикули от' : 'Find similar items from'}
               </span>
@@ -200,7 +218,7 @@ export function ProductPageContent({
                 </span>
               </div>
               {/* Product thumbnails from seller */}
-              <div className="hidden md:flex items-center gap-1.5 ml-2">
+              <div className="flex items-center gap-1.5 ml-2">
                 {images.slice(0, 5).map((img, i) => (
                   <div key={i} className="w-10 h-10 border border-border rounded bg-white overflow-hidden">
                     <Image src={img} alt="" width={40} height={40} className="object-contain w-full h-full" />
@@ -221,24 +239,24 @@ export function ProductPageContent({
         )}
 
         {/* ===== MAIN PRODUCT GRID - eBay 2-Column Layout with Thumbnails inside Image Container ===== */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] 2xl:grid-cols-[1fr_400px] gap-3 lg:gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] 2xl:grid-cols-[1fr_400px] lg:gap-4">
           
-          {/* === CENTER: Main Image with Thumbnails Inside === */}
-          <div className="relative lg:border lg:border-border lg:rounded-lg lg:overflow-hidden lg:bg-white dark:lg:bg-muted/20">
+          {/* === LEFT: Main Image with Thumbnails Inside === */}
+          <div className="relative lg:border lg:border-border lg:rounded-lg lg:bg-white dark:lg:bg-muted/20 overflow-hidden">
             {/* Container for thumbnails + main image */}
             <div className="flex">
               {/* Vertical Thumbnails (Desktop) - Inside the container */}
-              <div className="hidden lg:flex flex-col gap-1 p-2 border-r border-border bg-muted/10">
+              <div className="hidden lg:flex flex-col gap-2 p-3">
                 {images.slice(0, 7).map((img, index) => (
                   <button
                     key={index}
                     onMouseEnter={() => setSelectedImage(index)}
                     onClick={() => setSelectedImage(index)}
                     className={cn(
-                      "w-16 aspect-square border-2 overflow-hidden bg-white transition-colors rounded",
+                      "w-16 h-16 overflow-hidden rounded-lg shrink-0 transition-opacity",
                       selectedImage === index 
-                        ? "border-foreground" 
-                        : "border-border/50 hover:border-foreground/50"
+                        ? "opacity-100" 
+                        : "opacity-40 hover:opacity-70"
                     )}
                   >
                     <Image 
@@ -246,109 +264,111 @@ export function ProductPageContent({
                       alt={`View ${index + 1}`} 
                       width={64}
                       height={64}
-                      className="object-contain w-full h-full p-0.5" 
+                      className="object-contain w-full h-full" 
                     />
                   </button>
                 ))}
               </div>
               
               {/* Main Image Area */}
-              <div className="flex-1 relative">
-            {/* Viewed badge - eBay style red banner */}
-            {viewedLast24h > 5 && (
-              <div className="absolute top-0 left-0 right-0 z-10">
-                <div className="bg-red-600 text-white text-xs font-semibold py-1.5 px-3 inline-flex items-center gap-1.5">
-                  <Eye weight="bold" className="w-3.5 h-3.5" />
-                  {viewedLast24h} {locale === 'bg' ? 'ГЛЕДАНИ ЗА 24Ч' : 'VIEWED IN THE LAST 24 HOURS'}
+              <div className="flex-1 relative min-h-[320px] sm:min-h-[400px] lg:min-h-[600px]">
+                
+                {/* Top Right Actions - Vertical stack on mobile, horizontal on desktop */}
+                <div className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button 
+                        onClick={() => setIsZoomOpen(true)}
+                        aria-label={locale === 'bg' ? 'Увеличи снимка' : 'Enlarge image'}
+                        className="w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white rounded-full active:scale-95 transition-all touch-manipulation"
+                      >
+                        <MagnifyingGlassPlus className="w-5 h-5 text-foreground/70" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      <p>{locale === 'bg' ? 'Увеличи' : 'Enlarge'}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <div className="flex items-center gap-1 bg-white/80 hover:bg-white rounded-full px-2 py-1 transition-colors">
+                    <span className="text-xs font-medium text-muted-foreground">{watchCount}</span>
+                    <button 
+                      onClick={() => setIsWatching(!isWatching)}
+                      aria-label={isWatching ? (locale === 'bg' ? 'Премахни от списък' : 'Remove from watchlist') : (locale === 'bg' ? 'Добави в списък' : 'Add to watchlist')}
+                      aria-pressed={isWatching}
+                      className="w-7 h-7 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform touch-manipulation"
+                    >
+                      <Heart 
+                        className={cn("w-5 h-5", isWatching ? "fill-deal text-deal" : "text-foreground/70")} 
+                        weight={isWatching ? "fill" : "regular"}
+                      />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-            
-            {/* Top Right Actions */}
-            <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button 
+
+                {/* Navigation Arrows - eBay style, 44px min touch target on mobile */}
+                {images.length > 1 && (
+                  <>
+                    <button
+                      aria-label={locale === 'bg' ? 'Предишна снимка' : 'Previous image'}
+                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center bg-white/90 hover:bg-white active:scale-95 border border-border rounded-full shadow-sm transition-all touch-manipulation"
+                      onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : images.length - 1)}
+                    >
+                      <CaretLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      aria-label={locale === 'bg' ? 'Следваща снимка' : 'Next image'}
+                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center bg-white/90 hover:bg-white active:scale-95 border border-border rounded-full shadow-sm transition-all touch-manipulation"
+                      onClick={() => setSelectedImage(prev => prev < images.length - 1 ? prev + 1 : 0)}
+                    >
+                      <CaretRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
+
+                {/* Main Image - eBay style */}
+                <div className="w-full bg-white dark:bg-muted/20 border border-border lg:border-0 rounded-lg lg:rounded-none overflow-hidden">
+                  <div 
+                    className="w-full min-h-[280px] sm:min-h-[360px] lg:min-h-[550px] relative cursor-zoom-in"
                     onClick={() => setIsZoomOpen(true)}
-                    className="w-9 h-9 flex items-center justify-center bg-white/90 border border-border rounded-full hover:bg-white transition-colors"
+                    onKeyDown={(e) => e.key === 'Enter' && setIsZoomOpen(true)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={locale === 'bg' ? 'Натисни за увеличаване' : 'Click to enlarge'}
                   >
-                    <MagnifyingGlassPlus className="w-4 h-4" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p>{locale === 'bg' ? 'Увеличи' : 'Enlarge'}</p>
-                </TooltipContent>
-              </Tooltip>
-              <div className="flex items-center gap-1.5 bg-white/90 border border-border rounded-full px-2.5 py-1.5">
-                <span className="text-sm font-medium text-muted-foreground">{watchCount}</span>
-                <button 
-                  onClick={() => setIsWatching(!isWatching)}
-                  className="hover:scale-110 transition-transform"
-                >
-                  <Heart 
-                    className={cn("w-5 h-5", isWatching ? "fill-red-500 text-red-500" : "text-muted-foreground")} 
-                    weight={isWatching ? "fill" : "regular"}
-                  />
-                </button>
-              </div>
-            </div>
+                    <Image
+                      src={images[selectedImage]}
+                      alt={product.title}
+                      fill
+                      className="object-contain p-3 sm:p-4 lg:p-8"
+                      sizes="(max-width: 1024px) 100vw, 700px"
+                      priority
+                    />
+                    {/* Image Counter - eBay style */}
+                    {images.length > 1 && (
+                      <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-[10px] sm:text-xs font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 rounded">
+                        {locale === 'bg' ? 'Снимка' : 'Picture'} {selectedImage + 1} {locale === 'bg' ? 'от' : 'of'} {images.length}
+                      </div>
+                    )}
+                  </div>
 
-            {/* Navigation Arrows - eBay style */}
-            {images.length > 1 && (
-              <>
-                <button
-                  className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white border border-border rounded-full shadow-sm transition-colors"
-                  onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : images.length - 1)}
-                >
-                  <CaretLeft className="w-5 h-5" />
-                </button>
-                <button
-                  className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white border border-border rounded-full shadow-sm transition-colors"
-                  onClick={() => setSelectedImage(prev => prev < images.length - 1 ? prev + 1 : 0)}
-                >
-                  <CaretRight className="w-5 h-5" />
-                </button>
-              </>
-            )}
-
-            {/* Main Image - eBay style */}
-            <div 
-              className="aspect-square lg:aspect-auto lg:h-full bg-white dark:bg-muted/20 relative overflow-hidden border border-border lg:border-0 rounded-lg lg:rounded-none cursor-zoom-in"
-              onClick={() => setIsZoomOpen(true)}
-            >
-              <Image
-                src={images[selectedImage]}
-                alt={product.title}
-                fill
-                className="object-contain p-4 lg:p-8"
-                sizes="(max-width: 1024px) 100vw, 700px"
-                priority
-              />
-              {/* Image Counter - eBay style */}
-              {images.length > 1 && (
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs font-medium px-2.5 py-1 rounded">
-                  {locale === 'bg' ? 'Снимка' : 'Picture'} {selectedImage + 1} {locale === 'bg' ? 'от' : 'of'} {images.length}
+                  {/* Mobile Thumbnails - 48px touch target */}
+                  <div className="lg:hidden flex gap-2.5 overflow-x-auto py-2.5 px-2 snap-x snap-mandatory no-scrollbar">
+                    {images.map((img, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => { e.stopPropagation(); setSelectedImage(index); }}
+                        className={cn(
+                          "shrink-0 w-16 h-16 overflow-hidden bg-white transition-all rounded-lg snap-start touch-manipulation active:scale-95 border",
+                          selectedImage === index 
+                            ? "opacity-100 border-primary" 
+                            : "opacity-60 border-transparent hover:opacity-90"
+                        )}
+                      >
+                        <Image src={img} alt={`View ${index + 1}`} width={64} height={64} className="object-contain w-full h-full p-0.5" />
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              )}
-            </div>
-
-            {/* Mobile Thumbnails */}
-            <div className="lg:hidden flex gap-1.5 overflow-x-auto py-3 -mx-1 px-1">
-              {images.map((img, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={cn(
-                    "shrink-0 w-16 h-16 border-2 overflow-hidden bg-white transition-colors",
-                    selectedImage === index 
-                      ? "border-foreground" 
-                      : "border-border"
-                  )}
-                >
-                  <Image src={img} alt={`View ${index + 1}`} width={64} height={64} className="object-contain w-full h-full" />
-                </button>
-              ))}
-            </div>
               </div>{/* End Main Image Area */}
             </div>{/* End flex container */}
 
@@ -369,12 +389,14 @@ export function ProductPageContent({
                   {images.length > 1 && (
                     <>
                       <button
+                        aria-label={locale === 'bg' ? 'Предишна снимка' : 'Previous image'}
                         className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/70 hover:bg-black rounded-full transition-colors"
                         onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : images.length - 1)}
                       >
                         <CaretLeft className="w-6 h-6 text-white" />
                       </button>
                       <button
+                        aria-label={locale === 'bg' ? 'Следваща снимка' : 'Next image'}
                         className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/70 hover:bg-black rounded-full transition-colors"
                         onClick={() => setSelectedImage(prev => prev < images.length - 1 ? prev + 1 : 0)}
                       >
@@ -420,70 +442,25 @@ export function ProductPageContent({
               </DialogContent>
             </Dialog>
 
-            {/* Share Button - eBay style */}
-            <button className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors py-2 lg:px-3">
-              <Share className="w-4 h-4" />
-              {locale === 'bg' ? 'Сподели' : 'Share'}
-            </button>
           </div>
 
           {/* === RIGHT: Product Details - eBay Clean Style === */}
-          <div className="space-y-2 lg:p-3 lg:rounded-lg lg:border lg:border-border lg:bg-background">
-            {/* Title - Large, plain BLACK text like eBay */}
-            <h1 className="text-xl lg:text-2xl font-normal text-foreground leading-tight">
-              {product.title}
-            </h1>
-
-            {/* Product Rating - Text link to scroll to reviews */}
-            <div className="flex items-center gap-1">
-              <div className="flex items-center gap-0.5">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className={cn(
-                      "w-4 h-4",
-                      star <= Math.round(product.rating)
-                        ? "fill-amber-400 text-amber-400"
-                        : "fill-muted text-muted"
-                    )}
-                    weight="fill"
-                  />
-                ))}
-              </div>
-              <span className="text-sm text-foreground font-medium ml-0.5">{product.rating.toFixed(1)}</span>
-              <button
-                onClick={() => {
-                  const reviewsSection = document.getElementById('product-reviews-section')
-                  reviewsSection?.scrollIntoView({ behavior: 'smooth' })
-                }}
-                className="text-sm text-primary hover:underline"
-              >
-                {locale === 'bg' ? 'Напиши отзив' : 'Write a review'}
-              </button>
-            </div>
-
-            {/* Seller Row - Single line with stars */}
-            {sellerData && (
-              <div className="flex items-center gap-2 py-1">
-                <Avatar className="h-7 w-7 border shrink-0">
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                    {sellerData.store_name?.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <Link 
-                  href={`/store/${sellerData.id}`} 
-                  className="font-medium text-primary hover:underline"
-                >
-                  {sellerData.store_name}
-                </Link>
-                <span className="text-muted-foreground text-sm">({sellerData.feedback_score})</span>
-                <div className="flex items-center gap-0.5">
+          <div className="px-2 sm:px-0 lg:p-3 lg:rounded-lg lg:border lg:border-border lg:bg-background mt-3 lg:mt-0">
+            
+            {/* Title + Rating inline */}
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground leading-none">
+                {product.title}
+              </h1>
+              {/* Rating inline with title */}
+              <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
                       className={cn(
-                        "w-3 h-3",
-                        star <= Math.round(sellerData.ratings?.accuracy || 5)
+                        "w-3.5 h-3.5 sm:w-4 sm:h-4",
+                        star <= Math.round(product.rating)
                           ? "fill-amber-400 text-amber-400"
                           : "fill-muted text-muted"
                       )}
@@ -491,29 +468,56 @@ export function ProductPageContent({
                     />
                   ))}
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 ml-auto" />
+                <span className="text-sm text-foreground font-medium">{product.rating.toFixed(1)}</span>
+                <span className="text-muted-foreground text-sm">({product.reviews_count || 0})</span>
               </div>
+            </div>
+
+            {/* Description - tight to title */}
+            {product.description && (
+              <p className="text-sm text-muted-foreground leading-snug mt-0.5 lg:hidden">
+                {product.description}
+              </p>
             )}
 
-            {/* Price Section */}
-            <div className="space-y-1 pt-1">
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight">
-                  US ${product.price.toFixed(2)}
-                </span>
-              </div>
+            {/* Seller - minimal spacing */}
+            {sellerData && (
+              <Link 
+                href={`/store/${sellerData.id}`}
+                className="inline-flex items-center gap-1.5 mt-0.5 text-sm group"
+              >
+                <Avatar className="h-5 w-5 border shrink-0">
+                  <AvatarFallback className="bg-primary/10 text-primary text-[9px] font-semibold">
+                    {sellerData.store_name?.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="font-medium text-primary group-hover:underline">{sellerData.store_name}</span>
+                <span className="text-muted-foreground">({sellerData.feedback_score})</span>
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star key={star} className="w-3 h-3 fill-amber-400 text-amber-400" weight="fill" />
+                  ))}
+                </div>
+              </Link>
+            )}
+
+            {/* Price Section - Hidden on mobile (shown in sticky bar) */}
+            <div className="hidden lg:block mt-4">
+              <span className="text-3xl font-bold text-foreground tracking-tight">
+                US ${product.price.toFixed(2)}
+              </span>
               {product.original_price && discountPercentage > 0 && (
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-sm mt-1">
                   <span className="text-muted-foreground line-through">
                     US ${product.original_price.toFixed(2)}
                   </span>
-                  <span className="text-deal-text font-medium">({discountPercentage}% off)</span>
+                  <span className="text-deal-text font-semibold">({discountPercentage}% off)</span>
                 </div>
               )}
             </div>
 
-            {/* Condition Row */}
-            <div className="flex items-center gap-2 text-sm">
+            {/* Condition Row - Desktop only */}
+            <div className="hidden lg:flex items-center gap-2 text-sm mt-3">
               <span className="text-muted-foreground">{locale === 'bg' ? 'Състояние:' : 'Condition:'}</span>
               <span className="font-medium text-foreground">{locale === 'bg' ? 'Ново' : 'New'}</span>
               <Tooltip>
@@ -526,9 +530,9 @@ export function ProductPageContent({
               </Tooltip>
             </div>
 
-            {/* ===== ACTION BUTTONS - eBay Style ===== */}
-            <div ref={buyBoxRef} className="space-y-2.5 pt-2">
-              <Button className="w-full h-12 text-base font-semibold rounded-full bg-primary hover:bg-primary/90">
+            {/* ===== ACTION BUTTONS - Desktop only, mobile uses sticky bar ===== */}
+            <div ref={buyBoxRef} className="hidden lg:block space-y-2 mt-4 pt-4 border-t border-border/50">
+              <Button className="w-full h-12 text-base font-semibold rounded-full bg-primary hover:bg-primary/90 active:scale-[0.98] touch-manipulation transition-transform">
                 {locale === 'bg' ? 'Купи сега' : 'Buy It Now'}
               </Button>
               <AddToCart
@@ -542,12 +546,12 @@ export function ProductPageContent({
                 currentUserId={currentUserId}
                 variant="outline"
                 showBuyNow={false}
-                className="h-12 text-base font-semibold rounded-full border-primary text-primary hover:bg-primary/5"
+                className="h-12 text-base font-semibold rounded-full border-primary text-primary hover:bg-primary/5 active:scale-[0.98] touch-manipulation transition-transform"
               />
               <Button 
                 variant="outline" 
                 className={cn(
-                  "w-full h-12 text-base font-semibold rounded-full gap-2 border-primary text-primary hover:bg-primary/5",
+                  "w-full h-12 text-base font-semibold rounded-full gap-2 border-primary text-primary hover:bg-primary/5 active:scale-[0.98] touch-manipulation transition-transform",
                   isWatching && "bg-blue-50 border-primary text-primary dark:bg-primary/10"
                 )}
                 onClick={() => setIsWatching(!isWatching)}
@@ -561,8 +565,8 @@ export function ProductPageContent({
             </div>
 
             {/* Social Proof - eBay style with BLACK text */}
-            <div className="flex items-center gap-2 text-sm py-2 text-foreground">
-              <Lightning className="w-5 h-5 text-muted-foreground" />
+            <div className="flex items-center gap-1.5 text-sm text-foreground mt-0.5">
+              <Lightning className="w-4 h-4 text-muted-foreground shrink-0" />
               <span>
                 {locale === 'bg' ? 'Популярно.' : 'People are checking this out.'}
                 <span className="font-semibold"> {watchCount} </span>
@@ -571,38 +575,38 @@ export function ProductPageContent({
             </div>
 
             {/* ===== SHIPPING INFO ===== */}
-            <div className="border-t border-b py-3 text-sm space-y-1.5">
+            <div className="border-t border-b py-2.5 text-sm space-y-2 mt-2">
               <div className="flex gap-2">
-                <span className="text-muted-foreground shrink-0">{locale === 'bg' ? 'Доставка:' : 'Shipping:'}</span>
-                <div>
+                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{locale === 'bg' ? 'Доставка:' : 'Shipping:'}</span>
+                <div className="flex-1">
                   <span className="font-semibold text-shipping-free">{locale === 'bg' ? 'БЕЗПЛАТНА' : 'FREE'}</span>
                   <span> Standard Shipping </span>
                   <button className="text-primary hover:underline">{locale === 'bg' ? 'Виж детайли' : 'See details'}</button>
-                  <div className="text-muted-foreground text-xs">{locale === 'bg' ? 'Местоположение: София, България' : 'Located in: Sofia, Bulgaria'}</div>
+                  <div className="text-muted-foreground text-xs mt-0.5">{locale === 'bg' ? 'Местоположение: София, България' : 'Located in: Sofia, Bulgaria'}</div>
                 </div>
               </div>
               <div className="flex gap-2">
-                <span className="text-muted-foreground shrink-0">{locale === 'bg' ? 'Доставка:' : 'Delivery:'}</span>
+                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{locale === 'bg' ? 'Доставка:' : 'Delivery:'}</span>
                 <span>{locale === 'bg' ? 'Очаквано между' : 'Est.'} <span className="font-semibold">{formattedDeliveryDate}</span></span>
               </div>
               <div className="flex gap-2">
-                <span className="text-muted-foreground shrink-0">{locale === 'bg' ? 'Връщане:' : 'Returns:'}</span>
+                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{locale === 'bg' ? 'Връщане:' : 'Returns:'}</span>
                 <span>{locale === 'bg' ? '30 дни безплатно връщане.' : '30 days returns.'} <button className="text-primary hover:underline">{locale === 'bg' ? 'Виж детайли' : 'See details'}</button></span>
               </div>
               <div className="flex gap-2 items-center">
-                <span className="text-muted-foreground shrink-0">{locale === 'bg' ? 'Плащания:' : 'Payments:'}</span>
+                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{locale === 'bg' ? 'Плащания:' : 'Payments:'}</span>
                 <div className="flex items-center gap-1">
-                  <div className="h-5 px-1.5 bg-[#003087] text-white text-[10px] font-bold flex items-center rounded-sm">PayPal</div>
-                  <div className="h-5 px-1.5 bg-white border text-[10px] font-bold flex items-center rounded-sm text-gray-700">Visa</div>
-                  <div className="h-5 px-1.5 bg-white border text-[10px] font-bold flex items-center rounded-sm text-gray-700">MC</div>
+                  <div className="h-5 px-1.5 bg-brand-dark text-white text-[10px] font-bold flex items-center rounded-sm">PayPal</div>
+                  <div className="h-5 px-1.5 bg-background border text-[10px] font-bold flex items-center rounded-sm text-muted-foreground">Visa</div>
+                  <div className="h-5 px-1.5 bg-background border text-[10px] font-bold flex items-center rounded-sm text-muted-foreground">MC</div>
                 </div>
               </div>
             </div>
 
             {/* Guarantee */}
-            <div className="flex items-start gap-2 py-2">
-              <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <p className="text-sm">
+            <div className="flex items-start gap-1.5 py-1.5">
+              <ShieldCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+              <p className="text-xs sm:text-sm">
                 <span className="font-medium">{locale === 'bg' ? 'Гаранция за връщане' : 'Money Back Guarantee'}</span>
                 <span className="text-muted-foreground"> {locale === 'bg' ? 'Получете артикула или парите си.' : 'Get item or money back.'}</span>
                 <Link href="#" className="text-primary hover:underline ml-1">{locale === 'bg' ? 'Научете повече' : 'Learn more'}</Link>
@@ -612,30 +616,30 @@ export function ProductPageContent({
         </div>
 
         {/* ===== ABOUT THIS ITEM Section ===== */}
-        <div className="mt-8">
-          {/* ===== PRODUCT INFO CONTAINER - Clean & Compact ===== */}
-          <div className="py-6">
-            {/* Clean Product Info Card */}
-            <div className="bg-muted/30 dark:bg-muted/10 border border-border rounded-lg overflow-hidden">
+        <div className="mt-4 lg:mt-6">
+          {/* ===== PRODUCT INFO - Clean & Minimal on Mobile ===== */}
+          <div className="py-3 lg:py-5">
+            {/* Mobile: Simple sections without card wrapper */}
+            <div className="space-y-4 lg:space-y-0 lg:bg-muted/30 lg:dark:bg-muted/10 lg:border lg:border-border lg:rounded-lg lg:overflow-hidden">
               
-              {/* Product Description */}
+              {/* Product Description - Hidden on mobile (shown inline under title) */}
               {product.description && (
-                <div className="p-5 border-b border-border">
-                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                <div className="hidden lg:block lg:p-5 lg:border-b lg:border-border">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                     {locale === 'bg' ? 'Описание на продукта' : 'Product Description'}
                   </h4>
-                  <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
+                  <p className="text-base leading-relaxed text-foreground whitespace-pre-wrap">
                     {product.description}
                   </p>
                 </div>
               )}
 
               {/* Technical Specifications */}
-              <div className="p-5 border-b border-border">
-                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+              <div className="lg:p-5 lg:border-b lg:border-border">
+                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                   {locale === 'bg' ? 'Технически спецификации' : 'Technical Specifications'}
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
                   {[
                     { label: locale === 'bg' ? 'Артикул №' : 'Item number', value: product.id.slice(0, 8) },
                     { label: locale === 'bg' ? 'Състояние' : 'Condition', value: locale === 'bg' ? 'Ново' : 'New' },
@@ -654,8 +658,8 @@ export function ProductPageContent({
               </div>
 
               {/* Package Contents */}
-              <div className="p-5">
-                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+              <div className="lg:p-5">
+                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                   {locale === 'bg' ? 'Съдържание на пакета' : "What's in the Box"}
                 </h4>
                 <ul className="space-y-1.5">
@@ -679,12 +683,12 @@ export function ProductPageContent({
 
         {/* ===== SELLER INFORMATION SECTION ===== */}
         {sellerData && (
-          <div className="mt-10 pt-8">
+          <div className="mt-3 lg:mt-8 pt-3 lg:pt-6 border-t border-border">
             {/* eBay-style two-column layout: Left = Seller Card, Right = Feedback */}
-            <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-3 lg:gap-6">
               
               {/* LEFT COLUMN: About Seller Card with background */}
-              <div className="bg-seller-card border border-seller-card-border rounded-lg p-5 space-y-4 h-fit">
+              <div className="bg-seller-card border border-seller-card-border rounded-lg p-4 space-y-3 h-fit">
                 {/* Compact seller header with stars + hover preview */}
                 <HoverCard openDelay={200} closeDelay={100}>
                   <HoverCardTrigger asChild>
@@ -692,7 +696,7 @@ export function ProductPageContent({
                       href={`/store/${sellerData.id}`}
                       className="flex items-center gap-3 group"
                     >
-                      <Avatar className="h-12 w-12 border bg-background shrink-0">
+                      <Avatar className="h-11 w-11 border bg-background shrink-0">
                         <AvatarFallback className="bg-primary/10 text-primary text-base font-semibold">
                           {sellerData.store_name?.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
@@ -704,7 +708,7 @@ export function ProductPageContent({
                           </span>
                           <span className="text-muted-foreground text-sm shrink-0">({sellerData.feedback_score})</span>
                         </div>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1">
                           <div className="flex items-center gap-0.5">
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star
@@ -730,25 +734,29 @@ export function ProductPageContent({
                     </div>
                     <div className="p-2 space-y-1">
                       {/* Sample seller products - would come from API */}
-                      {images.slice(0, 3).map((img, idx) => (
-                        <Link
-                          key={idx}
-                          href={`/store/${sellerData.id}`}
-                          className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50"
-                        >
-                          <div className="w-12 h-12 border rounded bg-white shrink-0 overflow-hidden">
-                            <Image src={img} alt="" width={48} height={48} className="object-contain w-full h-full" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm truncate">
-                              {locale === 'bg' ? 'Подобен продукт' : 'Similar product'} #{idx + 1}
-                            </p>
-                            <p className="text-sm font-semibold text-primary">
-                              ${(product.price * (0.8 + Math.random() * 0.4)).toFixed(2)}
-                            </p>
-                          </div>
-                        </Link>
-                      ))}
+                      {images.slice(0, 3).map((img, idx) => {
+                        // Deterministic price variation based on index
+                        const priceMultiplier = [0.85, 1.1, 0.95][idx] || 1
+                        return (
+                          <Link
+                            key={idx}
+                            href={`/store/${sellerData.id}`}
+                            className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50"
+                          >
+                            <div className="w-12 h-12 border rounded bg-white shrink-0 overflow-hidden">
+                              <Image src={img} alt="" width={48} height={48} className="object-contain w-full h-full" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm truncate">
+                                {locale === 'bg' ? 'Подобен продукт' : 'Similar product'} #{idx + 1}
+                              </p>
+                              <p className="text-sm font-semibold text-primary">
+                                ${(product.price * priceMultiplier).toFixed(2)}
+                              </p>
+                            </div>
+                          </Link>
+                        )
+                      })}
                     </div>
                     <div className="p-2 border-t border-border">
                       <Link
@@ -774,23 +782,23 @@ export function ProductPageContent({
                 />
 
                 {/* Detailed Ratings - Under buttons on left side */}
-                <div className="pt-4 border-t border-border">
-                  <h3 className="font-semibold mb-3">
+                <div className="pt-3 border-t border-border">
+                  <h3 className="font-semibold text-sm mb-2">
                     {locale === 'bg' ? 'Подробни оценки' : 'Detailed seller ratings'}
                   </h3>
-                  <p className="text-xs text-muted-foreground mb-3">
+                  <p className="text-xs text-muted-foreground mb-2">
                     {locale === 'bg' ? 'Средно за последните 12 месеца' : 'Average for the last 12 months'}
                   </p>
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     {[
                       { label: locale === 'bg' ? 'Точно описание' : 'Accurate description', value: sellerData.ratings.accuracy },
                       { label: locale === 'bg' ? 'Цена за доставка' : 'Reasonable shipping cost', value: sellerData.ratings.shipping_cost },
                       { label: locale === 'bg' ? 'Скорост на доставка' : 'Shipping speed', value: sellerData.ratings.shipping_speed },
                       { label: locale === 'bg' ? 'Комуникация' : 'Communication', value: sellerData.ratings.communication },
                     ].map((rating) => (
-                      <div key={rating.label} className="flex items-center gap-3">
+                      <div key={rating.label} className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground flex-1">{rating.label}</span>
-                        <Progress value={(rating.value / 5) * 100} className="h-2 w-24" />
+                        <Progress value={(rating.value / 5) * 100} className="h-2 w-20" />
                         <span className="text-sm font-medium w-8 text-right">{rating.value.toFixed(1)}</span>
                       </div>
                     ))}
@@ -798,45 +806,37 @@ export function ProductPageContent({
                 </div>
               </div>
 
-              {/* RIGHT COLUMN: Seller Feedback List - fills remaining height */}
+              {/* RIGHT COLUMN: Seller Feedback List */}
               <div className="flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-semibold">
                     {locale === 'bg' ? 'Обратна връзка за продавача' : 'Seller feedback'} 
                     <span className="text-muted-foreground font-normal ml-1">({sellerData.feedback_count})</span>
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground hidden sm:inline">
-                      {locale === 'bg' ? 'Филтър:' : 'Filter:'}
-                    </span>
-                    <Select defaultValue="all">
-                      <SelectTrigger className="w-[140px] h-9">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">{locale === 'bg' ? 'Всички оценки' : 'All ratings'}</SelectItem>
-                        <SelectItem value="positive">{locale === 'bg' ? 'Положителни' : 'Positive'}</SelectItem>
-                        <SelectItem value="neutral">{locale === 'bg' ? 'Неутрални' : 'Neutral'}</SelectItem>
-                        <SelectItem value="negative">{locale === 'bg' ? 'Отрицателни' : 'Negative'}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <Select defaultValue="all">
+                    <SelectTrigger className="w-[130px] h-9 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{locale === 'bg' ? 'Всички оценки' : 'All ratings'}</SelectItem>
+                      <SelectItem value="positive">{locale === 'bg' ? 'Положителни' : 'Positive'}</SelectItem>
+                      <SelectItem value="neutral">{locale === 'bg' ? 'Неутрални' : 'Neutral'}</SelectItem>
+                      <SelectItem value="negative">{locale === 'bg' ? 'Отрицателни' : 'Negative'}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 
-                {/* Feedback List - eBay style, expands to fill space */}
-                <div className="divide-y divide-border flex-1">
+                {/* Feedback List - Compact spacing */}
+                <div className="divide-y divide-border">
                   {sampleFeedback.map((feedback, idx) => (
-                    <div key={idx} className="py-4 first:pt-0">
-                      <div className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" weight="fill" />
+                    <div key={idx} className="py-3 first:pt-0">
+                      <div className="flex items-start gap-2">
+                        <CheckCircle className="w-5 h-5 text-success shrink-0 mt-0.5" weight="fill" />
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                             <span className="text-sm text-muted-foreground">{feedback.user} ({feedback.score})</span>
                             <span className="text-muted-foreground">·</span>
                             <span className="text-sm text-muted-foreground">{feedback.date}</span>
-                            <span className="ml-auto text-xs text-muted-foreground hidden sm:inline">
-                              {locale === 'bg' ? 'Потвърдена покупка' : 'Verified purchase'}
-                            </span>
                           </div>
                           <p className="text-sm text-foreground leading-relaxed">
                             {feedback.text}
@@ -847,7 +847,8 @@ export function ProductPageContent({
                   ))}
                 </div>
                 
-                <Button variant="link" className="mt-4 h-auto p-0 text-primary self-start">
+                {/* See all feedback button - tight margin */}
+                <Button variant="link" className="mt-1 mb-0 h-auto p-0 text-sm text-primary self-start">
                   {locale === 'bg' ? 'Виж цялата обратна връзка' : 'See all feedback'} →
                 </Button>
               </div>
@@ -856,36 +857,40 @@ export function ProductPageContent({
         )}
       </div>
 
-      {/* ===== STICKY BUY BOX - eBay style ===== */}
-      <div 
-        className={cn(
-          "fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg transition-transform duration-300 lg:hidden",
-          showStickyBuyBox ? "translate-y-0" : "translate-y-full"
-        )}
-      >
-        <div className="container max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
-          {/* Mini Product Info */}
-          <div className="shrink-0 w-12 h-12 bg-white border rounded overflow-hidden">
-            <Image
-              src={images[0]}
-              alt={product.title}
-              width={48}
-              height={48}
-              className="object-contain w-full h-full"
-            />
-          </div>
+      {/* ===== MOBILE STICKY BAR - Always visible, 48px min touch targets ===== */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg lg:hidden pb-safe">
+        <div className="px-3 py-3 flex items-center gap-3">
+          {/* Price - Prominent */}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate">{product.title}</p>
-            <p className="text-lg font-bold text-primary">
-              {product.price.toLocaleString(locale === 'bg' ? 'bg-BG' : 'en-US', { style: 'currency', currency: 'BGN' })}
-            </p>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-2xl font-bold text-foreground">US ${product.price.toFixed(2)}</span>
+            </div>
+            {product.original_price && discountPercentage > 0 && (
+              <div className="flex items-center gap-1.5 text-sm">
+                <span className="text-muted-foreground line-through">US ${product.original_price.toFixed(2)}</span>
+                <span className="text-deal-text font-semibold">-{discountPercentage}%</span>
+              </div>
+            )}
           </div>
-          {/* Quick Action */}
-          <Button className="shrink-0 h-10 px-5 rounded-full bg-primary hover:bg-primary/90 font-semibold">
+          {/* Watchlist button */}
+          <button 
+            onClick={() => setIsWatching(!isWatching)}
+            className={cn(
+              "shrink-0 w-12 h-12 flex items-center justify-center rounded-full border-2 transition-colors touch-manipulation active:scale-95",
+              isWatching ? "bg-primary/10 border-primary text-primary" : "border-border text-muted-foreground hover:text-foreground"
+            )}
+            aria-label={isWatching ? (locale === 'bg' ? 'В списъка' : 'Watching') : (locale === 'bg' ? 'Добави' : 'Watch')}
+          >
+            <Heart className={cn("w-6 h-6", isWatching && "fill-current")} weight={isWatching ? "fill" : "regular"} />
+          </button>
+          {/* Buy Now button */}
+          <Button className="shrink-0 h-12 px-8 rounded-full bg-primary hover:bg-primary/90 font-semibold text-base touch-manipulation active:scale-[0.98]">
             {locale === 'bg' ? 'Купи' : 'Buy Now'}
           </Button>
         </div>
       </div>
+
+
 
       {/* Desktop Sticky Buy Box - appears at top */}
       <div 

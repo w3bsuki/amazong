@@ -215,7 +215,7 @@ export function ProductCard({
         {/* Title - 2 lines max - eBay style: normal weight, underline on hover */}
         <h3 className={cn(
           "font-normal text-foreground group-hover:underline line-clamp-2 leading-snug",
-          isGrid ? "text-xs mb-1 min-h-8" : "text-xs sm:text-sm mb-1 sm:mb-1.5 min-h-8 sm:min-h-10"
+          isGrid ? "text-xs mb-1" : "text-xs sm:text-sm mb-1 sm:mb-1.5"
         )}>
           {title}
         </h3>

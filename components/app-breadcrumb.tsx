@@ -3,7 +3,6 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { House } from "@phosphor-icons/react"
-import { cn } from "@/lib/utils"
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -35,18 +34,13 @@ interface AppBreadcrumbProps {
 
 /**
  * Unified Breadcrumb component built on shadcn/ui primitives.
- * Uses Tailwind CSS v4 design tokens for consistent styling.
+ * Follows shadcn/ui + Tailwind CSS v4 best practices.
  * 
- * @example
- * ```tsx
- * <AppBreadcrumb 
- *   items={[
- *     { label: "Electronics", href: "/search?category=electronics" },
- *     { label: "Headphones", href: "/search?category=headphones" },
- *     { label: "Product Name" } // No href = current page
- *   ]}
- * />
- * ```
+ * - Uses semantic HTML: <nav aria-label="breadcrumb"> + <ol>
+ * - Proper ARIA: aria-current="page" on current page
+ * - Separators are aria-hidden
+ * - Accessible for screen readers
+ * - Mobile: horizontal scroll with truncation for long titles
  */
 export function AppBreadcrumb({ 
   items = [], 
@@ -54,28 +48,19 @@ export function AppBreadcrumb({
   showHome = true,
   homeLabel = "Amazong"
 }: AppBreadcrumbProps) {
-  // Defensive null check for items
   const safeItems = items || []
   
   return (
-    <Breadcrumb
-      className={cn(
-        "w-full border-b border-border py-3 mb-4",
-        className
-      )}
-    >
-      <BreadcrumbList className="text-sm text-muted-foreground flex-wrap">
-        {/* Home link */}
-          {showHome && (
+    <Breadcrumb className={className}>
+      <BreadcrumbList>
+        {/* Home link - icon only on mobile */}
+        {showHome && (
           <>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link 
-                  href="/" 
-                  className="inline-flex items-center gap-1.5 text-foreground hover:text-brand hover:underline underline-offset-2 transition-colors min-h-9 px-1"
-                >
-                  <House size={14} weight="regular" aria-hidden="true" />
-                  <span>{homeLabel}</span>
+                <Link href="/" className="flex items-center gap-1">
+                  <House size={16} weight="regular" aria-hidden="true" />
+                  <span className="hidden sm:inline">{homeLabel}</span>
                 </Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -91,20 +76,17 @@ export function AppBreadcrumb({
           return (
             <React.Fragment key={index}>
               {index > 0 && <BreadcrumbSeparator />}
-              <BreadcrumbItem className="min-w-0">
+              <BreadcrumbItem>
                 {isCurrentPage ? (
-                  <BreadcrumbPage className="inline-flex items-center gap-1.5 text-muted-foreground font-normal truncate max-w-[200px] sm:max-w-[300px]">
-                    {item.icon && <span className="shrink-0">{item.icon}</span>}
-                    <span className="truncate">{item.label}</span>
+                  <BreadcrumbPage title={item.label}>
+                    {item.icon && <span className="mr-1" aria-hidden="true">{item.icon}</span>}
+                    {item.label}
                   </BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link 
-                      href={item.href || "#"} 
-                      className="inline-flex items-center gap-1.5 text-foreground hover:text-brand hover:underline underline-offset-2 transition-colors min-h-9 px-1 truncate max-w-[150px] sm:max-w-[200px]"
-                    >
-                      {item.icon && <span className="shrink-0">{item.icon}</span>}
-                      <span className="truncate">{item.label}</span>
+                    <Link href={item.href || "#"} className="whitespace-nowrap">
+                      {item.icon && <span className="mr-1" aria-hidden="true">{item.icon}</span>}
+                      {item.label}
                     </Link>
                   </BreadcrumbLink>
                 )}

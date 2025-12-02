@@ -275,8 +275,8 @@ export default async function SearchPage({
       <div className="container">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar Filters - Hidden on mobile */}
-          <aside className="w-64 hidden lg:block shrink-0">
-            <div className="sticky top-28 pr-4 py-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto border-r border-sidebar-border bg-sidebar">
+          <aside className="w-64 hidden lg:block shrink-0 border-r border-border">
+            <div className="sticky top-28 py-4 pr-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
             <Suspense>
               <SearchFilters 
                 categories={allCategories}

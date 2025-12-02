@@ -1,14 +1,12 @@
 import { notFound } from "next/navigation"
-import Link from "next/link"
 import type { Metadata } from "next"
 import { getTranslations, getLocale } from "next-intl/server"
 import { createClient } from "@/lib/supabase/server"
-import { CaretRight } from "@phosphor-icons/react/dist/ssr"
 import { ProductPageContent } from "@/components/product-page-content-new"
 import { ProductCard } from "@/components/product-card"
-import { StickyAddToCart } from "@/components/sticky-add-to-cart"
 import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
 import { ReviewsSection } from "@/components/reviews-section"
+import { ProductBreadcrumb } from "@/components/product-breadcrumb"
 
 // Helper function to get delivery date
 function getDeliveryDate(locale: string): string {
@@ -142,16 +140,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   // Breadcrumb items
-  const breadcrumbItems = [
-    { label: locale === "bg" ? "Начало" : "Home", href: "/" },
-    ...(parentCategory
-      ? [{ label: parentCategory.name, href: `/search?category=${parentCategory.slug}` }]
-      : []),
-    ...(category
-      ? [{ label: category.name, href: `/search?category=${category.slug}` }]
-      : []),
-    { label: product.title?.slice(0, 40) + (product.title?.length > 40 ? "..." : ""), href: "#" },
-  ]
+  // Breadcrumb data is now built inline in the JSX
 
   return (
     <div className="min-h-screen bg-white dark:bg-background pb-24 lg:pb-10">
@@ -166,29 +155,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
         }}
       />
 
-      {/* Breadcrumb - eBay style: minimal, small text */}
-      <div className="container py-2">
-        <nav className="flex items-center gap-1.5 text-xs text-muted-foreground overflow-x-auto">
-          {breadcrumbItems.map((item, index) => (
-            <span key={item.href + index} className="flex items-center gap-1.5 shrink-0">
-              {index > 0 && <CaretRight className="w-3 h-3 text-muted-foreground/50" />}
-              {index === breadcrumbItems.length - 1 ? (
-                <span className="text-muted-foreground truncate max-w-[200px]">{item.label}</span>
-              ) : (
-                <Link 
-                  href={item.href} 
-                  className="hover:text-primary hover:underline"
-                >
-                  {item.label}
-                </Link>
-              )}
-            </span>
-          ))}
-        </nav>
+      {/* Breadcrumb - Sticky on mobile, below header */}
+      <div className="sticky top-[52px] md:static z-40 bg-background border-b md:border-0">
+        <div className="container py-1.5 lg:py-2">
+          <ProductBreadcrumb
+            locale={locale}
+            category={category ? { name: category.name, slug: category.slug } : null}
+            parentCategory={parentCategory ? { name: parentCategory.name, slug: parentCategory.slug } : null}
+            productTitle={product.title}
+          />
+        </div>
       </div>
 
       {/* Main Product Content - Full width layout with proper container */}
-      <div className="container py-4">
+      <div className="container pt-2 pb-0 lg:py-4">
         <ProductPageContent
           product={{
             id: product.id,
@@ -213,11 +193,35 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       {/* Related Products - eBay "People who viewed" style */}
       {relatedProducts && relatedProducts.length > 0 && (
-        <div className="container py-8">
-          <h2 className="text-lg font-semibold text-foreground mb-4">
+        <div className="container pt-4 pb-3 lg:py-6">
+          <h2 className="text-base lg:text-lg font-semibold text-foreground mb-2 lg:mb-4">
             {locale === "bg" ? "Хората, които разгледаха това, разгледаха и" : "People who viewed this item also viewed"}
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+          
+          {/* Mobile: Horizontal scroll with 2 cards visible */}
+          <div className="lg:hidden -mx-3 px-3">
+            <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2">
+              {relatedProducts.map((p: any, idx: number) => (
+                <div key={p.id} className="shrink-0 w-[calc(50%-5px)] snap-start">
+                  <ProductCard
+                    id={p.id}
+                    title={p.title}
+                    price={p.price}
+                    image={p.images?.[0] || p.image || "/placeholder.svg"}
+                    rating={p.rating || 0}
+                    reviews={p.review_count || 0}
+                    originalPrice={p.list_price}
+                    tags={p.tags || []}
+                    index={idx}
+                    variant="compact"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Desktop: Grid layout */}
+          <div className="hidden lg:grid lg:grid-cols-5 xl:grid-cols-6 gap-3">
             {relatedProducts.map((p: any, idx: number) => (
               <ProductCard
                 key={p.id}
@@ -247,19 +251,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           />
         </div>
       </div>
-
-      {/* Sticky Add to Cart for Mobile */}
-      <StickyAddToCart
-        product={{
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          image: product.images?.[0] || product.image || "/placeholder.svg",
-          seller_id: product.seller_id,
-        }}
-        locale={locale}
-        currentUserId={currentUserId}
-      />
     </div>
   )
 }

@@ -12,7 +12,6 @@ import { getLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
 import { Link } from "@/i18n/routing"
-import { CaretRight, House } from "@phosphor-icons/react/dist/ssr"
 import { cookies } from "next/headers"
 import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
 
@@ -279,40 +278,11 @@ export default async function CategoryPage({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Breadcrumb */}
-      <div className="border-b border-border bg-muted/30">
-        <div className="container py-3">
-          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Link href="/" className="hover:text-foreground transition-colors flex items-center gap-1">
-              <House className="size-4" />
-              <span className="sr-only sm:not-sr-only">{locale === "bg" ? "Начало" : "Home"}</span>
-            </Link>
-            <CaretRight className="size-3.5" />
-            <Link href="/categories" className="hover:text-foreground transition-colors">
-              {locale === "bg" ? "Категории" : "Categories"}
-            </Link>
-            <CaretRight className="size-3.5" />
-            {parentCategory && (
-              <>
-                <Link 
-                  href={`/categories/${parentCategory.slug}`} 
-                  className="hover:text-foreground transition-colors"
-                >
-                  {locale === 'bg' && parentCategory.name_bg ? parentCategory.name_bg : parentCategory.name}
-                </Link>
-                <CaretRight className="size-3.5" />
-              </>
-            )}
-            <span className="text-foreground font-medium">{categoryName}</span>
-          </nav>
-        </div>
-      </div>
-
       <div className="container">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar Filters */}
-          <aside className="w-64 hidden lg:block shrink-0">
-            <div className="sticky top-28 pr-4 py-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto border-r border-sidebar-border bg-sidebar">
+          <aside className="w-64 hidden lg:block shrink-0 border-r border-border">
+            <div className="sticky top-28 py-4 pr-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
             <Suspense>
               <SearchFilters 
                 categories={allCategories}
