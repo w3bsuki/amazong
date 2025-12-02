@@ -26,7 +26,6 @@ import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
 import { useLocale } from "next-intl"
 import Image from "next/image"
-import { categoryBlurDataURL } from "@/lib/image-utils"
 
 interface Category {
   id: string
@@ -36,17 +35,6 @@ interface Category {
   icon?: string | null
   image_url?: string | null
   children?: Category[]
-}
-
-interface SubcategoryProduct {
-  id: string
-  title: string
-  price: number
-  list_price: number | null
-  image: string | null
-  rating: number | null
-  slug: string
-  category_id: string
 }
 
 // Map category slugs to Phosphor icons
@@ -117,12 +105,8 @@ export function CategorySubheader() {
   const [isLoading, setIsLoading] = useState(!categoriesCache)
   const [activeCategory, setActiveCategory] = useState<Category | null>(null)
   const [headerHeight, setHeaderHeight] = useState(64)
-  const [subcategoryProducts, setSubcategoryProducts] = useState<SubcategoryProduct[]>([])
-  const [productsLoading, setProductsLoading] = useState(false)
+  // Products fetching removed - using eBay-style text + banner layout
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  // Cache products per category to prevent re-fetching
-  const productsCache = useRef<Record<string, SubcategoryProduct[]>>({})
-  const fetchingCategoryId = useRef<string | null>(null)
 
   // Measure header height for dropdown positioning
   useEffect(() => {
@@ -189,47 +173,6 @@ export function CategorySubheader() {
       clearTimeout(timeoutRef.current)
     }
     setActiveCategory(category)
-    
-    // Skip if "more-categories" or no children
-    if (category.id === "more-categories" || !category.children?.length) {
-      setSubcategoryProducts([])
-      return
-    }
-    
-    // Check if we already have cached products for this category
-    if (productsCache.current[category.id]) {
-      setSubcategoryProducts(productsCache.current[category.id])
-      setProductsLoading(false)
-      return
-    }
-    
-    // Skip if already fetching this category
-    if (fetchingCategoryId.current === category.id) {
-      return
-    }
-    
-    // Fetch products for this category
-    fetchingCategoryId.current = category.id
-    setProductsLoading(true)
-    
-    fetch(`/api/categories/products?parentId=${category.id}&limit=8`)
-      .then((res) => res.json())
-      .then((data) => {
-        // Convert products object to array
-        const productsArray = Object.values(data.products || {}) as SubcategoryProduct[]
-        const products = productsArray.slice(0, 8)
-        // Cache the products
-        productsCache.current[category.id] = products
-        setSubcategoryProducts(products)
-      })
-      .catch((err) => {
-        console.error("Failed to fetch products:", err)
-        setSubcategoryProducts([])
-      })
-      .finally(() => {
-        fetchingCategoryId.current = null
-        setProductsLoading(false)
-      })
   }, [])
 
   const handleMouseLeave = useCallback(() => {
@@ -358,147 +301,151 @@ export function CategorySubheader() {
             onMouseLeave={handleMouseLeave}
           >
             <div className="container p-5 max-h-(--mega-menu-max-height) overflow-y-auto">
-              {/* Category Header */}
-              <div className="flex items-center justify-between mb-4 pb-2 border-b border-border">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-brand">
-                    {activeCategory.id === "more-categories" 
-                      ? <DotsThree size={20} weight="bold" />
-                      : getCategoryIcon(activeCategory.slug)
-                    }
-                  </span>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    {getCategoryName(activeCategory)}
-                  </h3>
-                </div>
-                {activeCategory.id !== "more-categories" && (
-                  <Link
-                    href={`/categories/${activeCategory.slug}`}
-                    onClick={() => setActiveCategory(null)}
-                    className="text-sm font-medium text-brand hover:text-brand/80 transition-colors flex items-center gap-1"
-                  >
-                    {locale === "bg" ? "Виж всички" : "Browse all"}
-                    <CaretRight size={16} weight="regular" />
-                  </Link>
-                )}
-              </div>
-
-              {/* Subcategory/Category Grid - consistent sizing with products */}
-              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2">
-                {activeCategory.children.slice(0, 8).map((subcat) => (
-                  <Link
-                    key={subcat.id}
-                    href={activeCategory.id === "more-categories" 
-                      ? `/categories/${subcat.slug}` 
-                      : `/search?category=${subcat.slug}`
-                    }
-                    onClick={() => setActiveCategory(null)}
-                    className="group flex flex-col gap-1.5 p-2 rounded-lg hover:bg-accent/50 transition-colors"
-                  >
-                    {/* Square Image - same size as product cards */}
-                    <div className="aspect-square rounded-md overflow-hidden bg-muted ring-1 ring-border/40 group-hover:ring-brand/60 transition-all duration-100">
-                      <Image
-                        src={getSubcategoryImage(subcat.slug, subcat.image_url)}
-                        alt={getCategoryName(subcat)}
-                        width={120}
-                        height={120}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                        placeholder="blur"
-                        blurDataURL={categoryBlurDataURL()}
-                        loading="lazy"
-                      />
-                    </div>
-                    {/* Label */}
-                    <span className="text-xs text-center font-medium text-foreground line-clamp-2 leading-tight">
-                      {getCategoryName(subcat)}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-
-              {/* Show more link */}
-              {activeCategory.children.length > 8 && (
-                <div className="mt-4 pt-2 border-t border-border">
-                  <Link
-                    href={activeCategory.id === "more-categories" ? "/categories" : `/categories/${activeCategory.slug}`}
-                    onClick={() => setActiveCategory(null)}
-                    className="inline-flex items-center gap-1 text-sm font-medium text-brand hover:text-brand/80 transition-colors"
-                  >
-                    {locale === "bg" 
-                      ? `Виж всички ${activeCategory.id === "more-categories" ? categories.length : activeCategory.children.length} ${activeCategory.id === "more-categories" ? "категории" : "подкатегории"}` 
-                      : `View all ${activeCategory.id === "more-categories" ? categories.length : activeCategory.children.length} ${activeCategory.id === "more-categories" ? "categories" : "subcategories"}`}
-                    <CaretRight size={16} weight="regular" />
-                  </Link>
-                </div>
-              )}
-
-              {/* Recommended Products - 1 Row Only */}
-              {activeCategory.id !== "more-categories" && (
-                <div className="mt-5 pt-4 border-t border-border">
-                  <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <span>{locale === "bg" ? "Препоръчани продукти" : "Recommended Products"}</span>
-                  </h4>
-                  
-                  {productsLoading ? (
-                    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2">
-                      {[...Array(8)].map((_, i) => (
-                        <div key={i} className="animate-pulse p-2">
-                          <div className="aspect-square bg-muted rounded-md mb-2" />
-                          <div className="h-3 bg-muted rounded w-3/4 mb-1" />
-                          <div className="h-3 bg-muted rounded w-1/2" />
-                        </div>
+              {/* eBay-style Layout: Text Columns + Promotional Banner */}
+              <div className="flex gap-6">
+                {/* Left Side: Text Navigation (50%) */}
+                <div className="flex-1 flex gap-8">
+                  {/* Column 1: Most Popular Categories */}
+                  <div className="flex-1">
+                    <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border flex items-center gap-2">
+                      <span className="text-brand">
+                        {activeCategory.id === "more-categories" 
+                          ? <DotsThree size={18} weight="bold" />
+                          : getCategoryIcon(activeCategory.slug)
+                        }
+                      </span>
+                      {locale === "bg" ? "Популярни категории" : "Most popular"}
+                    </h4>
+                    <ul className="space-y-1">
+                      {activeCategory.children.slice(0, 7).map((subcat) => (
+                        <li key={subcat.id}>
+                          <Link
+                            href={activeCategory.id === "more-categories" 
+                              ? `/categories/${subcat.slug}` 
+                              : `/search?category=${subcat.slug}`
+                            }
+                            onClick={() => setActiveCategory(null)}
+                            className="text-sm text-foreground hover:text-brand hover:underline transition-colors block py-0.5"
+                          >
+                            {getCategoryName(subcat)}
+                          </Link>
+                        </li>
                       ))}
-                    </div>
-                  ) : subcategoryProducts.length > 0 ? (
-                    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2">
-                      {subcategoryProducts.map((product) => (
+                    </ul>
+                  </div>
+
+                  {/* Column 2: More Categories */}
+                  {activeCategory.children.length > 7 && (
+                    <div className="flex-1">
+                      <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
+                        {locale === "bg" ? "Още категории" : "More categories"}
+                      </h4>
+                      <ul className="space-y-1">
+                        {activeCategory.children.slice(7, 14).map((subcat) => (
+                          <li key={subcat.id}>
+                            <Link
+                              href={activeCategory.id === "more-categories" 
+                                ? `/categories/${subcat.slug}` 
+                                : `/search?category=${subcat.slug}`
+                              }
+                              onClick={() => setActiveCategory(null)}
+                              className="text-sm text-foreground hover:text-brand hover:underline transition-colors block py-0.5"
+                            >
+                              {getCategoryName(subcat)}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                      {/* View All Link */}
+                      {activeCategory.children.length > 14 && (
                         <Link
-                          key={product.id}
-                          href={`/products/${product.slug}`}
+                          href={activeCategory.id === "more-categories" ? "/categories" : `/categories/${activeCategory.slug}`}
                           onClick={() => setActiveCategory(null)}
-                          className="group flex flex-col gap-1.5 p-2 rounded-lg hover:bg-accent/50 transition-colors"
+                          className="inline-flex items-center gap-1 mt-3 text-sm font-medium text-brand hover:text-brand/80 transition-colors"
                         >
-                          {product.image && (
-                            <div className="aspect-square rounded-md overflow-hidden bg-muted ring-1 ring-border/40 group-hover:ring-brand/60 transition-all">
-                              <Image
-                                src={product.image}
-                                alt={product.title}
-                                width={120}
-                                height={120}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                                loading="lazy"
-                              />
-                            </div>
-                          )}
-                          <p className="text-xs font-medium text-foreground line-clamp-2 leading-tight">
-                            {product.title}
-                          </p>
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-bold text-brand">
-                              {product.price.toFixed(2)} лв.
-                            </span>
-                            {product.list_price && product.list_price > product.price && (
-                              <span className="text-xs text-muted-foreground line-through">
-                                {product.list_price.toFixed(2)}
-                              </span>
-                            )}
+                          {locale === "bg" 
+                            ? `Виж всички (${activeCategory.children.length})` 
+                            : `View all (${activeCategory.children.length})`}
+                          <CaretRight size={14} weight="bold" />
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Right Side: Promotional Banner (50%) */}
+                {activeCategory.id !== "more-categories" && (
+                  <div className="flex-1 max-w-[50%]">
+                    <Link
+                      href={`/categories/${activeCategory.slug}`}
+                      onClick={() => setActiveCategory(null)}
+                      className="block relative h-full min-h-[200px] rounded-lg overflow-hidden group"
+                    >
+                      {/* Banner Image */}
+                      <Image
+                        src={getSubcategoryImage(activeCategory.slug, activeCategory.image_url)}
+                        alt={getCategoryName(activeCategory)}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
+                      {/* Banner Content */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <span className="inline-block px-2 py-0.5 mb-2 text-xs font-bold uppercase tracking-wide bg-brand rounded">
+                          {getCategoryName(activeCategory)}
+                        </span>
+                        <h3 className="text-lg font-bold mb-1">
+                          {locale === "bg" ? "Открийте най-доброто" : "Discover the best"}
+                        </h3>
+                        <p className="text-sm opacity-90 mb-2">
+                          {locale === "bg" 
+                            ? `Над ${activeCategory.children.length} подкатегории` 
+                            : `Over ${activeCategory.children.length} subcategories`}
+                        </p>
+                        <span className="inline-flex items-center gap-1 text-sm font-semibold text-white group-hover:gap-2 transition-all">
+                          {locale === "bg" ? "Разгледай" : "Shop now"}
+                          <CaretRight size={16} weight="bold" />
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                )}
+
+                {/* More Categories: Show all categories in grid */}
+                {activeCategory.id === "more-categories" && (
+                  <div className="flex-1 max-w-[50%]">
+                    <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
+                      {locale === "bg" ? "Всички категории" : "All categories"}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {activeCategory.children.slice(0, 6).map((subcat) => (
+                        <Link
+                          key={subcat.id}
+                          href={`/categories/${subcat.slug}`}
+                          onClick={() => setActiveCategory(null)}
+                          className="flex items-center gap-2 p-2 rounded-md hover:bg-accent/50 transition-colors group"
+                        >
+                          <div className="w-10 h-10 rounded-md overflow-hidden bg-muted ring-1 ring-border/40 shrink-0">
+                            <Image
+                              src={getSubcategoryImage(subcat.slug, subcat.image_url)}
+                              alt={getCategoryName(subcat)}
+                              width={40}
+                              height={40}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              loading="lazy"
+                            />
                           </div>
-                          {product.rating && (
-                            <div className="flex items-center gap-0.5">
-                              <span className="text-xs text-amber-500">★</span>
-                              <span className="text-xs text-muted-foreground">{product.rating.toFixed(1)}</span>
-                            </div>
-                          )}
+                          <span className="text-sm font-medium text-foreground group-hover:text-brand transition-colors">
+                            {getCategoryName(subcat)}
+                          </span>
                         </Link>
                       ))}
                     </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {locale === "bg" ? "Няма препоръчани продукти" : "No recommended products"}
-                    </p>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
