@@ -47,6 +47,7 @@ import {
 import { cn } from "@/lib/utils"
 import { AddToCart } from "@/components/add-to-cart"
 import { ContactSellerButton } from "@/components/contact-seller-button"
+import { useWishlist } from "@/lib/wishlist-context"
 
 interface ProductPageContentProps {
   product: {
@@ -95,11 +96,30 @@ export function ProductPageContent({
   t: _t, // TODO: Replace inline locale checks with t.* translations
 }: ProductPageContentProps) {
   const [selectedImage, setSelectedImage] = useState(0)
-  const [isWatching, setIsWatching] = useState(false)
   const [isZoomOpen, setIsZoomOpen] = useState(false)
   const [showStickyBuyBox, setShowStickyBuyBox] = useState(false)
+  const [isWishlistPending, setIsWishlistPending] = useState(false)
+  
+  // Use wishlist context for persisting to database
+  const { isInWishlist, toggleWishlist } = useWishlist()
+  const isWatching = isInWishlist(product.id)
   
   const buyBoxRef = useRef<HTMLDivElement>(null)
+
+  // Handle wishlist toggle
+  const handleWishlistToggle = async () => {
+    setIsWishlistPending(true)
+    try {
+      await toggleWishlist({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.images[0] || "/placeholder.svg",
+      })
+    } finally {
+      setIsWishlistPending(false)
+    }
+  }
 
   // Sticky buy box scroll detection
   useEffect(() => {
@@ -292,13 +312,14 @@ export function ProductPageContent({
                   <div className="flex items-center gap-1 bg-white/80 hover:bg-white rounded-full px-2 py-1 transition-colors">
                     <span className="text-xs font-medium text-muted-foreground">{watchCount}</span>
                     <button 
-                      onClick={() => setIsWatching(!isWatching)}
+                      onClick={handleWishlistToggle}
+                      disabled={isWishlistPending}
                       aria-label={isWatching ? (locale === 'bg' ? 'Премахни от списък' : 'Remove from watchlist') : (locale === 'bg' ? 'Добави в списък' : 'Add to watchlist')}
                       aria-pressed={isWatching}
-                      className="w-7 h-7 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform touch-manipulation"
+                      className={cn("w-7 h-7 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform touch-manipulation", isWishlistPending && "opacity-50")}
                     >
                       <Heart 
-                        className={cn("w-5 h-5", isWatching ? "fill-deal text-deal" : "text-foreground/70")} 
+                        className={cn("w-5 h-5", isWatching ? "fill-deal text-deal" : "text-foreground/70", isWishlistPending && "animate-pulse")} 
                         weight={isWatching ? "fill" : "regular"}
                       />
                     </button>
@@ -550,13 +571,14 @@ export function ProductPageContent({
               />
               <Button 
                 variant="outline" 
+                disabled={isWishlistPending}
                 className={cn(
                   "w-full h-12 text-base font-semibold rounded-full gap-2 border-primary text-primary hover:bg-primary/5 active:scale-[0.98] touch-manipulation transition-transform",
                   isWatching && "bg-blue-50 border-primary text-primary dark:bg-primary/10"
                 )}
-                onClick={() => setIsWatching(!isWatching)}
+                onClick={handleWishlistToggle}
               >
-                <Heart className={cn("w-5 h-5", isWatching && "fill-current")} weight={isWatching ? "fill" : "regular"} />
+                <Heart className={cn("w-5 h-5", isWatching && "fill-current", isWishlistPending && "animate-pulse")} weight={isWatching ? "fill" : "regular"} />
                 {isWatching 
                   ? (locale === 'bg' ? 'В списъка' : 'Watching') 
                   : (locale === 'bg' ? 'Добави в списък' : 'Add to Watchlist')
@@ -872,16 +894,18 @@ export function ProductPageContent({
           </div>
           {/* Watchlist button */}
           <button 
-            onClick={() => setIsWatching(!isWatching)}
+            onClick={handleWishlistToggle}
+            disabled={isWishlistPending}
             className={cn(
               "shrink-0 size-11 flex items-center justify-center rounded-full border transition-all duration-200 touch-manipulation active:scale-95",
               isWatching 
                 ? "bg-primary/10 border-primary text-primary" 
-                : "border-input bg-background text-muted-foreground hover:text-foreground hover:border-foreground/20"
+                : "border-input bg-background text-muted-foreground hover:text-foreground hover:border-foreground/20",
+              isWishlistPending && "opacity-50"
             )}
             aria-label={isWatching ? (locale === 'bg' ? 'В списъка' : 'Watching') : (locale === 'bg' ? 'Добави' : 'Watch')}
           >
-            <Heart className={cn("size-5", isWatching && "fill-current")} weight={isWatching ? "fill" : "regular"} />
+            <Heart className={cn("size-5", isWatching && "fill-current", isWishlistPending && "animate-pulse")} weight={isWatching ? "fill" : "regular"} />
           </button>
           {/* Buy Now button */}
           <Button 

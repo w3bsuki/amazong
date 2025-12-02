@@ -6,14 +6,15 @@ import {
     HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
-import { Link, useRouter } from "@/i18n/routing"
+import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { User } from "@supabase/supabase-js"
 import { useCart } from "@/lib/cart-context"
-import { ShoppingCart, Package, ArrowCounterClockwise, Truck, MapPin, Minus, Plus, Trash, ChatCircle, PaperPlaneTilt, Bell, Clock, TrendUp, X, CaretRight, Storefront } from "@phosphor-icons/react"
+import { ShoppingCart, Package, ArrowCounterClockwise, Truck, MapPin, Minus, Plus, Trash, ChatCircle, PaperPlaneTilt, Bell, Clock, TrendUp, X, CaretRight, SpinnerGap } from "@phosphor-icons/react"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
+import { createClient } from "@/lib/supabase/client"
 
 interface AccountDropdownProps {
     user: User | null
@@ -21,10 +22,19 @@ interface AccountDropdownProps {
 
 export function AccountDropdown({ user }: AccountDropdownProps) {
     const t = useTranslations('Header')
-    const router = useRouter()
+    const [isSigningOut, setIsSigningOut] = useState(false)
 
     const handleSignOut = async () => {
-        router.push('/api/auth/sign-out')
+        try {
+            setIsSigningOut(true)
+            const supabase = createClient()
+            await supabase.auth.signOut()
+            // Force hard navigation to clear all state
+            window.location.href = '/'
+        } catch (error) {
+            console.error('Sign out error:', error)
+            setIsSigningOut(false)
+        }
     }
 
     return (
@@ -60,9 +70,17 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                             <p className="text-sm font-medium">{t('hello')}, {user.email}</p>
                             <Button
                                 onClick={handleSignOut}
-                                className="w-56 h-[30px] text-xs bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text"
+                                disabled={isSigningOut}
+                                className="w-56 h-[30px] text-xs bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text disabled:opacity-70"
                             >
-                                {t('signOut')}
+                                {isSigningOut ? (
+                                    <>
+                                        <SpinnerGap className="size-4 animate-spin mr-2" />
+                                        {t('signingOut') || 'Signing out...'}
+                                    </>
+                                ) : (
+                                    t('signOut')
+                                )}
                             </Button>
                         </div>
                     )}
@@ -121,14 +139,6 @@ export function CartDropdown() {
             <HoverCardTrigger asChild>
                 <Link href="/cart" aria-label={tNav('cart')}>
                     <Button variant="ghost" className="h-12 flex items-center gap-1.5 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
-                        <div className="relative">
-                            <ShoppingCart size={24} weight="regular" className="group-hover:text-brand" aria-hidden="true" />
-                            {mounted && displayItems > 0 && (
-                                <span className="absolute -top-0.5 -right-1 bg-badge-deal text-white text-[9px] font-medium min-w-4 h-4 flex items-center justify-center rounded-full px-0.5" aria-hidden="true">
-                                    {displayItems}
-                                </span>
-                            )}
-                        </div>
                         <div className="flex flex-col items-start leading-none gap-0">
                             <span className="text-[10px] text-header-text-muted group-hover:text-brand">
                                 {mounted ? `${displayItems} ${displayItems === 1 ? (locale === 'bg' ? 'артикул' : 'item') : (locale === 'bg' ? 'артикула' : 'items')}` : (locale === 'bg' ? 'Количка' : 'Cart')}
@@ -271,7 +281,6 @@ export function OrdersDropdown({ user }: OrdersDropdownProps) {
             <HoverCardTrigger asChild>
                 <Link href="/account/orders">
                     <Button variant="ghost" className="h-12 hidden lg:flex items-center gap-2 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
-                        <Package size={20} weight="regular" className="text-header-text group-hover:text-brand" />
                         <div className="flex flex-col items-start leading-none gap-0">
                             <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('yourOrders')}</span>
                             <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('ordersLabel')}</span>
@@ -361,7 +370,6 @@ export function SellingDropdown({ user }: SellingDropdownProps) {
             <HoverCardTrigger asChild>
                 <Link href="/sell">
                     <Button variant="ghost" className="h-12 hidden lg:flex items-center gap-2 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
-                        <Storefront size={20} weight="regular" className="text-header-text group-hover:text-brand" />
                         <div className="flex flex-col items-start leading-none gap-0">
                             <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('startSelling')}</span>
                             <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('sell')}</span>
@@ -627,7 +635,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
                 <Link href="/account/messages">
                     <Button variant="ghost" className="h-12 flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
                         <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('messages')}</span>
-                        <span className="text-sm font-medium mt-0.5">{tNav('messagesLabel')}</span>
+                        <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('messagesLabel')}</span>
                     </Button>
                 </Link>
             </HoverCardTrigger>

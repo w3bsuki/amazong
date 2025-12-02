@@ -9,14 +9,13 @@ import {
     MapPin, 
     User, 
     ChatCircle as MessageSquare,
-    SignOut,
     House,
     Crown,
     Storefront
 } from "@phosphor-icons/react/dist/ssr";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { SignOutButton } from "@/components/sign-out-button";
 
 /**
  * Account Layout
@@ -129,19 +128,11 @@ export default async function AccountLayout({
                                 {initials}
                             </AvatarFallback>
                         </Avatar>
-                        <form action="/auth/signout" method="post">
-                            <Button 
-                                variant="ghost" 
-                                size="sm"
-                                type="submit"
-                                className="text-muted-foreground hover:text-foreground"
-                            >
-                                <SignOut className="size-4" />
-                                <span className="hidden sm:inline ml-1.5">
-                                    {locale === 'bg' ? 'Изход' : 'Sign Out'}
-                                </span>
-                            </Button>
-                        </form>
+                        <SignOutButton 
+                            locale={locale}
+                            className="text-muted-foreground hover:text-foreground"
+                            labelClassName="hidden sm:inline ml-1.5"
+                        />
                     </div>
                 </div>
             </header>

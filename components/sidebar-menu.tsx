@@ -54,7 +54,8 @@ import {
     Flower,
     PaintBrush,
     SignOut,
-    Storefront
+    Storefront,
+    SpinnerGap
 } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -65,11 +66,12 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Link, useRouter } from "@/i18n/routing"
+import { Link } from "@/i18n/routing"
 import { useState, useEffect } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { User as SupabaseUser } from "@supabase/supabase-js"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
 
 interface Category {
     id: string
@@ -136,9 +138,9 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
     const [categories, setCategories] = useState<Category[]>([])
     const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({})
     const [isLoading, setIsLoading] = useState(true)
+    const [isSigningOut, setIsSigningOut] = useState(false)
     const t = useTranslations('Sidebar')
     const locale = useLocale()
-    const router = useRouter()
 
     // Get display name from user metadata or email
     const getUserDisplayName = () => {
@@ -182,8 +184,17 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
     }
 
     const handleSignOut = async () => {
+        setIsSigningOut(true)
         setOpen(false)
-        router.push('/api/auth/sign-out')
+        try {
+            const supabase = createClient()
+            await supabase.auth.signOut()
+            // Force hard navigation to clear all state
+            window.location.href = '/'
+        } catch (error) {
+            console.error('Sign out error:', error)
+            setIsSigningOut(false)
+        }
     }
 
     const quickLinks = [
@@ -585,10 +596,15 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                             {isLoggedIn && (
                                 <button
                                     onClick={handleSignOut}
-                                    className="w-full flex items-center justify-center gap-2 min-h-11 text-sm font-medium text-destructive hover:bg-destructive/10 active:bg-destructive/15 rounded-lg transition-colors touch-action-manipulation tap-transparent"
+                                    disabled={isSigningOut}
+                                    className="w-full flex items-center justify-center gap-2 min-h-11 text-sm font-medium text-destructive hover:bg-destructive/10 active:bg-destructive/15 rounded-lg transition-colors touch-action-manipulation tap-transparent disabled:opacity-70"
                                 >
-                                    <SignOut size={18} weight="regular" />
-                                    {locale === 'bg' ? 'Излез' : 'Sign Out'}
+                                    {isSigningOut ? (
+                                        <SpinnerGap size={18} className="animate-spin" />
+                                    ) : (
+                                        <SignOut size={18} weight="regular" />
+                                    )}
+                                    {isSigningOut ? (locale === 'bg' ? 'Излизане...' : 'Signing out...') : (locale === 'bg' ? 'Излез' : 'Sign Out')}
                                 </button>
                             )}
                         </div>
