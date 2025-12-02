@@ -85,7 +85,7 @@ export default async function LocaleLayout({
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>
-            <body className={`${inter.className} ${inter.variable} bg-background min-h-screen overflow-x-hidden`}>
+            <body className={`${inter.className} ${inter.variable} bg-background min-h-screen`}>
                 <NextIntlClientProvider messages={messages}>
                     <AuthStateListener />
                     <CartProvider>
