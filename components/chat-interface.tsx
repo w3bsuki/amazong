@@ -223,7 +223,7 @@ export function ChatInterface({
                       isOwn ? "justify-end" : "justify-start"
                     )}>
                       <span className={cn(
-                        "text-[10px]",
+                        "text-xs",
                         isOwn ? "text-white/70" : "text-muted-foreground"
                       )}>
                         {format(new Date(message.created_at), "HH:mm")}

@@ -125,7 +125,7 @@ export function MobileFilters({ categories, currentCategory, locale, resultsCoun
         )} />
         <span>{t('filters')}</span>
         {filterCount > 0 && (
-          <span className="bg-primary text-primary-foreground text-[11px] font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
+          <span className="bg-primary text-primary-foreground text-xs font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
             {filterCount}
           </span>
         )}

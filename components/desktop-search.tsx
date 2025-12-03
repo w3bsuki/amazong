@@ -108,7 +108,7 @@ export function DesktopSearch() {
                     ? "Търси продукти, марки и още..."
                     : "Search products, brands, and more..."
                 }
-                className="h-full border-0 rounded-none focus-visible:ring-0 text-foreground pl-10 pr-10 text-sm placeholder:text-muted-foreground bg-transparent"
+                className="h-full border-0 rounded-none focus-visible:ring-0 text-foreground pl-10 pr-10 text-base placeholder:text-muted-foreground bg-transparent"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => setIsOpen(true)}
@@ -301,7 +301,7 @@ export function DesktopSearch() {
                       onClick={() => handleSelectSearch(search)}
                       className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-md text-left group"
                     >
-                      <div className="w-5 h-5 rounded-full bg-linear-to-br from-deal to-primary flex items-center justify-center text-[10px] font-bold text-white">
+                      <div className="w-5 h-5 rounded-full bg-linear-to-br from-deal to-primary flex items-center justify-center text-xs font-bold text-white">
                         {i + 1}
                       </div>
                       <span className="text-sm text-foreground group-hover:text-brand flex-1">
@@ -346,13 +346,13 @@ export function DesktopSearch() {
           <div className="px-4 py-2 bg-muted/50 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
             <span>
               {locale === "bg" ? "Натисни" : "Press"}{" "}
-              <kbd className="px-1.5 py-0.5 bg-background rounded border text-[10px] font-mono">
+              <kbd className="px-1.5 py-0.5 bg-background rounded border text-xs font-mono">
                 Enter
               </kbd>{" "}
               {locale === "bg" ? "за търсене" : "to search"}
             </span>
             <span>
-              <kbd className="px-1.5 py-0.5 bg-background rounded border text-[10px] font-mono">
+              <kbd className="px-1.5 py-0.5 bg-background rounded border text-xs font-mono">
                 Esc
               </kbd>{" "}
               {locale === "bg" ? "за затваряне" : "to close"}

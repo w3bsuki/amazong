@@ -141,7 +141,7 @@ export default async function SellersPage() {
                           {seller.store_name}
                         </h3>
                         {seller.verified && (
-                          <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] px-1.5 py-0 shrink-0">
+                          <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs px-1.5 py-0 shrink-0">
                             {locale === 'bg' ? 'Потвърден' : 'Verified'}
                           </Badge>
                         )}

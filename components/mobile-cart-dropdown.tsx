@@ -57,7 +57,7 @@ export function MobileCartDropdown() {
                     <ShoppingCart size={24} weight="regular" className="text-header-text" aria-hidden="true" />
                     {mounted && totalItems > 0 && (
                         <span 
-                            className="absolute top-0.5 right-0 bg-badge-deal text-white text-[9px] font-bold min-w-4 h-4 flex items-center justify-center rounded-full px-0.5" 
+                            className="absolute top-0.5 right-0 bg-badge-deal text-white text-xs font-bold min-w-4 h-4 flex items-center justify-center rounded-full px-0.5" 
                             aria-hidden="true"
                         >
                             {totalItems}

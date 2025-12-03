@@ -90,7 +90,7 @@ export function MobileTabBar({ onMenuClick }: MobileTabBarProps) {
                 aria-label={label}
               >
                 {tab.icon}
-                <span className="text-[10px] font-normal">{label}</span>
+                <span className="text-xs font-normal">{label}</span>
               </button>
             )
           }
@@ -112,12 +112,12 @@ export function MobileTabBar({ onMenuClick }: MobileTabBarProps) {
               <span className="relative">
                 {tab.icon}
                 {tab.id === "cart" && cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-badge-deal text-white text-[10px] font-medium rounded-full min-w-4 h-4 flex items-center justify-center px-1">
+                  <span className="absolute -top-1 -right-2 bg-badge-deal text-white text-xs font-medium rounded-full min-w-4 h-4 flex items-center justify-center px-1">
                     {cartItemCount > 99 ? "99+" : cartItemCount}
                   </span>
                 )}
               </span>
-              <span className="text-[10px] font-normal">{label}</span>
+              <span className="text-xs font-normal">{label}</span>
             </Link>
           )
         })}

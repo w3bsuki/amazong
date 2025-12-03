@@ -21,7 +21,7 @@ const sizeClasses = {
   },
   md: {
     symbol: 'text-sm',
-    whole: 'text-2xl sm:text-[28px]',
+    whole: 'text-2xl sm:text-3xl',
     decimal: 'text-sm',
     original: 'text-sm'
   },

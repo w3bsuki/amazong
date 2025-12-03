@@ -139,7 +139,7 @@ function ConversationItem({ conversation, isSelected, onClick }: ConversationIte
 
       {/* Unread badge */}
       {unreadCount > 0 && (
-        <span className="inline-block mt-1 text-[10px] bg-[#067D68] text-white px-1.5 py-0.5 rounded">
+        <span className="inline-block mt-1 text-xs bg-[#067D68] text-white px-1.5 py-0.5 rounded">
           {unreadCount} new
         </span>
       )}

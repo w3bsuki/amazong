@@ -123,7 +123,7 @@ export function AddToCart({
             <Button
                 onClick={handleAddToCart}
                 disabled={isPending || isOwnProduct}
-                className="w-full bg-cta-add-cart hover:bg-cta-add-cart-hover text-foreground border-none rounded-sm h-9 text-[13px] font-normal disabled:opacity-50"
+                className="w-full bg-cta-add-cart hover:bg-cta-add-cart-hover text-foreground border-none rounded-sm h-9 text-sm font-normal disabled:opacity-50"
                 title={isOwnProduct ? "You cannot purchase your own products" : undefined}
             >
                 {isPending ? "Adding..." : isOwnProduct ? "Your Product" : t('addToCart')}
@@ -132,7 +132,7 @@ export function AddToCart({
                 <Button
                     onClick={handleBuyNow}
                     disabled={isOwnProduct}
-                    className="w-full bg-cta-buy-now hover:bg-cta-buy-now/90 text-white border-none rounded-sm h-9 text-[13px] font-normal disabled:opacity-50"
+                    className="w-full bg-cta-buy-now hover:bg-cta-buy-now/90 text-white border-none rounded-sm h-9 text-sm font-normal disabled:opacity-50"
                     title={isOwnProduct ? "You cannot purchase your own products" : undefined}
                 >
                     {t('buyNow')}

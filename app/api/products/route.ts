@@ -4,6 +4,14 @@ import { NextResponse } from "next/server"
 import { createClient as createServerClient } from "@/lib/supabase/server"
 import { z } from "zod"
 
+// Attribute schema
+const attributeSchema = z.object({
+    attribute_id: z.string().uuid().nullable(),
+    name: z.string().min(1),
+    value: z.string().min(1),
+    is_custom: z.boolean().default(false),
+})
+
 // Server-side validation schema matching DB constraints
 const productSchema = z.object({
     title: z.string().min(5).max(200),
@@ -18,6 +26,7 @@ const productSchema = z.object({
         url: z.string().url(),
         thumbnailUrl: z.string().url()
     })).min(1, "At least one image is required"),
+    attributes: z.array(attributeSchema).optional(),
 })
 
 export async function POST(request: Request) {
@@ -46,6 +55,7 @@ export async function POST(request: Request) {
             tags: Array.isArray(body.tags) ? body.tags : [],
             listingType: body.listingType || "normal",
             images: body.images,
+            attributes: Array.isArray(body.attributes) ? body.attributes : [],
         })
 
         if (!parseResult.success) {
@@ -115,7 +125,27 @@ export async function POST(request: Request) {
             // Product was created, log error but don't fail
         }
 
-        // 6. If boosted, create a listing_boost record for tracking
+        // 7. Save product attributes (Item Specifics)
+        if (data.attributes && data.attributes.length > 0) {
+            const attributeRecords = data.attributes.map(attr => ({
+                product_id: product.id,
+                attribute_id: attr.attribute_id,
+                name: attr.name,
+                value: attr.value,
+                is_custom: attr.is_custom,
+            }))
+
+            const { error: attrError } = await supabaseAdmin
+                .from('product_attributes')
+                .insert(attributeRecords)
+
+            if (attrError) {
+                console.error("Product Attributes Insert Error:", attrError)
+                // Product was created, log error but don't fail
+            }
+        }
+
+        // 8. If boosted, create a listing_boost record for tracking
         if (isBoosted) {
             await supabaseAdmin
                 .from('listing_boosts')

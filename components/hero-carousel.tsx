@@ -160,7 +160,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
                 
                 <Link 
                   href={slide.link}
-                  className={`inline-flex items-center gap-1 sm:gap-2 ${slide.accent} hover:brightness-110 text-white font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-sm text-xs sm:text-sm tap-transparent`}
+                  className={`inline-flex items-center gap-1 sm:gap-2 ${slide.accent} hover:opacity-90 text-white font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-sm text-xs sm:text-sm tap-transparent`}
                 >
                   {slide.cta}
                   <CaretRight size={14} weight="regular" className="sm:size-4" />
@@ -194,10 +194,10 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
             key={index}
             onClick={() => scrollToSlide(index)}
             className={cn(
-              "size-2 rounded-full tap-transparent transition-transform",
+              "size-2 rounded-full tap-transparent",
               currentSlide === index 
-                ? "bg-white scale-125" 
-                : "bg-white/50 hover:bg-white/75"
+                ? "bg-white" 
+                : "bg-white/50"
             )}
             aria-label={`Go to slide ${index + 1}`}
           />

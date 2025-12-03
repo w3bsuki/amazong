@@ -42,12 +42,12 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
             <HoverCardTrigger asChild>
                 <Link href={user ? "/account" : "/auth/login"}>
                     <Button variant="ghost" className="h-12 flex flex-col items-start leading-none gap-0 text-header-text border border-transparent hover:border-header-text/20 rounded-sm p-2 px-3 hover:text-brand group">
-                        <span className="text-[10px] text-header-text-muted group-hover:text-brand">
+                        <span className="text-xs text-header-text-muted group-hover:text-brand">
                             {user ? `${t('hello')}, ${user.email?.split('@')[0]}` : t('helloSignIn')}
                         </span>
                         <span className="font-medium text-sm flex items-center gap-1 mt-0.5">
                             {t('accountAndLists')}
-                            <span className="text-[10px] text-header-text-muted group-hover:text-brand">▼</span>
+                            <span className="text-xs text-header-text-muted group-hover:text-brand">▼</span>
                         </span>
                     </Button>
                 </Link>
@@ -57,11 +57,11 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                     {!user ? (
                         <>
                             <Link href="/auth/login" className="w-56">
-                                <Button className="w-full bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text rounded-md h-[30px] font-normal text-[13px]">
+                                <Button className="w-full bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text rounded-md h-[30px] font-normal text-sm">
                                     {t('signIn')}
                                 </Button>
                             </Link>
-                            <div className="text-[11px] mt-2 text-foreground">
+                            <div className="text-xs mt-2 text-foreground">
                                 {t('newCustomer')} <Link href="/auth/sign-up" className="text-link hover:underline hover:text-link-hover">{t('startHere')}</Link>
                             </div>
                         </>
@@ -87,8 +87,8 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                 </div>
                 <div className="flex p-5">
                     <div className="flex-1 border-r border-border pr-5">
-                        <h3 className="font-semibold text-[16px] mb-2 text-foreground">{t('yourLists')}</h3>
-                        <ul className="space-y-1.5 text-[13px] text-muted-foreground">
+                        <h3 className="font-semibold text-base mb-2 text-foreground">{t('yourLists')}</h3>
+                        <ul className="space-y-1.5 text-sm text-muted-foreground">
                             <li><Link href="/account/wishlist" className="hover:text-link-hover hover:underline">{t('wishlist')}</Link></li>
                             <li><Link href="#" className="hover:text-link-hover hover:underline">{t('browsingHistory')}</Link></li>
                             <li><Link href="#" className="hover:text-link-hover hover:underline">{t('createList')}</Link></li>
@@ -96,8 +96,8 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                         </ul>
                     </div>
                     <div className="flex-1 pl-5">
-                        <h3 className="font-semibold text-[16px] mb-2 text-foreground">{t('yourAccount')}</h3>
-                        <ul className="space-y-1.5 text-[13px] text-muted-foreground">
+                        <h3 className="font-semibold text-base mb-2 text-foreground">{t('yourAccount')}</h3>
+                        <ul className="space-y-1.5 text-sm text-muted-foreground">
                             <li><Link href="/account" className="hover:text-link-hover hover:underline">{t('account')}</Link></li>
                             <li><Link href="/account/orders" className="hover:text-link-hover hover:underline">{t('orders')}</Link></li>
                             <li><Link href="/account/messages" className="hover:text-link-hover hover:underline">{t('messages')}</Link></li>
@@ -140,7 +140,7 @@ export function CartDropdown() {
                 <Link href="/cart" aria-label={tNav('cart')}>
                     <Button variant="ghost" className="h-12 flex items-center gap-1.5 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
                         <div className="flex flex-col items-start leading-none gap-0">
-                            <span className="text-[10px] text-header-text-muted group-hover:text-brand">
+                            <span className="text-xs text-header-text-muted group-hover:text-brand">
                                 {mounted ? `${displayItems} ${displayItems === 1 ? (locale === 'bg' ? 'артикул' : 'item') : (locale === 'bg' ? 'артикула' : 'items')}` : (locale === 'bg' ? 'Количка' : 'Cart')}
                             </span>
                             <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('cart')}</span>
@@ -282,7 +282,7 @@ export function OrdersDropdown({ user }: OrdersDropdownProps) {
                 <Link href="/account/orders">
                     <Button variant="ghost" className="h-12 hidden lg:flex items-center gap-2 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
                         <div className="flex flex-col items-start leading-none gap-0">
-                            <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('yourOrders')}</span>
+                            <span className="text-xs text-header-text-muted group-hover:text-brand">{tNav('yourOrders')}</span>
                             <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('ordersLabel')}</span>
                         </div>
                     </Button>
@@ -371,7 +371,7 @@ export function SellingDropdown({ user }: SellingDropdownProps) {
                 <Link href="/sell">
                     <Button variant="ghost" className="h-12 hidden lg:flex items-center gap-2 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
                         <div className="flex flex-col items-start leading-none gap-0">
-                            <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('startSelling')}</span>
+                            <span className="text-xs text-header-text-muted group-hover:text-brand">{tNav('startSelling')}</span>
                             <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('sell')}</span>
                         </div>
                     </Button>
@@ -494,7 +494,7 @@ export function LocationDropdown({ country, onCountryChange }: LocationDropdownP
         <HoverCard open={isOpen} onOpenChange={setIsOpen} openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
                 <Button variant="ghost" className="h-12 hidden lg:flex flex-col items-start leading-none gap-0 text-header-text hover:text-brand text-xs p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm shrink-0 group">
-                    <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('deliverTo')}</span>
+                    <span className="text-xs text-header-text-muted group-hover:text-brand">{tNav('deliverTo')}</span>
                     <div className="flex items-center gap-1 font-medium text-sm text-header-text mt-0.5 group-hover:text-brand">
                         <MapPin size={14} weight="fill" />
                         <span>{country}</span>
@@ -634,7 +634,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
             <HoverCardTrigger asChild>
                 <Link href="/account/messages">
                     <Button variant="ghost" className="h-12 flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
-                        <span className="text-[10px] text-header-text-muted group-hover:text-brand">{tNav('messages')}</span>
+                        <span className="text-xs text-header-text-muted group-hover:text-brand">{tNav('messages')}</span>
                         <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('messagesLabel')}</span>
                     </Button>
                 </Link>

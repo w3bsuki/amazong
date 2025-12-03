@@ -29,7 +29,7 @@ export function StickyCheckoutButton({
   return (
     <div 
       className={cn(
-        "fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg z-40",
+        "fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40",
         "lg:hidden safe-area-bottom"
       )}
     >

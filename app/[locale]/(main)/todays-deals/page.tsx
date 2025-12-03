@@ -194,7 +194,7 @@ export default function TodaysDealsPage() {
                                     )} />
                                 </div>
                                 <span className={cn(
-                                    "text-[11px] sm:text-xs font-medium text-center transition-colors",
+                                    "text-xs font-medium text-center transition-colors",
                                     activeCategory === cat.id ? "text-primary" : "text-muted-foreground"
                                 )}>
                                     {getCategoryName(cat.id)}
@@ -246,14 +246,14 @@ export default function TodaysDealsPage() {
                                     />
                                     {/* Discount badge */}
                                     <div className="absolute top-1.5 left-1.5">
-                                        <Badge className="bg-brand-deal hover:bg-brand-deal text-white rounded-md px-1.5 py-0.5 text-[10px] sm:text-xs font-bold">
+                                        <Badge className="bg-brand-deal hover:bg-brand-deal text-white rounded-md px-1.5 py-0.5 text-xs font-bold">
                                             -{deal.discount}%
                                         </Badge>
                                     </div>
                                 </div>
 
                                 {/* Time remaining */}
-                                <div className="flex items-center gap-1 text-brand-deal text-[10px] sm:text-xs font-medium mb-2">
+                                <div className="flex items-center gap-1 text-brand-deal text-xs font-medium mb-2">
                                     <Clock className="size-3" />
                                     <span>{locale === "bg" ? "Приключва след" : "Ends in"} {deal.timeLeft}</span>
                                 </div>
@@ -286,7 +286,7 @@ export default function TodaysDealsPage() {
                                             />
                                         ))}
                                     </div>
-                                    <span className="text-[10px] sm:text-xs text-link font-medium">
+                                    <span className="text-xs text-link font-medium">
                                         {deal.reviews.toLocaleString()}
                                     </span>
                                 </div>

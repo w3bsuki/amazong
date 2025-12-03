@@ -216,12 +216,12 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                     key={i}
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className="flex flex-col items-center justify-center gap-1.5 min-h-[72px] p-3 rounded-xl bg-deal/10 border border-deal/20 text-deal transition-all active:scale-95 touch-action-manipulation tap-transparent"
+                    className="flex flex-col items-center justify-center gap-1.5 min-h-[72px] p-3 rounded-xl bg-deal/10 border border-deal/20 text-deal touch-action-manipulation tap-transparent"
                   >
                     <div className="size-9 rounded-lg flex items-center justify-center bg-deal/15 text-deal">
                       {link.icon}
                     </div>
-                    <span className="text-[11px] font-medium text-center leading-tight">
+                    <span className="text-xs font-medium text-center leading-tight">
                       {link.label}
                     </span>
                   </Link>
@@ -240,12 +240,12 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                     key={i}
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted/50 hover:bg-muted transition-all active:scale-95 touch-action-manipulation tap-transparent"
+                    className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted/50 hover:bg-muted touch-action-manipulation tap-transparent"
                   >
                     <div className="size-8 rounded-lg flex items-center justify-center bg-background text-muted-foreground">
                       {link.icon}
                     </div>
-                    <span className="text-[10px] font-medium text-center leading-tight text-foreground">
+                    <span className="text-xs font-medium text-center leading-tight text-foreground">
                       {link.label}
                     </span>
                   </Link>

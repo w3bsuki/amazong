@@ -280,7 +280,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
                           {product.title}
                         </Link>
                         {product.list_price && product.list_price > product.price && (
-                          <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-[10px] shrink-0">
+                          <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-xs shrink-0">
                             <Tag weight="fill" className="size-3 mr-0.5" />
                             -{Math.round(((product.list_price - product.price) / product.list_price) * 100)}%
                           </Badge>

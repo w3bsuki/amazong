@@ -51,8 +51,7 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
           size={16}
           weight={inWishlist ? "fill" : "regular"}
           className={cn(
-            "transition-all",
-            isPending && "animate-pulse"
+            isPending && "opacity-50"
           )}
         />
         {inWishlist ? "Saved" : "Save for Later"}
@@ -76,8 +75,8 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
         size={20}
         weight={inWishlist ? "fill" : "regular"}
         className={cn(
-          inWishlist ? "text-deal" : "text-muted-foreground hover:text-deal",
-          isPending && "animate-pulse"
+          inWishlist ? "text-deal" : "text-muted-foreground",
+          isPending && "opacity-50"
         )}
       />
     </button>

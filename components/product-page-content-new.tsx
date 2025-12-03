@@ -205,7 +205,7 @@ export function ProductPageContent({
                 {locale === 'bg' ? 'Подобни артикули от' : 'Similar from'}
               </span>
               <Avatar className="h-4 w-4 shrink-0">
-                <AvatarFallback className="bg-primary/10 text-primary text-[8px] font-semibold">
+                <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
                   {sellerData.store_name?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -226,7 +226,7 @@ export function ProductPageContent({
               </span>
               <div className="flex items-center gap-2 shrink-0">
                 <Avatar className="h-5 w-5">
-                  <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
                     {sellerData.store_name?.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -300,7 +300,7 @@ export function ProductPageContent({
                       <button 
                         onClick={() => setIsZoomOpen(true)}
                         aria-label={locale === 'bg' ? 'Увеличи снимка' : 'Enlarge image'}
-                        className="w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white rounded-full active:scale-95 transition-all touch-manipulation"
+                        className="w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white rounded-full touch-manipulation"
                       >
                         <MagnifyingGlassPlus className="w-5 h-5 text-foreground/70" />
                       </button>
@@ -309,17 +309,17 @@ export function ProductPageContent({
                       <p>{locale === 'bg' ? 'Увеличи' : 'Enlarge'}</p>
                     </TooltipContent>
                   </Tooltip>
-                  <div className="flex items-center gap-1 bg-white/80 hover:bg-white rounded-full px-2 py-1 transition-colors">
+                  <div className="flex items-center gap-1 bg-white/80 hover:bg-white rounded-full px-2 py-1">
                     <span className="text-xs font-medium text-muted-foreground">{watchCount}</span>
                     <button 
                       onClick={handleWishlistToggle}
                       disabled={isWishlistPending}
                       aria-label={isWatching ? (locale === 'bg' ? 'Премахни от списък' : 'Remove from watchlist') : (locale === 'bg' ? 'Добави в списък' : 'Add to watchlist')}
                       aria-pressed={isWatching}
-                      className={cn("w-7 h-7 flex items-center justify-center hover:scale-110 active:scale-95 transition-transform touch-manipulation", isWishlistPending && "opacity-50")}
+                      className={cn("w-7 h-7 flex items-center justify-center touch-manipulation", isWishlistPending && "opacity-50")}
                     >
                       <Heart 
-                        className={cn("w-5 h-5", isWatching ? "fill-deal text-deal" : "text-foreground/70", isWishlistPending && "animate-pulse")} 
+                        className={cn("w-5 h-5", isWatching ? "fill-deal text-deal" : "text-foreground/70")} 
                         weight={isWatching ? "fill" : "regular"}
                       />
                     </button>
@@ -331,14 +331,14 @@ export function ProductPageContent({
                   <>
                     <button
                       aria-label={locale === 'bg' ? 'Предишна снимка' : 'Previous image'}
-                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center bg-white/90 hover:bg-white active:scale-95 border border-border rounded-full shadow-sm transition-all touch-manipulation"
+                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center bg-white/90 hover:bg-white border border-border rounded-full shadow-sm touch-manipulation"
                       onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : images.length - 1)}
                     >
                       <CaretLeft className="w-6 h-6" />
                     </button>
                     <button
                       aria-label={locale === 'bg' ? 'Следваща снимка' : 'Next image'}
-                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center bg-white/90 hover:bg-white active:scale-95 border border-border rounded-full shadow-sm transition-all touch-manipulation"
+                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center bg-white/90 hover:bg-white border border-border rounded-full shadow-sm touch-manipulation"
                       onClick={() => setSelectedImage(prev => prev < images.length - 1 ? prev + 1 : 0)}
                     >
                       <CaretRight className="w-6 h-6" />
@@ -366,7 +366,7 @@ export function ProductPageContent({
                     />
                     {/* Image Counter - eBay style */}
                     {images.length > 1 && (
-                      <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-[10px] sm:text-xs font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 rounded">
+                      <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 rounded">
                         {locale === 'bg' ? 'Снимка' : 'Picture'} {selectedImage + 1} {locale === 'bg' ? 'от' : 'of'} {images.length}
                       </div>
                     )}
@@ -379,7 +379,7 @@ export function ProductPageContent({
                         key={index}
                         onClick={(e) => { e.stopPropagation(); setSelectedImage(index); }}
                         className={cn(
-                          "shrink-0 w-16 h-16 overflow-hidden bg-white transition-all rounded-lg snap-start touch-manipulation active:scale-95 border",
+                          "shrink-0 w-16 h-16 overflow-hidden bg-white rounded-lg snap-start touch-manipulation border",
                           selectedImage === index 
                             ? "opacity-100 border-primary" 
                             : "opacity-60 border-transparent hover:opacity-90"
@@ -402,7 +402,7 @@ export function ProductPageContent({
                 <DialogDescription className="sr-only">
                   {product.title} - {locale === 'bg' ? 'Снимка' : 'Image'} {selectedImage + 1} {locale === 'bg' ? 'от' : 'of'} {images.length}
                 </DialogDescription>
-                <DialogClose className="absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-black/70 hover:bg-black rounded-full transition-colors">
+                <DialogClose className="absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-black/70 hover:bg-black rounded-full">
                   <X className="w-5 h-5 text-white" weight="bold" />
                 </DialogClose>
                 <div className="relative w-full h-[85vh] flex items-center justify-center">
@@ -411,14 +411,14 @@ export function ProductPageContent({
                     <>
                       <button
                         aria-label={locale === 'bg' ? 'Предишна снимка' : 'Previous image'}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/70 hover:bg-black rounded-full transition-colors"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/70 hover:bg-black rounded-full"
                         onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : images.length - 1)}
                       >
                         <CaretLeft className="w-6 h-6 text-white" />
                       </button>
                       <button
                         aria-label={locale === 'bg' ? 'Следваща снимка' : 'Next image'}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/70 hover:bg-black rounded-full transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/70 hover:bg-black rounded-full"
                         onClick={() => setSelectedImage(prev => prev < images.length - 1 ? prev + 1 : 0)}
                       >
                         <CaretRight className="w-6 h-6 text-white" />
@@ -508,7 +508,7 @@ export function ProductPageContent({
                 className="inline-flex items-center gap-1.5 mt-0.5 text-sm group"
               >
                 <Avatar className="h-5 w-5 border shrink-0">
-                  <AvatarFallback className="bg-primary/10 text-primary text-[9px] font-semibold">
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
                     {sellerData.store_name?.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -553,7 +553,7 @@ export function ProductPageContent({
 
             {/* ===== ACTION BUTTONS - Desktop only, mobile uses sticky bar ===== */}
             <div ref={buyBoxRef} className="hidden lg:block space-y-2 mt-4 pt-4 border-t border-border/50">
-              <Button className="w-full h-12 text-base font-semibold rounded-full bg-primary hover:bg-primary/90 active:scale-[0.98] touch-manipulation transition-transform">
+              <Button className="w-full h-12 text-base font-semibold rounded-full bg-primary hover:bg-primary/90 touch-manipulation">
                 {locale === 'bg' ? 'Купи сега' : 'Buy It Now'}
               </Button>
               <AddToCart
@@ -567,13 +567,13 @@ export function ProductPageContent({
                 currentUserId={currentUserId}
                 variant="outline"
                 showBuyNow={false}
-                className="h-12 text-base font-semibold rounded-full border-primary text-primary hover:bg-primary/5 active:scale-[0.98] touch-manipulation transition-transform"
+                className="h-12 text-base font-semibold rounded-full border-primary text-primary hover:bg-primary/5 touch-manipulation"
               />
               <Button 
                 variant="outline" 
                 disabled={isWishlistPending}
                 className={cn(
-                  "w-full h-12 text-base font-semibold rounded-full gap-2 border-primary text-primary hover:bg-primary/5 active:scale-[0.98] touch-manipulation transition-transform",
+                  "w-full h-12 text-base font-semibold rounded-full gap-2 border-primary text-primary hover:bg-primary/5 touch-manipulation",
                   isWatching && "bg-blue-50 border-primary text-primary dark:bg-primary/10"
                 )}
                 onClick={handleWishlistToggle}
@@ -618,9 +618,9 @@ export function ProductPageContent({
               <div className="flex gap-2 items-center">
                 <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{locale === 'bg' ? 'Плащания:' : 'Payments:'}</span>
                 <div className="flex items-center gap-1">
-                  <div className="h-5 px-1.5 bg-brand-dark text-white text-[10px] font-bold flex items-center rounded-sm">PayPal</div>
-                  <div className="h-5 px-1.5 bg-background border text-[10px] font-bold flex items-center rounded-sm text-muted-foreground">Visa</div>
-                  <div className="h-5 px-1.5 bg-background border text-[10px] font-bold flex items-center rounded-sm text-muted-foreground">MC</div>
+                  <div className="h-5 px-1.5 bg-brand-dark text-white text-xs font-bold flex items-center rounded-sm">PayPal</div>
+                  <div className="h-5 px-1.5 bg-background border text-xs font-bold flex items-center rounded-sm text-muted-foreground">Visa</div>
+                  <div className="h-5 px-1.5 bg-background border text-xs font-bold flex items-center rounded-sm text-muted-foreground">MC</div>
                 </div>
               </div>
             </div>
@@ -897,7 +897,7 @@ export function ProductPageContent({
             onClick={handleWishlistToggle}
             disabled={isWishlistPending}
             className={cn(
-              "shrink-0 size-11 flex items-center justify-center rounded-full border transition-all duration-200 touch-manipulation active:scale-95",
+              "shrink-0 size-11 flex items-center justify-center rounded-full border touch-manipulation",
               isWatching 
                 ? "bg-primary/10 border-primary text-primary" 
                 : "border-input bg-background text-muted-foreground hover:text-foreground hover:border-foreground/20",
@@ -910,7 +910,7 @@ export function ProductPageContent({
           {/* Buy Now button */}
           <Button 
             size="lg"
-            className="shrink-0 h-11 px-6 rounded-full bg-primary hover:bg-primary/90 font-semibold text-sm shadow-sm touch-manipulation active:scale-[0.98] transition-transform"
+            className="shrink-0 h-11 px-6 rounded-full bg-primary hover:bg-primary/90 font-semibold text-sm shadow-sm touch-manipulation"
           >
             {locale === 'bg' ? 'Купи' : 'Buy Now'}
           </Button>

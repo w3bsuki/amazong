@@ -64,7 +64,7 @@ function CompactProductCard({
         {/* Square Image Container with optional discount badge */}
         <div className="relative w-full aspect-square bg-secondary p-3 flex items-center justify-center overflow-hidden">
           {hasDiscount && (
-            <div className="absolute top-2 left-2 z-10 bg-deal text-white text-[10px] font-medium px-1.5 py-0.5 rounded">
+            <div className="absolute top-2 left-2 z-10 bg-deal text-white text-xs font-medium px-1.5 py-0.5 rounded">
               -{discountPercent}%
             </div>
           )}
@@ -82,7 +82,7 @@ function CompactProductCard({
         {/* Content */}
         <div className="p-2.5 flex-1 flex flex-col">
           {/* Title */}
-          <h3 className="text-xs sm:text-sm font-normal text-foreground line-clamp-2 mb-1.5 leading-snug min-h-9 group-hover:underline">
+          <h3 className="text-sm font-normal text-foreground line-clamp-2 mb-1.5 leading-snug min-h-9 group-hover:underline">
             {title}
           </h3>
 
@@ -100,14 +100,14 @@ function CompactProductCard({
                 />
               ))}
             </div>
-            <span className="text-[10px] text-muted-foreground">{reviews}</span>
+            <span className="text-xs text-muted-foreground">{reviews}</span>
           </div>
 
           {/* Price */}
           <div className="mt-auto pt-1">
             <div className="flex items-baseline gap-1.5">
               <span className={cn(
-                "text-sm sm:text-base font-medium",
+                "text-sm font-normal",
                 hasDiscount ? "text-deal" : "text-foreground"
               )}>
                 {formatPrice(price)}
@@ -118,7 +118,7 @@ function CompactProductCard({
                 </span>
               )}
             </div>
-            <div className="text-[10px] text-muted-foreground mt-0.5">
+            <div className="text-xs text-muted-foreground mt-0.5">
               {t('delivery')} {formattedDate}
             </div>
           </div>
@@ -173,13 +173,13 @@ export function TrendingProductsSection({
     <div className="bg-card border border-border rounded-md overflow-hidden">
       {/* Header Section */}
       <div className="text-center pt-5 sm:pt-6 pb-3 sm:pb-4 px-4">
-        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-1.5 tracking-tight text-foreground">
+        <h2 className="text-xl font-bold mb-1.5 tracking-tight text-foreground">
           {title}
         </h2>
         {ctaText && ctaHref && (
           <Link 
             href={ctaHref} 
-            className="text-xs sm:text-sm font-normal hover:underline underline-offset-4 inline-flex items-center gap-1 text-brand-blue hover:text-brand-blue-dark"
+            className="text-sm font-normal hover:underline underline-offset-4 inline-flex items-center gap-1 text-brand-blue hover:text-brand-blue-dark"
           >
             {ctaText}
             <CaretRight size={12} weight="regular" />
@@ -199,7 +199,7 @@ export function TrendingProductsSection({
                   key={tab.id}
                   value={tab.id}
                   className={cn(
-                    "px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-normal rounded-full",
+                    "px-3 sm:px-4 py-1.5 sm:py-2 text-sm font-normal rounded-full",
                     "text-muted-foreground hover:text-foreground hover:bg-secondary",
                     "data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
                     "whitespace-nowrap min-h-8 sm:min-h-10 flex items-center gap-1.5"

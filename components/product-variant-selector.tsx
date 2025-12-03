@@ -134,7 +134,7 @@ export function ProductVariantSelector({
                   onClick={() => setSelectedSize(size)}
                   disabled={!available}
                   className={cn(
-                    "min-h-11 min-w-11 px-4 py-2 border rounded-md text-sm font-medium transition-all",
+                    "min-h-11 min-w-11 px-4 py-2 border rounded-md text-sm font-medium",
                     "focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-1",
                     selectedSize === size
                       ? "border-brand-blue bg-brand-blue/5 text-brand-blue ring-1 ring-brand-blue"
@@ -170,7 +170,7 @@ export function ProductVariantSelector({
                   disabled={!available}
                   title={color}
                   className={cn(
-                    "relative min-h-11 min-w-11 rounded-full border-2 transition-all",
+                    "relative min-h-11 min-w-11 rounded-full border-2",
                     "focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2",
                     selectedColor === color
                       ? "border-brand-blue ring-2 ring-brand-blue ring-offset-1"

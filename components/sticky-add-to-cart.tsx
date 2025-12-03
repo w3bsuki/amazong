@@ -52,7 +52,7 @@ export function StickyAddToCart({ product, locale, currentUserId }: StickyAddToC
   return (
     <div 
       className={cn(
-        "fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg z-40",
+        "fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40",
         "lg:hidden safe-area-bottom"
       )}
     >
@@ -82,7 +82,7 @@ export function StickyAddToCart({ product, locale, currentUserId }: StickyAddToC
         {/* Add to cart button */}
         <Button 
           className={cn(
-            "h-11 px-6 font-medium rounded-full transition-all",
+            "h-11 px-6 font-medium rounded-full",
             isAdding 
               ? "bg-green-500 hover:bg-green-600 text-white" 
               : "bg-cta-add-cart hover:bg-cta-add-cart-hover text-foreground"

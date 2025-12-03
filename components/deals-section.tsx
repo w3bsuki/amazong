@@ -70,7 +70,7 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
         <div className="p-2.5 flex-1 flex flex-col">
           {/* Deal Badge */}
           <div className="flex items-center gap-1.5 mb-1.5">
-            <span className="bg-deal-light text-deal font-medium text-[10px] uppercase px-2 py-0.5 rounded-full">
+            <span className="bg-deal-light text-deal font-medium text-xs uppercase px-2 py-0.5 rounded-full">
               {t('deal')}
             </span>
           </div>
@@ -94,16 +94,16 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
                 />
               ))}
             </div>
-            <span className="text-[10px] text-muted-foreground">{reviews}</span>
+            <span className="text-xs text-muted-foreground">{reviews}</span>
           </div>
 
           {/* Price - With strikethrough */}
           <div className="mt-auto pt-1">
             <div className="flex flex-col">
-              <span className="text-sm sm:text-base font-medium text-price-sale">{formatPrice(price)}</span>
-              <span className="text-[10px] text-muted-foreground line-through">{formatPrice(listPrice)}</span>
+              <span className="text-sm font-normal text-price-sale">{formatPrice(price)}</span>
+              <span className="text-xs text-muted-foreground line-through">{formatPrice(listPrice)}</span>
             </div>
-            <div className="text-[10px] text-stock-available font-medium mt-1 flex items-center gap-1">
+            <div className="text-xs text-stock-available font-medium mt-1 flex items-center gap-1">
               <Clock size={12} weight="regular" />
               <span className="truncate">{locale === 'bg' ? `Спести ${formatPrice(listPrice - price)}` : `Save ${formatPrice(listPrice - price)}`}</span>
             </div>
@@ -148,7 +148,7 @@ export function DealsSection({
     <div className="rounded-md overflow-hidden bg-card border border-border">
       {/* Header Section - Clean eBay-style */}
       <div className="text-center pt-5 sm:pt-6 pb-3 sm:pb-4 px-4">
-        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-1.5 tracking-tight text-foreground">
+        <h2 className="text-xl font-bold mb-1.5 tracking-tight text-foreground">
           {title}
         </h2>
         {ctaText && ctaHref && (
@@ -172,7 +172,7 @@ export function DealsSection({
                 key={tab.id}
                 value={tab.id}
                 className={cn(
-                  "px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-normal rounded-full",
+                  "px-3 sm:px-4 py-1.5 sm:py-2 text-sm font-normal rounded-full",
                   "text-muted-foreground hover:text-foreground hover:bg-secondary",
                   "data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
                   "whitespace-nowrap min-h-8 sm:min-h-10"
@@ -197,7 +197,7 @@ export function DealsSection({
                 onClick={() => scroll(tab.id, "left")}
                 className={cn(
                   "absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border transition-opacity",
+                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
                   scrollStates[tab.id]?.left ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll left"
@@ -208,7 +208,7 @@ export function DealsSection({
                 onClick={() => scroll(tab.id, "right")}
                 className={cn(
                   "absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border transition-opacity",
+                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
                   scrollStates[tab.id]?.right ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 aria-label="Scroll right"

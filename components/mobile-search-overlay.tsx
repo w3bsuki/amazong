@@ -406,7 +406,7 @@ export function MobileSearchOverlay({ className }: MobileSearchOverlayProps) {
                           onClick={() => handleSearch(search)}
                           className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
                         >
-                          <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-[11px] font-bold text-white bg-linear-to-br from-deal to-brand" aria-hidden="true">
+                          <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white bg-linear-to-br from-deal to-brand" aria-hidden="true">
                             {index + 1}
                           </span>
                           <span className="flex-1 text-base text-foreground">{search}</span>

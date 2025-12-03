@@ -67,7 +67,7 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
         {/* Content - Clean and compact */}
         <div className="p-2.5 flex-1 flex flex-col">
           {/* Title - 2 lines max */}
-          <h3 className="text-xs sm:text-sm font-normal text-foreground line-clamp-2 mb-1.5 leading-snug min-h-9 group-hover:underline">
+          <h3 className="text-sm font-normal text-foreground line-clamp-2 mb-1.5 leading-snug min-h-9 group-hover:underline">
             {title}
           </h3>
 
@@ -85,13 +85,13 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
                 />
               ))}
             </div>
-            <span className="text-[10px] text-muted-foreground">{reviews}</span>
+            <span className="text-xs text-muted-foreground">{reviews}</span>
           </div>
 
           {/* Price - Prominent */}
           <div className="mt-auto pt-1">
-            <span className="text-sm sm:text-base font-medium text-foreground">{formatPrice(price)}</span>
-            <div className="text-[10px] text-muted-foreground mt-0.5">
+            <span className="text-sm font-normal text-foreground">{formatPrice(price)}</span>
+            <div className="text-xs text-muted-foreground mt-0.5">
               {t('delivery')} {formattedDate}
             </div>
           </div>
@@ -143,7 +143,7 @@ export function TabbedProductSection({
       {/* Header Section - eBay style clean */}
       <div className="text-center pt-5 sm:pt-6 pb-3 sm:pb-4 px-4">
         <h2 className={cn(
-          "text-lg sm:text-xl md:text-2xl font-semibold mb-1.5 tracking-tight",
+          "text-xl font-bold mb-1.5 tracking-tight",
           variant === "deals" ? "text-white" : "text-foreground"
         )}>
           {title}
@@ -152,7 +152,7 @@ export function TabbedProductSection({
           <Link 
             href={ctaHref} 
             className={cn(
-              "text-xs sm:text-sm font-normal hover:underline underline-offset-4 inline-flex items-center gap-1",
+              "text-sm font-normal hover:underline underline-offset-4 inline-flex items-center gap-1",
               variant === "deals" ? "text-white/80 hover:text-white" : "text-brand-blue hover:text-brand-blue-dark"
             )}
           >
@@ -177,7 +177,7 @@ export function TabbedProductSection({
                 key={tab.id}
                 value={tab.id}
                 className={cn(
-                  "px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-normal rounded-full",
+                  "px-3 sm:px-4 py-1.5 sm:py-2 text-sm font-normal rounded-full",
                   variant === "deals" 
                     ? "text-white/80 hover:text-white hover:bg-white/20 data-[state=active]:text-deal data-[state=active]:bg-white"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",

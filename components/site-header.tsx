@@ -46,7 +46,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
       <div className="md:hidden bg-header-bg text-header-text px-2 py-1.5 flex items-center">
         <SidebarMenu user={user} />
         <Link href="/" className="flex items-center shrink-0 min-h-11">
-          <span className="text-xl font-semibold tracking-tight text-foreground">AMZN</span>
+          <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
         </Link>
         <div className="flex-1" />
         <div className="flex items-center gap-0">
@@ -68,7 +68,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
         <div className="container flex items-center h-14 md:h-16 gap-3">
           {/* Logo - Dark text on light background */}
           <Link href="/" prefetch={true} className="flex items-center shrink-0 hover:opacity-80 outline-none focus:ring-2 focus:ring-brand/30 rounded-sm py-1 min-h-11">
-            <span className="text-lg md:text-2xl font-semibold tracking-tight text-foreground">AMZN</span>
+            <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
           </Link>
 
           {/* Deliver to */}

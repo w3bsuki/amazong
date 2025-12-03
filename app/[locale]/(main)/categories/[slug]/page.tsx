@@ -249,13 +249,13 @@ export default async function CategoryPage({
 
   currentCategory = categoryData
 
-  // Check if this is a subcategory
+  // Get parent category if this is a subcategory
   if (categoryData.parent_id) {
     parentCategory = allCats?.find(c => c.id === categoryData.parent_id) || null
-    subcategories = []
-  } else {
-    subcategories = allCats?.filter(c => c.parent_id === categoryData.id) || []
   }
+  
+  // ALWAYS get children of current category (L0->L1 or L1->L2)
+  subcategories = allCats?.filter(c => c.parent_id === categoryData.id) || []
 
   // Get products from this category AND all its subcategories
   const categoryIds = [categoryData.id, ...subcategories.map(s => s.id)]

@@ -74,6 +74,25 @@ interface Seller {
   user_id: string;
 }
 
+interface CategoryAttribute {
+  id: string;
+  category_id: string;
+  name: string;
+  name_bg: string | null;
+  attribute_type: 'text' | 'number' | 'select' | 'multiselect' | 'boolean' | 'date';
+  is_required: boolean;
+  options: string[];
+  options_bg: string[];
+  placeholder: string | null;
+  placeholder_bg: string | null;
+  sort_order: number;
+}
+
+interface CustomAttribute {
+  name: string;
+  value: string;
+}
+
 // ============================================================================
 // SCHEMAS
 // ============================================================================
@@ -120,9 +139,10 @@ type ProductFormData = z.infer<typeof productSchema>;
 const steps = [
   { id: 1, name: "Photos", icon: Camera },
   { id: 2, name: "Details", icon: Package },
-  { id: 3, name: "Pricing", icon: CurrencyDollar },
-  { id: 4, name: "Tags", icon: Tag },
-  { id: 5, name: "Review", icon: Check },
+  { id: 3, name: "Specifics", icon: Tag },
+  { id: 4, name: "Pricing", icon: CurrencyDollar },
+  { id: 5, name: "Tags", icon: Sparkle },
+  { id: 6, name: "Review", icon: Check },
 ];
 
 function StepIndicator({ currentStep }: { currentStep: number }) {
@@ -520,7 +540,7 @@ function TagInput({
               {/* Badge preview */}
               <Badge
                 className={cn(
-                  "px-2 py-0.5 text-[10px] uppercase tracking-wide font-bold mb-2",
+                  "px-2 py-0.5 text-xs uppercase tracking-wide font-bold mb-2",
                   isSelected ? option.color + " text-white" : "bg-gray-200 text-gray-600"
                 )}
               >
@@ -564,6 +584,14 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
   const params = useParams();
   const locale = params?.locale || "en";
 
+  // Category-specific attributes (like eBay's Item Specifics)
+  const [categoryAttributes, setCategoryAttributes] = useState<CategoryAttribute[]>([]);
+  const [attributeValues, setAttributeValues] = useState<Record<string, string>>({});
+  const [customAttributes, setCustomAttributes] = useState<CustomAttribute[]>([]);
+  const [showAddCustom, setShowAddCustom] = useState(false);
+  const [newCustomName, setNewCustomName] = useState("");
+  const [newCustomValue, setNewCustomValue] = useState("");
+
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -583,7 +611,68 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
   const { watch, trigger } = form;
   const watchedImages = watch("images");
   const watchedTags = watch("tags");
-  const watchedListingType = watch("listingType");
+  const watchedCategoryId = watch("categoryId");
+
+  // Fetch attributes when category changes
+  useEffect(() => {
+    const fetchAttributes = async () => {
+      if (!watchedCategoryId) {
+        setCategoryAttributes([]);
+        setAttributeValues({});
+        return;
+      }
+      
+      try {
+        const res = await fetch(`/api/categories/attributes?categoryId=${watchedCategoryId}`);
+        const data = await res.json();
+        setCategoryAttributes(data.attributes || []);
+        setAttributeValues({});
+      } catch (err) {
+        console.error("Failed to fetch attributes:", err);
+      }
+    };
+    fetchAttributes();
+  }, [watchedCategoryId]);
+
+  // Helper to get localized attribute name
+  const getAttributeName = (attr: CategoryAttribute) => {
+    if (locale === 'bg' && attr.name_bg) return attr.name_bg;
+    return attr.name;
+  };
+
+  // Helper to get localized options
+  const getAttributeOptions = (attr: CategoryAttribute) => {
+    if (locale === 'bg' && attr.options_bg?.length > 0) return attr.options_bg;
+    return attr.options || [];
+  };
+
+  // Add custom attribute
+  const addCustomAttribute = () => {
+    if (newCustomName.trim() && newCustomValue.trim()) {
+      setCustomAttributes(prev => [...prev, { name: newCustomName.trim(), value: newCustomValue.trim() }]);
+      setNewCustomName("");
+      setNewCustomValue("");
+      setShowAddCustom(false);
+    }
+  };
+
+  // Remove custom attribute
+  const removeCustomAttribute = (index: number) => {
+    setCustomAttributes(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Validate required attributes
+  const validateAttributes = (): boolean => {
+    for (const attr of categoryAttributes) {
+      if (attr.is_required && !attributeValues[attr.name]) {
+        setError(locale === 'bg' 
+          ? `Моля попълнете полето "${getAttributeName(attr)}"` 
+          : `Please fill in "${attr.name}"`);
+        return false;
+      }
+    }
+    return true;
+  };
 
   // Step validation
   const validateStep = async (step: number): Promise<boolean> => {
@@ -593,10 +682,13 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
       case 2:
         return await trigger(["title", "description", "categoryId"]);
       case 3:
-        return await trigger(["price", "stock"]);
+        // Validate required item specifics
+        return validateAttributes();
       case 4:
-        return true; // Tags are optional
+        return await trigger(["price", "stock"]);
       case 5:
+        return true; // Tags are optional
+      case 6:
         return true; // Review step
       default:
         return true;
@@ -604,12 +696,13 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
   };
 
   const nextStep = async () => {
+    setError(null);
     const isValid = await validateStep(currentStep);
-    if (isValid && currentStep < 5) {
+    if (isValid && currentStep < 6) {
       setCanSubmit(false); // Disable submission during navigation
       setCurrentStep(currentStep + 1);
-      // Enable submission only after a short delay when on step 5
-      if (currentStep + 1 === 5) {
+      // Enable submission only after a short delay when on step 6
+      if (currentStep + 1 === 6) {
         setTimeout(() => setCanSubmit(true), 100);
       }
     }
@@ -625,9 +718,9 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("[ListingForm] handleSubmit called, currentStep:", currentStep, "canSubmit:", canSubmit);
-    // Only submit if we're on step 5 and submission is enabled
-    if (currentStep !== 5 || !canSubmit) {
-      console.log("[ListingForm] Submission blocked - not on step 5 or canSubmit is false");
+    // Only submit if we're on step 6 and submission is enabled
+    if (currentStep !== 6 || !canSubmit) {
+      console.log("[ListingForm] Submission blocked - not on step 6 or canSubmit is false");
       return;
     }
     form.handleSubmit(onSubmit)(e);
@@ -637,6 +730,24 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
     setError(null);
     startTransition(async () => {
       try {
+        // Build attributes array
+        const allAttributes = [
+          // Predefined attributes
+          ...categoryAttributes.map(attr => ({
+            attribute_id: attr.id,
+            name: attr.name,
+            value: attributeValues[attr.name] || '',
+            is_custom: false,
+          })).filter(a => a.value),
+          // Custom attributes
+          ...customAttributes.map(custom => ({
+            attribute_id: null,
+            name: custom.name,
+            value: custom.value,
+            is_custom: true,
+          }))
+        ];
+
         const response = await fetch("/api/products", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -650,6 +761,7 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
             tags: data.tags,
             listingType: data.listingType,
             images: data.images,
+            attributes: allAttributes,
           }),
         });
 
@@ -826,10 +938,230 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
               </div>
             </div>
 
-            {/* Step 3: Pricing */}
+            {/* Step 3: Item Specifics (Category Attributes) */}
             <div className={cn("p-8", currentStep !== 3 && "hidden")}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
+                  <Tag weight="fill" className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {locale === 'bg' ? 'Характеристики на продукта' : 'Item Specifics'}
+                  </h2>
+                  <p className="text-gray-500 text-sm">
+                    {locale === 'bg' 
+                      ? 'Добавете детайли за вашия продукт (напр. марка, модел, цвят)' 
+                      : 'Add details about your item (e.g., brand, model, color)'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Dynamic Category Attributes */}
+              {categoryAttributes.length > 0 ? (
+                <div className="space-y-6">
+                  {/* Required attributes first */}
+                  {categoryAttributes.filter(a => a.is_required).length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                        <span className="text-red-500">*</span>
+                        {locale === 'bg' ? 'Задължителни полета' : 'Required fields'}
+                      </h3>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {categoryAttributes.filter(a => a.is_required).map(attr => (
+                          <div key={attr.id} className="space-y-2">
+                            <label className="text-sm font-medium text-gray-900">
+                              {getAttributeName(attr)} <span className="text-red-500">*</span>
+                            </label>
+                            {attr.attribute_type === 'select' ? (
+                              <select
+                                value={attributeValues[attr.name] || ''}
+                                onChange={(e) => setAttributeValues(prev => ({ ...prev, [attr.name]: e.target.value }))}
+                                className="w-full h-12 px-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              >
+                                <option value="">{locale === 'bg' ? 'Изберете...' : 'Select...'}</option>
+                                {getAttributeOptions(attr).map((opt, i) => (
+                                  <option key={i} value={attr.options[i]}>{opt}</option>
+                                ))}
+                              </select>
+                            ) : attr.attribute_type === 'number' ? (
+                              <Input
+                                type="number"
+                                value={attributeValues[attr.name] || ''}
+                                onChange={(e) => setAttributeValues(prev => ({ ...prev, [attr.name]: e.target.value }))}
+                                placeholder={attr.placeholder || ''}
+                                className="h-12"
+                              />
+                            ) : (
+                              <Input
+                                type="text"
+                                value={attributeValues[attr.name] || ''}
+                                onChange={(e) => setAttributeValues(prev => ({ ...prev, [attr.name]: e.target.value }))}
+                                placeholder={attr.placeholder || (locale === 'bg' ? 'Въведете стойност...' : 'Enter value...')}
+                                className="h-12"
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Optional attributes */}
+                  {categoryAttributes.filter(a => !a.is_required).length > 0 && (
+                    <div className="space-y-4 pt-4 border-t border-gray-100">
+                      <h3 className="text-sm font-semibold text-gray-700">
+                        {locale === 'bg' ? 'Допълнителни полета' : 'Optional fields'}
+                      </h3>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {categoryAttributes.filter(a => !a.is_required).map(attr => (
+                          <div key={attr.id} className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">
+                              {getAttributeName(attr)}
+                            </label>
+                            {attr.attribute_type === 'select' ? (
+                              <select
+                                value={attributeValues[attr.name] || ''}
+                                onChange={(e) => setAttributeValues(prev => ({ ...prev, [attr.name]: e.target.value }))}
+                                className="w-full h-11 px-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              >
+                                <option value="">{locale === 'bg' ? 'Изберете...' : 'Select...'}</option>
+                                {getAttributeOptions(attr).map((opt, i) => (
+                                  <option key={i} value={attr.options[i]}>{opt}</option>
+                                ))}
+                              </select>
+                            ) : attr.attribute_type === 'number' ? (
+                              <Input
+                                type="number"
+                                value={attributeValues[attr.name] || ''}
+                                onChange={(e) => setAttributeValues(prev => ({ ...prev, [attr.name]: e.target.value }))}
+                                placeholder={attr.placeholder || ''}
+                                className="h-11"
+                              />
+                            ) : (
+                              <Input
+                                type="text"
+                                value={attributeValues[attr.name] || ''}
+                                onChange={(e) => setAttributeValues(prev => ({ ...prev, [attr.name]: e.target.value }))}
+                                placeholder={attr.placeholder || ''}
+                                className="h-11"
+                              />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-gray-500">
+                  <Tag className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                  <p className="text-lg font-medium">
+                    {locale === 'bg' 
+                      ? 'Няма специфични полета за тази категория' 
+                      : 'No specific fields for this category'}
+                  </p>
+                  <p className="text-sm mt-1">
+                    {locale === 'bg' 
+                      ? 'Можете да добавите собствени характеристики по-долу' 
+                      : 'You can add your own specifications below'}
+                  </p>
+                </div>
+              )}
+
+              {/* Custom Attributes Section (eBay-style) */}
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700">
+                      {locale === 'bg' ? 'Допълнителни характеристики' : 'Additional Specifications'}
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {locale === 'bg' 
+                        ? 'Добавете допълнителна информация (напр. "Гаранция - 2 години")' 
+                        : 'Add extra details (e.g., "Warranty - 2 years")'}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAddCustom(true)}
+                    className="gap-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {locale === 'bg' ? 'Добави' : 'Add'}
+                  </Button>
+                </div>
+
+                {/* List of custom attributes */}
+                {customAttributes.length > 0 && (
+                  <div className="space-y-2 mb-4">
+                    {customAttributes.map((attr, index) => (
+                      <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <span className="font-medium text-gray-900">{attr.name}:</span>
+                        <span className="text-gray-600 flex-1">{attr.value}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeCustomAttribute(index)}
+                          className="text-gray-400 hover:text-red-500 p-1"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add custom attribute form */}
+                {showAddCustom && (
+                  <div className="flex gap-2 items-end p-4 bg-blue-50 rounded-xl border border-blue-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="flex-1 space-y-1">
+                      <label className="text-xs font-medium text-gray-700">
+                        {locale === 'bg' ? 'Име' : 'Name'}
+                      </label>
+                      <Input
+                        value={newCustomName}
+                        onChange={(e) => setNewCustomName(e.target.value)}
+                        placeholder={locale === 'bg' ? 'напр. Гаранция' : 'e.g., Warranty'}
+                        className="h-10"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <label className="text-xs font-medium text-gray-700">
+                        {locale === 'bg' ? 'Стойност' : 'Value'}
+                      </label>
+                      <Input
+                        value={newCustomValue}
+                        onChange={(e) => setNewCustomValue(e.target.value)}
+                        placeholder={locale === 'bg' ? 'напр. 2 години' : 'e.g., 2 years'}
+                        className="h-10"
+                      />
+                    </div>
+                    <Button type="button" size="sm" onClick={addCustomAttribute} className="h-10">
+                      {locale === 'bg' ? 'Добави' : 'Add'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setShowAddCustom(false);
+                        setNewCustomName("");
+                        setNewCustomValue("");
+                      }}
+                      className="h-10"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Step 4: Pricing */}
+            <div className={cn("p-8", currentStep !== 4 && "hidden")}>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25">
                   <CurrencyDollar weight="fill" className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -936,11 +1268,11 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
               )}
             </div>
 
-            {/* Step 4: Tags */}
-            <div className={cn("p-8", currentStep !== 4 && "hidden")}>
+            {/* Step 5: Tags */}
+            <div className={cn("p-8", currentStep !== 5 && "hidden")}>
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 rounded-xl bg-linear-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/25">
-                  <Tag weight="fill" className="w-6 h-6 text-white" />
+                  <Sparkle weight="fill" className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Product Badges</h2>
@@ -970,8 +1302,8 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
               />
             </div>
 
-            {/* Step 5: Review & Listing Type */}
-            <div className={cn("p-8", currentStep !== 5 && "hidden")}>
+            {/* Step 6: Review & Listing Type */}
+            <div className={cn("p-8", currentStep !== 6 && "hidden")}>
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 rounded-xl bg-linear-to-br from-green-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-green-500/25">
                   <Check weight="fill" className="w-6 h-6 text-white" />
@@ -1121,7 +1453,7 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
                         watchedTags.map(tag => {
                           const tagOption = TAG_OPTIONS.find(t => t.value === tag);
                           return tagOption ? (
-                            <Badge key={tag} className={cn("text-[10px] text-white", tagOption.color)}>
+                            <Badge key={tag} className={cn("text-xs text-white", tagOption.color)}>
                               {tagOption.label}
                             </Badge>
                           ) : null;
@@ -1177,7 +1509,7 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
               </Button>
 
               <div className="flex items-center gap-2">
-                {[1, 2, 3, 4, 5].map((step) => (
+                {[1, 2, 3, 4, 5, 6].map((step) => (
                   <div
                     key={step}
                     className={cn(
@@ -1188,7 +1520,7 @@ function ListingForm({ seller, categories }: { seller: Seller; categories: Categ
                 ))}
               </div>
 
-              {currentStep < 5 ? (
+              {currentStep < 6 ? (
                 <Button
                   type="button"
                   onClick={nextStep}

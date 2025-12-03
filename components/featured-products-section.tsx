@@ -65,7 +65,7 @@ function FeaturedProductCard({
       <div className="bg-card rounded-md overflow-hidden h-full flex flex-col border border-border relative">
         {/* Boosted Indicator */}
         {isBoosted && (
-          <div className="absolute top-0 left-0 right-0 bg-primary text-primary-foreground text-[10px] font-medium py-0.5 text-center flex items-center justify-center gap-1 z-20">
+          <div className="absolute top-0 left-0 right-0 bg-primary text-primary-foreground text-xs font-medium py-0.5 text-center flex items-center justify-center gap-1 z-20">
             <Lightning size={10} weight="fill" />
             <span>{locale === 'bg' ? 'Промотирано' : 'Boosted'}</span>
           </div>
@@ -78,20 +78,20 @@ function FeaturedProductCard({
         )}>
           {/* Discount Badge */}
           {hasDiscount && (
-            <div className="absolute top-2 left-2 z-10 bg-deal text-white text-[10px] font-medium px-1.5 py-0.5 rounded">
+            <div className="absolute top-2 left-2 z-10 bg-deal text-white text-xs font-medium px-1.5 py-0.5 rounded">
               -{discountPercent}%
             </div>
           )}
           
           {/* Seller Tier Badge */}
           {sellerTier === 'premium' && (
-            <Badge className="absolute top-2 right-2 z-10 bg-primary text-primary-foreground text-[9px] px-1.5 py-0.5 border-0">
+            <Badge className="absolute top-2 right-2 z-10 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 border-0">
               <Medal size={10} weight="fill" className="mr-0.5" />
               {locale === 'bg' ? 'Премиум' : 'Premium'}
             </Badge>
           )}
           {sellerTier === 'business' && (
-            <Badge className="absolute top-2 right-2 z-10 bg-foreground text-background text-[9px] px-1.5 py-0.5 border-0">
+            <Badge className="absolute top-2 right-2 z-10 bg-foreground text-background text-xs px-1.5 py-0.5 border-0">
               <Briefcase size={10} weight="fill" className="mr-0.5" />
               {locale === 'bg' ? 'Бизнес' : 'Business'}
             </Badge>
@@ -129,7 +129,7 @@ function FeaturedProductCard({
                 />
               ))}
             </div>
-            <span className="text-[10px] text-muted-foreground">{reviews}</span>
+            <span className="text-xs text-muted-foreground">{reviews}</span>
           </div>
 
           {/* Price */}
@@ -147,7 +147,7 @@ function FeaturedProductCard({
                 </span>
               )}
             </div>
-            <div className="text-[10px] text-muted-foreground mt-0.5">
+            <div className="text-xs text-muted-foreground mt-0.5">
               {t('delivery')} {formattedDate}
             </div>
           </div>

@@ -170,7 +170,7 @@ export function ProductCard({
         {/* Boosted indicator */}
         {isBoosted && (
           <div className="absolute top-2 left-2 z-20">
-            <Badge className="bg-amber-500 text-white border-0 text-[10px] px-1.5 py-0.5 font-semibold flex items-center gap-0.5">
+            <Badge className="bg-amber-500 text-white border-0 text-xs px-1.5 py-0.5 font-semibold flex items-center gap-0.5">
               <Lightning weight="fill" className="w-3 h-3" />
               BOOST
             </Badge>
@@ -180,7 +180,7 @@ export function ProductCard({
         {primaryBadge && !isBoosted && (
           <div className="absolute top-2 left-2 z-20">
             <Badge className={cn(
-              "text-white border-0 text-[10px] px-1.5 py-0.5 font-semibold",
+              "text-white border-0 text-xs px-1.5 py-0.5 font-semibold",
               primaryBadge.color
             )}>
               {primaryBadge.text}
@@ -215,7 +215,7 @@ export function ProductCard({
         {/* Title - 2 lines max - eBay style: normal weight, underline on hover */}
         <h3 className={cn(
           "font-normal text-foreground group-hover:underline line-clamp-2 leading-snug",
-          isGrid ? "text-xs mb-1" : "text-xs sm:text-sm mb-1 sm:mb-1.5"
+          isGrid ? "text-sm mb-1" : "text-sm mb-1 sm:mb-1.5"
         )}>
           {title}
         </h3>
@@ -232,21 +232,21 @@ export function ProductCard({
               />
             ))}
           </div>
-          <span className="text-[10px] text-muted-foreground font-normal">{reviews.toLocaleString()}</span>
+          <span className="text-xs text-muted-foreground font-normal">{reviews.toLocaleString()}</span>
         </div>
 
         {/* Price & Button */}
         <div className="mt-auto pointer-events-auto">
           <div className="mb-1">
             <span className={cn(
-              "font-medium text-foreground tracking-tight",
-              isGrid ? "text-sm" : "text-sm sm:text-base md:text-lg"
+              "font-normal text-foreground",
+              isGrid ? "text-sm" : "text-sm sm:text-base"
             )}>{formatPrice(price)}</span>
           </div>
 
           {!isCompact && (
             <div className={cn(
-              "text-[10px] text-muted-foreground mb-1.5 flex items-center gap-1",
+              "text-xs text-muted-foreground mb-1.5 flex items-center gap-1",
               isGrid ? "hidden" : "hidden sm:flex sm:mb-2"
             )}>
               <Truck size={12} className="text-green-600" />
@@ -260,7 +260,7 @@ export function ProductCard({
             disabled={isOwnProduct}
             className={cn(
               "w-full bg-interactive hover:bg-interactive-hover text-white font-normal rounded-sm touch-action-manipulation disabled:opacity-50",
-              isGrid ? "min-h-9 text-xs" : "min-h-11 text-xs sm:text-sm"
+              isGrid ? "min-h-9 text-sm" : "min-h-11 text-sm"
             )}
             title={isOwnProduct ? "You cannot purchase your own products" : undefined}
           >

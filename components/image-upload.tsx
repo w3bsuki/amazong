@@ -168,7 +168,7 @@ export function ImageUpload({
               
               {/* Primary badge */}
               {index === 0 && (
-                <div className="absolute bottom-0 left-0 right-0 bg-foreground/80 text-background text-[10px] font-medium text-center py-0.5">
+                <div className="absolute bottom-0 left-0 right-0 bg-foreground/80 text-background text-xs font-medium text-center py-0.5">
                   Main
                 </div>
               )}
@@ -210,7 +210,7 @@ export function ImageUpload({
               ) : (
                 <>
                   <Upload size={20} />
-                  <span className="text-[10px]">Add</span>
+                  <span className="text-xs">Add</span>
                 </>
               )}
             </button>

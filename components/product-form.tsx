@@ -230,7 +230,7 @@ export function ProductForm({ userId, sellerCountryCode = 'BG' }: { userId: stri
               <div
                 key={dest.id}
                 onClick={() => toggleShipping(dest.id as keyof typeof shippingOptions)}
-                className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer ${
                   isChecked 
                     ? 'border-brand bg-brand/5' 
                     : 'border-border hover:border-brand/50'
@@ -269,7 +269,7 @@ export function ProductForm({ userId, sellerCountryCode = 'BG' }: { userId: stri
           {/* Pickup Only Option */}
           <div
             onClick={() => toggleShipping('pickup_only')}
-            className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+            className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer ${
               shippingOptions.pickup_only 
                 ? 'border-brand bg-brand/5' 
                 : 'border-border hover:border-brand/50'

@@ -33,7 +33,7 @@ export function LanguageSwitcher() {
                     variant="ghost"
                     className="h-12 flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group"
                 >
-                    <span className="text-[10px] text-header-text-muted group-hover:text-brand">{t('language')}</span>
+                    <span className="text-xs text-header-text-muted group-hover:text-brand">{t('language')}</span>
                     <span className="text-sm font-bold mt-0.5 flex items-center gap-1.5">
                         <span>{currentLocale.code === 'bg' ? 'BG' : 'EN'}</span>
                         <img 
