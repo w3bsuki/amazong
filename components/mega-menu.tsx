@@ -383,15 +383,11 @@ export function MegaMenu() {
       clearTimeout(timeoutRef.current)
     }
     setIsOpen(true)
-    // Prevent body scroll when menu is open
-    document.body.style.overflow = 'hidden'
   }, [])
 
   const handleMouseLeave = useCallback(() => {
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false)
-      // Restore body scroll when menu closes
-      document.body.style.overflow = ''
     }, 150)
   }, [])
 
@@ -399,10 +395,9 @@ export function MegaMenu() {
     setActiveCategory(category)
   }, [])
 
-  // Helper to close menu and restore body scroll
+  // Helper to close menu
   const closeMenu = useCallback(() => {
     setIsOpen(false)
-    document.body.style.overflow = ''
   }, [])
 
   useEffect(() => {
@@ -410,8 +405,6 @@ export function MegaMenu() {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
-      // Ensure body scroll is restored on unmount
-      document.body.style.overflow = ''
     }
   }, [])
 
@@ -441,9 +434,9 @@ export function MegaMenu() {
       {/* Mega Menu Panel - Full width, positioned below header */}
       <div
         className={cn(
-          "fixed left-0 right-0 z-50",
+          "fixed left-0 right-0 z-40",
           "bg-background",
-          "border-b border-border",
+          "border-b border-border shadow-lg",
           "transition-opacity duration-150 ease-out",
           isOpen 
             ? "opacity-100 pointer-events-auto" 
@@ -639,7 +632,7 @@ export function MegaMenu() {
       {/* Backdrop overlay - Subtle */}
       <div 
         className={cn(
-          "fixed inset-0 bg-black/30 z-40 transition-opacity duration-150",
+          "fixed inset-0 bg-black/30 z-30 transition-opacity duration-150",
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
         style={{ top: `${headerHeight}px` }}
