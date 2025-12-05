@@ -213,4 +213,4 @@ export async function POST(req: Request) {
   }
 }
 
-export const runtime = 'nodejs'
+// Note: runtime = 'nodejs' removed as it's not compatible with Next.js 16 cacheComponents

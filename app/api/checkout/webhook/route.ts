@@ -156,5 +156,5 @@ export async function POST(req: Request) {
   return NextResponse.json({ received: true });
 }
 
-// Disable body parsing - Stripe requires raw body for signature verification
-export const runtime = 'nodejs';
+// Note: runtime = 'nodejs' removed as it's not compatible with Next.js 16 cacheComponents
+// Stripe webhook signature verification still works with the default runtime

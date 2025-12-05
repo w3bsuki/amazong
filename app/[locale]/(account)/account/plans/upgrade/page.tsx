@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
 import { getLocale } from "next-intl/server"
 import { UpgradeContent } from "./upgrade-content"
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr"
@@ -14,6 +15,7 @@ import Link from "next/link"
  * When navigating from within the app, the intercepted modal version is shown instead.
  */
 export default async function UpgradePage() {
+  await connection()
   const locale = await getLocale()
   const supabase = await createClient()
   

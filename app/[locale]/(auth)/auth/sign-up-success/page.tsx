@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
+import { connection } from "next/server"
 import { CheckCircle, EnvelopeSimple } from "@phosphor-icons/react/dist/ssr"
 
 export default async function SignUpSuccessPage() {
+  await connection()
   const t = await getTranslations('Auth')
 
   return (

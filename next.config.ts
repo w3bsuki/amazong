@@ -10,13 +10,13 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   // ============================================
-  // Next.js 16+ Cache Components Configuration
+  // Next.js 16+ Configuration
   // ============================================
   
-  // Enable 'use cache' directive for Server Components
+  // Enable cache components for e-commerce performance
   cacheComponents: true,
   
-  // Custom cache life profiles for different content types
+  // Custom cache life profiles
   cacheLife: {
     // Categories: cached for 1 hour, serve stale for 5 min while revalidating
     categories: {
@@ -29,6 +29,12 @@ const nextConfig: NextConfig = {
       stale: 60,        // 1 minute
       revalidate: 300,  // 5 minutes
       expire: 3600,     // 1 hour
+    },
+    // Deals: shorter cache for time-sensitive promotions
+    deals: {
+      stale: 30,        // 30 seconds - deals change often
+      revalidate: 120,  // 2 minutes
+      expire: 600,      // 10 minutes - force refresh
     },
     // User data: short cache for personalization
     user: {

@@ -3,6 +3,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { connection } from "next/server";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 
@@ -28,6 +29,9 @@ export default async function MainLayout({
     children: React.ReactNode;
     params: Promise<{ locale: string }>;
 }) {
+    // Mark as dynamic for Next.js 16+ cacheComponents (user auth access)
+    await connection();
+    
     const { locale } = await params;
     
     // Enable static rendering - required for Next.js 16+ with cacheComponents

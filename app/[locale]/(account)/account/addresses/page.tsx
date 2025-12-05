@@ -2,8 +2,12 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { getLocale } from "next-intl/server"
 import { AddressesContent } from "./addresses-content"
+import { connection } from "next/server"
 
 export default async function AddressesPage() {
+    // Make this route dynamic since it uses user authentication
+    await connection()
+    
     const locale = await getLocale()
     const supabase = await createClient()
     

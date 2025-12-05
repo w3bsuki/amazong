@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Package, CreditCard, Lock, MapPin, Headphones, Crown, ChatCircle as MessageSquare, Storefront } from "@phosphor-icons/react/dist/ssr"
@@ -12,6 +13,7 @@ interface AccountPageProps {
 }
 
 export default async function AccountPage({ params }: AccountPageProps) {
+  await connection()
   const { locale } = await params
   const supabase = await createClient()
 

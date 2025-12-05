@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
 import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -9,6 +10,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr"
 import { AppBreadcrumb } from "@/components/app-breadcrumb"
 
 export default async function OrdersPage() {
+  await connection()
   const supabase = await createClient()
 
   if (!supabase) {

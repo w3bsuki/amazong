@@ -1,10 +1,6 @@
+"use client"
+
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-import { connection } from "next/server";
-import { setRequestLocale, getTranslations } from "next-intl/server";
-import { routing } from "@/i18n/routing";
-import { Suspense } from "react";
 import { 
     Package, 
     CreditCard, 
@@ -15,133 +11,66 @@ import {
     House,
     Crown,
     Storefront
-} from "@phosphor-icons/react/dist/ssr";
+} from "@phosphor-icons/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SignOutButton } from "@/components/sign-out-button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useLocale } from "next-intl";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
-// Generate static params for all supported locales
-export function generateStaticParams() {
-    return routing.locales.map((locale) => ({ locale }));
+interface AccountLayoutContentProps {
+  children: React.ReactNode;
+  modal: React.ReactNode;
 }
 
-function AccountLayoutSkeleton({ children }: { children: React.ReactNode }) {
-    return (
-        <div className="min-h-screen flex flex-col bg-muted/30">
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-                <div className="container flex h-14 items-center justify-between">
-                    <Skeleton className="h-6 w-20" />
-                    <Skeleton className="h-9 w-9 rounded-full" />
-                </div>
-            </header>
-            <div className="flex-1 flex">
-                <aside className="hidden lg:block w-64 border-r bg-background shrink-0">
-                    <div className="p-4 space-y-4">
-                        <Skeleton className="h-12 w-full" />
-                        <Skeleton className="h-8 w-full" />
-                        <Skeleton className="h-8 w-full" />
-                        <Skeleton className="h-8 w-full" />
-                    </div>
-                </aside>
-                <main className="flex-1 min-w-0 pb-20 lg:pb-0">
-                    {children}
-                </main>
-            </div>
-        </div>
-    );
-}
+export function AccountLayoutContent({ children, modal }: AccountLayoutContentProps) {
+    const locale = useLocale();
+    const [email, setEmail] = useState<string>("");
+    const [isLoading, setIsLoading] = useState(true);
 
-/**
- * Account Layout
- * 
- * Minimal, focused layout for account management:
- * - Simple header with logo and user info
- * - Sidebar navigation for account sections
- * - No mega menus, no distractions
- * - Supports modal overlays via @modal parallel route
- * 
- * Used for: Account settings, orders, plans, messages, etc.
- */
-export default function AccountLayout({
-    children,
-    modal,
-    params,
-}: {
-    children: React.ReactNode;
-    modal: React.ReactNode;
-    params: Promise<{ locale: string }>;
-}) {
-    return (
-        <Suspense fallback={<AccountLayoutSkeleton>{children}</AccountLayoutSkeleton>}>
-            <AccountLayoutContent params={params} modal={modal}>
-                {children}
-            </AccountLayoutContent>
-        </Suspense>
-    );
-}
+    useEffect(() => {
+        async function getUser() {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user?.email) {
+                setEmail(user.email);
+            }
+            setIsLoading(false);
+        }
+        getUser();
+    }, []);
 
-async function AccountLayoutContent({
-    children,
-    modal,
-    params,
-}: {
-    children: React.ReactNode;
-    modal: React.ReactNode;
-    params: Promise<{ locale: string }>;
-}) {
-    await connection();
-    const { locale } = await params;
-    
-    // Enable static rendering - CRITICAL for Next.js 16+
-    setRequestLocale(locale);
-    
-    const supabase = await createClient();
-    
-    if (!supabase) {
-        redirect("/auth/login");
-    }
-    
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-        redirect("/auth/login");
-    }
-
-    const t = await getTranslations({ locale, namespace: 'Account' });
-    
-    // Get user initials for avatar
-    const email = user.email || '';
-    const initials = email.substring(0, 2).toUpperCase();
+    const initials = email ? email.substring(0, 2).toUpperCase() : "??";
 
     const menuItems = [
         {
-            title: t('orders.title'),
+            title: locale === 'bg' ? 'Поръчки' : 'Orders',
             icon: Package,
             href: "/account/orders",
         },
         {
-            title: t('prime.title'),
+            title: locale === 'bg' ? 'Планове' : 'Plans',
             icon: Crown,
             href: "/account/plans",
         },
         {
-            title: t('security.title'),
+            title: locale === 'bg' ? 'Сигурност' : 'Security',
             icon: Lock,
             href: "/account/security",
         },
         {
-            title: t('addresses.title'),
+            title: locale === 'bg' ? 'Адреси' : 'Addresses',
             icon: MapPin,
             href: "/account/addresses",
         },
         {
-            title: t('payments.title'),
+            title: locale === 'bg' ? 'Плащания' : 'Payments',
             icon: CreditCard,
             href: "/account/payments",
         },
         {
-            title: t('messages.title'),
+            title: locale === 'bg' ? 'Съобщения' : 'Messages',
             icon: MessageSquare,
             href: "/account/messages",
         },
@@ -178,7 +107,7 @@ async function AccountLayoutContent({
                     {/* User Section */}
                     <div className="flex items-center gap-3">
                         <div className="hidden sm:flex flex-col items-end">
-                            <span className="text-sm font-medium">{email}</span>
+                            <span className="text-sm font-medium">{isLoading ? '...' : email}</span>
                             <span className="text-xs text-muted-foreground">
                                 {locale === 'bg' ? 'Личен акаунт' : 'Personal Account'}
                             </span>
@@ -210,7 +139,7 @@ async function AccountLayoutContent({
                                     </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <p className="font-medium text-sm truncate max-w-[160px]">{email}</p>
+                                    <p className="font-medium text-sm truncate max-w-[160px]">{isLoading ? '...' : email}</p>
                                     <p className="text-xs text-muted-foreground">
                                         {locale === 'bg' ? 'Личен акаунт' : 'Personal Account'}
                                     </p>
@@ -223,7 +152,7 @@ async function AccountLayoutContent({
                                     className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium hover:bg-muted transition-colors"
                                 >
                                     <User className="size-5 text-muted-foreground" />
-                                    {t('title')}
+                                    {locale === 'bg' ? 'Акаунт' : 'Account'}
                                 </Link>
                                 
                                 <div className="pt-2">

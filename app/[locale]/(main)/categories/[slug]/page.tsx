@@ -14,19 +14,13 @@ import type { Metadata } from 'next'
 import { Link } from "@/i18n/routing"
 import { cookies } from "next/headers"
 import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
+import {
+  getCategoryBySlug,
+  getCategoryContext,
+  getRootCategoriesWithChildren,
+} from "@/lib/data/categories"
 
 const ITEMS_PER_PAGE = 20
-
-// Define types
-interface Category {
-  id: string
-  name: string
-  name_bg: string | null
-  slug: string
-  parent_id: string | null
-  image_url?: string | null
-  display_order?: number | null
-}
 
 interface Product {
   id: string
@@ -54,25 +48,16 @@ export async function generateStaticParams() {
   }))
 }
 
-// Generate metadata for SEO
-// Uses createStaticClient because this may run at build time outside request scope
+// Generate metadata for SEO - Uses cached getCategoryBySlug
 export async function generateMetadata({ 
   params 
 }: {
   params: Promise<{ slug: string; locale: string }>
 }): Promise<Metadata> {
   const { slug, locale } = await params
-  const supabase = createStaticClient()
   
-  if (!supabase) {
-    return { title: "Category Not Found" }
-  }
-  
-  const { data: category } = await supabase
-    .from("categories")
-    .select("name, name_bg")
-    .eq("slug", slug)
-    .single()
+  // Use cached function instead of direct query
+  const category = await getCategoryBySlug(slug)
   
   if (!category) {
     return {
@@ -218,66 +203,31 @@ export default async function CategoryPage({
     notFound()
   }
   
-  let products: Product[] = []
-  let totalProducts = 0
-  let currentCategory: Category | null = null
-  let parentCategory: Category | null = null
-  let subcategories: Category[] = []
-  let allCategories: Category[] = []
-  let allCategoriesWithSubs: { category: Category; subs: Category[] }[] = []
-  let brands: string[] = []
-
-  // First, fetch the current category directly by slug (efficient single query)
-  const { data: categoryData, error: catError } = await supabase
-    .from("categories")
-    .select("id, name, name_bg, slug, parent_id, image_url, display_order")
-    .eq("slug", slug)
-    .single()
-
-  if (!categoryData || catError) {
+  // ============================================================================
+  // PHASE 2: Use cached data fetching functions (Next.js 16+ 'use cache' pattern)
+  // These functions use cacheTag and cacheLife for granular cache invalidation
+  // ============================================================================
+  
+  // Fetch category context (current, parent, siblings, children, attributes) - CACHED
+  const categoryContext = await getCategoryContext(slug)
+  
+  if (!categoryContext) {
     notFound()
   }
-
-  currentCategory = categoryData
-
-  // Now fetch related data in parallel
-  const [
-    parentResult,
-    childrenResult,
-    rootCatsResult
-  ] = await Promise.all([
-    // Get parent category if this is a subcategory
-    categoryData.parent_id 
-      ? supabase.from("categories").select("id, name, name_bg, slug, parent_id, image_url, display_order").eq("id", categoryData.parent_id).single()
-      : Promise.resolve({ data: null }),
-    // Get children of current category
-    supabase.from("categories").select("id, name, name_bg, slug, parent_id, image_url, display_order").eq("parent_id", categoryData.id).order("display_order").order("name"),
-    // Get root categories (L0) for sidebar
-    supabase.from("categories").select("id, name, name_bg, slug, parent_id, image_url, display_order").is("parent_id", null).order("display_order").order("name")
-  ])
-
-  parentCategory = parentResult.data
-  subcategories = childrenResult.data || []
-  allCategories = rootCatsResult.data || []
-
-  // Get subcategories for each root category (for sidebar navigation)
-  if (allCategories.length > 0) {
-    const rootIds = allCategories.map(c => c.id)
-    const { data: level1Cats } = await supabase
-      .from("categories")
-      .select("id, name, name_bg, slug, parent_id, image_url, display_order")
-      .in("parent_id", rootIds)
-      .order("display_order")
-      .order("name")
-    
-    allCategoriesWithSubs = allCategories.map(cat => ({
-      category: cat,
-      subs: (level1Cats || []).filter(c => c.parent_id === cat.id)
-    }))
-  }
+  
+  const { current: currentCategory, parent: parentCategory, children: subcategories, attributes: _attributes } = categoryContext
+  
+  // Fetch root categories with L1 children for sidebar - CACHED
+  const allCategoriesWithSubs = await getRootCategoriesWithChildren()
+  const allCategories = allCategoriesWithSubs.map(c => c.category)
+  
+  // Products still use direct Supabase query (dynamic, user-specific filters)
+  let products: Product[] = []
+  let totalProducts = 0
+  let brands: string[] = []
 
   // Get products from this category AND all its subcategories
-  const categoryIds = [categoryData.id, ...subcategories.map(s => s.id)]
+  const categoryIds = [currentCategory.id, ...subcategories.map(s => s.id)]
 
   const result = await searchProducts(supabase, categoryIds, {
     minPrice: searchParams.minPrice,

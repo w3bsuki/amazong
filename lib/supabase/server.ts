@@ -2,61 +2,58 @@ import { createServerClient } from "@supabase/ssr"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
 
+// =============================================================================
+// Supabase Clients - Use the right one for your context
+// =============================================================================
+//
+// createClient()       → For auth-dependent queries (uses cookies)
+// createStaticClient() → For cached queries (anon key, no cookies)
+// createAdminClient()  → For bypassing RLS (service role key)
+//
+// =============================================================================
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+function assertEnvVars() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY")
+  }
+}
+
+/** Auth-dependent client with cookies (for user-specific data) */
 export async function createClient() {
+  assertEnvVars()
   const cookieStore = await cookies()
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    console.warn("Missing Supabase environment variables. Returning null client.")
-    return null
-  }
-
-  return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+  return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
-      getAll() {
-        return cookieStore.getAll()
-      },
-      setAll(cookiesToSet) {
+      getAll: () => cookieStore.getAll(),
+      setAll: (cookiesToSet) => {
         try {
-          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
+          cookiesToSet.forEach(({ name, value, options }) => 
+            cookieStore.set(name, value, options)
+          )
         } catch {
-          // The "setAll" method was called from a Server Component.
-          // This can be ignored if you have middleware refreshing
-          // user sessions.
+          // Called from Server Component - middleware handles session refresh
         }
       },
     },
   })
 }
 
-/**
- * Create a Supabase admin client with service role key.
- * This bypasses RLS and should only be used in server-side code
- * where we've already verified user authentication.
- */
-export function createAdminClient() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.warn("Missing Supabase admin environment variables.")
-    return null
-  }
-
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
+/** Static client for cached queries (no cookies, safe for 'use cache') */
+export function createStaticClient() {
+  assertEnvVars()
+  return createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 }
 
-/**
- * Create a Supabase client for use in static generation contexts (generateStaticParams, generateMetadata at build time)
- * This client doesn't use cookies and is safe to use outside of request scope.
- */
-export function createStaticClient() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    console.warn("Missing Supabase environment variables. Returning null client.")
-    return null
+/** Admin client bypassing RLS (use only after auth verification) */
+export function createAdminClient() {
+  assertEnvVars()
+  if (!SUPABASE_SERVICE_KEY) {
+    throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY")
   }
-
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  return createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 }

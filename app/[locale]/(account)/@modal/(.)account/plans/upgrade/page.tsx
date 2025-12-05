@@ -1,6 +1,7 @@
 import { Modal } from "@/components/ui/modal"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
 import { getLocale } from "next-intl/server"
 import { UpgradeContent } from "@/app/[locale]/(account)/account/plans/upgrade/upgrade-content"
 
@@ -11,6 +12,7 @@ import { UpgradeContent } from "@/app/[locale]/(account)/account/plans/upgrade/u
  * When accessed directly (or on refresh), the user sees the full page version.
  */
 export default async function InterceptedUpgradePage() {
+  await connection()
   const locale = await getLocale()
   const supabase = await createClient()
   

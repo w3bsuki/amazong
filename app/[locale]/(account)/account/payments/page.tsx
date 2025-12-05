@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
 import { getLocale } from "next-intl/server"
 import { PaymentsContent } from "./payments-content"
 
 export default async function PaymentsPage() {
+    await connection()
     const locale = await getLocale()
     const supabase = await createClient()
     
