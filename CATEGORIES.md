@@ -15,7 +15,7 @@
 | 4 | 📚 Books & Magazines | books | Книги |
 | 5 | 📷 Cameras & Photo | cameras-photo | Фотоапарати |
 | 6 | 📱 Cell Phones & Tablets | cell-phones | Телефони |
-| 7 | 🌿 CBD & Wellness | cbd-wellness | CBD и уелнес |
+| 7 | 🌿 CBD & Natural Products | cbd-wellness | CBD и натурални продукти |
 | 8 | 🎨 Collectibles & Art | collectibles | Колекции и изкуство |
 | 9 | 💻 Computers & Networking | computers | Компютри |
 | 10 | 📺 Electronics | electronics | Електроника |
@@ -65,18 +65,25 @@
 
 ---
 
-## 🌿 CBD & WELLNESS
+## 🌿 CBD & NATURAL PRODUCTS
 
 | L2 Category | L3 Subcategories | Bulgarian |
 |-------------|------------------|-----------|
-| **CBD Oils & Tinctures** | Full Spectrum, Broad Spectrum, CBD Isolate, CBG Oil, CBN Oil, Pet CBD | CBD масла |
-| **CBD Edibles** | Gummies, Chocolates, Honey, Capsules, Beverages, Cooking Oils | CBD храни |
-| **CBD Topicals** | Creams, Balms, Lotions, Patches, Roll-Ons, Bath Bombs | CBD козметика |
-| **CBD Vapes** | Vape Pens, Cartridges, E-Liquids, Disposables | CBD вейп |
-| **Hemp Products** | Hemp Flower, Hemp Seeds, Hemp Protein, Hemp Clothing, Hemp Paper | Коноп |
-| **Functional Mushrooms** | Lion's Mane, Reishi, Chaga, Cordyceps, Turkey Tail, Mushroom Coffee, Capsules | Функционални гъби |
-| **Adaptogens** | Ashwagandha, Rhodiola, Maca, Ginseng, Holy Basil | Адаптогени |
-| **Wellness Accessories** | Vaporizers, Grinders, Storage, Testing Kits, Books | Аксесоари |
+| **CBD Oils & Tinctures** | Full Spectrum, Broad Spectrum, CBD Isolate, CBG Oil, CBN Oil, CBDa Oil, Water Soluble CBD, Nano CBD, High Potency (30%+) | CBD масла |
+| **CBD Capsules & Softgels** | Softgels, Tablets, Sleep Formula, Energy Formula, Focus Formula, Pain Relief Formula, Liposomal CBD | CBD капсули |
+| **CBD Edibles** | Gummies, Chocolates, Honey, Beverages, Cooking Oils, Protein Bars, Mints, Hard Candies | CBD храни |
+| **CBD Topicals** | Creams, Balms, Lotions, Patches, Roll-Ons, Bath Bombs, Massage Oils, Sports Recovery, Muscle Rubs | CBD локални |
+| **CBD Vapes** | Vape Pens, Cartridges, E-Liquids, Disposables, Live Resin Carts, Terpene Carts | CBD вейп |
+| **CBD Flowers & Pre-Rolls** | Indoor Grown, Outdoor Grown, Greenhouse, Pre-Rolls, Trim, CBD Hash, Moon Rocks | CBD цветя |
+| **CBD Beauty & Skincare** | Face Serums, Moisturizers, Eye Creams, Lip Balms, Face Masks, Anti-Aging, Acne Treatment | CBD козметика |
+| **CBD Concentrates** | Wax, Shatter, Crumble, Crystals, Distillate, Live Resin, Rosin | CBD концентрати |
+| **Pet CBD** | Dog CBD Oil, Cat CBD Oil, Pet Treats, Pet Topicals, Calming Chews, Joint Support | CBD за животни |
+| **Functional Mushrooms** | Lion's Mane, Reishi, Chaga, Cordyceps, Turkey Tail, Mushroom Coffee, Mushroom Gummies, Mushroom Tinctures, Mushroom Powders, Mushroom Capsules, Mushroom Tea, Tremella, Shiitake, Maitake | Функционални гъби |
+| **Mushroom Blends** | Focus Blend, Energy Blend, Immunity Blend, Sleep Blend, Beauty Blend, Athletic Performance, Brain Stack | Гъбени комплекси |
+| **Hemp Products** | Hemp Flower, Hemp Seeds, Hemp Protein, Hemp Hearts, Hemp Oil (Cooking), Hemp Milk, Hemp Clothing | Коноп |
+| **Adaptogens** | Ashwagandha, Rhodiola Rosea, Maca Root, Panax Ginseng, Holy Basil (Tulsi), Schisandra, Eleuthero, Bacopa | Адаптогени |
+| **Delta-8 & Alt Cannabinoids** | Delta-8 THC, HHC, THC-P, THC-V, CBG Products, CBN Products (Check EU Legality) | Алтернативни канабиноиди |
+| **CBD Accessories** | Vaporizers, Grinders, Storage Containers, Testing Kits, Dosing Tools, CBD Books, Starter Kits | CBD аксесоари |
 
 ---
 
@@ -347,8 +354,38 @@
 | **Bath & Body** | Body Wash, Lotion, Deodorants, Hand Care, Foot Care |
 | **Nail Care** | Polish, Tools, Art, Treatments |
 | **Men's Grooming** | Shaving, Beard Care, Skincare, Fragrances |
-| **Health & Wellness** | Vitamins, Supplements, First Aid, Medical Equipment, Personal Care |
 | **Fragrances** | Women's Perfumes, Men's Colognes, Unisex, Body Sprays |
+
+---
+
+## 💊 HEALTH & WELLNESS (Expanded 2025)
+
+| L2 Category | L3 Subcategories | Bulgarian | 2025 Trending |
+|-------------|------------------|-----------|---------------|
+| **Vitamins & Minerals** | Multivitamins, Vitamin D3+K2, Vitamin C, B-Complex, Zinc, Magnesium, Iron, Calcium, Vitamin E, Vitamin A, Folic Acid | Витамини | ⭐ Vitamin D, Magnesium Glycinate |
+| **Probiotics & Gut Health** | Probiotics Capsules, Prebiotic Fiber, Synbiotics, Digestive Enzymes, Gut Microbiome Tests, Postbiotics, Spore Probiotics, Fermented Supplements | Пробиотици | ⭐⭐ Gut-Brain Axis Focus |
+| **Collagen & Beauty Supplements** | Marine Collagen, Bovine Collagen, Collagen Peptides, Collagen Powder, Hyaluronic Acid, Biotin, Keratin, Silica, Anti-Aging Supplements | Колаген | ⭐⭐⭐ #1 Beauty Trend |
+| **Protein & Amino Acids** | Whey Protein, Plant Protein, Casein, BCAAs, EAAs, Creatine, L-Glutamine, L-Carnitine, Collagen Protein | Протеин | ⭐ Plant Protein Growing |
+| **Omega & Fish Oils** | Omega-3, Fish Oil, Krill Oil, Algae Oil (Vegan), Cod Liver Oil, Omega-3-6-9, EPA/DHA Concentrated | Омега мастни киселини | ⭐ Algae Oil for Vegans |
+| **Sleep & Relaxation** | Melatonin, Magnesium for Sleep, L-Theanine, GABA, Valerian Root, Passionflower, Sleep Gummies, Sleep Teas, Weighted Blankets | Сън и релаксация | ⭐⭐ Sleep Optimization Hot |
+| **Energy & Cognitive** | Nootropics, L-Theanine + Caffeine, Alpha-GPC, Lion's Mane, Bacopa Monnieri, Ginkgo Biloba, CoQ10, NAD+, NMN | Енергия и когнитивни | ⭐⭐ Brain Health Huge |
+| **Immune Support** | Elderberry, Echinacea, Vitamin C + Zinc, Beta-Glucan, Quercetin, Olive Leaf Extract, Propolis, Astragalus | Имунитет | ⭐ Year-Round Demand |
+| **Weight Management** | Fat Burners, Appetite Suppressants, Green Tea Extract, Garcinia Cambogia, CLA, L-Carnitine, Glucomannan, MCT Oil | Контрол на теглото | ⭐ GLP-1 Trend |
+| **Joint & Mobility** | Glucosamine, Chondroitin, MSM, Turmeric/Curcumin, Collagen Type II, Boswellia, Hyaluronic Acid, Joint Gummies | Стави и мобилност | ⭐ Aging Population |
+| **Women's Health** | Prenatal Vitamins, Iron Supplements, Myo-Inositol, DIM, Evening Primrose Oil, Menopause Support, Fertility Support, Hormone Balance | Женско здраве | ⭐⭐ Hormonal Health |
+| **Men's Health** | Testosterone Support, Prostate Health, Saw Palmetto, Maca Root, Tongkat Ali, Fenugreek, Zinc + Magnesium | Мъжко здраве | ⭐ Performance Focus |
+| **Heart Health** | CoQ10, Omega-3, Nattokinase, Aged Garlic Extract, Red Yeast Rice, Bergamot, Plant Sterols | Сърдечно здраве | ⭐ Preventive Care |
+| **Blood Sugar Support** | Berberine, Chromium, Ceylon Cinnamon, Alpha Lipoic Acid, Gymnema, Bitter Melon | Кръвна захар | ⭐⭐ Metabolic Health |
+| **Detox & Cleanse** | Liver Support, Milk Thistle, NAC (N-Acetyl Cysteine), Chlorella, Spirulina, Activated Charcoal, Detox Teas | Детокс | ⭐ Longevity Focus |
+| **Stress & Mood** | Ashwagandha, Rhodiola, SAMe, 5-HTP, St. John's Wort, Lemon Balm, L-Tyrosine, Stress Gummies | Стрес и настроение | ⭐⭐⭐ Mental Health Priority |
+| **Hair, Skin, Nails** | Biotin, Collagen, Keratin, Silica, MSM, Hair Growth Supplements, Hair Gummies, Nail Strengtheners | Коса, кожа, нокти | ⭐⭐ Always Popular |
+| **Sports Nutrition** | Pre-Workout, Post-Workout, Electrolytes, BCAAs, Creatine Monohydrate, Beta-Alanine, Citrulline, Pump Formulas | Спортно хранене | ⭐ Fitness Boom |
+| **Superfoods & Greens** | Green Powders, Spirulina, Chlorella, Wheatgrass, Moringa, Maca, Acai, Superfood Blends | Суперхрани | ⭐⭐ Convenience Focus |
+| **Medical Equipment** | Blood Pressure Monitors, Pulse Oximeters, Thermometers, Glucose Meters, Nebulizers, TENS Units, Massage Guns | Медицинско оборудване | ⭐ Home Health |
+| **First Aid & Safety** | First Aid Kits, Bandages, Antiseptics, Ice Packs, Eye Wash, Emergency Supplies, Wound Care | Първа помощ | Essential |
+| **Personal Care Devices** | Electric Toothbrushes, Water Flossers, Red Light Therapy, Blue Light Glasses, Posture Correctors, Compression Wear | Лични грижи | ⭐⭐ Tech-Wellness |
+| **Therapy & Recovery** | Massage Guns, Foam Rollers, Acupressure Mats, Cupping Sets, TENS/EMS Devices, Ice Baths, Infrared Saunas | Терапия и възстановяване | ⭐⭐ Recovery Trend |
+| **Longevity & Anti-Aging** | NMN, NAD+, Resveratrol, Pterostilbene, Spermidine, Fisetin, Rapamycin Alternatives, Senolytics | Дълголетие | ⭐⭐⭐ 2025 HOT TREND |
 
 ---
 

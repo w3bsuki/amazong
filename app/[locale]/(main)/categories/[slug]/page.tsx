@@ -25,6 +25,7 @@ interface Category {
   slug: string
   parent_id: string | null
   image_url?: string | null
+  display_order?: number | null
 }
 
 interface Product {
@@ -226,36 +227,54 @@ export default async function CategoryPage({
   let allCategoriesWithSubs: { category: Category; subs: Category[] }[] = []
   let brands: string[] = []
 
-  // Fetch ALL categories
-  const { data: allCats } = await supabase
+  // First, fetch the current category directly by slug (efficient single query)
+  const { data: categoryData, error: catError } = await supabase
     .from("categories")
-    .select("id, name, name_bg, slug, parent_id, image_url")
-    .order("name")
-  
-  if (allCats) {
-    allCategories = allCats.filter(c => c.parent_id === null)
-    allCategoriesWithSubs = allCategories.map(cat => ({
-      category: cat,
-      subs: allCats.filter(c => c.parent_id === cat.id)
-    }))
-  }
+    .select("id, name, name_bg, slug, parent_id, image_url, display_order")
+    .eq("slug", slug)
+    .single()
 
-  // Find the current category by slug
-  const categoryData = allCats?.find(c => c.slug === slug) || null
-
-  if (!categoryData) {
+  if (!categoryData || catError) {
     notFound()
   }
 
   currentCategory = categoryData
 
-  // Get parent category if this is a subcategory
-  if (categoryData.parent_id) {
-    parentCategory = allCats?.find(c => c.id === categoryData.parent_id) || null
+  // Now fetch related data in parallel
+  const [
+    parentResult,
+    childrenResult,
+    rootCatsResult
+  ] = await Promise.all([
+    // Get parent category if this is a subcategory
+    categoryData.parent_id 
+      ? supabase.from("categories").select("id, name, name_bg, slug, parent_id, image_url, display_order").eq("id", categoryData.parent_id).single()
+      : Promise.resolve({ data: null }),
+    // Get children of current category
+    supabase.from("categories").select("id, name, name_bg, slug, parent_id, image_url, display_order").eq("parent_id", categoryData.id).order("display_order").order("name"),
+    // Get root categories (L0) for sidebar
+    supabase.from("categories").select("id, name, name_bg, slug, parent_id, image_url, display_order").is("parent_id", null).order("display_order").order("name")
+  ])
+
+  parentCategory = parentResult.data
+  subcategories = childrenResult.data || []
+  allCategories = rootCatsResult.data || []
+
+  // Get subcategories for each root category (for sidebar navigation)
+  if (allCategories.length > 0) {
+    const rootIds = allCategories.map(c => c.id)
+    const { data: level1Cats } = await supabase
+      .from("categories")
+      .select("id, name, name_bg, slug, parent_id, image_url, display_order")
+      .in("parent_id", rootIds)
+      .order("display_order")
+      .order("name")
+    
+    allCategoriesWithSubs = allCategories.map(cat => ({
+      category: cat,
+      subs: (level1Cats || []).filter(c => c.parent_id === cat.id)
+    }))
   }
-  
-  // ALWAYS get children of current category (L0->L1 or L1->L2)
-  subcategories = allCats?.filter(c => c.parent_id === categoryData.id) || []
 
   // Get products from this category AND all its subcategories
   const categoryIds = [categoryData.id, ...subcategories.map(s => s.id)]

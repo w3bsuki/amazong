@@ -3,7 +3,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { getLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
+
+// Generate static params for all supported locales
+export function generateStaticParams() {
+    return routing.locales.map((locale) => ({ locale }));
+}
 
 /**
  * Main Layout
@@ -17,10 +23,15 @@ import { getLocale } from "next-intl/server";
  */
 export default async function MainLayout({
     children,
+    params,
 }: {
     children: React.ReactNode;
+    params: Promise<{ locale: string }>;
 }) {
-    const locale = await getLocale();
+    const { locale } = await params;
+    
+    // Enable static rendering - required for Next.js 16+ with cacheComponents
+    setRequestLocale(locale);
     
     const supabase = await createClient();
     let user = null;

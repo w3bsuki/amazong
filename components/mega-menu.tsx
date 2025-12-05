@@ -99,6 +99,7 @@ const categoryIconMap: Record<string, React.ReactNode> = {
   "jewelry-watches": <Diamond size={20} weight="regular" className="mega-menu-icon" />,
   "handmade": <Palette size={20} weight="regular" className="mega-menu-icon" />,
   "health-wellness": <Pill size={20} weight="regular" className="mega-menu-icon" />,
+  "cbd-wellness": <Leaf size={20} weight="regular" className="mega-menu-icon" />,
   "office-school": <GraduationCap size={20} weight="regular" className="mega-menu-icon" />,
   "musical-instruments": <Guitar size={20} weight="regular" className="mega-menu-icon" />,
   "movies-music": <FilmStrip size={20} weight="regular" className="mega-menu-icon" />,
@@ -107,6 +108,14 @@ const categoryIconMap: Record<string, React.ReactNode> = {
   "baby-kids": <Baby size={20} weight="regular" className="mega-menu-icon" />,
   "tools-home": <Hammer size={20} weight="regular" className="mega-menu-icon" />,
   "garden-outdoor": <Flower size={20} weight="regular" className="mega-menu-icon" />,
+  // Missing L0 icons from DB audit (Phase 1 fix)
+  "e-mobility": <Leaf size={20} weight="regular" className="mega-menu-icon" />,
+  "services": <Briefcase size={20} weight="regular" className="mega-menu-icon" />,
+  "bulgarian-traditional": <ForkKnife size={20} weight="regular" className="mega-menu-icon" />,
+  "wholesale": <ShoppingBag size={20} weight="regular" className="mega-menu-icon" />,
+  "software": <Code size={20} weight="regular" className="mega-menu-icon" />,
+  "real-estate": <House size={20} weight="regular" className="mega-menu-icon" />,
+  "hobbies": <Guitar size={20} weight="regular" className="mega-menu-icon" />,
 }
 
 // Fallback product images for subcategories - comprehensive mapping

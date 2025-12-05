@@ -1,3 +1,4 @@
+import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import bundleAnalyzer from '@next/bundle-analyzer';
 
@@ -7,8 +8,7 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   // ============================================
   // Next.js 16+ Cache Components Configuration
   // ============================================
@@ -89,6 +89,6 @@ const nextConfig = {
 
   // Strict mode for better development warnings
   reactStrictMode: true,
-}
+} satisfies NextConfig;
 
 export default withBundleAnalyzer(withNextIntl(nextConfig));

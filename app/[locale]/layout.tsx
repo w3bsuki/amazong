@@ -1,10 +1,16 @@
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Inter } from "next/font/google";
 import "../globals.css";
 import type { Metadata } from 'next';
+
+// Generate static params for all supported locales
+// Required in Next.js 16+ for dynamic route segments
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 // Optimized font loading with display: swap for better LCP
 // Subset limited to Latin for smaller bundle size
@@ -70,11 +76,14 @@ export default async function LocaleLayout({
     children: React.ReactNode;
     params: Promise<{ locale: string }>;
 }) {
-    // Ensure that the incoming `locale` is valid
+    // Ensure that the incoming `locale` is valid using proper type guard
     const { locale } = await params;
-    if (!routing.locales.includes(locale as any)) {
+    if (!hasLocale(routing.locales, locale)) {
         notFound();
     }
+    
+    // Enable static rendering - CRITICAL for Next.js 16+ with cacheComponents
+    setRequestLocale(locale);
 
     // Providing all messages to the client side
     const messages = await getMessages();

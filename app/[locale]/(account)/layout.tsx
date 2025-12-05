@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getLocale, getTranslations } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 import { 
     Package, 
     CreditCard, 
@@ -17,6 +18,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SignOutButton } from "@/components/sign-out-button";
 
+// Generate static params for all supported locales
+export function generateStaticParams() {
+    return routing.locales.map((locale) => ({ locale }));
+}
+
 /**
  * Account Layout
  * 
@@ -31,11 +37,17 @@ import { SignOutButton } from "@/components/sign-out-button";
 export default async function AccountLayout({
     children,
     modal,
+    params,
 }: {
     children: React.ReactNode;
     modal: React.ReactNode;
+    params: Promise<{ locale: string }>;
 }) {
-    const locale = await getLocale();
+    const { locale } = await params;
+    
+    // Enable static rendering - CRITICAL for Next.js 16+
+    setRequestLocale(locale);
+    
     const supabase = await createClient();
     
     if (!supabase) {
