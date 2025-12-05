@@ -1,12 +1,12 @@
 import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { ProductCard } from "@/components/product-card"
-import { SearchFilters } from "@/components/search-filters"
 import { SubcategoryTabs } from "@/components/subcategory-tabs"
 import { MobileFilters } from "@/components/mobile-filters"
 import { DesktopFilters } from "@/components/desktop-filters"
 import { FilterChips } from "@/components/filter-chips"
 import { SortSelect } from "@/components/sort-select"
 import { SearchPagination } from "@/components/search-pagination"
+import { CategorySidebar, CategorySidebarSkeleton } from "@/components/category-sidebar"
 import { Suspense } from "react"
 import { getLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
@@ -17,7 +17,6 @@ import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
 import {
   getCategoryBySlug,
   getCategoryContext,
-  getRootCategoriesWithChildren,
 } from "@/lib/data/categories"
 
 const ITEMS_PER_PAGE = 20
@@ -215,16 +214,11 @@ export default async function CategoryPage({
     notFound()
   }
   
-  const { current: currentCategory, parent: parentCategory, children: subcategories, attributes: _attributes } = categoryContext
-  
-  // Fetch root categories with L1 children for sidebar - CACHED
-  const allCategoriesWithSubs = await getRootCategoriesWithChildren()
-  const allCategories = allCategoriesWithSubs.map(c => c.category)
+  const { current: currentCategory, parent: parentCategory, children: subcategories } = categoryContext
   
   // Products still use direct Supabase query (dynamic, user-specific filters)
   let products: Product[] = []
   let totalProducts = 0
-  let brands: string[] = []
 
   // Get products from this category AND all its subcategories
   const categoryIds = [currentCategory.id, ...subcategories.map(s => s.id)]
@@ -248,25 +242,28 @@ export default async function CategoryPage({
   return (
     <div className="min-h-screen bg-background">
       <div className="container">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar Filters */}
-          <aside className="w-64 hidden lg:block shrink-0 border-r border-border">
-            <div className="sticky top-28 py-4 pr-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
-            <Suspense>
-              <SearchFilters 
-                categories={allCategories}
-                subcategories={subcategories}
-                currentCategory={currentCategory}
-                allCategoriesWithSubs={allCategoriesWithSubs}
-                brands={brands}
-                basePath={`/categories/${slug}`}
+        <div className="flex flex-col lg:flex-row gap-0">
+          {/* ============================================================================
+              PHASE 3: Context-Aware Category Sidebar
+              Uses categoryContext from getCategoryContext() with:
+              - Parent breadcrumb navigation
+              - Sibling categories (same level)
+              - Current category expanded with children
+              - Attribute filters (when available)
+              ============================================================================ */}
+          
+          {/* New Context-Aware Sidebar (Desktop) */}
+          <Suspense fallback={<CategorySidebarSkeleton />}>
+            <div className="hidden lg:block sticky top-20 h-[calc(100vh-5rem)] shrink-0">
+              <CategorySidebar 
+                context={categoryContext}
+                searchParams={searchParams as Record<string, string | string[]>}
               />
-            </Suspense>
-          </div>
-        </aside>
+            </div>
+          </Suspense>
 
         {/* Main Results */}
-        <div className="flex-1 py-4 sm:py-6">
+        <div className="flex-1 py-4 sm:py-6 lg:pl-6">
           {/* Category Header with Subcategory Tabs */}
           <Suspense>
             <SubcategoryTabs
@@ -289,7 +286,7 @@ export default async function CategoryPage({
             <div className="flex-1 lg:hidden">
               <Suspense>
                 <MobileFilters 
-                  categories={allCategories}
+                  categories={categoryContext.siblings}
                   currentCategory={currentCategory}
                   locale={locale}
                   resultsCount={totalProducts}

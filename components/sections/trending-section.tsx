@@ -1,4 +1,4 @@
-import { getNewestProducts, getPromoProducts, getBestSellers } from '@/lib/data/products'
+import { getNewestProducts, getPromoProducts, getBestSellers, toUI, type Product } from '@/lib/data/products'
 import { TrendingProductsSection } from '@/components/trending-products-section'
 import { getLocale } from 'next-intl/server'
 
@@ -16,18 +16,11 @@ export async function TrendingSection() {
     getBestSellers(12),
   ])
   
-  // Transform to expected format for the client component
-  const transformForUI = (products: Awaited<ReturnType<typeof getNewestProducts>>) => 
+  // Transform raw DB products to UI format using the toUI helper
+  const transformForUI = (products: Product[]) => 
     products.map(p => ({
-      id: p.id,
-      title: p.title,
-      price: p.price,
-      listPrice: p.listPrice,
-      image: p.image,
-      rating: p.rating,
-      reviews: p.reviews,
-      isPrime: p.isPrime,
-      createdAt: p.createdAt,
+      ...toUI(p),
+      createdAt: p.created_at ?? undefined,
     }))
   
   return (

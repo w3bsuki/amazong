@@ -12,7 +12,7 @@ interface Deal {
   id: string
   title: string
   price: number
-  listPrice: number
+  listPrice?: number
   image: string
   rating?: number
   reviews?: number
@@ -43,7 +43,11 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
     }).format(price)
   }
 
-  const discountPercent = Math.round((1 - price / listPrice) * 100)
+  // Use listPrice for discount calc, fallback to price if not available
+  const effectiveListPrice = listPrice ?? price
+  const discountPercent = effectiveListPrice > price 
+    ? Math.round((1 - price / effectiveListPrice) * 100) 
+    : 0
 
   return (
     <Link href={`/product/${id}`} className="block h-full group">
@@ -101,12 +105,16 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
           <div className="mt-auto pt-1">
             <div className="flex flex-col">
               <span className="text-sm font-normal text-price-sale">{formatPrice(price)}</span>
-              <span className="text-xs text-muted-foreground line-through">{formatPrice(listPrice)}</span>
+              {discountPercent > 0 && (
+                <span className="text-xs text-muted-foreground line-through">{formatPrice(effectiveListPrice)}</span>
+              )}
             </div>
-            <div className="text-xs text-stock-available font-medium mt-1 flex items-center gap-1">
-              <Clock size={12} weight="regular" />
-              <span className="truncate">{locale === 'bg' ? `Спести ${formatPrice(listPrice - price)}` : `Save ${formatPrice(listPrice - price)}`}</span>
-            </div>
+            {discountPercent > 0 && (
+              <div className="text-xs text-stock-available font-medium mt-1 flex items-center gap-1">
+                <Clock size={12} weight="regular" />
+                <span className="truncate">{locale === 'bg' ? `Спести ${formatPrice(effectiveListPrice - price)}` : `Save ${formatPrice(effectiveListPrice - price)}`}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

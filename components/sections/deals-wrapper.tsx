@@ -1,4 +1,4 @@
-import { getGlobalDeals } from '@/lib/data/products'
+import { getGlobalDeals, toUI, type Product } from '@/lib/data/products'
 import { DealsSection } from '@/components/deals-section'
 import { getLocale } from 'next-intl/server'
 
@@ -15,12 +15,18 @@ export async function DealsWrapper() {
   const locale = await getLocale()
   
   // Fetch all deals from cache
-  const allDeals = await getGlobalDeals(30)
+  const rawDeals = await getGlobalDeals(30)
   
-  // Filter by category for tabs
-  const techDeals = allDeals.filter(d => TECH_CATEGORIES.includes(d.categorySlug || ''))
-  const homeDeals = allDeals.filter(d => HOME_CATEGORIES.includes(d.categorySlug || ''))
-  const fashionDeals = allDeals.filter(d => FASHION_CATEGORIES.includes(d.categorySlug || ''))
+  // Transform to UI format
+  const allDeals = rawDeals.map(toUI)
+  
+  // Filter by category for tabs (using category_slug from raw data, then transform)
+  const filterAndTransform = (products: Product[], categories: string[]) =>
+    products.filter(d => categories.includes(d.category_slug || '')).map(toUI)
+  
+  const techDeals = filterAndTransform(rawDeals, TECH_CATEGORIES)
+  const homeDeals = filterAndTransform(rawDeals, HOME_CATEGORIES)
+  const fashionDeals = filterAndTransform(rawDeals, FASHION_CATEGORIES)
   
   return (
     <DealsSection
