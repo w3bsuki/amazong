@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRef, useEffect, useCallback } from "react"
+import { useRef, useCallback, useEffect } from "react"
 import Image from "next/image"
 import { MagnifyingGlass, Clock, TrendUp, Package, X, ArrowRight, Eye, Sparkle } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -24,7 +24,7 @@ export function DesktopSearch() {
   const formRef = useRef<HTMLFormElement>(null)
   
   const [isOpen, setIsOpen] = React.useState(false)
-  const [popoverWidth, setPopoverWidth] = React.useState<number>(500)
+  const [popoverWidth, setPopoverWidth] = React.useState(0)
   
   const { products: recentlyViewed, clearProducts: clearRecentlyViewed } = useRecentlyViewed()
   
@@ -34,25 +34,14 @@ export function DesktopSearch() {
     setQuery,
     products,
     isSearching,
-    recentSearches,
+    recentProducts,
     trendingSearches,
     formatPrice,
     saveSearch,
-    clearRecentSearches,
+    saveProduct,
+    clearRecentProducts,
     minSearchLength,
   } = useProductSearch(6)
-
-  // Measure form width for popover
-  useEffect(() => {
-    const updateWidth = () => {
-      if (formRef.current) {
-        setPopoverWidth(formRef.current.offsetWidth)
-      }
-    }
-    updateWidth()
-    window.addEventListener("resize", updateWidth)
-    return () => window.removeEventListener("resize", updateWidth)
-  }, [])
 
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault()
@@ -70,11 +59,14 @@ export function DesktopSearch() {
     router.push(`/search?q=${encodeURIComponent(search)}`)
   }, [setQuery, saveSearch, router])
 
-  const handleSelectProduct = useCallback((slug: string) => {
+  const handleSelectProduct = useCallback((slug: string, product?: any) => {
+    if (product) {
+      saveProduct(product)
+    }
     setIsOpen(false)
     setQuery("")
     router.push(`/product/${slug}`)
-  }, [setQuery, router])
+  }, [setQuery, router, saveProduct])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
@@ -88,6 +80,18 @@ export function DesktopSearch() {
     inputRef.current?.focus()
   }, [setQuery])
 
+  // Measure form width for popover
+  useEffect(() => {
+    const measureWidth = () => {
+      if (formRef.current) {
+        setPopoverWidth(formRef.current.offsetWidth)
+      }
+    }
+    measureWidth()
+    window.addEventListener("resize", measureWidth)
+    return () => window.removeEventListener("resize", measureWidth)
+  }, [])
+
   return (
     <div className="w-full h-11">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -95,7 +99,7 @@ export function DesktopSearch() {
           <form 
             ref={formRef}
             onSubmit={handleSearch}
-            className="flex h-full w-full rounded-md overflow-visible bg-white border border-border focus-within:ring-2 focus-within:ring-brand focus-within:border-brand"
+            className="flex h-full w-full rounded-md overflow-visible bg-white border border-border focus-within:border-brand"
           >
             {/* Search Input */}
             <div className="relative flex-1 flex items-center">
@@ -112,6 +116,7 @@ export function DesktopSearch() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => setIsOpen(true)}
+                onClick={() => setIsOpen(true)}
                 onKeyDown={handleKeyDown}
                 autoComplete="off"
               />
@@ -139,7 +144,7 @@ export function DesktopSearch() {
 
         <PopoverContent
           className="p-0 border border-border rounded-lg overflow-hidden"
-          style={{ width: popoverWidth }}
+          style={{ width: popoverWidth > 0 ? popoverWidth : undefined }}
           align="start"
           sideOffset={4}
           onOpenAutoFocus={(e) => e.preventDefault()}
@@ -166,7 +171,7 @@ export function DesktopSearch() {
                   {products.map((product) => (
                     <button
                       key={product.id}
-                      onClick={() => handleSelectProduct(product.slug)}
+                      onClick={() => handleSelectProduct(product.slug, product)}
                       className="w-full flex items-center gap-3 p-2.5 hover:bg-muted rounded-lg text-left group"
                     >
                       <div className="w-12 h-12 bg-muted rounded-lg overflow-hidden shrink-0 ring-1 ring-border">
@@ -223,7 +228,7 @@ export function DesktopSearch() {
                         onClick={() => setIsOpen(false)}
                         className="shrink-0 w-24 group"
                       >
-                        <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border group-hover:ring-brand">
+                        <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border group-hover:opacity-90 transition-opacity">
                           {product.image ? (
                             <Image
                               src={product.image}
@@ -238,7 +243,7 @@ export function DesktopSearch() {
                             </div>
                           )}
                         </div>
-                        <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-brand">
+                        <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-brand group-hover:underline transition-colors">
                           {product.title}
                         </p>
                         <p className="text-xs font-semibold text-price-sale">
@@ -251,8 +256,8 @@ export function DesktopSearch() {
               </div>
             )}
 
-            {/* Recent Searches */}
-            {recentSearches.length > 0 && !query && (
+            {/* Recent Searched Products */}
+            {recentProducts.length > 0 && !query && (
               <div className="border-b border-border">
                 <div className="flex items-center justify-between px-4 py-2.5 bg-muted/50">
                   <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
@@ -260,26 +265,45 @@ export function DesktopSearch() {
                     {locale === "bg" ? "Скорошни търсения" : "Recent Searches"}
                   </span>
                   <button
-                    onClick={clearRecentSearches}
-                    className="text-xs text-muted-foreground hover:text-foreground"
+                    onClick={clearRecentProducts}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {locale === "bg" ? "Изчисти" : "Clear"}
                   </button>
                 </div>
-                <div className="p-1">
-                  {recentSearches.map((search, i) => (
-                    <button
-                      key={`recent-${i}`}
-                      onClick={() => handleSelectSearch(search)}
-                      className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-md text-left group"
-                    >
-                      <Clock size={16} weight="regular" className="text-muted-foreground" />
-                      <span className="text-sm text-foreground group-hover:text-brand flex-1">
-                        {search}
-                      </span>
-                      <ArrowRight size={14} weight="regular" className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </button>
-                  ))}
+                <div className="p-2">
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
+                    {recentProducts.map((product) => (
+                      <Link
+                        key={product.id}
+                        href={`/product/${product.slug}`}
+                        onClick={() => setIsOpen(false)}
+                        className="shrink-0 w-24 group"
+                      >
+                        <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border group-hover:opacity-90 transition-opacity">
+                          {product.image ? (
+                            <Image
+                              src={product.image}
+                              alt={product.title}
+                              width={96}
+                              height={96}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Package size={24} weight="regular" className="text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                        <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-brand group-hover:underline transition-colors">
+                          {product.title}
+                        </p>
+                        <p className="text-xs font-semibold text-price-sale">
+                          {formatPrice(product.price)}
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}

@@ -28,8 +28,24 @@ const MIN_SEARCH_LENGTH = 2
 /** Maximum number of recent searches to store */
 const MAX_RECENT_SEARCHES = 5
 
+/** Maximum number of recent searched products to store */
+const MAX_RECENT_PRODUCTS = 6
+
 /** LocalStorage key for recent searches */
 const RECENT_SEARCHES_KEY = "recentSearches"
+
+/** LocalStorage key for recent searched products */
+const RECENT_PRODUCTS_KEY = "recentSearchedProducts"
+
+/** Recent searched product type */
+export interface RecentSearchedProduct {
+  id: string
+  title: string
+  price: number
+  image: string | null
+  slug: string
+  searchedAt: number
+}
 
 /* =============================================================================
    HOOKS
@@ -63,6 +79,7 @@ export function useProductSearch(maxResults: number = 8) {
   const [products, setProducts] = useState<SearchProduct[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [recentSearches, setRecentSearches] = useState<string[]>([])
+  const [recentProducts, setRecentProducts] = useState<RecentSearchedProduct[]>([])
 
   const debouncedQuery = useDebounce(query, SEARCH_DEBOUNCE_MS)
 
@@ -100,6 +117,19 @@ export function useProductSearch(maxResults: number = 8) {
       }
     } catch (e) {
       console.error("Failed to parse recent searches:", e)
+    }
+
+    // Load recent products
+    try {
+      const savedProducts = localStorage.getItem(RECENT_PRODUCTS_KEY)
+      if (savedProducts) {
+        const parsed = JSON.parse(savedProducts)
+        if (Array.isArray(parsed)) {
+          setRecentProducts(parsed.slice(0, MAX_RECENT_PRODUCTS))
+        }
+      }
+    } catch (e) {
+      console.error("Failed to parse recent products:", e)
     }
   }, [])
 
@@ -160,6 +190,36 @@ export function useProductSearch(maxResults: number = 8) {
     [recentSearches]
   )
 
+  // Save product to recent products
+  const saveProduct = useCallback(
+    (product: SearchProduct) => {
+      const recentProduct: RecentSearchedProduct = {
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.images?.[0] || null,
+        slug: product.slug,
+        searchedAt: Date.now(),
+      }
+
+      const updated = [
+        recentProduct,
+        ...recentProducts.filter((p) => p.id !== product.id),
+      ].slice(0, MAX_RECENT_PRODUCTS)
+
+      setRecentProducts(updated)
+
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(RECENT_PRODUCTS_KEY, JSON.stringify(updated))
+        } catch (e) {
+          console.error("Failed to save recent product:", e)
+        }
+      }
+    },
+    [recentProducts]
+  )
+
   // Clear all recent searches
   const clearRecentSearches = useCallback(() => {
     setRecentSearches([])
@@ -168,6 +228,18 @@ export function useProductSearch(maxResults: number = 8) {
         localStorage.removeItem(RECENT_SEARCHES_KEY)
       } catch (e) {
         console.error("Failed to clear recent searches:", e)
+      }
+    }
+  }, [])
+
+  // Clear all recent products
+  const clearRecentProducts = useCallback(() => {
+    setRecentProducts([])
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem(RECENT_PRODUCTS_KEY)
+      } catch (e) {
+        console.error("Failed to clear recent products:", e)
       }
     }
   }, [])
@@ -185,6 +257,7 @@ export function useProductSearch(maxResults: number = 8) {
     products,
     isSearching,
     recentSearches,
+    recentProducts,
     trendingSearches,
     
     // Utilities
@@ -192,7 +265,9 @@ export function useProductSearch(maxResults: number = 8) {
     
     // Actions
     saveSearch,
+    saveProduct,
     clearRecentSearches,
+    clearRecentProducts,
     clearQuery,
     
     // Constants

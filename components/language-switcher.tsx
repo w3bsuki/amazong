@@ -1,13 +1,14 @@
 "use client"
 
 import { useRouter, usePathname } from "@/i18n/routing"
-import { useLocale, useTranslations } from "next-intl"
+import { useLocale } from "next-intl"
 import { Button } from "@/components/ui/button"
 import {
     HoverCard,
     HoverCardContent,
     HoverCardTrigger,
 } from "@/components/ui/hover-card"
+import { Globe } from "@phosphor-icons/react"
 
 const locales = [
     { code: 'bg', name: 'Български', flag: 'https://flagcdn.com/w40/bg.png' },
@@ -18,7 +19,6 @@ export function LanguageSwitcher() {
     const router = useRouter()
     const pathname = usePathname()
     const locale = useLocale()
-    const t = useTranslations('Navigation')
 
     const currentLocale = locales.find(l => l.code === locale) || locales[1]
 
@@ -31,19 +31,10 @@ export function LanguageSwitcher() {
             <HoverCardTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="h-12 flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group"
+                    className="h-11 px-3 gap-1.5 border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover [&_svg]:size-6!"
                 >
-                    <span className="text-xs text-header-text-muted group-hover:text-brand">{t('language')}</span>
-                    <span className="text-sm font-bold mt-0.5 flex items-center gap-1.5">
-                        <span>{currentLocale.code === 'bg' ? 'BG' : 'EN'}</span>
-                        <img 
-                            src={currentLocale.flag} 
-                            alt={currentLocale.name} 
-                            width={20} 
-                            height={14} 
-                            className="rounded-sm"
-                        />
-                    </span>
+                    <Globe weight="regular" className="shrink-0" />
+                    <span className="text-sm font-bold">{currentLocale.code === 'bg' ? 'BG' : 'EN'}</span>
                 </Button>
             </HoverCardTrigger>
             <HoverCardContent align="start" sideOffset={8} className="w-44 p-1 bg-popover text-popover-foreground border border-border rounded-sm">

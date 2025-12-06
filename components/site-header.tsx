@@ -1,17 +1,31 @@
 "use client"
 
-import { AccountDropdown, CartDropdown, OrdersDropdown, SellingDropdown, LocationDropdown, MessagesDropdown } from "@/components/header-dropdowns"
+// Modular dropdown components
+import {
+  AccountDropdown,
+  CartDropdown,
+  OrdersDropdown,
+  SellingDropdown,
+  LocationDropdown,
+  MessagesDropdown,
+} from "@/components/dropdowns"
+
+// Navigation components
+import { MegaMenu } from "@/components/navigation/mega-menu"
+import { CategorySubheader } from "@/components/navigation/category-subheader"
+
+// Other components
 import { SidebarMenu } from "@/components/sidebar-menu"
-import { MegaMenu } from "@/components/mega-menu"
-import { CategorySubheader } from "@/components/category-subheader"
 import { MobileSearchOverlay } from "@/components/mobile-search-overlay"
 import { MobileCartDropdown } from "@/components/mobile-cart-dropdown"
 import { DesktopSearch } from "@/components/desktop-search"
+import { LanguageSwitcher } from "@/components/language-switcher"
+
+// Utilities
 import { getCountryName } from "@/lib/geolocation"
 import { useEffect, useState } from "react"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
-import { LanguageSwitcher } from "@/components/language-switcher"
 import { Plus } from "@phosphor-icons/react"
 
 import { User } from "@supabase/supabase-js"
@@ -66,39 +80,37 @@ export function SiteHeader({ user }: SiteHeaderProps) {
       {/* Desktop Top Header - Light/White like eBay */}
       <div className="hidden md:block text-header-text">
         <div className="container flex items-center h-14 md:h-16 gap-3">
-          {/* Logo - Dark text on light background */}
-          <Link href="/" prefetch={true} className="flex items-center shrink-0 hover:opacity-80 outline-none focus:ring-2 focus:ring-brand/30 rounded-sm py-1 min-h-11">
-            <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
-          </Link>
+          {/* Left Section - Logo + Location + Language */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Logo - Dark text on light background */}
+            <Link href="/" prefetch={true} className="flex items-center shrink-0 hover:opacity-80 outline-none focus:ring-2 focus:ring-brand/30 rounded-sm py-1 min-h-11">
+              <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
+            </Link>
 
-          {/* Deliver to */}
-          <LocationDropdown 
-            country={country} 
-            onCountryChange={(code, name) => {
-              setCountryCode(code)
-              setCountry(name)
-            }}
-          />
+            {/* Deliver to - Compact */}
+            <div className="hidden lg:block shrink-0">
+              <LocationDropdown 
+                country={country} 
+                onCountryChange={(code, name) => {
+                  setCountryCode(code)
+                  setCountry(name)
+                }}
+              />
+            </div>
 
-          {/* Language Switcher */}
-          <div className="hidden md:block">
-            <LanguageSwitcher />
-          </div>
-
-          {/* Account Dropdown - LEFT of search bar */}
-          <div className="hidden md:block">
-            <AccountDropdown user={user} />
-          </div>
-
-          {/* Search Bar - Desktop only - CENTERED, TAKES REMAINING SPACE */}
-          <div className="hidden md:flex flex-1 justify-center">
-            <div className="w-full max-w-2xl">
-              <DesktopSearch />
+            {/* Language Switcher - Compact */}
+            <div className="hidden lg:block shrink-0">
+              <LanguageSwitcher />
             </div>
           </div>
 
-          {/* Right Actions */}
-          <div className="flex items-center gap-1 shrink-0">
+          {/* Search Bar - Desktop only - FILLS AVAILABLE SPACE */}
+          <div className="hidden md:flex flex-1 min-w-0">
+            <DesktopSearch />
+          </div>
+
+          {/* Right Actions - All Icons */}
+          <div className="flex items-center gap-0.5 shrink-0">
             {/* Orders - With Dropdown */}
             <div className="hidden lg:block">
               <OrdersDropdown user={user} />
@@ -112,6 +124,11 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             {/* Messages - With Dropdown */}
             <div className="hidden md:block">
               <MessagesDropdown user={user} />
+            </div>
+
+            {/* Account - With Dropdown (moved to right) */}
+            <div className="hidden md:block">
+              <AccountDropdown user={user} />
             </div>
 
             {/* Cart - With Dropdown on Desktop */}
