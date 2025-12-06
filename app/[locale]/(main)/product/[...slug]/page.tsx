@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
@@ -8,6 +8,9 @@ import { ProductCard } from "@/components/product-card"
 import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
 import { ReviewsSection } from "@/components/reviews-section"
 import { ProductBreadcrumb } from "@/components/product-breadcrumb"
+
+// UUID regex pattern to detect if the id is a full UUID
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // Helper function to get delivery date
 function getDeliveryDate(locale: string): string {
@@ -22,13 +25,36 @@ function getDeliveryDate(locale: string): string {
 
 interface ProductPageProps {
   params: Promise<{
-    store: string
-    slug: string
+    slug: string[]  // Catch-all route: can be [id], [productSlug], or [storeSlug, productSlug]
     locale: string
   }>
 }
 
-// Helper to fetch product by store_slug + product_slug
+// Parse the URL segments to determine lookup strategy
+function parseSlugSegments(segments: string[]): {
+  type: 'uuid' | 'product-slug' | 'store-product'
+  storeSlug?: string
+  productSlug?: string
+  uuid?: string
+} {
+  if (segments.length === 2) {
+    // /product/{storeSlug}/{productSlug} - new canonical format
+    return { type: 'store-product', storeSlug: segments[0], productSlug: segments[1] }
+  }
+  
+  if (segments.length === 1) {
+    const value = segments[0]
+    if (UUID_REGEX.test(value)) {
+      return { type: 'uuid', uuid: value }
+    }
+    return { type: 'product-slug', productSlug: value }
+  }
+  
+  // Invalid URL structure
+  return { type: 'product-slug', productSlug: segments.join('/') }
+}
+
+// Helper to fetch product by store_slug + product_slug (canonical format)
 async function fetchProductByStoreAndSlug(
   supabase: Awaited<ReturnType<typeof createClient>>, 
   storeSlug: string, 
@@ -36,7 +62,6 @@ async function fetchProductByStoreAndSlug(
 ) {
   if (!supabase) return null
   
-  // Join products with sellers to match both slugs
   const { data, error } = await supabase
     .from("products")
     .select(`
@@ -63,8 +88,94 @@ async function fetchProductByStoreAndSlug(
   return data
 }
 
+// Helper to fetch product by UUID or product slug (legacy formats)
+async function fetchProductByIdOrSlug(
+  supabase: Awaited<ReturnType<typeof createClient>>, 
+  idOrSlug: string,
+  isUUID: boolean
+) {
+  if (!supabase) return null
+  
+  if (isUUID) {
+    const { data } = await supabase
+      .from("products")
+      .select(`
+        *,
+        categories (
+          id,
+          name,
+          slug,
+          parent_id
+        ),
+        sellers (
+          id,
+          store_name,
+          store_slug,
+          verified,
+          created_at
+        )
+      `)
+      .eq("id", idOrSlug)
+      .single()
+    return data
+  }
+  
+  // Slug lookup
+  const { data: bySlug } = await supabase
+    .from("products")
+    .select(`
+      *,
+      categories (
+        id,
+        name,
+        slug,
+        parent_id
+      ),
+      sellers (
+        id,
+        store_name,
+        store_slug,
+        verified,
+        created_at
+      )
+    `)
+    .eq("slug", idOrSlug)
+    .single()
+  
+  if (bySlug) return bySlug
+  
+  // Try to extract short ID from slug (last 8 chars)
+  const parts = idOrSlug.split('-')
+  const shortId = parts[parts.length - 1]
+  if (shortId && shortId.length === 8) {
+    const { data: byShortId } = await supabase
+      .from("products")
+      .select(`
+        *,
+        categories (
+          id,
+          name,
+          slug,
+          parent_id
+        ),
+        sellers (
+          id,
+          store_name,
+          store_slug,
+          verified,
+          created_at
+        )
+      `)
+      .ilike("id", `${shortId}%`)
+      .single()
+    return byShortId
+  }
+  
+  return null
+}
+
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { store, slug, locale } = await params
+  const { slug: segments, locale } = await params
   const supabase = await createClient()
 
   if (!supabase) {
@@ -73,7 +184,16 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
   }
 
-  const product = await fetchProductByStoreAndSlug(supabase, store, slug)
+  const parsed = parseSlugSegments(segments)
+  let product = null
+
+  if (parsed.type === 'store-product') {
+    product = await fetchProductByStoreAndSlug(supabase, parsed.storeSlug!, parsed.productSlug!)
+  } else if (parsed.type === 'uuid') {
+    product = await fetchProductByIdOrSlug(supabase, parsed.uuid!, true)
+  } else {
+    product = await fetchProductByIdOrSlug(supabase, parsed.productSlug!, false)
+  }
 
   if (!product) {
     return {
@@ -81,11 +201,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
   }
 
-  // SEO: Canonical URL with store and product slug
-  const canonicalUrl = `/${locale}/product/${store}/${slug}`
+  // SEO: Use canonical URL with store + product slug
+  const storeSlug = product.sellers?.store_slug
+  const productSlug = product.slug || product.id
+  const canonicalUrl = storeSlug 
+    ? `/${locale}/product/${storeSlug}/${productSlug}`
+    : `/${locale}/product/${productSlug}`
 
   return {
-    title: `${product.title} | ${product.sellers?.store_name || 'Shop'}`,
+    title: `${product.title}${storeSlug ? ` | ${product.sellers?.store_name}` : ''}`,
     description: product.description?.slice(0, 160) || `Shop ${product.title}`,
     alternates: {
       canonical: canonicalUrl,
@@ -101,7 +225,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   await connection()
-  const { store, slug, locale } = await params
+  const { slug: segments, locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("Product")
   const supabase = await createClient()
@@ -119,8 +243,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // Format delivery date
   const formattedDeliveryDate = getDeliveryDate(locale)
 
-  // Fetch product by store_slug + product_slug
-  const product = await fetchProductByStoreAndSlug(supabase, store, slug)
+  // Parse URL segments to determine lookup strategy
+  const parsed = parseSlugSegments(segments)
+  let product = null
+
+  if (parsed.type === 'store-product') {
+    // Canonical format: /product/{storeSlug}/{productSlug}
+    product = await fetchProductByStoreAndSlug(supabase, parsed.storeSlug!, parsed.productSlug!)
+  } else if (parsed.type === 'uuid') {
+    // Legacy format: /product/{uuid}
+    product = await fetchProductByIdOrSlug(supabase, parsed.uuid!, true)
+  } else {
+    // Legacy format: /product/{productSlug}
+    product = await fetchProductByIdOrSlug(supabase, parsed.productSlug!, false)
+  }
 
   if (!product) {
     notFound()
@@ -128,6 +264,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const category = product.categories
   const seller = product.sellers
+
+  // SEO: Redirect legacy URLs to canonical store-based URL (301 redirect)
+  // Only redirect if we have both store_slug and product slug, and we're NOT already on canonical URL
+  if (parsed.type !== 'store-product' && product.slug && seller?.store_slug) {
+    redirect(`/${locale}/product/${seller.store_slug}/${product.slug}`)
+  }
 
   // Fetch parent category if exists
   let parentCategory = null
@@ -140,15 +282,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
     parentCategory = parent
   }
 
-  // Fetch related products from the same seller (with their store_slug)
+  // Fetch related products (with seller's store_slug for URLs)
   const { data: relatedProducts } = await supabase
     .from("products")
-    .select(`
-      *,
-      sellers (
-        store_slug
-      )
-    `)
+    .select("*, sellers(store_slug)")
     .neq("id", product.id)
     .limit(6)
 
@@ -176,7 +313,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           title: product.title,
           price: product.price,
           image: product.images?.[0] || product.image || null,
-          slug: product.slug,
+          slug: product.slug || product.id,
           storeSlug: seller?.store_slug,
         }}
       />
