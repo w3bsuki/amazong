@@ -1,9 +1,10 @@
 import { Link } from "@/i18n/routing"
-import { getLocale } from "next-intl/server"
+import { setRequestLocale } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { CaretRight, GridFour } from "@phosphor-icons/react/dist/ssr"
 import { createClient } from "@/lib/supabase/server"
 import type { Metadata } from 'next'
+import { connection } from "next/server"
 
 interface Category {
   id: string
@@ -66,8 +67,17 @@ const categoryImages: Record<string, string> = {
   "software-services": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=200&h=200&fit=crop",
 }
 
-export default async function CategoriesPage() {
-  const locale = await getLocale()
+export default async function CategoriesPage({
+  params
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  // Mark as dynamic for uncached database access
+  await connection()
+  
+  const { locale } = await params
+  setRequestLocale(locale)
+  
   const supabase = await createClient()
   
   // Fetch categories directly in server component
