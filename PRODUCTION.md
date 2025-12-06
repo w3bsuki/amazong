@@ -1,513 +1,360 @@
-# PRODUCTION READINESS PLAN
+# 🧹 PRODUCTION CLEANUP AUDIT - FULL REPORT
 
-## 🎯 Mission
-Transform AMZN into a production-ready, professional e-commerce platform matching the UI/UX standards of Amazon.com, Target.com, and Trendyol.com.
-
-**Target Launch Date:** TBD  
-**Design Philosophy:** Trust Blue Utilitarian Design - Clean, Professional, Conversion-Focused
+This is the **comprehensive, exhaustive audit** of the entire codebase. Every file, folder, and line of code that needs cleanup is listed below.
 
 ---
 
-## 📊 AUDIT SUMMARY (November 26, 2025)
+## 📋 EXECUTIVE SUMMARY
 
-### Current State Assessment
-
-#### ✅ What's Working Well
-- **Landing Page**: Professional layout with category circles, hero carousel, featured products, deals sections
-- **Design System**: Strong foundation with Trust Blue theme tokens in CSS variables
-- **Internationalization**: Bulgarian (BG) and English (EN) fully implemented
-- **Mobile Tab Bar**: Professional implementation with proper touch targets
-- **Category Navigation**: Circles in search pages work well (Target.com style)
-- **Footer**: Comprehensive with all necessary links
-- **Cookie Consent**: Present and styled
-
-#### ⚠️ Critical Issues Found (Updated Nov 27, 2025)
-1. ~~**Sidebar Menu Duplicate Close Buttons**~~ ✅ FIXED - Removed built-in close from sheet.tsx
-2. ~~**Hardcoded Orange Colors**~~ ✅ FIXED - No hardcoded colors found in codebase
-3. ~~**Missing "All Products" Page**~~ ✅ FIXED - Created `/categories` page with Target.com style
-4. **Product Page Polish Needed** - Left sidebar missing on search pages (mobile), pricing/delivery info needs refinement
-5. ~~**Footer Links Dead**~~ ✅ FIXED - Created /about, /privacy, /terms, /contact, /returns pages
-6. ~~**Cart Page Styling**~~ ✅ FIXED - Now using brand tokens
-7. ~~**Login Page**~~ ✅ FIXED - Now using brand tokens
+| Category | Count | Status |
+|----------|-------|--------|
+| Root MD Files to Delete/Move | 46 | 🔴 Critical |
+| Temp/Dump Files to Delete | 6 | 🔴 Critical |
+| Unused npm Dependencies | 5 | 🟠 High |
+| Unused Shadcn UI Components | 16 | 🟠 High |
+| Unused Custom Components | 5 | 🟠 High |
+| Duplicate Hooks (to delete) | 2 | 🟠 High |
+| Duplicate Config Files | 1 | 🟠 High |
+| JS Scripts → TS Conversion | 4 | 🟡 Medium |
+| `console.log` Statements | 29 | 🟡 Medium |
+| `: any` Type Usage | 27 | 🟡 Medium |
+| Duplicate Images (png+jpg) | 11 | 🟡 Medium |
+| TODO Comments | 1 | 🟢 Low |
 
 ---
 
-## 🎨 PHASE 1: DESIGN SYSTEM STANDARDIZATION
+## 🗑️ SECTION 1: FILES TO DELETE
 
-### 1.1 Color Token Enforcement (Priority: CRITICAL)
+### 1.1 Root-Level Markdown Files (46 files → Move to `docs/archive/`)
+These clutter the root directory. Move all to `docs/archive/` or delete if obsolete:
 
-**Files to Fix:**
-
-| File | Issue | Fix |
-|------|-------|-----|
-| `header-dropdowns.tsx:286-287` | `bg-orange-100`, `text-orange-600` | → `bg-amber-100`, `text-brand-warning` or remove |
-| `cart/page.tsx` | `#007185`, `#c7511f`, `#f7ca00` | → `text-brand-blue`, `text-brand-deal`, `bg-brand-warning` |
-| `auth/login/page.tsx` | `#007185`, `#c7511f`, `#f0c14b` | → Brand tokens |
-
-**Allowed Colors:**
-```css
-/* Primary UI Colors */
---brand-blue: oklch(0.55 0.2 250);      /* Primary actions, links */
---brand-blue-light: oklch(0.68 0.16 230);  /* Hover states */
---brand-blue-dark: oklch(0.40 0.18 255);   /* Active states */
-
-/* Semantic Colors */
---brand-success: oklch(0.65 0.18 145);  /* In stock, success */
---brand-warning: oklch(0.80 0.15 80);   /* Warnings, ratings */
---brand-deal: oklch(0.55 0.22 25);      /* Deals, sales, notifications */
---rating: oklch(0.80 0.16 85);          /* Star ratings ONLY */
+```
+AMAZON_MOBILE_AUDIT.md
+AUDIT_ACTION_PLAN.md
+AUDIT_SUMMARY.md
+BULGARIA_LAUNCH_PLAN.md
+BUSINESS_MODEL.md
+CACHING.md
+CATEGORIES.md
+CATEGORY_AUDIT_REPORT.md
+COMPREHENSIVE_AUDIT_REPORT.md
+COMPREHENSIVE_UI_AUDIT_PLAN.md
+DATABASE_SECURITY_REPORT.md
+DESKTOP.md
+EBAY_PRODUCT_PAGE_AUDIT.md
+EBAY_REDESIGN_PLAN.md
+FRONTEND.md
+FRONTEND_BACKEND_ALIGNMENT_PLAN.md
+FRONTEND_BACKEND_ALIGNMENT_PLAN_V2.md
+HOMEPAGE_COLOR_AUDIT.md
+IMAGE_UPLOAD_COMPLETE.md
+IMAGE_UPLOAD_PLAN.md
+IMPROVEMENTS.md
+IMPROVEMENTS_FINAL.md
+MEGAMENU.md
+MOBILE.md
+MOBILE_FIX.md
+MOBILE_LANDING_PAGE_PLAN.md
+MOBILE_UX_AUDIT.md
+PLAN_COMPARISON.md
+PLAYWRIGHT_AUDIT_PLAN.md
+PLAYWRIGHT_AUDIT_REPORT.md
+PRODUCTION.md (this file → keep or rename)
+PRODUCTION1.md
+PRODUCTION_PUSH.md
+PRODUCTION_READY.md
+PRODUCTION_REFACTOR_PLAN.md
+PRODUCT_PAGE_FIX_PLAN.md
+QUICK_START_FIXES.md
+SHADCN_TAILWIND_V4_AUDIT.md
+STYLING.md
+SUPABASE_CATEGORIES_FULL.md
+SUPABASE_TASKS.md
+TAILWINDCSS_V4_AUDIT_PLAN.md
+TARGET_UI_AUDIT.md
+supabase.md
+uiuxrefactor-gemini.md
+uiuxrefactor.md
 ```
 
-### 1.2 Typography Standardization
-
-**Font Stack:**
-```css
---font-sans: "Inter", system-ui, -apple-system, sans-serif;
+### 1.2 Temp/Dump Files (DELETE IMMEDIATELY)
+```
+temp_categories.json          ← DELETE
+temp_mega_menu.txt            ← DELETE
+mega-menu-original.txt        ← DELETE
+categories_dump.json          ← DELETE
+categories_response.json      ← DELETE
+EBAY_STYLE_GUIDE.html         ← DELETE (orphan HTML file)
 ```
 
-**Typography Scale:**
-| Use Case | Desktop | Mobile | Weight |
-|----------|---------|--------|--------|
-| H1 (Page Title) | 28px/2xl | 22px/xl | Bold (700) |
-| H2 (Section) | 22px/xl | 18px/lg | Bold (700) |
-| H3 (Card Title) | 16px/base | 14px/sm | Semibold (600) |
-| Body | 14px/sm | 14px/sm | Normal (400) |
-| Caption | 12px/xs | 11px/[11px] | Normal (400) |
-| Price Large | 28px | 22px | Bold (700) |
-| Price Small | 14px | 12px | Medium (500) |
+### 1.3 Duplicate Config Files
+| File | Action |
+|------|--------|
+| `next.config.mjs` | DELETE (use `next.config.ts` only) |
 
-### 1.3 Component Standardization
+### 1.4 Misplaced Root Files
+| File | Action |
+|------|--------|
+| `proxy.ts` | MOVE to `lib/proxy.ts` |
 
-**Button Variants:**
-```tsx
-// Primary CTA (Buy Now, Add to Cart)
-<Button className="bg-brand-blue hover:bg-brand-blue-dark text-white">
+---
 
-// Secondary (Continue Shopping)
-<Button variant="outline" className="border-brand-blue text-brand-blue hover:bg-brand-blue/10">
+## 📦 SECTION 2: UNUSED npm DEPENDENCIES
 
-// Deal/Sale Button
-<Button className="bg-brand-deal hover:bg-brand-deal/90 text-white">
+### 2.1 Dependencies to REMOVE from `package.json`
+These packages are installed but **never imported** in the codebase:
 
-// Checkout (Yellow like Amazon)
-<Button className="bg-brand-warning hover:bg-brand-warning/90 text-black">
+| Package | Size | Action |
+|---------|------|--------|
+| `recharts` | ~1MB | REMOVE - not used anywhere |
+| `vaul` | drawer lib | REMOVE - using `@radix-ui/react-dialog` instead |
+| `cmdk` | command palette | REMOVE - not used anywhere |
+| `input-otp` | OTP input | REMOVE - not used anywhere |
+| `react-resizable-panels` | ~50KB | REMOVE - not used anywhere |
+
+**Note:** `marked` AND `react-markdown` are BOTH used in `components/ui/markdown.tsx`. Consider consolidating to one.
+
+### 2.2 Radix UI Dependencies to REMOVE
+These Radix primitives are installed but the corresponding Shadcn component is never used:
+
+| Radix Package | Shadcn Component | Action |
+|---------------|------------------|--------|
+| `@radix-ui/react-aspect-ratio` | `aspect-ratio.tsx` | REMOVE |
+| `@radix-ui/react-collapsible` | `collapsible.tsx` | REMOVE |
+| `@radix-ui/react-context-menu` | `context-menu.tsx` | REMOVE |
+| `@radix-ui/react-menubar` | `menubar.tsx` | REMOVE |
+| `@radix-ui/react-navigation-menu` | `navigation-menu.tsx` | REMOVE |
+| `@radix-ui/react-slider` | `slider.tsx` | REMOVE |
+| `@radix-ui/react-toggle` | `toggle.tsx` | REMOVE |
+| `@radix-ui/react-toggle-group` | `toggle-group.tsx` | REMOVE |
+
+---
+
+## 🧩 SECTION 3: UNUSED COMPONENTS
+
+### 3.1 Shadcn UI Components to DELETE (`components/ui/`)
+These were installed via `shadcn add` but are **never imported**:
+
+| File | Lines | Action |
+|------|-------|--------|
+| `components/ui/alert.tsx` | ~50 | DELETE |
+| `components/ui/aspect-ratio.tsx` | ~10 | DELETE |
+| `components/ui/calendar.tsx` | ~200 | DELETE |
+| `components/ui/carousel.tsx` | ~150 | DELETE |
+| `components/ui/chart.tsx` | ~300 | DELETE |
+| `components/ui/collapsible.tsx` | ~20 | DELETE |
+| `components/ui/context-menu.tsx` | ~250 | DELETE |
+| `components/ui/input-otp.tsx` | ~80 | DELETE |
+| `components/ui/menubar.tsx` | ~250 | DELETE |
+| `components/ui/navigation-menu.tsx` | ~200 | DELETE |
+| `components/ui/resizable.tsx` | ~60 | DELETE |
+| `components/ui/sidebar.tsx` | ~650 | DELETE |
+| `components/ui/slider.tsx` | ~50 | DELETE |
+| `components/ui/table.tsx` | ~100 | DELETE |
+| `components/ui/toggle.tsx` | ~50 | DELETE |
+| `components/ui/toggle-group.tsx` | ~60 | DELETE |
+
+### 3.2 Custom Components to DELETE (`components/`)
+| File | Reason | Action |
+|------|--------|--------|
+| `components/breadcrumb.tsx` | DUPLICATE of `app-breadcrumb.tsx` | DELETE |
+| `components/product-form-enhanced.tsx` | Never imported | DELETE |
+| `components/product-row.tsx` | Never imported (file is empty or unused) | DELETE |
+| `components/main-nav.tsx` | Never imported | DELETE |
+| `components/analytics.tsx` | Never imported (dead code) | DELETE |
+
+### 3.3 Duplicate Hooks to DELETE
+| Hook | Location | Keep | Delete |
+|------|----------|------|--------|
+| `useIsMobile` | `hooks/use-mobile.ts` ← KEEP | `components/ui/use-mobile.tsx` ← DELETE |
+| `useToast` | `hooks/use-toast.ts` ← KEEP | `components/ui/use-toast.ts` ← DELETE |
+
+**After deleting duplicates, update imports:**
+- Change all `from "@/components/ui/use-mobile"` → `from "@/hooks/use-mobile"`
+- Change all `from "@/components/ui/use-toast"` → `from "@/hooks/use-toast"`
+
+---
+
+## 🛠️ SECTION 4: TECH DEBT - CODE QUALITY FIXES
+
+### 4.1 `console.log` Statements to REMOVE (29 total)
+
+#### `app/[locale]/(main)/sell/page.tsx` (10 statements)
+```
+Line 720: console.log("[ListingForm] handleSubmit called...")
+Line 723: console.log("[ListingForm] Submission blocked...")
+Line 1574: console.log("[SellPage] Fetching seller and categories...")
+Line 1578: console.log("[SellPage] Checking seller status...")
+Line 1595: console.log("[SellPage] Seller data:", sellerData)
+Line 1604: console.log("[SellPage] Fetching categories...")
+Line 1608: console.log("[SellPage] Categories:", categoriesData...)
+Line 1614: console.log("[SellPage] Setting loading to false")
+Line 1622: console.log("[SellPage] Auth state changed...")
+Line 1646: console.log("[SellPage] Fallback: no auth state...")
 ```
 
-**Touch Targets (WCAG 2.1 AA):**
-- Minimum: 44x44px (`min-h-11 min-w-11`)
-- Recommended: 48x48px (`min-h-12 min-w-12`)
-- Large (Hero CTA): 56px (`min-h-14`)
-
----
-
-## 🔧 PHASE 2: UI/UX FIXES
-
-### 2.1 Sidebar Menu Fix (Priority: CRITICAL)
-
-**Current Issue:** Two close buttons overlapping
-**Location:** `components/sidebar-menu.tsx` + `components/ui/sheet.tsx`
-
-**Solution:**
-```tsx
-// In sheet.tsx - Remove the built-in close button from SheetContent
-// The sidebar-menu.tsx already has its own close button in the header
-
-function SheetContent({ className, children, side = 'right', ...props }) {
-  return (
-    <SheetPortal>
-      <SheetOverlay />
-      <SheetPrimitive.Content className={cn(/* ... */)} {...props}>
-        {children}
-        {/* REMOVE THIS: */}
-        {/* <SheetPrimitive.Close className="...">
-          <XIcon className="size-4" />
-        </SheetPrimitive.Close> */}
-      </SheetPrimitive.Content>
-    </SheetPortal>
-  )
-}
+#### `app/[locale]/(account)/account/orders/page.tsx` (3 statements)
+```
+Line 28: console.log('Orders page - User ID:', user.id)
+Line 36: console.log('Simple orders query:', ...)
+Line 51: console.log('Orders page - Orders found:', ...)
 ```
 
-### 2.2 Product Page Improvements
-
-**Current Issues:**
-1. No left sidebar with filters on desktop
-2. Price formatting needs consistency
-3. Missing Prime badge styling
-
-**Target Layout (Desktop):**
+#### `app/api/checkout/webhook/route.ts` (4 statements)
 ```
-┌──────────────────────────────────────────────────────────────┐
-│ Breadcrumb: Home > Electronics > Headphones                   │
-├──────────────────────────────────────────────────────────────┤
-│ ┌─────────┐  ┌──────────────────────┐  ┌─────────────────┐   │
-│ │ Gallery │  │ Product Details       │  │ Buy Box         │   │
-│ │ Images  │  │ - Title               │  │ - Price         │   │
-│ │         │  │ - Rating              │  │ - Delivery Date │   │
-│ │         │  │ - Price               │  │ - Stock Status  │   │
-│ │         │  │ - Features            │  │ - Add to Cart   │   │
-│ │         │  │ - Description         │  │ - Buy Now       │   │
-│ └─────────┘  └──────────────────────┘  └─────────────────┘   │
-├──────────────────────────────────────────────────────────────┤
-│ Related Products Carousel                                     │
-├──────────────────────────────────────────────────────────────┤
-│ Customer Reviews                                              │
-└──────────────────────────────────────────────────────────────┘
+Line 47: console.log('Processing checkout.session.completed:', ...)
+Line 78: console.log('Order created successfully:', ...)
+Line 129: console.log('Order items created:', ...)
+Line 147: console.log('Payment succeeded:', ...)
 ```
 
-### 2.3 Search Page Left Sidebar (Desktop)
-
-**Current:** Hidden on mobile, visible on desktop ✅
-**Needed:** Ensure consistent styling with brand tokens
-
-**Filters Checklist:**
-- [ ] Department/Category tree with brand-blue active states
-- [ ] Customer Reviews with rating stars (using `--rating` token)
-- [ ] Price ranges with proper input styling
-- [ ] Prime/Free Shipping checkboxes
-- [ ] Deals & Discounts section
-- [ ] Brand filter (when brands available)
-- [ ] Availability filter
-
-### 2.4 Create "All Products" / "Categories" Page
-
-**New Route:** `/categories` or `/shop`
-
-**Design (Target.com Style):**
+#### `app/api/subscriptions/webhook/route.ts` (1 statement)
 ```
-┌──────────────────────────────────────────────────────────────┐
-│ SHOP ALL CATEGORIES                                           │
-├──────────────────────────────────────────────────────────────┤
-│  ○ Electronics    ○ Computers     ○ Gaming      ○ Smart Home │
-│  ○ Home & Kitchen ○ Fashion       ○ Beauty      ○ Toys       │
-│  ○ Sports         ○ Books         ○ Automotive  ○ Garden     │
-│  ○ Health         ○ Baby          ○ Pet         ○ Office     │
-├──────────────────────────────────────────────────────────────┤
-│ FEATURED CATEGORIES                                           │
-│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐         │
-│ │Electronics│ │ Fashion  │ │  Home    │ │  Beauty  │         │
-│ │  [Image] │ │  [Image] │ │  [Image] │ │  [Image] │         │
-│ │ Shop Now │ │ Shop Now │ │ Shop Now │ │ Shop Now │         │
-│ └──────────┘ └──────────┘ └──────────┘ └──────────┘         │
-└──────────────────────────────────────────────────────────────┘
+Line 98: console.log(`Subscription activated for seller...`)
 ```
 
----
+#### `app/actions/checkout.ts` (7 statements)
+```
+Line 99: console.log('Processing order for user:', ...)
+Line 106: console.log('Stripe session status:', ...)
+Line 128: console.log('Order already exists:', ...)
+Line 137: console.log('Parsed items:', ...)
+Line 156: console.log('Creating order:', ...)
+Line 169: console.log('Order created:', ...)
+Line 200: console.log('Creating order items:', ...)
+```
 
-## 📱 PHASE 3: MOBILE OPTIMIZATION
+#### `lib/message-context.tsx` (4 statements)
+```
+Line 170: console.log("No authenticated user found")
+Line 177: console.log("Loading conversations for user:", ...)
+Line 194: console.log("Conversations query result:", ...)
+Line 199: console.log("No conversations found")
+```
 
-### 3.1 Mobile Header
-- [x] Search integrated ✅
-- [x] Hamburger menu ✅
-- [x] Cart with badge ✅
-- [ ] Location delivery selector (deferred)
+### 4.2 `: any` Types to FIX (27 total)
 
-### 3.2 Mobile Tab Bar
-- [x] Home ✅
-- [x] Menu (opens sidebar) ✅
-- [x] Cart with badge ✅
-- [x] Account ✅
+#### Critical - API Routes
+| File | Line | Code | Fix |
+|------|------|------|-----|
+| `app/api/upload-image/route.ts` | 106 | `catch (error: any)` | `catch (error: unknown)` |
+| `app/api/stores/route.ts` | 64 | `catch (error: any)` | `catch (error: unknown)` |
+| `app/api/products/search/route.ts` | 41 | `catch (error: any)` | `catch (error: unknown)` |
+| `app/api/payments/webhook/route.ts` | 29 | `catch (error: any)` | `catch (error: unknown)` |
+| `app/api/categories/route.ts` | 157 | `catch (error: any)` | `catch (error: unknown)` |
+| `app/api/categories/products/route.ts` | 75 | `catch (error: any)` | `catch (error: unknown)` |
+| `app/api/categories/attributes/route.ts` | 49 | `catch (error: any)` | `catch (error: unknown)` |
 
-### 3.3 Mobile Product Cards
-- [x] Touch-friendly (44px min) ✅
-- [x] Rating stars visible ✅
-- [x] Price prominent ✅
-- [x] Add to Cart button ✅
+#### High Priority - Page Components
+| File | Line | Code | Fix |
+|------|------|------|-----|
+| `app/[locale]/(main)/wishlist/shared/[token]/page.tsx` | 62 | `(item: any)` | Define `WishlistItem` type |
+| `app/[locale]/(main)/sellers/page.tsx` | 30, 54, 56, 58 | `any[]`, `(seller: any)`, etc. | Define `Seller` type |
+| `app/[locale]/(main)/seller/dashboard/page.tsx` | 109 | `(_event: any, session: any)` | Use Supabase types |
+| `app/[locale]/(main)/sell/page.tsx` | 1573, 1621 | `(currentUser: any)`, etc. | Use `User` type |
+| `app/[locale]/(main)/search/page.tsx` | 66 | `supabase: any` | Use `SupabaseClient` type |
+| `app/[locale]/(main)/product/[id]/page.tsx` | 204, 225 | `(p: any, idx: number)` | Define `Product` type |
+| `app/[locale]/(main)/categories/[slug]/page.tsx` | 84, 337 | `supabase: any`, `(product: any)` | Use proper types |
+| `app/[locale]/(account)/account/security/security-content.tsx` | 79, 110, 132 | `catch (error: any)` | `catch (error: unknown)` |
+| `app/[locale]/(account)/account/orders/page.tsx` | 124 | `(item: any)` | Define `OrderItem` type |
 
-### 3.4 Mobile Search Page
-- [x] Filter chips at top (horizontal scroll) ✅ (Nov 27, 2025)
-- [x] Sort dropdown ✅ (Already existed)
-- [x] Bottom sheet for filters (instead of sidebar) ✅ (Nov 27, 2025)
-- [ ] Infinite scroll OR pagination (Currently static pagination)
-
----
-
-## 🔗 PHASE 4: ROUTE COMPLETION
-
-### 4.1 Existing Routes (Audit Status)
-
-| Route | Status | Notes |
-|-------|--------|-------|
-| `/` (Landing) | ✅ Working | Minor polish needed |
-| `/search` | ✅ Working | Filters need brand-blue styling |
-| `/product/[id]` | ✅ Working | Polish layout, ensure consistency |
-| `/cart` | ✅ Fixed | Using brand tokens |
-| `/auth/login` | ✅ Fixed | Using brand tokens |
-| `/auth/sign-up` | ✅ Working | Check styling |
-| `/account` | ✅ Working | Styled correctly |
-| `/account/orders` | ✅ Working | |
-| `/account/wishlist` | ✅ Created | Wishlist page with move to cart (Nov 27, 2025) |
-| `/todays-deals` | ✅ Working | Good mobile layout |
-| `/gift-cards` | ✅ Working | Fully implemented |
-| `/registry` | ✅ Working | |
-| `/customer-service` | ✅ Working | Fully implemented |
-| `/sell` | ✅ Working | Seller + product creation flow |
-| `/checkout` | ✅ Created | Order summary + Stripe integration |
-| `/checkout/success` | ✅ Working | Order confirmation |
-| `/categories` | ✅ Created | Target.com style browsing |
-| `/about` | ✅ Professional | Company info, mission, values, stats, CTAs |
-| `/privacy` | ✅ Professional | Full privacy policy with 8 sections, sidebar nav |
-| `/terms` | ✅ Professional | Full terms of service with 12 sections, sidebar nav |
-| `/contact` | ✅ Professional | Quick help, form, support info, FAQ teaser |
-| `/returns` | ✅ Professional | Step-by-step process, eligibility, FAQ |
-| `/wishlist/shared/[token]` | ✅ Created | Public shared wishlist view (Nov 27, 2025) |
-| `/account/messages` | ✅ Created | Seller-buyer messaging with chat UI (Nov 27, 2025) |
-
-### 4.2 Missing Pages (Priority Order)
-
-1. ~~**`/categories`**~~ ✅ Created (Nov 27, 2025)
-2. ~~**`/checkout`**~~ ✅ Created (Nov 27, 2025)
-3. ~~**`/checkout/success`**~~ ✅ Already existed
-4. ~~**`/about`**~~ ✅ Created (Nov 27, 2025)
-5. **`/careers`** - Careers page (placeholder) - Deferred
-6. **`/blog`** - News/Blog (placeholder) - Deferred
-7. ~~**`/privacy`**~~ ✅ Created (Nov 27, 2025)
-8. ~~**`/terms`**~~ ✅ Created (Nov 27, 2025)
-9. ~~**`/returns`**~~ ✅ Created (Nov 27, 2025)
-10. ~~**`/contact`**~~ ✅ Created (Nov 27, 2025)
+#### Components & Lib
+| File | Line | Code | Fix |
+|------|------|------|-----|
+| `components/reviews-section.tsx` | 127 | `(review: any)` | Define `Review` type |
+| `components/image-upload.tsx` | 108 | `catch (error: any)` | `catch (error: unknown)` |
+| `lib/wishlist-context.tsx` | 68 | `(item: any)` | Define `WishlistItem` type |
+| `lib/data/products.ts` | 88 | `(p: any)` | Define `ProductRow` type |
 
 ---
 
-## 🔐 PHASE 5: BACKEND REQUIREMENTS
+## 📁 SECTION 5: SCRIPTS FOLDER CLEANUP
 
-### 5.1 Authentication (Supabase)
-- [x] Email/Password signup ✅
-- [x] Email/Password login ✅
-- [ ] OAuth providers (Google, Facebook) - Future
-- [ ] Email verification flow
-- [ ] Password reset flow
-- [ ] Session management
+### 5.1 JS Scripts to Convert to TypeScript
+| File | Lines | Action |
+|------|-------|--------|
+| `scripts/apply-migration.js` | ~70 | Convert to `apply-migration.ts` |
+| `scripts/create-user.js` | ~60 | Convert to `create-user.ts` |
+| `scripts/seed.js` | ~100 | Convert to `seed.ts` (already exists, DELETE `.js`) |
+| `scripts/verify-product.js` | ~100 | Convert to `verify-product.ts` |
 
-### 5.2 Product Management
-- [x] Products table ✅
-- [x] Categories table ✅
-- [x] Images support ✅
-- [x] Inventory/Stock tracking ✅ (Already in schema with stock column)
-- [x] Variants (size, color) ✅ (Nov 27, 2025) - Created product_variants table
-- [x] Product SEO fields ✅ (Nov 27, 2025) - Added meta_title, meta_description, slug
-
-### 5.3 Order System
-- [x] Orders table ✅
-- [x] Order items table ✅
-- [x] Order status workflow ✅
-- [x] Order history for users ✅ (Already exists at /account/orders)
-
-### 5.4 Reviews & Ratings
-- [x] Reviews table ✅
-- [x] Review submission form ✅ (Nov 27, 2025)
-- [ ] Review moderation
-- [x] Average rating calculation ✅
-- [x] Helpful/Report buttons ✅ (Nov 27, 2025)
-
-### 5.5 Messaging (Seller-Buyer)
-- [x] Messages table ✅ (Nov 27, 2025)
-- [x] Conversation threads ✅ (Nov 27, 2025)
-- [x] Messaging UI ✅ (Nov 27, 2025) - Chat interface with prompt-kit components
-- [x] Contact Seller button ✅ (Nov 27, 2025) - Product page integration
-- [ ] Real-time notifications - Future (Supabase Realtime)
-- [ ] Email notifications - Future
-
-### 5.6 Wishlist / Save for Later
-- [x] Wishlist table ✅ (Nov 27, 2025)
-- [x] Add/Remove functionality ✅ (Nov 27, 2025)
-- [x] Share wishlist ✅ (Nov 27, 2025) - Share tokens, public sharing page
-
-### 5.7 Seller Dashboard (Future)
-- [ ] Seller registration
-- [ ] Product listing management
-- [ ] Order management
-- [ ] Sales analytics
+### 5.2 Duplicate Script Files
+| Keep | Delete |
+|------|--------|
+| `scripts/seed.ts` | `scripts/seed.js` ← DELETE |
 
 ---
 
-## 📋 PHASE 6: TESTING CHECKLIST
+## 🖼️ SECTION 6: PUBLIC ASSETS CLEANUP
 
-### 6.1 Frontend Testing
+### 6.1 Duplicate Images (PNG + JPG pairs - keep only one format)
+| Keep (PNG - higher quality) | Delete (JPG) |
+|----------------------------|--------------|
+| `abstract-beauty.png` | `abstract-beauty.jpg` |
+| `colorful-toy-collection.png` | `colorful-toy-collection.jpg` |
+| `cozy-cabin-interior.png` | `cozy-cabin-interior.jpg` |
+| `diverse-fashion-collection.png` | `diverse-fashion-collection.jpg` |
+| `diverse-people-listening-headphones.png` | `diverse-people-listening-headphones.jpg` |
+| `modern-smartphone.png` | `modern-smartphone.jpg` |
+| `retro-living-room-tv.png` | `retro-living-room-tv.jpg` |
+| `vintage-camera-still-life.png` | `vintage-camera-still-life.jpg` |
 
-#### Desktop (1920x1080, 1440x900, 1280x800)
-- [ ] Landing page renders correctly
-- [ ] Hero carousel functional
-- [ ] Category circles scroll smoothly
-- [ ] Product cards display correctly
-- [ ] Search works with autocomplete
-- [ ] Filters work correctly
-- [ ] Product page layout is correct
-- [ ] Cart functionality works
-- [ ] Checkout flow works
-- [ ] Footer links work
-
-#### Tablet (768x1024)
-- [ ] Header collapses appropriately
-- [ ] Grid adjusts to 2-3 columns
-- [ ] Touch targets are adequate
-- [ ] Sidebar menu works
-
-#### Mobile (375x812, 414x896)
-- [ ] Header is compact
-- [ ] Mobile search works
-- [ ] Tab bar is visible
-- [ ] Product cards are 2-column
-- [ ] Horizontal scrolls work
-- [ ] Touch targets are 44px minimum
-- [ ] Safe area insets respected
-
-### 6.2 Cross-Browser Testing
-- [ ] Chrome (latest)
-- [ ] Firefox (latest)
-- [ ] Safari (latest)
-- [ ] Edge (latest)
-- [ ] Safari iOS
-- [ ] Chrome Android
-
-### 6.3 Accessibility Testing
-- [ ] WCAG 2.1 AA compliance
-- [ ] Screen reader compatibility
-- [ ] Keyboard navigation
-- [ ] Color contrast ratios
-- [ ] Focus indicators visible
-- [ ] Skip links work
-
-### 6.4 Performance Testing
-- [ ] Lighthouse score > 90
-- [ ] First Contentful Paint < 1.5s
-- [ ] Largest Contentful Paint < 2.5s
-- [ ] Cumulative Layout Shift < 0.1
-- [ ] Time to Interactive < 3.5s
+**Also keep these jpg-only files:** `fitness-watch.jpg`, `office-chair.jpg`, `smart-speaker.jpg`
 
 ---
 
-## 📝 TASK TRACKER
+## 📝 SECTION 7: TODO/FIXME COMMENTS
 
-### Sprint 1: Design System & Critical Fixes ✅ COMPLETED
-- [x] Fix sidebar menu double close buttons ✅ (Nov 27, 2025)
-- [x] Replace orange colors with brand tokens ✅ (Already completed)
-- [x] Fix cart page colors ✅ (Already completed)
-- [x] Fix login page colors ✅ (Already completed)
-- [x] Create professional static pages ✅ (Nov 27, 2025)
-  - About page - Full company info with mission, values, stats, CTAs
-  - Privacy Policy - Comprehensive legal sections with sidebar navigation
-  - Terms of Service - Full legal sections with 12 detailed policy areas
-  - Contact page - Quick help, contact form, support info, business hours
-  - Returns page - Step-by-step process, eligibility lists, FAQ section
-  - All pages translated to Bulgarian (bg.json)
-
-### Sprint 2: Page Completion ✅ COMPLETED
-- [x] Create `/categories` page ✅ (Nov 27, 2025)
-- [x] Create `/checkout` page ✅ (Nov 27, 2025)
-- [x] Create professional static pages ✅ (Nov 27, 2025)
-- [x] Implement checkout flow with Stripe ✅ (Already completed)
-
-### Sprint 3: Backend & Features ✅ COMPLETED (Nov 27, 2025)
-- [x] Order system tables ✅ (Already existed)
-- [x] Reviews table and UI ✅ (Nov 27, 2025)
-  - Created `ReviewForm` component with star rating, title, and comment
-  - Updated `ReviewsSection` to fetch real reviews from database
-  - Added `increment_helpful_count` function for helpful button
-  - Full i18n support (EN/BG)
-- [x] Wishlist functionality ✅ (Nov 27, 2025)
-  - Created `wishlists` table with RLS policies
-  - Created `WishlistProvider` context for state management
-  - Created `WishlistButton` component (icon and button variants)
-  - Added wishlist page at `/account/wishlist`
-  - Added heart icons to product cards and buy box
-  - Full i18n support (EN/BG)
-- [ ] Email verification (Supabase Auth setting - deferred)
-
-### Sprint 3.5: Security Fixes ✅ COMPLETED (Nov 27, 2025)
-- [x] Fixed `function_search_path_mutable` for `ensure_single_primary_image`
-- [x] Fixed RLS policies with `(select auth.uid())` pattern for performance
-- [x] Fixed `product_images` policies for sellers
-
-### Sprint 4: Advanced Features ✅ COMPLETED (Nov 27, 2025)
-- [x] Product Variants (size, color) ✅
-  - Created `product_variants` table with size, color, price adjustments
-  - Created `variant_options` lookup table for consistent values
-  - Created `ProductVariantSelector` component with color swatches and size buttons
-  - Added RLS policies and triggers for stock management
-- [x] Product SEO Fields ✅
-  - Added `meta_title`, `meta_description`, `slug` to products
-  - Auto-generate slug from title
-- [x] Mobile Search Enhancements ✅
-  - Created `MobileFilters` bottom sheet component
-  - Created `FilterChips` horizontal scroll component
-  - Integrated mobile filters into search page
-- [x] Seller-Buyer Messaging ✅
-  - Created `conversations` and `messages` tables
-  - Conversation threading with unread counts
-  - RLS policies for buyer/seller access
-  - Functions for mark as read, create conversation
-- [x] Share Wishlist ✅
-  - Added share tokens and public sharing
-  - Created `/wishlist/shared/[token]` page
-  - Enable/disable sharing functions
-
-### Sprint 5: Polish & Testing
-- [ ] Full cross-device testing
-- [ ] Accessibility audit
-- [ ] Performance optimization
-- [ ] Bug fixes
-
-### Sprint 6: Launch Prep
-- [ ] Production environment setup
-- [ ] Domain configuration
-- [ ] SSL certificates
-- [ ] Monitoring setup
-- [ ] Error tracking (Sentry)
-- [ ] Analytics (Vercel)
+| File | Line | Comment | Action |
+|------|------|---------|--------|
+| `components/product-page-content-new.tsx` | 96 | `// TODO: Replace inline locale checks with t.* translations` | Address or close |
 
 ---
 
-## 🎯 SUCCESS CRITERIA
+## 🗂️ SECTION 8: FILE RENAMING
 
-### UI/UX Metrics
-- [x] No hardcoded colors outside of design tokens ✅
-- [x] All interactive elements have 44px+ touch targets ✅
-- [x] All pages responsive across breakpoints ✅
-- [x] Consistent typography throughout ✅
-- [x] No duplicate UI elements (like close buttons) ✅ Fixed Nov 27
-
-### Performance Metrics
-- [ ] Lighthouse Performance > 90
-- [ ] Lighthouse Accessibility > 95
-- [ ] Lighthouse Best Practices > 90
-- [ ] Lighthouse SEO > 90
-
-### Functionality Metrics
-- [x] All routes return 200 ✅
-- [ ] All forms submit correctly
-- [x] Cart persists across sessions ✅
-- [x] Auth flow works end-to-end ✅
-- [x] Checkout flow with Stripe ✅
+| Current Name | New Name | Reason |
+|--------------|----------|--------|
+| `components/product-page-content-new.tsx` | `components/product-page-content.tsx` | Remove "-new" suffix |
 
 ---
 
-## 📚 REFERENCE MATERIALS
+## 📊 SUMMARY ACTION PLAN
 
-### Design Inspiration
-- [Amazon.com](https://amazon.com) - Product pages, Buy Box, Reviews
-- [Target.com](https://target.com) - Category circles, Clean layout
-- [Trendyol.com](https://trendyol.com) - Mobile experience, Deals
+### Phase 1: Immediate Cleanup (5 minutes)
+1. DELETE all temp/dump files (6 files)
+2. DELETE `next.config.mjs`
+3. DELETE duplicate hooks in `components/ui/`
 
-### Technical Stack
-- **Framework:** Next.js 14+ (App Router)
-- **UI Library:** shadcn/ui
-- **Styling:** Tailwind CSS v4
-- **Database:** Supabase (PostgreSQL)
-- **Auth:** Supabase Auth
-- **Payments:** Stripe
-- **Deployment:** Vercel
+### Phase 2: Component Cleanup (15 minutes)
+1. DELETE all 16 unused Shadcn UI components
+2. DELETE 5 unused custom components
+3. UPDATE imports for hooks
 
-### Key Files
-- `app/globals.css` - Design tokens
-- `components/ui/*` - Base components
-- `components/sidebar-menu.tsx` - Navigation
-- `components/site-header.tsx` - Header
-- `components/product-card.tsx` - Product display
-- `components/product-variant-selector.tsx` - Size/Color variants
-- `components/mobile-filters.tsx` - Mobile filter bottom sheet
-- `components/filter-chips.tsx` - Active filter chips
+### Phase 3: Dependency Cleanup (5 minutes)
+1. `pnpm remove recharts vaul cmdk input-otp react-resizable-panels`
+2. (Optional) Remove unused Radix packages
+
+### Phase 4: Code Quality (30 minutes)
+1. Remove all 29 `console.log` statements
+2. Fix all 27 `: any` types with proper types
+
+### Phase 5: Scripts & Assets (10 minutes)
+1. Convert 4 JS scripts to TS
+2. Delete duplicate JPG images (8 files)
+
+### Phase 6: Documentation (10 minutes)
+1. Move 46 root MD files to `docs/archive/`
+2. Move 45 docs folder files to appropriate locations
 
 ---
 
-*Last Updated: November 27, 2025*
-*Version: 1.2.0*
+## ✅ VERIFICATION CHECKLIST
+
+After cleanup:
+- [ ] `pnpm build` completes without errors
+- [ ] `pnpm lint` passes
+- [ ] Dev server starts correctly
+- [ ] All pages load without console errors
+- [ ] Search no longer finds `: any` in codebase
+- [ ] `grep -r "console.log" app/ components/ lib/` returns no results

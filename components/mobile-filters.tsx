@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { Sliders, Star, Check, CaretDown } from "@phosphor-icons/react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
@@ -15,25 +15,44 @@ import {
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
-interface Category {
+// Types for category attributes
+interface CategoryAttribute {
   id: string
   name: string
   name_bg: string | null
-  slug: string
-  parent_id: string | null
+  attribute_type: 'select' | 'multiselect' | 'boolean' | 'number' | 'text'
+  options: string[] | null
+  options_bg: string[] | null
+  min_value: number | null
+  max_value: number | null
+  is_filterable: boolean
+  sort_order: number | null
 }
 
 interface MobileFiltersProps {
-  categories: Category[]
-  currentCategory: Category | null
   locale: string
   resultsCount?: number
+  attributes?: CategoryAttribute[]
 }
 
-export function MobileFilters({ categories, currentCategory, locale, resultsCount = 0 }: MobileFiltersProps) {
+// Attributes to hide from filters (too space-consuming as quick pills)
+const HIDDEN_ATTRIBUTE_NAMES = [
+  'Cruelty Free',
+  'Vegan',
+  'cruelty_free',
+  'vegan',
+]
+
+export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: MobileFiltersProps) {
+  // Filter out hidden attributes
+  const visibleAttributes = attributes.filter(
+    attr => !HIDDEN_ATTRIBUTE_NAMES.includes(attr.name)
+  )
+  
   const [isOpen, setIsOpen] = useState(false)
   const [activeSection, setActiveSection] = useState<string | null>(null)
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const t = useTranslations('SearchFilters')
 
@@ -43,11 +62,22 @@ export function MobileFilters({ categories, currentCategory, locale, resultsCoun
   const currentPrime = searchParams.get("prime")
   const currentAvailability = searchParams.get("availability")
 
-  const getCategoryName = (cat: Category) => {
-    if (locale === 'bg' && cat.name_bg) {
-      return cat.name_bg
-    }
-    return cat.name
+  // Determine the base path - use current pathname for category pages
+  const basePath = pathname.includes('/categories/') ? pathname : '/search'
+  
+  // Get attribute display name
+  const getAttrName = (attr: CategoryAttribute) => {
+    return locale === 'bg' && attr.name_bg ? attr.name_bg : attr.name
+  }
+  
+  // Get attribute options
+  const getAttrOptions = (attr: CategoryAttribute) => {
+    return locale === 'bg' && attr.options_bg ? attr.options_bg : attr.options
+  }
+
+  // Get current attribute filter values
+  const getAttributeValues = (attrName: string): string[] => {
+    return searchParams.getAll(`attr_${attrName}`)
   }
 
   const updateParams = (key: string, value: string | null) => {
@@ -57,7 +87,8 @@ export function MobileFilters({ categories, currentCategory, locale, resultsCoun
     } else {
       params.set(key, value)
     }
-    router.push(`/search?${params.toString()}`)
+    const queryString = params.toString()
+    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
   }
 
   const toggleParam = (key: string) => {
@@ -67,7 +98,8 @@ export function MobileFilters({ categories, currentCategory, locale, resultsCoun
     } else {
       params.set(key, "true")
     }
-    router.push(`/search?${params.toString()}`)
+    const queryString = params.toString()
+    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
   }
 
   const handlePriceClick = (min: string | null, max: string | null) => {
@@ -76,8 +108,35 @@ export function MobileFilters({ categories, currentCategory, locale, resultsCoun
     else params.delete("minPrice")
     if (max) params.set("maxPrice", max)
     else params.delete("maxPrice")
-    router.push(`/search?${params.toString()}`)
+    const queryString = params.toString()
+    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
     setIsOpen(false)
+  }
+
+  // Handle attribute filter changes
+  const handleAttributeChange = (attrName: string, value: string | string[] | boolean) => {
+    const params = new URLSearchParams(searchParams.toString())
+    const paramKey = `attr_${attrName}`
+    
+    if (Array.isArray(value)) {
+      params.delete(paramKey)
+      if (value.length > 0) {
+        value.forEach(v => params.append(paramKey, v))
+      }
+    } else if (typeof value === 'boolean') {
+      if (value) {
+        params.set(paramKey, 'true')
+      } else {
+        params.delete(paramKey)
+      }
+    } else if (value) {
+      params.set(paramKey, value)
+    } else {
+      params.delete(paramKey)
+    }
+    
+    const queryString = params.toString()
+    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
   }
 
   const clearAllFilters = () => {
@@ -86,20 +145,32 @@ export function MobileFilters({ categories, currentCategory, locale, resultsCoun
     const q = searchParams.get("q")
     if (category) params.set("category", category)
     if (q) params.set("q", q)
-    router.push(`/search?${params.toString()}`)
+    const queryString = params.toString()
+    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
     setIsOpen(false)
   }
 
-  const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentPrime || currentAvailability
-  const filterCount = [currentMinPrice || currentMaxPrice, currentRating, currentPrime, currentAvailability].filter(Boolean).length
+  // Count active attribute filters
+  const activeAttrCount = visibleAttributes.filter(attr => getAttributeValues(attr.name).length > 0).length
+  const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentPrime || currentAvailability || activeAttrCount > 0
+  const filterCount = [currentMinPrice || currentMaxPrice, currentRating, currentPrime, currentAvailability].filter(Boolean).length + activeAttrCount
 
-  const filterSections = [
+  // Build filter sections dynamically including category attributes
+  const baseFilterSections = [
     { id: 'prime', label: t('deliveryDay') },
-    { id: 'category', label: t('department') },
     { id: 'rating', label: t('customerReviews') },
     { id: 'price', label: t('price') },
     { id: 'availability', label: t('availability') },
   ]
+  
+  // Add attribute sections
+  const attrFilterSections = visibleAttributes.map(attr => ({
+    id: `attr_${attr.id}`,
+    label: getAttrName(attr),
+    attribute: attr
+  }))
+  
+  const filterSections = [...baseFilterSections, ...attrFilterSections]
 
   const priceRanges = [
     { label: t('under25'), min: null, max: "25" },
@@ -116,7 +187,7 @@ export function MobileFilters({ categories, currentCategory, locale, resultsCoun
         variant="outline"
         onClick={() => setIsOpen(true)}
         className={cn(
-          "w-full h-11 rounded-full",
+          "h-11 rounded-full px-4",
           filterCount > 0 && "border-primary bg-primary/5"
         )}
       >
@@ -196,34 +267,6 @@ export function MobileFilters({ categories, currentCategory, locale, resultsCoun
                         </>
                       )}
 
-                      {/* Categories */}
-                      {section.id === 'category' && (
-                        <div className="space-y-0.5 max-h-60 overflow-y-auto">
-                          {categories.map((cat) => (
-                            <button
-                              key={cat.id}
-                              onClick={() => {
-                                const params = new URLSearchParams(searchParams.toString())
-                                params.set("category", cat.slug)
-                                router.push(`/search?${params.toString()}`)
-                                setIsOpen(false)
-                              }}
-                              className={cn(
-                                "w-full text-left px-3 py-2.5 min-h-11 rounded-lg text-sm",
-                                currentCategory?.slug === cat.slug
-                                  ? "bg-primary/10 text-primary font-medium"
-                                  : "hover:bg-muted"
-                              )}
-                            >
-                              {getCategoryName(cat)}
-                              {currentCategory?.slug === cat.slug && (
-                                <Check className="inline-block ml-2 h-4 w-4" />
-                              )}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
                       {/* Ratings */}
                       {section.id === 'rating' && (
                         <div className="space-y-0.5">
@@ -292,6 +335,78 @@ export function MobileFilters({ categories, currentCategory, locale, resultsCoun
                           />
                           <span className="text-sm">{t('includeOutOfStock')}</span>
                         </label>
+                      )}
+
+                      {/* Category Attribute Filters */}
+                      {'attribute' in section && section.attribute && (
+                        <>
+                          {/* Boolean attributes */}
+                          {section.attribute.attribute_type === 'boolean' && (
+                            <label className="flex items-center gap-3 min-h-11 cursor-pointer hover:bg-muted rounded-lg px-2 -mx-2">
+                              <Checkbox
+                                checked={getAttributeValues(section.attribute.name).includes('true')}
+                                onCheckedChange={(checked) => handleAttributeChange(section.attribute!.name, !!checked)}
+                                className="size-5"
+                              />
+                              <span className="text-sm">{locale === 'bg' ? 'Да' : 'Yes'}</span>
+                            </label>
+                          )}
+                          
+                          {/* Select attributes */}
+                          {section.attribute.attribute_type === 'select' && getAttrOptions(section.attribute) && (
+                            <div className="space-y-0.5">
+                              {getAttrOptions(section.attribute)!.map((option, idx) => {
+                                const isActive = getAttributeValues(section.attribute!.name).includes(option)
+                                return (
+                                  <button
+                                    key={idx}
+                                    onClick={() => handleAttributeChange(section.attribute!.name, isActive ? '' : option)}
+                                    className={cn(
+                                      "w-full text-left px-3 py-2.5 min-h-11 rounded-lg text-sm flex items-center justify-between",
+                                      isActive
+                                        ? "bg-primary/10 text-primary font-medium"
+                                        : "hover:bg-muted"
+                                    )}
+                                  >
+                                    {option}
+                                    {isActive && <Check className="h-4 w-4" />}
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          )}
+                          
+                          {/* Multiselect attributes */}
+                          {section.attribute.attribute_type === 'multiselect' && getAttrOptions(section.attribute) && (
+                            <div className="space-y-0.5">
+                              {getAttrOptions(section.attribute)!.map((option, idx) => {
+                                const currentValues = getAttributeValues(section.attribute!.name)
+                                const isChecked = currentValues.includes(option)
+                                return (
+                                  <label
+                                    key={idx}
+                                    className={cn(
+                                      "flex items-center gap-3 min-h-11 cursor-pointer hover:bg-muted rounded-lg px-2 -mx-2",
+                                      isChecked && "bg-primary/5"
+                                    )}
+                                  >
+                                    <Checkbox
+                                      checked={isChecked}
+                                      onCheckedChange={(checked) => {
+                                        const newValues = checked
+                                          ? [...currentValues, option]
+                                          : currentValues.filter(v => v !== option)
+                                        handleAttributeChange(section.attribute!.name, newValues)
+                                      }}
+                                      className="size-5"
+                                    />
+                                    <span className="text-sm">{option}</span>
+                                  </label>
+                                )
+                              })}
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   )}

@@ -322,8 +322,6 @@ export default async function SearchPage({
             <div className="flex-1 lg:hidden">
               <Suspense>
                 <MobileFilters 
-                  categories={allCategories}
-                  currentCategory={currentCategory}
                   locale={locale}
                   resultsCount={totalProducts}
                 />

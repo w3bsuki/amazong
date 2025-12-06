@@ -365,7 +365,7 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
       .order('display_order')
       .order('name'),
     
-    // Filterable attributes
+    // Filterable attributes for current category
     supabase
       .from('category_attributes')
       .select('*')
@@ -373,6 +373,19 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
       .eq('is_filterable', true)
       .order('sort_order')
   ])
+  
+  // If current category has no attributes but has a parent, inherit parent's attributes
+  let attributes = attributesResult.data || []
+  if (attributes.length === 0 && current.parent_id) {
+    const { data: parentAttributes } = await supabase
+      .from('category_attributes')
+      .select('*')
+      .eq('category_id', current.parent_id)
+      .eq('is_filterable', true)
+      .order('sort_order')
+    
+    attributes = parentAttributes || []
+  }
   
   return {
     current: {
@@ -389,7 +402,7 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     parent: (Array.isArray(current.parent) ? current.parent[0] : current.parent) as Category | null,
     siblings: (siblingsResult.data || []) as Category[],
     children: (childrenResult.data || []) as Category[],
-    attributes: (attributesResult.data || []) as CategoryAttribute[]
+    attributes: attributes as CategoryAttribute[]
   }
 }
 

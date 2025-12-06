@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { CaretDown, Star, Truck, Check, X } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
@@ -10,9 +10,38 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { DesktopFilterModal } from "@/components/desktop-filter-modal"
 
-export function DesktopFilters() {
+// =============================================================================
+// Types
+// =============================================================================
+
+interface CategoryAttribute {
+  id: string
+  name: string
+  name_bg: string | null
+  attribute_type: 'select' | 'multiselect' | 'boolean' | 'number' | 'text'
+  options: string[] | null
+  options_bg: string[] | null
+  min_value: number | null
+  max_value: number | null
+  is_filterable: boolean
+  sort_order: number | null
+}
+
+interface DesktopFiltersProps {
+  attributes?: CategoryAttribute[]
+  categorySlug?: string
+}
+
+// =============================================================================
+// Component: Simplified Desktop Filters
+// Now shows only 3 quick pills (Prime, Price, Rating) + "All Filters" modal
+// =============================================================================
+
+export function DesktopFilters({ attributes = [], categorySlug }: DesktopFiltersProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const t = useTranslations('SearchFilters')
   
@@ -24,6 +53,9 @@ export function DesktopFilters() {
   const currentRating = searchParams.get("minRating")
   const currentPrime = searchParams.get("prime")
 
+  // Build the base path for navigation (preserve current path)
+  const basePath = categorySlug ? pathname : '/search'
+
   const updateParams = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
     if (value === null) {
@@ -31,7 +63,8 @@ export function DesktopFilters() {
     } else {
       params.set(key, value)
     }
-    router.push(`/search?${params.toString()}`)
+    const queryString = params.toString()
+    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
   }
 
   const handlePriceClick = (min: string | null, max: string | null) => {
@@ -40,7 +73,8 @@ export function DesktopFilters() {
     else params.delete("minPrice")
     if (max) params.set("maxPrice", max)
     else params.delete("maxPrice")
-    router.push(`/search?${params.toString()}`)
+    const queryString = params.toString()
+    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
     setPriceOpen(false)
   }
 
@@ -66,16 +100,19 @@ export function DesktopFilters() {
 
   const hasPriceFilter = currentMinPrice || currentMaxPrice
   const hasRatingFilter = !!currentRating
+  
+  // Check if we have any attributes to show the filter modal
+  const hasAttributes = attributes.length > 0
 
   return (
     <>
-      {/* Prime Filter */}
+      {/* Prime Filter - Quick Pill */}
       <button
         onClick={() => updateParams("prime", currentPrime === "true" ? null : "true")}
         className={cn(
           "inline-flex items-center gap-2 h-[38px] px-4 rounded-full",
           "border text-sm font-medium",
-          "hover:bg-muted hover:border-ring",
+          "hover:bg-muted hover:border-ring transition-colors",
           currentPrime === "true"
             ? "bg-primary/10 border-primary text-primary"
             : "bg-card border-border text-foreground"
@@ -91,14 +128,14 @@ export function DesktopFilters() {
         )}
       </button>
 
-      {/* Price Filter */}
+      {/* Price Filter - Quick Pill */}
       <Popover open={priceOpen} onOpenChange={setPriceOpen}>
         <PopoverTrigger asChild>
           <button
             className={cn(
               "inline-flex items-center gap-2 h-[38px] px-4 rounded-full",
               "border text-sm font-medium",
-              "hover:bg-muted hover:border-ring",
+              "hover:bg-muted hover:border-ring transition-colors",
               hasPriceFilter
                 ? "bg-primary/10 border-primary text-primary"
                 : "bg-card border-border text-foreground"
@@ -141,14 +178,14 @@ export function DesktopFilters() {
         </PopoverContent>
       </Popover>
 
-      {/* Rating Filter */}
+      {/* Rating Filter - Quick Pill */}
       <Popover open={ratingOpen} onOpenChange={setRatingOpen}>
         <PopoverTrigger asChild>
           <button
             className={cn(
               "inline-flex items-center gap-2 h-[38px] px-4 rounded-full",
               "border text-sm font-medium",
-              "hover:bg-muted hover:border-ring",
+              "hover:bg-muted hover:border-ring transition-colors",
               hasRatingFilter
                 ? "bg-primary/10 border-primary text-primary"
                 : "bg-card border-border text-foreground"
@@ -206,6 +243,14 @@ export function DesktopFilters() {
           )}
         </PopoverContent>
       </Popover>
+
+      {/* All Filters Modal - Only show if we have category attributes */}
+      {hasAttributes && (
+        <DesktopFilterModal 
+          attributes={attributes}
+          categorySlug={categorySlug}
+        />
+      )}
     </>
   )
 }

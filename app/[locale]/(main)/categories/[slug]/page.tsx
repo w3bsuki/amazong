@@ -6,7 +6,7 @@ import { DesktopFilters } from "@/components/desktop-filters"
 import { FilterChips } from "@/components/filter-chips"
 import { SortSelect } from "@/components/sort-select"
 import { SearchPagination } from "@/components/search-pagination"
-import { CategorySidebar, CategorySidebarSkeleton } from "@/components/category-sidebar"
+import { SearchFilters } from "@/components/search-filters"
 import { Suspense } from "react"
 import { getLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
@@ -17,6 +17,7 @@ import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
 import {
   getCategoryBySlug,
   getCategoryContext,
+  getRootCategoriesWithChildren,
 } from "@/lib/data/categories"
 
 const ITEMS_PER_PAGE = 20
@@ -216,6 +217,10 @@ export default async function CategoryPage({
   
   const { current: currentCategory, parent: parentCategory, children: subcategories } = categoryContext
   
+  // Fetch ALL categories for the sidebar - use cached function
+  const allCategoriesWithSubs = await getRootCategoriesWithChildren()
+  const allCategories = allCategoriesWithSubs.map(c => c.category)
+  
   // Products still use direct Supabase query (dynamic, user-specific filters)
   let products: Product[] = []
   let totalProducts = 0
@@ -238,72 +243,78 @@ export default async function CategoryPage({
   const categoryName = locale === 'bg' && currentCategory.name_bg 
     ? currentCategory.name_bg 
     : currentCategory.name
+  
+  // Extract filterable attributes for the filter toolbar
+  const filterableAttributes = categoryContext.attributes.filter(attr => attr.is_filterable)
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container">
-        <div className="flex flex-col lg:flex-row gap-0">
-          {/* ============================================================================
-              PHASE 3: Context-Aware Category Sidebar
-              Uses categoryContext from getCategoryContext() with:
-              - Parent breadcrumb navigation
-              - Sibling categories (same level)
-              - Current category expanded with children
-              - Attribute filters (when available)
-              ============================================================================ */}
-          
-          {/* New Context-Aware Sidebar (Desktop) */}
-          <Suspense fallback={<CategorySidebarSkeleton />}>
-            <div className="hidden lg:block sticky top-20 h-[calc(100vh-5rem)] shrink-0">
-              <CategorySidebar 
-                context={categoryContext}
-                searchParams={searchParams as Record<string, string | string[]>}
-              />
+      <div className="container py-4 sm:py-6">
+        {/* Layout: Sidebar (desktop) + Main Content */}
+        <div className="flex gap-6">
+          {/* Sidebar Filters - Desktop Only */}
+          <aside className="w-64 hidden lg:block shrink-0 border-r border-border">
+            <div className="sticky top-28 py-4 pr-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
+              <Suspense>
+                <SearchFilters
+                  categories={allCategories}
+                  subcategories={subcategories}
+                  currentCategory={currentCategory}
+                  parentCategory={parentCategory}
+                  allCategoriesWithSubs={allCategoriesWithSubs}
+                  brands={[]}
+                  basePath={`/categories/${slug}`}
+                />
+              </Suspense>
             </div>
-          </Suspense>
-
-        {/* Main Results */}
-        <div className="flex-1 py-4 sm:py-6 lg:pl-6">
-          {/* Category Header with Subcategory Tabs */}
-          <Suspense>
-            <SubcategoryTabs
-              currentCategory={currentCategory}
-              subcategories={subcategories}
-              parentCategory={parentCategory}
-              basePath="/categories"
-            />
-          </Suspense>
-
-          {/* Active Filter Pills */}
-          <div className="mb-4">
+          </aside>
+          
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
+            {/* Category Header with Subcategory Tabs */}
             <Suspense>
-              <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} />
+              <SubcategoryTabs
+                currentCategory={currentCategory}
+                subcategories={subcategories}
+                parentCategory={parentCategory}
+                basePath="/categories"
+              />
             </Suspense>
-          </div>
 
-          {/* Filter & Sort Row */}
-          <div className="mb-3 sm:mb-5 flex items-center gap-2 sm:gap-2.5">
-            <div className="flex-1 lg:hidden">
+            {/* Active Filter Pills */}
+            <div className="mb-4">
+              <Suspense>
+                <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} />
+              </Suspense>
+            </div>
+
+          {/* Filter & Sort Row - Consolidated toolbar with all filters */}
+          <div className="mb-3 sm:mb-5 flex flex-wrap items-center gap-2 sm:gap-2.5">
+            {/* Mobile Filters (Sheet) */}
+            <div className="lg:hidden">
               <Suspense>
                 <MobileFilters 
-                  categories={categoryContext.siblings}
-                  currentCategory={currentCategory}
                   locale={locale}
                   resultsCount={totalProducts}
+                  attributes={filterableAttributes}
                 />
               </Suspense>
             </div>
             
-            <div className="flex-1 lg:max-w-[180px] lg:flex-initial">
-              <SortSelect />
-            </div>
+            {/* Sort Dropdown */}
+            <SortSelect />
             
-            <div className="hidden lg:flex items-center gap-2">
+            {/* Desktop Filters - Now includes attribute filters */}
+            <div className="hidden lg:flex items-center gap-2 flex-wrap">
               <Suspense>
-                <DesktopFilters />
+                <DesktopFilters 
+                  attributes={filterableAttributes}
+                  categorySlug={slug}
+                />
               </Suspense>
             </div>
             
+            {/* Results Count */}
             <p className="hidden sm:block text-sm text-muted-foreground ml-auto whitespace-nowrap">
               <span className="font-semibold text-foreground">{totalProducts}</span>
               <span> results</span>
@@ -386,8 +397,10 @@ export default async function CategoryPage({
             </Suspense>
           )}
         </div>
+        {/* End Main Content */}
+        </div>
+        {/* End flex container */}
       </div>
-    </div>
     </div>
   )
 }

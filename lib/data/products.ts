@@ -55,9 +55,12 @@ export async function getProducts(type: QueryType, limit = 36): Promise<Product[
   const supabase = createStaticClient()
   if (!supabase) return []
 
+  // Note: Not using join to categories because the foreign key constraint 
+  // (products_category_id_fkey) may not exist in the schema cache.
+  // If category info is needed, fetch it separately or ensure the FK exists.
   let query = supabase
     .from('products')
-    .select('id, title, price, list_price, rating, review_count, images, is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_europe, ships_to_usa, ships_to_worldwide, categories(slug)')
+    .select('id, title, price, list_price, rating, review_count, images, is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_europe, ships_to_usa, ships_to_worldwide, category_id')
 
   switch (type) {
     case 'deals':
@@ -87,7 +90,8 @@ export async function getProducts(type: QueryType, limit = 36): Promise<Product[
   return (data || [])
     .map((p: any) => ({
       ...p,
-      category_slug: Array.isArray(p.categories) ? p.categories[0]?.slug : p.categories?.slug
+      // category_id is selected directly, category_slug not available without FK
+      category_slug: undefined
     }))
     .filter((p: Product) => 
       type === 'deals' || type === 'promo' 

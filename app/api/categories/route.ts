@@ -31,9 +31,20 @@ interface CategoryWithChildren {
 function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[] {
   const categoryMap = new Map<string, CategoryWithChildren>()
   const rootCategories: CategoryWithChildren[] = []
+
+  console.log(`[buildCategoryTree] Input rows: ${rows.length}`)
   
+  // Filter out deprecated categories (display_order >= 9000)
+  const activeRows = rows.filter(row => (row.display_order ?? 0) < 9000)
+  
+  console.log(`[buildCategoryTree] Active rows after filter: ${activeRows.length}`)
+  
+  // Log root categories before building tree
+  const rootRowsBefore = activeRows.filter(r => r.depth === 0)
+  console.log(`[buildCategoryTree] Root rows (depth=0): ${rootRowsBefore.length}`)
+
   // First pass: create all category objects
-  for (const row of rows) {
+  for (const row of activeRows) {
     categoryMap.set(row.id, {
       id: row.id,
       name: row.name,
@@ -45,11 +56,11 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
       children: []
     })
   }
-  
+
   // Second pass: build tree structure
-  for (const row of rows) {
+  for (const row of activeRows) {
     const category = categoryMap.get(row.id)!
-    
+
     if (row.parent_id && categoryMap.has(row.parent_id)) {
       // Add to parent's children
       const parent = categoryMap.get(row.parent_id)!
@@ -60,7 +71,7 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
       rootCategories.push(category)
     }
   }
-  
+
   // Sort children by display_order, then by name
   function sortChildren(cats: CategoryWithChildren[]): CategoryWithChildren[] {
     cats.sort((a, b) => {
@@ -76,7 +87,7 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
     }
     return cats
   }
-  
+
   return sortChildren(rootCategories)
 }
 
@@ -98,15 +109,15 @@ export async function GET(request: Request) {
         p_slug: parentSlug,
         p_depth: depth
       })
-      
+
       if (error) {
         console.error("RPC Error:", error)
         return NextResponse.json({ error: error.message }, { status: 500 })
       }
-      
+
       const rows = (hierarchyData || []) as CategoryHierarchyRow[]
       const tree = buildCategoryTree(rows)
-      
+
       // Find the parent from the tree (depth=0)
       const parent = tree.length > 0 ? {
         id: tree[0].id,
@@ -114,7 +125,7 @@ export async function GET(request: Request) {
         name_bg: tree[0].name_bg,
         slug: tree[0].slug
       } : null
-      
+
       // Return children of the parent
       return NextResponse.json({
         categories: tree.length > 0 ? tree[0].children || [] : [],
@@ -123,28 +134,124 @@ export async function GET(request: Request) {
     }
 
     if (includeChildren) {
-      // Use RPC for full hierarchy - single query replaces N+1!
-      const { data: hierarchyData, error } = await supabase.rpc('get_category_hierarchy', {
-        p_slug: null,
-        p_depth: depth
-      })
-      
-      if (error) {
-        console.error("RPC Error:", error)
-        return NextResponse.json({ error: error.message }, { status: 500 })
+      // Fetch L0 categories (root) first
+      const { data: rootCats, error: rootError } = await supabase
+        .from("categories")
+        .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+        .is("parent_id", null)
+        .lt("display_order", 9000)
+        .order("display_order", { ascending: true })
+
+      if (rootError) {
+        console.error("Root Categories Query Error:", rootError)
+        return NextResponse.json({ error: rootError.message }, { status: 500 })
       }
+
+      console.log(`[API] Found ${rootCats?.length || 0} root categories`)
+
+      // Fetch L1 categories (children of root)
+      const rootIds = (rootCats || []).map(c => c.id)
+      const { data: l1Cats, error: l1Error } = await supabase
+        .from("categories")
+        .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+        .in("parent_id", rootIds)
+        .lt("display_order", 9000)
+        .order("display_order", { ascending: true })
+
+      if (l1Error) {
+        console.error("L1 Categories Query Error:", l1Error)
+        return NextResponse.json({ error: l1Error.message }, { status: 500 })
+      }
+
+      console.log(`[API] Found ${l1Cats?.length || 0} L1 categories`)
+
+      // Fetch L2 categories (grandchildren) if depth >= 2
+      let l2Cats: typeof l1Cats = []
+      if (depth >= 2 && l1Cats && l1Cats.length > 0) {
+        const l1Ids = l1Cats.map(c => c.id)
+        const { data: l2Data, error: l2Error } = await supabase
+          .from("categories")
+          .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+          .in("parent_id", l1Ids)
+          .lt("display_order", 9000)
+          .order("display_order", { ascending: true })
+
+        if (l2Error) {
+          console.error("L2 Categories Query Error:", l2Error)
+        } else {
+          l2Cats = l2Data || []
+          console.log(`[API] Found ${l2Cats.length} L2 categories`)
+        }
+      }
+
+      // Combine all categories
+      const allCategories = [...(rootCats || []), ...(l1Cats || []), ...l2Cats]
+
+      const cats = allCategories || []
       
-      const rows = (hierarchyData || []) as CategoryHierarchyRow[]
-      const tree = buildCategoryTree(rows)
-      
-      return NextResponse.json({ categories: tree })
+      // Build tree structure
+      const categoryMap = new Map<string, CategoryWithChildren>()
+      const rootCategories: CategoryWithChildren[] = []
+
+      // First pass: create all category objects
+      for (const cat of cats) {
+        categoryMap.set(cat.id, {
+          id: cat.id,
+          name: cat.name,
+          name_bg: cat.name_bg,
+          slug: cat.slug,
+          icon: cat.icon,
+          image_url: cat.image_url,
+          display_order: cat.display_order,
+          children: []
+        })
+      }
+
+      // Second pass: build tree
+      for (const cat of cats) {
+        const category = categoryMap.get(cat.id)!
+        if (cat.parent_id && categoryMap.has(cat.parent_id)) {
+          const parent = categoryMap.get(cat.parent_id)!
+          parent.children = parent.children || []
+          parent.children.push(category)
+        } else if (!cat.parent_id) {
+          rootCategories.push(category)
+        }
+      }
+
+      // Sort children
+      function sortChildren(categories: CategoryWithChildren[]) {
+        categories.sort((a, b) => {
+          const orderA = a.display_order ?? 999
+          const orderB = b.display_order ?? 999
+          if (orderA !== orderB) return orderA - orderB
+          return a.name.localeCompare(b.name)
+        })
+        for (const cat of categories) {
+          if (cat.children && cat.children.length > 0) {
+            sortChildren(cat.children)
+          }
+        }
+      }
+      sortChildren(rootCategories)
+
+      // Return debug info
+      return NextResponse.json({ 
+        categories: rootCategories, 
+        _debug: {
+          totalCount: cats.length,
+          rootCount: rootCategories.length,
+          rootCategories: rootCategories.map(c => ({ name: c.name, slug: c.slug, display_order: c.display_order }))
+        }
+      })
     }
 
-    // Simple query for just root categories (no children)
+    // Simple query for just root categories (no children) - exclude deprecated
     const { data: categories, error } = await supabase
       .from("categories")
       .select("id, name, name_bg, slug, icon, image_url, parent_id, display_order")
       .is("parent_id", null)
+      .lt("display_order", 9000)
       .order("display_order", { ascending: true })
       .order("name", { ascending: true })
 

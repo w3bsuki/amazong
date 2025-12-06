@@ -20,6 +20,7 @@ interface SearchFiltersProps {
   categories: Category[]
   subcategories: Category[]
   currentCategory: Category | null
+  parentCategory?: Category | null
   allCategoriesWithSubs?: { category: Category; subs: Category[] }[]
   brands?: string[]
   basePath?: string // e.g., "/categories/electronics" or undefined for "/search"
@@ -29,6 +30,7 @@ export function SearchFilters({
   categories, 
   subcategories, 
   currentCategory,
+  parentCategory,
   allCategoriesWithSubs = [],
   brands = [],
   basePath
@@ -48,6 +50,8 @@ export function SearchFilters({
   
   // Track expanded categories
   const [expandedCategories, setExpandedCategories] = useState<string[]>([])
+  // Track if "All Categories" is expanded (for context-aware view)
+  const [showAllCategories, setShowAllCategories] = useState(false)
   
   // Auto-expand current category
   useEffect(() => {
@@ -146,6 +150,18 @@ export function SearchFilters({
     return found?.subs || []
   }
 
+  // Filter out deprecated/moved categories
+  const isValidCategory = (cat: Category) => {
+    const name = cat.name.toLowerCase()
+    return !name.includes('[deprecated]') && 
+           !name.includes('[moved]') && 
+           !name.includes('[duplicate]')
+  }
+
+  // Filter categories and subcategories
+  const validCategories = categories.filter(isValidCategory)
+  const validSubcategories = subcategories.filter(isValidCategory)
+
   return (
     <div className="space-y-5 text-foreground">
       {/* Clear Filters Button */}
@@ -187,67 +203,129 @@ export function SearchFilters({
         </div>
       </div>
 
-      {/* Department/Category Navigation - Always show all main categories */}
+      {/* Department/Category Navigation - Context-aware */}
       <div className="pb-4 border-b border-border">
         <h3 className="font-semibold text-base mb-3">{t('department')}</h3>
         
         <div className="space-y-0.5">
-          {/* Show all main categories with expandable subcategories */}
-          {categories.map((cat) => {
-            const isExpanded = expandedCategories.includes(cat.slug)
-            const catSubs = allCategoriesWithSubs.length > 0 
-              ? getSubcategoriesFor(cat.id) 
-              : (currentCategory?.id === cat.id ? subcategories : [])
-            const hasSubs = catSubs.length > 0
-            const isCurrentCategory = currentCategory?.slug === cat.slug || currentCategory?.parent_id === cat.id
-            
-            return (
-              <div key={cat.id}>
-                <div className="flex items-center justify-between group">
-                  <Link
-                    href={`/categories/${cat.slug}`}
-                    className={`text-base cursor-pointer hover:text-primary flex-1 min-h-9 flex items-center ${
-                      isCurrentCategory ? 'font-semibold text-primary' : 'text-foreground'
-                    }`}
-                  >
-                    {getCategoryName(cat)}
-                  </Link>
-                  {hasSubs && (
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault()
-                        toggleCategory(cat.slug)
-                      }}
-                      className="min-h-9 min-w-9 flex items-center justify-center hover:bg-muted rounded-md"
+          {/* Context-aware navigation */}
+          {currentCategory ? (
+            <>
+              {/* Back/Toggle link - to parent or show all categories inline */}
+              {parentCategory ? (
+                // Has parent - show back link to parent
+                <Link
+                  href={`/categories/${parentCategory.slug}`}
+                  className="text-sm text-muted-foreground hover:text-primary hover:underline min-h-8 flex items-center gap-1"
+                >
+                  <CaretRight size={14} weight="bold" className="rotate-180" />
+                  {getCategoryName(parentCategory)}
+                </Link>
+              ) : (
+                // No parent (L0 category) - toggle to show all categories inline
+                <button
+                  onClick={() => setShowAllCategories(!showAllCategories)}
+                  className="text-sm text-muted-foreground hover:text-primary min-h-8 flex items-center gap-1 w-full"
+                >
+                  <CaretRight size={14} weight="bold" className={showAllCategories ? "rotate-90" : "rotate-180"} />
+                  <span className="hover:underline">
+                    {locale === 'bg' ? 'Всички категории' : 'All Categories'}
+                  </span>
+                </button>
+              )}
+              
+              {/* Show all L0 categories when expanded */}
+              {showAllCategories && !parentCategory && (
+                <div className="ml-2 mt-1 space-y-0.5 border-l-2 border-border pl-3 py-1">
+                  {validCategories.map((cat) => (
+                    <Link
+                      key={cat.id}
+                      href={`/categories/${cat.slug}`}
+                      className={`text-sm cursor-pointer min-h-8 flex items-center ${
+                        cat.id === currentCategory.id 
+                          ? 'font-semibold text-primary' 
+                          : 'text-muted-foreground hover:text-primary hover:underline'
+                      }`}
                     >
-                      {isExpanded ? (
-                        <CaretDown size={18} weight="regular" className="text-muted-foreground" />
-                      ) : (
-                        <CaretRight size={18} weight="regular" className="text-muted-foreground" />
-                      )}
-                    </button>
+                      {getCategoryName(cat)}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              
+              {/* Current category title */}
+              <div className="font-semibold text-lg text-foreground py-1">
+                {getCategoryName(currentCategory)}
+              </div>
+              
+              {/* Subcategories of current category (filtered) */}
+              {validSubcategories.length > 0 && (
+                <div className="space-y-0.5 pt-1">
+                  {validSubcategories.map((subcat) => (
+                    <Link
+                      key={subcat.id}
+                      href={`/categories/${subcat.slug}`}
+                      className="text-base cursor-pointer text-muted-foreground hover:text-primary hover:underline min-h-9 flex items-center"
+                    >
+                      {getCategoryName(subcat)}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            /* Full category list for search page or no category selected */
+            validCategories.map((cat) => {
+              const isExpanded = expandedCategories.includes(cat.slug)
+              const catSubs = allCategoriesWithSubs.length > 0 
+                ? getSubcategoriesFor(cat.id).filter(isValidCategory)
+                : []
+              const hasSubs = catSubs.length > 0
+              
+              return (
+                <div key={cat.id}>
+                  <div className="flex items-center justify-between group">
+                    <Link
+                      href={`/categories/${cat.slug}`}
+                      className="text-base cursor-pointer hover:text-primary flex-1 min-h-9 flex items-center text-foreground"
+                    >
+                      {getCategoryName(cat)}
+                    </Link>
+                    {hasSubs && (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault()
+                          toggleCategory(cat.slug)
+                        }}
+                        className="min-h-9 min-w-9 flex items-center justify-center hover:bg-muted rounded-md"
+                      >
+                        {isExpanded ? (
+                          <CaretDown size={18} weight="regular" className="text-muted-foreground" />
+                        ) : (
+                          <CaretRight size={18} weight="regular" className="text-muted-foreground" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                  
+                  {/* Subcategories */}
+                  {isExpanded && hasSubs && (
+                    <div className="ml-3 mt-1 space-y-0.5 border-l-2 border-border pl-3">
+                      {catSubs.map((subcat) => (
+                        <Link
+                          key={subcat.id}
+                          href={`/categories/${subcat.slug}`}
+                          className="text-base cursor-pointer hover:text-primary min-h-9 flex items-center text-muted-foreground"
+                        >
+                          {getCategoryName(subcat)}
+                        </Link>
+                      ))}
+                    </div>
                   )}
                 </div>
-                
-                {/* Subcategories */}
-                {isExpanded && hasSubs && (
-                  <div className="ml-3 mt-1 space-y-0.5 border-l-2 border-border pl-3">
-                    {catSubs.map((subcat) => (
-                      <Link
-                        key={subcat.id}
-                        href={`/categories/${subcat.slug}`}
-                        className={`text-base cursor-pointer hover:text-primary min-h-9 flex items-center ${
-                          currentCategory?.slug === subcat.slug ? 'font-semibold text-primary' : 'text-muted-foreground'
-                        }`}
-                      >
-                        {getCategoryName(subcat)}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+              )
+            })
+          )}
         </div>
       </div>
 

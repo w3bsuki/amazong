@@ -419,6 +419,7 @@ export function MegaMenu() {
 
   return (
     <>
+      {/* Main wrapper for hover state management */}
       <div 
         className="relative"
         ref={menuRef}
@@ -438,24 +439,51 @@ export function MegaMenu() {
           <List size={18} weight="bold" />
           <span>{locale === "bg" ? "Всички категории" : "All categories"}</span>
         </Button>
+
+        {/* Invisible bridge to prevent gap when moving to menu */}
+        {isOpen && (
+          <div 
+            className="absolute left-0 right-0 h-3" 
+            style={{ top: '100%' }}
+            aria-hidden="true"
+          />
+        )}
       </div>
 
-      {/* Mega Menu Panel - Full width, positioned below header */}
+      {/* Backdrop - closes menu on click */}
+      <div 
+        className={cn(
+          "fixed inset-0 z-30 transition-opacity duration-150",
+          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+        style={{ top: `${headerHeight}px` }}
+        onClick={closeMenu}
+        aria-hidden="true"
+      />
+
+      {/* Mega Menu Panel - Full width like category-subheader */}
       <div
         className={cn(
           "fixed left-0 right-0 z-40",
-          "bg-background",
-          "border-b border-border shadow-lg",
+          "bg-background border-b border-border",
           "transition-opacity duration-150 ease-out",
           isOpen 
             ? "opacity-100 pointer-events-auto" 
             : "opacity-0 pointer-events-none"
         )}
         style={{ top: `${headerHeight}px` }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
       >
-        <div className="container flex max-h-(--mega-menu-max-height)">
+        {/* Container wrapper for content alignment - mouse events here for container-width detection */}
+        <div 
+          className="container"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {/* Menu content box */}
+          <div 
+            className="flex overflow-hidden"
+            style={{ maxHeight: 'min(calc(100vh - 150px), 640px)' }}
+          >
           {/* Left Sidebar - Clean Categories List with scroll */}
           <div className="w-64 border-r border-border py-2 shrink-0 overflow-y-auto overscroll-contain">
               {isLoading ? (
@@ -549,27 +577,7 @@ export function MegaMenu() {
             <div className="flex-1 p-5 bg-background overflow-y-auto overscroll-contain">
               {activeCategory && (
                 <div>
-                  {/* Category Header - Simplified */}
-                  <div className="flex items-center justify-between mb-4 pb-2 border-b border-border">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-brand">
-                        {getCategoryIcon(activeCategory.slug)}
-                      </span>
-                      <h3 className="text-lg font-medium text-foreground">
-                        {getCategoryName(activeCategory)}
-                      </h3>
-                    </div>
-                    <Link
-                      href={`/categories/${activeCategory.slug}`}
-                      onClick={closeMenu}
-                      className="mega-menu-text font-normal text-brand hover:text-brand/80 transition-colors flex items-center gap-1"
-                    >
-                      {locale === "bg" ? "Виж всички" : "Browse all"}
-                      <CaretRight size={16} weight="regular" />
-                    </Link>
-                  </div>
-
-                  {/* Subcategory Cards Grid - Large cards */}
+                  {/* Subcategory Cards Grid - Clean, no animations */}
                   {activeCategory.children && activeCategory.children.length > 0 ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                       {activeCategory.children.slice(0, 16).map((subcat) => (
@@ -579,21 +587,21 @@ export function MegaMenu() {
                           onClick={closeMenu}
                           className="group flex flex-col items-center gap-2"
                         >
-                          {/* Square Image */}
-                          <div className="w-full aspect-square rounded-lg overflow-hidden bg-muted ring-1 ring-border/40 group-hover:ring-brand/60 transition-all duration-150">
+                          {/* Circle Image - Clean, slight opacity change on hover */}
+                          <div className="w-full aspect-square rounded-full overflow-hidden bg-muted group-hover:bg-muted/80">
                             <Image
                               src={getSubcategoryImage(subcat.slug, subcat.image_url)}
                               alt={getCategoryName(subcat)}
                               width={200}
                               height={200}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                              className="w-full h-full object-cover"
                               placeholder="blur"
                               blurDataURL={categoryBlurDataURL()}
                               loading="lazy"
                             />
                           </div>
-                          {/* Label */}
-                          <span className="text-sm text-center text-muted-foreground group-hover:text-foreground font-normal line-clamp-2 leading-tight transition-colors">
+                          {/* Label - Underline on hover */}
+                          <span className="text-sm text-center text-muted-foreground group-hover:text-foreground group-hover:underline font-normal line-clamp-2 leading-tight">
                             {getCategoryName(subcat)}
                           </span>
                         </Link>
@@ -610,7 +618,7 @@ export function MegaMenu() {
                       <Link
                         href={`/categories/${activeCategory.slug}`}
                         onClick={closeMenu}
-                        className="mt-2 mega-menu-text text-brand hover:text-brand/80 transition-colors"
+                        className="mt-2 mega-menu-text text-brand hover:text-brand/80"
                       >
                         {locale === "bg" ? "Отиди към категорията" : "Go to category"}
                       </Link>
@@ -623,7 +631,7 @@ export function MegaMenu() {
                       <Link
                         href={`/categories/${activeCategory.slug}`}
                         onClick={closeMenu}
-                        className="inline-flex items-center gap-1 mega-menu-text font-normal text-brand hover:text-brand/80 transition-colors"
+                        className="inline-flex items-center gap-1 mega-menu-text font-normal text-brand hover:text-brand/80"
                       >
                         {locale === "bg" 
                           ? `Виж всички ${activeCategory.children.length}` 
@@ -637,17 +645,7 @@ export function MegaMenu() {
             </div>
           </div>
         </div>
-
-      {/* Backdrop overlay - Subtle */}
-      <div 
-        className={cn(
-          "fixed inset-0 bg-black/30 z-30 transition-opacity duration-150",
-          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        )}
-        style={{ top: `${headerHeight}px` }}
-        onClick={closeMenu}
-        aria-hidden="true"
-      />
+      </div>
     </>
   )
 }

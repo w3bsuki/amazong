@@ -4,7 +4,7 @@ import { Link } from "@/i18n/routing"
 import { CategoryCircles } from "@/components/category-circles"
 import type { Metadata } from 'next'
 import { PromoCard } from "@/components/promo-card"
-import { getTranslations, getLocale } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
 
 // Async sections using cached data
 import { TrendingSection, FeaturedSection, DealsWrapper, SignInCTA } from "@/components/sections"
@@ -379,8 +379,10 @@ function SignInCtaSkeleton() {
 // Main Page Component
 // =============================================================================
 
-export default async function Home() {
-  const locale = await getLocale()
+export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
+  // Get locale from URL params instead of getLocale() to avoid uncached data warning
+  // The [locale] segment already contains this information
+  const { locale } = await params
   const t = await getTranslations('Home')
 
   return (

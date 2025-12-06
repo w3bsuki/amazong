@@ -105,6 +105,16 @@ export function SubcategoryCircles({
     return cat.name
   }
 
+  // Filter out deprecated/moved categories
+  const isValidCategory = (cat: Category) => {
+    const name = cat.name.toLowerCase()
+    return !name.includes('[deprecated]') && 
+           !name.includes('[moved]') && 
+           !name.includes('[duplicate]')
+  }
+
+  const validSubcategories = subcategories.filter(isValidCategory)
+
   // Build URL - supports both /categories/slug and /search?category=slug
   const buildUrl = (categorySlug: string) => {
     if (basePath) {
@@ -149,7 +159,7 @@ export function SubcategoryCircles({
     }
   }
 
-  if (subcategories.length === 0) return null
+  if (validSubcategories.length === 0) return null
 
   return (
     <div className={cn("relative w-full", className)}>
@@ -201,14 +211,14 @@ export function SubcategoryCircles({
           )}
           
           {/* Subcategory circles */}
-          {subcategories.map((subcat, index) => (
+          {validSubcategories.map((subcat, index) => (
             <Link
               key={subcat.id}
               href={buildUrl(subcat.slug)}
               className={cn(
                 "flex flex-col items-center gap-2 min-w-[90px] sm:min-w-[100px] group snap-start shrink-0",
                 "touch-action-manipulation",
-                index === subcategories.length - 1 && "mr-4"
+                index === validSubcategories.length - 1 && "mr-4"
               )}
             >
               {/* Circle with image */}

@@ -97,8 +97,8 @@ function getCategoryIcon(slug: string): React.ReactNode {
   return categoryIconMap[slug] || <Package size={16} weight="regular" />
 }
 
-// Maximum categories to show in the subheader
-const MAX_VISIBLE_CATEGORIES = 15
+// Maximum categories to show in the subheader row
+const MAX_VISIBLE_CATEGORIES = 14
 
 // eBay-style mega menu config
 // Each L0 category has: featured (most popular L1s to show with their L2s) + banner config
@@ -475,9 +475,9 @@ const MEGA_MENU_CONFIG: Record<string, MegaMenuConfig> = {
     }
   },
   // ===== GROCERY =====
-  // L1s: pantry-staples (5), beverages (5), snacks (4), organic-natural (4), international-foods (4)
+  // L1s: grocery-pantry (7), grocery-drinks (6), grocery-snacks (11), grocery-dairy (5), grocery-meat (4)
   "grocery": {
-    featured: ["pantry-staples", "beverages", "snacks"],
+    featured: ["grocery-pantry", "grocery-drinks", "grocery-snacks"],
     columns: 3,
     banner: {
       title: "Grocery & Food",
@@ -682,19 +682,20 @@ export function CategorySubheader() {
     return () => window.removeEventListener('resize', updateHeaderHeight)
   }, [])
 
-  // Fetch categories with depth=3 to get full hierarchy: L0 -> L1 -> L2 -> L3
+  // Fetch categories with depth=2 to get full hierarchy: L0 -> L1 -> L2
   useEffect(() => {
     const now = Date.now()
     const cacheExpired = now - cacheTimestamp > CACHE_TTL
     
-    if (categoriesCache && !cacheExpired) {
+    // Force fresh fetch - clear any stale cache
+    if (cacheExpired || !categoriesCache || categoriesCache.length < 20) {
+      categoriesCache = null
+    }
+    
+    if (categoriesCache) {
       setCategories(categoriesCache)
       setIsLoading(false)
       return
-    }
-    
-    if (cacheExpired) {
-      categoriesCache = null
     }
 
     if (categoriesFetching) {
@@ -706,11 +707,12 @@ export function CategorySubheader() {
     }
 
     categoriesFetching = true
-    // IMPORTANT: depth=3 fetches L0 -> L1 -> L2 -> L3 (full Fashion hierarchy)
-    fetch("/api/categories?children=true&depth=3", { cache: 'no-store' })
+    // depth=2 fetches L0 -> L1 -> L2 (needed for mega menu to show L2 children under L1 headers)
+    fetch("/api/categories?children=true&depth=2", { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         const cats = data.categories || []
+        console.log(`[CategorySubheader] Fetched ${cats.length} categories:`, cats.map((c: Category) => c.slug))
         categoriesCache = cats
         cacheTimestamp = Date.now()
         setCategories(cats)
@@ -806,22 +808,26 @@ export function CategorySubheader() {
 
   // English has longer words, show fewer categories
   const maxVisible = locale === "bg" ? MAX_VISIBLE_CATEGORIES : MAX_VISIBLE_CATEGORIES - 1
+  
+  // Show first N categories in subheader row (already sorted by display_order from API)
   const visibleCategories = categories.slice(0, maxVisible)
+  // Remaining categories go in the "Всички" dropdown
   const moreCategories = categories.slice(maxVisible)
-  const showMoreButton = moreCategories.length > 0
+  // Always show "Всички" button if there are categories beyond visible
+  const showMoreButton = categories.length > maxVisible
 
   const moreCategoryVirtual: Category = {
     id: "more-categories",
-    name: "More Categories",
-    name_bg: "Още категории",
+    name: "View All",
+    name_bg: "Всички",
     slug: "more",
-    children: moreCategories
+    children: moreCategories // Categories not shown in main row
   }
 
   return (
     <>
-      <div className="flex items-center w-full">
-        <div className="flex items-center gap-0.5 flex-1">
+      <div className="flex items-center w-full overflow-hidden">
+        <div className="flex items-center gap-0.5 flex-1 overflow-x-auto no-scrollbar">
           {visibleCategories.map((category) => {
             const hasChildren = category.children && category.children.length > 0
             const isActive = activeCategory?.id === category.id
@@ -829,14 +835,14 @@ export function CategorySubheader() {
             return (
               <div
                 key={category.id}
-                className="relative"
+                className="relative shrink-0"
                 onMouseEnter={() => handleMouseEnter(category)}
                 onMouseLeave={handleMouseLeave}
               >
                 <Link
                   href={`/categories/${category.slug}`}
                   className={cn(
-                    "flex items-center gap-1 px-2.5 py-2.5 text-sm font-medium transition-colors whitespace-nowrap",
+                    "flex items-center gap-1 px-2 py-2.5 text-sm font-medium transition-colors whitespace-nowrap",
                     "text-foreground hover:text-brand hover:underline",
                     isActive && "text-brand"
                   )}
@@ -1128,7 +1134,7 @@ export function CategorySubheader() {
               {/* "More Categories" Grid */}
               {activeCategory.id === "more-categories" && (
                 <div className="grid grid-cols-4 gap-4">
-                  {moreCategories.map((cat) => (
+                  {activeCategory.children?.map((cat) => (
                     <Link
                       key={cat.id}
                       href={`/categories/${cat.slug}`}
