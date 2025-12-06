@@ -22,6 +22,7 @@ export interface Product {
   ships_to_usa?: boolean | null
   ships_to_worldwide?: boolean | null
   category_slug?: string | null
+  slug?: string | null
 }
 
 /** UI-ready product format */
@@ -35,6 +36,7 @@ export interface UIProduct {
   reviews: number
   isPrime: boolean
   categorySlug?: string
+  slug?: string | null
 }
 
 // =============================================================================
@@ -60,7 +62,7 @@ export async function getProducts(type: QueryType, limit = 36): Promise<Product[
   // If category info is needed, fetch it separately or ensure the FK exists.
   let query = supabase
     .from('products')
-    .select('id, title, price, list_price, rating, review_count, images, is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_europe, ships_to_usa, ships_to_worldwide, category_id')
+    .select('id, title, price, list_price, rating, review_count, images, is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_europe, ships_to_usa, ships_to_worldwide, category_id, slug')
 
   switch (type) {
     case 'deals':
@@ -153,6 +155,7 @@ export function toUI(p: Product): UIProduct {
     reviews: p.review_count ?? 0,
     isPrime: p.is_prime ?? false,
     categorySlug: p.category_slug ?? undefined,
+    slug: p.slug,
   }
 }
 

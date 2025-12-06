@@ -348,6 +348,7 @@ export default async function CategoryPage({
                 originalPrice={product.list_price}
                 tags={product.tags || []}
                 variant="grid"
+                slug={product.slug}
               />
             ))}
           </div>

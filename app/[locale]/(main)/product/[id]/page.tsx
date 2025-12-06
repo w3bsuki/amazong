@@ -317,6 +317,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     tags={p.tags || []}
                     index={idx}
                     variant="compact"
+                    slug={p.slug}
                   />
                 </div>
               ))}
@@ -338,6 +339,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 tags={p.tags || []}
                 index={idx}
                 variant="compact"
+                slug={p.slug}
               />
             ))}
           </div>

@@ -16,6 +16,7 @@ interface Deal {
   image: string
   rating?: number
   reviews?: number
+  slug?: string | null
 }
 
 interface DealCategory {
@@ -32,9 +33,12 @@ interface DealsSectionProps {
 }
 
 // Compact Deal Card for carousels - Target style with discount
-function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, reviews = 0 }: Deal) {
+function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, reviews = 0, slug }: Deal) {
   const locale = useLocale()
   const t = useTranslations('Product')
+  
+  // Use slug for SEO-friendly URLs, fallback to id
+  const productUrl = `/product/${slug || id}`
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale, {
@@ -50,7 +54,7 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
     : 0
 
   return (
-    <Link href={`/product/${id}`} className="block h-full group">
+    <Link href={productUrl} className="block h-full group">
       <div className="bg-card rounded-md overflow-hidden h-full flex flex-col border border-border">
         {/* Square Image Container with Discount Badge */}
         <div className="relative w-full aspect-square bg-secondary p-3 flex items-center justify-center overflow-hidden">

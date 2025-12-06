@@ -18,6 +18,7 @@ interface Product {
   reviews?: number
   isPrime?: boolean
   createdAt?: string
+  slug?: string | null
 }
 
 interface TrendingProductsSectionProps {
@@ -37,10 +38,14 @@ function CompactProductCard({
   listPrice,
   image, 
   rating = 0, 
-  reviews = 0 
+  reviews = 0,
+  slug
 }: Product) {
   const locale = useLocale()
   const t = useTranslations('Product')
+  
+  // Use slug for SEO-friendly URLs, fallback to id
+  const productUrl = `/product/${slug || id}`
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale, {
@@ -59,7 +64,7 @@ function CompactProductCard({
   const formattedDate = new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'numeric', day: 'numeric' }).format(deliveryDate)
 
   return (
-    <Link href={`/product/${id}`} className="block h-full group">
+    <Link href={productUrl} className="block h-full group">
       <div className="bg-card rounded-md overflow-hidden h-full flex flex-col border border-border">
         {/* Square Image Container with optional discount badge */}
         <div className="relative w-full aspect-square bg-secondary p-3 flex items-center justify-center overflow-hidden">

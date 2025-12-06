@@ -60,6 +60,7 @@ interface Product {
   category_id: string | null
   image_url?: string | null
   tags?: string[]
+  slug?: string | null
 }
 
 // Helper function to search products with ILIKE fallback and pagination
@@ -385,6 +386,7 @@ export default async function SearchPage({
                 originalPrice={product.list_price}
                 tags={product.tags || []}
                 variant="grid"
+                slug={product.slug}
               />
             ))}
           </div>

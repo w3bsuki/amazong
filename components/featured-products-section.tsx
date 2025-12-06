@@ -19,6 +19,7 @@ interface FeaturedProduct {
   isPrime?: boolean
   isBoosted?: boolean
   sellerTier?: 'basic' | 'premium' | 'business'
+  slug?: string | null
 }
 
 interface FeaturedProductsSectionProps {
@@ -39,10 +40,14 @@ function FeaturedProductCard({
   rating = 0, 
   reviews = 0,
   isBoosted,
-  sellerTier
+  sellerTier,
+  slug
 }: FeaturedProduct) {
   const locale = useLocale()
   const t = useTranslations('Product')
+  
+  // Use slug for SEO-friendly URLs, fallback to id
+  const productUrl = `/product/${slug || id}`
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale, {
@@ -61,7 +66,7 @@ function FeaturedProductCard({
   const formattedDate = new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'numeric', day: 'numeric' }).format(deliveryDate)
 
   return (
-    <Link href={`/product/${id}`} className="block h-full group">
+    <Link href={productUrl} className="block h-full group">
       <div className="bg-card rounded-md overflow-hidden h-full flex flex-col border border-border relative">
         {/* Boosted Indicator */}
         {isBoosted && (
