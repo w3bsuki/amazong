@@ -345,6 +345,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             tags: product.tags || [],
             is_boosted: product.is_boosted || false,
             seller_id: product.seller_id,
+            slug: product.slug,
           }}
           seller={seller}
           locale={locale}

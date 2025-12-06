@@ -4,10 +4,10 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
-import { useCart } from "@/lib/cart-context"
+import { useCart, type CartItem } from "@/lib/cart-context"
 import { ShoppingCart, Package, Minus, Plus, Trash } from "@phosphor-icons/react"
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 export function CartDropdown() {
@@ -22,6 +22,14 @@ export function CartDropdown() {
   }, [])
 
   const displayItems = mounted ? totalItems : 0
+
+  // Build SEO-friendly product URL
+  const buildProductUrl = useCallback((item: CartItem) => {
+    if (item.storeSlug && item.slug) {
+      return `/product/${item.storeSlug}/${item.slug}`
+    }
+    return `/product/${item.slug || item.id}`
+  }, [])
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-US", {
@@ -83,7 +91,7 @@ export function CartDropdown() {
             <div className="max-h-[300px] overflow-y-auto">
               {items.slice(0, 4).map((item) => (
                 <div key={item.id} className="flex gap-3 p-3 border-b border-border hover:bg-muted">
-                  <Link href={`/product/${item.id}`} className="shrink-0">
+                  <Link href={buildProductUrl(item)} className="shrink-0">
                     <div className="w-16 h-16 bg-muted rounded overflow-hidden">
                       {item.image ? (
                         <Image
@@ -102,7 +110,7 @@ export function CartDropdown() {
                   </Link>
                   <div className="flex-1 min-w-0">
                     <Link
-                      href={`/product/${item.id}`}
+                      href={buildProductUrl(item)}
                       className="text-sm font-normal text-foreground hover:text-brand line-clamp-2"
                     >
                       {item.title}

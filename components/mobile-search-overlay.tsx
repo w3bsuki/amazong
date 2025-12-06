@@ -147,13 +147,21 @@ export function MobileSearchOverlay({ className }: MobileSearchOverlayProps) {
     [saveSearch, handleClose, router]
   )
 
+  // Build SEO-friendly product URL
+  const buildProductUrl = useCallback((product: { slug?: string; storeSlug?: string | null; id: string }) => {
+    if (product.storeSlug && product.slug) {
+      return `/product/${product.storeSlug}/${product.slug}`
+    }
+    return `/product/${product.slug || product.id}`
+  }, [])
+
   const handleProductSelect = useCallback(
-    (slugOrId: string) => {
-      if (!slugOrId) return
+    (product: { slug?: string; storeSlug?: string | null; id: string }) => {
+      if (!product) return
       handleClose()
-      router.push(`/product/${slugOrId}`)
+      router.push(buildProductUrl(product))
     },
-    [handleClose, router]
+    [handleClose, router, buildProductUrl]
   )
 
   const handleClearInput = useCallback(() => {
@@ -311,7 +319,7 @@ export function MobileSearchOverlay({ className }: MobileSearchOverlayProps) {
                     <li key={product.id} role="option" aria-selected="false">
                       <button
                         type="button"
-                        onClick={() => handleProductSelect(product.slug || product.id)}
+                        onClick={() => handleProductSelect(product)}
                         className="w-full flex items-center gap-3 p-3 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
                       >
                         <div className="size-14 bg-muted rounded-lg overflow-hidden shrink-0 ring-1 ring-border">

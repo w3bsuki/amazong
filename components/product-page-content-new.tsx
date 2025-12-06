@@ -62,10 +62,12 @@ interface ProductPageContentProps {
     tags?: string[]
     is_boosted?: boolean
     seller_id?: string
+    slug?: string
   }
   seller: {
     id: string
     store_name: string
+    store_slug?: string
     verified: boolean
     created_at: string
   } | null
@@ -562,7 +564,9 @@ export function ProductPageContent({
                   title: product.title,
                   price: product.price,
                   image: images[0],
-                  seller_id: product.seller_id
+                  seller_id: product.seller_id,
+                  slug: product.slug,
+                  storeSlug: seller?.store_slug,
                 }}
                 currentUserId={currentUserId}
                 variant="outline"
@@ -961,7 +965,9 @@ export function ProductPageContent({
                 title: product.title,
                 price: product.price,
                 image: images[0],
-                seller_id: product.seller_id
+                seller_id: product.seller_id,
+                slug: product.slug,
+                storeSlug: seller?.store_slug,
               }}
               currentUserId={currentUserId}
               variant="outline"

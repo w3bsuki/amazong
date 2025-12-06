@@ -13,6 +13,7 @@ export interface SearchProduct {
   price: number
   images: string[]
   slug: string
+  storeSlug?: string | null
 }
 
 /* =============================================================================
@@ -44,6 +45,7 @@ export interface RecentSearchedProduct {
   price: number
   image: string | null
   slug: string
+  storeSlug?: string | null
   searchedAt: number
 }
 
@@ -199,6 +201,7 @@ export function useProductSearch(maxResults: number = 8) {
         price: product.price,
         image: product.images?.[0] || null,
         slug: product.slug,
+        storeSlug: product.storeSlug,
         searchedAt: Date.now(),
       }
 

@@ -15,6 +15,8 @@ interface AddToCartProps {
         price: number
         image: string
         seller_id?: string
+        slug?: string
+        storeSlug?: string | null
     }
     currentUserId?: string | null
     /** Style variant - default is amazon style, ebay is for eBay-style layout */
@@ -53,6 +55,8 @@ export function AddToCart({
                 price: product.price,
                 image: product.image,
                 quantity: 1,
+                slug: product.slug,
+                storeSlug: product.storeSlug,
             })
             toast.success(t('addedToCart'))
             setIsPending(false)
@@ -70,6 +74,8 @@ export function AddToCart({
             price: product.price,
             image: product.image,
             quantity: 1,
+            slug: product.slug,
+            storeSlug: product.storeSlug,
         })
         // Redirect to cart/checkout would happen here
         window.location.href = "/cart"

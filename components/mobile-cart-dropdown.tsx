@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useCallback } from "react"
 import { ShoppingCart, Package, Minus, Plus, Trash } from "@phosphor-icons/react"
 import {
     Drawer,
@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
-import { useCart } from "@/lib/cart-context"
+import { useCart, type CartItem } from "@/lib/cart-context"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 
@@ -26,6 +26,14 @@ export function MobileCartDropdown() {
     const t = useTranslations('CartDropdown')
     const tNav = useTranslations('Navigation')
     const locale = useLocale()
+
+    // Build SEO-friendly product URL
+    const buildProductUrl = useCallback((item: CartItem) => {
+        if (item.storeSlug && item.slug) {
+            return `/product/${item.storeSlug}/${item.slug}`
+        }
+        return `/product/${item.slug || item.id}`
+    }, [])
 
     // Prevent hydration mismatch by only rendering cart count after mount
     useEffect(() => {
@@ -112,7 +120,7 @@ export function MobileCartDropdown() {
                                     )}
                                 >
                                     <Link 
-                                        href={`/product/${item.id}`} 
+                                        href={buildProductUrl(item)} 
                                         onClick={() => setOpen(false)}
                                         className="shrink-0"
                                     >
@@ -136,7 +144,7 @@ export function MobileCartDropdown() {
                                     </Link>
                                     <div className="flex-1 min-w-0">
                                         <Link 
-                                            href={`/product/${item.id}`}
+                                            href={buildProductUrl(item)}
                                             onClick={() => setOpen(false)}
                                             className="text-sm font-medium text-foreground hover:text-brand line-clamp-2 leading-tight"
                                         >

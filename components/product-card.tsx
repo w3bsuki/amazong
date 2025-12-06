@@ -139,6 +139,8 @@ export function ProductCard({
       price,
       image,
       quantity: 1,
+      slug,
+      storeSlug,
     })
     toast.success(tCart('itemAdded'))
   }

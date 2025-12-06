@@ -26,7 +26,8 @@ export async function GET(request: Request) {
         title,
         price,
         images,
-        slug
+        slug,
+        sellers(store_slug)
       `)
       .or(`title.ilike.${searchPattern},description.ilike.${searchPattern}`)
       .limit(limit)
@@ -37,7 +38,17 @@ export async function GET(request: Request) {
       return NextResponse.json({ products: [] })
     }
 
-    return NextResponse.json({ products: products || [] })
+    // Transform to include storeSlug at top level for easier client consumption
+    const transformedProducts = (products || []).map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      images: p.images,
+      slug: p.slug,
+      storeSlug: p.sellers?.store_slug || null,
+    }))
+
+    return NextResponse.json({ products: transformedProducts })
   } catch (error: any) {
     console.error("Search API Error:", error)
     return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 })

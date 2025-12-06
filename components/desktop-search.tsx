@@ -59,14 +59,22 @@ export function DesktopSearch() {
     router.push(`/search?q=${encodeURIComponent(search)}`)
   }, [setQuery, saveSearch, router])
 
-  const handleSelectProduct = useCallback((slug: string, product?: any) => {
+  // Build SEO-friendly product URL
+  const buildProductUrl = useCallback((product: { slug?: string; storeSlug?: string | null; id: string }) => {
+    if (product.storeSlug && product.slug) {
+      return `/product/${product.storeSlug}/${product.slug}`
+    }
+    return `/product/${product.slug || product.id}`
+  }, [])
+
+  const handleSelectProduct = useCallback((product: any) => {
     if (product) {
       saveProduct(product)
     }
     setIsOpen(false)
     setQuery("")
-    router.push(`/product/${slug}`)
-  }, [setQuery, router, saveProduct])
+    router.push(buildProductUrl(product))
+  }, [setQuery, router, saveProduct, buildProductUrl])
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
@@ -173,7 +181,7 @@ export function DesktopSearch() {
                   {products.map((product) => (
                     <button
                       key={product.id}
-                      onClick={() => handleSelectProduct(product.slug, product)}
+                      onClick={() => handleSelectProduct(product)}
                       className="w-full flex items-center gap-3 p-2.5 hover:bg-muted rounded-lg text-left group"
                     >
                       <div className="w-12 h-12 bg-muted rounded-lg overflow-hidden shrink-0 ring-1 ring-border">
@@ -226,7 +234,7 @@ export function DesktopSearch() {
                     {recentlyViewed.slice(0, 6).map((product) => (
                       <Link
                         key={product.id}
-                        href={`/product/${product.slug}`}
+                        href={buildProductUrl(product)}
                         onClick={() => setIsOpen(false)}
                         className="shrink-0 w-24 group"
                       >
@@ -278,7 +286,7 @@ export function DesktopSearch() {
                     {recentProducts.map((product) => (
                       <Link
                         key={product.id}
-                        href={`/product/${product.slug}`}
+                        href={buildProductUrl(product)}
                         onClick={() => setIsOpen(false)}
                         className="shrink-0 w-24 group"
                       >
