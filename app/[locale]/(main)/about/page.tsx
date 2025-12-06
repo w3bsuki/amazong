@@ -10,6 +10,12 @@ import Link from "next/link"
 import type { Metadata } from 'next'
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { routing } from "@/i18n/routing"
+
+// Generate static params for all locales - required for Next.js 16 Cache Components
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;

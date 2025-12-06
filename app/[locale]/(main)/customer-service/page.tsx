@@ -3,9 +3,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Package, ArrowsClockwise, CreditCard, User, Shield, Question, MagnifyingGlass as Search } from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 import type { Metadata } from 'next'
+import { routing } from "@/i18n/routing"
+
+// Generate static params for all locales - required for Next.js 16 Cache Components
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -17,8 +23,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function CustomerServicePage() {
-    const t = await getTranslations('CustomerService')
+export default async function CustomerServicePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  
+  // Enable static rendering for this locale
+  setRequestLocale(locale)
+  
+  const t = await getTranslations('CustomerService')
 
     const helpTopics = [
         { icon: Package, title: t('delivery') },

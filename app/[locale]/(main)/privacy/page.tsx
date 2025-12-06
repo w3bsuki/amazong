@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { 
@@ -13,6 +13,12 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
 import type { Metadata } from 'next'
+import { routing } from "@/i18n/routing"
+
+// Generate static params for all locales - required for Next.js 16 Cache Components
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -24,7 +30,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function PrivacyPage() {
+export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('Privacy')
   
   const sections = [

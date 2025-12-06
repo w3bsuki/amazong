@@ -2,10 +2,18 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Gift, Printer, CreditCard } from "@phosphor-icons/react/dist/ssr"
 import { EnvelopeSimple as Mail } from "@phosphor-icons/react/dist/ssr"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
+import { routing } from "@/i18n/routing"
 
-export default async function GiftCardsPage() {
+// Generate static params for all locales - required for Next.js 16 Cache Components
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
+
+export default async function GiftCardsPage({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params
+    setRequestLocale(locale)
     const t = await getTranslations('GiftCards')
 
     return (
