@@ -155,8 +155,13 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
   const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentPrime || currentAvailability || activeAttrCount > 0
   const filterCount = [currentMinPrice || currentMaxPrice, currentRating, currentPrime, currentAvailability].filter(Boolean).length + activeAttrCount
 
+  // Type for filter sections
+  type BaseFilterSection = { id: string; label: string; attribute?: undefined }
+  type AttrFilterSection = { id: string; label: string; attribute: CategoryAttribute }
+  type FilterSection = BaseFilterSection | AttrFilterSection
+
   // Build filter sections dynamically including category attributes
-  const baseFilterSections = [
+  const baseFilterSections: BaseFilterSection[] = [
     { id: 'prime', label: t('deliveryDay') },
     { id: 'rating', label: t('customerReviews') },
     { id: 'price', label: t('price') },
@@ -164,13 +169,13 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
   ]
   
   // Add attribute sections
-  const attrFilterSections = visibleAttributes.map(attr => ({
+  const attrFilterSections: AttrFilterSection[] = visibleAttributes.map(attr => ({
     id: `attr_${attr.id}`,
     label: getAttrName(attr),
     attribute: attr
   }))
   
-  const filterSections = [...baseFilterSections, ...attrFilterSections]
+  const filterSections: FilterSection[] = [...baseFilterSections, ...attrFilterSections]
 
   const priceRanges = [
     { label: t('under25'), min: null, max: "25" },
