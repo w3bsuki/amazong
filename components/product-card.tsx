@@ -53,6 +53,8 @@ interface ProductCardProps {
   sellerCountryCode?: string
   /** Buyer's shipping region for delivery time calculation */
   buyerRegion?: ShippingRegion
+  /** SEO-friendly slug for the product URL (preferred over id) */
+  slug?: string | null
 }
 
 export function ProductCard({ 
@@ -71,12 +73,16 @@ export function ProductCard({
   sellerId,
   currentUserId,
   sellerCountryCode = 'BG',
-  buyerRegion = 'BG'
+  buyerRegion = 'BG',
+  slug
 }: ProductCardProps) {
   const { addToCart } = useCart()
   const t = useTranslations('Product')
   const tCart = useTranslations('Cart')
   const locale = useLocale()
+  
+  // Use slug for SEO-friendly URLs, fallback to id
+  const productUrl = `/product/${slug || id}`
 
   // Check if user is trying to buy their own product
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
@@ -156,7 +162,7 @@ export function ProductCard({
     )}>
       {/* Hit Area for Nav - Prefetch first 4 products for instant navigation */}
       <Link 
-        href={`/product/${id}`} 
+        href={productUrl} 
         className="absolute inset-0 z-10" 
         aria-label={`View ${title}`}
         prefetch={index < 4}

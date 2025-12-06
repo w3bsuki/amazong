@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
@@ -8,6 +8,18 @@ import { ProductCard } from "@/components/product-card"
 import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
 import { ReviewsSection } from "@/components/reviews-section"
 import { ProductBreadcrumb } from "@/components/product-breadcrumb"
+
+// UUID regex pattern to detect if the id is a full UUID
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+// Helper function to extract product ID from slug
+// Slug format: "product-name-12345678" where last 8 chars are the short UUID
+function extractProductId(slugOrId: string): { isFullUUID: boolean; idOrSlug: string } {
+  if (UUID_REGEX.test(slugOrId)) {
+    return { isFullUUID: true, idOrSlug: slugOrId }
+  }
+  return { isFullUUID: false, idOrSlug: slugOrId }
+}
 
 // Helper function to get delivery date
 function getDeliveryDate(locale: string): string {
@@ -27,6 +39,46 @@ interface ProductPageProps {
   }>
 }
 
+// Helper to fetch product by UUID or slug
+async function fetchProductByIdOrSlug(supabase: Awaited<ReturnType<typeof createClient>>, idOrSlug: string) {
+  if (!supabase) return null
+  
+  const { isFullUUID } = extractProductId(idOrSlug)
+  
+  if (isFullUUID) {
+    // Direct UUID lookup
+    const { data } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", idOrSlug)
+      .single()
+    return data
+  } else {
+    // Slug lookup - try exact match first
+    const { data: bySlug } = await supabase
+      .from("products")
+      .select("*")
+      .eq("slug", idOrSlug)
+      .single()
+    
+    if (bySlug) return bySlug
+    
+    // Try to extract the short ID from the end of the slug (last 8 chars after the last hyphen)
+    const parts = idOrSlug.split('-')
+    const shortId = parts[parts.length - 1]
+    if (shortId && shortId.length === 8) {
+      const { data: byShortId } = await supabase
+        .from("products")
+        .select("*")
+        .ilike("id", `${shortId}%`)
+        .single()
+      return byShortId
+    }
+    
+    return null
+  }
+}
+
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { id, locale } = await params
   const supabase = await createClient()
@@ -37,11 +89,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
   }
 
-  const { data: product } = await supabase
-    .from("products")
-    .select("title, description, images")
-    .eq("id", id)
-    .single()
+  const product = await fetchProductByIdOrSlug(supabase, id)
 
   if (!product) {
     return {
@@ -49,13 +97,21 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
   }
 
+  // SEO: Use canonical URL with slug
+  const canonicalSlug = product.slug || product.id
+  const canonicalUrl = `/${locale}/product/${canonicalSlug}`
+
   return {
     title: product.title,
     description: product.description?.slice(0, 160) || `Shop ${product.title}`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: product.title,
       description: product.description?.slice(0, 160),
       images: product.images?.[0] ? [product.images[0]] : [],
+      url: canonicalUrl,
     },
   }
 }
@@ -80,8 +136,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // Format delivery date
   const formattedDeliveryDate = getDeliveryDate(locale)
 
-  // Fetch product with category and seller
-  const { data: product, error } = await supabase
+  // Determine if we're looking up by UUID or slug
+  const { isFullUUID } = extractProductId(id)
+  
+  // Build query - can lookup by id or slug
+  let query = supabase
     .from("products")
     .select(`
       *,
@@ -98,11 +157,53 @@ export default async function ProductPage({ params }: ProductPageProps) {
         created_at
       )
     `)
-    .eq("id", id)
-    .single()
+  
+  if (isFullUUID) {
+    query = query.eq("id", id)
+  } else {
+    // Try slug first, then short ID
+    query = query.eq("slug", id)
+  }
+
+  let { data: product, error } = await query.single()
+  
+  // If slug lookup failed, try short ID extraction
+  if (!product && !isFullUUID) {
+    const parts = id.split('-')
+    const shortId = parts[parts.length - 1]
+    if (shortId && shortId.length === 8) {
+      const { data: byShortId } = await supabase
+        .from("products")
+        .select(`
+          *,
+          categories (
+            id,
+            name,
+            slug,
+            parent_id
+          ),
+          sellers (
+            id,
+            store_name,
+            verified,
+            created_at
+          )
+        `)
+        .ilike("id", `${shortId}%`)
+        .single()
+      product = byShortId
+      error = null
+    }
+  }
 
   if (error || !product) {
     notFound()
+  }
+
+  // SEO: Redirect from UUID to SEO-friendly slug URL (301 redirect)
+  // This helps Google consolidate page authority to the canonical URL
+  if (isFullUUID && product.slug) {
+    redirect(`/${locale}/product/${product.slug}`)
   }
 
   const category = product.categories
