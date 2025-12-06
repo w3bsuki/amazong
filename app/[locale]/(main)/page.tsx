@@ -398,15 +398,15 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <CategoryCircles locale={locale} />
         </div>
 
-        {/* 2. Category Grid - Static, no data fetching */}
-        <CategoryCards locale={locale} t={(key) => t(key)} />
-
-        {/* 3. Trending Products - Async with Suspense */}
+        {/* 2. Trending/Popular Products - Async with Suspense (first product section) */}
         <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
           <Suspense fallback={<TrendingSectionSkeleton />}>
             <TrendingSection />
           </Suspense>
         </div>
+
+        {/* 3. Category Grid - Static, no data fetching */}
+        <CategoryCards locale={locale} t={(key) => t(key)} />
 
         {/* 4. Featured/Recommended Products - Async with Suspense */}
         <div className="mt-4 sm:mt-6 mx-1 sm:mx-0">
