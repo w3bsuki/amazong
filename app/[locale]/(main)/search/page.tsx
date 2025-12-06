@@ -61,6 +61,8 @@ interface Product {
   image_url?: string | null
   tags?: string[]
   slug?: string | null
+  store_slug?: string | null
+  sellers?: { store_slug: string | null } | null
 }
 
 // Helper function to search products with ILIKE fallback and pagination
@@ -85,7 +87,7 @@ async function searchProducts(
   
   // Build base query with count
   let countQuery = supabase.from("products").select("*", { count: "exact", head: true })
-  let dbQuery = supabase.from("products").select("*")
+  let dbQuery = supabase.from("products").select("*, sellers(store_slug)")
   
   // Apply shipping zone filter if provided
   if (shippingFilter) {
@@ -387,6 +389,7 @@ export default async function SearchPage({
                 tags={product.tags || []}
                 variant="grid"
                 slug={product.slug}
+                storeSlug={product.sellers?.store_slug}
               />
             ))}
           </div>

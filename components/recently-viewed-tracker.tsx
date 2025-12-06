@@ -10,6 +10,7 @@ interface RecentlyViewedTrackerProps {
     price: number
     image: string | null
     slug: string
+    storeSlug?: string | null
   }
 }
 

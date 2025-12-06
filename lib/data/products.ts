@@ -23,6 +23,7 @@ export interface Product {
   ships_to_worldwide?: boolean | null
   category_slug?: string | null
   slug?: string | null
+  store_slug?: string | null
 }
 
 /** UI-ready product format */
@@ -37,6 +38,7 @@ export interface UIProduct {
   isPrime: boolean
   categorySlug?: string
   slug?: string | null
+  storeSlug?: string | null
 }
 
 // =============================================================================
@@ -62,7 +64,7 @@ export async function getProducts(type: QueryType, limit = 36): Promise<Product[
   // If category info is needed, fetch it separately or ensure the FK exists.
   let query = supabase
     .from('products')
-    .select('id, title, price, list_price, rating, review_count, images, is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_europe, ships_to_usa, ships_to_worldwide, category_id, slug')
+    .select('id, title, price, list_price, rating, review_count, images, is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_europe, ships_to_usa, ships_to_worldwide, category_id, slug, sellers(store_slug)')
 
   switch (type) {
     case 'deals':
@@ -93,7 +95,9 @@ export async function getProducts(type: QueryType, limit = 36): Promise<Product[
     .map((p: any) => ({
       ...p,
       // category_id is selected directly, category_slug not available without FK
-      category_slug: undefined
+      category_slug: undefined,
+      // Extract store_slug from sellers join
+      store_slug: p.sellers?.store_slug ?? null
     }))
     .filter((p: Product) => 
       type === 'deals' || type === 'promo' 
@@ -156,6 +160,7 @@ export function toUI(p: Product): UIProduct {
     isPrime: p.is_prime ?? false,
     categorySlug: p.category_slug ?? undefined,
     slug: p.slug,
+    storeSlug: p.store_slug,
   }
 }
 

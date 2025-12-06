@@ -16,6 +16,8 @@ interface Product {
   rating?: number
   reviews?: number
   isPrime?: boolean
+  slug?: string | null
+  storeSlug?: string | null
 }
 
 interface TabCategory {
@@ -33,9 +35,14 @@ interface TabbedProductSectionProps {
 }
 
 // Compact Product Card for carousels - Target style
-function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0 }: Product) {
+function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0, slug, storeSlug }: Product) {
   const locale = useLocale()
   const t = useTranslations('Product')
+  
+  // Use store slug + product slug for SEO-friendly URLs
+  const productUrl = storeSlug && slug 
+    ? `/product/${storeSlug}/${slug}` 
+    : `/product/${slug || id}`
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale, {
@@ -49,7 +56,7 @@ function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0
   const formattedDate = new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'numeric', day: 'numeric' }).format(deliveryDate)
 
   return (
-    <Link href={`/product/${id}`} className="block h-full group">
+    <Link href={productUrl} className="block h-full group">
       <div className="bg-card rounded-md overflow-hidden h-full flex flex-col border border-border">
         {/* Square Image Container - Fixed aspect ratio */}
         <div className="relative w-full aspect-square bg-secondary p-3 flex items-center justify-center overflow-hidden">

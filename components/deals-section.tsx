@@ -17,6 +17,7 @@ interface Deal {
   rating?: number
   reviews?: number
   slug?: string | null
+  storeSlug?: string | null
 }
 
 interface DealCategory {
@@ -33,12 +34,14 @@ interface DealsSectionProps {
 }
 
 // Compact Deal Card for carousels - Target style with discount
-function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, reviews = 0, slug }: Deal) {
+function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, reviews = 0, slug, storeSlug }: Deal) {
   const locale = useLocale()
   const t = useTranslations('Product')
   
-  // Use slug for SEO-friendly URLs, fallback to id
-  const productUrl = `/product/${slug || id}`
+  // Use store slug + product slug for SEO-friendly URLs
+  const productUrl = storeSlug && slug 
+    ? `/product/${storeSlug}/${slug}` 
+    : `/product/${slug || id}`
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale, {

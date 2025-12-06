@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
@@ -8,18 +8,6 @@ import { ProductCard } from "@/components/product-card"
 import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
 import { ReviewsSection } from "@/components/reviews-section"
 import { ProductBreadcrumb } from "@/components/product-breadcrumb"
-
-// UUID regex pattern to detect if the id is a full UUID
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-// Helper function to extract product ID from slug
-// Slug format: "product-name-12345678" where last 8 chars are the short UUID
-function extractProductId(slugOrId: string): { isFullUUID: boolean; idOrSlug: string } {
-  if (UUID_REGEX.test(slugOrId)) {
-    return { isFullUUID: true, idOrSlug: slugOrId }
-  }
-  return { isFullUUID: false, idOrSlug: slugOrId }
-}
 
 // Helper function to get delivery date
 function getDeliveryDate(locale: string): string {
@@ -34,53 +22,49 @@ function getDeliveryDate(locale: string): string {
 
 interface ProductPageProps {
   params: Promise<{
-    id: string
+    store: string
+    slug: string
     locale: string
   }>
 }
 
-// Helper to fetch product by UUID or slug
-async function fetchProductByIdOrSlug(supabase: Awaited<ReturnType<typeof createClient>>, idOrSlug: string) {
+// Helper to fetch product by store_slug + product_slug
+async function fetchProductByStoreAndSlug(
+  supabase: Awaited<ReturnType<typeof createClient>>, 
+  storeSlug: string, 
+  productSlug: string
+) {
   if (!supabase) return null
   
-  const { isFullUUID } = extractProductId(idOrSlug)
+  // Join products with sellers to match both slugs
+  const { data, error } = await supabase
+    .from("products")
+    .select(`
+      *,
+      categories (
+        id,
+        name,
+        slug,
+        parent_id
+      ),
+      sellers!inner (
+        id,
+        store_name,
+        store_slug,
+        verified,
+        created_at
+      )
+    `)
+    .eq("slug", productSlug)
+    .eq("sellers.store_slug", storeSlug)
+    .single()
   
-  if (isFullUUID) {
-    // Direct UUID lookup
-    const { data } = await supabase
-      .from("products")
-      .select("*")
-      .eq("id", idOrSlug)
-      .single()
-    return data
-  } else {
-    // Slug lookup - try exact match first
-    const { data: bySlug } = await supabase
-      .from("products")
-      .select("*")
-      .eq("slug", idOrSlug)
-      .single()
-    
-    if (bySlug) return bySlug
-    
-    // Try to extract the short ID from the end of the slug (last 8 chars after the last hyphen)
-    const parts = idOrSlug.split('-')
-    const shortId = parts[parts.length - 1]
-    if (shortId && shortId.length === 8) {
-      const { data: byShortId } = await supabase
-        .from("products")
-        .select("*")
-        .ilike("id", `${shortId}%`)
-        .single()
-      return byShortId
-    }
-    
-    return null
-  }
+  if (error || !data) return null
+  return data
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { id, locale } = await params
+  const { store, slug, locale } = await params
   const supabase = await createClient()
 
   if (!supabase) {
@@ -89,7 +73,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
   }
 
-  const product = await fetchProductByIdOrSlug(supabase, id)
+  const product = await fetchProductByStoreAndSlug(supabase, store, slug)
 
   if (!product) {
     return {
@@ -97,12 +81,11 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
   }
 
-  // SEO: Use canonical URL with slug
-  const canonicalSlug = product.slug || product.id
-  const canonicalUrl = `/${locale}/product/${canonicalSlug}`
+  // SEO: Canonical URL with store and product slug
+  const canonicalUrl = `/${locale}/product/${store}/${slug}`
 
   return {
-    title: product.title,
+    title: `${product.title} | ${product.sellers?.store_name || 'Shop'}`,
     description: product.description?.slice(0, 160) || `Shop ${product.title}`,
     alternates: {
       canonical: canonicalUrl,
@@ -118,7 +101,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   await connection()
-  const { id, locale } = await params
+  const { store, slug, locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("Product")
   const supabase = await createClient()
@@ -136,81 +119,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // Format delivery date
   const formattedDeliveryDate = getDeliveryDate(locale)
 
-  // Determine if we're looking up by UUID or slug
-  const { isFullUUID } = extractProductId(id)
-  
-  // Build query - can lookup by id or slug
-  let query = supabase
-    .from("products")
-    .select(`
-      *,
-      categories (
-        id,
-        name,
-        slug,
-        parent_id
-      ),
-      sellers (
-        id,
-        store_name,
-        store_slug,
-        verified,
-        created_at
-      )
-    `)
-  
-  if (isFullUUID) {
-    query = query.eq("id", id)
-  } else {
-    // Try slug first, then short ID
-    query = query.eq("slug", id)
-  }
+  // Fetch product by store_slug + product_slug
+  const product = await fetchProductByStoreAndSlug(supabase, store, slug)
 
-  let { data: product, error } = await query.single()
-  
-  // If slug lookup failed, try short ID extraction
-  if (!product && !isFullUUID) {
-    const parts = id.split('-')
-    const shortId = parts[parts.length - 1]
-    if (shortId && shortId.length === 8) {
-      const { data: byShortId } = await supabase
-        .from("products")
-        .select(`
-          *,
-          categories (
-            id,
-            name,
-            slug,
-            parent_id
-          ),
-          sellers (
-            id,
-            store_name,
-            store_slug,
-            verified,
-            created_at
-          )
-        `)
-        .ilike("id", `${shortId}%`)
-        .single()
-      product = byShortId
-      error = null
-    }
-  }
-
-  if (error || !product) {
+  if (!product) {
     notFound()
   }
 
   const category = product.categories
   const seller = product.sellers
-
-  // SEO: Redirect to SEO-friendly URL with store slug (301 redirect)
-  // All old URLs (UUID, product-slug only) redirect to /product/{storeSlug}/{productSlug}
-  // This helps Google consolidate page authority to the canonical URL
-  if (product.slug && seller?.store_slug) {
-    redirect(`/${locale}/product/${seller.store_slug}/${product.slug}`)
-  }
 
   // Fetch parent category if exists
   let parentCategory = null
@@ -223,11 +140,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
     parentCategory = parent
   }
 
-  // Fetch related products (with seller's store_slug for URLs)
+  // Fetch related products from the same seller (with their store_slug)
   const { data: relatedProducts } = await supabase
     .from("products")
-    .select("*, sellers(store_slug)")
-    .neq("id", id)
+    .select(`
+      *,
+      sellers (
+        store_slug
+      )
+    `)
+    .neq("id", product.id)
     .limit(6)
 
   // Prepare translations for client component
@@ -245,9 +167,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ratings: t("ratings", { count: product.reviews_count || 0 }),
   }
 
-  // Breadcrumb items
-  // Breadcrumb data is now built inline in the JSX
-
   return (
     <div className="min-h-screen bg-white dark:bg-background pb-24 lg:pb-10">
       {/* Track this product as recently viewed */}
@@ -257,7 +176,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           title: product.title,
           price: product.price,
           image: product.images?.[0] || product.image || null,
-          slug: product.id,
+          slug: product.slug,
+          storeSlug: seller?.store_slug,
         }}
       />
 

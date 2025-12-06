@@ -32,6 +32,8 @@ interface Product {
   review_count: number | null
   category_id: string | null
   image_url?: string | null
+  slug?: string | null
+  sellers?: { store_slug: string | null } | null
 }
 
 // Generate static params for all categories (for SSG)
@@ -101,7 +103,7 @@ async function searchProducts(
   
   // Build count query
   let countQuery = supabase.from("products").select("*", { count: "exact", head: true })
-  let dbQuery = supabase.from("products").select("*")
+  let dbQuery = supabase.from("products").select("*, sellers(store_slug)")
   
   if (categoryIds.length > 0) {
     countQuery = countQuery.in("category_id", categoryIds)
@@ -349,6 +351,7 @@ export default async function CategoryPage({
                 tags={product.tags || []}
                 variant="grid"
                 slug={product.slug}
+                storeSlug={product.sellers?.store_slug}
               />
             ))}
           </div>

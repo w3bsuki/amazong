@@ -19,6 +19,7 @@ interface Product {
   isPrime?: boolean
   createdAt?: string
   slug?: string | null
+  storeSlug?: string | null
 }
 
 interface TrendingProductsSectionProps {
@@ -39,13 +40,16 @@ function CompactProductCard({
   image, 
   rating = 0, 
   reviews = 0,
-  slug
+  slug,
+  storeSlug
 }: Product) {
   const locale = useLocale()
   const t = useTranslations('Product')
   
-  // Use slug for SEO-friendly URLs, fallback to id
-  const productUrl = `/product/${slug || id}`
+  // Use store slug + product slug for SEO-friendly URLs
+  const productUrl = storeSlug && slug 
+    ? `/product/${storeSlug}/${slug}` 
+    : `/product/${slug || id}`
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale, {

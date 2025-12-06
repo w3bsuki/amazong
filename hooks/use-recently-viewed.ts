@@ -8,6 +8,7 @@ export interface RecentlyViewedProduct {
   price: number
   image: string | null
   slug: string
+  storeSlug?: string | null
   viewedAt: number
 }
 

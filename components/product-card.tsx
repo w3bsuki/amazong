@@ -55,6 +55,8 @@ interface ProductCardProps {
   buyerRegion?: ShippingRegion
   /** SEO-friendly slug for the product URL (preferred over id) */
   slug?: string | null
+  /** Store slug for the seller (for SEO-friendly URLs) */
+  storeSlug?: string | null
 }
 
 export function ProductCard({ 
@@ -74,15 +76,19 @@ export function ProductCard({
   currentUserId,
   sellerCountryCode = 'BG',
   buyerRegion = 'BG',
-  slug
+  slug,
+  storeSlug
 }: ProductCardProps) {
   const { addToCart } = useCart()
   const t = useTranslations('Product')
   const tCart = useTranslations('Cart')
   const locale = useLocale()
   
-  // Use slug for SEO-friendly URLs, fallback to id
-  const productUrl = `/product/${slug || id}`
+  // Use store slug + product slug for SEO-friendly URLs
+  // Format: /product/{storeSlug}/{productSlug} or fallback to /product/{id}
+  const productUrl = storeSlug && slug 
+    ? `/product/${storeSlug}/${slug}` 
+    : `/product/${slug || id}`
 
   // Check if user is trying to buy their own product
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
