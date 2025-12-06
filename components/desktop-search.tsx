@@ -80,7 +80,7 @@ export function DesktopSearch() {
     inputRef.current?.focus()
   }, [setQuery])
 
-  // Measure form width for popover
+  // Measure form width for popover to match search bar width
   useEffect(() => {
     const measureWidth = () => {
       if (formRef.current) {
@@ -91,6 +91,8 @@ export function DesktopSearch() {
     window.addEventListener("resize", measureWidth)
     return () => window.removeEventListener("resize", measureWidth)
   }, [])
+
+
 
   return (
     <div className="w-full h-11">
