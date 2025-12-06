@@ -9,7 +9,8 @@ import { FilterChips } from "@/components/filter-chips"
 import { SortSelect } from "@/components/sort-select"
 import { SearchPagination } from "@/components/search-pagination"
 import { Suspense } from "react"
-import { getLocale } from "next-intl/server"
+import { setRequestLocale } from "next-intl/server"
+import { connection } from "next/server"
 import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { getShippingFilter, parseShippingRegion } from '@/lib/shipping'
@@ -158,8 +159,10 @@ async function searchProducts(
 }
 
 export default async function SearchPage({
+  params,
   searchParams: searchParamsPromise,
 }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{
     q?: string
     category?: string
@@ -176,6 +179,9 @@ export default async function SearchPage({
     page?: string
   }>
 }) {
+  await connection()
+  const { locale } = await params
+  setRequestLocale(locale)
   const searchParams = await searchParamsPromise
   const supabase = await createClient()
   const query = searchParams.q || ""
@@ -267,8 +273,6 @@ export default async function SearchPage({
     // This would ideally come from a brands table, but for now we can extract from products
     // brands = [...new Set(products.map(p => p.brand).filter(Boolean))]
   }
-
-  const locale = await getLocale()
 
   return (
     <div className="min-h-screen bg-background">

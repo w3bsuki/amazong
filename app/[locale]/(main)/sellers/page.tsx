@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
-import { getLocale } from "next-intl/server"
+import { setRequestLocale } from "next-intl/server"
+import { connection } from "next/server"
 import { AppBreadcrumb } from "@/components/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -22,9 +23,15 @@ interface Seller {
   avatar_url: string | null
 }
 
-export default async function SellersPage() {
+export default async function SellersPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  await connection()
+  const { locale } = await params
+  setRequestLocale(locale)
   const supabase = await createClient()
-  const locale = await getLocale()
   
   // Fetch sellers with product count and average rating
   let sellers: any[] = []

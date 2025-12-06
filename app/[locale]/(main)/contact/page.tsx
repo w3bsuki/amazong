@@ -1,4 +1,5 @@
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { connection } from "next/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -23,7 +24,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function ContactPage() {
+export default async function ContactPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  await connection()
+  const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations('Contact')
   
   const quickHelp = [

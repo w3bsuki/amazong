@@ -8,7 +8,8 @@ import { SortSelect } from "@/components/sort-select"
 import { SearchPagination } from "@/components/search-pagination"
 import { SearchFilters } from "@/components/search-filters"
 import { Suspense } from "react"
-import { getLocale } from "next-intl/server"
+import { setRequestLocale } from "next-intl/server"
+import { connection } from "next/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
 import { Link } from "@/i18n/routing"
@@ -185,13 +186,14 @@ export default async function CategoryPage({
     page?: string
   }>
 }) {
+  await connection()
   const params = await paramsPromise
   const searchParams = await searchParamsPromise
-  const { slug } = params
+  const { slug, locale } = params
+  setRequestLocale(locale)
   const currentPage = Math.max(1, parseInt(searchParams.page || "1", 10))
   
   const supabase = await createClient()
-  const locale = await getLocale()
   
   // Get shipping zone from cookie for filtering
   const cookieStore = await cookies()
