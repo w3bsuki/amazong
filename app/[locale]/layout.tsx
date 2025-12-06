@@ -5,6 +5,7 @@ import { routing } from '@/i18n/routing';
 import { Inter } from "next/font/google";
 import "../globals.css";
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 
 // Generate static params for all supported locales
 // Required in Next.js 16+ for dynamic route segments
@@ -96,7 +97,9 @@ export default async function LocaleLayout({
             </head>
             <body className={`${inter.className} ${inter.variable} bg-background min-h-screen`}>
                 <NextIntlClientProvider messages={messages}>
-                    <AuthStateListener />
+                    <Suspense fallback={null}>
+                        <AuthStateListener />
+                    </Suspense>
                     <CartProvider>
                         <WishlistProvider>
                             {children}
