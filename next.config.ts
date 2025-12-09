@@ -79,14 +79,12 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Server Actions configuration
-  serverActions: {
-    // Allow up to 10MB for image uploads
-    bodySizeLimit: '10mb',
-  },
-
   // Experimental features for better performance
   experimental: {
+    // Server Actions configuration - Allow up to 10MB for image uploads
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
     // Enable optimistic updates for faster navigation
     optimisticClientCache: true,
     // Optimize package imports for smaller bundles
