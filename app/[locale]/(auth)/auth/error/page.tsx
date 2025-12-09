@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { getTranslations } from "next-intl/server"
 import { WarningCircle, ArrowLeft } from "@phosphor-icons/react/dist/ssr"
@@ -18,76 +17,97 @@ export default async function AuthErrorPage({
       case 'invalid_request': return t('errorInvalidRequest')
       case 'unauthorized_client': return t('errorUnauthorized')
       case 'server_error': return t('errorServer')
+      case 'verification_failed': return t('errorVerificationFailed') || 'Email verification failed. The link may have expired.'
+      case 'invalid_code': return t('errorInvalidCode') || 'Invalid verification code. Please try signing up again.'
       default: return t('errorGeneric')
     }
   }
 
   return (
-    <div className="min-h-svh flex flex-col bg-muted/30">
-      {/* Header */}
-      <header className="py-6 flex justify-center">
-        <Link href="/" className="text-heading-2 tracking-tight hover:opacity-70 transition-opacity">
-          AMZN
-        </Link>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 flex items-start justify-center px-4 pb-12">
-        <div className="w-full max-w-[350px]">
-          <div className="bg-card border border-border rounded-sm p-6 shadow-sm text-center">
+    <div className="min-h-svh flex items-center justify-center bg-gray-50 p-4">
+      <div className="w-full max-w-sm bg-white rounded-xl border border-gray-200 relative">
+        <div className="p-6">
+          {/* Logo & Header */}
+          <div className="flex flex-col items-center mb-6">
+            <Link href="/" className="mb-4 hover:opacity-80 transition-opacity">
+              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="8" fill="#3B82F6"/>
+                <path d="M14 24C14 18.477 18.477 14 24 14C29.523 14 34 18.477 34 24C34 29.523 29.523 34 24 34" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+                <path d="M24 34C24 31.239 21.761 29 19 29C16.239 29 14 31.239 14 34" stroke="white" strokeWidth="3" strokeLinecap="round"/>
+              </svg>
+            </Link>
+            
             {/* Error Icon */}
-            <div className="mx-auto size-14 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
-              <WarningCircle className="size-8 text-destructive" weight="fill" />
+            <div className="size-14 bg-red-100 rounded-full flex items-center justify-center mb-3">
+              <WarningCircle className="size-8 text-red-600" weight="fill" />
             </div>
             
-            <h1 className="text-heading-3 mb-2">{t('errorTitle')}</h1>
-            <p className="text-body-sm text-muted-foreground mb-6">{t('errorSubtitle')}</p>
-
-            {/* Error Details */}
-            <div className="p-4 bg-destructive/5 border border-destructive/20 rounded-sm text-left mb-6">
-              <p className="text-caption text-destructive">
-                {getErrorMessage(params.error, params.error_description)}
-              </p>
-              {params.error && (
-                <p className="text-meta text-muted-foreground mt-2">
-                  {t('errorCode')}: {params.error}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <Link href="/auth/login" className="block">
-                <Button className="w-full h-9 text-body-sm font-medium">
-                  {t('tryAgain')}
-                </Button>
-              </Link>
-              <Link href="/" className="block">
-                <Button variant="outline" className="w-full h-9 text-body-sm font-medium">
-                  <ArrowLeft className="size-4 mr-1.5" />
-                  {t('backToHome')}
-                </Button>
-              </Link>
-            </div>
-
-            <p className="text-meta text-muted-foreground mt-4">
-              {t('needHelp')}{" "}
-              <Link href="/help" className="text-primary hover:underline">{t('contactSupport')}</Link>
+            <h1 className="text-xl font-semibold text-gray-900">
+              {t('errorTitle')}
+            </h1>
+            <p className="text-sm text-gray-500 mt-1 text-center">
+              {t('errorSubtitle')}
             </p>
           </div>
 
-          {/* Footer */}
-          <footer className="mt-6 text-center space-y-2">
-            <div className="flex justify-center gap-4 text-caption">
-              <Link href="/terms" className="text-primary hover:underline">{t('conditionsOfUse')}</Link>
-              <Link href="/privacy" className="text-primary hover:underline">{t('privacyNotice')}</Link>
-              <Link href="/help" className="text-primary hover:underline">{t('help')}</Link>
-            </div>
-            <p className="text-meta">
-              {t('copyright', { year: new Date().getFullYear() })}
+          {/* Error Details */}
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-left mb-6">
+            <p className="text-sm text-red-700">
+              {getErrorMessage(params.error, params.error_description)}
             </p>
-          </footer>
+            {params.error && (
+              <p className="text-xs text-gray-500 mt-2">
+                {t('errorCode')}: {params.error}
+              </p>
+            )}
+          </div>
+
+          {/* Buttons */}
+          <div className="space-y-3">
+            <Link href="/auth/login" className="block">
+              <button className="
+                w-full h-10 
+                bg-blue-600 hover:bg-blue-700
+                text-white text-sm font-medium rounded-lg 
+                transition-colors
+                flex items-center justify-center
+              ">
+                {t('tryAgain')}
+              </button>
+            </Link>
+            <Link href="/" className="block">
+              <button className="
+                w-full h-10 
+                bg-white border border-gray-300 
+                text-gray-700 text-sm font-medium rounded-lg 
+                hover:bg-gray-50
+                transition-colors 
+                flex items-center justify-center gap-1.5
+              ">
+                <ArrowLeft className="size-4" />
+                {t('backToHome')}
+              </button>
+            </Link>
+          </div>
+
+          <p className="text-xs text-center text-gray-500 mt-4">
+            {t('needHelp')}{" "}
+            <Link href="/help" className="text-blue-600 hover:underline">{t('contactSupport')}</Link>
+          </p>
         </div>
-      </main>
+
+        {/* Footer */}
+        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
+          <div className="flex justify-center gap-4 text-xs text-gray-500">
+            <Link href="/terms" className="hover:text-blue-600 transition-colors">{t('conditionsOfUse')}</Link>
+            <Link href="/privacy" className="hover:text-blue-600 transition-colors">{t('privacyNotice')}</Link>
+            <Link href="/help" className="hover:text-blue-600 transition-colors">{t('help')}</Link>
+          </div>
+          <p className="text-xs text-center text-gray-400 mt-2">
+            {t('copyright', { year: new Date().getFullYear() })}
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
