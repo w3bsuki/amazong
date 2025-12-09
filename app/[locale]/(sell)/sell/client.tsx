@@ -46,7 +46,7 @@ export function SellPageClient({
 
     const supabase = createClient();
     
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: string, session: { user?: { id: string; email?: string } } | null) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser ? { id: currentUser.id, email: currentUser.email } : null);
       
