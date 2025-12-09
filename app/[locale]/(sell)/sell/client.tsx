@@ -25,11 +25,16 @@ interface SellPageClientProps {
 export function SellPageClient({ 
   initialUser, 
   initialSeller, 
-  categories: _categories // Categories now fetched dynamically in SellForm
+  categories // Pre-fetched from server
 }: SellPageClientProps) {
   const [user, setUser] = useState(initialUser);
   const [seller, setSeller] = useState(initialSeller);
   const [isAuthChecking, setIsAuthChecking] = useState(!initialUser);
+  
+  // Get locale and mobile state at top level (not conditionally)
+  const params = useParams();
+  const locale = typeof params?.locale === "string" ? params.locale : "en";
+  const isMobile = useIsMobile();
 
   // Listen for auth state changes (for client-side navigation)
   useEffect(() => {
@@ -41,8 +46,7 @@ export function SellPageClient({
 
     const supabase = createClient();
     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: any, session: any) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser ? { id: currentUser.id, email: currentUser.email } : null);
       
@@ -75,12 +79,12 @@ export function SellPageClient({
     };
   }, [initialUser, seller]);
 
-  // Loading state while checking auth - Full skeleton for better UX
+  // Loading state while checking auth
   if (isAuthChecking) {
     return <SellFormSkeleton />;
   }
 
-  // Not logged in - show sign in prompt (full height centered)
+  // Not logged in - show sign in prompt
   if (!user) {
     return (
       <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
@@ -92,7 +96,7 @@ export function SellPageClient({
     );
   }
 
-  // No store yet - show create store form (full height centered)
+  // No store yet - show create store form
   if (!seller) {
     return (
       <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
@@ -106,20 +110,15 @@ export function SellPageClient({
     );
   }
 
-  // Main listing form with error boundary
-  const params = useParams();
-  const locale = typeof params?.locale === "string" ? params.locale : "en";
-  const isMobile = useIsMobile();
-  
-  // Mobile: Use stepper wizard flow (professional, focused UX)
-  // Desktop: Use full form with sidebar (overview)
+  // Mobile: Use stepper wizard flow
+  // Desktop: Use full form with sidebar
   if (isMobile) {
     return (
       <SellErrorBoundary sellerId={seller.id}>
         <SellFormStepper 
           sellerId={seller.id}
           locale={locale}
-          categories={_categories}
+          categories={categories}
         />
       </SellErrorBoundary>
     );

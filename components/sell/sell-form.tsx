@@ -282,9 +282,9 @@ export function SellForm({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [_categoriesLoading, setCategoriesLoading] = useState(true);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSavedRef = useRef<string>("");
+  const draftRestoredRef = useRef(false);
   const isBg = locale === "bg";
 
   // Form setup
@@ -294,70 +294,100 @@ export function SellForm({
     mode: "onChange",
   });
 
-  // Watch form values
+  // Watch form values for progress calculation (this is fine - just for display)
   const formValues = form.watch();
   const progressData = calculateFormProgress(formValues);
   const progressPercent = progressData.percentage;
 
-  // Fetch categories from API
+  // Fetch categories from API - ONCE on mount
   useEffect(() => {
+    let cancelled = false;
     const fetchCategories = async () => {
-      setCategoriesLoading(true);
       try {
         const response = await fetch("/api/categories?children=true&depth=4");
         if (!response.ok) throw new Error("Failed to fetch categories");
         const data = await response.json();
-        setCategories(data.categories || []);
+        if (!cancelled) {
+          setCategories(data.categories || []);
+        }
       } catch (err) {
         console.error("Failed to fetch categories:", err);
-      } finally {
-        setCategoriesLoading(false);
       }
     };
     fetchCategories();
+    return () => { cancelled = true; };
   }, []);
 
-  // Track unsaved changes
+  // Load draft on mount - ONCE only
   useEffect(() => {
-    const currentJSON = JSON.stringify(formValues);
-    if (currentJSON !== lastSavedRef.current) {
-      setHasUnsavedChanges(true);
+    if (draftRestoredRef.current || existingProduct || !sellerId) return;
+    draftRestoredRef.current = true;
+    
+    try {
+      const savedDraft = localStorage.getItem(`sell-draft-${sellerId}`);
+      if (!savedDraft) return;
+      
+      const { data, savedAt } = JSON.parse(savedDraft);
+      const savedDate = new Date(savedAt);
+      const hoursSinceSave = (Date.now() - savedDate.getTime()) / (1000 * 60 * 60);
+      
+      if (hoursSinceSave < 24 && data) {
+        form.reset(data);
+        lastSavedRef.current = JSON.stringify(data);
+        toast.info(
+          isBg ? "Чернова възстановена" : "Draft restored",
+          { description: isBg ? "Продължете откъдето сте спрели" : "Continue where you left off" }
+        );
+      }
+    } catch {
+      // Silent fail
     }
-  }, [formValues]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sellerId]);
 
-  // Auto-save to localStorage with debounce
+  // Auto-save with subscription pattern (no infinite loops)
   useEffect(() => {
     if (!sellerId) return;
-    
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
 
-    saveTimeoutRef.current = setTimeout(() => {
-      const currentJSON = JSON.stringify(formValues);
-      if (currentJSON === lastSavedRef.current) return; // No changes
-
-      setIsSaving(true);
-      try {
-        localStorage.setItem(`sell-draft-${sellerId}`, JSON.stringify({
-          data: formValues,
-          savedAt: new Date().toISOString(),
-        }));
-        lastSavedRef.current = currentJSON;
-        setHasUnsavedChanges(false);
-        setAutoSaved(true);
-        setTimeout(() => setAutoSaved(false), 2000);
-      } catch {
-        console.error("Failed to auto-save");
-      } finally {
-        setIsSaving(false);
+    const subscription = form.watch((formData) => {
+      const currentJSON = JSON.stringify(formData);
+      
+      // Track unsaved changes
+      if (currentJSON !== lastSavedRef.current) {
+        setHasUnsavedChanges(true);
       }
-    }, 2000);
+      
+      // Debounced auto-save
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+
+      saveTimeoutRef.current = setTimeout(() => {
+        if (currentJSON === lastSavedRef.current) return;
+
+        setIsSaving(true);
+        try {
+          localStorage.setItem(`sell-draft-${sellerId}`, JSON.stringify({
+            data: formData,
+            savedAt: new Date().toISOString(),
+          }));
+          lastSavedRef.current = currentJSON;
+          setHasUnsavedChanges(false);
+          setAutoSaved(true);
+          setTimeout(() => setAutoSaved(false), 2000);
+        } catch {
+          // Ignore storage errors
+        } finally {
+          setIsSaving(false);
+        }
+      }, 2000);
+    });
 
     return () => {
+      subscription.unsubscribe();
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
     };
-  }, [formValues, sellerId]);
+  }, [sellerId, form]);
 
   // Manual save
   const handleSaveDraft = useCallback(() => {
@@ -365,9 +395,10 @@ export function SellForm({
     
     setIsSaving(true);
     try {
-      const currentJSON = JSON.stringify(formValues);
+      const currentData = form.getValues();
+      const currentJSON = JSON.stringify(currentData);
       localStorage.setItem(`sell-draft-${sellerId}`, JSON.stringify({
-        data: formValues,
+        data: currentData,
         savedAt: new Date().toISOString(),
       }));
       lastSavedRef.current = currentJSON;
@@ -380,33 +411,7 @@ export function SellForm({
     } finally {
       setIsSaving(false);
     }
-  }, [formValues, sellerId, isBg]);
-
-  // Load draft on mount
-  useEffect(() => {
-    if (existingProduct) return;
-    
-    const savedDraft = localStorage.getItem(`sell-draft-${sellerId}`);
-    if (savedDraft) {
-      try {
-        const { data, savedAt } = JSON.parse(savedDraft);
-        const savedDate = new Date(savedAt);
-        const hoursSinceSave = (Date.now() - savedDate.getTime()) / (1000 * 60 * 60);
-        
-        if (hoursSinceSave < 24 && data) {
-          form.reset(data);
-          lastSavedRef.current = JSON.stringify(data);
-          toast.info(
-            isBg ? "Чернова възстановена" : "Draft restored",
-            { description: isBg ? "Продължете откъдето сте спрели" : "Continue where you left off" }
-          );
-        }
-      } catch {
-        console.error("Failed to restore draft");
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sellerId, existingProduct]);
+  }, [sellerId, isBg, form]);
 
   // Form submission
   const onSubmit = useCallback((data: SellFormDataV4) => {

@@ -63,6 +63,9 @@ export function SellFormStepper({
   const [showSuccess, setShowSuccess] = useState(false);
   const [createdProductId, setCreatedProductId] = useState<string | null>(null);
   const isBg = locale === "bg";
+  
+  // Track if draft was already restored to prevent spam
+  const draftRestoredRef = useRef(false);
 
   // Form setup
   const form = useForm<SellFormDataV4>({
@@ -71,58 +74,64 @@ export function SellFormStepper({
     mode: "onChange",
   });
 
-  // Load draft on mount
+  // Load draft on mount - ONCE only
   useEffect(() => {
-    if (existingProduct) return;
+    // Skip if already restored, editing existing product, or no sellerId
+    if (draftRestoredRef.current || existingProduct || !sellerId) return;
+    draftRestoredRef.current = true;
     
-    const savedDraft = localStorage.getItem(`sell-draft-${sellerId}`);
-    if (savedDraft) {
-      try {
-        const { data, savedAt } = JSON.parse(savedDraft);
-        const savedDate = new Date(savedAt);
-        const hoursSinceSave = (Date.now() - savedDate.getTime()) / (1000 * 60 * 60);
-        
-        if (hoursSinceSave < 24 && data) {
-          form.reset(data);
-          toast.info(
-            isBg ? "Чернова възстановена" : "Draft restored",
-            { description: isBg ? "Продължете откъдето сте спрели" : "Continue where you left off" }
-          );
-        }
-      } catch {
-        console.error("Failed to restore draft");
+    try {
+      const savedDraft = localStorage.getItem(`sell-draft-${sellerId}`);
+      if (!savedDraft) return;
+      
+      const { data, savedAt } = JSON.parse(savedDraft);
+      const savedDate = new Date(savedAt);
+      const hoursSinceSave = (Date.now() - savedDate.getTime()) / (1000 * 60 * 60);
+      
+      if (hoursSinceSave < 24 && data) {
+        form.reset(data);
+        toast.info(
+          isBg ? "Чернова възстановена" : "Draft restored",
+          { description: isBg ? "Продължете откъдето сте спрели" : "Continue where you left off" }
+        );
       }
+    } catch {
+      // Silent fail - draft restore is not critical
     }
-  }, [sellerId, existingProduct, form, isBg]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sellerId]); // Only depend on sellerId - form.reset is stable, isBg doesn't affect logic
 
-  // Auto-save to localStorage
+  // Auto-save to localStorage with proper debounce (no infinite loop)
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const formValues = form.watch();
   
   useEffect(() => {
     if (!sellerId) return;
 
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current);
-    }
-
-    autoSaveTimeoutRef.current = setTimeout(() => {
-      try {
-        localStorage.setItem(`sell-draft-${sellerId}`, JSON.stringify({
-          data: formValues,
-          savedAt: new Date().toISOString(),
-        }));
-      } catch {
-        // Ignore storage errors
+    // Subscribe to form changes with a callback instead of watching all values
+    const subscription = form.watch((formData) => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
       }
-    }, 3000);
+
+      autoSaveTimeoutRef.current = setTimeout(() => {
+        try {
+          localStorage.setItem(`sell-draft-${sellerId}`, JSON.stringify({
+            data: formData,
+            savedAt: new Date().toISOString(),
+          }));
+        } catch {
+          // Ignore storage errors
+        }
+      }, 3000);
+    });
 
     return () => {
+      subscription.unsubscribe();
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [formValues, sellerId]);
+  }, [sellerId, form]);
 
   // Update step validity - create stable callbacks for each step
   const handleStep1Validity = useCallback((isValid: boolean) => {
