@@ -74,13 +74,10 @@ export async function POST(request: Request) {
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         )
 
-        // 3. Calculate boost expiration if listing is boosted (7 days by default)
-        const isBoosted = data.listingType === "boosted"
-        const boostExpiresAt = isBoosted 
-            ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() 
-            : null
+        // 3. Products are always created as normal - boosting requires Stripe payment
+        // The boost is applied via /api/boost/checkout -> /api/boost/webhook flow
 
-        // 4. Insert product with validated data
+        // 4. Insert product with validated data (always normal listing type)
         const { data: product, error } = await supabaseAdmin
             .from("products")
             .insert({
@@ -93,9 +90,9 @@ export async function POST(request: Request) {
                 tags: data.tags,
                 images: data.images.map((img) => img.url),
                 stock: data.stock,
-                listing_type: data.listingType,
-                is_boosted: isBoosted,
-                boost_expires_at: boostExpiresAt,
+                listing_type: "normal", // Always normal - boost applied after payment
+                is_boosted: false,
+                boost_expires_at: null,
             })
             .select()
             .single()
@@ -125,7 +122,7 @@ export async function POST(request: Request) {
             // Product was created, log error but don't fail
         }
 
-        // 7. Save product attributes (Item Specifics)
+        // 6. Save product attributes (Item Specifics)
         if (data.attributes && data.attributes.length > 0) {
             const attributeRecords = data.attributes.map(attr => ({
                 product_id: product.id,
@@ -145,19 +142,8 @@ export async function POST(request: Request) {
             }
         }
 
-        // 8. If boosted, create a listing_boost record for tracking
-        if (isBoosted) {
-            await supabaseAdmin
-                .from('listing_boosts')
-                .insert({
-                    product_id: product.id,
-                    seller_id: user.id,
-                    price_paid: 2.99, // Default boost price
-                    duration_days: 7,
-                    expires_at: boostExpiresAt,
-                    is_active: true
-                })
-        }
+        // Note: Boost is NO LONGER auto-created here
+        // User must complete Stripe checkout via /api/boost/checkout to activate boost
 
         return NextResponse.json({ success: true, product })
     } catch (error: unknown) {

@@ -40,6 +40,59 @@ export async function POST(req: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
 
+        // ============================================================
+        // HANDLE LISTING BOOST PAYMENTS (one-time payment)
+        // ============================================================
+        if (session.metadata?.type === 'listing_boost' && session.mode === 'payment') {
+          const sellerId = session.metadata.seller_id
+          const productId = session.metadata.product_id
+          const durationDays = parseInt(session.metadata.duration_days || '7')
+          const amountPaid = (session.amount_total || 0) / 100 // Convert from stotinki
+
+          if (sellerId && productId) {
+            // Calculate expiry date
+            const startsAt = new Date()
+            const expiresAt = new Date(startsAt.getTime() + durationDays * 24 * 60 * 60 * 1000)
+
+            // Create listing_boost record
+            const { error: boostError } = await supabase
+              .from('listing_boosts')
+              .insert({
+                product_id: productId,
+                seller_id: sellerId,
+                price_paid: amountPaid,
+                duration_days: durationDays,
+                starts_at: startsAt.toISOString(),
+                expires_at: expiresAt.toISOString(),
+                is_active: true,
+              })
+
+            if (boostError) {
+              console.error('Error creating listing boost:', boostError)
+            }
+
+            // Update product to mark as boosted
+            const { error: productError } = await supabase
+              .from('products')
+              .update({
+                is_boosted: true,
+                boost_expires_at: expiresAt.toISOString(),
+                listing_type: 'boosted',
+              })
+              .eq('id', productId)
+
+            if (productError) {
+              console.error('Error updating product boost status:', productError)
+            }
+
+            console.log(`✅ Boost activated for product ${productId}: ${durationDays} days, paid ${amountPaid} BGN`)
+          }
+          break
+        }
+
+        // ============================================================
+        // HANDLE SUBSCRIPTION PAYMENTS (recurring)
+        // ============================================================
         if (session.mode === 'subscription') {
           const sellerId = session.metadata?.seller_id
           const planTier = session.metadata?.plan_tier as 'premium' | 'business'

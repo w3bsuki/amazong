@@ -41,11 +41,26 @@
   --container-xs: 20rem;
 
   /* === TOUCH TARGETS (WCAG 2.1 AA) === */
+  /* --size-* tokens for reference */
   --size-touch-xs: 2.25rem;
   --size-touch-sm: 2.5rem;
   --size-touch-md: 2.75rem;
   --size-touch-lg: 3rem;
   --size-touch-xl: 3.5rem;
+
+  /* --spacing-touch-* tokens generate utility classes like h-touch, min-h-touch-lg, etc. */
+  --spacing-touch-xs: 2.25rem;   /* 36px */
+  --spacing-touch-sm: 2.5rem;    /* 40px */
+  --spacing-touch: 2.75rem;      /* 44px - WCAG AA minimum */
+  --spacing-touch-lg: 3rem;      /* 48px */
+  --spacing-touch-xl: 3.5rem;    /* 56px */
+
+  /* Form-specific spacing tokens - generates gap-form, p-section, etc. */
+  --spacing-form-sm: 0.75rem;    /* 12px */
+  --spacing-form: 1rem;          /* 16px */
+  --spacing-form-lg: 1.5rem;     /* 24px */
+  --spacing-section: 1.5rem;     /* 24px */
+  --spacing-section-lg: 2rem;    /* 32px */
 
   /* === SHADOWS (eBay-style: minimal/flat) === */
   --shadow-2xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
@@ -181,6 +196,20 @@
   /* Overlays */
   --color-overlay-dark: oklch(0 0 0 / 50%);
   --color-overlay-light: oklch(1 0 0 / 80%);
+
+  /* === FORM SECTION TOKENS (Sell page, etc.) === */
+  /* Clean, minimal form styling - no gradients */
+  --color-form-section-bg: oklch(1 0 0);
+  --color-form-section-border: oklch(0.92 0 0);
+  --color-form-input-bg: oklch(0.98 0 0);
+  --color-form-label: oklch(0.25 0 0);
+  --color-form-helper: oklch(0.55 0 0);
+  
+  /* Progress/Status colors */
+  --color-progress-bg: oklch(0.94 0 0);
+  --color-progress-fill: oklch(0.48 0.22 260);
+  --color-status-complete: oklch(0.55 0.18 145);
+  --color-status-pending: oklch(0.55 0 0);
 }
 
 /* ===== DARK MODE OVERRIDES ===== */
@@ -231,6 +260,15 @@
   --shadow-modal: 0 16px 48px 0 hsl(0 0% 0% / 0.35);
   --shadow-product: 0 2px 8px 0 hsl(0 0% 0% / 0.15);
   --shadow-product-hover: 0 8px 24px 0 hsl(0 0% 0% / 0.25);
+
+  /* Form section tokens (dark mode) */
+  --color-form-section-bg: oklch(0.22 0.02 250);
+  --color-form-section-border: oklch(0.35 0.02 250);
+  --color-form-input-bg: oklch(0.26 0.02 250);
+  --color-form-label: oklch(0.95 0 0);
+  --color-form-helper: oklch(0.70 0 0);
+  --color-progress-bg: oklch(0.30 0.02 250);
+  --color-progress-fill: oklch(0.60 0.16 250);
 }
 
 /* ===== BASE LAYER ===== */

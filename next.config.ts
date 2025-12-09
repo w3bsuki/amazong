@@ -79,6 +79,12 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  // Server Actions configuration
+  serverActions: {
+    // Allow up to 10MB for image uploads
+    bodySizeLimit: '10mb',
+  },
+
   // Experimental features for better performance
   experimental: {
     // Enable optimistic updates for faster navigation

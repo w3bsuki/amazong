@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { NextResponse } from "next/server"
+import { NextResponse, connection } from "next/server"
 
 // Type for the RPC return
 interface CategoryHierarchyRow {
@@ -92,6 +92,7 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
 }
 
 export async function GET(request: Request) {
+  await connection()
   try {
     const { searchParams } = new URL(request.url)
     const parentSlug = searchParams.get("parent")
@@ -166,22 +167,38 @@ export async function GET(request: Request) {
       console.log(`[API] Found ${l1Cats?.length || 0} L1 categories`)
 
       // Fetch L2 categories (grandchildren) if depth >= 2
+      // Batch in chunks of 50 to avoid header overflow with large IN clauses
       let l2Cats: typeof l1Cats = []
       if (depth >= 2 && l1Cats && l1Cats.length > 0) {
         const l1Ids = l1Cats.map(c => c.id)
-        const { data: l2Data, error: l2Error } = await supabase
-          .from("categories")
-          .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
-          .in("parent_id", l1Ids)
-          .lt("display_order", 9000)
-          .order("display_order", { ascending: true })
+        const BATCH_SIZE = 50
+        
+        // Process in batches
+        for (let i = 0; i < l1Ids.length; i += BATCH_SIZE) {
+          const batchIds = l1Ids.slice(i, i + BATCH_SIZE)
+          try {
+            const { data: l2Data, error: l2Error } = await supabase
+              .from("categories")
+              .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+              .in("parent_id", batchIds)
+              .lt("display_order", 9000)
+              .order("display_order", { ascending: true })
 
-        if (l2Error) {
-          console.error("L2 Categories Query Error:", l2Error)
-        } else {
-          l2Cats = l2Data || []
-          console.log(`[API] Found ${l2Cats.length} L2 categories`)
+            if (l2Error) {
+              console.error(`L2 Categories Query Error (batch ${i / BATCH_SIZE}):`, l2Error)
+            } else if (l2Data) {
+              l2Cats = [...l2Cats, ...l2Data]
+            }
+          } catch (err: any) {
+            console.error(`L2 Categories Batch Error (batch ${i / BATCH_SIZE}):`, {
+              message: err.message,
+              details: err.toString(),
+              hint: err.hint || '',
+              code: err.code || ''
+            })
+          }
         }
+        console.log(`[API] Found ${l2Cats.length} L2 categories (from ${Math.ceil(l1Ids.length / BATCH_SIZE)} batches)`)
       }
 
       // Combine all categories

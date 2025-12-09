@@ -255,6 +255,7 @@ export async function getSiblingCategories(parentId: string | null): Promise<Cat
   let query = supabase
     .from('categories')
     .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
+    .lt('display_order', 9999)
     .order('display_order', { ascending: true })
     .order('name', { ascending: true })
   
@@ -296,6 +297,7 @@ export async function getChildCategories(categoryId: string): Promise<Category[]
     .from('categories')
     .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
     .eq('parent_id', categoryId)
+    .lt('display_order', 9999)
     .order('display_order', { ascending: true })
     .order('name', { ascending: true })
   
@@ -342,26 +344,29 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
   
   // Fetch siblings, children, and attributes in parallel
   const [siblingsResult, childrenResult, attributesResult] = await Promise.all([
-    // Siblings (same parent)
+    // Siblings (same parent, exclude hidden)
     current.parent_id
       ? supabase
           .from('categories')
           .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
           .eq('parent_id', current.parent_id)
+          .lt('display_order', 9999)
           .order('display_order')
           .order('name')
       : supabase
           .from('categories')
           .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
           .is('parent_id', null)
+          .lt('display_order', 9999)
           .order('display_order')
           .order('name'),
     
-    // Children
+    // Children (exclude hidden categories with display_order >= 9999)
     supabase
       .from('categories')
       .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
       .eq('parent_id', current.id)
+      .lt('display_order', 9999)
       .order('display_order')
       .order('name'),
     
@@ -423,11 +428,12 @@ export async function getRootCategoriesWithChildren(): Promise<{ category: Categ
     return []
   }
   
-  // Get root categories
+  // Get root categories (exclude hidden ones with display_order >= 9999)
   const { data: rootCategories, error: rootError } = await supabase
     .from('categories')
     .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
     .is('parent_id', null)
+    .lt('display_order', 9999)
     .order('display_order')
     .order('name')
   
@@ -436,12 +442,13 @@ export async function getRootCategoriesWithChildren(): Promise<{ category: Categ
     return []
   }
   
-  // Get L1 categories for all roots in one query
+  // Get L1 categories for all roots in one query (exclude hidden)
   const rootIds = rootCategories.map(c => c.id)
   const { data: level1Cats, error: l1Error } = await supabase
     .from('categories')
     .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
     .in('parent_id', rootIds)
+    .lt('display_order', 9999)
     .order('display_order')
     .order('name')
   

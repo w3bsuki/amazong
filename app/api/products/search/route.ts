@@ -1,7 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import { connection } from "next/server"
 
 export async function GET(request: Request) {
+  await connection()
   try {
     const { searchParams } = new URL(request.url)
     const query = searchParams.get("q")?.trim()

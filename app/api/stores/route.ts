@@ -1,7 +1,6 @@
 
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
-import { cookies } from "next/headers"
 import { createClient as createServerClient } from "@/lib/supabase/server"
 
 export async function POST(request: Request) {
@@ -20,9 +19,11 @@ export async function POST(request: Request) {
         const body = await request.json()
         const { storeName, description } = body
 
-        if (!storeName) {
-            return NextResponse.json({ error: "Store name is required" }, { status: 400 })
+        if (!storeName || typeof storeName !== 'string' || storeName.trim().length < 2) {
+            return NextResponse.json({ error: "Store name must be at least 2 characters" }, { status: 400 })
         }
+
+        const trimmedName = storeName.trim()
 
         // 2. Use Service Role to bypass RLS for sellers table
         const supabaseAdmin = createClient(
@@ -30,7 +31,33 @@ export async function POST(request: Request) {
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         )
 
-        // 3. Ensure profile exists and has seller role
+        // 3. Check if user already has a store
+        const { data: existingSeller } = await supabaseAdmin
+            .from("sellers")
+            .select("id, store_name")
+            .eq("id", user.id)
+            .single()
+
+        if (existingSeller) {
+            return NextResponse.json({ 
+                error: `You already have a store: "${existingSeller.store_name}"` 
+            }, { status: 400 })
+        }
+
+        // 4. Check if store name is already taken
+        const { data: nameExists } = await supabaseAdmin
+            .from("sellers")
+            .select("id")
+            .ilike("store_name", trimmedName)
+            .single()
+
+        if (nameExists) {
+            return NextResponse.json({ 
+                error: `Store name "${trimmedName}" is already taken` 
+            }, { status: 400 })
+        }
+
+        // 5. Ensure profile exists and has seller role
         const { error: profileError } = await supabaseAdmin
             .from("profiles")
             .upsert({
@@ -44,25 +71,32 @@ export async function POST(request: Request) {
             throw profileError
         }
 
-        // 4. Create or update seller record
+        // 6. Create new seller record (INSERT, not UPSERT)
         const { data: seller, error: sellerError } = await supabaseAdmin
             .from("sellers")
-            .upsert({
+            .insert({
                 id: user.id,
-                store_name: storeName,
-                description: description
-            }, { onConflict: 'id' })
+                store_name: trimmedName,
+                description: description || null
+            })
             .select()
             .single()
 
         if (sellerError) {
             console.error("Seller Error:", sellerError)
+            // Handle unique constraint violation
+            if (sellerError.code === '23505') {
+                return NextResponse.json({ 
+                    error: "Store name is already taken" 
+                }, { status: 400 })
+            }
             throw sellerError
         }
 
         return NextResponse.json(seller)
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Store Creation Error:", error)
-        return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 })
+        const message = error instanceof Error ? error.message : "Internal Server Error"
+        return NextResponse.json({ error: message }, { status: 500 })
     }
 }
