@@ -63,18 +63,18 @@ export function CreateStoreForm({ onStoreCreated }: CreateStoreFormProps) {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center py-8 sm:py-12 px-4">
-      <Card className="max-w-lg w-full">
-        <CardContent className="p-6 sm:p-8">
-          {/* Header */}
+    <div className="w-full max-w-lg mx-auto py-6 sm:py-12 px-4">
+      <Card className="w-full shadow-lg border-border/50">
+        <CardContent className="p-5 sm:p-8">
+          {/* Header - Mobile optimized */}
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-sm bg-amber-500 mb-4">
-              <Sparkle weight="bold" className="w-8 h-8 text-white" />
+            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-amber-500 mb-4">
+              <Sparkle weight="bold" className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
             </div>
             <h1 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">
               Create Your Store
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
               Choose a unique name for your store. This will be visible to buyers.
             </p>
           </div>
@@ -139,17 +139,17 @@ export function CreateStoreForm({ onStoreCreated }: CreateStoreFormProps) {
             </form>
           </Form>
           
-          {/* Benefits list */}
-          <div className="mt-8 pt-6 border-t">
+          {/* Benefits list - Mobile friendly grid */}
+          <div className="mt-6 pt-6 border-t">
             <p className="text-xs text-muted-foreground text-center mb-4 uppercase tracking-wider">What you get</p>
-            <ul className="grid grid-cols-2 gap-3">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
               {[
                 "Unlimited listings",
                 "Secure payments",
                 "Analytics dashboard",
                 "Customer messaging",
               ].map((benefit) => (
-                <li key={benefit} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <li key={benefit} className="flex items-center gap-2.5 text-sm text-muted-foreground py-1">
                   <div className="size-5 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
                     <Check weight="bold" className="size-3 text-emerald-600" />
                   </div>

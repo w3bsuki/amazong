@@ -89,7 +89,7 @@ export function SellPageClient({
     return (
       <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
         <SellHeaderV3 />
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex flex-col justify-center overflow-y-auto">
           <SignInPrompt />
         </div>
       </div>
@@ -101,7 +101,7 @@ export function SellPageClient({
     return (
       <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
         <SellHeaderV3 user={{ email: user.email }} />
-        <div className="flex-1 flex items-center justify-center p-4">
+        <div className="flex-1 flex flex-col justify-center">
           <CreateStoreForm
             onStoreCreated={(newSeller) => setSeller(newSeller)}
           />

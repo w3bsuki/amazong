@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { SellPageClient } from "./client";
+import { unstable_cache } from "next/cache";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -20,158 +21,100 @@ interface CategoryNode {
   children: CategoryNode[];
 }
 
-// Fetch FULL category hierarchy (all levels) for the sell form
-// Uses level-by-level fetching to avoid pagination limits
-async function getCategories(): Promise<CategoryNode[]> {
-  try {
-    const supabase = await createClient();
-    if (!supabase) return [];
-    
-    // Fetch L0 (root) categories
-    const { data: rootCats, error: rootError } = await supabase
-      .from("categories")
-      .select("id, name, name_bg, slug, parent_id, display_order")
-      .is("parent_id", null)
-      .lt("display_order", 9000)
-      .order("display_order", { ascending: true });
+// Raw category type from database
+interface RawCategory {
+  id: string;
+  name: string;
+  name_bg: string | null;
+  slug: string;
+  parent_id: string | null;
+  display_order: number | null;
+}
 
-    if (rootError) {
-      console.error("[SellPage] Error fetching root categories:", rootError);
+// Build category tree from flat array
+function buildCategoryTree(categories: RawCategory[]): CategoryNode[] {
+  const categoryMap = new Map<string, CategoryNode>();
+  
+  // First pass: create all nodes
+  for (const cat of categories) {
+    categoryMap.set(cat.id, {
+      ...cat,
+      children: []
+    });
+  }
+  
+  // Second pass: build tree structure
+  const rootCategories: CategoryNode[] = [];
+  
+  for (const cat of categories) {
+    const node = categoryMap.get(cat.id)!;
+    
+    if (cat.parent_id && categoryMap.has(cat.parent_id)) {
+      categoryMap.get(cat.parent_id)!.children.push(node);
+    } else if (!cat.parent_id) {
+      rootCategories.push(node);
+    }
+  }
+  
+  // Sort children recursively by display_order
+  function sortChildren(nodes: CategoryNode[]): CategoryNode[] {
+    nodes.sort((a, b) => {
+      const orderA = a.display_order ?? 999;
+      const orderB = b.display_order ?? 999;
+      if (orderA !== orderB) return orderA - orderB;
+      return a.name.localeCompare(b.name);
+    });
+    for (const node of nodes) {
+      if (node.children.length > 0) {
+        sortChildren(node.children);
+      }
+    }
+    return nodes;
+  }
+  
+  return sortChildren(rootCategories);
+}
+
+// Cached category fetcher - fetches ALL categories in a single query
+// Cache is revalidated every hour for fresh category updates
+const getCategoriesCached = unstable_cache(
+  async (): Promise<CategoryNode[]> => {
+    try {
+      const supabase = await createClient();
+      if (!supabase) return [];
+      
+      // Single optimized query to fetch ALL categories at once
+      // Uses pagination range to get all records (Supabase default limit is 1000)
+      const { data: allCategories, error } = await supabase
+        .from("categories")
+        .select("id, name, name_bg, slug, parent_id, display_order")
+        .lt("display_order", 9000)
+        .order("display_order", { ascending: true })
+        .range(0, 2000); // Get up to 2000 categories in one query
+
+      if (error) {
+        console.error("[SellPage] Error fetching categories:", error);
+        return [];
+      }
+
+      if (!allCategories || allCategories.length === 0) return [];
+
+      return buildCategoryTree(allCategories);
+    } catch (error) {
+      console.error("[SellPage] Error in getCategoriesCached:", error);
       return [];
     }
-
-    if (!rootCats || rootCats.length === 0) return [];
-
-    // Fetch L1 categories (children of root)
-    const rootIds = rootCats.map(c => c.id);
-    const { data: l1Cats, error: l1Error } = await supabase
-      .from("categories")
-      .select("id, name, name_bg, slug, parent_id, display_order")
-      .in("parent_id", rootIds)
-      .lt("display_order", 9000)
-      .order("display_order", { ascending: true });
-
-    if (l1Error) {
-      console.error("[SellPage] Error fetching L1 categories:", l1Error);
-    }
-
-    // Fetch L2 categories (grandchildren) - may need batching for large sets
-    let l2Cats: typeof l1Cats = [];
-    if (l1Cats && l1Cats.length > 0) {
-      const l1Ids = l1Cats.map(c => c.id);
-      // Batch L1 IDs to avoid query limits (max ~300 per IN clause)
-      const batchSize = 250;
-      for (let i = 0; i < l1Ids.length; i += batchSize) {
-        const batch = l1Ids.slice(i, i + batchSize);
-        const { data: l2Data, error: l2Error } = await supabase
-          .from("categories")
-          .select("id, name, name_bg, slug, parent_id, display_order")
-          .in("parent_id", batch)
-          .lt("display_order", 9000)
-          .order("display_order", { ascending: true });
-
-        if (l2Error) {
-          console.error("[SellPage] Error fetching L2 categories batch:", l2Error);
-        } else if (l2Data) {
-          l2Cats = [...l2Cats, ...l2Data];
-        }
-      }
-    }
-
-    // Fetch L3 categories (great-grandchildren - actual product types like T-Shirts, Hats)
-    let l3Cats: typeof l1Cats = [];
-    if (l2Cats && l2Cats.length > 0) {
-      const l2Ids = l2Cats.map(c => c.id);
-      // Batch L2 IDs to avoid query limits
-      const batchSize = 250;
-      for (let i = 0; i < l2Ids.length; i += batchSize) {
-        const batch = l2Ids.slice(i, i + batchSize);
-        const { data: l3Data, error: l3Error } = await supabase
-          .from("categories")
-          .select("id, name, name_bg, slug, parent_id, display_order")
-          .in("parent_id", batch)
-          .lt("display_order", 9000)
-          .order("display_order", { ascending: true });
-
-        if (l3Error) {
-          console.error("[SellPage] Error fetching L3 categories batch:", l3Error);
-        } else if (l3Data) {
-          l3Cats = [...l3Cats, ...l3Data];
-        }
-      }
-    }
-
-    // Fetch L4 categories (deepest level - 647 leaf categories)
-    let l4Cats: typeof l1Cats = [];
-    if (l3Cats && l3Cats.length > 0) {
-      const l3Ids = l3Cats.map(c => c.id);
-      const batchSize = 250;
-      for (let i = 0; i < l3Ids.length; i += batchSize) {
-        const batch = l3Ids.slice(i, i + batchSize);
-        const { data: l4Data, error: l4Error } = await supabase
-          .from("categories")
-          .select("id, name, name_bg, slug, parent_id, display_order")
-          .in("parent_id", batch)
-          .lt("display_order", 9000)
-          .order("display_order", { ascending: true });
-
-        if (l4Error) {
-          console.error("[SellPage] Error fetching L4 categories batch:", l4Error);
-        } else if (l4Data) {
-          l4Cats = [...l4Cats, ...l4Data];
-        }
-      }
-    }
-
-    // Combine all categories (L0-L4)
-    const allCategories = [...rootCats, ...(l1Cats || []), ...l2Cats, ...l3Cats, ...l4Cats];
-
-    // Build a map for quick lookup
-    const categoryMap = new Map<string, CategoryNode>();
-    
-    // First pass: create all nodes
-    for (const cat of allCategories) {
-      categoryMap.set(cat.id, {
-        ...cat,
-        children: []
-      });
-    }
-    
-    // Second pass: build tree structure
-    const rootCategories: CategoryNode[] = [];
-    
-    for (const cat of allCategories) {
-      const node = categoryMap.get(cat.id)!;
-      
-      if (cat.parent_id && categoryMap.has(cat.parent_id)) {
-        categoryMap.get(cat.parent_id)!.children.push(node);
-      } else if (!cat.parent_id) {
-        rootCategories.push(node);
-      }
-    }
-    
-    // Sort children recursively by display_order
-    function sortChildren(nodes: CategoryNode[]): CategoryNode[] {
-      nodes.sort((a, b) => {
-        const orderA = a.display_order ?? 999;
-        const orderB = b.display_order ?? 999;
-        if (orderA !== orderB) return orderA - orderB;
-        return a.name.localeCompare(b.name);
-      });
-      for (const node of nodes) {
-        if (node.children.length > 0) {
-          sortChildren(node.children);
-        }
-      }
-      return nodes;
-    }
-    
-    const result = sortChildren(rootCategories);
-    return result;
-  } catch (error) {
-    console.error("[SellPage] Error fetching categories:", error);
-    return [];
+  },
+  ["sell-page-categories"],
+  {
+    revalidate: 3600, // 1 hour cache
+    tags: ["categories"]
   }
+);
+
+// Non-cached version for user-specific data
+async function getCategories(): Promise<CategoryNode[]> {
+  return getCategoriesCached();
 }
 
 // Check if user is a seller
@@ -203,22 +146,23 @@ export default async function SellPage({
   const { locale } = await params;
   setRequestLocale(locale);
   
-  // Fetch user on server
+  // Fetch user and categories in parallel for better performance
   const supabase = await createClient();
-  let user = null;
+  
+  // Run auth check and category fetch in parallel
+  const [categoriesResult, authResult] = await Promise.all([
+    getCategories(),
+    supabase ? supabase.auth.getUser() : Promise.resolve({ data: { user: null } })
+  ]);
+  
+  const categories = categoriesResult;
+  const user = authResult.data.user;
+  
+  // Fetch seller data only if user is authenticated
   let seller = null;
-  
-  if (supabase) {
-    const { data: { user: authUser } } = await supabase.auth.getUser();
-    user = authUser;
-    
-    if (authUser) {
-      seller = await getSellerData(authUser.id);
-    }
+  if (user) {
+    seller = await getSellerData(user.id);
   }
-  
-  // Pre-fetch categories for listing form (even if not logged in, for faster UX after login)
-  const categories = await getCategories();
   
   return (
     <SellPageClient 
