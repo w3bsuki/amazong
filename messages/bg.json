@@ -101,7 +101,9 @@
         "startSelling": "Моите",
         "home": "Начало",
         "menu": "Меню",
-        "account": "Профил"
+        "account": "Профил",
+        "signIn": "Вход",
+        "register": "Регистрация"
     },
     "Home": {
         "title": "Добре дошли в Amazon",

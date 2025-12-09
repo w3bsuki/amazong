@@ -8,7 +8,6 @@ import { useCart, type CartItem } from "@/lib/cart-context"
 import { ShoppingCart, Package, Minus, Plus, Trash } from "@phosphor-icons/react"
 import Image from "next/image"
 import { useState, useEffect, useCallback } from "react"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 export function CartDropdown() {
   const { items, totalItems, subtotal, removeFromCart, updateQuantity } = useCart()
@@ -39,28 +38,21 @@ export function CartDropdown() {
   }
 
   return (
-    <HoverCard openDelay={50} closeDelay={100}>
+    <HoverCard openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <Link href="/cart" aria-label={tNav("cart")}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-xl"
-                className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
-              >
-                <ShoppingCart weight="regular" />
-                {mounted && displayItems > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-brand text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
-                    {displayItems > 99 ? "99+" : displayItems}
-                  </span>
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" sideOffset={8}>
-              <p>{tNav("cart")}{mounted && displayItems > 0 ? ` (${displayItems})` : ""}</p>
-            </TooltipContent>
-          </Tooltip>
+        <Link href="/cart" aria-label={`${tNav("cart")}${mounted && displayItems > 0 ? ` (${displayItems} items)` : ""}`}>
+          <Button
+            variant="ghost"
+            size="icon-xl"
+            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
+          >
+            <ShoppingCart weight="regular" />
+            {mounted && displayItems > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-brand text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                {displayItems > 99 ? "99+" : displayItems}
+              </span>
+            )}
+          </Button>
         </Link>
       </HoverCardTrigger>
       <HoverCardContent

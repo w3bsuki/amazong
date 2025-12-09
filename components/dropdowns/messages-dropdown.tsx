@@ -6,7 +6,6 @@ import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { User } from "@supabase/supabase-js"
 import { ChatCircle, PaperPlaneTilt, Bell, CaretRight } from "@phosphor-icons/react"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface MessagesDropdownProps {
   user: User | null
@@ -17,29 +16,27 @@ export function MessagesDropdown({ user, unreadCount = 0 }: MessagesDropdownProp
   const t = useTranslations("MessagesDropdown")
   const tNav = useTranslations("Navigation")
 
+  // Don't show messages icon for non-authenticated users
+  if (!user) {
+    return null
+  }
+
   return (
-    <HoverCard openDelay={50} closeDelay={100}>
+    <HoverCard openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <Link href="/account/messages">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-xl"
-                className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
-              >
-                <ChatCircle weight="regular" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center px-1">
-                    {unreadCount > 99 ? "99+" : unreadCount}
-                  </span>
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" sideOffset={8}>
-              <p>{tNav("messagesLabel")}{unreadCount > 0 ? ` (${unreadCount})` : ""}</p>
-            </TooltipContent>
-          </Tooltip>
+        <Link href="/account/messages" aria-label={`${tNav("messagesLabel")}${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}>
+          <Button
+            variant="ghost"
+            size="icon-xl"
+            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
+          >
+            <ChatCircle weight="regular" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
+          </Button>
         </Link>
       </HoverCardTrigger>
       <HoverCardContent
@@ -54,70 +51,56 @@ export function MessagesDropdown({ user, unreadCount = 0 }: MessagesDropdownProp
           </div>
         </div>
 
-        {!user ? (
-          <div className="p-6 text-center">
-            <ChatCircle size={48} weight="light" className="text-muted-foreground/30 mx-auto mb-3" />
-            <p className="text-muted-foreground text-sm mb-4">{t("signInToView")}</p>
-            <Link href="/auth/login">
-              <Button className="w-full h-10 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
-                {t("signIn")}
-              </Button>
+        <div className="p-3">
+          <div className="space-y-1">
+            <Link href="/account/messages" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+              <div className="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center">
+                <ChatCircle size={20} weight="duotone" className="text-brand" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground group-hover:text-brand">{t("inbox")}</p>
+                <p className="text-xs text-muted-foreground">{t("inboxDesc")}</p>
+              </div>
+              <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+            </Link>
+
+            <Link
+              href="/account/messages?filter=sellers"
+              className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group"
+            >
+              <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                <PaperPlaneTilt size={20} weight="duotone" className="text-accent-foreground" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground group-hover:text-brand">{t("sellerMessages")}</p>
+                <p className="text-xs text-muted-foreground">{t("sellerMessagesDesc")}</p>
+              </div>
+              <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+            </Link>
+
+            <Link
+              href="/account/messages?filter=notifications"
+              className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group"
+            >
+              <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
+                <Bell size={20} weight="duotone" className="text-secondary-foreground" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground group-hover:text-brand">{t("notifications")}</p>
+                <p className="text-xs text-muted-foreground">{t("notificationsDesc")}</p>
+              </div>
+              <CaretRight size={16} weight="regular" className="text-muted-foreground" />
             </Link>
           </div>
-        ) : (
-          <>
-            <div className="p-3">
-              <div className="space-y-1">
-                <Link href="/account/messages" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
-                  <div className="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center">
-                    <ChatCircle size={20} weight="duotone" className="text-brand" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground group-hover:text-brand">{t("inbox")}</p>
-                    <p className="text-xs text-muted-foreground">{t("inboxDesc")}</p>
-                  </div>
-                  <CaretRight size={16} weight="regular" className="text-muted-foreground" />
-                </Link>
+        </div>
 
-                <Link
-                  href="/account/messages?filter=sellers"
-                  className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group"
-                >
-                  <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
-                    <PaperPlaneTilt size={20} weight="duotone" className="text-accent-foreground" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground group-hover:text-brand">{t("sellerMessages")}</p>
-                    <p className="text-xs text-muted-foreground">{t("sellerMessagesDesc")}</p>
-                  </div>
-                  <CaretRight size={16} weight="regular" className="text-muted-foreground" />
-                </Link>
-
-                <Link
-                  href="/account/messages?filter=notifications"
-                  className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group"
-                >
-                  <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
-                    <Bell size={20} weight="duotone" className="text-secondary-foreground" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground group-hover:text-brand">{t("notifications")}</p>
-                    <p className="text-xs text-muted-foreground">{t("notificationsDesc")}</p>
-                  </div>
-                  <CaretRight size={16} weight="regular" className="text-muted-foreground" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="p-3 bg-muted border-t border-border">
-              <Link href="/account/messages">
-                <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
-                  {t("viewAllMessages")}
-                </Button>
-              </Link>
-            </div>
-          </>
-        )}
+        <div className="p-3 bg-muted border-t border-border">
+          <Link href="/account/messages">
+            <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+              {t("viewAllMessages")}
+            </Button>
+          </Link>
+        </div>
       </HoverCardContent>
     </HoverCard>
   )

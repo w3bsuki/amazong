@@ -6,7 +6,6 @@ import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { User } from "@supabase/supabase-js"
 import { Storefront, Plus, Package, Truck, TrendUp, CaretRight } from "@phosphor-icons/react"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface SellingDropdownProps {
   user: User | null
@@ -16,24 +15,22 @@ export function SellingDropdown({ user }: SellingDropdownProps) {
   const t = useTranslations("SellingDropdown")
   const tNav = useTranslations("Navigation")
 
+  // Don't show selling icon for non-authenticated users
+  if (!user) {
+    return null
+  }
+
   return (
-    <HoverCard openDelay={50} closeDelay={100}>
+    <HoverCard openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <Link href="/sell">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-xl"
-                className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
-              >
-                <Storefront weight="regular" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" sideOffset={8}>
-              <p>{tNav("sell")}</p>
-            </TooltipContent>
-          </Tooltip>
+        <Link href="/sell" aria-label={tNav("sell")}>
+          <Button
+            variant="ghost"
+            size="icon-xl"
+            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
+          >
+            <Storefront weight="regular" />
+          </Button>
         </Link>
       </HoverCardTrigger>
       <HoverCardContent
@@ -93,25 +90,13 @@ export function SellingDropdown({ user }: SellingDropdownProps) {
           </div>
         </div>
 
-        {user && (
-          <div className="p-3 bg-muted border-t border-border">
-            <Link href="/sell/listings">
-              <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
-                {t("viewAllListings")}
-              </Button>
-            </Link>
-          </div>
-        )}
-
-        {!user && (
-          <div className="p-4 bg-muted border-t border-border">
-            <Link href="/auth/login">
-              <Button className="w-full h-10 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
-                {t("signInToSell")}
-              </Button>
-            </Link>
-          </div>
-        )}
+        <div className="p-3 bg-muted border-t border-border">
+          <Link href="/sell/listings">
+            <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+              {t("viewAllListings")}
+            </Button>
+          </Link>
+        </div>
       </HoverCardContent>
     </HoverCard>
   )

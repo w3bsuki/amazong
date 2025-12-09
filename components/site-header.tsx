@@ -109,32 +109,60 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             <DesktopSearch />
           </div>
 
-          {/* Right Actions - All Icons */}
+          {/* Right Actions - Conditional based on auth state */}
           <div className="flex items-center gap-0.5 shrink-0">
-            {/* Orders - With Dropdown */}
-            <div className="hidden lg:block">
-              <OrdersDropdown user={user} />
-            </div>
+            {user ? (
+              <>
+                {/* Authenticated: Show all icon dropdowns */}
+                {/* Orders - With Dropdown */}
+                <div className="hidden lg:block">
+                  <OrdersDropdown user={user} />
+                </div>
 
-            {/* Selling - With Dropdown */}
-            <div className="hidden lg:block">
-              <SellingDropdown user={user} />
-            </div>
+                {/* Selling - With Dropdown */}
+                <div className="hidden lg:block">
+                  <SellingDropdown user={user} />
+                </div>
 
-            {/* Messages - With Dropdown */}
-            <div className="hidden md:block">
-              <MessagesDropdown user={user} />
-            </div>
+                {/* Messages - With Dropdown */}
+                <div className="hidden md:block">
+                  <MessagesDropdown user={user} />
+                </div>
 
-            {/* Account - With Dropdown (moved to right) */}
-            <div className="hidden md:block">
-              <AccountDropdown user={user} />
-            </div>
+                {/* Account - With Dropdown */}
+                <div className="hidden md:block">
+                  <AccountDropdown user={user} />
+                </div>
 
-            {/* Cart - With Dropdown on Desktop */}
-            <div className="hidden md:block">
-              <CartDropdown />
-            </div>
+                {/* Cart - With Dropdown */}
+                <div className="hidden md:block">
+                  <CartDropdown />
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Unauthenticated: Show Sign In / Register buttons + Cart */}
+                <div className="hidden md:flex items-center gap-2">
+                  <Link
+                    href="/auth/sign-in"
+                    className="text-sm font-medium text-header-text hover:text-brand transition-colors px-3 py-2 rounded-md hover:bg-header-hover"
+                  >
+                    {t('signIn')}
+                  </Link>
+                  <Link
+                    href="/auth/sign-up"
+                    className="text-sm font-medium bg-brand text-white hover:bg-brand-dark transition-colors px-4 py-2 rounded-md"
+                  >
+                    {t('register')}
+                  </Link>
+                </div>
+
+                {/* Cart - Always visible even when logged out */}
+                <div className="hidden md:block">
+                  <CartDropdown />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

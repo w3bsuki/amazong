@@ -101,7 +101,9 @@
         "startSelling": "Your",
         "home": "Home",
         "menu": "Menu",
-        "account": "Account"
+        "account": "Account",
+        "signIn": "Sign in",
+        "register": "Register"
     },
     "Home": {
         "title": "Welcome to Amazon",
