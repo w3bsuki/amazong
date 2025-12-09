@@ -284,7 +284,8 @@ export function SellFormStepper({
   // Success Screen
   if (showSuccess) {
     const productTitle = form.getValues().title || (isBg ? "Вашият продукт" : "Your product");
-    const firstImage = form.getValues().images?.[0];
+    const firstImageObj = form.getValues().images?.[0];
+    const firstImageUrl = typeof firstImageObj === 'string' ? firstImageObj : firstImageObj?.url;
 
     return (
       <div className="min-h-screen bg-background flex flex-col">
@@ -321,11 +322,11 @@ export function SellFormStepper({
             </div>
 
             {/* Product preview card */}
-            {firstImage && (
+            {firstImageUrl && (
               <div className="bg-muted/50 rounded-xl p-4 border border-border">
                 <div className="flex items-center gap-3">
                   <img 
-                    src={firstImage} 
+                    src={firstImageUrl} 
                     alt={productTitle}
                     className="w-16 h-16 rounded-lg object-cover"
                   />
