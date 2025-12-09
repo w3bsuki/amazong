@@ -101,7 +101,7 @@ export default function SignUpPage() {
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
-    mode: "onBlur",
+    mode: "onChange",
   })
 
   const { isValid, errors } = form.formState
@@ -114,11 +114,14 @@ export default function SignUpPage() {
 
     startTransition(async () => {
       try {
+        // Use the proper site URL for email redirects (production)
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+        
         const { error } = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
           options: {
-            emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/?welcome=true`,
+            emailRedirectTo: `${siteUrl}/auth/confirm`,
             data: { full_name: data.name },
           },
         })
