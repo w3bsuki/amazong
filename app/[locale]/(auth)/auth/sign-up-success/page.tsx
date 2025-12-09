@@ -11,16 +11,8 @@ export default async function SignUpSuccessPage() {
     <div className="min-h-svh flex items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-sm bg-white rounded-xl border border-gray-200 relative">
         <div className="p-6">
-          {/* Logo & Header */}
+          {/* Header */}
           <div className="flex flex-col items-center mb-6">
-            <Link href="/" className="mb-4 hover:opacity-80 transition-opacity">
-              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="48" height="48" rx="8" fill="#3B82F6"/>
-                <path d="M14 24C14 18.477 18.477 14 24 14C29.523 14 34 18.477 34 24C34 29.523 29.523 34 24 34" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-                <path d="M24 34C24 31.239 21.761 29 19 29C16.239 29 14 31.239 14 34" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-              </svg>
-            </Link>
-            
             {/* Success Icon */}
             <div className="size-14 bg-emerald-100 rounded-full flex items-center justify-center mb-3">
               <CheckCircle className="size-8 text-emerald-600" weight="fill" />
