@@ -144,7 +144,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                 {/* Unauthenticated: Show Sign In / Register buttons + Cart */}
                 <div className="hidden md:flex items-center gap-2">
                   <Link
-                    href="/auth/sign-in"
+                    href="/auth/login"
                     className="text-sm font-medium text-header-text hover:text-brand transition-colors px-3 py-2 rounded-md hover:bg-header-hover"
                   >
                     {t('signIn')}

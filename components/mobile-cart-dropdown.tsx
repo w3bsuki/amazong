@@ -207,7 +207,7 @@ export function MobileCartDropdown() {
                 <DrawerFooter className="border-t border-border">
                     {items.length === 0 ? (
                         <Link href="/search" onClick={() => setOpen(false)} className="w-full">
-                            <Button className="w-full h-12 text-base font-semibold">
+                            <Button className="w-full h-12 text-base font-semibold bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
                                 {t('startShopping')}
                             </Button>
                         </Link>

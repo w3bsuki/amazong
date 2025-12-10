@@ -62,6 +62,31 @@
   --spacing-section: 1.5rem;     /* 24px */
   --spacing-section-lg: 2rem;    /* 32px */
 
+  /* === CTA BUTTON TOKENS === */
+  --color-cta-primary: oklch(0.48 0.22 260);
+  --color-cta-primary-hover: oklch(0.40 0.24 260);
+  --color-cta-primary-text: oklch(1 0 0);
+  --color-cta-buy-now: oklch(0.48 0.22 260);
+  --color-cta-add-cart: oklch(0.48 0.22 260);
+  --color-cta-add-cart-hover: oklch(0.40 0.24 260);
+  --color-cta-trust-blue: oklch(0.50 0.20 255);
+  --color-cta-trust-blue-hover: oklch(0.42 0.22 255);
+  --color-cta-trust-blue-text: oklch(1 0 0);
+
+  /* === HEADER TEXT TOKENS === */
+  --color-header-text: oklch(0.12 0 0);
+  --color-header-text-muted: oklch(0.45 0 0);
+  --color-header-hover: oklch(0.96 0 0);
+  --color-header-active: oklch(0.94 0 0);
+  --color-header-nav-bg: oklch(0.97 0 0);
+
+  /* === INTERACTIVE TOKENS === */
+  --color-interactive: oklch(0.48 0.22 260);
+  --color-interactive-hover: oklch(0.40 0.24 260);
+
+  /* === SUBHEADER TOKENS === */
+  --color-subheader-text: oklch(0.20 0 0);
+
   /* === SHADOWS (eBay-style: minimal/flat) === */
   --shadow-2xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
   --shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
@@ -248,6 +273,31 @@
 
   --color-footer-bg: oklch(0.15 0.015 250);
   --color-footer-border: oklch(0.28 0.02 250);
+
+  /* CTA tokens (dark mode) */
+  --color-cta-primary: oklch(0.60 0.16 250);
+  --color-cta-primary-hover: oklch(0.50 0.18 250);
+  --color-cta-primary-text: oklch(1 0 0);
+  --color-cta-buy-now: oklch(0.60 0.16 250);
+  --color-cta-add-cart: oklch(0.60 0.16 250);
+  --color-cta-add-cart-hover: oklch(0.50 0.18 250);
+  --color-cta-trust-blue: oklch(0.55 0.18 255);
+  --color-cta-trust-blue-hover: oklch(0.48 0.20 255);
+  --color-cta-trust-blue-text: oklch(1 0 0);
+
+  /* Header text tokens (dark mode) */
+  --color-header-text: oklch(0.95 0 0);
+  --color-header-text-muted: oklch(0.70 0 0);
+  --color-header-hover: oklch(0.28 0.02 250);
+  --color-header-active: oklch(0.32 0.02 250);
+  --color-header-nav-bg: oklch(0.20 0.02 250);
+
+  /* Interactive tokens (dark mode) */
+  --color-interactive: oklch(0.60 0.16 250);
+  --color-interactive-hover: oklch(0.50 0.18 250);
+
+  /* Subheader tokens (dark mode) */
+  --color-subheader-text: oklch(0.90 0 0);
 
   --color-filter-bg: oklch(0.22 0.02 250);
   --color-filter-border: oklch(0.35 0.02 250);

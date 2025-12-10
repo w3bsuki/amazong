@@ -19,15 +19,15 @@ export async function proxy(request: NextRequest) {
 
   // Geo-detection: Set user-country and user-zone cookies if not present
   const existingCountry = request.cookies.get('user-country')?.value;
-  
+
   if (!existingCountry) {
     // Try to detect country from IP headers (Vercel, Cloudflare, other CDNs)
-    const countryCode = 
+    const countryCode =
       request.headers.get('x-vercel-ip-country') ||
       request.headers.get('cf-ipcountry') ||
       request.headers.get('x-country-code') ||
       'BG'; // Default to Bulgaria for local development
-    
+
     // Calculate shipping region from country code
     const shippingRegion = getShippingRegion(countryCode);
 

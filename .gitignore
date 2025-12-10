@@ -28,3 +28,9 @@ pnpm-debug.log*
 
 # vercel
 .vercel
+
+# build artifacts
+tsconfig.tsbuildinfo
+
+# playwright screenshots
+.playwright-mcp/

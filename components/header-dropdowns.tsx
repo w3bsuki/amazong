@@ -161,9 +161,11 @@ export function CartDropdown() {
                 {items.length === 0 ? (
                     <div className="p-8 text-center">
                         <ShoppingCart size={48} weight="light" className="text-muted-foreground/30 mx-auto mb-3" />
-                        <p className="text-muted-foreground text-sm">{t('empty')}</p>
-                        <Link href="/search" className="text-link hover:underline text-sm mt-2 block">
-                            {t('startShopping')}
+                        <p className="text-muted-foreground text-sm mb-4">{t('empty')}</p>
+                        <Link href="/search">
+                            <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+                                {t('startShopping')}
+                            </Button>
                         </Link>
                     </div>
                 ) : (

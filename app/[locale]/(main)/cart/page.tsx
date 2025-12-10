@@ -1,175 +1,331 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { Link } from "@/i18n/routing"
 import { useCart } from "@/lib/cart-context"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle as CheckCircle2 } from "@phosphor-icons/react"
+import { Badge } from "@/components/ui/badge"
+import { 
+  CheckCircle, 
+  ShoppingCart,
+  Trash,
+  Heart,
+  SpinnerGap,
+  Truck,
+  ShieldCheck,
+  Minus,
+  Plus,
+  ArrowRight
+} from "@phosphor-icons/react"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
+import { useTranslations, useLocale } from "next-intl"
+import { useState, useEffect } from "react"
+import { cn } from "@/lib/utils"
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
   const router = useRouter()
+  const t = useTranslations("CartPage")
+  const locale = useLocale()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleCheckout = () => {
     if (items.length === 0) return
-    // Navigate to checkout page where user can select address and payment method
     router.push("/checkout")
   }
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
+      style: 'currency',
+      currency: locale === 'bg' ? 'BGN' : 'USD',
+    }).format(price)
+  }
+
+  // Loading state
+  if (!mounted) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <SpinnerGap className="size-8 animate-spin text-brand" />
+      </div>
+    )
+  }
+
+  // Empty cart state
   if (items.length === 0) {
     return (
-      <div className="container py-4 bg-background min-h-screen">
-        <AppBreadcrumb items={breadcrumbPresets.cart} />
-        
-        <div className="bg-card p-8 rounded border border-border mt-4 max-w-2xl mx-auto text-center">
-          <div className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg 
-              className="size-10 text-muted-foreground" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={1.5} 
-                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" 
-              />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-bold mb-2">Your Amazon Cart is empty</h1>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Your Shopping Cart lives to serve. Give it purpose — fill it with groceries, clothing, household supplies,
-            electronics, and more.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/">
-              <Button className="bg-brand hover:bg-brand/90 text-foreground gap-2 w-full sm:w-auto">
-                Continue Shopping
-              </Button>
-            </Link>
-            <Link href="/todays-deals">
-              <Button variant="outline" className="gap-2 w-full sm:w-auto">
-                View Today's Deals
-              </Button>
-            </Link>
-          </div>
-          <div className="mt-8 pt-6 border-t border-border">
-            <p className="text-sm text-muted-foreground mb-3">
-              Have an account? Your cart items are saved for you.
-            </p>
-            <Link href="/auth/login" className="text-sm text-link hover:underline">
-              Sign in to see your cart
-            </Link>
-          </div>
+      <div className="bg-secondary min-h-[80vh]">
+        <div className="container py-6">
+          <AppBreadcrumb items={breadcrumbPresets.cart} />
+          
+          <Card className="mt-6 max-w-lg mx-auto border-0 shadow-md">
+            <CardContent className="p-8 text-center">
+              <div className="size-24 bg-brand/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                <ShoppingCart className="size-12 text-brand" weight="duotone" />
+              </div>
+              <h1 className="text-2xl font-semibold mb-2">{t("emptyTitle")}</h1>
+              <p className="text-muted-foreground mb-8 max-w-sm mx-auto">
+                {t("emptyDescription")}
+              </p>
+              <div className="flex flex-col gap-3">
+                <Button 
+                  asChild
+                  size="lg"
+                  className="bg-brand hover:bg-brand/90 text-white rounded-full h-12"
+                >
+                  <Link href="/">
+                    {t("continueShopping")}
+                    <ArrowRight className="size-4 ml-2" />
+                  </Link>
+                </Button>
+                <Button 
+                  asChild
+                  variant="outline" 
+                  size="lg"
+                  className="rounded-full h-12"
+                >
+                  <Link href="/todays-deals">
+                    {t("viewDeals")}
+                  </Link>
+                </Button>
+              </div>
+              <Separator className="my-8" />
+              <p className="text-sm text-muted-foreground mb-2">
+                {t("signInPrompt")}
+              </p>
+              <Link href="/auth/login" className="text-sm font-medium text-brand hover:underline">
+                {t("signInLink")}
+              </Link>
+            </CardContent>
+          </Card>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="container py-4 bg-muted min-h-screen">
-      <AppBreadcrumb items={breadcrumbPresets.cart} />
-      
-      <div className="flex flex-col lg:flex-row gap-6 mt-4">
-        {/* Cart Items */}
-        <div className="flex-1 bg-card p-6 rounded border border-border">
-          <div className="flex justify-between items-end mb-2">
-            <h1 className="text-3xl font-normal">Shopping Cart</h1>
-            <span className="text-sm text-muted-foreground">Price</span>
-          </div>
-          <Separator className="mb-4" />
+    <div className="bg-secondary min-h-screen pb-32 lg:pb-8">
+      <div className="container py-4 lg:py-6">
+        <AppBreadcrumb items={breadcrumbPresets.cart} />
+        
+        {/* Page Header */}
+        <div className="mt-4 mb-6">
+          <h1 className="text-2xl lg:text-3xl font-semibold">{t("title")}</h1>
+          <p className="text-muted-foreground mt-1">
+            {totalItems} {totalItems === 1 ? (locale === 'bg' ? 'артикул' : 'item') : (locale === 'bg' ? 'артикула' : 'items')}
+          </p>
+        </div>
 
-          <div className="space-y-6">
-            {items.map((item) => (
-              <div key={item.id} className="flex flex-col sm:flex-row gap-4">
-                <div className="w-full sm:w-32 md:w-48 h-32 sm:h-32 md:h-48 relative shrink-0">
-                  <Image 
-                    src={item.image || "/placeholder.svg"} 
-                    alt={item.title} 
-                    fill 
-                    className="object-contain" 
-                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 128px, 192px"
-                    priority={items.indexOf(item) === 0}
-                    loading={items.indexOf(item) === 0 ? "eager" : "lazy"}
-                  />
-                </div>
-                <div className="flex-1">
-                  <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
-                    <div>
-                      <Link
-                        href={`/product/${item.id}`}
-                        className="text-base sm:text-lg font-medium hover:text-link-hover hover:underline line-clamp-2"
-                      >
-                        {item.title}
-                      </Link>
-                      <div className="text-accent-foreground text-xs my-1">In Stock</div>
-                      <div className="text-xs text-muted-foreground mb-2">Eligible for FREE Shipping & FREE Returns</div>
-                      <div className="flex flex-wrap items-center gap-2 text-xs">
-                        <div className="flex items-center border rounded bg-muted hover:bg-muted/80">
-                          <span className="px-2 py-1 bg-secondary border-r border-border">Qty:</span>
-                          <select
-                            value={item.quantity}
-                            onChange={(e) => updateQuantity(item.id, Number.parseInt(e.target.value))}
-                            className="bg-transparent border-none py-1 pl-1 pr-2 text-sm focus:ring-0 cursor-pointer"
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Cart Items */}
+          <div className="lg:col-span-2 space-y-4">
+            {items.map((item, index) => (
+              <Card key={item.id} className="border-0 shadow-sm overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="flex gap-4 p-4">
+                    {/* Product Image */}
+                    <Link 
+                      href={`/product/${item.id}`}
+                      className="relative shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-lg overflow-hidden group"
+                    >
+                      <Image 
+                        src={item.image || "/placeholder.svg"} 
+                        alt={item.title} 
+                        fill 
+                        className="object-contain p-2 group-hover:scale-105 transition-transform" 
+                        sizes="(max-width: 640px) 96px, 128px"
+                        priority={index === 0}
+                      />
+                    </Link>
+
+                    {/* Product Info */}
+                    <div className="flex-1 min-w-0 flex flex-col">
+                      <div className="flex justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <Link
+                            href={`/product/${item.id}`}
+                            className="font-medium hover:text-brand transition-colors line-clamp-2 text-sm sm:text-base"
                           >
-                            {[...Array(10)].map((_, i) => (
-                              <option key={i + 1} value={i + 1}>
-                                {i + 1}
-                              </option>
-                            ))}
-                          </select>
+                            {item.title}
+                          </Link>
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <Badge variant="secondary" className="bg-brand-success/10 text-brand-success border-0 text-xs">
+                              <CheckCircle className="size-3 mr-1" weight="fill" />
+                              {t("inStock")}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                            <Truck className="size-3" />
+                            {t("freeShippingEligible")}
+                          </p>
                         </div>
-                        <Separator orientation="vertical" className="h-3 hidden sm:block" />
-                        <button onClick={() => removeFromCart(item.id)} className="text-link hover:underline">
-                          Delete
-                        </button>
-                        <Separator orientation="vertical" className="h-3 hidden sm:block" />
-                        <button className="text-link hover:underline">Save for later</button>
+
+                        {/* Price - Desktop */}
+                        <div className="hidden sm:block text-right shrink-0">
+                          <p className="text-lg font-semibold">{formatPrice(item.price * item.quantity)}</p>
+                          {item.quantity > 1 && (
+                            <p className="text-xs text-muted-foreground">
+                              {formatPrice(item.price)} {locale === 'bg' ? 'всяка' : 'each'}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions Row */}
+                      <div className="flex items-center justify-between mt-auto pt-3">
+                        {/* Quantity Controls */}
+                        <div className="flex items-center gap-1 bg-muted rounded-full p-1">
+                          <button
+                            onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1)}
+                            disabled={item.quantity <= 1}
+                            className="size-8 flex items-center justify-center rounded-full hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus className="size-4" />
+                          </button>
+                          <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            disabled={item.quantity >= 10}
+                            className="size-8 flex items-center justify-center rounded-full hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            aria-label="Increase quantity"
+                          >
+                            <Plus className="size-4" />
+                          </button>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-1">
+                          <button 
+                            className="size-9 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                            aria-label={t("saveForLater")}
+                          >
+                            <Heart className="size-4" />
+                          </button>
+                          <button 
+                            onClick={() => removeFromCart(item.id)}
+                            className="size-9 flex items-center justify-center rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                            aria-label={t("delete")}
+                          >
+                            <Trash className="size-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Price - Mobile */}
+                      <div className="sm:hidden mt-2">
+                        <p className="text-lg font-semibold">{formatPrice(item.price * item.quantity)}</p>
                       </div>
                     </div>
-                    <div className="text-left sm:text-right font-bold text-lg mt-2 sm:mt-0">${(item.price * item.quantity).toFixed(2)}</div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
 
-          <Separator className="my-4" />
-          <div className="text-right text-lg">
-            Subtotal ({totalItems} items): <span className="font-bold">${subtotal.toFixed(2)}</span>
+          {/* Order Summary - Desktop Sidebar */}
+          <div className="hidden lg:block">
+            <Card className="border-0 shadow-sm sticky top-24">
+              <CardContent className="p-6">
+                <h2 className="font-semibold text-lg mb-4">{locale === 'bg' ? 'Обобщение' : 'Order Summary'}</h2>
+                
+                {/* Free Shipping Badge */}
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-brand-success/5 border border-brand-success/20 mb-4">
+                  <CheckCircle className="size-5 text-brand-success shrink-0 mt-0.5" weight="fill" />
+                  <div className="text-sm">
+                    <p className="font-medium text-brand-success">{t("qualifiesForFreeShipping")}</p>
+                    <Link href="#" className="text-xs text-brand hover:underline">
+                      {t("seeDetails")}
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{t("subtotalCount", { count: totalItems })}</span>
+                    <span>{formatPrice(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{locale === 'bg' ? 'Доставка' : 'Shipping'}</span>
+                    <span className="text-brand-success font-medium">{locale === 'bg' ? 'Безплатно' : 'FREE'}</span>
+                  </div>
+                </div>
+
+                <Separator className="my-4" />
+
+                <div className="flex justify-between mb-6">
+                  <span className="font-semibold">{locale === 'bg' ? 'Общо' : 'Total'}</span>
+                  <span className="text-xl font-bold">{formatPrice(subtotal)}</span>
+                </div>
+
+                <Button
+                  onClick={handleCheckout}
+                  size="lg"
+                  className="w-full bg-brand hover:bg-brand/90 text-white rounded-full h-12 font-semibold"
+                >
+                  {t("proceedToCheckout")}
+                  <ArrowRight className="size-4 ml-2" />
+                </Button>
+
+                {/* Trust Badges */}
+                <div className="mt-6 pt-4 border-t border-border space-y-2">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <ShieldCheck className="size-4 text-brand-success" />
+                    <span>{locale === 'bg' ? 'Сигурно плащане' : 'Secure checkout'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Truck className="size-4 text-brand" />
+                    <span>{locale === 'bg' ? '30-дневно връщане' : '30-day returns'}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
+      </div>
 
-        {/* Checkout Sidebar */}
-        <div className="w-full lg:w-80 h-fit bg-card p-4 rounded shadow-sm">
-          <div className="flex items-start gap-1 mb-4 text-accent-foreground">
-            <CheckCircle2 className="h-5 w-5 mt-0.5" />
-            <span className="text-sm">
-              Your order qualifies for FREE Shipping. Choose this option at checkout.{" "}
-              <Link href="#" className="text-link hover:underline">
-                See details
-              </Link>
-            </span>
+      {/* Sticky Checkout Bar - Mobile */}
+      <div 
+        className={cn(
+          "fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-40",
+          "lg:hidden"
+        )}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <div className="container py-3 px-4">
+          {/* Free shipping badge */}
+          <div className="flex items-center gap-2 text-xs text-brand-success mb-2">
+            <CheckCircle className="size-3.5" weight="fill" />
+            <span className="font-medium">{locale === 'bg' ? 'Безплатна доставка' : 'Free shipping'}</span>
           </div>
-          <div className="text-lg mb-4">
-            Subtotal ({totalItems} items): <span className="font-bold">${subtotal.toFixed(2)}</span>
+          
+          <div className="flex items-center gap-4">
+            {/* Order summary */}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-muted-foreground">
+                {locale === 'bg' ? 'Общо' : 'Total'} ({totalItems})
+              </p>
+              <p className="text-xl font-bold">
+                {formatPrice(subtotal)}
+              </p>
+            </div>
+            
+            {/* Checkout button */}
+            <Button 
+              onClick={handleCheckout}
+              size="lg"
+              className="h-12 px-8 font-semibold rounded-full bg-brand hover:bg-brand/90 text-white shadow-lg"
+            >
+              {locale === 'bg' ? 'Плащане' : 'Checkout'}
+              <ArrowRight className="size-4 ml-1" />
+            </Button>
           </div>
-          <div className="flex items-center gap-2 mb-4">
-            <input type="checkbox" id="gift" className="rounded-sm" />
-            <label htmlFor="gift" className="text-sm">
-              This order contains a gift
-            </label>
-          </div>
-          <Button
-            onClick={handleCheckout}
-            className="w-full bg-brand hover:bg-brand/90 text-foreground border-none rounded-full shadow-sm"
-          >
-            Proceed to checkout
-          </Button>
         </div>
       </div>
     </div>

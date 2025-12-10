@@ -496,36 +496,29 @@ export function ProductPageContent({
               </div>
             </div>
 
-            {/* Description - tight to title */}
+            {/* Description - tight to title (mobile only) */}
             {product.description && (
               <p className="text-sm text-muted-foreground leading-snug mt-0.5 lg:hidden">
                 {product.description}
               </p>
             )}
 
-            {/* Seller - minimal spacing */}
-            {sellerData && (
-              <Link 
-                href={`/store/${sellerData.id}`}
-                className="inline-flex items-center gap-1.5 mt-0.5 text-sm group"
-              >
-                <Avatar className="h-5 w-5 border shrink-0">
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                    {sellerData.store_name?.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="font-medium text-primary group-hover:underline">{sellerData.store_name}</span>
-                <span className="text-muted-foreground">({sellerData.feedback_score})</span>
-                <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="w-3 h-3 fill-amber-400 text-amber-400" weight="fill" />
-                  ))}
-                </div>
-              </Link>
-            )}
+            {/* Condition Row - Desktop only, moved up before price */}
+            <div className="hidden lg:flex items-center gap-2 text-sm mt-2">
+              <span className="text-muted-foreground">{locale === 'bg' ? 'Състояние:' : 'Condition:'}</span>
+              <span className="font-medium text-foreground">{locale === 'bg' ? 'Ново' : 'New'}</span>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Info className="w-4 h-4 text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p>{locale === 'bg' ? 'Чисто нов, неизползван продукт' : 'A brand-new, unused item'}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
 
             {/* Price Section - Hidden on mobile (shown in sticky bar) */}
-            <div className="hidden lg:block mt-4">
+            <div className="hidden lg:block mt-3">
               <span className="text-3xl font-bold text-foreground tracking-tight">
                 US ${product.price.toFixed(2)}
               </span>
@@ -539,19 +532,59 @@ export function ProductPageContent({
               )}
             </div>
 
-            {/* Condition Row - Desktop only */}
-            <div className="hidden lg:flex items-center gap-2 text-sm mt-3">
-              <span className="text-muted-foreground">{locale === 'bg' ? 'Състояние:' : 'Condition:'}</span>
-              <span className="font-medium text-foreground">{locale === 'bg' ? 'Ново' : 'New'}</span>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Info className="w-4 h-4 text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
-                  <p>{locale === 'bg' ? 'Чисто нов, неизползван продукт' : 'A brand-new, unused item'}</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
+            {/* Seller Section - Desktop: Bigger card-like display, Mobile: compact inline */}
+            {sellerData && (
+              <>
+                {/* Mobile: Compact inline seller */}
+                <Link 
+                  href={`/store/${sellerData.id}`}
+                  className="inline-flex items-center gap-1.5 mt-1 text-sm group lg:hidden"
+                >
+                  <Avatar className="h-5 w-5 border shrink-0">
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                      {sellerData.store_name?.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium text-primary group-hover:underline">{sellerData.store_name}</span>
+                  <span className="text-muted-foreground">({sellerData.feedback_score})</span>
+                  <div className="flex items-center">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star key={star} className="w-3 h-3 fill-amber-400 text-amber-400" weight="fill" />
+                    ))}
+                  </div>
+                </Link>
+
+                {/* Desktop: Enhanced seller card */}
+                <div className="hidden lg:block mt-4 p-3 bg-muted/30 dark:bg-muted/20 rounded-lg border border-border/50">
+                  <Link 
+                    href={`/store/${sellerData.id}`}
+                    className="flex items-center gap-3 group"
+                  >
+                    <Avatar className="h-10 w-10 border bg-background shrink-0">
+                      <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+                        {sellerData.store_name?.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-primary group-hover:underline text-base">
+                          {sellerData.store_name}
+                        </span>
+                        {sellerData.verified && (
+                          <CheckCircle className="w-4 h-4 text-primary" weight="fill" />
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span>{sellerData.positive_feedback_percentage}% {locale === 'bg' ? 'положителни' : 'positive'}</span>
+                        <span>·</span>
+                        <span>{(sellerData.total_items_sold / 1000).toFixed(0)}K {locale === 'bg' ? 'продадени' : 'sold'}</span>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+                  </Link>
+                </div>
+              </>
+            )}
 
             {/* ===== ACTION BUTTONS - Desktop only, mobile uses sticky bar ===== */}
             <div ref={buyBoxRef} className="hidden lg:block space-y-2 mt-4 pt-4 border-t border-border/50">
@@ -643,66 +676,102 @@ export function ProductPageContent({
 
         {/* ===== ABOUT THIS ITEM Section ===== */}
         <div className="mt-4 lg:mt-6">
-          {/* ===== PRODUCT INFO - Clean & Minimal on Mobile ===== */}
-          <div className="py-3 lg:py-5">
-            {/* Mobile: Simple sections without card wrapper */}
-            <div className="space-y-4 lg:space-y-0 lg:bg-muted/30 lg:dark:bg-muted/10 lg:border lg:border-border lg:rounded-lg lg:overflow-hidden">
-              
-              {/* Product Description - Hidden on mobile (shown inline under title) */}
-              {product.description && (
-                <div className="hidden lg:block lg:p-5 lg:border-b lg:border-border">
-                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                    {locale === 'bg' ? 'Описание на продукта' : 'Product Description'}
-                  </h4>
-                  <p className="text-base leading-relaxed text-foreground whitespace-pre-wrap">
-                    {product.description}
-                  </p>
-                </div>
+          {/* ===== MOBILE: Simple stacked sections ===== */}
+          <div className="lg:hidden py-3 space-y-4">
+            {/* Technical Specifications */}
+            <div>
+              <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                {locale === 'bg' ? 'Технически спецификации' : 'Technical Specifications'}
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
+                {[
+                  { label: locale === 'bg' ? 'Артикул №' : 'Item number', value: product.id.slice(0, 8) },
+                  { label: locale === 'bg' ? 'Състояние' : 'Condition', value: locale === 'bg' ? 'Ново' : 'New' },
+                  { label: locale === 'bg' ? 'Марка' : 'Brand', value: 'Generic' },
+                  { label: locale === 'bg' ? 'Тип' : 'Type', value: 'Standard' },
+                  { label: locale === 'bg' ? 'Модел' : 'Model', value: 'N/A' },
+                  { label: locale === 'bg' ? 'Произход' : 'Country of Origin', value: locale === 'bg' ? 'България' : 'Bulgaria' },
+                  { label: locale === 'bg' ? 'Гаранция' : 'Warranty', value: locale === 'bg' ? '12 месеца' : '12 months' },
+                ].map((spec, idx) => (
+                  <div key={idx} className="flex justify-between py-2 border-b border-border/50 last:border-0">
+                    <span className="text-sm text-muted-foreground">{spec.label}</span>
+                    <span className="text-sm font-medium text-foreground">{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Package Contents */}
+            <div>
+              <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                {locale === 'bg' ? 'Съдържание на пакета' : "What's in the Box"}
+              </h4>
+              <ul className="space-y-1.5">
+                {[
+                  locale === 'bg' ? '1x Основен продукт' : '1x Main Product',
+                  locale === 'bg' ? '1x Инструкции за употреба' : '1x User Manual',
+                  locale === 'bg' ? '1x Гаранционна карта' : '1x Warranty Card',
+                  locale === 'bg' ? 'Оригинална опаковка' : 'Original Packaging',
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm text-foreground">
+                    <span className="w-1.5 h-1.5 bg-foreground/40 rounded-full shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* ===== DESKTOP: 3-column clean text layout ===== */}
+          <div className="hidden lg:grid lg:grid-cols-3 gap-12 pt-4 border-t border-border">
+            {/* Description */}
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                {locale === 'bg' ? 'Описание' : 'Description'}
+              </h3>
+              {product.description ? (
+                <p className="text-sm text-foreground leading-relaxed">
+                  {product.description}
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {locale === 'bg' ? 'Няма налично описание.' : 'No description available.'}
+                </p>
               )}
+            </div>
 
-              {/* Technical Specifications */}
-              <div className="lg:p-5 lg:border-b lg:border-border">
-                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                  {locale === 'bg' ? 'Технически спецификации' : 'Technical Specifications'}
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
-                  {[
-                    { label: locale === 'bg' ? 'Артикул №' : 'Item number', value: product.id.slice(0, 8) },
-                    { label: locale === 'bg' ? 'Състояние' : 'Condition', value: locale === 'bg' ? 'Ново' : 'New' },
-                    { label: locale === 'bg' ? 'Марка' : 'Brand', value: 'Generic' },
-                    { label: locale === 'bg' ? 'Тип' : 'Type', value: 'Standard' },
-                    { label: locale === 'bg' ? 'Модел' : 'Model', value: 'N/A' },
-                    { label: locale === 'bg' ? 'Произход' : 'Country of Origin', value: locale === 'bg' ? 'България' : 'Bulgaria' },
-                    { label: locale === 'bg' ? 'Гаранция' : 'Warranty', value: locale === 'bg' ? '12 месеца' : '12 months' },
-                  ].map((spec, idx) => (
-                    <div key={idx} className="flex justify-between py-2 border-b border-border/50 last:border-0">
-                      <span className="text-sm text-muted-foreground">{spec.label}</span>
-                      <span className="text-sm font-medium text-foreground">{spec.value}</span>
-                    </div>
-                  ))}
-                </div>
+            {/* Specifications */}
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                {locale === 'bg' ? 'Спецификации' : 'Specifications'}
+              </h3>
+              <div className="space-y-1">
+                {[
+                  { label: locale === 'bg' ? 'Артикул' : 'Item #', value: product.id.slice(0, 8) },
+                  { label: locale === 'bg' ? 'Състояние' : 'Condition', value: locale === 'bg' ? 'Ново' : 'New' },
+                  { label: locale === 'bg' ? 'Марка' : 'Brand', value: 'Generic' },
+                  { label: locale === 'bg' ? 'Произход' : 'Origin', value: locale === 'bg' ? 'България' : 'Bulgaria' },
+                  { label: locale === 'bg' ? 'Гаранция' : 'Warranty', value: locale === 'bg' ? '12 месеца' : '12 months' },
+                ].map((spec, idx) => (
+                  <div key={idx} className="text-sm">
+                    <span className="text-muted-foreground">{spec.label}:</span>{' '}
+                    <span className="text-foreground">{spec.value}</span>
+                  </div>
+                ))}
               </div>
+            </div>
 
-              {/* Package Contents */}
-              <div className="lg:p-5">
-                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                  {locale === 'bg' ? 'Съдържание на пакета' : "What's in the Box"}
-                </h4>
-                <ul className="space-y-1.5">
-                  {[
-                    locale === 'bg' ? '1x Основен продукт' : '1x Main Product',
-                    locale === 'bg' ? '1x Инструкции за употреба' : '1x User Manual',
-                    locale === 'bg' ? '1x Гаранционна карта' : '1x Warranty Card',
-                    locale === 'bg' ? 'Оригинална опаковка' : 'Original Packaging',
-                  ].map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-sm text-foreground">
-                      <span className="w-1.5 h-1.5 bg-foreground/40 rounded-full shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+            {/* Contents */}
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                {locale === 'bg' ? 'Съдържание' : 'In the Box'}
+              </h3>
+              <div className="space-y-1 text-sm text-foreground">
+                <div>1× {locale === 'bg' ? 'Основен продукт' : 'Main Product'}</div>
+                <div>1× {locale === 'bg' ? 'Инструкции' : 'User Manual'}</div>
+                <div>1× {locale === 'bg' ? 'Гаранционна карта' : 'Warranty Card'}</div>
+                <div>{locale === 'bg' ? 'Оригинална опаковка' : 'Original Packaging'}</div>
               </div>
-
             </div>
           </div>
         </div>
