@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createStaticClient } from "@/lib/supabase/server";
 import { connection } from "next/server";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
@@ -80,24 +80,65 @@ function buildCategoryTree(categories: RawCategory[]): CategoryNode[] {
 const getCategoriesCached = unstable_cache(
   async (): Promise<CategoryNode[]> => {
     try {
-      const supabase = await createClient();
+      // Use static client for cached queries (no cookies needed for public categories)
+      const supabase = createStaticClient();
       if (!supabase) return [];
       
-      // Single optimized query to fetch ALL categories at once
-      // Uses pagination range to get all records (Supabase default limit is 1000)
-      const { data: allCategories, error } = await supabase
+      // Fetch root categories first (L0)
+      const { data: rootCats, error: rootError } = await supabase
         .from("categories")
         .select("id, name, name_bg, slug, parent_id, display_order")
+        .is("parent_id", null)
         .lt("display_order", 9000)
-        .order("display_order", { ascending: true })
-        .range(0, 2000); // Get up to 2000 categories in one query
+        .order("display_order", { ascending: true });
 
-      if (error) {
-        console.error("[SellPage] Error fetching categories:", error);
+      if (rootError) {
+        console.error("[SellPage] Error fetching root categories:", rootError);
         return [];
       }
 
-      if (!allCategories || allCategories.length === 0) return [];
+      if (!rootCats || rootCats.length === 0) return [];
+
+      // Fetch L1 categories (children of root)
+      const rootIds = rootCats.map(c => c.id);
+      const { data: l1Cats, error: l1Error } = await supabase
+        .from("categories")
+        .select("id, name, name_bg, slug, parent_id, display_order")
+        .in("parent_id", rootIds)
+        .lt("display_order", 9000)
+        .order("display_order", { ascending: true });
+
+      if (l1Error) {
+        console.error("[SellPage] Error fetching L1 categories:", l1Error);
+      }
+
+      // Fetch L2 categories in batches
+      let l2Cats: typeof l1Cats = [];
+      if (l1Cats && l1Cats.length > 0) {
+        const l1Ids = l1Cats.map(c => c.id);
+        const BATCH_SIZE = 100;
+        
+        for (let i = 0; i < l1Ids.length; i += BATCH_SIZE) {
+          const batchIds = l1Ids.slice(i, i + BATCH_SIZE);
+          const { data: l2Data, error: l2Error } = await supabase
+            .from("categories")
+            .select("id, name, name_bg, slug, parent_id, display_order")
+            .in("parent_id", batchIds)
+            .lt("display_order", 9000)
+            .order("display_order", { ascending: true });
+
+          if (l2Error) {
+            console.error("[SellPage] Error fetching L2 batch:", l2Error);
+          } else if (l2Data) {
+            l2Cats = [...l2Cats, ...l2Data];
+          }
+        }
+      }
+
+      // Combine all categories
+      const allCategories = [...rootCats, ...(l1Cats || []), ...l2Cats];
+      
+      console.log(`[SellPage] Fetched ${allCategories.length} categories (${rootCats.length} root, ${l1Cats?.length || 0} L1, ${l2Cats.length} L2)`);
 
       return buildCategoryTree(allCategories);
     } catch (error) {

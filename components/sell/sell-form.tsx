@@ -40,6 +40,7 @@ interface SellFormProps {
   locale?: string;
   existingProduct?: SellFormDataV4 & { id: string };
   sellerId: string;
+  categories?: Category[];
 }
 
 // ============================================================================
@@ -274,6 +275,7 @@ export function SellForm({
   locale = "en",
   existingProduct,
   sellerId,
+  categories: initialCategories = [],
 }: SellFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -281,7 +283,7 @@ export function SellForm({
   const [autoSaved, setAutoSaved] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSavedRef = useRef<string>("");
   const draftRestoredRef = useRef(false);
@@ -299,8 +301,11 @@ export function SellForm({
   const progressData = calculateFormProgress(formValues);
   const progressPercent = progressData.percentage;
 
-  // Fetch categories from API - ONCE on mount
+  // Fetch categories from API only if not provided from server
   useEffect(() => {
+    // Skip if categories were passed from server
+    if (initialCategories.length > 0) return;
+    
     let cancelled = false;
     const fetchCategories = async () => {
       try {
@@ -316,7 +321,7 @@ export function SellForm({
     };
     fetchCategories();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialCategories.length]);
 
   // Load draft on mount - ONCE only
   useEffect(() => {

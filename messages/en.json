@@ -342,6 +342,24 @@
         "returnPolicy": "30-day return policy",
         "qty": "Qty"
     },
+    "CheckoutSuccess": {
+        "verifying": "Verifying your payment...",
+        "thankYou": "Thank You for Your Order!",
+        "orderConfirmed": "Your order has been confirmed and will be shipped soon.",
+        "orderNumber": "Order number",
+        "paymentProcessed": "Payment Processed",
+        "orderProcessingNote": "Your payment was successful, but we couldn't verify all order details. Please contact support if you don't receive a confirmation email.",
+        "continueShopping": "Continue Shopping",
+        "contactSupport": "Contact Support",
+        "whatHappensNext": "What happens next?",
+        "confirmationEmail": "Confirmation Email",
+        "confirmationEmailDesc": "You'll receive an email confirmation with your order details shortly.",
+        "orderProcessing": "Order Processing",
+        "orderProcessingDesc": "We're preparing your items for shipment. This usually takes 1-2 business days.",
+        "trackOrder": "Track Your Order",
+        "trackOrderDesc": "Once shipped, you'll receive tracking information to follow your package.",
+        "viewOrders": "View My Orders"
+    },
     "CheckoutFooter": {
         "allRightsReserved": "All rights reserved."
     },

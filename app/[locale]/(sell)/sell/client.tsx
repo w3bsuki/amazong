@@ -129,6 +129,7 @@ export function SellPageClient({
       <SellForm 
         sellerId={seller.id}
         locale={locale}
+        categories={categories}
       />
     </SellErrorBoundary>
   );
