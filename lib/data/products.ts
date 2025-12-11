@@ -24,6 +24,8 @@ export interface Product {
   category_slug?: string | null
   slug?: string | null
   store_slug?: string | null
+  /** Product attributes (condition, brand, model, etc.) */
+  attributes?: Record<string, string> | null
 }
 
 /** UI-ready product format */
@@ -39,6 +41,18 @@ export interface UIProduct {
   categorySlug?: string
   slug?: string | null
   storeSlug?: string | null
+  /** Item condition (new, like-new, good, fair, poor) */
+  condition?: string
+  /** Brand name */
+  brand?: string
+  /** Vehicle/Product make (for automotive) */
+  make?: string
+  /** Vehicle/Product model */
+  model?: string
+  /** Year (for vehicles, electronics) */
+  year?: string
+  /** Location (for real estate, services) */
+  location?: string
 }
 
 // =============================================================================
@@ -59,12 +73,10 @@ export async function getProducts(type: QueryType, limit = 36): Promise<Product[
   const supabase = createStaticClient()
   if (!supabase) return []
 
-  // Note: Not using join to categories because the foreign key constraint 
-  // (products_category_id_fkey) may not exist in the schema cache.
-  // If category info is needed, fetch it separately or ensure the FK exists.
+  // Join categories to get the slug for category-aware badge display
   let query = supabase
     .from('products')
-    .select('id, title, price, list_price, rating, review_count, images, is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_europe, ships_to_usa, ships_to_worldwide, category_id, slug, sellers(store_slug)')
+    .select('id, title, price, list_price, rating, review_count, images, is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_europe, ships_to_usa, ships_to_worldwide, category_id, slug, attributes, sellers(store_slug), categories(slug)')
 
   switch (type) {
     case 'deals':
@@ -93,8 +105,8 @@ export async function getProducts(type: QueryType, limit = 36): Promise<Product[
   return (data || [])
     .map((p: any) => ({
       ...p,
-      // category_id is selected directly, category_slug not available without FK
-      category_slug: undefined,
+      // Extract category_slug from categories join
+      category_slug: p.categories?.slug ?? null,
       // Extract store_slug from sellers join
       store_slug: p.sellers?.store_slug ?? null
     }))
@@ -160,6 +172,12 @@ export function toUI(p: Product): UIProduct {
     categorySlug: p.category_slug ?? undefined,
     slug: p.slug,
     storeSlug: p.store_slug,
+    condition: p.attributes?.condition,
+    brand: p.attributes?.brand,
+    make: p.attributes?.make,
+    model: p.attributes?.model,
+    year: p.attributes?.year,
+    location: p.attributes?.location,
   }
 }
 

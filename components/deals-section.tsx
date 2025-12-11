@@ -91,22 +91,38 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
             {title}
           </h3>
 
-          {/* Rating - Always show even when 0 */}
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <div className="flex text-rating">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={11}
-                  weight={i < Math.floor(rating) ? "fill" : "regular"}
-                  className={cn(
-                    i < Math.floor(rating) ? "" : "text-rating-empty"
-                  )}
-                />
-              ))}
+          {/* Rating - Hide on mobile if no reviews */}
+          {reviews > 0 ? (
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className="flex text-rating">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    size={11}
+                    weight={i < Math.floor(rating) ? "fill" : "regular"}
+                    className={cn(
+                      i < Math.floor(rating) ? "" : "text-rating-empty"
+                    )}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-muted-foreground">{reviews}</span>
             </div>
-            <span className="text-xs text-muted-foreground">{reviews}</span>
-          </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-1.5 mb-1.5">
+              <div className="flex text-rating">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    size={11}
+                    weight="regular"
+                    className="text-rating-empty"
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-muted-foreground">0</span>
+            </div>
+          )}
 
           {/* Price - With strikethrough */}
           <div className="mt-auto pt-1">
@@ -160,10 +176,10 @@ export function DealsSection({
   }
 
   return (
-    <section className="overflow-hidden">
-      {/* Header Section - Clean eBay-style */}
-      <div className="flex items-center justify-between px-3 pt-2 pb-1 md:px-4 md:pt-4 md:pb-2">
-        <h2 className="text-sm font-semibold text-foreground md:text-base">
+    <section className="overflow-hidden md:rounded-md md:bg-card md:border md:border-border">
+      {/* Header Section */}
+      <div className="flex items-center justify-between px-3 pt-1.5 pb-1 md:block md:text-center md:pt-5 md:pb-3 md:px-4">
+        <h2 className="text-base font-semibold text-foreground md:text-xl md:font-bold md:mb-1.5 md:tracking-tight">
           {title}
         </h2>
         {ctaText && ctaHref && (
@@ -179,18 +195,18 @@ export function DealsSection({
 
       {/* Tabs */}
       <Tabs defaultValue={tabs[0]?.id} className="w-full">
-        {/* Tab List - Hidden on mobile, show on md+ */}
+        {/* Tab List - Hidden on mobile, show on md+ with rounded-full pills */}
         <div className="hidden md:flex justify-center px-4 pb-2 overflow-x-auto no-scrollbar">
-          <TabsList className="h-9 p-1 gap-1 rounded-lg bg-muted border border-border">
+          <TabsList className="h-auto p-1 gap-1 rounded-full bg-muted border border-border">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
                 className={cn(
-                  "px-3 py-1.5 text-xs font-medium rounded-md",
-                  "text-muted-foreground hover:text-foreground",
-                  "data-[state=active]:text-foreground data-[state=active]:bg-background data-[state=active]:shadow-sm",
-                  "whitespace-nowrap"
+                  "px-4 py-2 text-sm font-normal rounded-full",
+                  "text-muted-foreground hover:text-foreground hover:bg-secondary",
+                  "data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
+                  "whitespace-nowrap min-h-10"
                 )}
               >
                 {tab.label}
@@ -204,7 +220,7 @@ export function DealsSection({
           <TabsContent 
             key={tab.id} 
             value={tab.id} 
-            className="mt-0 pb-2 md:pb-4 overflow-hidden"
+            className="mt-0 pb-2 md:pt-4 md:pb-6 overflow-hidden"
           >
             <div className="relative overflow-hidden">
               {/* Scroll Buttons */}
@@ -240,7 +256,7 @@ export function DealsSection({
                 {tab.deals.map((deal) => (
                   <div
                     key={deal.id}
-                    className="w-[40%] min-w-[40%] shrink-0 snap-start sm:w-[30%] sm:min-w-[30%] md:w-44 md:min-w-44"
+                    className="w-[43%] min-w-[43%] shrink-0 snap-start sm:w-[32%] sm:min-w-[32%] md:w-48 md:min-w-48"
                   >
                     <CompactDealCard {...deal} />
                   </div>

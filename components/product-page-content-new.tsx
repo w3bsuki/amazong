@@ -211,7 +211,7 @@ export function ProductPageContent({
                   {sellerData.store_name?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <Link href={`/store/${sellerData.id}`} className="font-medium text-primary hover:underline truncate">
+              <Link href={`/store/${sellerData.store_slug || sellerData.id}`} className="font-medium text-primary hover:underline truncate">
                 {sellerData.store_name}
               </Link>
               <span className="text-muted-foreground shrink-0">
@@ -232,7 +232,7 @@ export function ProductPageContent({
                     {sellerData.store_name?.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <Link href={`/store/${sellerData.id}`} className="font-medium text-primary hover:underline">
+                <Link href={`/store/${sellerData.store_slug || sellerData.id}`} className="font-medium text-primary hover:underline">
                   {sellerData.store_name}
                 </Link>
                 <span className="text-muted-foreground">
@@ -248,7 +248,7 @@ export function ProductPageContent({
                 ))}
               </div>
               <Link 
-                href={`/store/${sellerData.id}`} 
+                href={`/store/${sellerData.store_slug || sellerData.id}`} 
                 className="text-primary hover:underline font-medium shrink-0 ml-auto"
               >
                 {locale === 'bg' ? 'Магазин' : 'Shop store on eBay'}
@@ -537,7 +537,7 @@ export function ProductPageContent({
               <>
                 {/* Mobile: Compact inline seller */}
                 <Link 
-                  href={`/store/${sellerData.id}`}
+                  href={`/store/${sellerData.store_slug || sellerData.id}`}
                   className="inline-flex items-center gap-1.5 mt-1 text-sm group lg:hidden"
                 >
                   <Avatar className="h-5 w-5 border shrink-0">
@@ -557,7 +557,7 @@ export function ProductPageContent({
                 {/* Desktop: Enhanced seller card */}
                 <div className="hidden lg:block mt-4 p-3 bg-muted/30 dark:bg-muted/20 rounded-lg border border-border/50">
                   <Link 
-                    href={`/store/${sellerData.id}`}
+                    href={`/store/${sellerData.store_slug || sellerData.id}`}
                     className="flex items-center gap-3 group"
                   >
                     <Avatar className="h-10 w-10 border bg-background shrink-0">
@@ -788,7 +788,7 @@ export function ProductPageContent({
                 <HoverCard openDelay={200} closeDelay={100}>
                   <HoverCardTrigger asChild>
                     <Link 
-                      href={`/store/${sellerData.id}`}
+                      href={`/store/${sellerData.store_slug || sellerData.id}`}
                       className="flex items-center gap-3 group"
                     >
                       <Avatar className="h-11 w-11 border bg-background shrink-0">
@@ -835,7 +835,7 @@ export function ProductPageContent({
                         return (
                           <Link
                             key={idx}
-                            href={`/store/${sellerData.id}`}
+                            href={`/store/${sellerData.store_slug || sellerData.id}`}
                             className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50"
                           >
                             <div className="w-12 h-12 border rounded bg-white shrink-0 overflow-hidden">
@@ -855,7 +855,7 @@ export function ProductPageContent({
                     </div>
                     <div className="p-2 border-t border-border">
                       <Link
-                        href={`/store/${sellerData.id}`}
+                        href={`/store/${sellerData.store_slug || sellerData.id}`}
                         className="block text-center text-sm text-primary hover:underline py-1"
                       >
                         {locale === 'bg' ? 'Виж всички артикули' : 'View all items'} →

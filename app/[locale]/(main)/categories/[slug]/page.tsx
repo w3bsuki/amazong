@@ -27,6 +27,7 @@ interface Product {
   id: string
   title: string
   price: number
+  list_price: number | null
   images: string[]
   rating: number | null
   review_count: number | null
@@ -34,6 +35,8 @@ interface Product {
   image_url?: string | null
   slug?: string | null
   sellers?: { store_slug: string | null } | null
+  /** Product attributes JSONB (condition, brand, make, model, year, location) */
+  attributes?: Record<string, string> | null
 }
 
 // Generate static params for all categories (for SSG)
@@ -103,7 +106,7 @@ async function searchProducts(
   
   // Build count query
   let countQuery = supabase.from("products").select("*", { count: "exact", head: true })
-  let dbQuery = supabase.from("products").select("*, sellers(store_slug)")
+  let dbQuery = supabase.from("products").select("*, sellers(store_slug), attributes")
   
   if (categoryIds.length > 0) {
     countQuery = countQuery.in("category_id", categoryIds)
@@ -352,6 +355,13 @@ export default async function CategoryPage({
                 variant="grid"
                 slug={product.slug}
                 storeSlug={product.sellers?.store_slug}
+                categorySlug={slug}
+                condition={product.attributes?.condition}
+                brand={product.attributes?.brand}
+                make={product.attributes?.make}
+                model={product.attributes?.model}
+                year={product.attributes?.year}
+                location={product.attributes?.location}
               />
             ))}
           </div>

@@ -1,6 +1,5 @@
 import { Suspense } from "react"
 import { HeroCarousel } from "@/components/hero-carousel"
-import { PromoBannerStrip } from "@/components/promo-banner-strip"
 import { Link } from "@/i18n/routing"
 import { CategoryCircles } from "@/components/category-circles"
 import type { Metadata } from 'next'
@@ -8,7 +7,7 @@ import { PromoCard } from "@/components/promo-card"
 import { getTranslations } from "next-intl/server"
 
 // Async sections using cached data
-import { TrendingSection, FeaturedSection, DealsWrapper, SignInCTA } from "@/components/sections"
+import { TrendingSection, FeaturedSection, DealsWrapper, SignInCTA, NewestListings, NewestListingsSectionSkeleton } from "@/components/sections"
 
 // Skeleton fallbacks
 import { 
@@ -34,26 +33,26 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 function CategoryCards({ locale, t }: { locale: string; t: (key: string) => string }) {
   return (
-    <div className="pt-2 pb-1">
+    <div className="pt-1 pb-0.5 sm:pt-2 sm:pb-1">
       {/* Section Header */}
-      <div className="flex items-center justify-between px-3 mb-1.5 md:px-4 md:mb-2">
-        <h2 className="text-sm font-semibold text-foreground md:text-base">
+      <div className="flex items-center justify-between px-3 mb-1.5 sm:px-0 sm:mb-2">
+        <h2 className="text-base font-semibold text-foreground sm:text-lg">
           {locale === "bg" ? "Разгледай по категория" : "Shop by Department"}
         </h2>
         <Link 
           href="/categories" 
-          className="text-xs text-brand-blue hover:underline md:text-sm"
+          className="text-xs text-brand-blue hover:underline sm:text-sm"
         >
           {locale === "bg" ? "Виж всички" : "See all"}
         </Link>
       </div>
       
       {/* Scrollable container on mobile, grid on desktop */}
-      <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pb-2 px-3 no-scrollbar scroll-pl-3 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-4 md:overflow-visible md:pb-0 md:px-4">
+      <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pb-2 px-3 no-scrollbar scroll-pl-3 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 sm:overflow-visible sm:pb-0 sm:px-0">
         
         {/* Computers Card */}
-        <div className="w-[70%] min-w-[70%] sm:w-[48%] sm:min-w-[48%] shrink-0 snap-start md:w-auto md:min-w-0 bg-card rounded-lg p-3 border border-border/50 md:border-border md:p-3 shadow-sm">
-          <h3 className="text-sm sm:text-base font-semibold text-foreground mb-2 sm:mb-2.5">
+        <div className="w-[70%] min-w-[70%] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3">
+          <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
             {locale === "bg" ? "Компютри" : "Computers"}
           </h3>
           <div className="grid grid-cols-2 gap-2 md:gap-2">
@@ -88,8 +87,8 @@ function CategoryCards({ locale, t }: { locale: string; t: (key: string) => stri
         </div>
 
         {/* Home & Kitchen Card */}
-        <div className="w-[70%] min-w-[70%] sm:w-[48%] sm:min-w-[48%] shrink-0 snap-start md:w-auto md:min-w-0 bg-card rounded-lg p-3 border border-border/50 md:border-border md:p-3 shadow-sm">
-          <h3 className="text-sm sm:text-base font-semibold text-foreground mb-2 sm:mb-2.5">
+        <div className="w-[70%] min-w-[70%] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3">
+          <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
             {locale === "bg" ? "Дом и кухня" : "Home"}
           </h3>
           <div className="grid grid-cols-2 gap-2 md:gap-2">
@@ -124,8 +123,8 @@ function CategoryCards({ locale, t }: { locale: string; t: (key: string) => stri
         </div>
 
         {/* Fashion Card */}
-        <div className="w-[70%] min-w-[70%] sm:w-[48%] sm:min-w-[48%] shrink-0 snap-start md:w-auto md:min-w-0 bg-card rounded-lg p-3 border border-border/50 md:border-border md:p-3 shadow-sm">
-          <h3 className="text-sm sm:text-base font-semibold text-foreground mb-2 sm:mb-2.5">
+        <div className="w-[70%] min-w-[70%] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3">
+          <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
             {locale === "bg" ? "Мода" : "Fashion"}
           </h3>
           <div className="grid grid-cols-2 gap-2 md:gap-2">
@@ -160,8 +159,8 @@ function CategoryCards({ locale, t }: { locale: string; t: (key: string) => stri
         </div>
 
         {/* Beauty Card */}
-        <div className="w-[70%] min-w-[70%] sm:w-[48%] sm:min-w-[48%] shrink-0 snap-start md:w-auto md:min-w-0 bg-card rounded-lg p-3 border border-border/50 md:border-border md:p-3 shadow-sm mr-3 md:mr-0">
-          <h3 className="text-sm sm:text-base font-semibold text-foreground mb-2 sm:mb-2.5">
+        <div className="w-[70%] min-w-[70%] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3 mr-1 sm:mr-0">
+          <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
             {locale === "bg" ? "Красота" : "Beauty"}
           </h3>
           <div className="grid grid-cols-2 gap-2 md:gap-2">
@@ -201,8 +200,8 @@ function CategoryCards({ locale, t }: { locale: string; t: (key: string) => stri
 
 function PromoCards({ locale }: { locale: string }) {
   return (
-    <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pb-2 px-3 mt-4 md:mt-6 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-3 md:overflow-visible md:pb-0 no-scrollbar scroll-pl-3">
-      <div className="w-[65%] min-w-[65%] sm:w-[44%] sm:min-w-[44%] shrink-0 snap-start md:w-auto md:min-w-0">
+    <div className="flex gap-2 overflow-x-auto snap-x snap-mandatory pb-2 px-3 mt-4 sm:mt-6 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-3 sm:overflow-visible sm:pb-0 no-scrollbar scroll-pl-3">
+      <div className="w-[65%] min-w-[65%] shrink-0 snap-start sm:w-auto sm:min-w-0">
         <PromoCard
           bgImage="https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=800&q=80"
           dealText={locale === "bg" ? "Спести до" : "Save up to"}
@@ -211,7 +210,7 @@ function PromoCards({ locale }: { locale: string }) {
           href="/search?category=electronics&brand=apple"
         />
       </div>
-      <div className="w-[65%] min-w-[65%] sm:w-[44%] sm:min-w-[44%] shrink-0 snap-start md:w-auto md:min-w-0">
+      <div className="w-[65%] min-w-[65%] shrink-0 snap-start sm:w-auto sm:min-w-0">
         <PromoCard
           bgImage="https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=800&q=80"
           dealText={locale === "bg" ? "До" : "Up to"}
@@ -221,7 +220,7 @@ function PromoCards({ locale }: { locale: string }) {
           badge={locale === "bg" ? "🔥 Гореща" : "🔥 Hot"}
         />
       </div>
-      <div className="w-[65%] min-w-[65%] sm:w-[44%] sm:min-w-[44%] shrink-0 snap-start md:w-auto md:min-w-0">
+      <div className="w-[65%] min-w-[65%] shrink-0 snap-start sm:w-auto sm:min-w-0">
         <PromoCard
           bgImage="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
           dealText={locale === "bg" ? "До" : "Up to"}
@@ -230,7 +229,7 @@ function PromoCards({ locale }: { locale: string }) {
           href="/search?category=electronics"
         />
       </div>
-      <div className="w-[65%] min-w-[65%] sm:w-[44%] sm:min-w-[44%] shrink-0 snap-start md:w-auto md:min-w-0 mr-3 md:mr-0">
+      <div className="w-[65%] min-w-[65%] shrink-0 snap-start sm:w-auto sm:min-w-0 mr-1 sm:mr-0">
         <PromoCard
           bgImage="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80"
           dealText={locale === "bg" ? "До" : "Up to"}
@@ -269,13 +268,13 @@ function MoreWaysToShop({ locale }: { locale: string }) {
   ]
 
   return (
-    <div className="mt-2 px-3 md:mt-4 md:px-0">
-      <h2 className="text-sm font-semibold text-foreground mb-1.5 md:text-base md:mb-3">
+    <div className="mt-1.5 px-3 sm:mt-4 sm:px-0">
+      <h2 className="text-base font-semibold text-foreground mb-1.5 sm:text-lg sm:mb-3">
         {locale === "bg" ? "Още начини за пазаруване" : "More ways to shop"}
       </h2>
       
       {/* Mobile: 2x2 grid | Desktop: 4-col grid */}
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-4">
         {cards.map((card) => (
           <Link 
             key={card.href}
@@ -327,10 +326,17 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const t = await getTranslations('Home')
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-background pb-20">
+    <main className="flex min-h-screen flex-col items-center bg-background md:bg-muted pb-20">
       {/* 
-        MOBILE: Category circles first (right under search), then promo banner
-        DESKTOP: Full hero carousel 
+        MOBILE LAYOUT (optimized for conversion - Vinted/OLX pattern):
+        1. Header (compact)
+        2. Category Circles (quick navigation)
+        3. CTA Banner (seller/buyer actions)
+        4. Промотирани Section (promoted products)
+        5. Най-нови обяви (infinite scroll - THE MAIN CONTENT)
+        
+        DESKTOP LAYOUT (keeps existing Amazon-style):
+        Full hero carousel + all sections
       */}
       
       {/* Category Circles - First thing after header on mobile */}
@@ -338,61 +344,80 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <CategoryCircles locale={locale} />
       </div>
       
-      {/* Promo Banner - After circles on mobile */}
-      <div className="w-full md:hidden">
-        <PromoBannerStrip locale={locale} />
-      </div>
-      
       {/* Desktop: Full hero carousel */}
       <div className="hidden md:block w-full">
         <HeroCarousel locale={locale} />
       </div>
 
-      {/* Main Content Container */}
-      <div className="w-full px-0 md:container relative z-10 pb-6">
+      {/* Main Content Container - overlaps hero like Amazon on desktop */}
+      <div className="w-full px-0 md:container relative z-10 pb-6 md:-mt-28 lg:-mt-32">
         
         {/* Desktop: Category Circles after hero */}
-        <div className="hidden md:block mt-4">
+        <div className="hidden md:block md:mt-4">
           <CategoryCircles locale={locale} />
         </div>
 
         {/* 2. Trending/Popular Products - Async with Suspense (first product section) */}
-        <div className="mt-3 sm:mt-6">
+        <div className="md:mt-6 md:mx-0">
           <Suspense fallback={<TrendingSectionSkeleton />}>
             <TrendingSection />
           </Suspense>
         </div>
 
-        {/* 3. Shop by Department Cards - Horizontally scrollable on mobile, grid on desktop */}
-        <div className="mt-4 sm:mt-6">
-          <CategoryCards locale={locale} t={(key) => t(key)} />
+        {/* ================================================================
+            MOBILE: Infinite Scroll "Newest Listings" replaces all below
+            DESKTOP: Keep all sections for rich browsing experience
+            ================================================================ */}
+        
+        {/* MOBILE ONLY: Newest Listings with Infinite Scroll */}
+        <div className="md:hidden">
+          <Suspense fallback={<NewestListingsSectionSkeleton />}>
+            <NewestListings />
+          </Suspense>
+          
+          {/* Sign In CTA - At the end on mobile */}
+          <div className="px-3 pt-3">
+            <Suspense fallback={<SignInCtaSkeleton />}>
+              <SignInCTA />
+            </Suspense>
+          </div>
         </div>
 
-        {/* 4. Featured/Recommended Products - Async with Suspense */}
-        <div className="mt-4 sm:mt-6">
-          <Suspense fallback={<FeaturedSectionSkeleton />}>
-            <FeaturedSection />
-          </Suspense>
-        </div>
+        {/* DESKTOP ONLY: Full browsing experience */}
+        <div className="hidden md:block">
+          {/* 3. Shop by Department Cards - Grid on desktop */}
+          <div className="mt-6">
+            <CategoryCards locale={locale} t={(key) => t(key)} />
+          </div>
 
-        {/* 5. Promo Cards - Static, no data fetching */}
-        <PromoCards locale={locale} />
+          {/* 4. Featured/Recommended Products - Async with Suspense */}
+          <div className="mt-6 mx-0">
+            <Suspense fallback={<FeaturedSectionSkeleton />}>
+              <FeaturedSection />
+            </Suspense>
+          </div>
 
-        {/* 6. Deals of the Day - Async with Suspense */}
-        <div className="mt-3 sm:mt-6">
-          <Suspense fallback={<DealsSectionSkeleton />}>
-            <DealsWrapper />
-          </Suspense>
-        </div>
+          {/* 5. Promo Cards - Static, no data fetching */}
+          <div className="mt-6">
+            <PromoCards locale={locale} />
+          </div>
 
-        {/* 7. More Ways to Shop - Static, no data fetching */}
-        <MoreWaysToShop locale={locale} />
+          {/* 6. Deals of the Day - Async with Suspense */}
+          <div className="mt-6 mx-0">
+            <Suspense fallback={<DealsSectionSkeleton />}>
+              <DealsWrapper />
+            </Suspense>
+          </div>
 
-        {/* 8. Sign In CTA - Async with Suspense (only section needing auth) */}
-        <div className="mt-3 sm:mt-6 px-2 md:px-0">
-          <Suspense fallback={<SignInCtaSkeleton />}>
-            <SignInCTA />
-          </Suspense>
+          {/* 7. More Ways to Shop - Static, no data fetching */}
+          <MoreWaysToShop locale={locale} />
+
+          {/* 8. Sign In CTA - Async with Suspense (only section needing auth) */}
+          <div className="mt-6 px-0">
+            <Suspense fallback={<SignInCtaSkeleton />}>
+              <SignInCTA />
+            </Suspense>
+          </div>
         </div>
       </div>
     </main>

@@ -18,6 +18,7 @@ import { CategorySubheader } from "@/components/navigation/category-subheader"
 import { SidebarMenu } from "@/components/sidebar-menu"
 import { MobileSearchOverlay } from "@/components/mobile-search-overlay"
 import { MobileCartDropdown } from "@/components/mobile-cart-dropdown"
+import { MobileWishlistButton } from "@/components/mobile-wishlist-button"
 import { DesktopSearch } from "@/components/desktop-search"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { MagnifyingGlass, Camera } from "@phosphor-icons/react"
@@ -72,6 +73,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
           <div className="flex-1" />
           <div className="flex items-center -mr-1">
             <MobileSearchOverlay />
+            <MobileWishlistButton />
             <MobileCartDropdown />
           </div>
         </div>

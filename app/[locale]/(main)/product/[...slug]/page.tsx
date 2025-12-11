@@ -282,10 +282,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
     parentCategory = parent
   }
 
-  // Fetch related products (with seller's store_slug for URLs)
+  // Fetch related products (with seller's store_slug for URLs and attributes for badges)
   const { data: relatedProducts } = await supabase
     .from("products")
-    .select("*, sellers(store_slug)")
+    .select("*, sellers(store_slug), categories(slug), attributes")
     .neq("id", product.id)
     .limit(6)
 
@@ -380,6 +380,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     variant="compact"
                     slug={p.slug}
                     storeSlug={p.sellers?.store_slug}
+                    categorySlug={p.categories?.slug}
+                    condition={p.attributes?.condition}
+                    brand={p.attributes?.brand}
+                    make={p.attributes?.make}
+                    model={p.attributes?.model}
+                    year={p.attributes?.year}
+                    location={p.attributes?.location}
                   />
                 </div>
               ))}
@@ -403,6 +410,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 variant="compact"
                 slug={p.slug}
                 storeSlug={p.sellers?.store_slug}
+                categorySlug={p.categories?.slug}
+                condition={p.attributes?.condition}
+                brand={p.attributes?.brand}
+                make={p.attributes?.make}
+                model={p.attributes?.model}
+                year={p.attributes?.year}
+                location={p.attributes?.location}
               />
             ))}
           </div>

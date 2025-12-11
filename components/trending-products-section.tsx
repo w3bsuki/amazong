@@ -4,9 +4,9 @@ import { useRef, useState, useCallback } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { CaretLeft, CaretRight, Star, TrendUp, Tag, CurrencyCircleDollar } from "@phosphor-icons/react"
-import { useLocale, useTranslations } from "next-intl"
-import Image from "next/image"
+import { CaretLeft, CaretRight, TrendUp, Tag, CurrencyCircleDollar } from "@phosphor-icons/react"
+import { useLocale } from "next-intl"
+import { ProductCard } from "@/components/product-card"
 
 interface Product {
   id: string
@@ -31,119 +31,13 @@ interface TrendingProductsSectionProps {
   ctaHref?: string
 }
 
-// Compact Product Card with optional discount badge
-function CompactProductCard({ 
-  id, 
-  title, 
-  price, 
-  listPrice,
-  image, 
-  rating = 0, 
-  reviews = 0,
-  slug,
-  storeSlug
-}: Product) {
-  const locale = useLocale()
-  const t = useTranslations('Product')
-  
-  // Use store slug + product slug for SEO-friendly URLs
-  const productUrl = storeSlug && slug 
-    ? `/product/${storeSlug}/${slug}` 
-    : `/product/${slug || id}`
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
-    }).format(price)
-  }
-
-  const hasDiscount = listPrice && listPrice > price
-  const discountPercent = hasDiscount 
-    ? Math.round(((listPrice - price) / listPrice) * 100) 
-    : 0
-
-  const deliveryDate = new Date()
-  deliveryDate.setDate(deliveryDate.getDate() + 2)
-  const formattedDate = new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'numeric', day: 'numeric' }).format(deliveryDate)
-
-  return (
-    <Link href={productUrl} className="block h-full group">
-      <div className="rounded-md overflow-hidden h-full flex flex-col bg-card border border-border">
-        {/* Square Image Container with optional discount badge */}
-        <div className="relative w-full aspect-square bg-secondary rounded-md p-2 flex items-center justify-center overflow-hidden">
-          {hasDiscount && (
-            <div className="absolute top-2 left-2 z-10 bg-deal text-white text-xs font-medium px-1.5 py-0.5 rounded">
-              -{discountPercent}%
-            </div>
-          )}
-          <div className="relative w-full h-full">
-            <Image
-              src={image || "/placeholder.svg"}
-              alt={title}
-              fill
-              className="object-contain"
-              sizes="180px"
-            />
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-2 md:p-2.5 flex-1 flex flex-col">
-          {/* Title */}
-          <h3 className="text-xs font-medium text-foreground line-clamp-2 mb-1 leading-tight md:text-sm group-hover:underline">
-            {title}
-          </h3>
-
-          {/* Rating - Always show even when 0 */}
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <div className="flex text-rating">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={11}
-                  weight={i < Math.floor(rating) ? "fill" : "regular"}
-                  className={cn(
-                    i < Math.floor(rating) ? "" : "text-rating-empty"
-                  )}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-muted-foreground">{reviews}</span>
-          </div>
-
-          {/* Price */}
-          <div className="mt-auto pt-1">
-            <div className="flex items-baseline gap-1.5">
-              <span className={cn(
-                "text-sm font-normal",
-                hasDiscount ? "text-deal" : "text-foreground"
-              )}>
-                {formatPrice(price)}
-              </span>
-              {hasDiscount && (
-                <span className="text-xs text-muted-foreground line-through">
-                  {formatPrice(listPrice)}
-                </span>
-              )}
-            </div>
-            <div className="text-xs text-muted-foreground mt-0.5">
-              {t('delivery')} {formattedDate}
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  )
-}
-
 export function TrendingProductsSection({
   title,
   newestProducts,
   promoProducts,
   bestSellersProducts,
   ctaText,
-  ctaHref,
+  ctaHref
 }: TrendingProductsSectionProps) {
   const locale = useLocale()
   const scrollContainerRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -179,16 +73,16 @@ export function TrendingProductsSection({
   }
 
   return (
-    <section className="overflow-hidden">
-      {/* Header Section */}
-      <div className="flex items-center justify-between px-3 pt-2 pb-1 md:px-4 md:pt-4 md:pb-2">
-        <h2 className="text-sm font-semibold text-foreground md:text-base">
+    <section className="overflow-hidden md:bg-card md:border md:border-border md:rounded-md">
+      {/* Header Section - Full-width banner on mobile for visual continuity */}
+      <div className="bg-cta-trust-blue text-cta-trust-blue-text px-3 py-2 flex items-center justify-between md:rounded-none md:bg-transparent md:text-foreground md:block md:text-center md:pt-5 md:pb-3 md:px-4">
+        <h2 className="text-sm font-semibold md:text-xl md:font-bold md:mb-1.5 md:tracking-tight">
           {title}
         </h2>
         {ctaText && ctaHref && (
           <Link 
             href={ctaHref} 
-            className="text-xs font-medium hover:underline inline-flex items-center gap-0.5 text-brand-blue md:text-sm"
+            className="text-xs font-medium hover:underline inline-flex items-center gap-0.5 text-white/90 md:text-brand-blue md:text-sm"
           >
             {ctaText}
             <CaretRight size={14} weight="regular" />
@@ -200,7 +94,7 @@ export function TrendingProductsSection({
       <Tabs defaultValue="newest" className="w-full">
         {/* Tab List - Hidden on mobile, show on md+ */}
         <div className="hidden md:flex justify-center px-4 pb-2 overflow-x-auto no-scrollbar">
-          <TabsList className="h-9 p-1 gap-1 rounded-lg bg-muted border border-border">
+          <TabsList className="h-auto p-1 gap-1 rounded-full bg-muted border border-border">
             {tabs.map((tab) => {
               const Icon = tab.icon
               return (
@@ -208,10 +102,10 @@ export function TrendingProductsSection({
                   key={tab.id}
                   value={tab.id}
                   className={cn(
-                    "px-3 py-1.5 text-xs font-medium rounded-md",
-                    "text-muted-foreground hover:text-foreground",
-                    "data-[state=active]:text-foreground data-[state=active]:bg-background data-[state=active]:shadow-sm",
-                    "whitespace-nowrap flex items-center gap-1.5"
+                    "px-4 py-2 text-sm font-normal rounded-full",
+                    "text-muted-foreground hover:text-foreground hover:bg-secondary",
+                    "data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
+                    "whitespace-nowrap min-h-10 flex items-center gap-1.5"
                   )}
                 >
                   <Icon size={14} weight="regular" />
@@ -227,7 +121,7 @@ export function TrendingProductsSection({
           <TabsContent 
             key={tab.id} 
             value={tab.id} 
-            className="mt-0 pb-2 md:pb-4 overflow-hidden"
+            className="mt-1 pb-1 md:mt-0 md:pt-4 md:pb-6 overflow-hidden"
           >
             <div className="relative overflow-hidden">
               {/* Scroll Buttons */}
@@ -261,12 +155,16 @@ export function TrendingProductsSection({
                 className="flex flex-row flex-nowrap gap-2 overflow-x-auto snap-x snap-mandatory scroll-pl-3 px-3 pb-1 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
               >
                 {tab.products.length > 0 ? (
-                  tab.products.map((product) => (
+                  tab.products.map((product, index) => (
                     <div
                       key={product.id}
-                      className="w-[40%] min-w-[40%] shrink-0 snap-start sm:w-[30%] sm:min-w-[30%] md:w-44 md:min-w-44"
+                      className="w-[calc(50%-0.5rem)] min-w-[calc(50%-0.5rem)] shrink-0 snap-start sm:w-[32%] sm:min-w-[32%] md:w-48 md:min-w-48"
                     >
-                      <CompactProductCard {...product} />
+                      <ProductCard
+                        variant="compact"
+                        index={index}
+                        {...product}
+                      />
                     </div>
                   ))
                 ) : (

@@ -3,10 +3,8 @@
 import { useRef, useState, useCallback } from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { CaretLeft, CaretRight, Star, Lightning, Medal, Briefcase } from "@phosphor-icons/react"
-import { useLocale, useTranslations } from "next-intl"
-import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
+import { CaretLeft, CaretRight } from "@phosphor-icons/react"
+import { ProductCard } from "@/components/product-card"
 
 interface FeaturedProduct {
   id: string
@@ -29,141 +27,6 @@ interface FeaturedProductsSectionProps {
   products: FeaturedProduct[]
   ctaText?: string
   ctaHref?: string
-}
-
-// Featured Product Card
-function FeaturedProductCard({ 
-  id, 
-  title, 
-  price, 
-  listPrice,
-  image, 
-  rating = 0, 
-  reviews = 0,
-  isBoosted,
-  sellerTier,
-  slug,
-  storeSlug
-}: FeaturedProduct) {
-  const locale = useLocale()
-  const t = useTranslations('Product')
-  
-  // Use store slug + product slug for SEO-friendly URLs
-  const productUrl = storeSlug && slug 
-    ? `/product/${storeSlug}/${slug}` 
-    : `/product/${slug || id}`
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
-    }).format(price)
-  }
-
-  const hasDiscount = listPrice && listPrice > price
-  const discountPercent = hasDiscount 
-    ? Math.round(((listPrice - price) / listPrice) * 100) 
-    : 0
-
-  const deliveryDate = new Date()
-  deliveryDate.setDate(deliveryDate.getDate() + 2)
-  const formattedDate = new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'numeric', day: 'numeric' }).format(deliveryDate)
-
-  return (
-    <Link href={productUrl} className="block h-full group">
-      <div className="rounded-md overflow-hidden h-full flex flex-col bg-card border border-border relative">
-        {/* Boosted Indicator */}
-        {isBoosted && (
-          <div className="absolute top-0 left-0 right-0 bg-primary text-primary-foreground text-xs font-medium py-0.5 text-center flex items-center justify-center gap-1 z-20">
-            <Lightning size={10} weight="fill" />
-            <span>{locale === 'bg' ? 'Промотирано' : 'Boosted'}</span>
-          </div>
-        )}
-        
-        {/* Square Image Container */}
-        <div className={cn(
-          "relative w-full aspect-square bg-secondary rounded-md p-2 flex items-center justify-center overflow-hidden",
-          isBoosted && "pt-6"
-        )}>
-          {/* Discount Badge */}
-          {hasDiscount && (
-            <div className="absolute top-2 left-2 z-10 bg-deal text-white text-xs font-medium px-1.5 py-0.5 rounded">
-              -{discountPercent}%
-            </div>
-          )}
-          
-          {/* Seller Tier Badge */}
-          {sellerTier === 'premium' && (
-            <Badge className="absolute top-2 right-2 z-10 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 border-0">
-              <Medal size={10} weight="fill" className="mr-0.5" />
-              {locale === 'bg' ? 'Премиум' : 'Premium'}
-            </Badge>
-          )}
-          {sellerTier === 'business' && (
-            <Badge className="absolute top-2 right-2 z-10 bg-foreground text-background text-xs px-1.5 py-0.5 border-0">
-              <Briefcase size={10} weight="fill" className="mr-0.5" />
-              {locale === 'bg' ? 'Бизнес' : 'Business'}
-            </Badge>
-          )}
-          
-          <div className="relative w-full h-full">
-            <Image
-              src={image || "/placeholder.svg"}
-              alt={title}
-              fill
-              className="object-contain"
-              sizes="180px"
-            />
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-2 md:p-2.5 flex-1 flex flex-col">
-          {/* Title */}
-          <h3 className="text-xs font-medium text-foreground line-clamp-2 mb-1 leading-tight md:text-sm group-hover:underline">
-            {title}
-          </h3>
-
-          {/* Rating - Always show even when 0 */}
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <div className="flex text-rating">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={11}
-                  weight={i < Math.floor(rating) ? "fill" : "regular"}
-                  className={cn(
-                    i < Math.floor(rating) ? "" : "text-rating-empty"
-                  )}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-muted-foreground">{reviews}</span>
-          </div>
-
-          {/* Price */}
-          <div className="mt-auto pt-1">
-            <div className="flex items-baseline gap-1.5">
-              <span className={cn(
-                "text-sm sm:text-base font-medium",
-                hasDiscount ? "text-deal" : "text-foreground"
-              )}>
-                {formatPrice(price)}
-              </span>
-              {hasDiscount && (
-                <span className="text-xs text-muted-foreground line-through">
-                  {formatPrice(listPrice)}
-                </span>
-              )}
-            </div>
-            <div className="text-xs text-muted-foreground mt-0.5">
-              {t('delivery')} {formattedDate}
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  )
 }
 
 export function FeaturedProductsSection({
@@ -197,11 +60,11 @@ export function FeaturedProductsSection({
   }
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden md:bg-card md:border md:border-border md:rounded-md">
       {/* Header Section */}
-      <div className="flex items-center justify-between px-3 pt-2 pb-1 md:px-4 md:pt-4 md:pb-2">
-        <div>
-          <h2 className="text-sm font-semibold text-foreground md:text-base">
+      <div className="flex items-center justify-between px-3 pt-1.5 pb-1 md:block md:text-center md:pt-5 md:pb-3 md:px-4">
+        <div className="md:mb-1.5">
+          <h2 className="text-base font-semibold text-foreground md:text-xl md:font-semibold md:tracking-tight">
             {title}
           </h2>
           {subtitle && (
@@ -220,7 +83,7 @@ export function FeaturedProductsSection({
       </div>
 
       {/* Products Carousel */}
-      <div className="relative overflow-hidden pb-2 md:pb-4">
+      <div className="relative overflow-hidden pb-2 md:pb-6">
         {/* Scroll Buttons */}
         <button
           onClick={() => scroll("left")}
@@ -251,12 +114,16 @@ export function FeaturedProductsSection({
           onScroll={checkScrollability}
           className="flex flex-row flex-nowrap gap-2 overflow-x-auto snap-x snap-mandatory scroll-pl-3 px-3 pb-1 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
         >
-          {products.map((product) => (
+          {products.map((product, index) => (
             <div
               key={product.id}
-              className="w-[40%] min-w-[40%] shrink-0 snap-start sm:w-[30%] sm:min-w-[30%] md:w-44 md:min-w-44"
+              className="w-[43%] min-w-[43%] shrink-0 snap-start sm:w-[32%] sm:min-w-[32%] md:w-48 md:min-w-48"
             >
-              <FeaturedProductCard {...product} />
+              <ProductCard
+                variant="featured"
+                index={index}
+                {...product}
+              />
             </div>
           ))}
         </div>

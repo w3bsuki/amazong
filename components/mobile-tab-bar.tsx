@@ -1,14 +1,17 @@
 "use client"
 
 import * as React from "react"
-import { House, Heart, ChatCircle, User, PlusCircle } from "@phosphor-icons/react"
+import { useRef } from "react"
+import { House, SquaresFour, ChatCircle, User, PlusCircle } from "@phosphor-icons/react"
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
+import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile-menu-sheet"
 
 export function MobileTabBar() {
   const pathname = usePathname()
   const t = useTranslations("Navigation")
+  const menuSheetRef = useRef<MobileMenuSheetHandle>(null)
 
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/"
@@ -40,22 +43,20 @@ export function MobileTabBar() {
             <span className="text-[10px] font-medium">{t("home")}</span>
           </Link>
 
-          {/* Wishlist */}
-          <Link
-            href="/wishlist"
-            prefetch={true}
+          {/* Categories - Opens drawer with category circles */}
+          <button
+            onClick={() => menuSheetRef.current?.open()}
             className={cn(
               "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
-              isActive("/wishlist") ? "text-brand" : "text-muted-foreground"
+              isActive("/categories") ? "text-brand" : "text-muted-foreground"
             )}
-            aria-label={t("wishlist")}
-            aria-current={isActive("/wishlist") ? "page" : undefined}
+            aria-label={t("categories")}
           >
-            <Heart size={22} weight={isActive("/wishlist") ? "fill" : "regular"} />
-            <span className="text-[10px] font-medium">{t("wishlist")}</span>
-          </Link>
+            <SquaresFour size={22} weight={isActive("/categories") ? "fill" : "regular"} />
+            <span className="text-[10px] font-medium">{t("categories")}</span>
+          </button>
 
           {/* Sell */}
           <Link
@@ -109,6 +110,9 @@ export function MobileTabBar() {
         </Link>
       </div>
     </nav>
+    
+    {/* Mobile Menu Sheet with category circles */}
+    <MobileMenuSheet ref={menuSheetRef} />
   </>
   )
 }

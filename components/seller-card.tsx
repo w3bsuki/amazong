@@ -23,6 +23,7 @@ import { ContactSellerButton } from "./contact-seller-button"
 interface SellerInfo {
   id: string
   store_name: string
+  store_slug?: string  // SEO-friendly URL slug
   avatar_url?: string | null
   description?: string | null
   verified?: boolean
@@ -112,7 +113,7 @@ export function SellerCard({
   if (variant === "mini") {
     return (
       <div className={`flex items-center gap-3 py-2 ${className}`}>
-        <Link href={`/store/${seller.id}`} className="shrink-0">
+        <Link href={`/store/${seller.store_slug || seller.id}`} className="shrink-0">
           <Avatar className="h-8 w-8 border">
             <AvatarImage src={seller.avatar_url || undefined} alt={seller.store_name} />
             <AvatarFallback className="text-xs bg-muted">
@@ -122,7 +123,7 @@ export function SellerCard({
         </Link>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
           <Link 
-            href={`/store/${seller.id}`} 
+            href={`/store/${seller.store_slug || seller.id}`} 
             className="font-medium text-link hover:text-link-hover hover:underline"
           >
             {seller.store_name}
@@ -134,7 +135,7 @@ export function SellerCard({
           )}
           <span className="text-muted-foreground">|</span>
           <Link 
-            href={`/store/${seller.id}`}
+            href={`/store/${seller.store_slug || seller.id}`}
             className="text-link hover:text-link-hover hover:underline"
           >
             {t("sellersOtherItems")}
@@ -171,7 +172,7 @@ export function SellerCard({
       <Card className={`overflow-hidden ${className}`}>
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
-            <Link href={`/store/${seller.id}`}>
+            <Link href={`/store/${seller.store_slug || seller.id}`}>
               <Avatar className="h-12 w-12 border">
                 <AvatarImage src={seller.avatar_url || undefined} alt={seller.store_name} />
                 <AvatarFallback className="bg-muted">
@@ -182,7 +183,7 @@ export function SellerCard({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <Link 
-                  href={`/store/${seller.id}`}
+                  href={`/store/${seller.store_slug || seller.id}`}
                   className="font-semibold text-foreground hover:text-link hover:underline truncate"
                 >
                   {seller.store_name}
@@ -209,7 +210,7 @@ export function SellerCard({
           {showContact && productId && productTitle && (
             <div className="flex gap-2 mt-4">
               <Button variant="outline" size="sm" className="flex-1" asChild>
-                <Link href={`/store/${seller.id}`}>
+                <Link href={`/store/${seller.store_slug || seller.id}`}>
                   <Storefront className="h-4 w-4 mr-2" />
                   {t("visitStore")}
                 </Link>
@@ -242,7 +243,7 @@ export function SellerCard({
 
         {/* Seller Info */}
         <div className="flex items-start gap-4">
-          <Link href={`/store/${seller.id}`}>
+          <Link href={`/store/${seller.store_slug || seller.id}`}>
             <Avatar className="h-16 w-16 border-2">
               <AvatarImage src={seller.avatar_url || undefined} alt={seller.store_name} />
               <AvatarFallback className="text-lg bg-muted">
@@ -253,7 +254,7 @@ export function SellerCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <Link 
-                href={`/store/${seller.id}`}
+                href={`/store/${seller.store_slug || seller.id}`}
                 className="text-xl font-semibold text-foreground hover:text-link hover:underline"
               >
                 {seller.store_name}
@@ -307,7 +308,7 @@ export function SellerCard({
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2 mt-6">
           <Button variant="outline" size="sm" asChild>
-            <Link href={`/store/${seller.id}`}>
+            <Link href={`/store/${seller.store_slug || seller.id}`}>
               <Storefront className="h-4 w-4 mr-2" />
               {t("visitStore")}
             </Link>

@@ -13,9 +13,7 @@ import { Link } from "@/i18n/routing"
 import { 
   X, 
   CaretRight, 
-  Tag, 
   Heart, 
-  Package,
   User,
   Question,
   Gear,
@@ -23,7 +21,6 @@ import {
   DeviceMobile,
   Laptop,
   GameController,
-  House,
   TShirt,
   Sparkle,
   Baby,
@@ -37,9 +34,18 @@ import {
   List,
   Lightning,
   Medal,
-  ChatCircle,
   Storefront,
   ClockCounterClockwise,
+  ShoppingBag,
+  Headphones,
+  Desktop,
+  Armchair,
+  CookingPot,
+  Sneaker,
+  Watch,
+  Diamond,
+  Gift,
+  type Icon as PhosphorIcon
 } from "@phosphor-icons/react"
 import { useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
@@ -51,24 +57,45 @@ interface Category {
   slug: string
 }
 
-// Professional Phosphor icons for categories
-const categoryIconMap: Record<string, React.ReactNode> = {
-  electronics: <DeviceMobile size={20} weight="regular" />,
-  computers: <Laptop size={20} weight="regular" />,
-  gaming: <GameController size={20} weight="regular" />,
-  "smart-home": <House size={20} weight="regular" />,
-  home: <House size={20} weight="regular" />,
-  fashion: <TShirt size={20} weight="regular" />,
-  beauty: <Sparkle size={20} weight="regular" />,
-  toys: <GameController size={20} weight="regular" />,
-  sports: <Football size={20} weight="regular" />,
-  books: <Book size={20} weight="regular" />,
-  automotive: <Car size={20} weight="regular" />,
-  garden: <Flower size={20} weight="regular" />,
-  health: <FirstAidKit size={20} weight="regular" />,
-  baby: <Baby size={20} weight="regular" />,
-  pets: <PawPrint size={20} weight="regular" />,
-  office: <Briefcase size={20} weight="regular" />,
+// Map category slugs to Phosphor icons - same as category-circles.tsx
+const categoryIcons: Record<string, PhosphorIcon> = {
+  "electronics": Headphones,
+  "computers": Desktop,
+  "laptops": Laptop,
+  "phones": DeviceMobile,
+  "gaming": GameController,
+  "home": Armchair,
+  "furniture": Armchair,
+  "kitchen": CookingPot,
+  "fashion": TShirt,
+  "clothing": TShirt,
+  "shoes": Sneaker,
+  "accessories": Watch,
+  "beauty": Flower,
+  "cosmetics": Sparkle,
+  "health": FirstAidKit,
+  "baby": Baby,
+  "toys": GameController,
+  "sports": Football,
+  "automotive": Car,
+  "books": Book,
+  "pets": PawPrint,
+  "office": Briefcase,
+  "garden": Flower,
+  "jewelry": Diamond,
+  "gifts": Gift,
+  "default": ShoppingBag
+}
+
+const getCategoryIcon = (slug: string): PhosphorIcon => {
+  if (categoryIcons[slug]) return categoryIcons[slug]
+  const slugLower = slug.toLowerCase()
+  for (const [key, icon] of Object.entries(categoryIcons)) {
+    if (slugLower.includes(key) || key.includes(slugLower)) {
+      return icon
+    }
+  }
+  return categoryIcons["default"]
 }
 
 export interface MobileMenuSheetHandle {
@@ -110,77 +137,70 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
       return cat.name
     }
 
-    const quickLinks = [
-      // Deals row - highlighted
+    // Quick discovery links
+    const discoverLinks = [
       {
-        icon: <Lightning size={20} weight="fill" />,
-        label: locale === 'bg' ? 'Оферти на деня' : 'Daily Deals',
+        icon: Lightning,
+        label: locale === 'bg' ? 'Оферти' : 'Deals',
         href: '/todays-deals',
-        highlight: true,
+        color: 'text-deal bg-deal/10 border-deal/20',
       },
       {
-        icon: <Tag size={20} weight="fill" />,
-        label: locale === 'bg' ? 'Нови обяви' : 'New Listings',
-        href: '/search?sort=newest',
-        highlight: true,
-      },
-      {
-        icon: <Medal size={20} weight="fill" />,
-        label: locale === 'bg' ? 'Топ продавачи' : 'Top Sellers',
+        icon: Medal,
+        label: locale === 'bg' ? 'Топ' : 'Top',
         href: '/top-sellers',
-        highlight: true,
+        color: 'text-amber-600 bg-amber-50 border-amber-200',
+      },
+      {
+        icon: Gift,
+        label: locale === 'bg' ? 'Подаръци' : 'Gifts',
+        href: '/search?occasion=gift',
+        color: 'text-pink-600 bg-pink-50 border-pink-200',
       },
     ]
 
+    // User activity links
     const userLinks = [
       {
-        icon: <ClockCounterClockwise size={20} weight="regular" />,
+        icon: ClockCounterClockwise,
         label: locale === 'bg' ? 'Поръчки' : 'Orders',
         href: '/account/orders',
       },
       {
-        icon: <Storefront size={20} weight="regular" />,
-        label: locale === 'bg' ? 'Продажби' : 'Selling',
-        href: '/account/selling',
+        icon: Storefront,
+        label: locale === 'bg' ? 'Продавай' : 'Sell',
+        href: '/sell',
       },
       {
-        icon: <Heart size={20} weight="regular" />,
-        label: locale === 'bg' ? 'Любими' : 'Wishlist',
+        icon: Heart,
+        label: locale === 'bg' ? 'Любими' : 'Saved',
         href: '/wishlist',
-      },
-      {
-        icon: <ChatCircle size={20} weight="regular" />,
-        label: locale === 'bg' ? 'Съобщения' : 'Messages',
-        href: '/account/messages',
       },
     ]
 
+    // Account links
     const accountLinks = [
       {
-        icon: <User size={20} weight="regular" />,
+        icon: User,
         label: locale === 'bg' ? 'Акаунт' : 'Account',
         href: '/account',
       },
       {
-        icon: <Question size={20} weight="regular" />,
-        label: locale === 'bg' ? 'Помощ' : 'Help Center',
+        icon: Question,
+        label: locale === 'bg' ? 'Помощ' : 'Help',
         href: '/customer-service',
       },
       {
-        icon: <Gear size={20} weight="regular" />,
+        icon: Gear,
         label: locale === 'bg' ? 'Настройки' : 'Settings',
         href: '/account/settings',
       },
     ]
 
-    const getCategoryIcon = (slug: string) => {
-      return categoryIconMap[slug] || <Package size={20} weight="regular" />
-    }
-
     return (
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="max-h-[85dvh] rounded-t-2xl">
-          {/* Header - Compact like cart drawer */}
+        <DrawerContent className="max-h-[90dvh] rounded-t-2xl">
+          {/* Header */}
           <DrawerHeader className="pb-3 pt-0 border-b border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -191,7 +211,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
               </div>
               <DrawerClose asChild>
                 <button 
-                  className="flex items-center justify-center size-11 -mr-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors touch-action-manipulation tap-transparent"
+                  className="flex items-center justify-center size-11 -mr-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors touch-action-manipulation"
                   aria-label="Close menu"
                 >
                   <X size={20} weight="regular" />
@@ -199,132 +219,142 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
               </DrawerClose>
             </div>
             <DrawerDescription className="sr-only">
-              Navigation menu with categories, quick links, and account settings
+              Navigation menu with categories and account settings
             </DrawerDescription>
           </DrawerHeader>
 
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-8 max-h-[calc(85dvh-80px)]">
-            {/* Deals Row - Highlighted */}
+          <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-8 max-h-[calc(90dvh-80px)]">
+            
+            {/* Discover Row - Compact pills */}
             <section className="pt-4 pb-4">
-              <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
-                {locale === 'bg' ? 'Открий' : 'Discover'}
-              </h3>
-              <div className="grid grid-cols-3 gap-2">
-                {quickLinks.map((link, i) => (
-                  <Link
-                    key={i}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="flex flex-col items-center justify-center gap-1.5 min-h-[72px] p-3 rounded-xl bg-deal/10 border border-deal/20 text-deal touch-action-manipulation tap-transparent"
-                  >
-                    <div className="size-9 rounded-lg flex items-center justify-center bg-deal/15 text-deal">
-                      {link.icon}
-                    </div>
-                    <span className="text-xs font-medium text-center leading-tight">
+              <div className="flex gap-2">
+                {discoverLinks.map((link) => {
+                  const Icon = link.icon
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        "flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-medium transition-colors",
+                        link.color
+                      )}
+                    >
+                      <Icon size={16} weight="fill" />
                       {link.label}
-                    </span>
-                  </Link>
-                ))}
+                    </Link>
+                  )
+                })}
               </div>
             </section>
 
-            {/* User Links - Orders, Selling, Wishlist, Messages */}
-            <section className="pb-4">
-              <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
-                {locale === 'bg' ? 'Моят профил' : 'My Activity'}
-              </h3>
-              <div className="grid grid-cols-4 gap-2">
-                {userLinks.map((link, i) => (
-                  <Link
-                    key={i}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted/50 hover:bg-muted touch-action-manipulation tap-transparent"
-                  >
-                    <div className="size-8 rounded-lg flex items-center justify-center bg-background text-muted-foreground">
-                      {link.icon}
-                    </div>
-                    <span className="text-xs font-medium text-center leading-tight text-foreground">
-                      {link.label}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </section>
-
-            {/* Categories Section */}
+            {/* Categories Section - Target-style circles grid */}
             <section className="pb-5">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  {locale === 'bg' ? 'Категории' : 'Shop by Category'}
+                <h3 className="text-sm font-semibold text-foreground">
+                  {locale === 'bg' ? 'Категории' : 'Categories'}
                 </h3>
                 <Link 
                   href="/categories" 
                   onClick={() => setOpen(false)}
-                  className="text-xs text-brand font-medium hover:text-brand-dark transition-colors"
+                  className="text-xs text-brand font-medium hover:text-brand-dark flex items-center gap-1"
                 >
-                  {locale === 'bg' ? 'Виж всички' : 'View All'}
+                  {locale === 'bg' ? 'Всички' : 'See all'}
+                  <CaretRight size={12} weight="bold" />
                 </Link>
               </div>
-              <div className="space-y-0.5">
-                {categories.map((cat) => (
-                  <Link
-                    key={cat.slug}
-                    href={`/search?category=${cat.slug}`}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 min-h-[48px] px-3 py-2.5 -mx-1 rounded-lg hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
-                  >
-                    <div className="size-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0">
-                      {getCategoryIcon(cat.slug)}
-                    </div>
-                    <span className="flex-1 text-sm font-medium text-foreground">
-                      {getCategoryName(cat)}
-                    </span>
-                    <CaretRight size={16} weight="regular" className="text-muted-foreground/60 shrink-0" />
-                  </Link>
-                ))}
+              
+              {/* Category Circles Grid - 4 columns like Target */}
+              <div className="grid grid-cols-4 gap-y-4 gap-x-2">
+                {categories.slice(0, 12).map((cat) => {
+                  const Icon = getCategoryIcon(cat.slug)
+                  return (
+                    <Link
+                      key={cat.slug}
+                      href={`/categories/${cat.slug}`}
+                      onClick={() => setOpen(false)}
+                      className="flex flex-col items-center gap-1.5 group"
+                    >
+                      {/* Circle with icon */}
+                      <div className="size-14 rounded-full bg-muted border border-border flex items-center justify-center group-hover:border-brand group-hover:bg-brand/5 transition-colors">
+                        <Icon size={24} weight="duotone" className="text-foreground/80 group-hover:text-brand transition-colors" />
+                      </div>
+                      {/* Category name */}
+                      <span className="text-[10px] font-medium text-center text-foreground leading-tight line-clamp-2 max-w-[60px] group-hover:text-brand transition-colors">
+                        {getCategoryName(cat)}
+                      </span>
+                    </Link>
+                  )
+                })}
               </div>
             </section>
 
-            {/* Account & Settings Section */}
-            <section className="pb-5">
-              <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
-                {locale === 'bg' ? 'Акаунт' : 'Account & Help'}
+            {/* User Activity Row */}
+            <section className="pb-4">
+              <h3 className="text-sm font-semibold text-foreground mb-3">
+                {locale === 'bg' ? 'Моят профил' : 'My Activity'}
+              </h3>
+              <div className="grid grid-cols-3 gap-2">
+                {userLinks.map((link) => {
+                  const Icon = link.icon
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                    >
+                      <div className="size-9 rounded-full bg-background flex items-center justify-center text-muted-foreground">
+                        <Icon size={18} weight="regular" />
+                      </div>
+                      <span className="text-xs font-medium text-foreground">
+                        {link.label}
+                      </span>
+                    </Link>
+                  )
+                })}
+              </div>
+            </section>
+
+            {/* Account & Settings - Compact list */}
+            <section className="pb-4">
+              <h3 className="text-sm font-semibold text-foreground mb-3">
+                {locale === 'bg' ? 'Акаунт и помощ' : 'Account & Help'}
               </h3>
               <div className="space-y-0.5">
-                {accountLinks.map((link, i) => (
-                  <Link
-                    key={i}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 min-h-[48px] px-3 py-2.5 -mx-1 rounded-lg hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
-                  >
-                    <div className="size-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0">
-                      {link.icon}
-                    </div>
-                    <span className="flex-1 text-sm font-medium text-foreground">
-                      {link.label}
-                    </span>
-                    <CaretRight size={16} weight="regular" className="text-muted-foreground/60 shrink-0" />
-                  </Link>
-                ))}
+                {accountLinks.map((link) => {
+                  const Icon = link.icon
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-3 min-h-[44px] px-3 py-2 -mx-1 rounded-lg hover:bg-muted transition-colors"
+                    >
+                      <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0">
+                        <Icon size={18} weight="regular" />
+                      </div>
+                      <span className="flex-1 text-sm font-medium text-foreground">
+                        {link.label}
+                      </span>
+                      <CaretRight size={14} weight="regular" className="text-muted-foreground/60 shrink-0" />
+                    </Link>
+                  )
+                })}
               </div>
             </section>
 
-            {/* Language Selector - Compact card */}
+            {/* Language Selector */}
             <section className="pb-4">
               <div className="flex items-center justify-between p-3 bg-muted/50 rounded-xl">
                 <div className="flex items-center gap-3">
-                  <div className="size-9 rounded-lg bg-background flex items-center justify-center text-muted-foreground">
-                    <Globe size={20} weight="regular" />
+                  <div className="size-8 rounded-lg bg-background flex items-center justify-center text-muted-foreground">
+                    <Globe size={18} weight="regular" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">
                       {locale === 'bg' ? 'Език' : 'Language'}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {locale === 'bg' ? 'BG' : 'EN'}
                     </p>
                   </div>
                 </div>
@@ -334,7 +364,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                     locale="en"
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "flex items-center justify-center min-w-[40px] h-9 rounded-md text-xs font-semibold transition-colors touch-action-manipulation tap-transparent",
+                      "flex items-center justify-center min-w-[36px] h-8 rounded-md text-xs font-semibold transition-colors",
                       locale === 'en' 
                         ? 'bg-brand text-white' 
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -347,7 +377,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                     locale="bg"
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "flex items-center justify-center min-w-[40px] h-9 rounded-md text-xs font-semibold transition-colors touch-action-manipulation tap-transparent",
+                      "flex items-center justify-center min-w-[36px] h-8 rounded-md text-xs font-semibold transition-colors",
                       locale === 'bg' 
                         ? 'bg-brand text-white' 
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'

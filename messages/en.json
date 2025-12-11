@@ -106,7 +106,8 @@
         "register": "Register",
         "search": "Search",
         "wishlist": "Wishlist",
-        "chat": "Chat"
+        "chat": "Chat",
+        "categories": "Categories"
     },
     "Home": {
         "title": "Welcome to Amazon",

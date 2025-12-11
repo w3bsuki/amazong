@@ -281,10 +281,10 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
         </div>
       </div>
       
-      {/* Scrollable Container - Larger circles for 4-5 per viewport */}
+      {/* Scrollable Container - Compact on mobile, larger on desktop */}
       <div
         ref={scrollRef}
-        className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-4 px-3 py-1 scroll-pl-3 md:gap-6 md:px-4 md:scroll-pl-4"
+        className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-2 px-3 py-1 scroll-pl-3 md:gap-6 md:px-4 md:scroll-pl-4"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {categories.map((category, index) => {
@@ -297,23 +297,23 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
                 index === categories.length - 1 && "mr-3 md:mr-4"
               )}
             >
-              {/* Circle - Clean minimal style using design tokens */}
+              {/* Circle - Compact on mobile, larger on desktop */}
               <div
                 className={cn(
                   "rounded-full flex items-center justify-center",
                   "bg-muted border border-border",
-                  "size-20 sm:size-24 md:size-28",
+                  "size-16 md:size-28",
                   "transition-all duration-200 ease-out",
-                  "group-hover:border-cta-trust-blue group-hover:bg-background group-hover:shadow-md"
+                  "group-hover:border-cta-trust-blue group-hover:bg-background md:group-hover:shadow-md"
                 )}
               >
                 {(() => {
                   const Icon = getCategoryIcon(category.slug)
-                  return <Icon className="size-8 sm:size-10 md:size-12 text-muted-foreground group-hover:text-cta-trust-blue transition-colors duration-200" weight="regular" />
+                  return <Icon className="size-7 md:size-12 text-foreground/80 group-hover:text-cta-trust-blue transition-colors duration-200" weight="duotone" />
                 })()}
               </div>
               {/* Category name below circle */}
-              <span className="mt-2.5 text-foreground font-medium text-xs sm:text-sm md:text-base text-center max-w-20 sm:max-w-24 md:max-w-28 leading-tight line-clamp-2 group-hover:text-cta-trust-blue transition-colors duration-200">
+              <span className="mt-1.5 md:mt-2.5 text-foreground font-medium text-[10px] md:text-base text-center max-w-[68px] md:max-w-28 leading-tight line-clamp-2 group-hover:text-cta-trust-blue transition-colors duration-200">
                 {getCategoryName(category)}
               </span>
             </Link>

@@ -63,6 +63,10 @@ interface Product {
   slug?: string | null
   store_slug?: string | null
   sellers?: { store_slug: string | null } | null
+  /** Product attributes JSONB (condition, brand, make, model, year, location) */
+  attributes?: Record<string, string> | null
+  /** Category info from join */
+  categories?: { slug: string } | null
 }
 
 // Helper function to search products with ILIKE fallback and pagination
@@ -87,7 +91,7 @@ async function searchProducts(
   
   // Build base query with count
   let countQuery = supabase.from("products").select("*", { count: "exact", head: true })
-  let dbQuery = supabase.from("products").select("*, sellers(store_slug)")
+  let dbQuery = supabase.from("products").select("*, sellers(store_slug), attributes, categories(slug)")
   
   // Apply shipping zone filter if provided
   if (shippingFilter) {
@@ -390,6 +394,13 @@ export default async function SearchPage({
                 variant="grid"
                 slug={product.slug}
                 storeSlug={product.sellers?.store_slug}
+                categorySlug={product.categories?.slug || currentCategory?.slug}
+                condition={product.attributes?.condition}
+                brand={product.attributes?.brand}
+                make={product.attributes?.make}
+                model={product.attributes?.model}
+                year={product.attributes?.year}
+                location={product.attributes?.location}
               />
             ))}
           </div>

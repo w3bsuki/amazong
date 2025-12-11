@@ -4,9 +4,8 @@ import * as React from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { CaretLeft, CaretRight, Star } from "@phosphor-icons/react"
-import { useLocale, useTranslations } from "next-intl"
-import Image from "next/image"
+import { CaretLeft, CaretRight } from "@phosphor-icons/react"
+import { ProductCard } from "@/components/product-card"
 
 interface Product {
   id: string
@@ -32,80 +31,6 @@ interface TabbedProductSectionProps {
   ctaText?: string
   ctaHref?: string
   variant?: "default" | "featured" | "deals"
-}
-
-// Compact Product Card for carousels - Target style
-function CompactProductCard({ id, title, price, image, rating = 4.5, reviews = 0, slug, storeSlug }: Product) {
-  const locale = useLocale()
-  const t = useTranslations('Product')
-  
-  // Use store slug + product slug for SEO-friendly URLs
-  const productUrl = storeSlug && slug 
-    ? `/product/${storeSlug}/${slug}` 
-    : `/product/${slug || id}`
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
-    }).format(price)
-  }
-
-  const deliveryDate = new Date()
-  deliveryDate.setDate(deliveryDate.getDate() + 2)
-  const formattedDate = new Intl.DateTimeFormat(locale, { weekday: 'short', month: 'numeric', day: 'numeric' }).format(deliveryDate)
-
-  return (
-    <Link href={productUrl} className="block h-full group">
-      <div className="bg-card rounded-md overflow-hidden h-full flex flex-col border border-border">
-        {/* Square Image Container - Fixed aspect ratio */}
-        <div className="relative w-full aspect-square bg-secondary p-3 flex items-center justify-center overflow-hidden">
-          <div className="relative w-full h-full">
-            <Image
-              src={image || "/placeholder.svg"}
-              alt={title}
-              fill
-              className="object-contain"
-              sizes="180px"
-            />
-          </div>
-        </div>
-
-        {/* Content - Clean and compact */}
-        <div className="p-2.5 flex-1 flex flex-col">
-          {/* Title - 2 lines max */}
-          <h3 className="text-sm font-normal text-foreground line-clamp-2 mb-1.5 leading-snug min-h-9 group-hover:underline">
-            {title}
-          </h3>
-
-          {/* Rating - Always show even when 0 */}
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <div className="flex text-rating">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={11}
-                  weight={i < Math.floor(rating) ? "fill" : "regular"}
-                  className={cn(
-                    i < Math.floor(rating) ? "" : "text-rating-empty"
-                  )}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-muted-foreground">{reviews}</span>
-          </div>
-
-          {/* Price - Prominent */}
-          <div className="mt-auto pt-1">
-            <span className="text-sm font-normal text-foreground">{formatPrice(price)}</span>
-            <div className="text-xs text-muted-foreground mt-0.5">
-              {t('delivery')} {formattedDate}
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  )
 }
 
 export function TabbedProductSection({
@@ -235,12 +160,16 @@ export function TabbedProductSection({
                 onScroll={checkScrollability}
                 className="flex flex-row flex-nowrap gap-3 overflow-x-auto snap-x snap-mandatory scroll-pl-4 px-4 pb-2 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
               >
-                {tab.products.map((product) => (
+                {tab.products.map((product, index) => (
                   <div
                     key={product.id}
-                    className="w-[45%] min-w-[45%] shrink-0 snap-start md:w-44 md:min-w-44 group"
+                    className="w-[43%] min-w-[43%] shrink-0 snap-start sm:w-[32%] sm:min-w-[32%] md:w-48 md:min-w-48 group"
                   >
-                    <CompactProductCard {...product} />
+                    <ProductCard
+                      variant="compact"
+                      index={index}
+                      {...product}
+                    />
                   </div>
                 ))}
               </div>
