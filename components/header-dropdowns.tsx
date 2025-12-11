@@ -470,9 +470,10 @@ export function LocationDropdown({ country, onCountryChange }: LocationDropdownP
     const locale = useLocale()
     const [isOpen, setIsOpen] = useState(false)
 
-    // Shipping zones instead of individual countries
+    // Shipping zones - Updated December 2025: Added UK (post-Brexit)
     const shippingZones = [
         { code: 'BG', zone: 'BG', name: 'Bulgaria', nameLocal: 'България', flag: 'https://flagcdn.com/w40/bg.png', icon: '🇧🇬' },
+        { code: 'UK', zone: 'UK', name: 'United Kingdom', nameLocal: 'Великобритания', flag: 'https://flagcdn.com/w40/gb.png', icon: '🇬🇧' },
         { code: 'EU', zone: 'EU', name: 'Europe', nameLocal: 'Европа', flag: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/40px-Flag_of_Europe.svg.png', icon: '🇪🇺' },
         { code: 'US', zone: 'US', name: 'USA', nameLocal: 'САЩ', flag: 'https://flagcdn.com/w40/us.png', icon: '🇺🇸' },
         { code: 'WW', zone: 'WW', name: 'Worldwide', nameLocal: 'По целия свят', flag: null, icon: '🌍' },

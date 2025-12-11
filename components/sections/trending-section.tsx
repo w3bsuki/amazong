@@ -1,4 +1,4 @@
-import { getNewestProducts, getPromoProducts, getBestSellers, toUI, type Product } from '@/lib/data/products'
+import { getPromoProducts, getBestSellers, getFeaturedProducts, toUI, type Product } from '@/lib/data/products'
 import { TrendingProductsSection } from '@/components/trending-products-section'
 import { getLocale } from 'next-intl/server'
 
@@ -10,8 +10,9 @@ export async function TrendingSection() {
   const locale = await getLocale()
   
   // Fetch all data in parallel using cached functions
-  const [newestProducts, promoProducts, bestSellersProducts] = await Promise.all([
-    getNewestProducts(12),
+  // First tab: Featured/Boosted products (promoted sellers)
+  const [featuredProducts, promoProducts, bestSellersProducts] = await Promise.all([
+    getFeaturedProducts(12),
     getPromoProducts(12),
     getBestSellers(12),
   ])
@@ -25,12 +26,12 @@ export async function TrendingSection() {
   
   return (
     <TrendingProductsSection
-      title={locale === "bg" ? "Открийте популярни продукти" : "Explore trending picks"}
-      newestProducts={transformForUI(newestProducts)}
+      title={locale === "bg" ? "Промотирани" : "Promoted"}
+      newestProducts={transformForUI(featuredProducts)}
       promoProducts={transformForUI(promoProducts)}
       bestSellersProducts={transformForUI(bestSellersProducts)}
       ctaText={locale === "bg" ? "Виж всички" : "Shop all"}
-      ctaHref="/search"
+      ctaHref="/search?featured=true"
     />
   )
 }

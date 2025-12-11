@@ -103,7 +103,10 @@
         "menu": "Меню",
         "account": "Профил",
         "signIn": "Вход",
-        "register": "Регистрация"
+        "register": "Регистрация",
+        "search": "Търсене",
+        "wishlist": "Любими",
+        "chat": "Чат"
     },
     "Home": {
         "title": "Добре дошли в Amazon",

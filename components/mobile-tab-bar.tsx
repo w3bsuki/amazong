@@ -1,127 +1,114 @@
 "use client"
 
-import { House, ShoppingCart, User, List } from "@phosphor-icons/react"
+import * as React from "react"
+import { House, Heart, ChatCircle, User, PlusCircle } from "@phosphor-icons/react"
 import { Link, usePathname } from "@/i18n/routing"
-import { useCart } from "@/lib/cart-context"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
-interface TabItem {
-  id: "home" | "menu" | "cart" | "account"
-  icon: React.ReactNode
-  href?: string
-  action?: "menu"
-}
-
-const tabs: TabItem[] = [
-  {
-    id: "home",
-    icon: <House size={24} weight="regular" />,
-    href: "/"
-  },
-  {
-    id: "menu",
-    icon: <List size={24} weight="regular" />,
-    action: "menu"
-  },
-  {
-    id: "cart",
-    icon: <ShoppingCart size={24} weight="regular" />,
-    href: "/cart"
-  },
-  {
-    id: "account",
-    icon: <User size={24} weight="regular" />,
-    href: "/account"
-  }
-]
-
-interface MobileTabBarProps {
-  onMenuClick?: () => void
-}
-
-export function MobileTabBar({ onMenuClick }: MobileTabBarProps) {
+export function MobileTabBar() {
   const pathname = usePathname()
-  const { items } = useCart()
   const t = useTranslations("Navigation")
-  
-  const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
-  const isActive = (tab: TabItem) => {
-    if (tab.href === "/") {
-      return pathname === "/"
-    }
-    return tab.href && pathname.includes(tab.href)
-  }
-
-  // Get label from translations
-  const getLabel = (id: TabItem["id"]) => {
-    const labels: Record<TabItem["id"], string> = {
-      home: t("home"),
-      menu: t("menu"),
-      cart: t("cart"),
-      account: t("account"),
-    }
-    return labels[id]
+  const isActive = (path: string) => {
+    if (path === "/") return pathname === "/"
+    return pathname.startsWith(path)
   }
 
   return (
-    <nav 
-      className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden pb-safe"
-      role="navigation"
-      aria-label="Mobile navigation"
-    >
-      <div className="flex items-stretch h-16">
-        {tabs.map((tab) => {
-          const active = isActive(tab)
-          const label = getLabel(tab.id)
-          
-          if (tab.action === "menu") {
-            return (
-              <button
-                key={tab.id}
-                onClick={onMenuClick}
-                className={cn(
-                  "flex flex-col items-center justify-center flex-1 min-h-[44px] gap-0.5",
-                  "touch-action-manipulation tap-transparent",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
-                  active ? "text-primary" : "text-muted-foreground"
-                )}
-                aria-label={label}
-              >
-                {tab.icon}
-                <span className="text-xs font-normal">{label}</span>
-              </button>
-            )
-          }
-          
-          return (
-            <Link
-              key={tab.id}
-              href={tab.href || "/"}
-              prefetch={tab.id === "home" || tab.id === "cart"}
-              className={cn(
-                "flex flex-col items-center justify-center flex-1 min-h-[44px] gap-0.5 relative",
-                "touch-action-manipulation tap-transparent",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
-                active ? "text-primary" : "text-muted-foreground"
-              )}
-              aria-label={label}
-              aria-current={active ? "page" : undefined}
-            >
-              <span className="relative">
-                {tab.icon}
-                {tab.id === "cart" && cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-badge-deal text-white text-xs font-medium rounded-full min-w-4 h-4 flex items-center justify-center px-1">
-                    {cartItemCount > 99 ? "99+" : cartItemCount}
-                  </span>
-                )}
-              </span>
-              <span className="text-xs font-normal">{label}</span>
-            </Link>
-          )
-        })}
+    <>
+      <nav 
+        className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border md:hidden pb-safe"
+        role="navigation"
+        aria-label="Mobile navigation"
+      >
+        <div className="flex items-center justify-around h-14 px-2 relative">
+          {/* Home */}
+          <Link
+            href="/"
+            prefetch={true}
+            className={cn(
+              "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
+              "touch-action-manipulation tap-transparent",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
+              isActive("/") && pathname === "/" ? "text-brand" : "text-muted-foreground"
+            )}
+            aria-label={t("home")}
+            aria-current={pathname === "/" ? "page" : undefined}
+          >
+            <House size={22} weight={pathname === "/" ? "fill" : "regular"} />
+            <span className="text-[10px] font-medium">{t("home")}</span>
+          </Link>
+
+          {/* Wishlist */}
+          <Link
+            href="/wishlist"
+            prefetch={true}
+            className={cn(
+              "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
+              "touch-action-manipulation tap-transparent",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
+              isActive("/wishlist") ? "text-brand" : "text-muted-foreground"
+            )}
+            aria-label={t("wishlist")}
+            aria-current={isActive("/wishlist") ? "page" : undefined}
+          >
+            <Heart size={22} weight={isActive("/wishlist") ? "fill" : "regular"} />
+            <span className="text-[10px] font-medium">{t("wishlist")}</span>
+          </Link>
+
+          {/* Sell */}
+          <Link
+            href="/sell"
+            prefetch={true}
+            className={cn(
+              "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
+              "touch-action-manipulation tap-transparent",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
+              isActive("/sell") ? "text-brand" : "text-muted-foreground"
+            )}
+            aria-label={t("sell")}
+            aria-current={isActive("/sell") ? "page" : undefined}
+          >
+            <PlusCircle size={22} weight={isActive("/sell") ? "fill" : "regular"} />
+            <span className="text-[10px] font-medium">{t("sell")}</span>
+          </Link>
+
+        {/* Chat */}
+        <Link
+          href="/messages"
+          prefetch={true}
+          className={cn(
+            "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
+            "touch-action-manipulation tap-transparent",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
+            isActive("/messages") ? "text-brand" : "text-muted-foreground"
+          )}
+          aria-label={t("chat")}
+          aria-current={isActive("/messages") ? "page" : undefined}
+        >
+          <ChatCircle size={22} weight={isActive("/messages") ? "fill" : "regular"} />
+          <span className="text-[10px] font-medium">{t("chat")}</span>
+        </Link>
+
+        {/* Account */}
+        <Link
+          href="/account"
+          prefetch={true}
+          className={cn(
+            "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
+            "touch-action-manipulation tap-transparent",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
+            isActive("/account") ? "text-brand" : "text-muted-foreground"
+          )}
+          aria-label={t("account")}
+          aria-current={isActive("/account") ? "page" : undefined}
+        >
+          <User size={22} weight={isActive("/account") ? "fill" : "regular"} />
+          <span className="text-[10px] font-medium">{t("account")}</span>
+        </Link>
       </div>
     </nav>
+  </>
   )
 }

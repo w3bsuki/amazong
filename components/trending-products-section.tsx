@@ -69,9 +69,9 @@ function CompactProductCard({
 
   return (
     <Link href={productUrl} className="block h-full group">
-      <div className="bg-card rounded-md overflow-hidden h-full flex flex-col border border-border">
+      <div className="rounded-md overflow-hidden h-full flex flex-col bg-card border border-border">
         {/* Square Image Container with optional discount badge */}
-        <div className="relative w-full aspect-square bg-secondary p-3 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full aspect-square bg-secondary rounded-md p-2 flex items-center justify-center overflow-hidden">
           {hasDiscount && (
             <div className="absolute top-2 left-2 z-10 bg-deal text-white text-xs font-medium px-1.5 py-0.5 rounded">
               -{discountPercent}%
@@ -89,9 +89,9 @@ function CompactProductCard({
         </div>
 
         {/* Content */}
-        <div className="p-2.5 flex-1 flex flex-col">
+        <div className="p-2 md:p-2.5 flex-1 flex flex-col">
           {/* Title */}
-          <h3 className="text-sm font-normal text-foreground line-clamp-2 mb-1.5 leading-snug min-h-9 group-hover:underline">
+          <h3 className="text-xs font-medium text-foreground line-clamp-2 mb-1 leading-tight md:text-sm group-hover:underline">
             {title}
           </h3>
 
@@ -179,28 +179,28 @@ export function TrendingProductsSection({
   }
 
   return (
-    <div className="bg-card border border-border rounded-md overflow-hidden">
+    <section className="overflow-hidden">
       {/* Header Section */}
-      <div className="text-center pt-5 sm:pt-6 pb-3 sm:pb-4 px-4">
-        <h2 className="text-xl font-bold mb-1.5 tracking-tight text-foreground">
+      <div className="flex items-center justify-between px-3 pt-2 pb-1 md:px-4 md:pt-4 md:pb-2">
+        <h2 className="text-sm font-semibold text-foreground md:text-base">
           {title}
         </h2>
         {ctaText && ctaHref && (
           <Link 
             href={ctaHref} 
-            className="text-sm font-normal hover:underline underline-offset-4 inline-flex items-center gap-1 text-brand-blue hover:text-brand-blue-dark"
+            className="text-xs font-medium hover:underline inline-flex items-center gap-0.5 text-brand-blue md:text-sm"
           >
             {ctaText}
-            <CaretRight size={12} weight="regular" />
+            <CaretRight size={14} weight="regular" />
           </Link>
         )}
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="newest" className="w-full">
-        {/* Tab List with icons */}
-        <div className="flex justify-center px-3 sm:px-4 pb-2">
-          <TabsList className="h-auto p-1 gap-0.5 sm:gap-1 rounded-full flex flex-wrap justify-center sm:flex-nowrap sm:overflow-x-auto no-scrollbar max-w-full bg-muted border border-border">
+        {/* Tab List - Hidden on mobile, show on md+ */}
+        <div className="hidden md:flex justify-center px-4 pb-2 overflow-x-auto no-scrollbar">
+          <TabsList className="h-9 p-1 gap-1 rounded-lg bg-muted border border-border">
             {tabs.map((tab) => {
               const Icon = tab.icon
               return (
@@ -208,13 +208,13 @@ export function TrendingProductsSection({
                   key={tab.id}
                   value={tab.id}
                   className={cn(
-                    "px-3 sm:px-4 py-1.5 sm:py-2 text-sm font-normal rounded-full",
-                    "text-muted-foreground hover:text-foreground hover:bg-secondary",
-                    "data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
-                    "whitespace-nowrap min-h-8 sm:min-h-10 flex items-center gap-1.5"
+                    "px-3 py-1.5 text-xs font-medium rounded-md",
+                    "text-muted-foreground hover:text-foreground",
+                    "data-[state=active]:text-foreground data-[state=active]:bg-background data-[state=active]:shadow-sm",
+                    "whitespace-nowrap flex items-center gap-1.5"
                   )}
                 >
-                  <Icon size={14} weight="regular" className="hidden sm:block" />
+                  <Icon size={14} weight="regular" />
                   {tab.label}
                 </TabsTrigger>
               )
@@ -227,7 +227,7 @@ export function TrendingProductsSection({
           <TabsContent 
             key={tab.id} 
             value={tab.id} 
-            className="mt-0 pt-3 sm:pt-4 pb-4 sm:pb-6 overflow-hidden"
+            className="mt-0 pb-2 md:pb-4 overflow-hidden"
           >
             <div className="relative overflow-hidden">
               {/* Scroll Buttons */}
@@ -258,13 +258,13 @@ export function TrendingProductsSection({
               <div
                 ref={(el) => { scrollContainerRefs.current[tab.id] = el }}
                 onScroll={() => checkScrollability(tab.id)}
-                className="flex flex-row flex-nowrap gap-3 overflow-x-auto snap-x snap-mandatory scroll-pl-4 px-4 pb-2 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
+                className="flex flex-row flex-nowrap gap-2 overflow-x-auto snap-x snap-mandatory scroll-pl-3 px-3 pb-1 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
               >
                 {tab.products.length > 0 ? (
                   tab.products.map((product) => (
                     <div
                       key={product.id}
-                      className="w-[45%] min-w-[45%] shrink-0 snap-start md:w-44 md:min-w-44 group"
+                      className="w-[40%] min-w-[40%] shrink-0 snap-start sm:w-[30%] sm:min-w-[30%] md:w-44 md:min-w-44"
                     >
                       <CompactProductCard {...product} />
                     </div>
@@ -279,6 +279,6 @@ export function TrendingProductsSection({
           </TabsContent>
         ))}
       </Tabs>
-    </div>
+    </section>
   )
 }

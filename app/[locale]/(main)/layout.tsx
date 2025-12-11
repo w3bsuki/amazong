@@ -1,6 +1,8 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CookieConsent } from "@/components/cookie-consent";
+import { MobileTabBar } from "@/components/mobile-tab-bar";
+// MobileSearchBar is now integrated into SiteHeader
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { connection } from "next/server";
@@ -60,15 +62,16 @@ export default async function MainLayout({
                 {locale === 'bg' ? 'Преминете към футъра' : 'Skip to footer'}
             </a>
             
-            <Suspense fallback={<div className="h-[100px] w-full bg-header-bg" />}>
+            <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
                 <SiteHeader user={user} />
             </Suspense>
             
-            <main id="main-content" role="main" className="flex-1">
+            <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
                 {children}
             </main>
             
             <SiteFooter />
+            <MobileTabBar />
             <CookieConsent />
         </div>
     );

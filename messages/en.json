@@ -103,7 +103,10 @@
         "menu": "Menu",
         "account": "Account",
         "signIn": "Sign in",
-        "register": "Register"
+        "register": "Register",
+        "search": "Search",
+        "wishlist": "Wishlist",
+        "chat": "Chat"
     },
     "Home": {
         "title": "Welcome to Amazon",

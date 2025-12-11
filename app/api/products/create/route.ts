@@ -40,9 +40,11 @@ const productSchema = z.object({
   tags: z.array(z.string()).default([]),
   images: z.array(imageSchema).min(1, "At least one image is required"),
   attributes: z.array(attributeSchema).optional().default([]),
-  // Shipping
+  // Shipping - Updated December 2025 with UK and USA
   shipsToBulgaria: z.boolean().default(true),
+  shipsToUK: z.boolean().default(false),
   shipsToEurope: z.boolean().default(false),
+  shipsToUSA: z.boolean().default(false),
   shipsToWorldwide: z.boolean().default(false),
   pickupOnly: z.boolean().default(false),
   // Condition
@@ -135,7 +137,9 @@ export async function POST(request: Request) {
         is_boosted: false,
         boost_expires_at: null,
         ships_to_bulgaria: data.shipsToBulgaria ?? true,
+        ships_to_uk: data.shipsToUK ?? false,
         ships_to_europe: data.shipsToEurope ?? false,
+        ships_to_usa: data.shipsToUSA ?? false,
         ships_to_worldwide: data.shipsToWorldwide ?? false,
         pickup_only: data.pickupOnly ?? false,
         attributes: attributesJson,

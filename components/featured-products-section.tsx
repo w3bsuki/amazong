@@ -71,7 +71,7 @@ function FeaturedProductCard({
 
   return (
     <Link href={productUrl} className="block h-full group">
-      <div className="bg-card rounded-md overflow-hidden h-full flex flex-col border border-border relative">
+      <div className="rounded-md overflow-hidden h-full flex flex-col bg-card border border-border relative">
         {/* Boosted Indicator */}
         {isBoosted && (
           <div className="absolute top-0 left-0 right-0 bg-primary text-primary-foreground text-xs font-medium py-0.5 text-center flex items-center justify-center gap-1 z-20">
@@ -82,7 +82,7 @@ function FeaturedProductCard({
         
         {/* Square Image Container */}
         <div className={cn(
-          "relative w-full aspect-square bg-secondary p-3 flex items-center justify-center overflow-hidden",
+          "relative w-full aspect-square bg-secondary rounded-md p-2 flex items-center justify-center overflow-hidden",
           isBoosted && "pt-6"
         )}>
           {/* Discount Badge */}
@@ -118,9 +118,9 @@ function FeaturedProductCard({
         </div>
 
         {/* Content */}
-        <div className="p-2.5 flex-1 flex flex-col">
+        <div className="p-2 md:p-2.5 flex-1 flex flex-col">
           {/* Title */}
-          <h3 className="text-xs sm:text-sm font-normal text-foreground line-clamp-2 mb-1.5 leading-snug min-h-9 group-hover:underline">
+          <h3 className="text-xs font-medium text-foreground line-clamp-2 mb-1 leading-tight md:text-sm group-hover:underline">
             {title}
           </h3>
 
@@ -197,28 +197,30 @@ export function FeaturedProductsSection({
   }
 
   return (
-    <div className="bg-card border border-border rounded-md overflow-hidden">
+    <div className="overflow-hidden">
       {/* Header Section */}
-      <div className="text-center pt-5 sm:pt-6 pb-3 sm:pb-4 px-4">
-        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-foreground mb-1.5">
-          {title}
-        </h2>
-        {subtitle && (
-          <p className="text-sm text-muted-foreground mb-2">{subtitle}</p>
-        )}
+      <div className="flex items-center justify-between px-3 pt-2 pb-1 md:px-4 md:pt-4 md:pb-2">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground md:text-base">
+            {title}
+          </h2>
+          {subtitle && (
+            <p className="text-xs text-muted-foreground md:text-sm">{subtitle}</p>
+          )}
+        </div>
         {ctaText && ctaHref && (
           <Link 
             href={ctaHref} 
-            className="text-xs sm:text-sm font-normal hover:underline underline-offset-4 inline-flex items-center gap-1 text-link hover:text-link-hover"
+            className="text-xs font-medium hover:underline inline-flex items-center gap-0.5 text-brand-blue md:text-sm"
           >
             {ctaText}
-            <CaretRight size={12} weight="regular" />
+            <CaretRight size={14} weight="regular" />
           </Link>
         )}
       </div>
 
       {/* Products Carousel */}
-      <div className="relative overflow-hidden pb-4 sm:pb-6">
+      <div className="relative overflow-hidden pb-2 md:pb-4">
         {/* Scroll Buttons */}
         <button
           onClick={() => scroll("left")}
@@ -247,12 +249,12 @@ export function FeaturedProductsSection({
         <div
           ref={scrollContainerRef}
           onScroll={checkScrollability}
-          className="flex flex-row flex-nowrap gap-3 overflow-x-auto snap-x snap-mandatory scroll-pl-4 px-4 pb-2 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
+          className="flex flex-row flex-nowrap gap-2 overflow-x-auto snap-x snap-mandatory scroll-pl-3 px-3 pb-1 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
         >
           {products.map((product) => (
             <div
               key={product.id}
-              className="w-[45%] min-w-[45%] shrink-0 snap-start md:w-44 md:min-w-44 group"
+              className="w-[40%] min-w-[40%] shrink-0 snap-start sm:w-[30%] sm:min-w-[30%] md:w-44 md:min-w-44"
             >
               <FeaturedProductCard {...product} />
             </div>

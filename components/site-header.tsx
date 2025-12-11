@@ -20,13 +20,13 @@ import { MobileSearchOverlay } from "@/components/mobile-search-overlay"
 import { MobileCartDropdown } from "@/components/mobile-cart-dropdown"
 import { DesktopSearch } from "@/components/desktop-search"
 import { LanguageSwitcher } from "@/components/language-switcher"
+import { MagnifyingGlass, Camera } from "@phosphor-icons/react"
 
 // Utilities
 import { getCountryName } from "@/lib/geolocation"
 import { useEffect, useState } from "react"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
-import { Plus } from "@phosphor-icons/react"
 
 import { User } from "@supabase/supabase-js"
 
@@ -37,8 +37,13 @@ interface SiteHeaderProps {
 export function SiteHeader({ user }: SiteHeaderProps) {
   const [country, setCountry] = useState("Bulgaria")
   const [, setCountryCode] = useState("BG") // Used for shipping zone filtering
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const t = useTranslations('Navigation')
   const locale = useLocale()
+  
+  const searchPlaceholder = locale === "bg" 
+    ? "Какво търсиш днес?" 
+    : "What are you looking for?"
 
   useEffect(() => {
     // Simple cookie parser
@@ -55,26 +60,46 @@ export function SiteHeader({ user }: SiteHeaderProps) {
   }, [locale])
 
   return (
-    <header className="sticky top-0 z-50 w-full flex flex-col border-b border-header-border bg-header-bg">
-      {/* Mobile Header - Shows only on mobile */}
-      <div className="md:hidden bg-header-bg text-header-text px-2 py-1.5 flex items-center">
-        <SidebarMenu user={user} />
-        <Link href="/" className="flex items-center shrink-0 min-h-11">
-          <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
-        </Link>
-        <div className="flex-1" />
-        <div className="flex items-center gap-0">
-          <MobileSearchOverlay />
-          {/* Sell/List Button */}
-          <Link 
-            href="/sell" 
-            className="flex items-center justify-center size-11 rounded-lg text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
-            aria-label={t('sell')}
-          >
-            <Plus size={24} weight="regular" />
+    <header className="sticky top-0 z-50 w-full flex flex-col bg-background">
+      {/* Mobile Header + Search - Unified container like Target */}
+      <div className="md:hidden bg-background text-header-text">
+        {/* Top row - Logo & Actions */}
+        <div className="px-2 py-1 flex items-center">
+          <SidebarMenu user={user} />
+          <Link href="/" className="flex items-center shrink-0 -ml-2">
+            <span className="text-lg font-bold tracking-tight text-foreground">AMZN</span>
           </Link>
-          <MobileCartDropdown />
+          <div className="flex-1" />
+          <div className="flex items-center -mr-1">
+            <MobileSearchOverlay />
+            <MobileCartDropdown />
+          </div>
         </div>
+        
+        {/* Search bar row - integrated into header */}
+        <div className="px-3 pb-2">
+          <button
+            onClick={() => setIsMobileSearchOpen(true)}
+            className="w-full flex items-center gap-2 h-10 px-3 rounded-full bg-muted border border-border text-muted-foreground text-sm text-left active:bg-muted/80 transition-colors duration-150"
+            aria-label={searchPlaceholder}
+            aria-haspopup="dialog"
+            aria-expanded={isMobileSearchOpen}
+          >
+            <MagnifyingGlass size={18} weight="regular" className="text-muted-foreground shrink-0" />
+            <span className="flex-1 truncate">{searchPlaceholder}</span>
+            <div className="flex items-center gap-1 shrink-0">
+              <div className="w-px h-5 bg-border" />
+              <Camera size={18} weight="regular" className="text-muted-foreground ml-1" />
+            </div>
+          </button>
+        </div>
+        
+        {/* Search Overlay - controlled by header */}
+        <MobileSearchOverlay 
+          hideDefaultTrigger 
+          externalOpen={isMobileSearchOpen} 
+          onOpenChange={setIsMobileSearchOpen} 
+        />
       </div>
 
       {/* Desktop Top Header - Light/White like eBay */}

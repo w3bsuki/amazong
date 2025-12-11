@@ -80,8 +80,7 @@ export async function getProducts(type: QueryType, limit = 36): Promise<Product[
     case 'featured':
       query = query
         .or('is_boosted.eq.true,is_featured.eq.true')
-        .gte('rating', 4.0)
-        .order('rating', { ascending: false })
+        .order('created_at', { ascending: false })
       break
   }
 

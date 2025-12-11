@@ -23,7 +23,7 @@ interface ShippingSectionProps {
   locale?: string;
 }
 
-// Shipping regions with Bulgarian context
+// Shipping regions with Bulgarian context - Updated December 2025 with UK and USA
 const SHIPPING_REGIONS = [
   {
     id: "bulgaria",
@@ -38,6 +38,18 @@ const SHIPPING_REGIONS = [
     carriers: ["Speedy", "Econt", "Bulgarian Posts"],
   },
   {
+    id: "uk",
+    field: "shipsToUK" as const,
+    label: "United Kingdom",
+    labelBg: "Великобритания",
+    description: "Ship to UK",
+    descriptionBg: "Доставка до Великобритания",
+    icon: GlobeHemisphereEast,
+    deliveryTime: "5-12 days",
+    deliveryTimeBg: "5-12 дни",
+    carriers: ["Royal Mail", "DPD UK", "Parcelforce"],
+  },
+  {
     id: "europe",
     field: "shipsToEurope" as const,
     label: "Europe",
@@ -48,6 +60,18 @@ const SHIPPING_REGIONS = [
     deliveryTime: "5-10 days",
     deliveryTimeBg: "5-10 дни",
     carriers: ["DHL", "DPD", "GLS"],
+  },
+  {
+    id: "usa",
+    field: "shipsToUSA" as const,
+    label: "USA",
+    labelBg: "САЩ",
+    description: "Ship to United States",
+    descriptionBg: "Доставка до САЩ",
+    icon: Globe,
+    deliveryTime: "10-20 days",
+    deliveryTimeBg: "10-20 дни",
+    carriers: ["USPS", "UPS", "FedEx"],
   },
   {
     id: "worldwide",

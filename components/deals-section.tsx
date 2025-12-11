@@ -58,9 +58,9 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
 
   return (
     <Link href={productUrl} className="block h-full group">
-      <div className="bg-card rounded-md overflow-hidden h-full flex flex-col border border-border">
+      <div className="rounded-md overflow-hidden h-full flex flex-col bg-card border border-border">
         {/* Square Image Container with Discount Badge */}
-        <div className="relative w-full aspect-square bg-secondary p-3 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full aspect-square bg-secondary rounded-md p-2 flex items-center justify-center overflow-hidden">
           {/* Discount Badge - More prominent */}
           <div className="absolute top-2 left-2 z-10 bg-badge-deal text-white text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
             <Lightning size={12} weight="fill" />
@@ -78,16 +78,16 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
         </div>
 
         {/* Content - Compact */}
-        <div className="p-2.5 flex-1 flex flex-col">
+        <div className="p-2 md:p-2.5 flex-1 flex flex-col">
           {/* Deal Badge */}
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <span className="bg-deal-light text-deal font-medium text-xs uppercase px-2 py-0.5 rounded-full">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="bg-deal-light text-deal font-medium text-[10px] uppercase px-1.5 py-0.5 rounded-full md:text-xs">
               {t('deal')}
             </span>
           </div>
 
           {/* Title - 2 lines max */}
-          <h3 className="text-xs sm:text-sm font-normal text-foreground line-clamp-2 mb-1.5 leading-snug min-h-9 group-hover:underline">
+          <h3 className="text-xs font-medium text-foreground line-clamp-2 mb-1 leading-tight md:text-sm group-hover:underline">
             {title}
           </h3>
 
@@ -160,37 +160,37 @@ export function DealsSection({
   }
 
   return (
-    <div className="rounded-md overflow-hidden bg-card border border-border">
+    <section className="overflow-hidden">
       {/* Header Section - Clean eBay-style */}
-      <div className="text-center pt-5 sm:pt-6 pb-3 sm:pb-4 px-4">
-        <h2 className="text-xl font-bold mb-1.5 tracking-tight text-foreground">
+      <div className="flex items-center justify-between px-3 pt-2 pb-1 md:px-4 md:pt-4 md:pb-2">
+        <h2 className="text-sm font-semibold text-foreground md:text-base">
           {title}
         </h2>
         {ctaText && ctaHref && (
           <Link 
             href={ctaHref} 
-            className="text-xs sm:text-sm font-normal hover:underline underline-offset-4 inline-flex items-center gap-1 text-brand-blue hover:text-brand-blue-dark"
+            className="text-xs font-medium hover:underline inline-flex items-center gap-0.5 text-brand-blue md:text-sm"
           >
             {ctaText}
-            <CaretRight size={12} weight="regular" />
+            <CaretRight size={14} weight="regular" />
           </Link>
         )}
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue={tabs[0]?.id} className="w-full">
-        {/* Tab List - Clean eBay-style pills */}
-        <div className="flex justify-center px-3 sm:px-4 pb-2">
-          <TabsList className="bg-muted h-auto p-1 gap-0.5 sm:gap-1 rounded-full border border-border flex flex-wrap justify-center sm:flex-nowrap sm:overflow-x-auto no-scrollbar max-w-full">
+        {/* Tab List - Hidden on mobile, show on md+ */}
+        <div className="hidden md:flex justify-center px-4 pb-2 overflow-x-auto no-scrollbar">
+          <TabsList className="h-9 p-1 gap-1 rounded-lg bg-muted border border-border">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
                 className={cn(
-                  "px-3 sm:px-4 py-1.5 sm:py-2 text-sm font-normal rounded-full",
-                  "text-muted-foreground hover:text-foreground hover:bg-secondary",
-                  "data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
-                  "whitespace-nowrap min-h-8 sm:min-h-10"
+                  "px-3 py-1.5 text-xs font-medium rounded-md",
+                  "text-muted-foreground hover:text-foreground",
+                  "data-[state=active]:text-foreground data-[state=active]:bg-background data-[state=active]:shadow-sm",
+                  "whitespace-nowrap"
                 )}
               >
                 {tab.label}
@@ -204,7 +204,7 @@ export function DealsSection({
           <TabsContent 
             key={tab.id} 
             value={tab.id} 
-            className="mt-0 pt-3 sm:pt-4 pb-4 sm:pb-6 overflow-hidden"
+            className="mt-0 pb-2 md:pb-4 overflow-hidden"
           >
             <div className="relative overflow-hidden">
               {/* Scroll Buttons */}
@@ -235,12 +235,12 @@ export function DealsSection({
               <div
                 ref={(el) => { scrollContainerRefs.current[tab.id] = el }}
                 onScroll={() => checkScrollability(tab.id)}
-                className="flex flex-row flex-nowrap gap-3 overflow-x-auto snap-x snap-mandatory scroll-pl-4 px-4 pb-2 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
+                className="flex flex-row flex-nowrap gap-2 overflow-x-auto snap-x snap-mandatory scroll-pl-3 px-3 pb-1 no-scrollbar scroll-smooth md:gap-4 md:scroll-pl-6 md:px-6"
               >
                 {tab.deals.map((deal) => (
                   <div
                     key={deal.id}
-                    className="w-[45%] min-w-[45%] shrink-0 snap-start md:w-44 md:min-w-44 group"
+                    className="w-[40%] min-w-[40%] shrink-0 snap-start sm:w-[30%] sm:min-w-[30%] md:w-44 md:min-w-44"
                   >
                     <CompactDealCard {...deal} />
                   </div>
@@ -250,6 +250,6 @@ export function DealsSection({
           </TabsContent>
         ))}
       </Tabs>
-    </div>
+    </section>
   )
 }

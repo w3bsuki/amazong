@@ -7,10 +7,13 @@
  * A Bulgarian seller shipping to USA = 10-20 days
  * A USA seller shipping to USA = 1-5 days
  * Same destination, different times based on origin!
+ * 
+ * Updated December 2025: Added UK as separate region (post-Brexit)
  */
 
 // Shipping regions (buyer's delivery destination)
-export type ShippingRegion = 'BG' | 'EU' | 'US' | 'WW';
+// UK added as separate region post-Brexit (no longer part of EU for shipping)
+export type ShippingRegion = 'BG' | 'UK' | 'EU' | 'US' | 'WW';
 
 // Seller origin country codes
 export type SellerCountry = 'BG' | 'DE' | 'US' | 'UK' | 'OTHER';
@@ -33,6 +36,7 @@ const DELIVERY_MATRIX: Record<SellerCountry, Record<ShippingRegion, DeliveryEsti
   // Bulgarian sellers
   BG: {
     BG: { minDays: 1, maxDays: 3, label: '1-3 days', labelBg: '1-3 дни' },
+    UK: { minDays: 5, maxDays: 12, label: '5-12 days', labelBg: '5-12 дни' },
     EU: { minDays: 5, maxDays: 10, label: '5-10 days', labelBg: '5-10 дни' },
     US: { minDays: 10, maxDays: 20, label: '10-20 days', labelBg: '10-20 дни' },
     WW: { minDays: 15, maxDays: 30, label: '15-30 days', labelBg: '15-30 дни' },
@@ -40,6 +44,7 @@ const DELIVERY_MATRIX: Record<SellerCountry, Record<ShippingRegion, DeliveryEsti
   // German sellers (example EU country)
   DE: {
     BG: { minDays: 5, maxDays: 10, label: '5-10 days', labelBg: '5-10 дни' },
+    UK: { minDays: 3, maxDays: 7, label: '3-7 days', labelBg: '3-7 дни' },
     EU: { minDays: 2, maxDays: 5, label: '2-5 days', labelBg: '2-5 дни' },
     US: { minDays: 7, maxDays: 14, label: '7-14 days', labelBg: '7-14 дни' },
     WW: { minDays: 10, maxDays: 21, label: '10-21 days', labelBg: '10-21 дни' },
@@ -47,6 +52,7 @@ const DELIVERY_MATRIX: Record<SellerCountry, Record<ShippingRegion, DeliveryEsti
   // USA sellers
   US: {
     BG: { minDays: 10, maxDays: 20, label: '10-20 days', labelBg: '10-20 дни' },
+    UK: { minDays: 5, maxDays: 10, label: '5-10 days', labelBg: '5-10 дни' },
     EU: { minDays: 7, maxDays: 14, label: '7-14 days', labelBg: '7-14 дни' },
     US: { minDays: 1, maxDays: 5, label: '1-5 days', labelBg: '1-5 дни' },
     WW: { minDays: 7, maxDays: 21, label: '7-21 days', labelBg: '7-21 дни' },
@@ -54,6 +60,7 @@ const DELIVERY_MATRIX: Record<SellerCountry, Record<ShippingRegion, DeliveryEsti
   // UK sellers
   UK: {
     BG: { minDays: 5, maxDays: 12, label: '5-12 days', labelBg: '5-12 дни' },
+    UK: { minDays: 1, maxDays: 3, label: '1-3 days', labelBg: '1-3 дни' },
     EU: { minDays: 3, maxDays: 7, label: '3-7 days', labelBg: '3-7 дни' },
     US: { minDays: 5, maxDays: 10, label: '5-10 days', labelBg: '5-10 дни' },
     WW: { minDays: 10, maxDays: 21, label: '10-21 days', labelBg: '10-21 дни' },
@@ -61,6 +68,7 @@ const DELIVERY_MATRIX: Record<SellerCountry, Record<ShippingRegion, DeliveryEsti
   // Other countries (fallback)
   OTHER: {
     BG: { minDays: 10, maxDays: 25, label: '10-25 days', labelBg: '10-25 дни' },
+    UK: { minDays: 7, maxDays: 18, label: '7-18 days', labelBg: '7-18 дни' },
     EU: { minDays: 7, maxDays: 20, label: '7-20 days', labelBg: '7-20 дни' },
     US: { minDays: 7, maxDays: 21, label: '7-21 days', labelBg: '7-21 дни' },
     WW: { minDays: 14, maxDays: 35, label: '14-35 days', labelBg: '14-35 дни' },
@@ -86,15 +94,19 @@ const COUNTRY_TO_SELLER_CATEGORY: Record<string, SellerCountry> = {
 
 /**
  * Map ISO country codes to shipping regions (buyer perspective)
+ * Updated December 2025: GB/UK now maps to 'UK' region (post-Brexit)
  */
 const COUNTRY_TO_REGION: Record<string, ShippingRegion> = {
   BG: 'BG',
-  // EU countries
+  // UK - POST-BREXIT: Separate shipping zone from EU
+  GB: 'UK',
+  UK: 'UK',
+  // EU countries (GB removed post-Brexit)
   AT: 'EU', BE: 'EU', HR: 'EU', CY: 'EU', CZ: 'EU', DK: 'EU',
   EE: 'EU', FI: 'EU', FR: 'EU', DE: 'EU', GR: 'EU', HU: 'EU',
   IE: 'EU', IT: 'EU', LV: 'EU', LT: 'EU', LU: 'EU', MT: 'EU',
   NL: 'EU', PL: 'EU', PT: 'EU', RO: 'EU', SK: 'EU', SI: 'EU',
-  ES: 'EU', SE: 'EU', GB: 'EU', CH: 'EU', NO: 'EU',
+  ES: 'EU', SE: 'EU', CH: 'EU', NO: 'EU',
   // USA
   US: 'US',
 };
@@ -149,10 +161,12 @@ export function getDeliveryLabel(
 
 /**
  * Check if a product ships to a given region based on its shipping flags
+ * Updated December 2025: Added UK support
  */
 export function productShipsToRegion(
   product: {
     ships_to_bulgaria?: boolean;
+    ships_to_uk?: boolean;
     ships_to_europe?: boolean;
     ships_to_usa?: boolean;
     ships_to_worldwide?: boolean;
@@ -170,6 +184,9 @@ export function productShipsToRegion(
     case 'BG':
       // Bulgaria buyers see: BG shippers + EU shippers (since BG is in EU) + Worldwide
       return !!(product.ships_to_bulgaria || product.ships_to_europe || product.ships_to_worldwide);
+    case 'UK':
+      // UK buyers see: UK shippers + EU shippers (some EU sellers ship to UK) + Worldwide
+      return !!(product.ships_to_uk || product.ships_to_europe || product.ships_to_worldwide);
     case 'EU':
       // EU buyers see: EU shippers + Worldwide
       return !!(product.ships_to_europe || product.ships_to_worldwide);
@@ -186,9 +203,11 @@ export function productShipsToRegion(
 
 /**
  * Shipping region display names
+ * Updated December 2025: Added UK
  */
 export const SHIPPING_REGIONS: Record<ShippingRegion, { en: string; bg: string }> = {
   BG: { en: 'Bulgaria', bg: 'България' },
+  UK: { en: 'United Kingdom', bg: 'Великобритания' },
   EU: { en: 'Europe', bg: 'Европа' },
   US: { en: 'United States', bg: 'САЩ' },
   WW: { en: 'Worldwide', bg: 'По целия свят' },
@@ -204,10 +223,14 @@ export function getRegionName(region: ShippingRegion, locale: string = 'en'): st
 /**
  * Build Supabase filter string for shipping zone
  * Returns an "or" filter that matches products shipping to the buyer's region
+ * Updated December 2025: Added UK support
  * 
  * @example
  * const filter = getShippingFilter('BG')
  * // Returns: "ships_to_bulgaria.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true"
+ * 
+ * const filterUK = getShippingFilter('UK')
+ * // Returns: "ships_to_uk.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true"
  * 
  * supabase.from('products').or(filter)
  */
@@ -216,6 +239,9 @@ export function getShippingFilter(buyerRegion: ShippingRegion): string {
     case 'BG':
       // Bulgaria buyers see: BG + EU (since BG is in EU) + Worldwide
       return 'ships_to_bulgaria.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true';
+    case 'UK':
+      // UK buyers see: UK + EU (some EU sellers still ship to UK) + Worldwide
+      return 'ships_to_uk.eq.true,ships_to_europe.eq.true,ships_to_worldwide.eq.true';
     case 'EU':
       // EU buyers see: EU + Worldwide
       return 'ships_to_europe.eq.true,ships_to_worldwide.eq.true';
@@ -231,12 +257,17 @@ export function getShippingFilter(buyerRegion: ShippingRegion): string {
 
 /**
  * Validate and parse shipping region from cookie/string
+ * Updated December 2025: Added UK support
  */
 export function parseShippingRegion(value: string | undefined | null): ShippingRegion {
   if (!value) return 'BG'; // Default to Bulgaria
   const upper = value.toUpperCase();
-  if (upper === 'BG' || upper === 'EU' || upper === 'US' || upper === 'WW') {
+  if (upper === 'BG' || upper === 'UK' || upper === 'EU' || upper === 'US' || upper === 'WW') {
     return upper as ShippingRegion;
+  }
+  // Handle GB -> UK mapping for backward compatibility
+  if (upper === 'GB') {
+    return 'UK';
   }
   return 'BG'; // Default fallback
 }

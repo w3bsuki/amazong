@@ -137,7 +137,9 @@ export const sellFormSchemaV4 = z.object({
 
   // ========== SHIPPING ==========
   shipsToBulgaria: z.boolean().default(true),
+  shipsToUK: z.boolean().default(false),
   shipsToEurope: z.boolean().default(false),
+  shipsToUSA: z.boolean().default(false),
   shipsToWorldwide: z.boolean().default(false),
   pickupOnly: z.boolean().default(false),
   
@@ -180,7 +182,9 @@ export const defaultSellFormValuesV4: SellFormDataV4 = {
   acceptOffers: false,
   minOfferPercent: undefined,
   shipsToBulgaria: true,
+  shipsToUK: false,
   shipsToEurope: false,
+  shipsToUSA: false,
   shipsToWorldwide: false,
   pickupOnly: false,
   shippingPrice: "",
@@ -258,7 +262,7 @@ export function calculateFormProgress(data: Partial<SellFormDataV4>): {
       key: "shipping",
       label: "Configure shipping",
       labelBg: "Настрой доставка",
-      completed: !!(data.shipsToBulgaria || data.shipsToEurope || data.shipsToWorldwide || data.pickupOnly),
+      completed: !!(data.shipsToBulgaria || data.shipsToUK || data.shipsToEurope || data.shipsToUSA || data.shipsToWorldwide || data.pickupOnly),
       required: true,
     },
   ];

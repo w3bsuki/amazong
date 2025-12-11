@@ -114,7 +114,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
 
   return (
     <div 
-      className="relative w-full container group overflow-hidden hero-carousel"
+      className="relative w-full md:container group overflow-hidden"
       onMouseEnter={stopAutoplay}
       onMouseLeave={startAutoplay}
     >
@@ -130,7 +130,8 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
             key={slide.id} 
             className="w-full shrink-0 snap-start snap-always"
           >
-            <div className="relative h-[150px] sm:h-[200px] md:h-[300px] lg:h-[380px] w-full overflow-hidden select-none">
+            {/* Slimmer hero - prioritizes categories below */}
+            <div className="relative h-[180px] sm:h-[200px] md:h-[260px] lg:h-[320px] w-full overflow-hidden select-none">
               {/* Background Image */}
               <Image
                 src={slide.image}

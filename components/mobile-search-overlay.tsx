@@ -20,6 +20,12 @@ import { useProductSearch } from "@/hooks/use-product-search"
 
 interface MobileSearchOverlayProps {
   className?: string
+  /** If true, hides the default trigger button (use when providing external trigger) */
+  hideDefaultTrigger?: boolean
+  /** External control for open state */
+  externalOpen?: boolean
+  /** Callback when overlay should close (for external control) */
+  onOpenChange?: (open: boolean) => void
 }
 
 /** Focus delay in milliseconds after overlay opens */
@@ -34,14 +40,28 @@ const FOCUS_DELAY_MS = 100
  * - Trending searches
  * - Full WCAG 2.1 AA accessibility compliance
  */
-export function MobileSearchOverlay({ className }: MobileSearchOverlayProps) {
+export function MobileSearchOverlay({ 
+  className,
+  hideDefaultTrigger = false,
+  externalOpen,
+  onOpenChange,
+}: MobileSearchOverlayProps) {
   // Generate unique IDs for accessibility
   const searchInputId = useId()
   const overlayTitleId = useId()
   const overlayDescId = useId()
 
-  // State
-  const [isOpen, setIsOpen] = React.useState(false)
+  // State - use external control if provided
+  const [internalOpen, setInternalOpen] = React.useState(false)
+  const isOpen = externalOpen !== undefined ? externalOpen : internalOpen
+  
+  const setIsOpen = React.useCallback((open: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(open)
+    } else {
+      setInternalOpen(open)
+    }
+  }, [onOpenChange])
 
   // Refs
   const inputRef = useRef<HTMLInputElement>(null)
@@ -179,27 +199,29 @@ export function MobileSearchOverlay({ className }: MobileSearchOverlayProps) {
 
   return (
     <>
-      {/* Search Trigger Button */}
-      <button
-        ref={triggerRef}
-        type="button"
-        onClick={handleOpen}
-        className={cn(
-          "flex items-center justify-center",
-          "size-11 p-0",
-          "rounded-lg text-header-text",
-          "hover:bg-header-hover active:bg-header-active",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          "transition-colors duration-150",
-          "md:hidden touch-action-manipulation",
-          className
-        )}
-        aria-label={strings.search}
-        aria-haspopup="dialog"
-        aria-expanded={isOpen}
-      >
-        <MagnifyingGlass size={24} weight="regular" aria-hidden="true" />
-      </button>
+      {/* Search Trigger Button - hidden when using external trigger */}
+      {!hideDefaultTrigger && (
+        <button
+          ref={triggerRef}
+          type="button"
+          onClick={handleOpen}
+          className={cn(
+            "flex items-center justify-center",
+            "size-11 p-0",
+            "rounded-lg text-header-text",
+            "hover:bg-header-hover active:bg-header-active",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "transition-colors duration-150",
+            "md:hidden touch-action-manipulation",
+            className
+          )}
+          aria-label={strings.search}
+          aria-haspopup="dialog"
+          aria-expanded={isOpen}
+        >
+          <MagnifyingGlass size={24} weight="regular" aria-hidden="true" />
+        </button>
+      )}
 
       {/* Full-Screen Search Overlay */}
       {isOpen && (
