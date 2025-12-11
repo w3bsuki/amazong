@@ -3,99 +3,88 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-
-interface PromoBanner {
-  id: string
-  text: string
-  highlight?: string
-  link: string
-}
+import { Storefront, ShoppingBag } from "@phosphor-icons/react"
 
 interface PromoBannerStripProps {
   locale?: string
 }
 
 /**
- * Simple Promotional Banner Strip - Clean, no gradients
- * Auto-advances every 4 seconds
+ * Mobile CTA Cards - Launch-ready promotional section
+ * Two prominent action cards for new marketplace launch
  */
 export function PromoBannerStrip({ locale = "en" }: PromoBannerStripProps) {
-  const [currentIndex, setCurrentIndex] = React.useState(0)
-  const intervalRef = React.useRef<NodeJS.Timeout | null>(null)
-
-  const banners: PromoBanner[] = [
+  const ctaCards = [
     {
-      id: "1",
-      text: locale === "bg" ? "Безплатна доставка над" : "Free shipping over",
-      highlight: "$35",
-      link: "/customer-service",
+      id: "sell",
+      title: locale === "bg" ? "Започни да продаваш" : "Start Selling",
+      description: locale === "bg" ? "Листни първия си продукт безплатно" : "List your first product for free",
+      link: "/sell",
+      icon: Storefront,
+      variant: "primary" as const,
     },
     {
-      id: "2",
-      text: locale === "bg" ? "Черен петък – до" : "Black Friday – up to",
-      highlight: "50% off",
-      link: "/todays-deals",
-    },
-    {
-      id: "3",
-      text: locale === "bg" ? "Нови продукти всеки ден" : "New arrivals daily",
-      highlight: "",
-      link: "/search?sort=newest",
-    },
-    {
-      id: "4",
-      text: locale === "bg" ? "Техника – спести до" : "Tech deals – save up to",
-      highlight: "$200",
-      link: "/search?category=electronics",
+      id: "shop",
+      title: locale === "bg" ? "Открий продукти" : "Explore Products",
+      description: locale === "bg" ? "Нови продукти всеки ден" : "New arrivals every day",
+      link: "/search",
+      icon: ShoppingBag,
+      variant: "secondary" as const,
     },
   ]
 
-  // Auto-advance banners
-  React.useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % banners.length)
-    }, 4000)
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [banners.length])
-
-  const currentBanner = banners[currentIndex]
-
   return (
-    <div className="w-full px-3 pt-2">
-      <Link
-        href={currentBanner.link}
-        className={cn(
-          "flex items-center justify-center gap-1.5 w-full",
-          "py-2.5 px-4",
-          "text-white text-sm font-medium",
-          "rounded-lg",
-          "bg-cta-trust-blue hover:bg-cta-trust-blue-hover",
-          "transition-colors duration-200"
-        )}
-      >
-        <span>{currentBanner.text}</span>
-        {currentBanner.highlight && (
-          <span className="font-bold">{currentBanner.highlight}</span>
-        )}
-        <span className="ml-1">→</span>
-      </Link>
-      
-      {/* Dot indicators */}
-      <div className="flex justify-center gap-1.5 py-2">
-        {banners.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => setCurrentIndex(idx)}
-            className={cn(
-              "size-1.5 rounded-full transition-colors",
-              idx === currentIndex ? "bg-foreground" : "bg-border"
-            )}
-            aria-label={`Go to banner ${idx + 1}`}
-          />
-        ))}
+    <div className="w-full px-3 pt-3 pb-2">
+      {/* Two CTA Cards - Side by side */}
+      <div className="grid grid-cols-2 gap-2.5">
+        {ctaCards.map((card) => {
+          const Icon = card.icon
+          return (
+            <Link
+              key={card.id}
+              href={card.link}
+              className={cn(
+                "group flex flex-col items-center text-center",
+                "p-4 rounded-xl",
+                "border transition-all duration-200",
+                card.variant === "primary" 
+                  ? "bg-brand text-white border-brand hover:bg-brand-dark"
+                  : "bg-card text-foreground border-border hover:border-brand/30 hover:bg-accent/50"
+              )}
+            >
+              <div className={cn(
+                "size-10 rounded-full flex items-center justify-center mb-2.5",
+                card.variant === "primary"
+                  ? "bg-white/15"
+                  : "bg-brand/10"
+              )}>
+                <Icon 
+                  size={22} 
+                  weight="duotone"
+                  className={cn(
+                    card.variant === "primary" 
+                      ? "text-white" 
+                      : "text-brand"
+                  )} 
+                />
+              </div>
+              <h3 className={cn(
+                "text-sm font-semibold leading-tight",
+                card.variant === "primary" ? "text-white" : "text-foreground"
+              )}>
+                {card.title}
+              </h3>
+              <p className={cn(
+                "text-[11px] mt-1 leading-snug",
+                card.variant === "primary" 
+                  ? "text-white/80" 
+                  : "text-muted-foreground"
+              )}>
+                {card.description}
+              </p>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
