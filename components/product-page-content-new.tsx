@@ -198,31 +198,9 @@ export function ProductPageContent({
       {/* eBay-style Main Layout - Full Width */}
       <div className="w-full">
         
-        {/* Similar Items Banner - eBay style - full width within container */}
+        {/* Similar Items Banner - eBay style - DESKTOP ONLY (cleaner mobile UX without this) */}
         {sellerData && (
-          <div className="bg-[#f7f7f7] dark:bg-muted/30 py-1.5 lg:py-2.5 px-2 sm:px-3 lg:px-4 mb-2 lg:mb-4 rounded-md">
-            {/* Mobile: Single row compact layout with truncation */}
-            <div className="flex items-center gap-2 lg:hidden text-sm overflow-hidden">
-              <span className="text-muted-foreground shrink-0">
-                {locale === 'bg' ? 'Подобни артикули от' : 'Similar from'}
-              </span>
-              <Avatar className="h-4 w-4 shrink-0">
-                <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                  {sellerData.store_name?.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <Link href={`/store/${sellerData.store_slug || sellerData.id}`} className="font-medium text-primary hover:underline truncate">
-                {sellerData.store_name}
-              </Link>
-              <span className="text-muted-foreground shrink-0">
-                ({(sellerData.total_items_sold / 1000).toFixed(0)}K)
-              </span>
-              <span className="text-muted-foreground/60 text-xs shrink-0 ml-auto">
-                {locale === 'bg' ? 'Спонсорирано' : 'Ad'}
-              </span>
-            </div>
-            {/* Desktop: Single row layout */}
-            <div className="hidden lg:flex items-center gap-3 text-sm">
+          <div className="hidden lg:flex items-center gap-3 text-sm bg-[#f7f7f7] dark:bg-muted/30 py-2.5 px-4 mb-4 rounded-md">
               <span className="text-muted-foreground shrink-0">
                 {locale === 'bg' ? 'Подобни артикули от' : 'Find similar items from'}
               </span>
@@ -256,7 +234,46 @@ export function ProductPageContent({
               <span className="text-muted-foreground text-xs shrink-0">
                 {locale === 'bg' ? 'Спонсорирано' : 'Sponsored'}
               </span>
-            </div>
+          </div>
+        )}
+
+        {/* ===== MOBILE SELLER BANNER - Clean top banner with store info ===== */}
+        {sellerData && (
+          <div className="lg:hidden flex items-center gap-3 px-4 py-2.5 bg-muted/30 dark:bg-muted/20 border-b border-border/50">
+            <Link 
+              href={`/store/${sellerData.store_slug || sellerData.id}`}
+              className="flex items-center gap-2.5 flex-1 min-w-0"
+            >
+              <Avatar className="h-9 w-9 border bg-background shrink-0">
+                <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+                  {sellerData.store_name?.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-foreground truncate">{sellerData.store_name}</span>
+                  {sellerData.verified && (
+                    <CheckCircle className="w-3.5 h-3.5 text-primary shrink-0" weight="fill" />
+                  )}
+                </div>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <div className="flex items-center">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star key={star} className="w-3 h-3 fill-amber-400 text-amber-400" weight="fill" />
+                    ))}
+                  </div>
+                  <span>{sellerData.positive_feedback_percentage}%</span>
+                  <span>·</span>
+                  <span>({sellerData.feedback_score})</span>
+                </div>
+              </div>
+            </Link>
+            <Link 
+              href={`/store/${sellerData.store_slug || sellerData.id}`}
+              className="shrink-0 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-full hover:bg-primary/5 active:bg-primary/10 transition-colors"
+            >
+              {locale === 'bg' ? 'Магазин' : 'View Store'}
+            </Link>
           </div>
         )}
 
@@ -264,7 +281,7 @@ export function ProductPageContent({
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] 2xl:grid-cols-[1fr_400px] lg:gap-4">
           
           {/* === LEFT: Main Image with Thumbnails Inside === */}
-          <div className="relative lg:border lg:border-border lg:rounded-lg lg:bg-white dark:lg:bg-muted/20 overflow-hidden">
+          <div className="relative lg:border lg:border-border lg:rounded-lg lg:bg-white dark:lg:bg-muted/20 overflow-hidden -mx-4 lg:mx-0">
             {/* Container for thumbnails + main image */}
             <div className="flex">
               {/* Vertical Thumbnails (Desktop) - Inside the container */}
@@ -296,7 +313,7 @@ export function ProductPageContent({
               <div className="flex-1 relative min-h-[320px] sm:min-h-[400px] lg:min-h-[600px]">
                 
                 {/* Top Right Actions - Vertical stack on mobile, horizontal on desktop */}
-                <div className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2">
+                <div className="absolute top-2 sm:top-3 right-4 lg:right-3 z-10 flex flex-col sm:flex-row items-end sm:items-center gap-1.5 sm:gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button 
@@ -333,14 +350,14 @@ export function ProductPageContent({
                   <>
                     <button
                       aria-label={locale === 'bg' ? 'Предишна снимка' : 'Previous image'}
-                      className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center bg-white/90 hover:bg-white border border-border rounded-full shadow-sm touch-manipulation"
+                      className="absolute left-4 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center bg-white/80 lg:bg-white/90 hover:bg-white lg:border lg:border-border rounded-full lg:shadow-sm touch-manipulation"
                       onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : images.length - 1)}
                     >
                       <CaretLeft className="w-6 h-6" />
                     </button>
                     <button
                       aria-label={locale === 'bg' ? 'Следваща снимка' : 'Next image'}
-                      className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 sm:w-11 sm:h-11 flex items-center justify-center bg-white/90 hover:bg-white border border-border rounded-full shadow-sm touch-manipulation"
+                      className="absolute right-4 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center bg-white/80 lg:bg-white/90 hover:bg-white lg:border lg:border-border rounded-full lg:shadow-sm touch-manipulation"
                       onClick={() => setSelectedImage(prev => prev < images.length - 1 ? prev + 1 : 0)}
                     >
                       <CaretRight className="w-6 h-6" />
@@ -348,8 +365,8 @@ export function ProductPageContent({
                   </>
                 )}
 
-                {/* Main Image - eBay style */}
-                <div className="w-full bg-white dark:bg-muted/20 border border-border lg:border-0 rounded-lg lg:rounded-none overflow-hidden">
+                {/* Main Image - Clean on mobile, bordered on desktop */}
+                <div className="w-full bg-white dark:bg-muted/20 lg:border lg:border-border rounded-none lg:rounded-lg overflow-hidden">
                   <div 
                     className="w-full min-h-[280px] sm:min-h-[360px] lg:min-h-[550px] relative cursor-zoom-in"
                     onClick={() => setIsZoomOpen(true)}
@@ -375,7 +392,7 @@ export function ProductPageContent({
                   </div>
 
                   {/* Mobile Thumbnails - 48px touch target */}
-                  <div className="lg:hidden flex gap-2.5 overflow-x-auto py-2.5 px-2 snap-x snap-mandatory no-scrollbar">
+                  <div className="lg:hidden flex gap-2 overflow-x-auto py-2 px-4 snap-x snap-mandatory no-scrollbar bg-background">
                     {images.map((img, index) => (
                       <button
                         key={index}
@@ -532,28 +549,9 @@ export function ProductPageContent({
               )}
             </div>
 
-            {/* Seller Section - Desktop: Bigger card-like display, Mobile: compact inline */}
+            {/* Seller Section - Desktop only (Mobile has banner above image) */}
             {sellerData && (
               <>
-                {/* Mobile: Compact inline seller */}
-                <Link 
-                  href={`/store/${sellerData.store_slug || sellerData.id}`}
-                  className="inline-flex items-center gap-1.5 mt-1 text-sm group lg:hidden"
-                >
-                  <Avatar className="h-5 w-5 border shrink-0">
-                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                      {sellerData.store_name?.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="font-medium text-primary group-hover:underline">{sellerData.store_name}</span>
-                  <span className="text-muted-foreground">({sellerData.feedback_score})</span>
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} className="w-3 h-3 fill-amber-400 text-amber-400" weight="fill" />
-                    ))}
-                  </div>
-                </Link>
-
                 {/* Desktop: Enhanced seller card */}
                 <div className="hidden lg:block mt-4 p-3 bg-muted/30 dark:bg-muted/20 rounded-lg border border-border/50">
                   <Link 

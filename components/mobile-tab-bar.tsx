@@ -13,10 +13,16 @@ export function MobileTabBar() {
   const t = useTranslations("Navigation")
   const menuSheetRef = useRef<MobileMenuSheetHandle>(null)
 
+  // Hide tab bar on product pages - they have their own sticky buy box
+  const isProductPage = pathname.startsWith("/product/")
+  
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/"
     return pathname.startsWith(path)
   }
+
+  // Don't render on product pages - let the sticky buy box take over
+  if (isProductPage) return null
 
   return (
     <>

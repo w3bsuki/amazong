@@ -21,12 +21,13 @@ import { MobileCartDropdown } from "@/components/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/mobile-wishlist-button"
 import { DesktopSearch } from "@/components/desktop-search"
 import { LanguageSwitcher } from "@/components/language-switcher"
-import { MagnifyingGlass, Camera } from "@phosphor-icons/react"
+import { MagnifyingGlass, Camera, CaretLeft } from "@phosphor-icons/react"
 
 // Utilities
 import { getCountryName } from "@/lib/geolocation"
+import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
-import { Link } from "@/i18n/routing"
+import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 
 import { User } from "@supabase/supabase-js"
@@ -41,6 +42,11 @@ export function SiteHeader({ user }: SiteHeaderProps) {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
   const t = useTranslations('Navigation')
   const locale = useLocale()
+  const pathname = usePathname()
+  const router = useRouter()
+  
+  // Product pages get special mobile UX: back button instead of hamburger, no search bar
+  const isProductPage = pathname.startsWith("/product/")
   
   const searchPlaceholder = locale === "bg" 
     ? "Какво търсиш днес?" 
@@ -65,20 +71,38 @@ export function SiteHeader({ user }: SiteHeaderProps) {
       {/* Mobile Header + Search - Unified container like Target */}
       <div className="md:hidden bg-background text-header-text">
         {/* Top row - Logo & Actions */}
-        <div className="px-2 py-1 flex items-center">
-          <SidebarMenu user={user} />
-          <Link href="/" className="flex items-center shrink-0 -ml-2">
+        <div className={cn(
+          "px-2 py-1.5 flex items-center",
+          isProductPage && "border-b border-border/50"
+        )}>
+          {/* Back button on product pages, hamburger menu elsewhere */}
+          {isProductPage ? (
+            <button 
+              onClick={() => router.back()}
+              className="flex items-center justify-center size-10 -ml-1 rounded-full text-foreground hover:bg-muted active:bg-muted/80 active:scale-95 transition-all"
+              aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
+            >
+              <CaretLeft size={22} weight="bold" />
+            </button>
+          ) : (
+            <SidebarMenu user={user} />
+          )}
+          <Link href="/" className={cn(
+            "flex items-center shrink-0",
+            isProductPage ? "ml-1" : "-ml-2"
+          )}>
             <span className="text-lg font-bold tracking-tight text-foreground">AMZN</span>
           </Link>
           <div className="flex-1" />
-          <div className="flex items-center -mr-1">
+          <div className="flex items-center gap-0.5">
             <MobileSearchOverlay />
             <MobileWishlistButton />
             <MobileCartDropdown />
           </div>
         </div>
         
-        {/* Search bar row - integrated into header */}
+        {/* Search bar row - integrated into header, hidden on product pages */}
+        {!isProductPage && (
         <div className="px-3 pb-2">
           <button
             onClick={() => setIsMobileSearchOpen(true)}
@@ -95,6 +119,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             </div>
           </button>
         </div>
+        )}
         
         {/* Search Overlay - controlled by header */}
         <MobileSearchOverlay 

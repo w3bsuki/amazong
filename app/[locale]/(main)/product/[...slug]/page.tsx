@@ -318,8 +318,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
         }}
       />
 
-      {/* Breadcrumb - Sticky on mobile, below header */}
-      <div className="sticky top-[52px] md:static z-40 bg-background border-b md:border-0">
+      {/* Breadcrumb - Desktop only for cleaner mobile UX */}
+      <div className="hidden md:block md:static z-40 bg-background md:border-0">
         <div className="container py-1.5 lg:py-2">
           <ProductBreadcrumb
             locale={locale}
