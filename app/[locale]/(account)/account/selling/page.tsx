@@ -20,6 +20,7 @@ import {
   TrendUp,
   Clock,
   Tag,
+  ChartLineUp,
 } from "@phosphor-icons/react/dist/ssr"
 
 interface SellingPageProps {
@@ -135,12 +136,20 @@ export default async function SellingPage({ params }: SellingPageProps) {
               </p>
             </div>
           </div>
-          <Button asChild className="gap-2" size="lg">
-            <Link href={`/${locale}/sell`}>
-              <Plus weight="bold" className="size-4" />
-              {locale === 'bg' ? 'Нова обява' : 'New Listing'}
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" className="gap-2">
+              <Link href={`/${locale}/account/sales`}>
+                <ChartLineUp weight="bold" className="size-4" />
+                {locale === 'bg' ? 'Продажби' : 'Sales'}
+              </Link>
+            </Button>
+            <Button asChild className="gap-2" size="lg">
+              <Link href={`/${locale}/sell`}>
+                <Plus weight="bold" className="size-4" />
+                {locale === 'bg' ? 'Нова обява' : 'New Listing'}
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Stats Grid */}

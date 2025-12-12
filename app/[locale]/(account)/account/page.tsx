@@ -1,10 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
-import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
-import { Package, CreditCard, Lock, MapPin, Headphones, Crown, ChatCircle as MessageSquare, Storefront } from "@phosphor-icons/react/dist/ssr"
-import { getTranslations } from "next-intl/server"
+import { AccountStatsCards } from "@/components/account-stats-cards"
+import { AccountChart } from "@/components/account-chart"
+import { AccountRecentActivity } from "@/components/account-recent-activity"
 
 interface AccountPageProps {
   params: Promise<{
@@ -29,85 +28,56 @@ export default async function AccountPage({ params }: AccountPageProps) {
     redirect("/auth/login")
   }
 
-  const t = await getTranslations({ locale, namespace: 'Account' })
+  // Fetch all user stats in parallel
+  const [ordersResult, wishlistResult, productsResult, messagesResult, salesResult] = await Promise.all([
+    supabase.from('orders').select('id, total_amount, status, created_at', { count: 'exact' }).eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
+    supabase.from('wishlist_items').select('id', { count: 'exact' }).eq('user_id', user.id),
+    supabase.from('products').select('id, title, price, stock, created_at', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
+    supabase.from('messages').select('id, read', { count: 'exact' }).eq('receiver_id', user.id).eq('read', false),
+    supabase.from('order_items').select('id, price_at_purchase, quantity, created_at, products(title)', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
+  ])
 
-  const menuItems = [
-    {
-      title: t('orders.title'),
-      description: t('orders.desc'),
-      icon: Package,
-      href: "/account/orders",
-    },
-    {
-      title: t('prime.title'),
-      description: t('prime.desc'),
-      icon: Crown,
-      href: "/account/plans",
-    },
-    {
-      title: t('security.title'),
-      description: t('security.desc'),
-      icon: Lock,
-      href: "/account/security",
-    },
-    {
-      title: t('addresses.title'),
-      description: t('addresses.desc'),
-      icon: MapPin,
-      href: "/account/addresses",
-    },
-    {
-      title: t('payments.title'),
-      description: t('payments.desc'),
-      icon: CreditCard,
-      href: "/account/payments",
-    },
-    {
-      title: t('customerService.title'),
-      description: t('customerService.desc'),
-      icon: Headphones,
-      href: "/customer-service",
-    },
-    {
-      title: t('messages.title'),
-      description: t('messages.desc'),
-      icon: MessageSquare,
-      href: "/account/messages",
-    },
-    {
-      title: locale === 'bg' ? 'Продажби' : 'Selling',
-      description: locale === 'bg' ? 'Управлявайте продуктите и продажбите си' : 'Manage your products and sales',
-      icon: Storefront,
-      href: "/account/selling",
-    },
-  ]
+  const totalOrders = ordersResult.count || 0
+  const pendingOrders = ordersResult.data?.filter(o => o.status === 'pending' || o.status === 'processing').length || 0
+  const productCount = productsResult.count || 0
+  const unreadMessages = messagesResult.count || 0
+  const wishlistCount = wishlistResult.count || 0
+  const totalSales = salesResult.count || 0
+  const salesRevenue = (salesResult.data || []).reduce((sum, item: any) => 
+    sum + (Number(item.price_at_purchase) * item.quantity), 0
+  )
+
+  // Prepare data for components
+  const totals = {
+    orders: totalOrders,
+    pendingOrders,
+    sales: totalSales,
+    revenue: salesRevenue,
+    products: productCount,
+    messages: unreadMessages,
+    wishlist: wishlistCount,
+  }
+
+  const recentOrders = ordersResult.data || []
+  const recentProducts = productsResult.data || []
+  const recentSales = (salesResult.data || []).map((sale: any) => ({
+    ...sale,
+    product_title: sale.products?.title,
+  }))
 
   return (
-    <div className="p-4 lg:p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold">{t('title')}</h1>
-        <p className="text-muted-foreground mt-1">
-          {locale === 'bg' ? 'Управлявайте вашия акаунт и настройки' : 'Manage your account and settings'}
-        </p>
+    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+      <h1 className="sr-only">{locale === "bg" ? "Преглед на акаунта" : "Account Overview"}</h1>
+      <AccountStatsCards totals={totals} locale={locale} />
+      <div className="px-4 lg:px-6">
+        <AccountChart locale={locale} />
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        {menuItems.map((item) => (
-          <Link href={item.href} key={item.title}>
-            <Card className="h-full hover:bg-muted/50 hover:border-primary/20 transition-all border-border cursor-pointer rounded-lg group">
-              <CardContent className="p-4 flex gap-4 items-start">
-                <div className="shrink-0 p-2 rounded-lg bg-primary/5 group-hover:bg-primary/10 transition-colors">
-                  <item.icon className="size-6 text-primary" weight="duotone" />
-                </div>
-                <div className="min-w-0">
-                  <h2 className="text-base font-medium group-hover:text-primary transition-colors">{item.title}</h2>
-                  <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
+      <AccountRecentActivity 
+        orders={recentOrders}
+        products={recentProducts}
+        sales={recentSales}
+        locale={locale}
+      />
     </div>
   )
 }

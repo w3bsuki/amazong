@@ -229,7 +229,7 @@
   --color-form-input-bg: oklch(0.98 0 0);
   --color-form-label: oklch(0.25 0 0);
   --color-form-helper: oklch(0.55 0 0);
-  
+
   /* Progress/Status colors */
   --color-progress-bg: oklch(0.94 0 0);
   --color-progress-fill: oklch(0.48 0.22 260);
@@ -319,6 +319,14 @@
   --color-form-helper: oklch(0.70 0 0);
   --color-progress-bg: oklch(0.30 0.02 250);
   --color-progress-fill: oklch(0.60 0.16 250);
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 /* ===== BASE LAYER ===== */
@@ -418,3 +426,34 @@
 .slide-out-to-right { animation-name: slideOutToRight; }
 .animate-slide-up { animation: slideUp 0.15s ease; }
 .animate-slide-down { animation: slideDown 0.15s ease; }
+
+:root {
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

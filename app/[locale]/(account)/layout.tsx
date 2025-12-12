@@ -1,25 +1,11 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { setRequestLocale, getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Suspense } from "react";
-import { 
-    Package, 
-    CreditCard, 
-    Lock, 
-    MapPin, 
-    User, 
-    ChatCircle as MessageSquare,
-    House,
-    Crown,
-    Storefront
-} from "@phosphor-icons/react/dist/ssr";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { SignOutButton } from "@/components/sign-out-button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AccountLayoutContent } from "./account-layout-content";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -28,23 +14,24 @@ export function generateStaticParams() {
 
 function AccountLayoutSkeleton({ children }: { children: React.ReactNode }) {
     return (
-        <div className="min-h-screen flex flex-col bg-muted/30">
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-                <div className="container flex h-14 items-center justify-between">
-                    <Skeleton className="h-6 w-20" />
-                    <Skeleton className="h-9 w-9 rounded-full" />
+        <div className="flex min-h-svh w-full">
+            {/* Sidebar skeleton */}
+            <div className="hidden lg:flex w-64 flex-col border-r bg-sidebar">
+                <div className="p-4 space-y-4">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-full" />
                 </div>
-            </header>
-            <div className="flex-1 flex">
-                <aside className="hidden lg:block w-64 border-r bg-background shrink-0">
-                    <div className="p-4 space-y-4">
-                        <Skeleton className="h-12 w-full" />
-                        <Skeleton className="h-8 w-full" />
-                        <Skeleton className="h-8 w-full" />
-                        <Skeleton className="h-8 w-full" />
-                    </div>
-                </aside>
-                <main className="flex-1 min-w-0 pb-20 lg:pb-0">
+            </div>
+            {/* Main content skeleton */}
+            <div className="flex-1 flex flex-col">
+                <div className="h-12 border-b flex items-center px-4 gap-2">
+                    <Skeleton className="h-6 w-6" />
+                    <Skeleton className="h-4 w-32" />
+                </div>
+                <main className="flex-1 p-4">
                     {children}
                 </main>
             </div>
@@ -55,33 +42,15 @@ function AccountLayoutSkeleton({ children }: { children: React.ReactNode }) {
 /**
  * Account Layout
  * 
- * Minimal, focused layout for account management:
- * - Simple header with logo and user info
- * - Sidebar navigation for account sections
- * - No mega menus, no distractions
+ * Modern dashboard-style layout for account management using shadcn sidebar:
+ * - Collapsible sidebar navigation with icons
+ * - Clean header with breadcrumbs
+ * - Mobile-optimized with bottom tab bar
  * - Supports modal overlays via @modal parallel route
  * 
  * Used for: Account settings, orders, plans, messages, etc.
  */
-export default function AccountLayout({
-    children,
-    modal,
-    params,
-}: {
-    children: React.ReactNode;
-    modal: React.ReactNode;
-    params: Promise<{ locale: string }>;
-}) {
-    return (
-        <Suspense fallback={<AccountLayoutSkeleton>{children}</AccountLayoutSkeleton>}>
-            <AccountLayoutContent params={params} modal={modal}>
-                {children}
-            </AccountLayoutContent>
-        </Suspense>
-    );
-}
-
-async function AccountLayoutContent({
+export default async function AccountLayout({
     children,
     modal,
     params,
@@ -93,9 +62,10 @@ async function AccountLayoutContent({
     await connection();
     const { locale } = await params;
     
-    // Enable static rendering - CRITICAL for Next.js 16+
+    // Enable static rendering
     setRequestLocale(locale);
     
+    // Check auth on server side
     const supabase = await createClient();
     
     if (!supabase) {
@@ -108,179 +78,12 @@ async function AccountLayoutContent({
         redirect("/auth/login");
     }
 
-    const t = await getTranslations({ locale, namespace: 'Account' });
-    
-    // Get user initials for avatar
-    const email = user.email || '';
-    const initials = email.substring(0, 2).toUpperCase();
-
-    const menuItems = [
-        {
-            title: t('orders.title'),
-            icon: Package,
-            href: "/account/orders",
-        },
-        {
-            title: t('prime.title'),
-            icon: Crown,
-            href: "/account/plans",
-        },
-        {
-            title: t('security.title'),
-            icon: Lock,
-            href: "/account/security",
-        },
-        {
-            title: t('addresses.title'),
-            icon: MapPin,
-            href: "/account/addresses",
-        },
-        {
-            title: t('payments.title'),
-            icon: CreditCard,
-            href: "/account/payments",
-        },
-        {
-            title: t('messages.title'),
-            icon: MessageSquare,
-            href: "/account/messages",
-        },
-        {
-            title: locale === 'bg' ? 'Продавам' : 'Selling',
-            icon: Storefront,
-            href: "/account/selling",
-        },
-    ];
-
     return (
-        <div className="min-h-screen flex flex-col bg-muted/30">
-            {/* Minimal Header */}
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-                <div className="container flex h-14 items-center justify-between">
-                    {/* Logo + Back to Store */}
-                    <div className="flex items-center gap-4">
-                        <Link 
-                            href="/" 
-                            className="flex items-center gap-2 font-semibold text-xl hover:opacity-80 transition-opacity"
-                        >
-                            <span className="text-primary">AMZN</span>
-                        </Link>
-                        <div className="hidden sm:block h-6 w-px bg-border" />
-                        <Link 
-                            href="/"
-                            className="hidden sm:flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            <House className="size-4" />
-                            {locale === 'bg' ? 'Към магазина' : 'Back to Store'}
-                        </Link>
-                    </div>
-
-                    {/* User Section */}
-                    <div className="flex items-center gap-3">
-                        <div className="hidden sm:flex flex-col items-end">
-                            <span className="text-sm font-medium">{email}</span>
-                            <span className="text-xs text-muted-foreground">
-                                {locale === 'bg' ? 'Личен акаунт' : 'Personal Account'}
-                            </span>
-                        </div>
-                        <Avatar className="size-9">
-                            <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                                {initials}
-                            </AvatarFallback>
-                        </Avatar>
-                        <SignOutButton 
-                            locale={locale}
-                            className="text-muted-foreground hover:text-foreground"
-                            labelClassName="hidden sm:inline ml-1.5"
-                        />
-                    </div>
-                </div>
-            </header>
-
-            {/* Main Content with Sidebar */}
-            <div className="flex-1 flex">
-                {/* Sidebar - Desktop */}
-                <aside className="hidden lg:block w-64 border-r bg-background shrink-0">
-                    <ScrollArea className="h-[calc(100vh-3.5rem)]">
-                        <div className="p-4">
-                            <div className="flex items-center gap-3 mb-6 px-2">
-                                <Avatar className="size-12">
-                                    <AvatarFallback className="bg-primary/10 text-primary">
-                                        {initials}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-medium text-sm truncate max-w-[160px]">{email}</p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {locale === 'bg' ? 'Личен акаунт' : 'Personal Account'}
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            <nav className="space-y-1">
-                                <Link
-                                    href="/account"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium hover:bg-muted transition-colors"
-                                >
-                                    <User className="size-5 text-muted-foreground" />
-                                    {t('title')}
-                                </Link>
-                                
-                                <div className="pt-2">
-                                    <p className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                        {locale === 'bg' ? 'Управление' : 'Manage'}
-                                    </p>
-                                </div>
-                                
-                                {menuItems.map((item) => (
-                                    <Link
-                                        key={item.href}
-                                        href={item.href}
-                                        className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm hover:bg-muted transition-colors"
-                                    >
-                                        <item.icon className="size-5 text-muted-foreground" />
-                                        {item.title}
-                                    </Link>
-                                ))}
-                            </nav>
-                        </div>
-                    </ScrollArea>
-                </aside>
-
-                {/* Mobile Bottom Nav */}
-                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t">
-                    <div className="flex items-center justify-around py-2">
-                        <Link href="/account" className="flex flex-col items-center gap-1 px-3 py-1.5">
-                            <User className="size-5" />
-                            <span className="text-xs">{locale === 'bg' ? 'Акаунт' : 'Account'}</span>
-                        </Link>
-                        <Link href="/account/orders" className="flex flex-col items-center gap-1 px-3 py-1.5">
-                            <Package className="size-5" />
-                            <span className="text-xs">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
-                        </Link>
-                        <Link href="/account/plans" className="flex flex-col items-center gap-1 px-3 py-1.5">
-                            <Crown className="size-5" />
-                            <span className="text-xs">{locale === 'bg' ? 'Планове' : 'Plans'}</span>
-                        </Link>
-                        <Link href="/account/messages" className="flex flex-col items-center gap-1 px-3 py-1.5">
-                            <MessageSquare className="size-5" />
-                            <span className="text-xs">{locale === 'bg' ? 'Чат' : 'Chat'}</span>
-                        </Link>
-                        <Link href="/" className="flex flex-col items-center gap-1 px-3 py-1.5">
-                            <House className="size-5" />
-                            <span className="text-xs">{locale === 'bg' ? 'Магазин' : 'Store'}</span>
-                        </Link>
-                    </div>
-                </nav>
-
-                {/* Page Content */}
-                <main className="flex-1 min-w-0 pb-20 lg:pb-0">
-                    {children}
-                </main>
-            </div>
-            
-            {/* Modal Slot - for intercepted routes */}
-            {modal}
-        </div>
+        <Suspense fallback={<AccountLayoutSkeleton>{children}</AccountLayoutSkeleton>}>
+            <AccountLayoutContent modal={modal}>
+                {children}
+            </AccountLayoutContent>
+        </Suspense>
     );
 }
+
