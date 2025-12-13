@@ -51,7 +51,7 @@ export function AccountTabBar() {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border lg:hidden pb-safe"
+      className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border lg:hidden pb-safe"
       role="navigation"
       aria-label="Account navigation"
     >
@@ -66,22 +66,19 @@ export function AccountTabBar() {
               href={tab.href}
               prefetch={true}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors",
-                "touch-action-manipulation",
+                "flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] gap-0.5 transition-colors",
+                "touch-action-manipulation tap-transparent",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
                 active && !isStore 
-                  ? "text-primary" 
-                  : "text-muted-foreground hover:text-foreground",
+                  ? "text-brand" 
+                  : "text-muted-foreground",
               )}
               aria-label={tab.label}
               aria-current={active ? "page" : undefined}
             >
               <tab.icon 
-                className={cn(
-                  "size-5 transition-transform",
-                  active && !isStore && "scale-110"
-                )}
-                stroke={active && !isStore ? 2.5 : 1.5}
+                className="size-5"
+                stroke={active && !isStore ? 2 : 1.5}
               />
               <span className={cn(
                 "text-[10px] leading-tight",

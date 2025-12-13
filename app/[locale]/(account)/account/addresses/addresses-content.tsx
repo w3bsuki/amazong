@@ -1,12 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
 import {
     Dialog,
     DialogContent,
@@ -34,10 +32,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { 
     Plus, 
-    MapPin, 
-    Pencil, 
-    Trash, 
-    Star,
     SpinnerGap,
     House,
     Briefcase,
@@ -45,6 +39,8 @@ import {
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
+import { AccountAddressesStats } from "@/components/account-addresses-stats"
+import { AccountAddressesGrid } from "@/components/account-addresses-grid"
 
 interface Address {
     id: string
@@ -58,6 +54,7 @@ interface Address {
     postal_code: string
     country: string
     is_default: boolean
+    created_at: string
 }
 
 interface AddressFormData {
@@ -277,133 +274,54 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
         }
     }
 
-    const getLabelIcon = (label: string) => {
-        const found = addressLabels.find(l => l.value === label)
-        return found ? found.icon : MapPin
+    // Compute stats
+    const stats = useMemo(() => {
+        const total = addresses.length
+        const defaultCount = addresses.filter(a => a.is_default).length
+        const homeCount = addresses.filter(a => a.label.toLowerCase() === 'home' || a.label.toLowerCase() === 'дом').length
+        const workCount = addresses.filter(a => a.label.toLowerCase() === 'work' || a.label.toLowerCase() === 'работа').length
+        return { total, defaultCount, homeCount, workCount }
+    }, [addresses])
+
+    const handleEdit = (address: Address) => {
+        openEditDialog(address)
+    }
+
+    const handleDeleteClick = (addressId: string) => {
+        setDeletingAddressId(addressId)
+        setIsDeleteDialogOpen(true)
+    }
+
+    const t = {
+        addAddress: locale === 'bg' ? 'Добави' : 'Add',
     }
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h1 className="text-2xl font-semibold">
-                        {locale === 'bg' ? 'Вашите адреси' : 'Your Addresses'}
-                    </h1>
-                    <p className="text-muted-foreground text-sm mt-1">
-                        {locale === 'bg' 
-                            ? 'Управлявайте адресите си за доставка'
-                            : 'Manage your delivery addresses'}
-                    </p>
-                </div>
-                <Button onClick={openAddDialog} className="gap-2">
+        <div className="flex flex-col gap-4">
+            {/* Mobile header with add button */}
+            <div className="flex items-center justify-between sm:hidden">
+                <AccountAddressesStats stats={stats} locale={locale} />
+                <Button onClick={openAddDialog} size="sm" className="h-8 gap-1.5">
                     <Plus className="size-4" weight="bold" />
-                    {locale === 'bg' ? 'Добави адрес' : 'Add Address'}
+                    {t.addAddress}
                 </Button>
             </div>
 
-            {addresses.length === 0 ? (
-                <Card className="border-dashed">
-                    <CardContent className="flex flex-col items-center justify-center py-12">
-                        <MapPin className="size-12 text-muted-foreground/50 mb-4" />
-                        <h3 className="text-lg font-medium mb-2">
-                            {locale === 'bg' ? 'Нямате запазени адреси' : 'No saved addresses'}
-                        </h3>
-                        <p className="text-muted-foreground text-center mb-4 max-w-sm">
-                            {locale === 'bg' 
-                                ? 'Добавете адрес за по-бързо плащане при следващата поръчка'
-                                : 'Add an address for faster checkout on your next order'}
-                        </p>
-                        <Button onClick={openAddDialog} variant="outline" className="gap-2">
-                            <Plus className="size-4" />
-                            {locale === 'bg' ? 'Добави първия адрес' : 'Add your first address'}
-                        </Button>
-                    </CardContent>
-                </Card>
-            ) : (
-                <div className="grid gap-4 md:grid-cols-2">
-                    {addresses.map((address) => {
-                        const LabelIcon = getLabelIcon(address.label)
-                        return (
-                            <Card key={address.id} className={address.is_default ? 'border-primary' : ''}>
-                                <CardHeader className="pb-3">
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <LabelIcon className="size-5 text-muted-foreground" />
-                                            <CardTitle className="text-base">{address.label}</CardTitle>
-                                            {address.is_default && (
-                                                <Badge variant="secondary" className="text-xs">
-                                                    <Star className="size-3 mr-1" weight="fill" />
-                                                    {locale === 'bg' ? 'По подразбиране' : 'Default'}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
-                                                className="size-8"
-                                                onClick={() => openEditDialog(address)}
-                                            >
-                                                <Pencil className="size-4" />
-                                            </Button>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon" 
-                                                className="size-8 text-destructive hover:text-destructive"
-                                                onClick={() => {
-                                                    setDeletingAddressId(address.id)
-                                                    setIsDeleteDialogOpen(true)
-                                                }}
-                                            >
-                                                <Trash className="size-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-sm space-y-1">
-                                        <p className="font-medium">{address.full_name}</p>
-                                        <p className="text-muted-foreground">{address.address_line1}</p>
-                                        {address.address_line2 && (
-                                            <p className="text-muted-foreground">{address.address_line2}</p>
-                                        )}
-                                        <p className="text-muted-foreground">
-                                            {address.city}{address.state ? `, ${address.state}` : ''} {address.postal_code}
-                                        </p>
-                                        <p className="text-muted-foreground">{address.country}</p>
-                                        {address.phone && (
-                                            <p className="text-muted-foreground pt-1">{address.phone}</p>
-                                        )}
-                                    </div>
-                                    {!address.is_default && (
-                                        <Button 
-                                            variant="link" 
-                                            className="mt-3 h-auto p-0 text-sm"
-                                            onClick={() => handleSetDefault(address.id)}
-                                            disabled={isLoading}
-                                        >
-                                            {locale === 'bg' ? 'Направи по подразбиране' : 'Set as default'}
-                                        </Button>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        )
-                    })}
+            {/* Desktop stats */}
+            <div className="hidden sm:block">
+                <AccountAddressesStats stats={stats} locale={locale} />
+            </div>
 
-                    {/* Add New Card */}
-                    <Card 
-                        className="border-dashed cursor-pointer hover:border-primary/50 transition-colors"
-                        onClick={openAddDialog}
-                    >
-                        <CardContent className="flex flex-col items-center justify-center h-full min-h-[200px]">
-                            <Plus className="size-10 text-muted-foreground/50 mb-2" />
-                            <p className="text-muted-foreground font-medium">
-                                {locale === 'bg' ? 'Добави нов адрес' : 'Add new address'}
-                            </p>
-                        </CardContent>
-                    </Card>
-                </div>
-            )}
+            {/* Grid */}
+            <AccountAddressesGrid
+                addresses={addresses}
+                locale={locale}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+                onAdd={openAddDialog}
+                onSetDefault={handleSetDefault}
+                isLoading={isLoading}
+            />
 
             {/* Add/Edit Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

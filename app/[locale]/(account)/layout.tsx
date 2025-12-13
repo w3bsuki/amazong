@@ -16,7 +16,7 @@ function AccountLayoutSkeleton({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex min-h-svh w-full">
             {/* Sidebar skeleton */}
-            <div className="hidden lg:flex w-64 flex-col border-r bg-sidebar">
+            <div className="hidden lg:flex w-72 flex-col border-r bg-sidebar">
                 <div className="p-4 space-y-4">
                     <Skeleton className="h-10 w-full" />
                     <Skeleton className="h-8 w-full" />

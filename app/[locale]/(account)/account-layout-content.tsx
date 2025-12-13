@@ -35,8 +35,8 @@ export function AccountLayoutContent({ children, modal }: AccountLayoutContentPr
 
   if (isLoading) {
     return (
-      <div className="flex min-h-svh items-center justify-center">
-        <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      <div className="flex min-h-svh items-center justify-center bg-account-section-bg">
+        <div className="size-8 animate-spin rounded-full border-4 border-brand border-t-transparent" />
       </div>
     )
   }
@@ -45,7 +45,7 @@ export function AccountLayoutContent({ children, modal }: AccountLayoutContentPr
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 64)",
+          "--sidebar-width": "calc(var(--spacing) * 72)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
@@ -59,8 +59,8 @@ export function AccountLayoutContent({ children, modal }: AccountLayoutContentPr
       />
       <SidebarInset>
         <AccountHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2 px-4 py-4 pb-20 md:px-6 md:py-6 lg:pb-6">
+        <div className="flex flex-1 flex-col bg-account-section-bg min-h-0">
+          <div className="@container/main flex flex-1 flex-col gap-4 px-4 py-4 pb-20 lg:px-6 lg:py-6 lg:pb-6">
             {children}
           </div>
         </div>

@@ -33,56 +33,8 @@ interface Review {
     } | null
 }
 
-// Mock reviews data for demonstration
-const mockReviews: Review[] = [
-    {
-        id: 'mock-1',
-        rating: 5,
-        title: 'Отличен продукт!',
-        comment: 'Много съм доволен от покупката. Качеството е страхотно, доставката беше бърза. Определено препоръчвам на всички!',
-        created_at: '2024-11-28T10:30:00Z',
-        helpful_count: 24,
-        profiles: { full_name: 'Иван Петров', avatar_url: null }
-    },
-    {
-        id: 'mock-2',
-        rating: 5,
-        title: 'Точно каквото очаквах',
-        comment: 'Продуктът напълно отговаря на описанието. Използвам го всеки ден и съм много доволен. Продавачът е коректен.',
-        created_at: '2024-11-25T14:15:00Z',
-        helpful_count: 18,
-        profiles: { full_name: 'Мария Георгиева', avatar_url: null }
-    },
-    {
-        id: 'mock-3',
-        rating: 4,
-        title: 'Добро съотношение цена-качество',
-        comment: 'За тази цена е много добър избор. Има малки недостатъци, но като цяло съм доволен. Бих купил отново.',
-        created_at: '2024-11-20T09:45:00Z',
-        helpful_count: 12,
-        profiles: { full_name: 'Георги Димитров', avatar_url: null }
-    },
-    {
-        id: 'mock-4',
-        rating: 5,
-        title: 'Перфектно!',
-        comment: 'Надмина очакванията ми. Бърза доставка, отлично качество, професионална опаковка. 10/10!',
-        created_at: '2024-11-15T16:20:00Z',
-        helpful_count: 31,
-        profiles: { full_name: 'Елена Стоянова', avatar_url: null }
-    },
-    {
-        id: 'mock-5',
-        rating: 4,
-        title: 'Препоръчвам',
-        comment: 'Много добър продукт. Използвам го от седмица и засега всичко е наред. Ще актуализирам отзива след повече употреба.',
-        created_at: '2024-11-10T11:00:00Z',
-        helpful_count: 8,
-        profiles: { full_name: 'Петър Николов', avatar_url: null }
-    }
-]
-
-const mockDistribution: Record<number, number> = { 5: 156, 4: 48, 3: 12, 2: 4, 1: 2 }
+// PRODUCTION: No mock data - show empty state instead
+const emptyDistribution: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
 
 export function ReviewsSection({ rating, reviewCount, productId }: { rating: number, reviewCount: number, productId: string }) {
     const t = useTranslations('Reviews')
@@ -116,28 +68,28 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
 
             if (error) {
                 console.error("Error fetching reviews:", error)
-                // Use mock data on error
-                setReviews(mockReviews)
-                setRatingDistribution(mockDistribution)
+                // PRODUCTION: Show empty state on error
+                setReviews([])
+                setRatingDistribution(emptyDistribution)
             } else if (data && data.length > 0) {
                 setReviews(data as Review[])
                 
-                // Calculate rating distribution
+                // Calculate rating distribution from real data
                 const distribution: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
-                data.forEach((review: any) => {
+                data.forEach((review: { rating: number }) => {
                     distribution[review.rating] = (distribution[review.rating] || 0) + 1
                 })
                 setRatingDistribution(distribution)
             } else {
-                // No reviews found, use mock data
-                setReviews(mockReviews)
-                setRatingDistribution(mockDistribution)
+                // PRODUCTION: No reviews found - show empty state
+                setReviews([])
+                setRatingDistribution(emptyDistribution)
             }
         } catch (error) {
             console.error("Error in fetchReviews:", error)
-            // Use mock data on error
-            setReviews(mockReviews)
-            setRatingDistribution(mockDistribution)
+            // PRODUCTION: Show empty state on error
+            setReviews([])
+            setRatingDistribution(emptyDistribution)
         } finally {
             setIsLoading(false)
         }

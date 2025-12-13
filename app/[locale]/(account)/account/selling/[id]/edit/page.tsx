@@ -17,7 +17,7 @@ function EditProductContent() {
 export default function EditProductPage() {
   return (
     <Suspense fallback={
-      <div className="container py-4 sm:py-6">
+      <div className="py-4 sm:py-6">
         <Skeleton className="h-8 w-64 mb-4" />
         <Skeleton className="h-[500px] w-full" />
       </div>

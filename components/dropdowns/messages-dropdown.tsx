@@ -24,7 +24,7 @@ export function MessagesDropdown({ user, unreadCount = 0 }: MessagesDropdownProp
   return (
     <HoverCard openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <Link href="/account/messages" aria-label={`${tNav("messagesLabel")}${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}>
+        <Link href="/chat" aria-label={`${tNav("messagesLabel")}${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}>
           <Button
             variant="ghost"
             size="icon-xl"
@@ -53,7 +53,7 @@ export function MessagesDropdown({ user, unreadCount = 0 }: MessagesDropdownProp
 
         <div className="p-3">
           <div className="space-y-1">
-            <Link href="/account/messages" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+            <Link href="/chat" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
               <div className="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center">
                 <ChatCircle size={20} weight="duotone" className="text-brand" />
               </div>
@@ -65,7 +65,7 @@ export function MessagesDropdown({ user, unreadCount = 0 }: MessagesDropdownProp
             </Link>
 
             <Link
-              href="/account/messages?filter=sellers"
+              href="/chat?filter=sellers"
               className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group"
             >
               <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
@@ -79,7 +79,7 @@ export function MessagesDropdown({ user, unreadCount = 0 }: MessagesDropdownProp
             </Link>
 
             <Link
-              href="/account/messages?filter=notifications"
+              href="/chat?filter=notifications"
               className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group"
             >
               <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
@@ -95,7 +95,7 @@ export function MessagesDropdown({ user, unreadCount = 0 }: MessagesDropdownProp
         </div>
 
         <div className="p-3 bg-muted border-t border-border">
-          <Link href="/account/messages">
+          <Link href="/chat">
             <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
               {t("viewAllMessages")}
             </Button>

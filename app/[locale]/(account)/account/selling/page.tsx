@@ -2,26 +2,20 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
 import Link from "next/link"
-import Image from "next/image"
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
   Plus,
   Package,
-  Eye,
-  Pencil,
   Storefront,
   CurrencyCircleDollar,
   ShoppingCart,
   Warning,
   Star,
-  TrendUp,
-  Clock,
-  Tag,
   ChartLineUp,
 } from "@phosphor-icons/react/dist/ssr"
+import { SellingProductsList } from "./selling-products-list"
 
 interface SellingPageProps {
   params: Promise<{
@@ -40,6 +34,8 @@ interface Product {
   rating: number | null
   review_count: number | null
   created_at: string
+  is_boosted: boolean
+  boost_expires_at: string | null
   category?: {
     name: string
     slug: string
@@ -87,6 +83,8 @@ export default async function SellingPage({ params }: SellingPageProps) {
       rating,
       review_count,
       created_at,
+      is_boosted,
+      boost_expires_at,
       category:categories(name, slug)
     `)
     .eq("seller_id", user.id)
@@ -106,26 +104,69 @@ export default async function SellingPage({ params }: SellingPageProps) {
     }).format(value)
   }
 
+  const t = {
+    products: locale === 'bg' ? 'продукта' : 'products',
+    value: locale === 'bg' ? 'стойност' : 'value',
+    lowStock: locale === 'bg' ? 'нисък склад' : 'low stock',
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container py-4 sm:py-6">
-        {/* Breadcrumb */}
-        <AppBreadcrumb items={[
-          { label: locale === 'bg' ? 'Акаунт' : 'Account', href: '/account' },
-          { label: locale === 'bg' ? 'Моят магазин' : 'My Store' }
-        ]} />
+    <div className="flex flex-col gap-4 md:gap-6">
+      <h1 className="sr-only">{locale === 'bg' ? 'Моят магазин' : 'My Store'}</h1>
         
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4 mb-6">
+        {/* Mobile: Revolut-style header with stats pills */}
+        <div className="sm:hidden">
+          {/* Store info + Add button */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="size-11 rounded-full bg-account-stat-icon-bg border border-account-stat-border flex items-center justify-center">
+                <Storefront weight="fill" className="size-5 text-account-stat-icon" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold">{seller.store_name}</span>
+                  {seller.verified && (
+                    <Star weight="fill" className="size-3.5 text-emerald-500" />
+                  )}
+                </div>
+              </div>
+            </div>
+            <Button asChild size="sm" className="h-9 gap-1.5 rounded-full px-4">
+              <Link href={`/${locale}/sell`}>
+                <Plus weight="bold" className="size-4" />
+                {locale === 'bg' ? 'Добави' : 'Add'}
+              </Link>
+            </Button>
+          </div>
+
+          {/* Revolut-style stats pills */}
+          <div className="flex items-center gap-3 text-sm">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-account-stat-bg border border-account-stat-border">
+              <Package weight="duotone" className="size-4 text-account-accent" />
+              <span className="font-semibold">{totalProducts}</span>
+              <span className="text-muted-foreground">{t.products}</span>
+            </div>
+            {lowStockProducts > 0 && (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800">
+                <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+                <span className="font-semibold text-amber-600 dark:text-amber-400">{lowStockProducts}</span>
+                <span className="text-amber-600/70 dark:text-amber-400/70">{t.lowStock}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Desktop: Full header */}
+        <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="size-14 sm:size-16 rounded-xl bg-linear-to-br from-brand to-brand-dark flex items-center justify-center shadow-lg">
-              <Storefront weight="fill" className="size-7 sm:size-8 text-white" />
+            <div className="size-14 rounded-2xl bg-account-stat-icon-bg border border-account-stat-border flex items-center justify-center">
+              <Storefront weight="fill" className="size-7 text-account-stat-icon" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold text-foreground">{seller.store_name}</h1>
+                <h2 className="text-xl font-bold text-foreground">{seller.store_name}</h2>
                 {seller.verified && (
-                  <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-0">
+                  <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border-0">
                     <Star weight="fill" className="size-3 mr-1" />
                     {locale === 'bg' ? 'Потвърден' : 'Verified'}
                   </Badge>
@@ -137,13 +178,13 @@ export default async function SellingPage({ params }: SellingPageProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button asChild variant="outline" className="gap-2">
+            <Button asChild variant="outline" className="gap-2 rounded-full">
               <Link href={`/${locale}/account/sales`}>
                 <ChartLineUp weight="bold" className="size-4" />
                 {locale === 'bg' ? 'Продажби' : 'Sales'}
               </Link>
             </Button>
-            <Button asChild className="gap-2" size="lg">
+            <Button asChild className="gap-2 rounded-full">
               <Link href={`/${locale}/sell`}>
                 <Plus weight="bold" className="size-4" />
                 {locale === 'bg' ? 'Нова обява' : 'New Listing'}
@@ -152,273 +193,117 @@ export default async function SellingPage({ params }: SellingPageProps) {
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-          <Card>
-            <CardContent className="pt-4 sm:pt-6">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="size-10 sm:size-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                  <Package weight="duotone" className="size-5 sm:size-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate">{locale === 'bg' ? 'Общо продукти' : 'Total Products'}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-foreground">{totalProducts}</p>
-                </div>
+        {/* Desktop: Stats Grid - using account tokens */}
+        <div className="hidden sm:grid grid-cols-2 gap-3 @xl/main:grid-cols-4">
+          <Card className="@container/card">
+            <CardHeader className="p-4">
+              <CardDescription className="flex items-center gap-1.5">
+                <Package weight="duotone" className="size-4 shrink-0 text-account-stat-icon" />
+                <span className="truncate">{locale === 'bg' ? 'Продукти' : 'Products'}</span>
+              </CardDescription>
+              <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                {totalProducts.toLocaleString()}
+              </CardTitle>
+              <div className="pt-1">
+                <Badge variant="outline" className="text-account-info border-account-stat-border bg-account-info-soft">
+                  {locale === 'bg' ? 'Активни' : 'Active'}
+                </Badge>
               </div>
-            </CardContent>
+            </CardHeader>
           </Card>
 
-          <Card>
-            <CardContent className="pt-4 sm:pt-6">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="size-10 sm:size-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-                  <CurrencyCircleDollar weight="duotone" className="size-5 sm:size-6 text-green-600 dark:text-green-400" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate">{locale === 'bg' ? 'Стойност' : 'Inventory Value'}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-foreground">{formatCurrency(totalValue)}</p>
-                </div>
+          <Card className="@container/card">
+            <CardHeader className="p-4">
+              <CardDescription className="flex items-center gap-1.5">
+                <CurrencyCircleDollar weight="duotone" className="size-4 shrink-0 text-emerald-500" />
+                <span className="truncate">{locale === 'bg' ? 'Стойност' : 'Value'}</span>
+              </CardDescription>
+              <CardTitle className="text-2xl font-semibold tabular-nums text-emerald-600 dark:text-emerald-400 @[250px]/card:text-3xl">
+                {formatCurrency(totalValue)}
+              </CardTitle>
+              <div className="pt-1">
+                <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-400">
+                  {locale === 'bg' ? 'Инвентар' : 'Inventory'}
+                </Badge>
               </div>
-            </CardContent>
+            </CardHeader>
           </Card>
 
-          <Card>
-            <CardContent className="pt-4 sm:pt-6">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="size-10 sm:size-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
-                  <ShoppingCart weight="duotone" className="size-5 sm:size-6 text-purple-600 dark:text-purple-400" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate">{locale === 'bg' ? 'Поръчки' : 'Orders'}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-foreground">0</p>
-                </div>
+          <Card className="@container/card">
+            <CardHeader className="p-4">
+              <CardDescription className="flex items-center gap-1.5">
+                <ShoppingCart weight="duotone" className="size-4 shrink-0" />
+                <span className="truncate">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
+              </CardDescription>
+              <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                0
+              </CardTitle>
+              <div className="pt-1">
+                <Badge variant="outline" className="text-muted-foreground border-border">
+                  {locale === 'bg' ? 'Този месец' : 'This month'}
+                </Badge>
               </div>
-            </CardContent>
+            </CardHeader>
           </Card>
 
-          <Card className={lowStockProducts > 0 ? "border-amber-200 dark:border-amber-800" : ""}>
-            <CardContent className="pt-4 sm:pt-6">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className={`size-10 sm:size-12 rounded-xl flex items-center justify-center shrink-0 ${
-                  lowStockProducts > 0 
-                    ? "bg-amber-100 dark:bg-amber-900/30" 
-                    : "bg-muted"
-                }`}>
-                  <Warning weight="duotone" className={`size-5 sm:size-6 ${
-                    lowStockProducts > 0 
-                      ? "text-amber-600 dark:text-amber-400" 
-                      : "text-muted-foreground"
-                  }`} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate">{locale === 'bg' ? 'Нисък склад' : 'Low Stock'}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-foreground">{lowStockProducts}</p>
-                </div>
+          <Card className={`@container/card ${lowStockProducts > 0 ? "border-amber-200 dark:border-amber-800" : ""}`}>
+            <CardHeader className="p-4">
+              <CardDescription className="flex items-center gap-1.5">
+                <Warning weight="duotone" className="size-4 shrink-0" />
+                <span className="truncate">{locale === 'bg' ? 'Нисък склад' : 'Low Stock'}</span>
+              </CardDescription>
+              <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${lowStockProducts > 0 ? 'text-amber-600 dark:text-amber-400' : ''}`}>
+                {lowStockProducts.toLocaleString()}
+              </CardTitle>
+              <div className="pt-1">
+                {lowStockProducts > 0 ? (
+                  <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50 dark:bg-amber-950/50 dark:border-amber-800 dark:text-amber-400">
+                    {locale === 'bg' ? 'Внимание' : 'Attention'}
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="text-muted-foreground border-border">
+                    {locale === 'bg' ? 'Всичко е ОК' : 'All good'}
+                  </Badge>
+                )}
               </div>
-            </CardContent>
+            </CardHeader>
           </Card>
         </div>
 
-        {/* Products Section */}
-        <Card>
+        {/* Products List - No card wrapper on mobile */}
+        <div className="sm:hidden mt-4">
+          <div className="flex items-center justify-between px-1 mb-3">
+            <span className="font-semibold text-base text-foreground">
+              {locale === 'bg' ? 'Вашите продукти' : 'Your Products'}
+            </span>
+          </div>
+          <SellingProductsList products={sellerProducts} locale={locale} />
+        </div>
+
+        {/* Desktop: Products in Card */}
+        <Card className="hidden sm:block shadow-none">
           <CardHeader className="pb-3">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg sm:text-xl">
+                <CardTitle className="text-base">
                   {locale === 'bg' ? 'Вашите продукти' : 'Your Products'}
                 </CardTitle>
                 <CardDescription>
                   {locale === 'bg' ? 'Управлявайте вашите обяви' : 'Manage your product listings'}
                 </CardDescription>
               </div>
-              <Button asChild variant="outline" size="sm" className="self-start sm:self-auto">
+              <Button asChild variant="outline" size="sm" className="rounded-full">
                 <Link href={`/${locale}/sell`}>
                   <Plus weight="bold" className="size-4 mr-2" />
-                  {locale === 'bg' ? 'Добави продукт' : 'Add Product'}
+                  {locale === 'bg' ? 'Добави' : 'Add'}
                 </Link>
               </Button>
             </div>
           </CardHeader>
-          <CardContent>
-            {sellerProducts.length === 0 ? (
-              <div className="text-center py-12 sm:py-16">
-                <div className="size-16 sm:size-20 bg-muted rounded-full mx-auto flex items-center justify-center mb-4">
-                  <Package weight="duotone" className="size-8 sm:size-10 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {locale === 'bg' ? 'Нямате продукти все още' : 'No products yet'}
-                </h3>
-                <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                  {locale === 'bg' 
-                    ? 'Започнете да продавате, като създадете първата си обява' 
-                    : 'Start selling by creating your first product listing'}
-                </p>
-                <Button asChild>
-                  <Link href={`/${locale}/sell`}>
-                    <Plus weight="bold" className="size-4 mr-2" />
-                    {locale === 'bg' ? 'Създай обява' : 'Create Listing'}
-                  </Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-0 divide-y divide-border">
-                {sellerProducts.map((product) => (
-                  <div key={product.id} className="flex items-start sm:items-center gap-3 sm:gap-4 py-4 first:pt-0 last:pb-0">
-                    {/* Product Image */}
-                    <div className="relative size-16 sm:size-20 rounded-lg overflow-hidden bg-muted shrink-0">
-                      {product.images?.[0] && product.images[0].startsWith('http') ? (
-                        <Image
-                          src={product.images[0]}
-                          alt={product.title}
-                          fill
-                          className="object-cover"
-                          sizes="80px"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package className="size-6 sm:size-8 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <Link 
-                          href={`/${locale}/product/${product.id}`}
-                          className="font-medium text-foreground hover:text-brand hover:underline line-clamp-1 text-sm sm:text-base"
-                        >
-                          {product.title}
-                        </Link>
-                        {product.list_price && product.list_price > product.price && (
-                          <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-xs shrink-0">
-                            <Tag weight="fill" className="size-3 mr-0.5" />
-                            -{Math.round(((product.list_price - product.price) / product.list_price) * 100)}%
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-muted-foreground mt-1">
-                        <div className="flex items-baseline gap-1.5">
-                          <span className={`font-medium ${product.list_price && product.list_price > product.price ? 'text-deal' : 'text-foreground'}`}>
-                            {formatCurrency(Number(product.price))}
-                          </span>
-                          {product.list_price && product.list_price > product.price && (
-                            <span className="text-muted-foreground line-through text-xs">
-                              {formatCurrency(Number(product.list_price))}
-                            </span>
-                          )}
-                        </div>
-                        <span className={product.stock < 5 ? "text-amber-600 dark:text-amber-400 font-medium" : ""}>
-                          {product.stock === 0 
-                            ? (locale === 'bg' ? 'Изчерпан' : 'Out of stock')
-                            : `${product.stock} ${locale === 'bg' ? 'в склад' : 'in stock'}`
-                          }
-                        </span>
-                        {product.category && (
-                          <span className="hidden sm:inline">{(product.category as any).name}</span>
-                        )}
-                      </div>
-                      {/* Rating */}
-                      <div className="flex items-center gap-1 mt-1.5">
-                        <div className="flex text-rating">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              size={12}
-                              weight={i < Math.floor(product.rating || 0) ? "fill" : "regular"}
-                              className="text-rating"
-                            />
-                          ))}
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          ({product.review_count || 0})
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-                      <Button asChild variant="ghost" size="icon" className="size-8 sm:size-9">
-                        <Link href={`/${locale}/product/${product.id}`}>
-                          <Eye className="size-4" />
-                          <span className="sr-only">View</span>
-                        </Link>
-                      </Button>
-                      <Button asChild variant="ghost" size="icon" className="size-8 sm:size-9">
-                        <Link href={`/${locale}/account/selling/${product.id}/edit`}>
-                          <Pencil className="size-4" />
-                          <span className="sr-only">Edit</span>
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+          <CardContent className="p-0">
+            <SellingProductsList products={sellerProducts} locale={locale} />
           </CardContent>
         </Card>
-
-        {/* Quick Tips - Only show if they have products */}
-        {sellerProducts.length > 0 && (
-          <Card className="mt-6">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-                <TrendUp weight="duotone" className="size-5 text-brand" />
-                {locale === 'bg' ? 'Съвети за повече продажби' : 'Tips to boost your sales'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid sm:grid-cols-3 gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="size-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                    <Package weight="duotone" className="size-4 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-sm text-foreground">
-                      {locale === 'bg' ? 'Добавете повече снимки' : 'Add more photos'}
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {locale === 'bg' 
-                        ? 'Продуктите с 4+ снимки се продават 2x по-бързо' 
-                        : 'Products with 4+ photos sell 2x faster'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="size-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-                    <CurrencyCircleDollar weight="duotone" className="size-4 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-sm text-foreground">
-                      {locale === 'bg' ? 'Конкурентни цени' : 'Competitive pricing'}
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {locale === 'bg' 
-                        ? 'Проверете цените на конкурентите' 
-                        : 'Check competitor prices regularly'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="size-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
-                    <Clock weight="duotone" className="size-4 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-sm text-foreground">
-                      {locale === 'bg' ? 'Бърз отговор' : 'Quick response'}
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {locale === 'bg' 
-                        ? 'Отговаряйте на съобщенията бързо' 
-                        : 'Respond to messages quickly'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
     </div>
   )
 }

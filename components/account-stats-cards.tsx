@@ -1,16 +1,7 @@
 "use client"
 
-import { IconTrendingUp, IconPackage, IconChartLine, IconBuildingStore, IconMessage } from "@tabler/icons-react"
-
-import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { IconPackage, IconChartLine, IconBuildingStore, IconMessage, IconHeart, IconChevronRight, IconPlus } from "@tabler/icons-react"
+import Link from "next/link"
 
 interface AccountStatsProps {
   totals: {
@@ -26,134 +17,107 @@ interface AccountStatsProps {
 }
 
 export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
-      maximumFractionDigits: 0,
-    }).format(value)
-  }
-
   const t = {
     orders: locale === 'bg' ? 'Поръчки' : 'Orders',
-    ordersDesc: locale === 'bg' ? 'Направени поръчки' : 'Orders placed',
-    pending: locale === 'bg' ? 'В изпълнение' : 'In progress',
     sales: locale === 'bg' ? 'Продажби' : 'Sales',
-    salesDesc: locale === 'bg' ? 'Продадени артикули' : 'Items sold',
-    revenue: locale === 'bg' ? 'Приходи' : 'Revenue',
-    revenueDesc: locale === 'bg' ? 'От продажби' : 'From sales',
     products: locale === 'bg' ? 'Обяви' : 'Listings',
-    productsDesc: locale === 'bg' ? 'Активни продукти' : 'Active products',
-    active: locale === 'bg' ? 'Активни' : 'Active',
-    messages: locale === 'bg' ? 'Съобщения' : 'Messages',
-    messagesDesc: locale === 'bg' ? 'Непрочетени' : 'Unread',
-    wishlist: locale === 'bg' ? 'Любими' : 'Wishlist',
-    wishlistDesc: locale === 'bg' ? 'Запазени продукти' : 'Saved items',
+    messages: locale === 'bg' ? 'Чат' : 'Chat',
+    wishlist: locale === 'bg' ? 'Любими' : 'Saved',
+    sell: locale === 'bg' ? 'Продай' : 'Sell',
+    settings: locale === 'bg' ? 'Настройки' : 'Settings',
   }
 
+  // Quick actions - Professional neutral icons
+  const quickActions = [
+    {
+      href: "/account/orders",
+      icon: IconPackage,
+      label: t.orders,
+      count: totals.orders,
+    },
+    {
+      href: "/account/selling",
+      icon: IconBuildingStore,
+      label: t.products,
+      count: totals.products,
+    },
+    {
+      href: "/account/sales",
+      icon: IconChartLine,
+      label: t.sales,
+      count: totals.sales,
+    },
+    {
+      href: "/chat",
+      icon: IconMessage,
+      label: t.messages,
+      count: totals.messages,
+    },
+    {
+      href: "/account/wishlist",
+      icon: IconHeart,
+      label: t.wishlist,
+      count: totals.wishlist,
+    },
+    {
+      href: "/sell",
+      icon: IconPlus,
+      label: t.sell,
+      count: null,
+    },
+  ]
+
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription className="flex items-center gap-2">
-            <IconPackage className="size-4" />
-            {t.orders}
-          </CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {totals.orders.toLocaleString()}
-          </CardTitle>
-          <CardAction>
-            {totals.pendingOrders > 0 ? (
-              <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
-                {totals.pendingOrders} {t.pending}
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50">
-                <IconTrendingUp className="size-3" />
-                {t.active}
-              </Badge>
+    <>
+      {/* Mobile: Revolut-style circular action buttons */}
+      <div className="sm:hidden">
+        <div className="grid grid-cols-5 gap-1">
+          {quickActions.slice(0, 5).map((action) => (
+            <Link
+              key={action.href}
+              href={action.href}
+              className="flex flex-col items-center gap-1.5 py-2 active:scale-95 transition-transform"
+            >
+              {/* Circular neutral icon */}
+              <div className="relative flex size-12 items-center justify-center rounded-full bg-account-stat-icon-bg border border-border">
+                <action.icon className="size-5 text-account-stat-icon" strokeWidth={1.8} />
+                {/* Count badge */}
+                {action.count !== null && action.count > 0 && (
+                  <div className="absolute -top-0.5 -right-0.5 flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-foreground text-background px-1 text-[10px] font-bold shadow-sm">
+                    {action.count > 99 ? '99+' : action.count}
+                  </div>
+                )}
+              </div>
+              {/* Label */}
+              <span className="text-[11px] font-medium text-account-stat-label text-center leading-tight">
+                {action.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: Horizontal quick actions bar */}
+      <div className="hidden sm:flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+        {quickActions.map((action) => (
+          <Link
+            key={action.href}
+            href={action.href}
+            className="group flex items-center gap-2 px-4 py-2 rounded-full bg-account-stat-bg border border-account-stat-border hover:bg-account-card-hover transition-all shrink-0"
+          >
+            <div className="flex size-7 items-center justify-center rounded-full bg-account-stat-icon-bg">
+              <action.icon className="size-3.5 text-account-stat-icon" strokeWidth={2} />
+            </div>
+            <span className="text-sm font-medium text-account-stat-value">{action.label}</span>
+            {action.count !== null && action.count > 0 && (
+              <span className="text-xs font-semibold text-account-stat-label bg-account-accent-soft px-1.5 py-0.5 rounded-full">
+                {action.count}
+              </span>
             )}
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">
-            {t.ordersDesc}
-          </div>
-        </CardFooter>
-      </Card>
-
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription className="flex items-center gap-2">
-            <IconChartLine className="size-4" />
-            {t.sales}
-          </CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {totals.sales.toLocaleString()}
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50">
-              <IconTrendingUp className="size-3" />
-              {formatCurrency(totals.revenue)}
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">
-            {t.salesDesc}
-          </div>
-        </CardFooter>
-      </Card>
-
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription className="flex items-center gap-2">
-            <IconBuildingStore className="size-4" />
-            {t.products}
-          </CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {totals.products.toLocaleString()}
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50">
-              {t.active}
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">
-            {t.productsDesc}
-          </div>
-        </CardFooter>
-      </Card>
-
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription className="flex items-center gap-2">
-            <IconMessage className="size-4" />
-            {t.messages}
-          </CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {totals.messages.toLocaleString()}
-          </CardTitle>
-          <CardAction>
-            {totals.messages > 0 ? (
-              <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50">
-                {t.messagesDesc}
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="text-gray-600 border-gray-200 bg-gray-50">
-                {t.messagesDesc}
-              </Badge>
-            )}
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">
-            {t.messagesDesc}
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
+            <IconChevronRight className="size-3.5 text-muted-foreground/50 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        ))}
+      </div>
+    </>
   )
 }

@@ -1,21 +1,30 @@
-import { getPromoProducts, getBestSellers, getFeaturedProducts, toUI, type Product } from '@/lib/data/products'
+import { getPromoProducts, getBestSellers, getFeaturedProducts, toUI, type Product, type ShippingZone } from '@/lib/data/products'
 import { TrendingProductsSection } from '@/components/trending-products-section'
 import { getLocale } from 'next-intl/server'
+import { cookies } from 'next/headers'
 
 /**
  * Async server component that fetches trending products data.
- * Uses cached data functions - zone filtering happens client-side.
+ * Filters by user's selected shipping zone (from header dropdown).
  */
 export async function TrendingSection() {
   const locale = await getLocale()
   
-  // Fetch all data in parallel using cached functions
-  // First tab: Featured/Boosted products (promoted sellers)
+  // Read user's shipping zone from cookie (set by header "Доставка до" dropdown)
+  const cookieStore = await cookies()
+  const userZone = (cookieStore.get('user-zone')?.value || 'WW') as ShippingZone
+  
+  // Fetch extra to have enough after other UI slicing
   const [featuredProducts, promoProducts, bestSellersProducts] = await Promise.all([
-    getFeaturedProducts(12),
-    getPromoProducts(12),
-    getBestSellers(12),
+    getFeaturedProducts(36, userZone),
+    getPromoProducts(36, userZone),
+    getBestSellers(36, userZone),
   ])
+
+  // DB already applied zone filtering; just slice for layout
+  const zonedFeatured = featuredProducts.slice(0, 12)
+  const zonedPromo = promoProducts.slice(0, 12)
+  const zonedBestSellers = bestSellersProducts.slice(0, 12)
   
   // Transform raw DB products to UI format using the toUI helper
   const transformForUI = (products: Product[]) => 
@@ -27,11 +36,12 @@ export async function TrendingSection() {
   return (
     <TrendingProductsSection
       title={locale === "bg" ? "Промотирани" : "Promoted"}
-      newestProducts={transformForUI(featuredProducts)}
-      promoProducts={transformForUI(promoProducts)}
-      bestSellersProducts={transformForUI(bestSellersProducts)}
+      newestProducts={transformForUI(zonedFeatured)}
+      promoProducts={transformForUI(zonedPromo)}
+      bestSellersProducts={transformForUI(zonedBestSellers)}
       ctaText={locale === "bg" ? "Виж всички" : "Shop all"}
       ctaHref="/search?featured=true"
+      bannerTone="trust"
     />
   )
 }

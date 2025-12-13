@@ -174,7 +174,10 @@ export function productShipsToRegion(
   },
   buyerRegion: ShippingRegion
 ): boolean {
-  // Pickup only = no shipping
+  // Worldwide = no filtering (show all products)
+  if (buyerRegion === 'WW') return true;
+
+  // Pickup only = no shipping to any destination-specific region
   if (product.pickup_only) return false;
   
   // Worldwide covers everything
@@ -193,9 +196,6 @@ export function productShipsToRegion(
     case 'US':
       // USA buyers see: USA shippers + Worldwide
       return !!(product.ships_to_usa || product.ships_to_worldwide);
-    case 'WW':
-      // Worldwide = any shipping option
-      return !!product.ships_to_worldwide;
     default:
       return !!product.ships_to_worldwide;
   }
@@ -250,8 +250,8 @@ export function getShippingFilter(buyerRegion: ShippingRegion): string {
       return 'ships_to_usa.eq.true,ships_to_worldwide.eq.true';
     case 'WW':
     default:
-      // Worldwide only sees worldwide shippers
-      return 'ships_to_worldwide.eq.true';
+      // Worldwide = no filter (show everything). Callers should NOT apply `.or()`.
+      return '';
   }
 }
 
@@ -260,7 +260,7 @@ export function getShippingFilter(buyerRegion: ShippingRegion): string {
  * Updated December 2025: Added UK support
  */
 export function parseShippingRegion(value: string | undefined | null): ShippingRegion {
-  if (!value) return 'BG'; // Default to Bulgaria
+  if (!value) return 'WW'; // Default to Worldwide (show all)
   const upper = value.toUpperCase();
   if (upper === 'BG' || upper === 'UK' || upper === 'EU' || upper === 'US' || upper === 'WW') {
     return upper as ShippingRegion;
@@ -269,5 +269,5 @@ export function parseShippingRegion(value: string | undefined | null): ShippingR
   if (upper === 'GB') {
     return 'UK';
   }
-  return 'BG'; // Default fallback
+  return 'WW'; // Default fallback
 }

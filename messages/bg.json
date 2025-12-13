@@ -298,7 +298,8 @@
         "review": "Преглед",
         "step": "Стъпка",
         "of": "от",
-        "secureCheckout": "Сигурно плащане"
+        "secureCheckout": "Сигурно плащане",
+        "complete": "Готово"
     },
     "CheckoutPage": {
         "title": "Плащане",
@@ -662,7 +663,15 @@
         "priceLowHigh": "Цена: Ниска към висока",
         "priceHighLow": "Цена: Висока към ниска",
         "avgReview": "Средна оценка",
-        "newestArrivals": "Най-нови"
+        "newestArrivals": "Най-нови",
+        "shipsTo": "Доставка до",
+        "bulgaria": "България",
+        "unitedKingdom": "Великобритания",
+        "europe": "Европа",
+        "usa": "САЩ",
+        "worldwide": "По света",
+        "clearShipping": "Изчисти филтър за доставка",
+        "anyLocation": "Всякъде"
     },
     "Cookies": {
         "title": "Използваме бисквитки",
@@ -1034,6 +1043,10 @@
     "Messages": {
         "pageTitle": "Съобщения",
         "pageDescription": "Комуникирайте с продавачи относно вашите поръчки и запитвания",
+        "searchPlaceholder": "Търсене в съобщения...",
+        "newMessage": "Ново съобщение",
+        "noConversationsHint": "Съобщенията от продавачи ще се появят тук",
+        "tryDifferentSearch": "Опитайте с различен термин за търсене",
         "conversations": "Разговори",
         "noConversations": "Все още няма разговори",
         "noConversationsDescription": "Когато се свържете с продавач, вашите разговори ще се появят тук.",
@@ -1057,6 +1070,25 @@
         "cannotContactSelfDescription": "Не можете да започнете разговор със себе си.",
         "errorStartingConversation": "Грешка при започване на разговор",
         "errorStartingConversationDescription": "Нещо се обърка. Моля, опитайте отново по-късно.",
-        "back": "Назад"
+        "back": "Назад",
+        "tabAll": "Всички",
+        "tabUnread": "Непрочетени",
+        "tabBuying": "Покупки",
+        "tabSelling": "Продажби"
+    },
+    "GeoWelcome": {
+        "title": "Здравейте! Установихме, че посещавате от {country}",
+        "description": "Разгледайте Amazon {region} за да видите продукти, които доставят до вашата локация",
+        "selectRegion": "Изберете вашия регион",
+        "confirmButton": "Да, покажи {region} продукти",
+        "declineButton": "Не, покажи всички продукти",
+        "changeAnytime": "Можете да промените това по всяко време в настройките",
+        "regions": {
+            "BG": "България",
+            "UK": "Великобритания",
+            "EU": "Европа",
+            "US": "САЩ",
+            "WW": "Целият свят"
+        }
     }
 }

@@ -123,7 +123,7 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                 </Link>
               </li>
               <li>
-                <Link href="/account/messages" className="hover:text-link-hover hover:underline">
+                <Link href="/chat" className="hover:text-link-hover hover:underline">
                   {t("messages")}
                 </Link>
               </li>

@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function AccountLoading() {
   return (
-    <div className="container py-4 min-h-screen bg-background">
+    <div className="py-4">
       {/* Breadcrumb */}
       <div className="flex gap-2 items-center mb-4">
         <Skeleton className="h-4 w-16" />

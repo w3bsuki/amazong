@@ -2,9 +2,10 @@
 // Sell Page Components
 // ============================================================================
 
-// Authentication
+// Authentication & Store Creation
 export { SignInPrompt } from "./sign-in-prompt";
 export { CreateStoreForm } from "./create-store-form";
+export { CreateStoreWizard } from "./create-store-wizard"; // Enhanced wizard with Personal/Business
 
 // Main Form
 export { SellForm } from "./sell-form";

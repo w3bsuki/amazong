@@ -1,28 +1,37 @@
-import { getProducts, toUI } from '@/lib/data/products'
+import { getProducts, toUI, type ShippingZone } from '@/lib/data/products'
 import { FeaturedProductsSection } from '@/components/featured-products-section'
 import { getLocale } from 'next-intl/server'
+import { cookies } from 'next/headers'
 
 /**
  * Async server component that fetches featured/recommended products.
  * Falls back to bestsellers if no featured products exist.
+ * Filters by user's selected shipping zone (from header dropdown).
  */
 export async function FeaturedSection() {
   const locale = await getLocale()
   
-  // Try featured first, fall back to bestsellers
-  let products = await getProducts('featured', 12)
+  // Read user's shipping zone from cookie (set by header "Доставка до" dropdown)
+  const cookieStore = await cookies()
+  const userZone = (cookieStore.get('user-zone')?.value || 'WW') as ShippingZone
+  
+  // Fetch extra to have enough after other UI slicing
+  let products = await getProducts('featured', 36, userZone)
   
   if (products.length === 0) {
-    products = await getProducts('bestsellers', 12)
+    products = await getProducts('bestsellers', 36, userZone)
   }
   
-  // Don't render if no products
-  if (products.length === 0) {
+  // DB already applied zone filtering; just slice for layout
+  const zonedProducts = products.slice(0, 12)
+  
+  // Don't render if no products after filtering
+  if (zonedProducts.length === 0) {
     return null
   }
   
   // Transform to UI format
-  const transformedProducts = products.map(toUI)
+  const transformedProducts = zonedProducts.map(toUI)
   
   return (
     <FeaturedProductsSection

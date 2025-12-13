@@ -10,7 +10,8 @@ import {
   Package,
   House,
   FloppyDisk,
-  X
+  X,
+  ShoppingCart
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -165,6 +166,12 @@ export function SellHeaderV3({
                     <Link href="/account/selling" className="flex items-center gap-2">
                       <Package className="size-4" />
                       My Listings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/sell/orders" className="flex items-center gap-2">
+                      <ShoppingCart className="size-4" />
+                      Orders
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />

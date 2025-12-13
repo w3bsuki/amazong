@@ -49,12 +49,19 @@ export default async function PlansPage({ params }: PlansPageProps) {
     .single()
 
   const currentTier = seller?.tier || 'basic'
+  const accountType = seller?.account_type || 'personal'
+
+  // Filter plans by seller's account type
+  const filteredPlans = (plans || []).filter(
+    (plan: { account_type?: string }) => plan.account_type === accountType
+  )
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="flex flex-col gap-4 md:gap-6">
+      <h1 className="sr-only">{locale === 'bg' ? 'Планове' : 'Plans'}</h1>
       <PlansContent 
         locale={locale}
-        plans={plans || []}
+        plans={filteredPlans}
         currentTier={currentTier}
         seller={seller}
         currentSubscription={currentSubscription}

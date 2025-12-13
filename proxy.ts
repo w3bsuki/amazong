@@ -18,25 +18,37 @@ export async function proxy(request: NextRequest) {
   response.headers.set('x-pathname', request.nextUrl.pathname);
 
   // Geo-detection: Set user-country and user-zone cookies if not present
-  const existingCountry = request.cookies.get('user-country')?.value;
+  const existingCountryRaw = request.cookies.get('user-country')?.value;
+  const existingZone = request.cookies.get('user-zone')?.value;
 
-  if (!existingCountry) {
-    // Try to detect country from IP headers (Vercel, Cloudflare, other CDNs)
-    const countryCode =
-      request.headers.get('x-vercel-ip-country') ||
-      request.headers.get('cf-ipcountry') ||
-      request.headers.get('x-country-code') ||
-      'BG'; // Default to Bulgaria for local development
+  // Prefer existing cookie country; otherwise detect from headers
+  const detectedCountryRaw =
+    request.headers.get('x-vercel-ip-country') ||
+    request.headers.get('cf-ipcountry') ||
+    request.headers.get('x-country-code') ||
+    'BG'; // Default to Bulgaria for local development
 
-    // Calculate shipping region from country code
-    const shippingRegion = getShippingRegion(countryCode);
+  // Normalize legacy/alternate values
+  const normalizeCountry = (code: string) => {
+    const upper = code.toUpperCase();
+    if (upper === 'UK') return 'GB';
+    if (upper === 'WW') return 'BG';
+    return upper;
+  };
 
-    // Set cookies for 1 year
+  const countryCode = normalizeCountry(existingCountryRaw || detectedCountryRaw);
+  const shippingRegion = existingZone || getShippingRegion(countryCode);
+
+  // Set cookies for 1 year (only if missing)
+  if (!existingCountryRaw) {
     response.cookies.set('user-country', countryCode, {
       maxAge: 60 * 60 * 24 * 365,
       path: '/',
       sameSite: 'lax',
     });
+  }
+
+  if (!existingZone) {
     response.cookies.set('user-zone', shippingRegion, {
       maxAge: 60 * 60 * 24 * 365,
       path: '/',

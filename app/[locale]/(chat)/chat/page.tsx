@@ -23,7 +23,7 @@ export default async function MessagesPage() {
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login?redirect=/account/messages")
+    redirect("/auth/login?redirect=/chat")
   }
 
   const {
@@ -31,7 +31,7 @@ export default async function MessagesPage() {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login?redirect=/account/messages")
+    redirect("/auth/login?redirect=/chat")
   }
 
   return <MessagesPageClient />

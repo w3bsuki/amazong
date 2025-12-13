@@ -2,78 +2,62 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function OrdersLoading() {
   return (
-    <div className="container py-4 min-h-screen bg-background">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 mb-4">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-4 w-4" />
-        <Skeleton className="h-4 w-24" />
-      </div>
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 mt-4">
-        <Skeleton className="h-9 w-36" />
-        <div className="flex w-full md:w-auto">
-          <Skeleton className="h-10 w-full md:w-80 rounded-r-none" />
-          <Skeleton className="h-10 w-32 rounded-l-none" />
-        </div>
-      </div>
-
-      {/* Order Cards */}
-      <div className="space-y-6">
-        {[1, 2, 3].map((order) => (
-          <div key={order} className="rounded-md border border-border shadow-sm overflow-hidden">
-            {/* Order Header */}
-            <div className="bg-muted p-4 border-b border-border">
-              <div className="flex flex-col md:flex-row justify-between gap-4">
-                <div className="flex gap-8">
-                  <div>
-                    <Skeleton className="h-3 w-24 mb-1" />
-                    <Skeleton className="h-4 w-20" />
-                  </div>
-                  <div>
-                    <Skeleton className="h-3 w-12 mb-1" />
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                  <div>
-                    <Skeleton className="h-3 w-16 mb-1" />
-                    <Skeleton className="h-4 w-12" />
-                  </div>
-                </div>
-                <div className="text-right">
-                  <Skeleton className="h-3 w-32 mb-1" />
-                  <div className="flex gap-2 justify-end">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                </div>
-              </div>
+    <div className="flex flex-col gap-4 md:gap-6">
+      {/* Main card */}
+      <div className="rounded-xl border border-border bg-card">
+        <div className="px-4 py-4 sm:px-6 sm:py-6 space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="mt-2 h-4 w-64" />
             </div>
-            
-            {/* Order Content */}
-            <div className="p-4">
-              <Skeleton className="h-6 w-32 mb-4" />
-              
-              {/* Order Items */}
-              <div className="flex flex-col gap-6">
-                {[1, 2].map((item) => (
-                  <div key={item} className="flex gap-4">
-                    <Skeleton className="w-24 h-24 shrink-0" />
-                    <div className="flex-1">
-                      <Skeleton className="h-5 w-full mb-1" />
-                      <Skeleton className="h-5 w-3/4 mb-2" />
-                      <Skeleton className="h-3 w-48 mb-2" />
-                      <div className="flex gap-2 mt-2">
-                        <Skeleton className="h-8 w-24" />
-                        <Skeleton className="h-8 w-28" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="flex flex-col items-end gap-2">
+              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-6 w-36 hidden sm:block" />
             </div>
           </div>
-        ))}
+
+          {/* Tabs */}
+          <Skeleton className="h-10 w-full sm:w-96 rounded-full" />
+          {/* Search */}
+          <Skeleton className="h-10 w-full" />
+        </div>
+
+        <div className="border-t border-border" />
+
+        {/* Mobile list skeleton */}
+        <div className="p-2 md:hidden space-y-2">
+          {[1, 2, 3].map((order) => (
+            <div key={order} className="rounded-md border border-border p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-2">
+                  <Skeleton className="h-5 w-36" />
+                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+                <Skeleton className="h-4 w-4" />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop table skeleton */}
+        <div className="hidden md:block p-6">
+          <div className="grid grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5].map((h) => (
+              <Skeleton key={h} className="h-4 w-full" />
+            ))}
+          </div>
+          <div className="mt-4 space-y-3">
+            {[1, 2, 3, 4].map((r) => (
+              <div key={r} className="grid grid-cols-5 gap-4">
+                {[1, 2, 3, 4, 5].map((c) => (
+                  <Skeleton key={c} className="h-4 w-full" />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )

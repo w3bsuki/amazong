@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
+import { AccountHeroCard } from "@/components/account-hero-card"
 import { AccountStatsCards } from "@/components/account-stats-cards"
 import { AccountChart } from "@/components/account-chart"
 import { AccountRecentActivity } from "@/components/account-recent-activity"
@@ -30,11 +31,11 @@ export default async function AccountPage({ params }: AccountPageProps) {
 
   // Fetch all user stats in parallel
   const [ordersResult, wishlistResult, productsResult, messagesResult, salesResult] = await Promise.all([
-    supabase.from('orders').select('id, total_amount, status, created_at', { count: 'exact' }).eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
+    supabase.from('orders').select('id, total_amount, status, created_at, order_items(id, products(images))', { count: 'exact' }).eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
     supabase.from('wishlist_items').select('id', { count: 'exact' }).eq('user_id', user.id),
-    supabase.from('products').select('id, title, price, stock, created_at', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
+    supabase.from('products').select('id, title, price, stock, images, created_at', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
     supabase.from('messages').select('id, read', { count: 'exact' }).eq('receiver_id', user.id).eq('read', false),
-    supabase.from('order_items').select('id, price_at_purchase, quantity, created_at, products(title)', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
+    supabase.from('order_items').select('id, price_at_purchase, quantity, created_at, products(title, images)', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
   ])
 
   const totalOrders = ordersResult.count || 0
@@ -63,15 +64,25 @@ export default async function AccountPage({ params }: AccountPageProps) {
   const recentSales = (salesResult.data || []).map((sale: any) => ({
     ...sale,
     product_title: sale.products?.title,
+    product_image: sale.products?.images?.[0] || null,
   }))
 
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+    <div className="flex flex-col gap-5 md:gap-6">
       <h1 className="sr-only">{locale === "bg" ? "Преглед на акаунта" : "Account Overview"}</h1>
+      
+      {/* Hero card with revenue & key stats */}
+      <AccountHeroCard totals={totals} locale={locale} />
+      
+      {/* Quick action buttons */}
       <AccountStatsCards totals={totals} locale={locale} />
-      <div className="px-4 lg:px-6">
+      
+      {/* Chart - desktop only */}
+      <div className="hidden sm:block">
         <AccountChart locale={locale} />
       </div>
+      
+      {/* Recent activity sections */}
       <AccountRecentActivity 
         orders={recentOrders}
         products={recentProducts}

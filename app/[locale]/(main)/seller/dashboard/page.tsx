@@ -12,17 +12,16 @@ import {
   Plus,
   Pencil,
   Trash,
-  CaretRight,
+
   SpinnerGap,
   Warning,
   ShoppingCart,
-  ChartLineUp,
+
   Star,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
 interface Seller {
   id: string;

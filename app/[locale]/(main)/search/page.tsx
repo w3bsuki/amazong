@@ -11,8 +11,8 @@ import { SearchPagination } from "@/components/search-pagination"
 import { Suspense } from "react"
 import { setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
+import { cookies } from "next/headers"
 import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
 import { getShippingFilter, parseShippingRegion } from '@/lib/shipping'
 
 const ITEMS_PER_PAGE = 20
@@ -194,10 +194,14 @@ export default async function SearchPage({
   const query = searchParams.q || ""
   const currentPage = Math.max(1, parseInt(searchParams.page || "1", 10))
   
-  // Get user's shipping zone from cookie for filtering
+  // Read shipping zone from cookie (set by header "Доставка до" dropdown)
+  // Only filter if user has selected a specific zone (not WW = worldwide = show all)
   const cookieStore = await cookies()
-  const userZone = parseShippingRegion(cookieStore.get('user-zone')?.value)
-  const shippingFilter = getShippingFilter(userZone)
+  const userZone = cookieStore.get('user-zone')?.value
+  const parsedZone = parseShippingRegion(userZone)
+  const shippingFilter = parsedZone !== 'WW'
+    ? (getShippingFilter(parsedZone) || undefined)
+    : undefined
   
   let products: Product[] = []
   let totalProducts = 0

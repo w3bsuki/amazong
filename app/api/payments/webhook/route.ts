@@ -1,13 +1,10 @@
 import { stripe } from "@/lib/stripe"
-import { createClient } from "@supabase/supabase-js"
+import { createAdminClient } from "@/lib/supabase/server"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 
-// Use service role for webhook (no user session)
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// PRODUCTION: Use centralized admin client for consistency
+const supabase = createAdminClient()
 
 export async function POST(request: Request) {
     const body = await request.text()

@@ -41,13 +41,13 @@ interface PaymentsContentProps {
     initialPaymentMethods: PaymentMethod[]
 }
 
-// Brand icons/colors
+// Brand icons/colors - using semantic tokens
 const cardBrandStyles: Record<string, { bg: string; text: string }> = {
-    visa: { bg: 'bg-blue-500', text: 'text-white' },
-    mastercard: { bg: 'bg-orange-500', text: 'text-white' },
-    amex: { bg: 'bg-blue-600', text: 'text-white' },
-    discover: { bg: 'bg-orange-400', text: 'text-white' },
-    default: { bg: 'bg-gray-500', text: 'text-white' }
+    visa: { bg: 'bg-primary', text: 'text-primary-foreground' },
+    mastercard: { bg: 'bg-primary', text: 'text-primary-foreground' },
+    amex: { bg: 'bg-primary', text: 'text-primary-foreground' },
+    discover: { bg: 'bg-primary', text: 'text-primary-foreground' },
+    default: { bg: 'bg-muted-foreground', text: 'text-background' }
 }
 
 export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsContentProps) {
@@ -169,8 +169,8 @@ export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsConte
     }
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
+        <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-semibold">
                         {locale === 'bg' ? 'Начини на плащане' : 'Payment Methods'}
@@ -192,7 +192,7 @@ export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsConte
             </div>
 
             {/* Security Notice */}
-            <Card className="mb-6 bg-muted/50 border-muted">
+            <Card className="bg-muted/50 border-muted">
                 <CardContent className="flex items-start gap-3 pt-4">
                     <Shield className="size-5 text-primary shrink-0 mt-0.5" weight="fill" />
                     <div className="text-sm">

@@ -23,7 +23,6 @@ import {
   Handbag,
   Watch,
   // Beauty & Personal Care
-  Flower,
   Sparkle,
   Drop,
   // Baby & Kids
@@ -37,7 +36,6 @@ import {
   // Sports & Fitness
   Barbell,
   Bicycle,
-  Football,
   PersonSimpleRun,
   // Pets
   Dog,
@@ -93,7 +91,7 @@ interface Category {
 // Map category slugs to specific e-commerce Phosphor icons
 const categoryIcons: Record<string, PhosphorIcon> = {
   // Electronics & Technology
-  "electronics": Headphones,
+  "electronics": DeviceMobile,
   "computers": Desktop,
   "laptops": Laptop,
   "phones": DeviceMobile,
@@ -101,7 +99,7 @@ const categoryIcons: Record<string, PhosphorIcon> = {
   "audio": Headphones,
   
   // Home & Living
-  "home": Armchair,
+  "home": CookingPot,
   "furniture": Armchair,
   "kitchen": CookingPot,
   "lighting": Lamp,
@@ -118,7 +116,7 @@ const categoryIcons: Record<string, PhosphorIcon> = {
   "accessories": Watch,
   
   // Beauty & Health
-  "beauty": Flower,
+  "beauty": Sparkle,
   "cosmetics": Sparkle,
   "skincare": Drop,
   "health": FirstAidKit,
@@ -138,7 +136,7 @@ const categoryIcons: Record<string, PhosphorIcon> = {
   "fuel": GasPump,
   
   // Sports & Outdoors
-  "sports": Football,
+  "sports": Barbell,
   "fitness": Barbell,
   "outdoor": PersonSimpleRun,
   "cycling": Bicycle,
@@ -243,7 +241,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
   }
 
   return (
-    <div className="relative w-full overflow-hidden bg-card py-2 md:py-4">
+    <div className="relative w-full overflow-hidden bg-background pt-2 pb-0.5 md:py-4">
       {/* Header - Desktop only, consistent with other sections */}
       <div className="hidden md:flex items-center justify-between mb-3 px-4">
         <div className="flex items-center gap-3">
@@ -252,7 +250,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
           </h2>
           <Link 
             href="/categories" 
-            className="text-xs text-brand-blue hover:underline md:text-sm"
+            className="text-xs text-link hover:underline md:text-sm"
           >
             {locale === "bg" ? "Виж всички" : "See all"}
           </Link>
@@ -261,7 +259,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
           <button
             onClick={() => scrollTo("left")}
             className={cn(
-              "size-7 flex items-center justify-center rounded-full border border-border bg-white hover:bg-muted",
+              "size-7 flex items-center justify-center rounded-full border border-border bg-background hover:bg-accent focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
               !canScrollLeft && "opacity-40 pointer-events-none"
             )}
             aria-label="Scroll left"
@@ -271,7 +269,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
           <button
             onClick={() => scrollTo("right")}
             className={cn(
-              "size-7 flex items-center justify-center rounded-full border border-border bg-white hover:bg-muted",
+              "size-7 flex items-center justify-center rounded-full border border-border bg-background hover:bg-accent focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
               !canScrollRight && "opacity-40 pointer-events-none"
             )}
             aria-label="Scroll right"
@@ -293,27 +291,43 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
               key={category.slug}
               href={`/categories/${category.slug}`}
               className={cn(
-                "flex flex-col items-center shrink-0 group snap-start",
+                "flex flex-col items-center shrink-0 group snap-start focus-visible:outline-none",
                 index === categories.length - 1 && "mr-3 md:mr-4"
               )}
             >
-              {/* Circle - Compact on mobile, larger on desktop */}
+              {/* Circle - Slightly larger on mobile for better text fit */}
               <div
                 className={cn(
                   "rounded-full flex items-center justify-center",
-                  "bg-muted border border-border",
-                  "size-16 md:size-28",
-                  "transition-all duration-200 ease-out",
-                  "group-hover:border-cta-trust-blue group-hover:bg-background md:group-hover:shadow-md"
+                  "size-[66px] md:size-28",
+                  "bg-card ring-1 ring-border shadow-xs",
+                  "transition-[transform,box-shadow,ring-color] duration-200 ease-out",
+                  "group-hover:ring-ring/30 md:group-hover:shadow-sm",
+                  "group-active:scale-[0.98]"
                 )}
               >
-                {(() => {
-                  const Icon = getCategoryIcon(category.slug)
-                  return <Icon className="size-7 md:size-12 text-foreground/80 group-hover:text-cta-trust-blue transition-colors duration-200" weight="duotone" />
-                })()}
+                <div
+                  className={cn(
+                    "rounded-full flex items-center justify-center",
+                    "size-[58px] md:size-25",
+                    "bg-background ring-1 ring-border/60",
+                    "transition-colors duration-200",
+                    "group-hover:bg-accent/40 group-hover:ring-ring/30"
+                  )}
+                >
+                  {(() => {
+                    const Icon = getCategoryIcon(category.slug)
+                    return (
+                      <Icon
+                        className="size-7 md:size-12 text-link transition-colors duration-200"
+                        weight="regular"
+                      />
+                    )
+                  })()}
+                </div>
               </div>
-              {/* Category name below circle */}
-              <span className="mt-1.5 md:mt-2.5 text-foreground font-medium text-[10px] md:text-base text-center max-w-[68px] md:max-w-28 leading-tight line-clamp-2 group-hover:text-cta-trust-blue transition-colors duration-200">
+              {/* Category name below circle - wider for longer Bulgarian names */}
+              <span className="mt-1.5 md:mt-2.5 text-foreground font-medium text-[11px] md:text-base text-center max-w-[74px] md:max-w-28 leading-tight line-clamp-2 group-hover:text-link transition-colors duration-200">
                 {getCategoryName(category)}
               </span>
             </Link>

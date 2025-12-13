@@ -1,5 +1,6 @@
 import { createClient, createAdminClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
 
 export type UserRole = 'buyer' | 'seller' | 'admin'
 
@@ -81,7 +82,14 @@ export async function isAdmin(): Promise<boolean> {
  * ONLY call this after verifying admin with requireAdmin()
  */
 export async function getAdminStats() {
+  // Mark as dynamic and satisfy Next.js current-time access rules.
+  await connection()
+
   const adminClient = createAdminClient()
+
+  const sevenDaysAgoIso = new Date(
+    Date.now() - 7 * 24 * 60 * 60 * 1000
+  ).toISOString()
   
   const [
     usersResult,
@@ -102,14 +110,14 @@ export async function getAdminStats() {
     adminClient
       .from('profiles')
       .select('id, email, full_name, role, created_at')
-      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .gte('created_at', sevenDaysAgoIso)
       .order('created_at', { ascending: false })
       .limit(10),
     
     adminClient
       .from('products')
       .select('id, title, price, created_at, seller_id')
-      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .gte('created_at', sevenDaysAgoIso)
       .order('created_at', { ascending: false })
       .limit(10),
     

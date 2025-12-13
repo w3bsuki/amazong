@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -21,7 +20,6 @@ import {
     Eye,
     EyeSlash,
     CheckCircle,
-    Warning,
     DeviceMobile
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
@@ -115,7 +113,8 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
         }
     }
 
-    const handleResetPassword = async () => {
+    // Reset password via email - can be exposed in UI later
+    const _handleResetPassword = async () => {
         setIsLoading(true)
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
@@ -153,10 +152,10 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
         if (hasNumber) score++
         if (hasSpecial) score++
         
-        if (score <= 2) return { label: locale === 'bg' ? 'Слаба' : 'Weak', color: 'text-red-500', width: 'w-1/4' }
-        if (score === 3) return { label: locale === 'bg' ? 'Средна' : 'Fair', color: 'text-yellow-500', width: 'w-2/4' }
-        if (score === 4) return { label: locale === 'bg' ? 'Добра' : 'Good', color: 'text-blue-500', width: 'w-3/4' }
-        return { label: locale === 'bg' ? 'Силна' : 'Strong', color: 'text-green-500', width: 'w-full' }
+        if (score <= 2) return { label: locale === 'bg' ? 'Слаба' : 'Weak', color: 'text-destructive', width: 'w-1/4' }
+        if (score === 3) return { label: locale === 'bg' ? 'Средна' : 'Fair', color: 'text-warning', width: 'w-2/4' }
+        if (score === 4) return { label: locale === 'bg' ? 'Добра' : 'Good', color: 'text-info', width: 'w-3/4' }
+        return { label: locale === 'bg' ? 'Силна' : 'Strong', color: 'text-success', width: 'w-full' }
     }
 
     // Get password validation errors for display
@@ -170,130 +169,89 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
     const isPasswordValid = validatePassword(passwordData.newPassword, locale).valid
 
     return (
-        <div className="max-w-2xl mx-auto">
-            <div className="mb-6">
-                <h1 className="text-2xl font-semibold">
-                    {locale === 'bg' ? 'Вход и сигурност' : 'Login & Security'}
-                </h1>
-                <p className="text-muted-foreground text-sm mt-1">
-                    {locale === 'bg' 
-                        ? 'Управлявайте настройките за сигурност на акаунта си'
-                        : 'Manage your account security settings'}
-                </p>
+        <div className="space-y-4">
+            {/* Mobile: Clean list-based UI */}
+            <div className="rounded-lg border bg-card divide-y">
+                {/* Email Row */}
+                <button
+                    onClick={() => setIsChangeEmailOpen(true)}
+                    className="w-full flex items-center gap-3 p-3 text-left active:bg-muted/50 transition-colors"
+                >
+                    <div className="flex size-10 items-center justify-center rounded-full bg-muted">
+                        <Envelope className="size-5 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">{locale === 'bg' ? 'Имейл' : 'Email'}</p>
+                        <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+                        <CheckCircle className="size-3.5" weight="fill" />
+                        <span className="hidden sm:inline">{locale === 'bg' ? 'Потвърден' : 'Verified'}</span>
+                    </div>
+                </button>
+
+                {/* Password Row */}
+                <button
+                    onClick={() => setIsChangePasswordOpen(true)}
+                    className="w-full flex items-center gap-3 p-3 text-left active:bg-muted/50 transition-colors"
+                >
+                    <div className="flex size-10 items-center justify-center rounded-full bg-muted">
+                        <Key className="size-5 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">{locale === 'bg' ? 'Парола' : 'Password'}</p>
+                        <p className="text-xs text-muted-foreground">••••••••</p>
+                    </div>
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 text-xs"
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setIsChangePasswordOpen(true)
+                        }}
+                    >
+                        {locale === 'bg' ? 'Промени' : 'Change'}
+                    </Button>
+                </button>
+
+                {/* 2FA Row */}
+                <div className="flex items-center gap-3 p-3">
+                    <div className="flex size-10 items-center justify-center rounded-full bg-muted">
+                        <DeviceMobile className="size-5 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">{locale === 'bg' ? '2FA' : '2FA'}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {locale === 'bg' ? 'Не е активирана' : 'Not enabled'}
+                        </p>
+                    </div>
+                    <Button variant="outline" size="sm" className="h-7 text-xs" disabled>
+                        {locale === 'bg' ? 'Скоро' : 'Soon'}
+                    </Button>
+                </div>
             </div>
 
-            <div className="space-y-4">
-                {/* Email Section */}
-                <Card>
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <Envelope className="size-5 text-muted-foreground" />
-                            {locale === 'bg' ? 'Имейл адрес' : 'Email Address'}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="font-medium">{userEmail}</p>
-                                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                                    <CheckCircle className="size-4 text-green-500" weight="fill" />
-                                    {locale === 'bg' ? 'Потвърден' : 'Verified'}
-                                </p>
-                            </div>
-                            <Button variant="outline" onClick={() => setIsChangeEmailOpen(true)}>
-                                {locale === 'bg' ? 'Промени' : 'Change'}
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Password Section */}
-                <Card>
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <Key className="size-5 text-muted-foreground" />
-                            {locale === 'bg' ? 'Парола' : 'Password'}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="font-medium">••••••••••</p>
-                                <p className="text-sm text-muted-foreground">
-                                    {locale === 'bg' ? 'Последно променена: неизвестно' : 'Last changed: unknown'}
-                                </p>
-                            </div>
-                            <div className="flex gap-2">
-                                <Button variant="outline" onClick={handleResetPassword} disabled={isLoading}>
-                                    {locale === 'bg' ? 'Нулирай' : 'Reset'}
-                                </Button>
-                                <Button onClick={() => setIsChangePasswordOpen(true)}>
-                                    {locale === 'bg' ? 'Промени' : 'Change'}
-                                </Button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Two-Factor Authentication */}
-                <Card>
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <DeviceMobile className="size-5 text-muted-foreground" />
-                            {locale === 'bg' ? 'Двуфакторна автентикация' : 'Two-Factor Authentication'}
-                        </CardTitle>
-                        <CardDescription>
-                            {locale === 'bg' 
-                                ? 'Добавете допълнителен слой сигурност към акаунта си'
-                                : 'Add an extra layer of security to your account'}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <Warning className="size-4" />
-                                <span className="text-sm">
-                                    {locale === 'bg' ? 'Не е активирана' : 'Not enabled'}
-                                </span>
-                            </div>
-                            <Button variant="outline" disabled>
-                                {locale === 'bg' ? 'Скоро' : 'Coming Soon'}
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Security Tips */}
-                <Card className="bg-muted/50">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <Shield className="size-5 text-primary" weight="fill" />
-                            {locale === 'bg' ? 'Съвети за сигурност' : 'Security Tips'}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li className="flex items-start gap-2">
-                                <CheckCircle className="size-4 text-green-500 mt-0.5 shrink-0" />
-                                {locale === 'bg' 
-                                    ? 'Използвайте уникална парола за този акаунт'
-                                    : 'Use a unique password for this account'}
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <CheckCircle className="size-4 text-green-500 mt-0.5 shrink-0" />
-                                {locale === 'bg' 
-                                    ? 'Никога не споделяйте паролата си с никого'
-                                    : 'Never share your password with anyone'}
-                            </li>
-                            <li className="flex items-start gap-2">
-                                <CheckCircle className="size-4 text-green-500 mt-0.5 shrink-0" />
-                                {locale === 'bg' 
-                                    ? 'Проверявайте редовно историята на входовете си'
-                                    : 'Regularly review your login history'}
-                            </li>
-                        </ul>
-                    </CardContent>
-                </Card>
+            {/* Security Tips - Simplified */}
+            <div className="rounded-lg border bg-muted/30 p-3">
+                <div className="flex items-center gap-2 mb-2">
+                    <Shield className="size-4 text-primary" weight="fill" />
+                    <span className="text-sm font-medium">{locale === 'bg' ? 'Съвети' : 'Tips'}</span>
+                </div>
+                <ul className="space-y-1.5 text-xs text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                        <CheckCircle className="size-3 text-emerald-500 mt-0.5 shrink-0" />
+                        {locale === 'bg' 
+                            ? 'Използвайте уникална парола'
+                            : 'Use a unique password'}
+                    </li>
+                    <li className="flex items-start gap-2">
+                        <CheckCircle className="size-3 text-emerald-500 mt-0.5 shrink-0" />
+                        {locale === 'bg' 
+                            ? 'Никога не споделяйте паролата си'
+                            : 'Never share your password'}
+                    </li>
+                </ul>
             </div>
 
             {/* Change Password Dialog */}
@@ -341,7 +299,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                                 </div>
                             )}
                             {passwordErrors.length > 0 && (
-                                <ul className="text-xs text-red-500 space-y-0.5 mt-1">
+                                <ul className="text-xs text-destructive space-y-0.5 mt-1">
                                     {passwordErrors.map((error, i) => (
                                         <li key={i}>• {error}</li>
                                     ))}
@@ -358,7 +316,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                                 placeholder="••••••••"
                             />
                             {passwordData.confirmPassword && passwordData.newPassword !== passwordData.confirmPassword && (
-                                <p className="text-xs text-red-500">
+                                <p className="text-xs text-destructive">
                                     {locale === 'bg' ? 'Паролите не съвпадат' : 'Passwords do not match'}
                                 </p>
                             )}

@@ -1,16 +1,53 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
-import Link from "next/link"
-import Image from "next/image"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr"
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { AccountOrdersToolbar } from "@/components/account-orders-toolbar"
+import { AccountOrdersStats } from "@/components/account-orders-stats"
+import { AccountOrdersGrid } from "@/components/account-orders-grid"
 
-export default async function OrdersPage() {
+type OrderStatus =
+  | "pending"
+  | "processing"
+  | "paid"
+  | "shipped"
+  | "delivered"
+  | "cancelled"
+  | string
+
+type OrderProduct = {
+  id: string
+  title: string | null
+  images: string[] | null
+  price?: number | null
+}
+
+type OrderItemRow = {
+  id: string
+  product_id: string
+  quantity: number
+  price_at_purchase?: number
+  product?: OrderProduct | null
+}
+
+type OrderRow = {
+  id: string
+  created_at: string
+  status: OrderStatus | null
+  total_amount: number | string | null
+  order_items: OrderItemRow[]
+}
+
+interface OrdersPageProps {
+  params: Promise<{ locale: string }>
+  searchParams?: Promise<{ q?: string; status?: string }>
+}
+
+export default async function OrdersPage({ params, searchParams }: OrdersPageProps) {
   await connection()
+  const { locale } = await params
+  const sp = (await searchParams) || {}
+  const query = (sp.q || "").trim()
+  const statusFilter = (sp.status || "all").trim()
   const supabase = await createClient()
 
   if (!supabase) {
@@ -26,7 +63,7 @@ export default async function OrdersPage() {
   }
 
   // Fetch orders from Supabase with full details
-  const { data: orders, error } = await supabase
+  const { data: ordersRaw } = await supabase
     .from("orders")
     .select(`
         *,
@@ -38,125 +75,76 @@ export default async function OrdersPage() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
 
+  const allOrders = ((ordersRaw || []) as unknown as OrderRow[]).map((order) => ({
+    ...order,
+    order_items: Array.isArray(order.order_items) ? order.order_items : [],
+  }))
+
+  const normalize = (value: string) => value.toLowerCase()
+
+  const matchesQuery = (order: OrderRow) => {
+    if (!query) return true
+    const q = normalize(query)
+    if (normalize(order.id).includes(q)) return true
+    return order.order_items.some((item) => {
+      const title = item.product?.title || ""
+      return normalize(title).includes(q)
+    })
+  }
+
+  const isOpenStatus = (status: OrderStatus | null) =>
+    status === "pending" || status === "processing" || status === "shipped" || status === "paid"
+
+  const matchesStatus = (order: OrderRow) => {
+    const s = (order.status || "pending") as OrderStatus
+    switch (statusFilter) {
+      case "open":
+        return isOpenStatus(s)
+      case "delivered":
+        return s === "delivered"
+      case "cancelled":
+        return s === "cancelled"
+      case "all":
+      default:
+        return true
+    }
+  }
+
+  const filteredOrders = allOrders.filter((o) => matchesStatus(o) && matchesQuery(o))
+
+  // Calculate stats
+  const stats = {
+    total: allOrders.length,
+    pending: allOrders.filter((o) => isOpenStatus((o.status || "pending") as OrderStatus)).length,
+    delivered: allOrders.filter((o) => o.status === "delivered").length,
+    cancelled: allOrders.filter((o) => o.status === "cancelled").length,
+    totalSpend: allOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0),
+  }
+
+  const counts = {
+    all: allOrders.length,
+    open: stats.pending,
+    delivered: stats.delivered,
+    cancelled: stats.cancelled,
+  }
+
   return (
-    <div className="flex flex-col gap-6">
-      <AppBreadcrumb 
-        items={[
-          { label: 'Your Account', href: '/account' },
-          { label: 'Your Orders' }
-        ]} 
+    <div className="flex flex-col gap-4 md:gap-6">
+      <h1 className="sr-only">{locale === "bg" ? "Поръчки" : "Orders"}</h1>
+
+      {/* Stats Cards */}
+      <AccountOrdersStats stats={stats} locale={locale} />
+
+      {/* Toolbar with Tabs and Search */}
+      <AccountOrdersToolbar
+        locale={locale}
+        initialQuery={query}
+        initialStatus={statusFilter}
+        counts={counts}
       />
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Your Orders</h1>
-          <p className="text-sm text-muted-foreground">
-            {error ? "We couldn’t load your orders right now." : "Track, return, or buy again."}
-          </p>
-        </div>
-        <div className="relative w-full md:w-md">
-          <MagnifyingGlass className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search orders" className="pl-9" />
-          <Button type="button" className="absolute right-1 top-1 h-7 px-3" size="sm">
-            Search
-          </Button>
-        </div>
-      </div>
-
-      {!orders || orders.length === 0 ? (
-        <Card className="shadow-xs">
-          <CardContent className="p-8 text-center">
-            <p className="text-muted-foreground mb-4">You have not placed any orders yet.</p>
-            <Link href="/">
-              <Button>Start Shopping</Button>
-            </Link>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-6">
-          {orders.map((order) => (
-            <Card key={order.id} className="overflow-hidden shadow-xs">
-              <CardHeader className="border-b bg-muted/40 p-4">
-                <div className="flex flex-col md:flex-row justify-between text-sm text-muted-foreground gap-4">
-                  <div className="flex gap-8">
-                    <div>
-                      <div className="uppercase text-xs font-bold">Order Placed</div>
-                      <div>{new Date(order.created_at).toLocaleDateString()}</div>
-                    </div>
-                    <div>
-                      <div className="uppercase text-xs font-bold">Total</div>
-                      <div>${order.total_amount}</div>
-                    </div>
-                    <div>
-                      <div className="uppercase text-xs font-bold">Ship To</div>
-                      <div className="text-primary hover:underline cursor-pointer">User</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="uppercase text-xs font-bold">Order # {order.id.slice(0, 8)}</div>
-                    <div className="flex gap-2 justify-end">
-                      <Link href="#" className="text-primary hover:underline">
-                        View order details
-                      </Link>
-                      <span className="text-muted-foreground/50">|</span>
-                      <Link href="#" className="text-primary hover:underline">
-                        Invoice
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-4">
-                <div className="flex flex-col gap-6">
-                  <h3 className="font-bold text-lg text-accent-foreground">
-                    {order.status === "delivered" ? "Delivered" : "Arriving soon"}
-                  </h3>
-                  {order.order_items.map((item: any) => (
-                    <div key={item.id} className="flex gap-4">
-                      <div className="relative w-24 h-24 shrink-0">
-                        <Image
-                          src={item.product?.images?.[0] || "/placeholder.svg"}
-                          alt={item.product?.title || "Product"}
-                          fill
-                          className="object-contain"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <Link
-                          href={`/product/${item.product_id}`}
-                          className="font-medium text-primary hover:underline"
-                        >
-                          {item.product?.title}
-                        </Link>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          Return window closed on{" "}
-                          {new Date(
-                            new Date(order.created_at).setDate(new Date(order.created_at).getDate() + 30),
-                          ).toLocaleDateString()}
-                        </div>
-                        <div className="flex gap-2 mt-2">
-                          <Button
-                            variant="outline"
-                            className="h-8 text-xs"
-                          >
-                            Buy it again
-                          </Button>
-                          <Button
-                            variant="outline"
-                            className="h-8 text-xs"
-                          >
-                            View your item
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      {/* Orders Grid */}
+      <AccountOrdersGrid orders={filteredOrders} locale={locale} />
     </div>
   )
 }

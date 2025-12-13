@@ -57,6 +57,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/lib/cart-context";
 import { WishlistProvider } from "@/lib/wishlist-context";
 import { AuthStateListener } from "@/components/auth-state-listener";
+import { GeoWelcomeModal } from "@/components/geo-welcome-modal";
 
 /**
  * Root Locale Layout
@@ -104,6 +105,7 @@ export default async function LocaleLayout({
                         <WishlistProvider>
                             {children}
                             <Toaster />
+                            <GeoWelcomeModal locale={locale} />
                         </WishlistProvider>
                     </CartProvider>
                 </NextIntlClientProvider>

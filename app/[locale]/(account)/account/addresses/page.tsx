@@ -34,7 +34,8 @@ export default async function AddressesPage({
         .order('created_at', { ascending: false })
 
     return (
-        <div className="p-4 lg:p-6">
+        <div className="flex flex-col gap-4 md:gap-6">
+            <h1 className="sr-only">{locale === "bg" ? "Адреси" : "Addresses"}</h1>
             <AddressesContent 
                 locale={locale}
                 initialAddresses={addresses || []}

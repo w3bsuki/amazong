@@ -25,7 +25,8 @@ export default async function SecurityPage({
     }
 
     return (
-        <div className="p-4 lg:p-6">
+        <div className="flex flex-col gap-4 md:gap-6">
+            <h1 className="sr-only">{locale === "bg" ? "Сигурност" : "Security"}</h1>
             <SecurityContent 
                 locale={locale}
                 userEmail={user.email || ''}

@@ -298,7 +298,8 @@
         "review": "Review",
         "step": "Step",
         "of": "of",
-        "secureCheckout": "Secure Checkout"
+        "secureCheckout": "Secure Checkout",
+        "complete": "Complete"
     },
     "CheckoutPage": {
         "title": "Checkout",
@@ -662,7 +663,15 @@
         "priceLowHigh": "Price: Low to High",
         "priceHighLow": "Price: High to Low",
         "avgReview": "Avg. Customer Review",
-        "newestArrivals": "Newest Arrivals"
+        "newestArrivals": "Newest Arrivals",
+        "shipsTo": "Ships to",
+        "bulgaria": "Bulgaria",
+        "unitedKingdom": "United Kingdom",
+        "europe": "Europe",
+        "usa": "USA",
+        "worldwide": "Worldwide",
+        "clearShipping": "Clear shipping filter",
+        "anyLocation": "Any location"
     },
     "Cookies": {
         "title": "We use cookies",
@@ -1034,6 +1043,10 @@
     "Messages": {
         "pageTitle": "Messages",
         "pageDescription": "Communicate with sellers about your orders and inquiries",
+        "searchPlaceholder": "Search messages...",
+        "newMessage": "New message",
+        "noConversationsHint": "Messages from sellers will appear here",
+        "tryDifferentSearch": "Try a different search term",
         "conversations": "Conversations",
         "noConversations": "No conversations yet",
         "noConversationsDescription": "When you contact a seller, your conversations will appear here.",
@@ -1057,6 +1070,25 @@
         "cannotContactSelfDescription": "You cannot start a conversation with yourself.",
         "errorStartingConversation": "Error starting conversation",
         "errorStartingConversationDescription": "Something went wrong. Please try again later.",
-        "back": "Back"
+        "back": "Back",
+        "tabAll": "All",
+        "tabUnread": "Unread",
+        "tabBuying": "Buying",
+        "tabSelling": "Selling"
+    },
+    "GeoWelcome": {
+        "title": "Hello! We detected you're visiting from {country}",
+        "description": "View Amazon {region} to see products that ship to your location",
+        "selectRegion": "Select your region",
+        "confirmButton": "Yes, show {region} products",
+        "declineButton": "No, show all products",
+        "changeAnytime": "You can change this anytime in settings",
+        "regions": {
+            "BG": "Bulgaria",
+            "UK": "United Kingdom",
+            "EU": "Europe",
+            "US": "United States",
+            "WW": "Worldwide"
+        }
     }
 }

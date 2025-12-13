@@ -12,13 +12,17 @@ import {
   IconLock,
   IconMapPin,
   IconCreditCard,
+  IconReceipt,
   IconBuildingStore,
   IconChartLine,
   IconCrown,
   IconHome,
   IconSettings,
   IconLogout,
+  IconSparkles,
 } from "@tabler/icons-react"
+import { PlansModal } from "@/components/plans-modal"
+import { Button } from "@/components/ui/button"
 
 import {
   Sidebar,
@@ -68,7 +72,7 @@ const getAccountNavItems = (locale: string) => [
   },
   {
     title: locale === 'bg' ? 'Съобщения' : 'Messages',
-    url: "/account/messages",
+    url: "/chat",
     icon: IconMessage,
   },
 ]
@@ -89,6 +93,11 @@ const getAccountManageItems = (locale: string) => [
     url: "/account/payments",
     icon: IconCreditCard,
   },
+  {
+    title: locale === 'bg' ? 'Фактуриране' : 'Billing',
+    url: "/account/billing",
+    icon: IconReceipt,
+  },
 ]
 
 const getAccountSellerItems = (locale: string) => [
@@ -101,11 +110,6 @@ const getAccountSellerItems = (locale: string) => [
     title: locale === 'bg' ? 'Продажби' : 'Sales',
     url: "/account/sales",
     icon: IconChartLine,
-  },
-  {
-    title: locale === 'bg' ? 'Планове' : 'Plans',
-    url: "/account/plans",
-    icon: IconCrown,
   },
 ]
 
@@ -316,6 +320,34 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Upgrade CTA */}
+        <SidebarGroup className="px-2">
+          <div className="rounded-lg bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="size-8 rounded-md bg-primary/10 flex items-center justify-center">
+                <IconSparkles className="size-4 text-primary" />
+              </div>
+              <div className="text-sm font-medium">
+                {locale === 'bg' ? 'Надградете плана' : 'Upgrade Plan'}
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">
+              {locale === 'bg' 
+                ? 'По-ниски комисиони и повече възможности' 
+                : 'Lower commissions & more features'}
+            </p>
+            <PlansModal
+              source="sidebar"
+              trigger={
+                <Button size="sm" className="w-full h-8 text-xs">
+                  <IconCrown className="size-3.5 mr-1.5" />
+                  {locale === 'bg' ? 'Виж планове' : 'View Plans'}
+                </Button>
+              }
+            />
+          </div>
         </SidebarGroup>
 
         {/* Secondary Nav */}

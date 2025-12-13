@@ -33,7 +33,8 @@ export default async function PaymentsPage({
         .order('created_at', { ascending: false })
 
     return (
-        <div className="p-4 lg:p-6">
+        <div className="flex flex-col gap-4 md:gap-6">
+            <h1 className="sr-only">{locale === 'bg' ? 'Начини на плащане' : 'Payment Methods'}</h1>
             <PaymentsContent 
                 locale={locale}
                 initialPaymentMethods={paymentMethods || []}

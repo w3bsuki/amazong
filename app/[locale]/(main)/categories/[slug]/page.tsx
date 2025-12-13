@@ -10,10 +10,10 @@ import { SearchFilters } from "@/components/search-filters"
 import { Suspense } from "react"
 import { setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
+import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
 import { Link } from "@/i18n/routing"
-import { cookies } from "next/headers"
 import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
 import {
   getCategoryBySlug,
@@ -200,11 +200,14 @@ export default async function CategoryPage({
   
   const supabase = await createClient()
   
-  // Get shipping zone from cookie for filtering
+  // Read shipping zone from cookie (set by header "Доставка до" dropdown)
+  // Only filter if user has selected a specific zone (not WW = worldwide = show all)
   const cookieStore = await cookies()
-  const userZoneCookie = cookieStore.get('user-zone')?.value
-  const userZone = parseShippingRegion(userZoneCookie)
-  const shippingFilter = getShippingFilter(userZone)
+  const userZone = cookieStore.get('user-zone')?.value
+  const parsedZone = parseShippingRegion(userZone)
+  const shippingFilter = parsedZone !== 'WW'
+    ? getShippingFilter(parsedZone)
+    : ''
   
   if (!supabase) {
     notFound()

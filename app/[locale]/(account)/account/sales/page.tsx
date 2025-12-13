@@ -245,8 +245,8 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4 mb-6">
           <div className="flex items-center gap-4">
-            <div className="size-14 sm:size-16 rounded-xl bg-linear-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg">
-              <ChartLineUp weight="fill" className="size-7 sm:size-8 text-white" />
+            <div className="size-14 sm:size-16 rounded-xl bg-account-stat-icon-bg border border-account-stat-border flex items-center justify-center">
+              <ChartLineUp weight="fill" className="size-7 sm:size-8 text-account-stat-icon" />
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-bold text-foreground">

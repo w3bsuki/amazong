@@ -18,7 +18,6 @@ export function AccountHeader() {
       '/account': { en: 'Account Overview', bg: 'Преглед на акаунта' },
       '/account/orders': { en: 'Orders', bg: 'Поръчки' },
       '/account/wishlist': { en: 'Wishlist', bg: 'Любими' },
-      '/account/messages': { en: 'Messages', bg: 'Съобщения' },
       '/account/security': { en: 'Security', bg: 'Сигурност' },
       '/account/addresses': { en: 'Addresses', bg: 'Адреси' },
       '/account/payments': { en: 'Payments', bg: 'Плащания' },

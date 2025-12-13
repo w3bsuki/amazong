@@ -200,7 +200,7 @@ export function ProductPageContent({
         
         {/* Similar Items Banner - eBay style - DESKTOP ONLY (cleaner mobile UX without this) */}
         {sellerData && (
-          <div className="hidden lg:flex items-center gap-3 text-sm bg-[#f7f7f7] dark:bg-muted/30 py-2.5 px-4 mb-4 rounded-md">
+          <div className="hidden lg:flex items-center gap-3 text-sm bg-muted/50 dark:bg-muted/30 py-2.5 px-4 mb-4 rounded-md">
               <span className="text-muted-foreground shrink-0">
                 {locale === 'bg' ? 'Подобни артикули от' : 'Find similar items from'}
               </span>

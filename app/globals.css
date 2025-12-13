@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -235,6 +236,25 @@
   --color-progress-fill: oklch(0.48 0.22 260);
   --color-status-complete: oklch(0.55 0.18 145);
   --color-status-pending: oklch(0.55 0 0);
+
+  /* === ACCOUNT DASHBOARD TOKENS === */
+  /* Professional neutral theming - no gradients */
+  --color-account-stat-bg: oklch(0.985 0 0);
+  --color-account-stat-border: oklch(0.88 0 0);
+  --color-account-stat-icon: oklch(0.35 0 0);
+  --color-account-stat-icon-bg: oklch(0.96 0 0);
+  --color-account-stat-value: oklch(0.15 0 0);
+  --color-account-stat-label: oklch(0.50 0 0);
+  --color-account-card-hover: oklch(0.97 0 0);
+  --color-account-accent: oklch(0.35 0 0);
+  --color-account-accent-soft: oklch(0.95 0 0);
+  --color-account-success: oklch(0.50 0.14 145);
+  --color-account-success-soft: oklch(0.95 0.03 145);
+  --color-account-warning: oklch(0.65 0.14 70);
+  --color-account-warning-soft: oklch(0.96 0.04 70);
+  --color-account-info: oklch(0.55 0.12 240);
+  --color-account-info-soft: oklch(0.95 0.02 240);
+  --color-account-section-bg: oklch(0.98 0 0);
 }
 
 /* ===== DARK MODE OVERRIDES ===== */
@@ -258,6 +278,12 @@
   --color-border: oklch(0.35 0.02 250);
   --color-input: oklch(0.35 0.02 250);
   --color-ring: oklch(0.60 0.16 250);
+
+  /* Semantic status colors (dark mode) */
+  --color-success: oklch(0.65 0.16 145);
+  --color-warning: oklch(0.70 0.14 85);
+  --color-error: oklch(0.60 0.22 27);
+  --color-info: oklch(0.60 0.16 250);
 
   --color-brand: oklch(0.60 0.16 250);
   --color-brand-light: oklch(0.70 0.14 250);
@@ -319,6 +345,24 @@
   --color-form-helper: oklch(0.70 0 0);
   --color-progress-bg: oklch(0.30 0.02 250);
   --color-progress-fill: oklch(0.60 0.16 250);
+
+  /* Account dashboard tokens (dark mode) */
+  --color-account-stat-bg: oklch(0.22 0 0);
+  --color-account-stat-border: oklch(0.35 0 0);
+  --color-account-stat-icon: oklch(0.85 0 0);
+  --color-account-stat-icon-bg: oklch(0.26 0 0);
+  --color-account-stat-value: oklch(0.95 0 0);
+  --color-account-stat-label: oklch(0.65 0 0);
+  --color-account-card-hover: oklch(0.25 0 0);
+  --color-account-accent: oklch(0.80 0 0);
+  --color-account-accent-soft: oklch(0.28 0 0);
+  --color-account-success: oklch(0.60 0.14 145);
+  --color-account-success-soft: oklch(0.25 0.04 145);
+  --color-account-warning: oklch(0.68 0.14 70);
+  --color-account-warning-soft: oklch(0.28 0.05 70);
+  --color-account-info: oklch(0.65 0.10 240);
+  --color-account-info-soft: oklch(0.28 0.03 240);
+  --color-account-section-bg: oklch(0.18 0 0);
   --sidebar: hsl(240 5.9% 10%);
   --sidebar-foreground: hsl(240 4.8% 95.9%);
   --sidebar-primary: hsl(224.3 76.3% 48%);
@@ -406,26 +450,9 @@
 }
 .hero-carousel img { pointer-events: none; user-select: none; -webkit-user-drag: none; }
 
-/* ===== ANIMATIONS (essential only) ===== */
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-@keyframes slideInFromLeft { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-@keyframes slideOutToLeft { from { transform: translateX(0); } to { transform: translateX(-100%); } }
-@keyframes slideInFromRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
-@keyframes slideOutToRight { from { transform: translateX(0); } to { transform: translateX(100%); } }
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-@keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
-
-.animate-in { animation-duration: 150ms; animation-timing-function: ease-out; animation-fill-mode: both; }
-.animate-out { animation-duration: 100ms; animation-timing-function: ease-in; animation-fill-mode: both; }
-.fade-in-0 { animation-name: fadeIn; }
-.fade-out-0 { animation-name: fadeOut; }
-.slide-in-from-left { animation-name: slideInFromLeft; }
-.slide-out-to-left { animation-name: slideOutToLeft; }
-.slide-in-from-right { animation-name: slideInFromRight; }
-.slide-out-to-right { animation-name: slideOutToRight; }
-.animate-slide-up { animation: slideUp 0.15s ease; }
-.animate-slide-down { animation: slideDown 0.15s ease; }
+/* ===== ANIMATIONS ===== */
+/* Note: tailwindcss-animate plugin provides animate-in, animate-out, slide-in-from-*, etc. */
+/* Only add custom animations here that aren't provided by the plugin */
 
 :root {
   --sidebar: hsl(0 0% 98%);

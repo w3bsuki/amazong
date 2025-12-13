@@ -100,15 +100,17 @@ export function AccountChart({ locale }: AccountChartProps) {
     last7: locale === 'bg' ? 'Последни 7 дни' : 'Last 7 days',
   }
 
+  // Hide chart on mobile for cleaner app-like UX
+  if (isMobile) {
+    return null
+  }
+
   return (
     <Card className="@container/chart">
       <CardHeader>
         <CardTitle>{t.title}</CardTitle>
         <CardDescription>
-          <span className="hidden @[540px]/chart:block">
-            {t.description}
-          </span>
-          <span className="@[540px]/chart:hidden">{t.last90}</span>
+          {t.description}
         </CardDescription>
         <CardAction>
           <ToggleGroup

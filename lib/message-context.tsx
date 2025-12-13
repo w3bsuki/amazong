@@ -151,7 +151,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
     }
   }, [supabase])
 
-  // Load all conversations for the current user
+  // Load all conversations for the current user - OPTIMIZED with single RPC call
   const loadConversations = useCallback(async () => {
     setIsLoading(true)
     setError(null)
@@ -167,86 +167,135 @@ export function MessageProvider({ children }: MessageProviderProps) {
       }
       
       if (!userData.user) {
-        console.log("No authenticated user found")
         setConversations([])
         setIsLoading(false)
         return
       }
 
       const userId = userData.user.id
-      console.log("Loading conversations for user:", userId)
 
-      // Fetch conversations with related data
-      // Note: buyer_id and seller_id reference auth.users, so we need separate queries for profiles
-      const { data, error: fetchError } = await supabase
-        .from("conversations")
-        .select(`
-          *,
-          product:products(
-            id,
-            title,
-            images
-          )
-        `)
-        .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
-        .order("last_message_at", { ascending: false, nullsFirst: false })
+      // OPTIMIZED: Single RPC call instead of N+1 queries
+      const { data, error: fetchError } = await supabase.rpc('get_user_conversations', {
+        p_user_id: userId
+      })
 
-      console.log("Conversations query result:", { data, fetchError })
-
-      if (fetchError) throw fetchError
+      if (fetchError) {
+        // Fallback to basic query if RPC not available (migration not run yet)
+        console.warn("RPC not available, using fallback query:", fetchError.message)
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from("conversations")
+          .select(`*, product:products(id, title, images)`)
+          .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+          .order("last_message_at", { ascending: false, nullsFirst: false })
+        
+        if (fallbackError) throw fallbackError
+        
+        // Fetch seller info for all conversations
+        const sellerIds = [...new Set((fallbackData || []).map((c: RawConversation) => c.seller_id))]
+        const { data: sellerData } = await supabase
+          .from("sellers")
+          .select("id, store_name")
+          .in("id", sellerIds)
+        
+        const sellerMap = new Map(sellerData?.map(s => [s.id, s.store_name]) || [])
+        
+        // Transform fallback data to expected format with actual seller names
+        const transformed = (fallbackData || []).map((conv: RawConversation) => ({
+          ...conv,
+          buyer: { id: conv.buyer_id, full_name: null, avatar_url: null },
+          seller: { 
+            id: conv.seller_id, 
+            business_name: sellerMap.get(conv.seller_id) || "Seller",
+            user_id: conv.seller_id,
+            profile: null 
+          },
+          last_message: null
+        })) as Conversation[]
+        
+        setConversations(transformed)
+        await refreshUnreadCount()
+        setIsLoading(false)
+        return
+      }
 
       if (!data || data.length === 0) {
-        console.log("No conversations found")
         setConversations([])
         setIsLoading(false)
         await refreshUnreadCount()
         return
       }
 
-      // Fetch profiles and seller info for each conversation
-      const conversationsWithProfiles = await Promise.all(
-        (data || []).map(async (conv: RawConversation) => {
-          // Get buyer profile
-          const { data: buyerProfile } = await supabase
-            .from("profiles")
-            .select("id, full_name, avatar_url")
-            .eq("id", conv.buyer_id)
-            .single()
-
-          // Get seller profile and store info
-          const { data: sellerProfile } = await supabase
-            .from("profiles")
-            .select("id, full_name, avatar_url")
-            .eq("id", conv.seller_id)
-            .single()
-
-          const { data: sellerStore } = await supabase
-            .from("sellers")
-            .select("id, store_name")
-            .eq("id", conv.seller_id)
-            .single()
-
-          // Get last message
-          const { data: lastMessageData } = await supabase
-            .from("messages")
-            .select("*")
-            .eq("conversation_id", conv.id)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .single()
-
-          return {
-            ...conv,
-            buyer: buyerProfile,
-            seller: sellerStore ? {
-              id: sellerStore.id,
-              business_name: sellerStore.store_name,
-              profile: sellerProfile
-            } : null,
-            last_message: lastMessageData
-          } as Conversation
-        })
-      )
+      // Transform RPC result to Conversation type
+      const conversationsWithProfiles = data.map((row: {
+        id: string
+        buyer_id: string
+        seller_id: string
+        product_id: string | null
+        order_id: string | null
+        subject: string | null
+        status: "open" | "closed" | "archived"
+        last_message_at: string
+        buyer_unread_count: number
+        seller_unread_count: number
+        created_at: string
+        updated_at: string
+        buyer_full_name: string | null
+        buyer_avatar_url: string | null
+        seller_full_name: string | null
+        seller_avatar_url: string | null
+        store_name: string | null
+        store_slug: string | null
+        product_title: string | null
+        product_images: string[] | null
+        last_message_id: string | null
+        last_message_content: string | null
+        last_message_sender_id: string | null
+        last_message_type: string | null
+        last_message_created_at: string | null
+      }) => ({
+        id: row.id,
+        buyer_id: row.buyer_id,
+        seller_id: row.seller_id,
+        product_id: row.product_id,
+        order_id: row.order_id,
+        subject: row.subject,
+        status: row.status,
+        last_message_at: row.last_message_at,
+        buyer_unread_count: row.buyer_unread_count,
+        seller_unread_count: row.seller_unread_count,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        buyer: {
+          id: row.buyer_id,
+          full_name: row.buyer_full_name,
+          avatar_url: row.buyer_avatar_url
+        },
+        seller: row.store_name ? {
+          id: row.seller_id,
+          business_name: row.store_name,
+          user_id: row.seller_id,
+          profile: {
+            full_name: row.seller_full_name || row.store_name,
+            avatar_url: row.seller_avatar_url
+          }
+        } : null,
+        product: row.product_id ? {
+          id: row.product_id,
+          title: row.product_title || "",
+          images: row.product_images || []
+        } : undefined,
+        last_message: row.last_message_id ? {
+          id: row.last_message_id,
+          conversation_id: row.id,
+          sender_id: row.last_message_sender_id || "",
+          content: row.last_message_content || "",
+          message_type: (row.last_message_type || "text") as "text" | "image" | "order_update" | "system",
+          attachment_url: null,
+          is_read: false,
+          read_at: null,
+          created_at: row.last_message_created_at || ""
+        } : undefined
+      })) as Conversation[]
 
       setConversations(conversationsWithProfiles)
       await refreshUnreadCount()

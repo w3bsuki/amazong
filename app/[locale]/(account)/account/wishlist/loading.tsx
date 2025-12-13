@@ -2,13 +2,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function WishlistLoading() {
   return (
-    <div className="min-h-screen bg-secondary py-6">
-      <div className="container">
-        {/* Header */}
-        <div className="flex items-center gap-2 mb-6">
-          <Skeleton className="h-6 w-6" />
-          <Skeleton className="h-8 w-36" />
-        </div>
+    <div className="py-6">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-6">
+        <Skeleton className="h-6 w-6" />
+        <Skeleton className="h-8 w-36" />
+      </div>
 
         {/* Card with items */}
         <div className="bg-card rounded-lg border border-border">
@@ -42,10 +41,9 @@ export default function WishlistLoading() {
           ))}
         </div>
 
-        {/* Add All to Cart Button */}
-        <div className="mt-6 flex justify-end">
-          <Skeleton className="h-10 w-44 rounded" />
-        </div>
+      {/* Add All to Cart Button */}
+      <div className="mt-6 flex justify-end">
+        <Skeleton className="h-10 w-44 rounded" />
       </div>
     </div>
   )

@@ -83,18 +83,18 @@ export function MobileTabBar() {
 
         {/* Chat */}
         <Link
-          href="/messages"
+          href="/chat"
           prefetch={true}
           className={cn(
             "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
             "touch-action-manipulation tap-transparent",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
-            isActive("/messages") ? "text-brand" : "text-muted-foreground"
+            isActive("/chat") ? "text-brand" : "text-muted-foreground"
           )}
           aria-label={t("chat")}
-          aria-current={isActive("/messages") ? "page" : undefined}
+          aria-current={isActive("/chat") ? "page" : undefined}
         >
-          <ChatCircle size={22} weight={isActive("/messages") ? "fill" : "regular"} />
+          <ChatCircle size={22} weight={isActive("/chat") ? "fill" : "regular"} />
           <span className="text-[10px] font-medium">{t("chat")}</span>
         </Link>
 

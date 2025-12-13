@@ -182,24 +182,21 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container py-4 sm:py-6">
-          <Skeleton className="h-8 w-64 mb-4" />
-          <Skeleton className="h-[500px] w-full" />
-        </div>
+      <div className="py-4 sm:py-6">
+        <Skeleton className="h-8 w-64 mb-4" />
+        <Skeleton className="h-[500px] w-full" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="container py-4 sm:py-6">
-        {/* Breadcrumb */}
-        <AppBreadcrumb items={[
-          { label: locale === 'bg' ? 'Акаунт' : 'Account', href: '/account' },
-          { label: locale === 'bg' ? 'Моят магазин' : 'My Store', href: '/account/selling' },
-          { label: locale === 'bg' ? 'Редактиране' : 'Edit Product' }
-        ]} />
+    <div className="py-4 sm:py-6">
+      {/* Breadcrumb */}
+      <AppBreadcrumb items={[
+        { label: locale === 'bg' ? 'Акаунт' : 'Account', href: '/account' },
+        { label: locale === 'bg' ? 'Моят магазин' : 'My Store', href: '/account/selling' },
+        { label: locale === 'bg' ? 'Редактиране' : 'Edit Product' }
+      ]} />
 
         {/* Header */}
         <div className="flex items-center gap-4 mt-4 mb-6">
@@ -494,7 +491,6 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
             </Button>
           </div>
         </div>
-      </div>
     </div>
   )
 }

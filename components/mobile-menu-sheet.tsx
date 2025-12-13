@@ -277,7 +277,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                       className="flex flex-col items-center gap-1.5 group"
                     >
                       {/* Circle with icon */}
-                      <div className="size-14 rounded-full bg-muted border border-border flex items-center justify-center group-hover:border-brand group-hover:bg-brand/5 transition-colors">
+                      <div className="size-14 rounded-full bg-muted border border-border flex items-center justify-center group-hover:border-brand group-hover:bg-brand/5 transition-all group-hover:scale-105 group-active:scale-95">
                         <Icon size={24} weight="duotone" className="text-foreground/80 group-hover:text-brand transition-colors" />
                       </div>
                       {/* Category name */}
@@ -364,7 +364,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                     locale="en"
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "flex items-center justify-center min-w-[36px] h-8 rounded-md text-xs font-semibold transition-colors",
+                      "flex items-center justify-center min-w-[36px] h-8 rounded-md text-xs font-semibold transition-all active:scale-95",
                       locale === 'en' 
                         ? 'bg-brand text-white' 
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'
@@ -377,7 +377,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                     locale="bg"
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "flex items-center justify-center min-w-[36px] h-8 rounded-md text-xs font-semibold transition-colors",
+                      "flex items-center justify-center min-w-[36px] h-8 rounded-md text-xs font-semibold transition-all active:scale-95",
                       locale === 'bg' 
                         ? 'bg-brand text-white' 
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'

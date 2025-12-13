@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
 
-// Boost pricing options
+// Boost pricing options (in BGN)
 const BOOST_PRICING = {
   '7': { price: 2.99, label: '7 days' },
-  '14': { price: 4.99, label: '14 days' },
-  '30': { price: 8.99, label: '30 days' },
+  '14': { price: 5.00, label: '14 days' },
+  '30': { price: 9.99, label: '30 days' },
 } as const
 
 type BoostDuration = keyof typeof BOOST_PRICING

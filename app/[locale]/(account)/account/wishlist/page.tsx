@@ -1,150 +1,114 @@
-"use client"
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
+import { connection } from "next/server"
+import { WishlistContent } from "./wishlist-content"
 
-import { useWishlist } from "@/lib/wishlist-context"
-import { useCart } from "@/lib/cart-context"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Heart, ShoppingCart, Trash, ArrowRight } from "@phosphor-icons/react"
-import Image from "next/image"
-import Link from "next/link"
-import { useTranslations } from "next-intl"
-import { toast } from "sonner"
+interface WishlistPageProps {
+  params: Promise<{
+    locale: string
+  }>
+  searchParams: Promise<{
+    category?: string
+    q?: string
+    stock?: string
+  }>
+}
 
-export default function WishlistPage() {
-  const { items, isLoading, removeFromWishlist } = useWishlist()
-  const { addToCart } = useCart()
-  const t = useTranslations("Wishlist")
+export default async function WishlistPage({ params, searchParams }: WishlistPageProps) {
+  await connection()
+  const { locale } = await params
+  const { category: categoryFilter, q: searchQuery, stock: stockFilter } = await searchParams
+  const supabase = await createClient()
 
-  const handleMoveToCart = (item: typeof items[0]) => {
-    addToCart({
-      id: item.product_id,
-      title: item.title,
-      price: item.price,
-      image: item.image,
-      quantity: 1,
-    })
-    removeFromWishlist(item.product_id)
-    toast.success("Moved to cart")
+  if (!supabase) {
+    redirect("/auth/login")
   }
 
-  if (isLoading) {
-    return (
-      <div className="animate-pulse">
-        <div className="h-7 w-48 rounded bg-muted mb-6" />
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-32 rounded-lg bg-card" />
-          ))}
-        </div>
-      </div>
-    )
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect("/auth/login")
   }
 
-  if (items.length === 0) {
-    return (
-      <div className="flex flex-col gap-6">
-        <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
-          <Heart className="h-6 w-6" />
-          {t("title")}
-        </h1>
+  // Fetch wishlist items with product details including stock AND category
+  const { data: wishlistData } = await supabase
+    .from("wishlists")
+    .select(`
+      id,
+      product_id,
+      created_at,
+      products (
+        id,
+        title,
+        price,
+        images,
+        stock,
+        category_id,
+        categories (
+          id,
+          name,
+          slug
+        )
+      )
+    `)
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
 
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Heart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-xl font-semibold text-foreground mb-2">{t("empty")}</h2>
-            <p className="text-muted-foreground mb-6">{t("emptyDescription")}</p>
-            <Button asChild>
-              <Link href="/search">
-                {t("startShopping")}
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
+  // Transform to expected format with category info
+  const items = (wishlistData || []).map((item: any) => ({
+    id: item.id,
+    product_id: item.product_id,
+    title: item.products?.title || "Unknown Product",
+    price: item.products?.price || 0,
+    image: item.products?.images?.[0] || "/placeholder.svg",
+    stock: item.products?.stock || 0,
+    created_at: item.created_at,
+    category_id: item.products?.category_id || null,
+    category_name: item.products?.categories?.name || null,
+    category_slug: item.products?.categories?.slug || null,
+  }))
+
+  // Extract unique categories from wishlist items for filtering
+  const categoriesMap = new Map<string, { id: string; name: string; slug: string; count: number }>()
+  items.forEach((item: any) => {
+    if (item.category_slug && item.category_name) {
+      const existing = categoriesMap.get(item.category_slug)
+      if (existing) {
+        existing.count++
+      } else {
+        categoriesMap.set(item.category_slug, {
+          id: item.category_id,
+          name: item.category_name,
+          slug: item.category_slug,
+          count: 1,
+        })
+      }
+    }
+  })
+  const categories = Array.from(categoriesMap.values()).sort((a, b) => b.count - a.count)
+
+  // Calculate stats (before filtering)
+  const stats = {
+    total: items.length,
+    inStock: items.filter((i: any) => i.stock > 0).length,
+    outOfStock: items.filter((i: any) => i.stock <= 0).length,
+    totalValue: items.reduce((sum: number, i: any) => sum + i.price, 0),
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
-          <Heart className="h-6 w-6" />
-          {t("title")} ({items.length})
-        </h1>
-      </div>
-
-      <Card>
-        <CardContent className="p-0">
-          {items.map((item, index) => (
-            <div key={item.id}>
-              {index > 0 && <Separator />}
-              <div className="p-4 flex gap-4">
-                <Link href={`/product/${item.product_id}`} className="shrink-0">
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-muted rounded-lg overflow-hidden">
-                    <Image src={item.image} alt={item.title} fill className="object-contain" />
-                  </div>
-                </Link>
-
-                <div className="flex-1 flex flex-col gap-1">
-                  <Link
-                    href={`/product/${item.product_id}`}
-                    className="text-sm sm:text-base font-medium text-foreground hover:underline line-clamp-2"
-                  >
-                    {item.title}
-                  </Link>
-
-                  <div className="text-lg font-semibold text-foreground">
-                    ${item.price.toFixed(2)}
-                  </div>
-
-                  <div className="text-xs text-muted-foreground">
-                    {t("addedOn")} {new Date(item.created_at).toLocaleDateString()}
-                  </div>
-
-                  <div className="flex gap-2 pt-3">
-                    <Button size="sm" onClick={() => handleMoveToCart(item)} className="text-xs">
-                      <ShoppingCart className="h-3.5 w-3.5 mr-1" />
-                      {t("moveToCart")}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => removeFromWishlist(item.product_id)}
-                      className="text-xs"
-                    >
-                      <Trash className="h-3.5 w-3.5 mr-1" />
-                      {t("remove")}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-end">
-        <Button
-          variant="secondary"
-          onClick={() => {
-            items.forEach((item) => {
-              addToCart({
-                id: item.product_id,
-                title: item.title,
-                price: item.price,
-                image: item.image,
-                quantity: 1,
-              })
-            })
-            toast.success(`Added ${items.length} items to cart`)
-          }}
-        >
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          {t("addAllToCart")}
-        </Button>
-      </div>
+    <div className="flex flex-col gap-4 md:gap-6">
+      <h1 className="sr-only">{locale === "bg" ? "Любими продукти" : "Wishlist"}</h1>
+      <WishlistContent 
+        initialItems={items} 
+        stats={stats} 
+        locale={locale} 
+        categories={categories}
+        initialCategoryFilter={categoryFilter || null}
+        initialSearchQuery={searchQuery || ""}
+        initialStockFilter={stockFilter || "all"}
+      />
     </div>
   )
 }

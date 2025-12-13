@@ -6,17 +6,30 @@ import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Check, Crown, Buildings, User, Lightning, SpinnerGap, ArrowUpRight } from "@phosphor-icons/react"
+import { Lightning, ArrowUpRight, User, Buildings } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { PlansGrid, type Plan } from "@/components/plan-card"
 
 interface SubscriptionPlan {
   id: string
   tier: string
   name: string
+  account_type?: "personal" | "business"
   price_monthly: number
   price_yearly: number
-  commission_rate: number
+  // Fee structure (all paid by seller from earnings)
+  final_value_fee?: number      // % of sale when item sells
+  insertion_fee?: number        // Per listing after free allowance
+  per_order_fee?: number        // Flat fee per transaction (payment processing)
+  commission_rate?: number      // Legacy field for backward compatibility
+  max_listings?: number | null
+  boosts_included?: number
+  priority_support?: boolean
+  analytics_access?: string
+  badge_type?: string | null
+  description?: string
+  description_bg?: string
   features: string[]
   stripe_monthly_price_id: string | null
   stripe_yearly_price_id: string | null
@@ -26,7 +39,10 @@ interface SubscriptionPlan {
 interface Seller {
   id: string
   tier: string
-  commission_rate: number
+  account_type?: "personal" | "business"
+  final_value_fee?: number
+  insertion_fee?: number
+  commission_rate?: number  // Legacy
   [key: string]: unknown
 }
 
@@ -47,6 +63,31 @@ interface PlansContentProps {
   currentSubscription: Subscription | null
 }
 
+// Convert SubscriptionPlan to Plan interface for shared component
+function toPlan(sp: SubscriptionPlan): Plan {
+  return {
+    id: sp.id,
+    name: sp.name,
+    tier: sp.tier,
+    account_type: sp.account_type || "personal",
+    price_monthly: sp.price_monthly,
+    price_yearly: sp.price_yearly,
+    max_listings: sp.max_listings ?? null,
+    // Fee structure (all paid by seller)
+    final_value_fee: sp.final_value_fee ?? sp.commission_rate ?? 12,
+    insertion_fee: sp.insertion_fee ?? 0.25,
+    per_order_fee: sp.per_order_fee ?? 0.25,
+    commission_rate: sp.commission_rate,  // Legacy compat
+    boosts_included: sp.boosts_included ?? 0,
+    priority_support: sp.priority_support ?? false,
+    analytics_access: sp.analytics_access ?? "none",
+    badge_type: sp.badge_type ?? null,
+    description: sp.description ?? "",
+    description_bg: sp.description_bg ?? "",
+    features: sp.features,
+  }
+}
+
 export function PlansContent({ 
   locale, 
   plans, 
@@ -54,66 +95,44 @@ export function PlansContent({
   seller,
   currentSubscription 
 }: PlansContentProps) {
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
+  const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly")
+  const [accountType, setAccountType] = useState<"personal" | "business">(
+    seller?.account_type || "personal"
+  )
   const searchParams = useSearchParams()
 
   // Show toast notifications based on URL params (from Stripe redirect)
   useEffect(() => {
-    if (searchParams.get('success') === 'true') {
+    if (searchParams.get("success") === "true") {
       toast.success(
-        locale === 'bg' 
-          ? 'Абонаментът е активиран успешно!' 
-          : 'Subscription activated successfully!'
+        locale === "bg" 
+          ? "Абонаментът е активиран успешно!" 
+          : "Subscription activated successfully!"
       )
-      // Clean up URL
-      window.history.replaceState({}, '', window.location.pathname)
-    } else if (searchParams.get('canceled') === 'true') {
+      window.history.replaceState({}, "", window.location.pathname)
+    } else if (searchParams.get("canceled") === "true") {
       toast.info(
-        locale === 'bg' 
-          ? 'Плащането беше отменено' 
-          : 'Payment was cancelled'
+        locale === "bg" 
+          ? "Плащането беше отменено" 
+          : "Payment was cancelled"
       )
-      // Clean up URL
-      window.history.replaceState({}, '', window.location.pathname)
+      window.history.replaceState({}, "", window.location.pathname)
     }
   }, [searchParams, locale])
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: 'BGN',
-      minimumFractionDigits: 2,
-    }).format(price)
-  }
-
-  const planIcons: Record<string, React.ReactNode> = {
-    basic: <User className="size-6" weight="duotone" />,
-    premium: <Crown className="size-6" weight="duotone" />,
-    business: <Buildings className="size-6" weight="duotone" />,
-  }
-
-  const planColors: Record<string, string> = {
-    basic: "border-border",
-    premium: "border-primary",
-    business: "border-primary",
-  }
-
-  const handleSubscribe = async (plan: SubscriptionPlan) => {
+  const handleSelectPlan = async (plan: Plan) => {
     if (plan.price_monthly === 0) {
-      // Can't subscribe to free tier via Stripe
-      toast.info(locale === 'bg' ? 'Това е безплатен план' : 'This is a free plan')
+      toast.info(locale === "bg" ? "Това е безплатен план" : "This is a free plan")
       return
     }
 
-    setLoadingPlan(plan.id)
+    setLoadingPlanId(plan.id)
     
     try {
-      const response = await fetch('/api/subscriptions/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch("/api/subscriptions/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           planId: plan.id,
           billingPeriod,
@@ -123,77 +142,80 @@ export function PlansContent({
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session')
+        throw new Error(data.error || "Failed to create checkout session")
       }
 
-      // Redirect to Stripe Checkout
       if (data.url) {
         window.location.href = data.url
       }
     } catch (error) {
-      console.error('Checkout error:', error)
+      console.error("Checkout error:", error)
       toast.error(
-        locale === 'bg' 
-          ? 'Грешка при създаване на плащане. Моля, опитайте отново.' 
-          : 'Error creating payment. Please try again.'
+        locale === "bg" 
+          ? "Грешка при създаване на плащане. Моля, опитайте отново." 
+          : "Error creating payment. Please try again."
       )
     } finally {
-      setLoadingPlan(null)
+      setLoadingPlanId(null)
     }
   }
 
   const handleManageSubscription = async () => {
     try {
-      const response = await fetch('/api/subscriptions/portal', {
-        method: 'POST',
-      })
+      const response = await fetch("/api/subscriptions/portal", { method: "POST" })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to open customer portal')
+        throw new Error(data.error || "Failed to open customer portal")
       }
 
       if (data.url) {
         window.location.href = data.url
       }
     } catch (error) {
-      console.error('Portal error:', error)
+      console.error("Portal error:", error)
       toast.error(
-        locale === 'bg' 
-          ? 'Грешка при отваряне на портала. Моля, опитайте отново.' 
-          : 'Error opening portal. Please try again.'
+        locale === "bg" 
+          ? "Грешка при отваряне на портала. Моля, опитайте отново." 
+          : "Error opening portal. Please try again."
       )
     }
   }
 
+  // Filter plans by account type
+  const filteredPlans = plans
+    .filter((p) => !p.account_type || p.account_type === accountType)
+    .map(toPlan)
+
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="text-center mb-8">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="text-center">
         <h1 className="text-2xl sm:text-3xl font-semibold mb-2">
-          {locale === 'bg' ? 'Изберете план за продавач' : 'Choose a Seller Plan'}
+          {locale === "bg" ? "Изберете план за продавач" : "Choose a Seller Plan"}
         </h1>
         <p className="text-muted-foreground">
-          {locale === 'bg' 
-            ? 'Надградете акаунта си за по-ниски комисиони и повече възможности'
-            : 'Upgrade your account for lower commissions and more features'}
+          {locale === "bg" 
+            ? "Надградете акаунта си за по-ниски комисиони и повече възможности"
+            : "Upgrade your account for lower commissions and more features"}
         </p>
       </div>
 
-      {/* Current Plan Badge */}
+      {/* Current Plan Badge & Actions */}
       {seller && (
-        <div className="flex flex-col items-center gap-3 mb-6">
+        <div className="flex flex-col items-center gap-3">
           <Badge variant="secondary" className="text-sm px-3 py-1">
-            {locale === 'bg' ? 'Текущ план: ' : 'Current plan: '}
+            {locale === "bg" ? "Текущ план: " : "Current plan: "}
             <span className="font-semibold capitalize ml-1">{currentTier}</span>
           </Badge>
           
           <div className="flex items-center gap-2">
-            {currentTier !== 'business' && (
+            {currentTier !== "business" && (
               <Link href="/account/plans/upgrade">
                 <Button size="sm" className="gap-1.5">
                   <ArrowUpRight className="size-4" weight="bold" />
-                  {locale === 'bg' ? 'Надгради' : 'Upgrade'}
+                  {locale === "bg" ? "Надгради" : "Upgrade"}
                 </Button>
               </Link>
             )}
@@ -203,37 +225,67 @@ export function PlansContent({
                 size="sm"
                 onClick={handleManageSubscription}
               >
-                {locale === 'bg' ? 'Управление на абонамента' : 'Manage Subscription'}
+                {locale === "bg" ? "Управление на абонамента" : "Manage Subscription"}
               </Button>
             )}
           </div>
         </div>
       )}
 
-      {/* Billing Toggle */}
-      <div className="flex justify-center mb-6">
+      {/* Account Type Toggle + Billing Toggle */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="inline-flex p-1 rounded-xl bg-muted/50 border">
+          <button
+            onClick={() => setAccountType("personal")}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
+              accountType === "personal"
+                ? "bg-background shadow-sm text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <User weight={accountType === "personal" ? "fill" : "regular"} className="size-4" />
+            {locale === "bg" ? "Личен" : "Personal"}
+          </button>
+          <button
+            onClick={() => setAccountType("business")}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
+              accountType === "business"
+                ? "bg-background shadow-sm text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Buildings weight={accountType === "business" ? "fill" : "regular"} className="size-4" />
+            {locale === "bg" ? "Бизнес" : "Business"}
+          </button>
+        </div>
+
+        <div className="hidden sm:block w-px h-8 bg-border" />
+
+        {/* Billing Toggle */}
         <div className="inline-flex items-center gap-2 bg-muted rounded-lg p-1">
           <button
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-colors",
-              billingPeriod === 'monthly' 
+              billingPeriod === "monthly" 
                 ? "bg-background text-foreground shadow-sm" 
                 : "text-muted-foreground hover:text-foreground"
             )}
-            onClick={() => setBillingPeriod('monthly')}
+            onClick={() => setBillingPeriod("monthly")}
           >
-            {locale === 'bg' ? 'Месечно' : 'Monthly'}
+            {locale === "bg" ? "Месечно" : "Monthly"}
           </button>
           <button
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2",
-              billingPeriod === 'yearly' 
+              billingPeriod === "yearly" 
                 ? "bg-background text-foreground shadow-sm" 
                 : "text-muted-foreground hover:text-foreground"
             )}
-            onClick={() => setBillingPeriod('yearly')}
+            onClick={() => setBillingPeriod("yearly")}
           >
-            {locale === 'bg' ? 'Годишно' : 'Yearly'}
+            {locale === "bg" ? "Годишно" : "Yearly"}
             <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
               -17%
             </Badge>
@@ -241,154 +293,60 @@ export function PlansContent({
         </div>
       </div>
 
-      {/* Plans Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-        {plans.map((plan) => {
-          const isCurrentPlan = plan.tier === currentTier
-          const isPopular = plan.tier === 'premium'
-          const features = plan.features as string[]
-          const isLoading = loadingPlan === plan.id
-          const price = billingPeriod === 'monthly' ? plan.price_monthly : plan.price_yearly
+      {/* Plans Grid - Uses shared component */}
+      <PlansGrid
+        plans={filteredPlans}
+        locale={locale}
+        billingPeriod={billingPeriod}
+        currentTier={currentTier}
+        loadingPlanId={loadingPlanId}
+        onSelectPlan={handleSelectPlan}
+        variant="compact"
+      />
 
-          return (
-            <Card 
-              key={plan.id} 
-              className={cn(
-                "relative flex flex-col",
-                planColors[plan.tier],
-                isPopular && "border-2 border-primary",
-                isCurrentPlan && "bg-muted/50"
-              )}
-            >
-              {isPopular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground">
-                    {locale === 'bg' ? 'Популярен' : 'Popular'}
-                  </Badge>
-                </div>
-              )}
-              
-              <CardHeader className="text-center pb-4">
-                <div className="mx-auto mb-3 p-3 rounded-full bg-muted text-foreground">
-                  {planIcons[plan.tier]}
-                </div>
-                <CardTitle className="text-xl">{plan.name}</CardTitle>
-                <CardDescription className="capitalize">{plan.tier}</CardDescription>
-              </CardHeader>
-
-              <CardContent className="flex-1 flex flex-col">
-                {/* Price */}
-                <div className="text-center mb-6">
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-3xl font-semibold">
-                      {price === 0 ? (locale === 'bg' ? 'Безплатно' : 'Free') : formatPrice(price)}
-                    </span>
-                    {price > 0 && (
-                      <span className="text-muted-foreground text-sm">
-                        /{billingPeriod === 'monthly' 
-                          ? (locale === 'bg' ? 'месец' : 'month')
-                          : (locale === 'bg' ? 'година' : 'year')
-                        }
-                      </span>
-                    )}
-                  </div>
-                  {billingPeriod === 'yearly' && plan.price_yearly > 0 && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      <span className="line-through">{formatPrice(plan.price_monthly * 12)}</span>
-                      <span className="text-primary ml-2">
-                        {locale === 'bg' ? 'спестяваш' : 'save'} {formatPrice(plan.price_monthly * 12 - plan.price_yearly)}
-                      </span>
-                    </p>
-                  )}
-                </div>
-
-                {/* Commission Rate */}
-                <div className="bg-muted rounded-md p-3 mb-4 text-center">
-                  <span className="text-2xl font-semibold text-foreground">{plan.commission_rate}%</span>
-                  <p className="text-xs text-muted-foreground">
-                    {locale === 'bg' ? 'комисион на продажба' : 'commission per sale'}
-                  </p>
-                </div>
-
-                {/* Features */}
-                <ul className="space-y-2 mb-6 flex-1">
-                  {features.map((feature: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2 text-sm">
-                      <Check className="size-4 text-primary mt-0.5 shrink-0" weight="bold" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA Button */}
-                <Button
-                  className={cn(
-                    "w-full",
-                    isCurrentPlan 
-                      ? "bg-muted text-muted-foreground cursor-default hover:bg-muted" 
-                      : "bg-interactive hover:bg-interactive-hover text-white"
-                  )}
-                  disabled={isCurrentPlan || isLoading}
-                  onClick={() => handleSubscribe(plan)}
-                >
-                  {isLoading ? (
-                    <SpinnerGap className="size-4 animate-spin" />
-                  ) : isCurrentPlan ? (
-                    locale === 'bg' ? 'Текущ план' : 'Current Plan'
-                  ) : plan.tier === 'basic' ? (
-                    locale === 'bg' ? 'Понижи плана' : 'Downgrade'
-                  ) : (
-                    locale === 'bg' ? 'Надгради' : 'Upgrade'
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
-
-      {/* Boost Section */}
-      <div className="mt-10">
+      {/* Boost Section - Compact */}
+      <div className="mt-6 md:mt-10">
         <Card className="border-border">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-md bg-muted">
-                <Lightning className="size-5 text-primary" weight="fill" />
+          <CardHeader className="p-4 pb-2 md:p-6 md:pb-4">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-muted">
+                <Lightning className="size-4 text-primary" weight="fill" />
               </div>
               <div>
-                <CardTitle className="text-lg">
+                <CardTitle className="text-base md:text-lg">
                   {locale === 'bg' ? 'Промотирай обявите си' : 'Boost Your Listings'}
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs md:text-sm">
                   {locale === 'bg' 
-                    ? 'Плати за да покажеш продуктите си на повече хора'
-                    : 'Pay to show your products to more people'}
+                    ? 'Покажи продуктите си на повече хора'
+                    : 'Show your products to more people'}
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="border border-border rounded-md p-4 text-center">
-                <p className="text-2xl font-semibold">2.99 лв</p>
-                <p className="text-sm text-muted-foreground">{locale === 'bg' ? '7 дни' : '7 days'}</p>
+          <CardContent className="p-4 pt-2 md:p-6 md:pt-0">
+            {/* Horizontal scroll on mobile */}
+            <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory sm:grid sm:grid-cols-3 sm:overflow-visible">
+              <div className="border border-border rounded-md p-3 text-center shrink-0 w-24 snap-center sm:w-auto">
+                <p className="text-lg font-semibold">2.99 лв</p>
+                <p className="text-xs text-muted-foreground">{locale === 'bg' ? '7 дни' : '7 days'}</p>
               </div>
-              <div className="border border-primary rounded-md p-4 text-center relative">
-                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs">
-                  {locale === 'bg' ? 'Най-добра цена' : 'Best value'}
+              <div className="border border-primary rounded-md p-3 text-center relative shrink-0 w-24 snap-center sm:w-auto">
+                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] px-1.5 py-0">
+                  {locale === 'bg' ? 'Най-добра' : 'Best'}
                 </Badge>
-                <p className="text-2xl font-semibold">4.99 лв</p>
-                <p className="text-sm text-muted-foreground">{locale === 'bg' ? '14 дни' : '14 days'}</p>
+                <p className="text-lg font-semibold">4.99 лв</p>
+                <p className="text-xs text-muted-foreground">{locale === 'bg' ? '14 дни' : '14 days'}</p>
               </div>
-              <div className="border border-border rounded-md p-4 text-center">
-                <p className="text-2xl font-semibold">8.99 лв</p>
-                <p className="text-sm text-muted-foreground">{locale === 'bg' ? '30 дни' : '30 days'}</p>
+              <div className="border border-border rounded-md p-3 text-center shrink-0 w-24 snap-center sm:w-auto">
+                <p className="text-lg font-semibold">8.99 лв</p>
+                <p className="text-xs text-muted-foreground">{locale === 'bg' ? '30 дни' : '30 days'}</p>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground mt-4 text-center">
+            <p className="text-[10px] md:text-xs text-muted-foreground mt-3 text-center">
               {locale === 'bg' 
-                ? 'Промотираните обяви се показват в секцията "Препоръчани продукти" и имат по-високо позициониране в търсенето.'
-                : 'Boosted listings appear in the "Recommended Products" section and rank higher in search results.'}
+                ? 'Промотираните обяви се показват в секцията "Препоръчани" и имат по-високо позициониране.'
+                : 'Boosted listings appear in "Recommended" and rank higher in search.'}
             </p>
           </CardContent>
         </Card>

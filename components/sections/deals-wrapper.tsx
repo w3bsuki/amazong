@@ -1,6 +1,7 @@
-import { getGlobalDeals, toUI, type Product } from '@/lib/data/products'
+import { getGlobalDeals, toUI, type Product, type ShippingZone } from '@/lib/data/products'
 import { DealsSection } from '@/components/deals-section'
 import { getLocale } from 'next-intl/server'
+import { cookies } from 'next/headers'
 
 // Category slugs for filtering
 const TECH_CATEGORIES = ['electronics', 'computers', 'gaming', 'smart-home', 'phones-tablets', 'audio']
@@ -9,24 +10,29 @@ const FASHION_CATEGORIES = ['fashion', 'women', 'men', 'shoes', 'bags', 'accesso
 
 /**
  * Async server component that fetches deals data.
- * Uses cached data function - returns all deals, categorized for tabs.
+ * Filters by user's selected shipping zone (from header dropdown).
  */
 export async function DealsWrapper() {
   const locale = await getLocale()
   
-  // Fetch all deals from cache
-  const rawDeals = await getGlobalDeals(30)
+  // Read user's shipping zone from cookie (set by header "Доставка до" dropdown)
+  const cookieStore = await cookies()
+  const userZone = (cookieStore.get('user-zone')?.value || 'WW') as ShippingZone
+  
+  // Fetch deals already filtered by zone (WW = show all)
+  const rawDeals = await getGlobalDeals(80, userZone)
+  const zonedDeals = rawDeals.slice(0, 30)
   
   // Transform to UI format
-  const allDeals = rawDeals.map(toUI)
+  const allDeals = zonedDeals.map(toUI)
   
-  // Filter by category for tabs (using category_slug from raw data, then transform)
+  // Filter by category for tabs (using category_slug from zoned data, then transform)
   const filterAndTransform = (products: Product[], categories: string[]) =>
     products.filter(d => categories.includes(d.category_slug || '')).map(toUI)
   
-  const techDeals = filterAndTransform(rawDeals, TECH_CATEGORIES)
-  const homeDeals = filterAndTransform(rawDeals, HOME_CATEGORIES)
-  const fashionDeals = filterAndTransform(rawDeals, FASHION_CATEGORIES)
+  const techDeals = filterAndTransform(zonedDeals, TECH_CATEGORIES)
+  const homeDeals = filterAndTransform(zonedDeals, HOME_CATEGORIES)
+  const fashionDeals = filterAndTransform(zonedDeals, FASHION_CATEGORIES)
   
   return (
     <DealsSection

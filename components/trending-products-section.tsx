@@ -29,6 +29,8 @@ interface TrendingProductsSectionProps {
   bestSellersProducts: Product[]
   ctaText?: string
   ctaHref?: string
+  /** Mobile banner tone; desktop remains transparent. */
+  bannerTone?: "trust" | "contrast"
 }
 
 export function TrendingProductsSection({
@@ -37,7 +39,8 @@ export function TrendingProductsSection({
   promoProducts,
   bestSellersProducts,
   ctaText,
-  ctaHref
+  ctaHref,
+  bannerTone = "trust",
 }: TrendingProductsSectionProps) {
   const locale = useLocale()
   const scrollContainerRefs = useRef<Record<string, HTMLDivElement | null>>({})
@@ -74,27 +77,42 @@ export function TrendingProductsSection({
 
   return (
     <section className="overflow-hidden md:bg-card md:border md:border-border md:rounded-md">
-      {/* Header Section - Full-width banner on mobile for visual continuity */}
-      <div className="bg-cta-trust-blue text-cta-trust-blue-text px-3 py-2 flex items-center justify-between md:rounded-none md:bg-transparent md:text-foreground md:block md:text-center md:pt-5 md:pb-3 md:px-4">
-        <h2 className="text-sm font-semibold md:text-xl md:font-bold md:mb-1.5 md:tracking-tight">
-          {title}
-        </h2>
-        {ctaText && ctaHref && (
-          <Link 
-            href={ctaHref} 
-            className="text-xs font-medium hover:underline inline-flex items-center gap-0.5 text-white/90 md:text-brand-blue md:text-sm"
-          >
-            {ctaText}
-            <CaretRight size={14} weight="regular" />
-          </Link>
-        )}
+      {/* Header Section */}
+      <div className="px-3 pt-2 md:px-0 md:pt-0">
+        <div
+          className={cn(
+            "px-3 py-2.5 flex items-center justify-between",
+            "rounded-lg border border-border/60",
+            "md:rounded-none md:border-0 md:bg-transparent md:text-foreground md:block md:text-center md:pt-5 md:pb-3 md:px-4",
+            bannerTone === "contrast"
+              ? "bg-foreground text-background"
+              : "bg-cta-trust-blue text-cta-trust-blue-text"
+          )}
+        >
+          <h2 className="text-sm font-semibold md:text-xl md:font-bold md:mb-1.5 md:tracking-tight">
+            {title}
+          </h2>
+          {ctaText && ctaHref && (
+            <Link
+              href={ctaHref}
+              className={cn(
+                "text-xs font-semibold hover:underline inline-flex items-center gap-0.5 md:text-sm",
+                bannerTone === "contrast" ? "text-background/90" : "text-cta-trust-blue-text/90",
+                "md:text-link"
+              )}
+            >
+              {ctaText}
+              <CaretRight size={14} weight="regular" />
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="newest" className="w-full">
-        {/* Tab List - Hidden on mobile, show on md+ */}
-        <div className="hidden md:flex justify-center px-4 pb-2 overflow-x-auto no-scrollbar">
-          <TabsList className="h-auto p-1 gap-1 rounded-full bg-muted border border-border">
+        {/* Tab List - Mobile + Desktop */}
+        <div className="flex justify-center px-3 pt-2 pb-1 md:px-4 md:pt-0 md:pb-2 overflow-x-auto no-scrollbar">
+          <TabsList className="h-auto p-1 gap-1 rounded-full bg-muted/70 border border-border w-max">
             {tabs.map((tab) => {
               const Icon = tab.icon
               return (
@@ -102,10 +120,10 @@ export function TrendingProductsSection({
                   key={tab.id}
                   value={tab.id}
                   className={cn(
-                    "px-4 py-2 text-sm font-normal rounded-full",
-                    "text-muted-foreground hover:text-foreground hover:bg-secondary",
+                    "px-3 py-1.5 text-[13px] font-medium rounded-full",
+                    "text-muted-foreground hover:text-foreground hover:bg-secondary/70",
                     "data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
-                    "whitespace-nowrap min-h-10 flex items-center gap-1.5"
+                    "whitespace-nowrap min-h-9 flex items-center gap-1.5"
                   )}
                 >
                   <Icon size={14} weight="regular" />

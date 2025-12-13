@@ -10,11 +10,12 @@ import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { User } from "@supabase/supabase-js"
 import { useCart } from "@/lib/cart-context"
-import { ShoppingCart, Package, ArrowCounterClockwise, Truck, MapPin, Minus, Plus, Trash, ChatCircle, PaperPlaneTilt, Bell, Clock, TrendUp, X, CaretRight, SpinnerGap } from "@phosphor-icons/react"
+import { ShoppingCart, Package, ArrowCounterClockwise, Truck, MapPin, Minus, Plus, Trash, ChatCircle, PaperPlaneTilt, Bell, Clock, TrendUp, X, CaretRight, SpinnerGap, Crown, ArrowRight } from "@phosphor-icons/react"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/client"
+import { PlansModal } from "@/components/plans-modal"
 
 interface AccountDropdownProps {
     user: User | null
@@ -100,14 +101,49 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                         <ul className="space-y-1.5 text-sm text-muted-foreground">
                             <li><Link href="/account" className="hover:text-link-hover hover:underline">{t('account')}</Link></li>
                             <li><Link href="/account/orders" className="hover:text-link-hover hover:underline">{t('orders')}</Link></li>
-                            <li><Link href="/account/messages" className="hover:text-link-hover hover:underline">{t('messages')}</Link></li>
+                            <li><Link href="/chat" className="hover:text-link-hover hover:underline">{t('messages')}</Link></li>
                             <li><Link href="/account/selling" className="hover:text-link-hover hover:underline">{t('recommendations')}</Link></li>
-                            <li><Link href="#" className="hover:text-link-hover hover:underline">{t('memberships')}</Link></li>
+                            <li><Link href="/account/billing" className="hover:text-link-hover hover:underline">{t('memberships')}</Link></li>
                         </ul>
                     </div>
                 </div>
+                {/* Upgrade CTA for logged in users */}
+                <UpgradeCta user={user} />
             </HoverCardContent>
         </HoverCard>
+    )
+}
+
+// Upgrade CTA component for Account dropdown
+function UpgradeCta({ user }: { user: User | null }) {
+    const locale = useLocale()
+    
+    if (!user) return null
+    
+    return (
+        <div className="p-4 border-t border-border bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
+            <PlansModal
+                source="header"
+                trigger={
+                    <button className="w-full flex items-center justify-between p-2.5 rounded-lg bg-background border border-primary/20 hover:border-primary/40 transition-colors group">
+                        <div className="flex items-center gap-2.5">
+                            <div className="size-8 rounded-md bg-primary/10 flex items-center justify-center">
+                                <Crown weight="fill" className="size-4 text-primary" />
+                            </div>
+                            <div className="text-left">
+                                <p className="text-sm font-medium text-foreground">
+                                    {locale === 'bg' ? 'Надградете плана' : 'Upgrade Plan'}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                    {locale === 'bg' ? 'По-ниски комисиони' : 'Lower commissions'}
+                                </p>
+                            </div>
+                        </div>
+                        <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                    </button>
+                }
+            />
+        </div>
     )
 }
 
@@ -635,7 +671,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
     return (
         <HoverCard openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
-                <Link href="/account/messages">
+                <Link href="/chat">
                     <Button variant="ghost" className="h-12 flex flex-col items-start leading-none gap-0 p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm text-header-text hover:text-brand group">
                         <span className="text-xs text-header-text-muted group-hover:text-brand">{tNav('messages')}</span>
                         <span className="text-sm font-medium mt-0.5 group-hover:text-brand">{tNav('messagesLabel')}</span>
@@ -666,7 +702,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
                         {/* Quick Actions */}
                         <div className="p-3">
                             <div className="space-y-1">
-                                <Link href="/account/messages" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+                                <Link href="/chat" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
                                     <div className="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center">
                                         <ChatCircle size={20} weight="duotone" className="text-brand" />
                                     </div>
@@ -677,7 +713,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
                                     <CaretRight size={16} weight="regular" className="text-muted-foreground" />
                                 </Link>
 
-                                <Link href="/account/messages?filter=sellers" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+                                <Link href="/chat?filter=sellers" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
                                     <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
                                         <PaperPlaneTilt size={20} weight="duotone" className="text-accent-foreground" />
                                     </div>
@@ -688,7 +724,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
                                     <CaretRight size={16} weight="regular" className="text-muted-foreground" />
                                 </Link>
 
-                                <Link href="/account/messages?filter=notifications" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+                                <Link href="/chat?filter=notifications" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
                                     <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
                                         <Bell size={20} weight="duotone" className="text-secondary-foreground" />
                                     </div>
@@ -703,7 +739,7 @@ export function MessagesDropdown({ user }: MessagesDropdownProps) {
 
                         {/* Footer */}
                         <div className="p-3 bg-muted border-t border-border">
-                            <Link href="/account/messages">
+                            <Link href="/chat">
                                 <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
                                     {t('viewAllMessages')}
                                 </Button>

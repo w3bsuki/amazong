@@ -2,11 +2,12 @@
 
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
-import { Lock, ShoppingCart } from "@phosphor-icons/react"
+import { usePathname } from "next/navigation"
+import { Lock, ShoppingCart, CheckCircle } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface CheckoutHeaderProps {
-  currentStep?: 1 | 2 | 3
+  currentStep?: 1 | 2 | 3 | "complete"
 }
 
 /**
@@ -16,8 +17,13 @@ interface CheckoutHeaderProps {
  * - No navigation, search, or other distractions
  * - Secure checkout badge for trust
  */
-export function CheckoutHeader({ currentStep = 1 }: CheckoutHeaderProps) {
+export function CheckoutHeader({ currentStep: propStep }: CheckoutHeaderProps) {
   const t = useTranslations("CheckoutHeader")
+  const pathname = usePathname()
+  
+  // Auto-detect current step from pathname if not provided
+  const currentStep = propStep ?? (pathname?.includes('/success') ? "complete" : 1)
+  const isComplete = currentStep === "complete"
 
   const steps = [
     { id: 1, label: t("shipping") },
@@ -49,60 +55,76 @@ export function CheckoutHeader({ currentStep = 1 }: CheckoutHeaderProps) {
             className="hidden md:flex items-center gap-1" 
             aria-label={t("checkoutProgress")}
           >
-            {steps.map((step, index) => (
-              <div key={step.id} className="flex items-center">
-                {/* Step */}
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors">
-                  <div
-                    className={cn(
-                      "flex items-center justify-center size-6 rounded-full text-xs font-semibold transition-all",
-                      currentStep > step.id && "bg-brand-success text-white",
-                      currentStep === step.id && "bg-brand text-white ring-2 ring-brand/20",
-                      currentStep < step.id && "bg-muted text-muted-foreground"
-                    )}
-                    aria-current={currentStep === step.id ? "step" : undefined}
-                  >
-                    {currentStep > step.id ? "✓" : step.id}
+            {steps.map((step, index) => {
+              const stepNum = typeof currentStep === "number" ? currentStep : 4
+              const isStepComplete = isComplete || stepNum > step.id
+              const isStepActive = !isComplete && stepNum === step.id
+              
+              return (
+                <div key={step.id} className="flex items-center">
+                  {/* Step */}
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors">
+                    <div
+                      className={cn(
+                        "flex items-center justify-center size-6 rounded-full text-xs font-semibold transition-all",
+                        isStepComplete && "bg-brand-success text-white",
+                        isStepActive && "bg-brand text-white ring-2 ring-brand/20",
+                        !isStepComplete && !isStepActive && "bg-muted text-muted-foreground"
+                      )}
+                      aria-current={isStepActive ? "step" : undefined}
+                    >
+                      {isStepComplete ? "✓" : step.id}
+                    </div>
+                    <span
+                      className={cn(
+                        "text-sm font-medium transition-colors",
+                        isStepComplete || isStepActive ? "text-foreground" : "text-muted-foreground"
+                      )}
+                    >
+                      {step.label}
+                    </span>
                   </div>
-                  <span
-                    className={cn(
-                      "text-sm font-medium transition-colors",
-                      currentStep >= step.id ? "text-foreground" : "text-muted-foreground"
-                    )}
-                  >
-                    {step.label}
-                  </span>
-                </div>
 
-                {/* Connector line */}
-                {index < steps.length - 1 && (
-                  <div
-                    className={cn(
-                      "w-6 lg:w-10 h-0.5 transition-colors",
-                      currentStep > step.id ? "bg-brand-success" : "bg-border"
-                    )}
-                    aria-hidden="true"
-                  />
-                )}
-              </div>
-            ))}
+                  {/* Connector line */}
+                  {index < steps.length - 1 && (
+                    <div
+                      className={cn(
+                        "w-6 lg:w-10 h-0.5 transition-colors",
+                        isStepComplete ? "bg-brand-success" : "bg-border"
+                      )}
+                      aria-hidden="true"
+                    />
+                  )}
+                </div>
+              )
+            })}
           </nav>
 
           {/* Mobile Progress - Pill style */}
           <div className="md:hidden flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
             <span className="text-xs font-medium text-muted-foreground">
-              {t("step")} {currentStep}/{steps.length}
+              {isComplete ? (
+                <span className="flex items-center gap-1">
+                  <CheckCircle className="size-3 text-brand-success" weight="fill" />
+                  {t("complete") || "Complete"}
+                </span>
+              ) : (
+                `${t("step")} ${currentStep}/${steps.length}`
+              )}
             </span>
             <div className="flex gap-1">
-              {steps.map((step) => (
-                <div
-                  key={step.id}
-                  className={cn(
-                    "size-1.5 rounded-full transition-colors",
-                    currentStep >= step.id ? "bg-brand" : "bg-border"
-                  )}
-                />
-              ))}
+              {steps.map((step) => {
+                const stepNum = typeof currentStep === "number" ? currentStep : 4
+                return (
+                  <div
+                    key={step.id}
+                    className={cn(
+                      "size-1.5 rounded-full transition-colors",
+                      isComplete || stepNum >= step.id ? "bg-brand-success" : "bg-border"
+                    )}
+                  />
+                )
+              })}
             </div>
           </div>
 

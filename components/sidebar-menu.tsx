@@ -236,54 +236,59 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
             </SheetTrigger>
             <SheetContent 
                 side="left" 
+                hideCloseButton
                 className="w-full max-w-full sm:max-w-[380px] p-0 border-r-0 bg-background text-foreground gap-0"
             >
-                {/* Header - Profile with Language + Close */}
-                <SheetHeader className="bg-header-bg text-header-text px-3 py-2 space-y-0">
-                    <div className="flex items-center gap-2">
-                        {/* Profile area */}
-                        <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                            <Link 
-                                href={isLoggedIn ? "/account" : "/auth/login"}
-                                onClick={() => setOpen(false)}
-                                className="flex items-center gap-2.5 min-w-0 min-h-11 px-1.5 -mx-1.5 rounded-xl hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
-                            >
-                                <div className="size-9 shrink-0 rounded-full bg-muted/80 flex items-center justify-center">
-                                    <UserCircle size={24} weight="fill" className="text-muted-foreground" />
-                                </div>
-                                <div className="min-w-0">
-                                    <SheetTitle className="text-header-text text-base font-semibold truncate text-left">
-                                        {isLoggedIn 
-                                            ? displayName
-                                            : (locale === 'bg' ? 'Влез в акаунта' : 'Sign in')
-                                        }
-                                    </SheetTitle>
-                                    <SheetDescription className="sr-only">
-                                        {locale === 'bg' ? 'Навигационно меню с категории и настройки на акаунта' : 'Navigation menu with categories and account settings'}
-                                    </SheetDescription>
-                                    {isLoggedIn && (
-                                        <p className="text-xs text-header-text-muted flex items-center gap-0.5">
-                                            {locale === 'bg' ? 'Моят акаунт' : 'My account'}
-                                            <CaretRight size={12} weight="bold" />
-                                        </p>
-                                    )}
-                                </div>
-                            </Link>
-                            {/* Language dropdown - right next to profile */}
+                {/* Header - Account area with brand background */}
+                <SheetHeader className="bg-brand text-white px-4 py-3 space-y-0">
+                    <div className="flex items-center justify-between">
+                        {/* Profile info */}
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="size-10 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
+                                <UserCircle size={28} weight="fill" className="text-white" />
+                            </div>
+                            <div className="min-w-0">
+                                <SheetTitle className="text-white text-base font-semibold truncate text-left">
+                                    {isLoggedIn 
+                                        ? displayName
+                                        : (locale === 'bg' ? 'Здравей!' : 'Hello!')
+                                    }
+                                </SheetTitle>
+                                <SheetDescription className="sr-only">
+                                    {locale === 'bg' ? 'Навигационно меню с категории и настройки на акаунта' : 'Navigation menu with categories and account settings'}
+                                </SheetDescription>
+                                {isLoggedIn ? (
+                                    <Link 
+                                        href="/account"
+                                        onClick={() => setOpen(false)}
+                                        className="text-xs text-white/80 hover:text-white flex items-center gap-0.5 transition-colors"
+                                    >
+                                        {locale === 'bg' ? 'Моят акаунт' : 'My account'}
+                                        <CaretRight size={12} weight="bold" />
+                                    </Link>
+                                ) : (
+                                    <p className="text-xs text-white/80">
+                                        {locale === 'bg' ? 'Влез или се регистрирай' : 'Sign in or register'}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                        {/* Language + Close */}
+                        <div className="flex items-center gap-1">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button
-                                        className="flex items-center gap-1 min-h-9 px-1.5 rounded-lg hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent shrink-0"
+                                        className="flex items-center gap-1 min-h-9 px-2 rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors touch-action-manipulation tap-transparent"
                                     >
                                         <img 
                                             src={locale === 'bg' ? 'https://flagcdn.com/w40/bg.png' : 'https://flagcdn.com/w40/gb.png'}
                                             alt={locale === 'bg' ? 'BG' : 'EN'}
-                                            className="w-6 h-7 rounded-sm object-cover shadow-sm"
+                                            className="w-6 h-4 rounded-sm object-cover"
                                         />
-                                        <CaretDown size={10} weight="bold" className="text-header-text-muted" />
+                                        <CaretDown size={10} weight="bold" className="text-white/70" />
                                     </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="start" className="min-w-[140px]">
+                                <DropdownMenuContent align="end" className="min-w-[140px]">
                                     <DropdownMenuItem asChild>
                                         <Link
                                             href="/"
@@ -318,65 +323,64 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-9 text-white hover:bg-white/10 active:bg-white/20 rounded-full touch-action-manipulation tap-transparent"
+                                onClick={() => setOpen(false)}
+                            >
+                                <X size={20} weight="regular" />
+                                <span className="sr-only">{t('close')}</span>
+                            </Button>
                         </div>
-                        {/* Close button */}
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-9 text-header-text hover:bg-header-hover active:bg-header-active rounded-full touch-action-manipulation tap-transparent shrink-0"
-                            onClick={() => setOpen(false)}
-                        >
-                            <X size={20} weight="regular" />
-                            <span className="sr-only">{t('close')}</span>
-                        </Button>
                     </div>
                 </SheetHeader>
 
-                <ScrollArea className="h-[calc(100vh-64px)]">
+                <ScrollArea className="h-[calc(100vh-76px)]">
                     <div className="flex flex-col pb-6">
                         {/* Auth Actions - Only when not logged in */}
                         {!isLoggedIn && (
-                            <div className="px-4 py-3 bg-muted/50 border-b border-border">
+                            <div className="px-4 py-3 bg-muted/30 border-b border-border">
                                 <div className="flex gap-2">
                                     <Link
                                         href="/auth/login"
-                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 active:bg-primary/80 transition-colors"
+                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand text-white rounded-lg text-sm font-semibold hover:bg-brand-dark active:scale-[0.98] transition-all"
                                         onClick={() => setOpen(false)}
                                     >
-                                        <SignInIcon size={18} weight="regular" />
+                                        <SignInIcon size={18} weight="bold" />
                                         {locale === 'bg' ? 'Влез' : 'Sign In'}
                                     </Link>
                                     <Link
                                         href="/auth/sign-up"
-                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-secondary border border-border rounded-lg text-sm font-medium text-secondary-foreground hover:bg-accent active:bg-accent/80 transition-colors"
+                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-background border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted active:scale-[0.98] transition-all"
                                         onClick={() => setOpen(false)}
                                     >
-                                        {locale === 'bg' ? 'Регистрация' : 'Sign Up'}
+                                        {locale === 'bg' ? 'Регистрация' : 'Register'}
                                     </Link>
                                 </div>
                             </div>
                         )}
 
-                        {/* Quick Actions - Unified row for logged in users */}
+                        {/* Quick Actions - Action buttons for users */}
                         <div className="px-3 py-3 border-b border-border">
                             {isLoggedIn ? (
                                 <div className="grid grid-cols-4 gap-2">
                                     <Link
                                         href="/account/orders"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted hover:bg-muted/80 active:bg-accent transition-colors touch-action-manipulation"
+                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl border border-border bg-background hover:bg-muted active:scale-[0.98] transition-all touch-action-manipulation"
                                     >
-                                        <div className="size-9 rounded-full bg-background flex items-center justify-center">
+                                        <div className="size-9 rounded-full bg-muted flex items-center justify-center">
                                             <Clock size={20} weight="regular" className="text-foreground" />
                                         </div>
                                         <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
                                     </Link>
                                     <Link
-                                        href="/account/selling"
+                                        href="/sell"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted hover:bg-muted/80 active:bg-accent transition-colors touch-action-manipulation"
+                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl border border-border bg-background hover:bg-muted active:scale-[0.98] transition-all touch-action-manipulation"
                                     >
-                                        <div className="size-9 rounded-full bg-background flex items-center justify-center">
+                                        <div className="size-9 rounded-full bg-muted flex items-center justify-center">
                                             <Storefront size={20} weight="regular" className="text-foreground" />
                                         </div>
                                         <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Продажби' : 'Selling'}</span>
@@ -384,22 +388,22 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                     <Link
                                         href="/wishlist"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted hover:bg-muted/80 active:bg-accent transition-colors touch-action-manipulation"
+                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl border border-border bg-background hover:bg-muted active:scale-[0.98] transition-all touch-action-manipulation"
                                     >
-                                        <div className="size-9 rounded-full bg-background flex items-center justify-center">
+                                        <div className="size-9 rounded-full bg-muted flex items-center justify-center">
                                             <Heart size={20} weight="regular" className="text-foreground" />
                                         </div>
                                         <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Любими' : 'Saved'}</span>
                                     </Link>
                                     <Link
-                                        href="/account/messages"
+                                        href="/chat"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl bg-muted hover:bg-muted/80 active:bg-accent transition-colors touch-action-manipulation"
+                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl border border-border bg-background hover:bg-muted active:scale-[0.98] transition-all touch-action-manipulation"
                                     >
-                                        <div className="size-9 rounded-full bg-background flex items-center justify-center">
+                                        <div className="size-9 rounded-full bg-muted flex items-center justify-center">
                                             <Chat size={20} weight="regular" className="text-foreground" />
                                         </div>
-                                        <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Чат' : 'Messages'}</span>
+                                        <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Чат' : 'Chat'}</span>
                                     </Link>
                                 </div>
                             ) : (
@@ -482,22 +486,6 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                                 <Tag size={20} weight="fill" />
                                             </span>
                                             <span className="flex-1 font-medium">{locale === 'bg' ? 'Нови обяви' : 'New Listings'}</span>
-                                        </Link>
-                                        <div className="flex items-center justify-center size-11">
-                                            <CaretRight size={16} weight="regular" className="text-muted-foreground/50" />
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center">
-                                        <Link
-                                            href="/sellers"
-                                            onClick={() => setOpen(false)}
-                                            className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
-                                        >
-                                            <span className="text-warning">
-                                                <Trophy size={20} weight="fill" />
-                                            </span>
-                                            <span className="flex-1 font-medium">{locale === 'bg' ? 'Топ продавачи' : 'Top Sellers'}</span>
                                         </Link>
                                         <div className="flex items-center justify-center size-11">
                                             <CaretRight size={16} weight="regular" className="text-muted-foreground/50" />

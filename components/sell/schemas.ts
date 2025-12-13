@@ -1,12 +1,21 @@
 import * as z from "zod";
 
-// Store creation schema
+// Store creation schema - enhanced with account type
 export const storeSchema = z.object({
   storeName: z
     .string()
     .min(3, "Store name must be at least 3 characters")
     .max(50, "Store name cannot exceed 50 characters")
     .regex(/^[a-zA-Z0-9\s\-_]+$/, "Store name can only contain letters, numbers, spaces, hyphens, and underscores"),
+  accountType: z.enum(["personal", "business"]).default("personal"),
+  description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
+  // Business-only fields
+  businessName: z.string().max(100).optional(),
+  vatNumber: z.string().max(20).optional(),
+  websiteUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+  facebookUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+  instagramUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+  tiktokUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
 });
 
 // Product listing schema with enhanced validation

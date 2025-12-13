@@ -74,7 +74,7 @@ export function ContactStoreButton({
       if (error) throw error
 
       // Navigate to messages page with the conversation
-      router.push(`/account/messages?conversation=${conversationId}`)
+      router.push(`/chat?conversation=${conversationId}`)
     } catch (err) {
       console.error("Error starting conversation:", err)
       toast({

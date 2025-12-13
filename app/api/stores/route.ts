@@ -1,4 +1,3 @@
-
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import { createClient as createServerClient } from "@/lib/supabase/server"
@@ -17,13 +16,28 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json()
-        const { storeName, description } = body
+        const { 
+            storeName, 
+            description,
+            accountType = "personal",
+            businessName,
+            vatNumber,
+            websiteUrl,
+            facebookUrl,
+            instagramUrl,
+            tiktokUrl
+        } = body
 
         if (!storeName || typeof storeName !== 'string' || storeName.trim().length < 2) {
             return NextResponse.json({ error: "Store name must be at least 2 characters" }, { status: 400 })
         }
 
         const trimmedName = storeName.trim()
+
+        // Validate account type
+        if (!["personal", "business"].includes(accountType)) {
+            return NextResponse.json({ error: "Invalid account type" }, { status: 400 })
+        }
 
         // 2. Use Service Role to bypass RLS for sellers table
         const supabaseAdmin = createClient(
@@ -71,14 +85,27 @@ export async function POST(request: Request) {
             throw profileError
         }
 
-        // 6. Create new seller record (INSERT, not UPSERT)
+        // 6. Create new seller record with account type and business details
+        const sellerData: Record<string, unknown> = {
+            id: user.id,
+            store_name: trimmedName,
+            description: description || null,
+            account_type: accountType,
+        }
+
+        // Add business-specific fields if business account
+        if (accountType === "business") {
+            if (businessName) sellerData.business_name = businessName
+            if (vatNumber) sellerData.vat_number = vatNumber
+            if (websiteUrl) sellerData.website_url = websiteUrl
+            if (facebookUrl) sellerData.facebook_url = facebookUrl
+            if (instagramUrl) sellerData.instagram_url = instagramUrl
+            if (tiktokUrl) sellerData.tiktok_url = tiktokUrl
+        }
+
         const { data: seller, error: sellerError } = await supabaseAdmin
             .from("sellers")
-            .insert({
-                id: user.id,
-                store_name: trimmedName,
-                description: description || null
-            })
+            .insert(sellerData)
             .select()
             .single()
 

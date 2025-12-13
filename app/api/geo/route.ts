@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getShippingRegion } from '@/lib/shipping'
 
 /**
  * Geo Detection API
@@ -11,17 +12,10 @@ import { NextRequest, NextResponse } from 'next/server'
  * Falls back to Bulgaria (BG) for local development
  */
 
-// Map of country codes to shipping zone codes
-const COUNTRY_TO_ZONE: Record<string, string> = {
-  // Bulgaria - BG zone
-  BG: 'BG',
-  
-  // EU countries - EU zone
-  AT: 'EU', BE: 'EU', HR: 'EU', CY: 'EU', CZ: 'EU', DK: 'EU', 
-  EE: 'EU', FI: 'EU', FR: 'EU', DE: 'EU', GR: 'EU', HU: 'EU', 
-  IE: 'EU', IT: 'EU', LV: 'EU', LT: 'EU', LU: 'EU', MT: 'EU', 
-  NL: 'EU', PL: 'EU', PT: 'EU', RO: 'EU', SK: 'EU', SI: 'EU', 
-  ES: 'EU', SE: 'EU', GB: 'EU', CH: 'EU', NO: 'EU',
+function normalizeCountry(code: string) {
+  const upper = code.toUpperCase()
+  if (upper === 'UK') return 'GB'
+  return upper
 }
 
 export async function GET(request: NextRequest) {
@@ -32,18 +26,20 @@ export async function GET(request: NextRequest) {
     request.headers.get('x-country-code') ||      // Some CDNs
     'BG' // Default to Bulgaria for local dev / unknown
 
+  const normalizedCountry = normalizeCountry(countryCode)
+
   // Get the detected shipping zone
-  const shippingZone = COUNTRY_TO_ZONE[countryCode] || 'WW' // Default to Worldwide
+  const shippingZone = getShippingRegion(normalizedCountry)
 
   // Set cookie with 1 year expiry
   const response = NextResponse.json({
-    country: countryCode,
+    country: normalizedCountry,
     zone: shippingZone,
     detected: true,
   })
 
   // Set cookies for client-side access
-  response.cookies.set('user-country', countryCode, {
+  response.cookies.set('user-country', normalizedCountry, {
     maxAge: 60 * 60 * 24 * 365, // 1 year
     path: '/',
     sameSite: 'lax',

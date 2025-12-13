@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { 
   SignInPrompt, 
-  CreateStoreForm, 
+  CreateStoreWizard, 
   SellHeaderV3,
   SellFormSkeleton,
   SellErrorBoundary,
@@ -96,14 +96,15 @@ export function SellPageClient({
     );
   }
 
-  // No store yet - show create store form
+  // No store yet - show create store wizard with Personal/Business selection
   if (!seller) {
     return (
       <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
         <SellHeaderV3 user={{ email: user.email }} />
-        <div className="flex-1 flex flex-col justify-center">
-          <CreateStoreForm
+        <div className="flex-1 flex flex-col justify-center overflow-y-auto">
+          <CreateStoreWizard
             onStoreCreated={(newSeller) => setSeller(newSeller)}
+            locale={locale}
           />
         </div>
       </div>

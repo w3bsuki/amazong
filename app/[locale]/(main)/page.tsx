@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import { HeroCarousel } from "@/components/hero-carousel"
 import { Link } from "@/i18n/routing"
 import { CategoryCircles } from "@/components/category-circles"
+import { StartSellingBanner } from "@/components/start-selling-banner"
 import type { Metadata } from 'next'
 import { PromoCard } from "@/components/promo-card"
 import { getTranslations } from "next-intl/server"
@@ -342,6 +343,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       {/* Category Circles - First thing after header on mobile */}
       <div className="w-full md:hidden">
         <CategoryCircles locale={locale} />
+        {/* Start Selling CTA - Promote seller signup for new marketplace */}
+        <StartSellingBanner locale={locale} />
       </div>
       
       {/* Desktop: Full hero carousel */}
@@ -357,8 +360,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <CategoryCircles locale={locale} />
         </div>
 
-        {/* 2. Trending/Popular Products - Async with Suspense (first product section) */}
-        <div className="md:mt-6 md:mx-0">
+        {/* 2. Trending/Popular Products - Desktop only (mobile uses tabbed infinite feed) */}
+        <div className="hidden md:block md:mt-6 md:mx-0">
           <Suspense fallback={<TrendingSectionSkeleton />}>
             <TrendingSection />
           </Suspense>

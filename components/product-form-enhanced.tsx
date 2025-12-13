@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { Package, Globe, MapPin, Storefront, Truck, Clock, Plus, X, CaretDown, Tag, Info } from "@phosphor-icons/react"
+import { Package, Globe, MapPin, Storefront, Truck, Clock, Plus, X, Tag, Info } from "@phosphor-icons/react"
 import { getDeliveryLabel, type ShippingRegion } from "@/lib/shipping"
 import { cn } from "@/lib/utils"
 
