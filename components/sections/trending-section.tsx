@@ -6,6 +6,7 @@ import { cookies } from 'next/headers'
 /**
  * Async server component that fetches trending products data.
  * Filters by user's selected shipping zone (from header dropdown).
+ * v2 - Fixed to use getNewestProducts instead of getFeaturedProducts
  */
 export async function TrendingSection() {
   const locale = await getLocale()
