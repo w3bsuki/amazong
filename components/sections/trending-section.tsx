@@ -1,4 +1,4 @@
-import { getPromoProducts, getBestSellers, getFeaturedProducts, toUI, type Product, type ShippingZone } from '@/lib/data/products'
+import { getPromoProducts, getBestSellers, getNewestProducts, toUI, type Product, type ShippingZone } from '@/lib/data/products'
 import { TrendingProductsSection } from '@/components/trending-products-section'
 import { getLocale } from 'next-intl/server'
 import { cookies } from 'next/headers'
@@ -15,14 +15,14 @@ export async function TrendingSection() {
   const userZone = (cookieStore.get('user-zone')?.value || 'WW') as ShippingZone
   
   // Fetch extra to have enough after other UI slicing
-  const [featuredProducts, promoProducts, bestSellersProducts] = await Promise.all([
-    getFeaturedProducts(36, userZone),
+  const [newestProducts, promoProducts, bestSellersProducts] = await Promise.all([
+    getNewestProducts(36, userZone),
     getPromoProducts(36, userZone),
     getBestSellers(36, userZone),
   ])
 
   // DB already applied zone filtering; just slice for layout
-  const zonedFeatured = featuredProducts.slice(0, 12)
+  const zonedNewest = newestProducts.slice(0, 12)
   const zonedPromo = promoProducts.slice(0, 12)
   const zonedBestSellers = bestSellersProducts.slice(0, 12)
   
@@ -36,11 +36,11 @@ export async function TrendingSection() {
   return (
     <TrendingProductsSection
       title={locale === "bg" ? "Промотирани" : "Promoted"}
-      newestProducts={transformForUI(zonedFeatured)}
+      newestProducts={transformForUI(zonedNewest)}
       promoProducts={transformForUI(zonedPromo)}
       bestSellersProducts={transformForUI(zonedBestSellers)}
       ctaText={locale === "bg" ? "Виж всички" : "Shop all"}
-      ctaHref="/search?featured=true"
+      ctaHref="/search?sort=newest"
       bannerTone="trust"
     />
   )
