@@ -24,17 +24,16 @@ interface RecentProduct {
 interface RecentOrder {
   id: string
   quantity: number
-  price_at_time: number
-  created_at: string
+  price_at_purchase: number
   order_id: string
   product: {
     id: string
     title: string
     images: string[] | null
-  }[] | {
+  } | null
+  order: {
     id: string
-    title: string
-    images: string[] | null
+    created_at: string
   } | null
 }
 
@@ -155,11 +154,11 @@ export function BusinessRecentActivity({ products, orders }: BusinessRecentActiv
                           {product?.title || 'Unknown Product'}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Qty: {order.quantity} • {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
+                          Qty: {order.quantity} • {order.order?.created_at ? formatDistanceToNow(new Date(order.order.created_at), { addSuffix: true }) : ''}
                         </p>
                       </div>
                       <div className="text-sm font-medium tabular-nums">
-                        {formatCurrency(order.price_at_time * order.quantity)}
+                        {formatCurrency(order.price_at_purchase * order.quantity)}
                       </div>
                     </div>
                   )

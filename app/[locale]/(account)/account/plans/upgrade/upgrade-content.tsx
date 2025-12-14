@@ -8,6 +8,9 @@ import { Check, Crown, Buildings, User, SpinnerGap } from "@phosphor-icons/react
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+
 interface SubscriptionPlan {
   id: string
   tier: string
@@ -15,16 +18,24 @@ interface SubscriptionPlan {
   price_monthly: number
   price_yearly: number
   commission_rate: number
-  features: string[]
-  stripe_monthly_price_id: string | null
-  stripe_yearly_price_id: string | null
+  features: Json // Database returns Json type
+  stripe_monthly_price_id?: string | null
+  stripe_yearly_price_id?: string | null
   is_active: boolean
+  // Optional fields from database
+  account_type?: string | null
+  analytics_access?: string | null
+  badge_type?: string | null
+  boosts_included?: number | null
+  created_at?: string | null
+  currency?: string | null
+  [key: string]: unknown
 }
 
 interface Seller {
   id: string
-  tier: string
-  commission_rate: number
+  tier: string | null
+  commission_rate: number | null
   [key: string]: unknown
 }
 

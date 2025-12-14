@@ -20,12 +20,11 @@ import {
   IconMapPin,
   IconClock,
   IconChevronDown,
-  IconDots,
   IconCopy,
 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import {
   DropdownMenu,
@@ -36,7 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 
-// Type definitions
+// Type definitions - aligned with actual database schema
 interface OrderProduct {
   id: string
   title: string
@@ -48,14 +47,16 @@ interface OrderProduct {
 interface OrderItem {
   id: string
   quantity: number
-  price_at_time: number
-  created_at: string
+  price_at_time: number // Maps to price_at_purchase in DB
+  status?: string | null
+  tracking_number?: string | null
+  shipping_carrier?: string | null
   product: OrderProduct | OrderProduct[] | null
 }
 
 interface OrderCustomer {
   id: string
-  email: string
+  email: string | null
   full_name: string | null
   phone: string | null
 }
@@ -64,12 +65,8 @@ interface Order {
   id: string
   status: string | null
   created_at: string
-  updated_at: string | null
+  total_amount?: number
   shipping_address: Record<string, unknown> | null
-  billing_address: Record<string, unknown> | null
-  shipping_method: string | null
-  shipping_cost: number | null
-  notes: string | null
   user: OrderCustomer | OrderCustomer[] | null
 }
 
@@ -142,8 +139,8 @@ export function OrderDetailView({
   const statusConfig = STATUS_CONFIG[status] || STATUS_CONFIG.pending
   const StatusIcon = statusConfig.icon
   
-  const shippingCost = order.shipping_cost || 0
-  const total = subtotal + shippingCost
+  const shippingCost = 0 // Shipping cost not stored in orders table yet
+  const total = order.total_amount || (subtotal + shippingCost)
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('bg-BG', {
@@ -373,7 +370,7 @@ export function OrderDetailView({
                   <div className="pb-4">
                     <p className="font-medium text-sm">{statusConfig.label}</p>
                     <p className="text-xs text-muted-foreground">
-                      {format(new Date(order.updated_at || order.created_at), "MMM d, yyyy 'at' h:mm a")}
+                      {format(new Date(order.created_at), "MMM d, yyyy 'at' h:mm a")}
                     </p>
                   </div>
                 </div>
@@ -451,26 +448,8 @@ export function OrderDetailView({
               ) : (
                 <p className="text-sm text-muted-foreground">No shipping address provided</p>
               )}
-              {order.shipping_method && (
-                <div className="flex items-center gap-2 text-sm mt-3 pt-3 border-t">
-                  <IconTruck className="size-4 text-muted-foreground" />
-                  <span>{order.shipping_method}</span>
-                </div>
-              )}
             </CardContent>
           </Card>
-
-          {/* Notes Card */}
-          {order.notes && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Notes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{order.notes}</p>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </div>

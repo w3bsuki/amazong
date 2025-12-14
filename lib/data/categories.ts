@@ -20,19 +20,66 @@ export interface CategoryWithParent extends Category {
   parent: Category | null
 }
 
+export type AttributeType = 'select' | 'multiselect' | 'boolean' | 'number' | 'text'
+
 export interface CategoryAttribute {
   id: string
-  category_id: string
+  category_id: string | null
   name: string
   name_bg: string | null
-  attribute_type: 'select' | 'multiselect' | 'boolean' | 'number' | 'text'
+  attribute_type: AttributeType
   options: string[] | null
   options_bg: string[] | null
-  min_value: number | null
-  max_value: number | null
-  is_filterable: boolean
-  is_required: boolean
+  placeholder?: string | null
+  placeholder_bg?: string | null
+  min_value?: number | null
+  max_value?: number | null
+  is_filterable: boolean | null
+  is_required: boolean | null
   sort_order: number | null
+  validation_rules?: unknown | null
+}
+
+// Valid attribute types
+const VALID_ATTRIBUTE_TYPES: AttributeType[] = ['select', 'multiselect', 'boolean', 'number', 'text']
+
+// Helper to transform DB row to CategoryAttribute
+function toCategoryAttribute(row: {
+  id: string
+  category_id: string | null
+  name: string
+  name_bg: string | null
+  attribute_type: string
+  options: unknown | null
+  options_bg: unknown | null
+  placeholder?: string | null
+  placeholder_bg?: string | null
+  is_filterable: boolean | null
+  is_required: boolean | null
+  sort_order: number | null
+  validation_rules?: unknown | null
+  created_at?: string | null
+}): CategoryAttribute {
+  // Validate and cast attribute_type - default to 'text' if invalid
+  const attrType = VALID_ATTRIBUTE_TYPES.includes(row.attribute_type as AttributeType)
+    ? row.attribute_type as AttributeType
+    : 'text'
+    
+  return {
+    id: row.id,
+    category_id: row.category_id,
+    name: row.name,
+    name_bg: row.name_bg,
+    attribute_type: attrType,
+    options: Array.isArray(row.options) ? row.options as string[] : null,
+    options_bg: Array.isArray(row.options_bg) ? row.options_bg as string[] : null,
+    placeholder: row.placeholder,
+    placeholder_bg: row.placeholder_bg,
+    is_filterable: row.is_filterable,
+    is_required: row.is_required,
+    sort_order: row.sort_order,
+    validation_rules: row.validation_rules,
+  }
 }
 
 interface CategoryHierarchyRow {
@@ -147,7 +194,7 @@ export async function getCategoryHierarchy(
   }
   
   const { data, error } = await supabase.rpc('get_category_hierarchy', {
-    p_slug: slug || null,
+    p_slug: slug ?? undefined,
     p_depth: depth
   })
   
@@ -231,7 +278,7 @@ export async function getCategoryAttributes(categoryId: string): Promise<Categor
     return []
   }
   
-  return (data || []) as CategoryAttribute[]
+  return (data || []).map(toCategoryAttribute)
 }
 
 /**
@@ -407,7 +454,7 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     parent: (Array.isArray(current.parent) ? current.parent[0] : current.parent) as Category | null,
     siblings: (siblingsResult.data || []) as Category[],
     children: (childrenResult.data || []) as Category[],
-    attributes: attributes as CategoryAttribute[]
+    attributes: attributes.map(toCategoryAttribute)
   }
 }
 

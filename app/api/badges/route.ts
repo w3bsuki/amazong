@@ -19,8 +19,7 @@ export async function GET() {
       .from("user_badges")
       .select(`
         id,
-        earned_at,
-        is_featured,
+        awarded_at,
         badge_definitions (
           id,
           code,
@@ -30,12 +29,12 @@ export async function GET() {
           color,
           category,
           tier,
-          criteria,
-          sort_order
+          criteria
         )
       `)
       .eq("user_id", user.id)
-      .order("earned_at", { ascending: false })
+      .is("revoked_at", null)
+      .order("awarded_at", { ascending: false })
     
     if (error) {
       console.error("Failed to fetch badges:", error)
@@ -44,10 +43,9 @@ export async function GET() {
     
     // Transform the data
     const transformedBadges = (badges || []).map(b => ({
-      id: b.id,
-      earned_at: b.earned_at,
-      is_featured: b.is_featured,
       ...b.badge_definitions,
+      user_badge_id: b.id,
+      awarded_at: b.awarded_at,
     }))
     
     return NextResponse.json({

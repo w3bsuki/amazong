@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
@@ -6,6 +6,7 @@ import { getStoreInfo, getStoreProducts, getSellerFeedback, getStoreBadgeData } 
 import { StorePageClient } from "@/components/store/store-page-client"
 import { calculateSellerTrustScore } from "@/lib/badges"
 import type { DisplayBadge, TrustScoreBreakdown } from "@/lib/types/badges"
+import { createClient } from "@/lib/supabase/server"
 
 interface StorePageProps {
   params: Promise<{
@@ -58,6 +59,20 @@ export default async function StorePage({ params }: StorePageProps) {
   
   if (!store) {
     notFound()
+  }
+  
+  // Check if the seller has a username - if so, redirect to /u/[username]
+  const supabase = await createClient()
+  if (supabase) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", store.id)
+      .single()
+    
+    if (profile?.username) {
+      redirect(`/${locale}/u/${profile.username}`)
+    }
   }
   
   // Fetch initial products, reviews, and badge data in parallel

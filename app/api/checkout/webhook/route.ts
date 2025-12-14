@@ -48,17 +48,32 @@ export async function POST(req: Request) {
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
 
       // Create order in database
+      const shippingAddr = session.customer_details?.address ? {
+        name: session.customer_details.name || null,
+        email: session.customer_details.email || null,
+        address: {
+          city: session.customer_details.address.city || null,
+          country: session.customer_details.address.country || null,
+          line1: session.customer_details.address.line1 || null,
+          line2: session.customer_details.address.line2 || null,
+          postal_code: session.customer_details.address.postal_code || null,
+          state: session.customer_details.address.state || null,
+        },
+      } : null
+
+      const userId = session.client_reference_id || session.metadata?.user_id
+      if (!userId) {
+        console.error('No user_id found in session');
+        return NextResponse.json({ error: 'No user_id' }, { status: 400 });
+      }
+
       const { data: order, error: orderError } = await supabase
         .from('orders')
         .insert({
-          user_id: session.client_reference_id || session.metadata?.user_id,
+          user_id: userId,
           total_amount: (session.amount_total || 0) / 100,
           status: 'paid',
-          shipping_address: session.customer_details?.address ? {
-            name: session.customer_details.name,
-            email: session.customer_details.email,
-            address: session.customer_details.address,
-          } : null,
+          shipping_address: shippingAddr as import("@/lib/supabase/database.types").Json,
           // Store Stripe payment intent for reference
           stripe_payment_intent_id: session.payment_intent as string,
         })
@@ -104,16 +119,16 @@ export async function POST(req: Request) {
             products?.map(p => [p.id, p.seller_id]) || []
           );
 
-          const orderItems = itemsData.map((item) => ({
-            order_id: order.id,
-            product_id: item.id,
-            seller_id: productSellerMap.get(item.id),
-            quantity: item.qty || 1,
-            price_at_purchase: item.price,
-          }));
-
-          // Filter out items without valid product_id or seller_id
-          const validItems = orderItems.filter(item => item.product_id && item.seller_id);
+          // Build valid order items with required seller_id
+          const validItems = itemsData
+            .filter(item => item.id && productSellerMap.get(item.id))
+            .map((item) => ({
+              order_id: order.id,
+              product_id: item.id,
+              seller_id: productSellerMap.get(item.id)!,
+              quantity: item.qty || 1,
+              price_at_purchase: item.price,
+            }));
 
           if (validItems.length > 0) {
             const { error: itemsError } = await supabase

@@ -103,8 +103,9 @@ export async function POST(request: NextRequest) {
       compression: ((1 - webpBuffer.length / file.size) * 100).toFixed(1) + '%'
     })
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Image upload error:', error)
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 })
+    const message = error instanceof Error ? error.message : 'Internal server error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

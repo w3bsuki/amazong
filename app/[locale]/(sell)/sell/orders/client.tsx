@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { OrderStatusBadge } from "@/components/order-status-badge"
 import { OrderStatusActions } from "@/components/order-status-actions"
+import { SellerRateBuyerActions } from "@/components/seller-rate-buyer-actions"
 import { getSellerOrders, getSellerOrderStats, getOrderConversation, type OrderItem } from "@/app/actions/orders"
 import { type OrderItemStatus } from "@/lib/order-status"
 import { cn } from "@/lib/utils"
@@ -266,6 +267,13 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                               sellerId={item.seller_id}
                               isSeller={true}
                               conversationId={conversationId}
+                              locale={locale}
+                            />
+                            
+                            {/* Rate Buyer - only shown for delivered orders */}
+                            <SellerRateBuyerActions
+                              orderItemId={item.id}
+                              currentStatus={item.status}
                               locale={locale}
                             />
                             

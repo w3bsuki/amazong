@@ -2,6 +2,11 @@ import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import { createClient as createServerClient } from "@/lib/supabase/server"
 
+/**
+ * @deprecated This route is deprecated. Users now get a username at signup.
+ * This route now updates the user's profile with seller-related fields.
+ * The sellers table has been merged into the profiles table.
+ */
 export async function POST(request: Request) {
     try {
         // 1. Verify the user is authenticated
@@ -29,7 +34,7 @@ export async function POST(request: Request) {
         } = body
 
         if (!storeName || typeof storeName !== 'string' || storeName.trim().length < 2) {
-            return NextResponse.json({ error: "Store name must be at least 2 characters" }, { status: 400 })
+            return NextResponse.json({ error: "Display name must be at least 2 characters" }, { status: 400 })
         }
 
         const trimmedName = storeName.trim()
@@ -39,94 +44,67 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Invalid account type" }, { status: 400 })
         }
 
-        // 2. Use Service Role to bypass RLS for sellers table
+        // 2. Use Service Role to bypass RLS
         const supabaseAdmin = createClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         )
 
-        // 3. Check if user already has a store
-        const { data: existingSeller } = await supabaseAdmin
-            .from("sellers")
-            .select("id, store_name")
+        // 3. Get existing profile
+        const { data: existingProfile } = await supabaseAdmin
+            .from("profiles")
+            .select("id, display_name, username, account_type")
             .eq("id", user.id)
             .single()
 
-        if (existingSeller) {
-            return NextResponse.json({ 
-                error: `You already have a store: "${existingSeller.store_name}"` 
-            }, { status: 400 })
+        if (!existingProfile) {
+            return NextResponse.json({ error: "Profile not found" }, { status: 404 })
         }
 
-        // 4. Check if store name is already taken
-        const { data: nameExists } = await supabaseAdmin
-            .from("sellers")
-            .select("id")
-            .ilike("store_name", trimmedName)
-            .single()
-
-        if (nameExists) {
-            return NextResponse.json({ 
-                error: `Store name "${trimmedName}" is already taken` 
-            }, { status: 400 })
-        }
-
-        // 5. Ensure profile exists and has seller role
-        const { error: profileError } = await supabaseAdmin
-            .from("profiles")
-            .upsert({
-                id: user.id,
-                email: user.email,
-                role: 'seller'
-            })
-
-        if (profileError) {
-            console.error("Profile Error:", profileError)
-            throw profileError
-        }
-
-        // 6. Create new seller record with account type and business details
-        // All new sellers start on 'free' tier with default fees
-        const sellerData: Record<string, unknown> = {
-            id: user.id,
-            store_name: trimmedName,
-            description: description || null,
+        // 4. Build profile update data
+        // Seller fields are now on profiles table
+        const profileData: Record<string, unknown> = {
+            display_name: trimmedName,
+            bio: description || null,
             account_type: accountType,
-            tier: 'free',
+            tier: existingProfile.account_type === accountType ? undefined : 'free', // Only reset tier if changing account type
             commission_rate: accountType === 'business' ? 10.00 : 12.00, // Business gets better rate
             final_value_fee: accountType === 'business' ? 10.00 : 12.00,
             insertion_fee: 0,
             per_order_fee: 0,
+            role: 'seller'
         }
 
         // Add business-specific fields if business account
         if (accountType === "business") {
-            if (businessName) sellerData.business_name = businessName
-            if (vatNumber) sellerData.vat_number = vatNumber
-            if (websiteUrl) sellerData.website_url = websiteUrl
-            if (facebookUrl) sellerData.facebook_url = facebookUrl
-            if (instagramUrl) sellerData.instagram_url = instagramUrl
-            if (tiktokUrl) sellerData.tiktok_url = tiktokUrl
+            if (businessName) profileData.business_name = businessName
+            if (vatNumber) profileData.vat_number = vatNumber
+            if (websiteUrl) profileData.website_url = websiteUrl
+            if (facebookUrl) profileData.facebook_url = facebookUrl
+            if (instagramUrl) profileData.instagram_url = instagramUrl
+            if (tiktokUrl) profileData.tiktok_url = tiktokUrl
         }
 
-        const { data: seller, error: sellerError } = await supabaseAdmin
-            .from("sellers")
-            .insert(sellerData)
+        // Remove undefined values
+        Object.keys(profileData).forEach(key => {
+            if (profileData[key] === undefined) {
+                delete profileData[key]
+            }
+        })
+
+        const { data: profile, error: profileError } = await supabaseAdmin
+            .from("profiles")
+            .update(profileData)
+            .eq("id", user.id)
             .select()
             .single()
 
-        if (sellerError) {
-            console.error("Seller Error:", sellerError)
-            // Handle unique constraint violation
-            if (sellerError.code === '23505') {
-                return NextResponse.json({ 
-                    error: "Store name is already taken" 
-                }, { status: 400 })
-            }
-            throw sellerError
+        if (profileError) {
+            console.error("Profile Update Error:", profileError)
+            throw profileError
         }
 
-        return NextResponse.json(seller)
+        return NextResponse.json(profile)
     } catch (error: unknown) {
         console.error("Store Creation Error:", error)
         const message = error instanceof Error ? error.message : "Internal Server Error"

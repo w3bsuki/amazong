@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -62,20 +63,24 @@ export default function SellerDashboard() {
           return;
         }
 
-        // Fetch seller info
-        const { data: sellerData, error: sellerError } = await supabase
-          .from("sellers")
+        // Fetch profile info
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
           .select("*")
           .eq("id", session.user.id)
           .single();
 
-        if (sellerError || !sellerData) {
-          setError("You don't have a seller account yet");
+        if (profileError || !profileData || !profileData.username) {
+          setError("You need to set up a username to access the seller dashboard");
           setLoading(false);
           return;
         }
 
-        setSeller(sellerData);
+        // Map profile to seller format for compatibility
+        setSeller({
+          ...profileData,
+          store_name: profileData.display_name || profileData.business_name || profileData.username,
+        });
 
         // Fetch products
         const { data: productsData, error: productsError } = await supabase
@@ -104,8 +109,7 @@ export default function SellerDashboard() {
     };
 
     // Listen for auth state
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       if (session?.user) {
         fetchData();
       } else {

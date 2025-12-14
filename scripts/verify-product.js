@@ -25,7 +25,7 @@ try {
 }
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const _supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY; // Available for non-admin operations
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
@@ -51,14 +51,16 @@ async function verifyProduct() {
         console.log('Products found:', data);
     }
 
-    console.log('Checking seller...');
+    // Check for seller in profiles table (sellers table was migrated to profiles)
+    console.log('Checking seller (from profiles)...');
     const { data: seller, error: sellerError } = await supabase
-        .from('sellers')
+        .from('profiles')
         .select('*')
-        .ilike('store_name', '%Seller 6777%');
+        .eq('is_seller', true)
+        .limit(1);
 
     if (sellerError) {
-        console.error('Error fetching seller:', sellerError);
+        console.error('Error fetching seller from profiles:', sellerError);
     } else {
         console.log('Seller found:', seller);
     }
@@ -72,7 +74,7 @@ async function verifyProduct() {
         console.error('Error fetching categories:', catError);
     } else {
         console.log('Categories count:', categories.length);
-        if (categories.length > 0) {
+        if (categories.length > 0 && seller && seller.length > 0) {
             console.log('First category:', categories[0]);
 
             // Try inserting a product
@@ -86,7 +88,6 @@ async function verifyProduct() {
                     price: 99.99,
                     category_id: categories[0].id,
                     images: ['https://placehold.co/600x400']
-                    // subcategory removed
                 })
                 .select();
 

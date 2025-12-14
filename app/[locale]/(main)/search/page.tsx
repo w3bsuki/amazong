@@ -71,7 +71,7 @@ interface Product {
 
 // Helper function to search products with ILIKE fallback and pagination
 async function searchProducts(
-  supabase: any, 
+  supabase: Awaited<ReturnType<typeof createClient>>, 
   query: string, 
   categoryIds: string[] | null,
   filters: {
@@ -162,7 +162,25 @@ async function searchProducts(
   dbQuery = dbQuery.range(offset, offset + limit - 1)
   
   const { data } = await dbQuery
-  return { products: data || [], total: total || 0 }
+  
+  // Transform DB data to Product interface (handle nullable fields)
+  const products: Product[] = (data || []).map(p => ({
+    id: p.id,
+    title: p.title,
+    price: p.price,
+    list_price: p.list_price,
+    images: p.images || [],
+    rating: p.rating,
+    review_count: p.review_count,
+    category_id: p.category_id,
+    image_url: p.images?.[0] || null,
+    tags: Array.isArray(p.tags) ? p.tags.filter((t): t is string => typeof t === 'string') : [],
+    slug: p.slug,
+    categories: p.categories && !Array.isArray(p.categories) ? p.categories : null,
+    attributes: p.attributes as Record<string, string> | null,
+  }))
+  
+  return { products, total: total || 0 }
 }
 
 export default async function SearchPage({

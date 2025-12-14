@@ -30,21 +30,21 @@ import {
 async function getAccountingData(sellerId: string) {
   const supabase = await createClient()
   
-  // Get seller's commission rate and financial info
+  // Get profile's commission rate and financial info
   const { data: seller } = await supabase
-    .from('sellers')
-    .select('commission_rate, tier, total_sales')
+    .from('profiles')
+    .select('commission_rate, tier')
     .eq('id', sellerId)
     .single()
   
-  // Get completed orders with revenue
+  // Get completed orders with revenue (order_items doesn't have created_at, join orders)
   const { data: completedOrders } = await supabase
     .from('order_items')
-    .select('quantity, price_at_time, created_at')
+    .select('quantity, price_at_purchase, order:orders(created_at)')
     .eq('seller_id', sellerId)
-  
+
   const totalSales = completedOrders?.reduce((sum, item) => 
-    sum + (Number(item.price_at_time) * item.quantity), 0) || 0
+    sum + (Number(item.price_at_purchase) * item.quantity), 0) || 0
   
   const commissionRate = seller?.commission_rate || 10
   const totalCommission = totalSales * (commissionRate / 100)

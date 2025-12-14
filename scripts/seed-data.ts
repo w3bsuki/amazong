@@ -94,14 +94,15 @@ async function seed() {
         })
     }
 
-    // Create Seller record
-    console.log('Creating seller record...')
-    await supabase.from('sellers').upsert({
-        id: finalSellerId,
-        store_name: 'Tech Haven',
-        description: 'Your one-stop shop for the latest gadgets and electronics.',
-        verified: true
-    }, { onConflict: 'id' })
+    // Update profile with seller info (sellers table has been merged into profiles)
+    console.log('Updating profile with seller info...')
+    await supabase.from('profiles').update({
+        display_name: 'Tech Haven',
+        bio: 'Your one-stop shop for the latest gadgets and electronics.',
+        is_verified_business: true,
+        is_seller: true,
+        username: 'tech-haven'
+    }).eq('id', finalSellerId)
 
     // 3. Products
     console.log('Seeding products...')

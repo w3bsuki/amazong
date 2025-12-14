@@ -26,9 +26,9 @@ export default async function InterceptedUpgradePage() {
     redirect("/auth/login")
   }
 
-  // Fetch seller info
-  const { data: seller } = await supabase
-    .from('sellers')
+  // Fetch profile info (seller fields are now on profiles)
+  const { data: profile } = await supabase
+    .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
@@ -40,7 +40,14 @@ export default async function InterceptedUpgradePage() {
     .eq('is_active', true)
     .order('price_monthly', { ascending: true })
 
-  const currentTier = seller?.tier || 'basic'
+  const currentTier = profile?.tier || 'basic'
+
+  // Transform plans to ensure proper types (database can return null for some fields)
+  const transformedPlans = (plans || []).map(plan => ({
+    ...plan,
+    is_active: plan.is_active ?? true,
+    features: plan.features ?? [],
+  }))
 
   return (
     <Modal 
@@ -52,9 +59,9 @@ export default async function InterceptedUpgradePage() {
     >
       <UpgradeContent 
         locale={locale}
-        plans={plans || []}
+        plans={transformedPlans}
         currentTier={currentTier}
-        seller={seller}
+        seller={profile}
       />
     </Modal>
   )

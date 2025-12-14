@@ -41,13 +41,13 @@ export async function getProfile(): Promise<{
   success: boolean
   data?: {
     id: string
-    email: string
+    email: string | null
     full_name: string | null
     avatar_url: string | null
     phone: string | null
     shipping_region: string | null
     country_code: string | null
-    role: string
+    role: string | null
     created_at: string
   }
   error?: string

@@ -65,14 +65,17 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         console.error("Error fetching wishlist:", error)
         setItems([])
       } else if (data) {
-        setItems(data.map((item: any) => ({
-          id: item.id,
-          product_id: item.product_id,
-          title: item.products?.title || "Unknown Product",
-          price: item.products?.price || 0,
-          image: item.products?.images?.[0] || "/placeholder.svg",
-          created_at: item.created_at,
-        })))
+        setItems(data.map((item: { id: string; product_id: string; created_at: string; products: { title: string; price: number; images: string[] | null } | null }) => {
+          const prod = item.products
+          return {
+            id: item.id,
+            product_id: item.product_id,
+            title: prod?.title || "Unknown Product",
+            price: prod?.price || 0,
+            image: prod?.images?.[0] || "/placeholder.svg",
+            created_at: item.created_at,
+          }
+        }))
       }
     } catch (error) {
       console.error("Error in refreshWishlist:", error)

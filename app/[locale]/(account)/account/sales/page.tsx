@@ -70,16 +70,22 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
     redirect("/auth/login")
   }
 
-  // Check if user has a seller account
-  const { data: seller } = await supabase
-    .from("sellers")
+  // Check if user has a seller profile (has username)
+  const { data: profile } = await supabase
+    .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single()
 
-  // If no seller account, redirect to sell page to create one
-  if (!seller) {
+  // If no username, redirect to sell page to set one up
+  if (!profile || !profile.username) {
     redirect(`/${locale}/sell`)
+  }
+  
+  // Map profile to seller format for compatibility
+  const seller = {
+    ...profile,
+    store_name: profile.display_name || profile.business_name || profile.username,
   }
 
   // Calculate date range
@@ -106,60 +112,78 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   // Fetch sales (order_items where seller_id matches)
   const { data: salesData } = await supabase
     .from("order_items")
-    .select(`
-      id,
-      order_id,
-      product_id,
-      quantity,
-      price_at_purchase,
-      orders!inner (
-        id,
-        status,
-        created_at,
-        shipping_address,
-        user_id,
-        profiles:user_id (
-          email,
-          full_name
-        )
-      ),
-      products (
-        id,
-        title,
-        images,
-        price
-      )
-    `)
+    .select("id, order_id, product_id, quantity, price_at_purchase, status")
     .eq("seller_id", user.id)
-    .gte("orders.created_at", startDate.toISOString())
-    .order("orders(created_at)", { ascending: false })
 
-  // Transform the data to match our interface
-  const sales: SaleItem[] = (salesData || []).map((item: any) => ({
-    id: item.id,
-    order_id: item.order_id,
-    product_id: item.product_id,
-    quantity: item.quantity,
-    price_at_purchase: item.price_at_purchase,
-    created_at: item.orders?.created_at || '',
-    status: item.orders?.status || 'pending',
-    product: item.products ? {
-      id: item.products.id,
-      title: item.products.title,
-      images: item.products.images,
-      price: item.products.price,
-    } : null,
-    order: item.orders ? {
-      id: item.orders.id,
-      status: item.orders.status,
-      created_at: item.orders.created_at,
-      shipping_address: item.orders.shipping_address,
-      buyer: item.orders.profiles ? {
-        email: item.orders.profiles.email,
-        full_name: item.orders.profiles.full_name,
-      } : null,
-    } : null,
-  }))
+  // Get unique order IDs and product IDs
+  const orderIds = [...new Set((salesData || []).map(s => s.order_id))]
+  const productIds = [...new Set((salesData || []).map(s => s.product_id))]
+  
+  // Fetch orders with date filter
+  const { data: ordersData } = orderIds.length > 0 
+    ? await supabase
+        .from("orders")
+        .select("id, status, created_at, shipping_address, user_id")
+        .in("id", orderIds)
+        .gte("created_at", startDate.toISOString())
+        .order("created_at", { ascending: false })
+    : { data: [] }
+  
+  // Get buyer profiles for the orders
+  const buyerIds = [...new Set((ordersData || []).map(o => o.user_id))]
+  const { data: buyersData } = buyerIds.length > 0
+    ? await supabase
+        .from("profiles")
+        .select("id, email, full_name")
+        .in("id", buyerIds)
+    : { data: [] }
+  
+  // Fetch products
+  const { data: productsData } = productIds.length > 0
+    ? await supabase
+        .from("products")
+        .select("id, title, images, price")
+        .in("id", productIds)
+    : { data: [] }
+  
+  // Create lookup maps
+  const ordersMap = new Map((ordersData || []).map(o => [o.id, o]))
+  const buyersMap = new Map((buyersData || []).map(b => [b.id, b]))
+  const productsMap = new Map((productsData || []).map(p => [p.id, p]))
+
+  // Transform the data to match our interface - filter only items with orders in date range
+  const sales: SaleItem[] = (salesData || [])
+    .filter(item => ordersMap.has(item.order_id))
+    .map((item) => {
+      const order = ordersMap.get(item.order_id)
+      const product = productsMap.get(item.product_id)
+      const buyer = order ? buyersMap.get(order.user_id) : null
+      return {
+        id: item.id,
+        order_id: item.order_id,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price_at_purchase: item.price_at_purchase,
+        created_at: order?.created_at || '',
+        status: typeof order?.status === 'string' ? order.status : 'pending',
+        product: product ? {
+          id: product.id,
+          title: product.title,
+          images: product.images || [],
+          price: product.price,
+        } : null,
+        order: order ? {
+          id: order.id,
+          status: typeof order.status === 'string' ? order.status : 'pending',
+          created_at: order.created_at,
+          shipping_address: order.shipping_address as { city?: string; country?: string } | null,
+          buyer: buyer ? {
+            email: buyer.email || '',
+            full_name: buyer.full_name,
+          } : null,
+        } : null,
+      }
+    })
 
   // Calculate stats
   const totalRevenue = sales.reduce((sum, sale) => sum + (Number(sale.price_at_purchase) * sale.quantity), 0)
@@ -185,7 +209,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
     .gte("orders.created_at", prevStartDate.toISOString())
     .lt("orders.created_at", startDate.toISOString())
 
-  const prevTotalRevenue = (prevSalesData || []).reduce((sum: number, sale: any) => 
+  const prevTotalRevenue = (prevSalesData || []).reduce((sum, sale) => 
     sum + (Number(sale.price_at_purchase) * sale.quantity), 0)
   const prevTotalSales = (prevSalesData || []).length
 

@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
         created_at, 
         slug,
         attributes,
-        sellers(store_slug),
+        seller:profiles(username),
         categories(slug)
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform to UI format
-    const products = (data || []).map((p: any) => ({
+    const products = (data || []).map((p) => ({
       ...toUI({
         id: p.id,
         title: p.title,
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
         images: p.images,
         is_prime: p.is_prime,
         slug: p.slug,
-        store_slug: p.sellers?.store_slug ?? null,
+        store_slug: p.seller?.username ?? null,
         category_slug: p.categories?.slug ?? null,
         attributes: p.attributes,
       }),

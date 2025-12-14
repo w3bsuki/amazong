@@ -95,12 +95,14 @@ export default function SignUpPage() {
   const [serverError, setServerError] = useState<string | null>(null)
   const [isSuccess, setIsSuccess] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false)
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
   const router = useRouter()
   const t = useTranslations('Auth')
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
+    defaultValues: { name: "", username: "", email: "", password: "", confirmPassword: "" },
     mode: "onChange",
   })
 
@@ -108,21 +110,69 @@ export default function SignUpPage() {
   const watchedPassword = form.watch("password")
   const watchedConfirmPassword = form.watch("confirmPassword")
 
+  // Check username availability with debounce
+  const checkUsername = async (username: string) => {
+    if (!username || username.length < 3) {
+      setUsernameAvailable(null)
+      return
+    }
+    
+    setIsCheckingUsername(true)
+    try {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .ilike("username", username)
+        .maybeSingle()
+      
+      setUsernameAvailable(!data)
+    } catch {
+      setUsernameAvailable(null)
+    } finally {
+      setIsCheckingUsername(false)
+    }
+  }
+
+  // Debounced username check
+  const debouncedCheckUsername = useMemo(() => {
+    let timeoutId: NodeJS.Timeout
+    return (username: string) => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => checkUsername(username), 500)
+    }
+  }, [])
+
   const onSubmit = async (data: SignUpFormData) => {
     const supabase = createClient()
     setServerError(null)
+
+    // Final username check
+    const { data: existingUser } = await supabase
+      .from("profiles")
+      .select("id")
+      .ilike("username", data.username)
+      .maybeSingle()
+    
+    if (existingUser) {
+      setServerError(t('usernameAlreadyTaken') || "This username is already taken")
+      return
+    }
 
     startTransition(async () => {
       try {
         // Use the proper site URL for email redirects (production)
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
         
-        const { error } = await supabase.auth.signUp({
+        const { error, data: authData } = await supabase.auth.signUp({
           email: data.email,
           password: data.password,
           options: {
             emailRedirectTo: `${siteUrl}/auth/confirm`,
-            data: { full_name: data.name },
+            data: { 
+              full_name: data.name,
+              username: data.username.toLowerCase(),
+            },
           },
         })
 
@@ -135,6 +185,18 @@ export default function SignUpPage() {
             setServerError(error.message)
           }
           return
+        }
+
+        // If user was created, update their profile with username
+        // This handles the case where email confirmation is disabled
+        if (authData?.user?.id) {
+          await supabase
+            .from("profiles")
+            .update({ 
+              username: data.username.toLowerCase(),
+              display_name: data.name,
+            })
+            .eq("id", authData.user.id)
         }
 
         setIsSuccess(true)
@@ -203,6 +265,60 @@ export default function SignUpPage() {
                         </div>
                       </FormControl>
                       <FormMessage className="text-xs text-red-500" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1">
+                      <label className="text-sm font-medium text-gray-700">
+                        {t('username') || 'Username'}
+                      </label>
+                      <FormControl>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">@</span>
+                          <input
+                            {...field}
+                            type="text"
+                            autoComplete="username"
+                            placeholder={t('usernamePlaceholder') || 'your_username'}
+                            onChange={(e) => {
+                              const value = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')
+                              field.onChange(value)
+                              debouncedCheckUsername(value)
+                            }}
+                            className={`
+                              w-full h-10 pl-7 pr-9 text-sm text-gray-900 placeholder:text-gray-400
+                              bg-white border rounded-lg
+                              focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500
+                              transition-colors
+                              ${errors.username ? 'border-red-400 focus:ring-red-500/40 focus:border-red-500' 
+                                : usernameAvailable === false ? 'border-red-400' 
+                                : usernameAvailable === true ? 'border-emerald-400' 
+                                : 'border-gray-300'}
+                            `}
+                          />
+                          {isCheckingUsername && (
+                            <SpinnerGap className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 animate-spin" />
+                          )}
+                          {!isCheckingUsername && !errors.username && usernameAvailable === true && (
+                            <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-emerald-500" weight="fill" />
+                          )}
+                          {!isCheckingUsername && usernameAvailable === false && (
+                            <X className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-red-500" />
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500" />
+                      {usernameAvailable === false && !errors.username && (
+                        <p className="text-xs text-red-500">{t('usernameAlreadyTaken') || 'This username is already taken'}</p>
+                      )}
+                      {field.value && field.value.length >= 3 && usernameAvailable === true && !errors.username && (
+                        <p className="text-xs text-emerald-600">amazong.com/u/{field.value}</p>
+                      )}
                     </FormItem>
                   )}
                 />

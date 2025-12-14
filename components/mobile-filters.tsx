@@ -14,20 +14,7 @@ import {
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
-
-// Types for category attributes
-interface CategoryAttribute {
-  id: string
-  name: string
-  name_bg: string | null
-  attribute_type: 'select' | 'multiselect' | 'boolean' | 'number' | 'text'
-  options: string[] | null
-  options_bg: string[] | null
-  min_value: number | null
-  max_value: number | null
-  is_filterable: boolean
-  sort_order: number | null
-}
+import type { CategoryAttribute } from "@/lib/data/categories"
 
 interface MobileFiltersProps {
   locale: string

@@ -5,19 +5,16 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { formatDistanceToNow, format } from "date-fns"
+import { format } from "date-fns"
 import {
   IconSearch,
-  IconFilter,
   IconChevronDown,
   IconDotsVertical,
-  IconMail,
   IconTruck,
   IconCheck,
   IconX,
   IconRefresh,
   IconPackage,
-  IconExternalLink,
   IconDownload,
   IconSelector,
   IconChevronUp,
@@ -76,10 +73,13 @@ interface Order {
 interface OrderItem {
   id: string
   quantity: number
-  price_at_time: number
-  created_at: string
+  price_at_purchase: number
+  order_id: string
+  product_id: string
+  seller_id: string
   order: Order | Order[] | null
   product: OrderProduct | OrderProduct[] | null
+  user?: { id: string; email: string | null; full_name: string | null } | null
 }
 
 interface OrdersTableProps {
@@ -131,14 +131,14 @@ export function OrdersTable({
   sellerId: _sellerId,
 }: OrdersTableProps) {
   const router = useRouter()
-  const [orders, setOrders] = React.useState<OrderItem[]>(initialOrders)
+  const [orders, _setOrders] = React.useState<OrderItem[]>(initialOrders)
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set())
   const [isAllSelected, setIsAllSelected] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [statusFilter, setStatusFilter] = React.useState<OrderStatus>("all")
   const [sortField, setSortField] = React.useState<SortField>("created_at")
   const [sortOrder, setSortOrder] = React.useState<SortOrder>("desc")
-  const [isLoading, setIsLoading] = React.useState(false)
+  const [_isLoading, _setIsLoading] = React.useState(false)
 
   // Helper to extract order data from potentially nested structure
   const getOrder = (item: OrderItem): Order | null => {
@@ -203,10 +203,12 @@ export function OrdersTable({
       
       switch (sortField) {
         case "created_at":
-          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          const timeA = orderA?.created_at ? new Date(orderA.created_at).getTime() : 0
+          const timeB = orderB?.created_at ? new Date(orderB.created_at).getTime() : 0
+          comparison = timeA - timeB
           break
         case "total":
-          comparison = (a.price_at_time * a.quantity) - (b.price_at_time * b.quantity)
+          comparison = (a.price_at_purchase * a.quantity) - (b.price_at_purchase * b.quantity)
           break
         case "customer":
           const custA = getCustomer(orderA)?.full_name || ""
@@ -513,10 +515,10 @@ export function OrdersTable({
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="text-sm">
-                          {format(new Date(item.created_at), "MMM d")}
+                          {order?.created_at ? format(new Date(order.created_at), "MMM d") : "-"}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {format(new Date(item.created_at), "h:mm a")}
+                          {order?.created_at ? format(new Date(order.created_at), "h:mm a") : ""}
                         </span>
                       </div>
                     </TableCell>
@@ -562,7 +564,7 @@ export function OrdersTable({
                       {item.quantity}
                     </TableCell>
                     <TableCell className="text-right font-medium tabular-nums">
-                      {formatCurrency(item.price_at_time * item.quantity)}
+                      {formatCurrency(item.price_at_purchase * item.quantity)}
                     </TableCell>
                     <TableCell>
                       <Badge 
@@ -645,7 +647,7 @@ export function OrdersTable({
           </span>
           <span className="font-medium text-foreground">
             Total: {formatCurrency(
-              filteredOrders.reduce((sum, item) => sum + (item.price_at_time * item.quantity), 0)
+              filteredOrders.reduce((sum, item) => sum + (item.price_at_purchase * item.quantity), 0)
             )}
           </span>
         </div>

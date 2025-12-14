@@ -68,8 +68,9 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
     try {
       const newState = await toggleFeatured(badgeId)
       toast.success(newState ? t.feature : t.unfeature)
-    } catch (err: any) {
-      if (err.message?.includes("Maximum")) {
+    } catch (err) {
+      const message = err instanceof Error ? err.message : ""
+      if (message.includes("Maximum")) {
         toast.error(t.maxFeatured)
       } else {
         toast.error("Failed to update badge")

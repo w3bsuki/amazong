@@ -49,6 +49,19 @@ import { AddToCart } from "@/components/add-to-cart"
 import { ContactSellerButton } from "@/components/contact-seller-button"
 import { useWishlist } from "@/lib/wishlist-context"
 
+// Seller stats from seller_stats table (real data, not mock!)
+interface SellerStats {
+  total_sales: number | null
+  total_reviews: number | null
+  average_rating: number | null
+  positive_feedback_pct: number | null
+  response_time_hours: number | null
+  communication_pct: number | null
+  item_described_pct: number | null
+  shipping_speed_pct: number | null
+  follower_count: number | null
+}
+
 interface ProductPageContentProps {
   product: {
     id: string
@@ -70,6 +83,7 @@ interface ProductPageContentProps {
     store_slug?: string
     verified: boolean
     created_at: string
+    stats: SellerStats | null
   } | null
   locale: string
   currentUserId: string | null
@@ -146,50 +160,30 @@ export function ProductPageContent({
   const soldCount = product.reviews_count ? product.reviews_count * 12 : 150
   const watchCount = Math.floor(soldCount * 0.15)
 
-  // Enhanced seller data - deterministic values for SSR
+  // Real seller data from database - NO MORE MOCK DATA!
+  // Stats come from seller_stats table (automatically updated by triggers)
+  const stats = seller?.stats
   const sellerData = seller ? {
     ...seller,
-    positive_feedback_percentage: 100,
-    total_items_sold: 505000,
-    response_time_hours: 24,
-    feedback_score: 798,
-    feedback_count: 746,
+    // Real metrics from seller_stats (with sensible defaults for new sellers)
+    positive_feedback_percentage: stats?.positive_feedback_pct ?? 0,
+    total_items_sold: stats?.total_sales ?? 0,
+    response_time_hours: stats?.response_time_hours ?? 0,
+    feedback_score: stats?.total_reviews ?? 0,
+    feedback_count: stats?.total_reviews ?? 0,
     member_since: new Date(seller.created_at).getFullYear().toString(),
     ratings: {
-      accuracy: 5.0,
-      shipping_cost: 5.0,
-      shipping_speed: 5.0,
-      communication: 5.0,
+      accuracy: stats?.item_described_pct ? stats.item_described_pct / 20 : 0, // Convert 0-100 to 0-5
+      shipping_cost: 0, // Not tracked in our schema
+      shipping_speed: stats?.shipping_speed_pct ? stats.shipping_speed_pct / 20 : 0,
+      communication: stats?.communication_pct ? stats.communication_pct / 20 : 0,
     }
   } : null
 
-  // Sample seller feedback data
-  const sampleFeedback = [
-    { 
-      user: "j***n", 
-      score: 156, 
-      text: locale === 'bg' 
-        ? 'Страхотен продавач! Бързо изпращане и добре опаковано.' 
-        : 'Great seller! Fast shipping and well packaged.',
-      date: locale === 'bg' ? 'Последните 6 месеца' : 'Past 6 months'
-    },
-    { 
-      user: "m***a", 
-      score: 89, 
-      text: locale === 'bg'
-        ? 'Продуктът отговаря на описанието. Препоръчвам!'
-        : 'Product matches description. Recommend!',
-      date: locale === 'bg' ? 'Последните 6 месеца' : 'Past 6 months'
-    },
-    { 
-      user: "s***k", 
-      score: 234, 
-      text: locale === 'bg'
-        ? 'Отлична комуникация, бърза доставка. Ще купя отново.'
-        : 'Excellent communication, fast delivery. Will buy again.',
-      date: locale === 'bg' ? 'Последните 6 месеца' : 'Past 6 months'
-    },
-  ]
+  // Note: Seller feedback is now fetched from seller_feedback table via server actions
+  // Use getSellerFeedback() from lib/data/store.ts when displaying feedback
+  // Empty array - feedback should be loaded separately if needed
+  const sampleFeedback: Array<{ user: string; score: number; text: string; date: string }> = []
 
   const images = product.images?.length > 0 ? product.images : ["/placeholder.svg"]
 

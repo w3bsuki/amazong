@@ -104,7 +104,7 @@ export async function getAdminStats() {
     adminClient.from('profiles').select('id', { count: 'exact', head: true }),
     adminClient.from('products').select('id', { count: 'exact', head: true }),
     adminClient.from('orders').select('id', { count: 'exact', head: true }),
-    adminClient.from('sellers').select('id', { count: 'exact', head: true }),
+    adminClient.from('profiles').select('id', { count: 'exact', head: true }).eq('is_seller', true),
     
     // Recent activity (last 7 days)
     adminClient

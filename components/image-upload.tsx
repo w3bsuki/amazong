@@ -105,8 +105,9 @@ export function ImageUpload({
         return newImages
       })
 
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to upload images')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to upload images'
+      toast.error(message)
     } finally {
       setUploading(false)
       if (fileInputRef.current) {

@@ -23,15 +23,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Get seller info
-    const { data: seller } = await supabase
-      .from('sellers')
+    // Get profile info
+    const { data: profile } = await supabase
+      .from('profiles')
       .select('*')
       .eq('id', user.id)
       .single()
 
-    if (!seller) {
-      return NextResponse.json({ error: 'Seller account not found' }, { status: 404 })
+    if (!profile) {
+      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
     // Get the subscription plan by ID
@@ -54,23 +54,23 @@ export async function POST(req: Request) {
     const price = billingPeriod === 'yearly' ? plan.price_yearly : plan.price_monthly
 
     // Create or get Stripe customer
-    let customerId = seller.stripe_customer_id
+    let customerId = profile.stripe_customer_id
 
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: user.email,
         metadata: {
-          seller_id: seller.id,
+          profile_id: profile.id,
           supabase_user_id: user.id,
         },
       })
       customerId = customer.id
 
-      // Save customer ID to seller
+      // Save customer ID to profile
       await supabase
-        .from('sellers')
+        .from('profiles')
         .update({ stripe_customer_id: customerId })
-        .eq('id', seller.id)
+        .eq('id', profile.id)
     }
 
     // Check if we have a pre-configured Stripe Price ID (recommended for production)
@@ -84,14 +84,14 @@ export async function POST(req: Request) {
       ? [{ price: stripePriceId, quantity: 1 }]
       : [{
           price_data: {
-            currency: 'eur',
+            currency: 'eur' as const,
             product_data: {
               name: `${plan.name} Plan`,
               description: `${plan.name} seller subscription - ${billingPeriod}`,
             },
             unit_amount: Math.round(price * 100), // Stripe uses cents
             recurring: {
-              interval: billingPeriod === 'yearly' ? 'year' : 'month',
+              interval: (billingPeriod === 'yearly' ? 'year' : 'month') as 'year' | 'month',
             },
           },
           quantity: 1,
@@ -104,11 +104,11 @@ export async function POST(req: Request) {
       payment_method_types: ['card'],
       line_items: lineItems,
       metadata: {
-        seller_id: seller.id,
+        profile_id: profile.id,
         plan_id: planId,
         plan_tier: plan.tier,
         billing_period: billingPeriod,
-        commission_rate: (plan.final_value_fee || plan.commission_rate).toString(),
+        commission_rate: (plan.final_value_fee ?? plan.commission_rate ?? 12).toString(),
       },
       // Allow promotion codes for discounts
       allow_promotion_codes: true,

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { 
   SignInPrompt, 
-  CreateStoreWizard, 
   SellHeaderV3,
   SellFormSkeleton,
   SellErrorBoundary,
@@ -51,15 +50,18 @@ export function SellPageClient({
       setUser(currentUser ? { id: currentUser.id, email: currentUser.email } : null);
       
       if (currentUser && !seller) {
-        // Check if user is a seller
-        const { data: sellerData } = await supabase
-          .from("sellers")
-          .select("id, store_name")
+        // Check if user has a profile with username (can sell)
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("id, username, display_name, business_name")
           .eq("id", currentUser.id)
           .single();
         
-        if (sellerData) {
-          setSeller(sellerData);
+        if (profileData?.username) {
+          setSeller({
+            id: profileData.id,
+            store_name: profileData.display_name || profileData.business_name || profileData.username,
+          });
         }
       } else if (!currentUser) {
         setSeller(null);
@@ -96,16 +98,25 @@ export function SellPageClient({
     );
   }
 
-  // No store yet - show create store wizard with Personal/Business selection
+  // No username yet - need to set one up (legacy users only)
+  // New users get username at signup, so this shouldn't happen
   if (!seller) {
     return (
       <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
         <SellHeaderV3 user={{ email: user.email }} />
-        <div className="flex-1 flex flex-col justify-center overflow-y-auto">
-          <CreateStoreWizard
-            onStoreCreated={(newSeller) => setSeller(newSeller)}
-            locale={locale}
-          />
+        <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
+          <div className="max-w-md mx-auto text-center space-y-4 px-4">
+            <h2 className="text-2xl font-bold">Set Up Your Username</h2>
+            <p className="text-muted-foreground">
+              You need a username before you can start selling. Visit your account settings to set one up.
+            </p>
+            <a 
+              href="/account/profile" 
+              className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Go to Settings
+            </a>
+          </div>
         </div>
       </div>
     );

@@ -13,7 +13,7 @@ export interface Product {
   list_price?: number | null
   rating?: number | null
   review_count?: number | null
-  images?: string[] | null
+  images: string[] | null
   is_prime?: boolean | null
   is_boosted?: boolean | null
   is_featured?: boolean | null
@@ -27,8 +27,8 @@ export interface Product {
   category_slug?: string | null
   slug?: string | null
   store_slug?: string | null
-  /** Product attributes (condition, brand, model, etc.) */
-  attributes?: Record<string, string> | null
+  /** Product attributes - Json from DB, we accept any */
+  attributes?: import("@/lib/supabase/database.types").Json | null
 }
 
 /** UI-ready product format */
@@ -79,7 +79,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   // Join categories to get the slug for category-aware badge display
   let query = supabase
     .from('products')
-    .select('id, title, price, list_price, rating, review_count, images, is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, sellers(store_slug), categories(slug)')
+    .select('id, title, price, list_price, rating, review_count, images, is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(username), categories(slug)')
 
   // Apply shipping zone filter (WW = show all, so no filter)
   if (zone && zone !== 'WW') {
@@ -116,12 +116,12 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   }
 
   return (data || [])
-    .map((p: any) => ({
+    .map((p) => ({
       ...p,
       // Extract category_slug from categories join
       category_slug: p.categories?.slug ?? null,
-      // Extract store_slug from sellers join
-      store_slug: p.sellers?.store_slug ?? null
+      // Extract store_slug from profiles join (username is the URL slug)
+      store_slug: p.seller?.username ?? null
     }))
     .filter((p: Product) => 
       type === 'deals' || type === 'promo' 
@@ -159,19 +159,30 @@ export type ShippingZone = 'BG' | 'UK' | 'EU' | 'US' | 'WW'
  * Filter products by shipping zone.
  * Can be used server-side or client-side.
  */
-export function filterByZone<T extends Partial<Product>>(
+export function filterByZone<T extends {
+  ships_to_bulgaria?: boolean | null
+  ships_to_uk?: boolean | null
+  ships_to_europe?: boolean | null
+  ships_to_usa?: boolean | null
+  ships_to_worldwide?: boolean | null
+  pickup_only?: boolean | null
+}>(
   products: T[],
   zone: ShippingZone,
   limit?: number
 ): T[] {
   if (zone === 'WW') return limit ? products.slice(0, limit) : products
 
-  const filtered = products.filter(p => productShipsToRegion(p as any, zone as ShippingRegion))
+  const filtered = products.filter(p => productShipsToRegion(p, zone as ShippingRegion))
   return limit ? filtered.slice(0, limit) : filtered
 }
 
 /** Transform to UI format */
 export function toUI(p: Product): UIProduct {
+  // Type-cast attributes from Json to object
+  const attrs = (p.attributes && typeof p.attributes === 'object' && !Array.isArray(p.attributes))
+    ? p.attributes as Record<string, unknown>
+    : {}
   return {
     id: p.id,
     title: p.title,
@@ -184,12 +195,12 @@ export function toUI(p: Product): UIProduct {
     categorySlug: p.category_slug ?? undefined,
     slug: p.slug,
     storeSlug: p.store_slug,
-    condition: p.attributes?.condition,
-    brand: p.attributes?.brand,
-    make: p.attributes?.make,
-    model: p.attributes?.model,
-    year: p.attributes?.year,
-    location: p.attributes?.location,
+    condition: typeof attrs.condition === 'string' ? attrs.condition : undefined,
+    brand: typeof attrs.brand === 'string' ? attrs.brand : undefined,
+    make: typeof attrs.make === 'string' ? attrs.make : undefined,
+    model: typeof attrs.model === 'string' ? attrs.model : undefined,
+    year: typeof attrs.year === 'string' ? attrs.year : undefined,
+    location: typeof attrs.location === 'string' ? attrs.location : undefined,
   }
 }
 

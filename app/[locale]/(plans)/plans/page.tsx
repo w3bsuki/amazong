@@ -119,16 +119,16 @@ export default function PlansPage() {
       setAuthLoading(false)
       
       if (authUser) {
-        const { data: seller } = await supabase
-          .from('sellers')
+        const { data: profile } = await supabase
+          .from('profiles')
           .select('tier, account_type')
           .eq('id', authUser.id)
           .single()
         
-        if (seller) {
-          setCurrentTier(seller.tier || 'basic')
-          if (seller.account_type) {
-            setAccountType(seller.account_type)
+        if (profile) {
+          setCurrentTier(profile.tier || 'basic')
+          if (profile.account_type) {
+            setAccountType(profile.account_type)
           }
         }
       }

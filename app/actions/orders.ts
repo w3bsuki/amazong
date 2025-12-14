@@ -51,8 +51,8 @@ export interface OrderItem {
   }
   buyer?: {
     id: string
-    full_name: string
-    email: string
+    full_name: string | null
+    email: string | null
     avatar_url: string | null
   }
 }
@@ -283,7 +283,7 @@ export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: s
     // Get seller profiles
     const sellerIds = [...new Set(orderItems?.map(item => item.seller_id).filter(Boolean))]
     
-    let sellersMap = new Map<string, { id: string; full_name: string; avatar_url: string | null }>()
+    let sellersMap = new Map<string, { id: string; full_name: string | null; avatar_url: string | null }>()
     
     if (sellerIds.length > 0) {
       const { data: sellers } = await supabase
@@ -331,5 +331,206 @@ export async function getOrderConversation(
     return { conversationId: conversation?.id || null }
   } catch {
     return { conversationId: null }
+  }
+}
+
+/**
+ * Buyer confirms delivery of an order item
+ * This allows the buyer to mark an item as delivered once they receive it
+ */
+export async function buyerConfirmDelivery(
+  orderItemId: string
+): Promise<{ success: boolean; error?: string; sellerId?: string }> {
+  try {
+    const supabase = await createClient()
+    if (!supabase) {
+      return { success: false, error: "Failed to connect to database" }
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: "Not authenticated" }
+    }
+
+    // First verify this order item belongs to an order by this user
+    const { data: orderItem, error: fetchError } = await supabase
+      .from('order_items')
+      .select(`
+        id,
+        status,
+        seller_id,
+        order:orders!inner(user_id)
+      `)
+      .eq('id', orderItemId)
+      .single()
+
+    if (fetchError || !orderItem) {
+      return { success: false, error: "Order item not found" }
+    }
+
+    // Verify the user owns this order
+    const order = orderItem.order as unknown as { user_id: string }
+    if (order.user_id !== user.id) {
+      return { success: false, error: "Not authorized to update this order" }
+    }
+
+    // Only allow confirmation if status is 'shipped'
+    if (orderItem.status !== 'shipped') {
+      return { 
+        success: false, 
+        error: orderItem.status === 'delivered' 
+          ? "Order already marked as delivered" 
+          : "Order must be shipped before confirming delivery"
+      }
+    }
+
+    // Update status to delivered
+    const { error: updateError } = await supabase
+      .from('order_items')
+      .update({ 
+        status: 'delivered',
+        delivered_at: new Date().toISOString()
+      })
+      .eq('id', orderItemId)
+
+    if (updateError) {
+      console.error('Error confirming delivery:', updateError)
+      return { success: false, error: "Failed to confirm delivery" }
+    }
+
+    // Revalidate pages
+    revalidatePath('/[locale]/account/orders', 'page')
+    revalidatePath('/[locale]/sell/orders', 'page')
+
+    return { success: true, sellerId: orderItem.seller_id }
+  } catch (error) {
+    console.error('Error in buyerConfirmDelivery:', error)
+    return { success: false, error: "An unexpected error occurred" }
+  }
+}
+
+/**
+ * Check if buyer can leave feedback for a seller after delivery
+ */
+export async function canBuyerRateSeller(
+  orderItemId: string
+): Promise<{ canRate: boolean; hasRated: boolean; sellerId?: string }> {
+  try {
+    const supabase = await createClient()
+    if (!supabase) {
+      return { canRate: false, hasRated: false }
+    }
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return { canRate: false, hasRated: false }
+    }
+
+    // Get order item with order info
+    const { data: orderItem } = await supabase
+      .from('order_items')
+      .select(`
+        id,
+        status,
+        seller_id,
+        order_id,
+        order:orders!inner(user_id)
+      `)
+      .eq('id', orderItemId)
+      .single()
+
+    if (!orderItem) {
+      return { canRate: false, hasRated: false }
+    }
+
+    const order = orderItem.order as unknown as { user_id: string }
+    if (order.user_id !== user.id) {
+      return { canRate: false, hasRated: false }
+    }
+
+    // Must be delivered to rate
+    if (orderItem.status !== 'delivered') {
+      return { canRate: false, hasRated: false, sellerId: orderItem.seller_id }
+    }
+
+    // Check if already rated
+    const { data: existingFeedback } = await supabase
+      .from('seller_feedback')
+      .select('id')
+      .eq('buyer_id', user.id)
+      .eq('seller_id', orderItem.seller_id)
+      .eq('order_id', orderItem.order_id)
+      .single()
+
+    return {
+      canRate: !existingFeedback,
+      hasRated: !!existingFeedback,
+      sellerId: orderItem.seller_id
+    }
+  } catch {
+    return { canRate: false, hasRated: false }
+  }
+}
+
+/**
+ * Check if seller can rate buyer after delivery
+ */
+export async function canSellerRateBuyer(
+  orderItemId: string
+): Promise<{ canRate: boolean; hasRated: boolean; buyerId?: string; orderId?: string }> {
+  try {
+    const supabase = await createClient()
+    if (!supabase) {
+      return { canRate: false, hasRated: false }
+    }
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return { canRate: false, hasRated: false }
+    }
+
+    // Get order item - seller must own it
+    const { data: orderItem } = await supabase
+      .from('order_items')
+      .select(`
+        id,
+        status,
+        seller_id,
+        order_id,
+        order:orders!inner(user_id)
+      `)
+      .eq('id', orderItemId)
+      .eq('seller_id', user.id)
+      .single()
+
+    if (!orderItem) {
+      return { canRate: false, hasRated: false }
+    }
+
+    const order = orderItem.order as unknown as { user_id: string }
+    const buyerId = order.user_id
+
+    // Must be delivered to rate
+    if (orderItem.status !== 'delivered') {
+      return { canRate: false, hasRated: false, buyerId, orderId: orderItem.order_id }
+    }
+
+    // Check if already rated - buyer_feedback uses order_id, not order_item_id
+    const { data: existingFeedback } = await supabase
+      .from('buyer_feedback')
+      .select('id')
+      .eq('seller_id', user.id)
+      .eq('buyer_id', buyerId)
+      .eq('order_id', orderItem.order_id)
+      .single()
+
+    return {
+      canRate: !existingFeedback,
+      hasRated: !!existingFeedback,
+      buyerId,
+      orderId: orderItem.order_id
+    }
+  } catch {
+    return { canRate: false, hasRated: false }
   }
 }

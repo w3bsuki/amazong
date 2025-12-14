@@ -190,14 +190,14 @@ export function MessageProvider({ children }: MessageProviderProps) {
         
         if (fallbackError) throw fallbackError
         
-        // Fetch seller info for all conversations
+        // Fetch seller info from profiles for all conversations
         const sellerIds = [...new Set((fallbackData || []).map((c: RawConversation) => c.seller_id))]
         const { data: sellerData } = await supabase
-          .from("sellers")
-          .select("id, store_name")
+          .from("profiles")
+          .select("id, display_name, username, business_name")
           .in("id", sellerIds)
         
-        const sellerMap = new Map(sellerData?.map((s: { id: string; store_name: string }) => [s.id, s.store_name]) || [])
+        const sellerMap = new Map(sellerData?.map((s: { id: string; display_name: string | null; username: string | null; business_name: string | null }) => [s.id, s.display_name || s.business_name || s.username || "Seller"]) || [])
         
         // Transform fallback data to expected format with actual seller names
         const transformed = (fallbackData || []).map((conv: RawConversation) => ({

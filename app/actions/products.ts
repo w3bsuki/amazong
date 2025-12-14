@@ -52,15 +52,19 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
     
     const data = validated.data
     
-    // Check if user has a seller account
-    const { data: seller, error: sellerError } = await supabase
-      .from("sellers")
-      .select("id, store_name")
+    // Check if user has a username (required to sell)
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, username")
       .eq("id", user.id)
       .single()
     
-    if (sellerError || !seller) {
-      return { success: false, error: "You must have a seller account to create products" }
+    if (profileError || !profile) {
+      return { success: false, error: "Profile not found" }
+    }
+    
+    if (!profile.username) {
+      return { success: false, error: "You must set a username before listing products" }
     }
     
     // Generate slug from title

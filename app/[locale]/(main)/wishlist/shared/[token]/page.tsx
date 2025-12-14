@@ -6,6 +6,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Gift, ShoppingCart } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations } from "next-intl/server"
+import type { Database } from "@/lib/supabase/database.types"
+
+type SharedWishlistItem = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
 
 interface SharedWishlistPageProps {
   params: Promise<{
@@ -59,7 +62,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
 
         {/* Wishlist Items Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {wishlistItems.map((item: any) => (
+          {(wishlistItems as SharedWishlistItem[]).map((item) => (
             <Card key={item.product_id} className="overflow-hidden hover:shadow-md transition-shadow">
               <Link href={`/product/${item.product_id}`}>
                 <div className="relative aspect-square bg-muted">

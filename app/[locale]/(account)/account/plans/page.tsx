@@ -26,17 +26,17 @@ export default async function PlansPage({ params }: PlansPageProps) {
     redirect("/auth/login")
   }
 
-  // Fetch seller info
-  const { data: seller } = await supabase
-    .from('sellers')
+  // Fetch profile info (seller fields are now on profiles)
+  const { data: profile } = await supabase
+    .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
 
-  // Fetch subscription plans
+  // Fetch subscription plans (only valid fields)
   const { data: plans } = await supabase
     .from('subscription_plans')
-    .select('*')
+    .select('id, name, tier, price_monthly, price_yearly, description, features, is_active, stripe_price_monthly_id, stripe_price_yearly_id, max_listings, commission_rate, account_type, final_value_fee, insertion_fee, per_order_fee, boosts_included, priority_support, analytics_access')
     .eq('is_active', true)
     .order('price_monthly', { ascending: true })
 
@@ -50,23 +50,31 @@ export default async function PlansPage({ params }: PlansPageProps) {
     .limit(1)
     .single()
 
-  const currentTier = seller?.tier || 'basic'
-  const accountType = seller?.account_type || 'personal'
+  const currentTier = profile?.tier || 'free'
+  const accountType = profile?.account_type || 'personal'
 
-  // Filter plans by seller's account type
+  // Filter plans by seller's account type (null handled as string comparison)
   const filteredPlans = (plans || []).filter(
-    (plan: { account_type?: string }) => plan.account_type === accountType
+    (plan) => plan.account_type === accountType || plan.account_type === null
   )
+
+  // Map profile to seller interface expected by PlansContent
+  const seller = profile ? {
+    id: profile.id,
+    tier: profile.tier || 'free',
+    commission_rate: Number(profile.commission_rate) || 12,
+    stripe_customer_id: profile.stripe_customer_id,
+  } : null
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
       <h1 className="sr-only">{locale === 'bg' ? 'Планове' : 'Plans'}</h1>
       <PlansContent 
         locale={locale}
-        plans={filteredPlans}
+        plans={filteredPlans as Parameters<typeof PlansContent>[0]['plans']}
         currentTier={currentTier}
         seller={seller}
-        currentSubscription={currentSubscription}
+        currentSubscription={currentSubscription as Parameters<typeof PlansContent>[0]['currentSubscription']}
       />
     </div>
   )

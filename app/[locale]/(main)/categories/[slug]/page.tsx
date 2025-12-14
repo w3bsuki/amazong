@@ -37,6 +37,8 @@ interface Product {
   sellers?: { store_slug: string | null } | null
   /** Product attributes JSONB (condition, brand, make, model, year, location) */
   attributes?: Record<string, string> | null
+  /** Product tags for display */
+  tags?: string[]
 }
 
 // Generate static params for all categories (for SSG)
@@ -87,7 +89,7 @@ export async function generateMetadata({
 
 // Helper function to search products with pagination
 async function searchProducts(
-  supabase: any, 
+  supabase: Awaited<ReturnType<typeof createClient>>, 
   categoryIds: string[],
   filters: {
     minPrice?: string
@@ -106,7 +108,7 @@ async function searchProducts(
   
   // Build count query
   let countQuery = supabase.from("products").select("*", { count: "exact", head: true })
-  let dbQuery = supabase.from("products").select("*, sellers(store_slug), attributes")
+  let dbQuery = supabase.from("products").select("*, profiles!products_seller_id_fkey(username)")
   
   if (categoryIds.length > 0) {
     countQuery = countQuery.in("category_id", categoryIds)
@@ -169,7 +171,29 @@ async function searchProducts(
   dbQuery = dbQuery.range(offset, offset + limit - 1)
   
   const { data } = await dbQuery
-  return { products: data || [], total: total || 0 }
+  
+  // Transform DB data to Product interface (handle nullable fields)
+  // Note: profiles is the join from products_seller_id_fkey, uses username as store_slug
+  const products: Product[] = (data || []).map(p => {
+    const profile = p.profiles && !Array.isArray(p.profiles) ? p.profiles : null
+    return {
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      list_price: p.list_price,
+      images: p.images || [],
+      rating: p.rating,
+      review_count: p.review_count,
+      category_id: p.category_id,
+      image_url: p.images?.[0] || null,
+      slug: p.slug,
+      sellers: profile ? { store_slug: profile.username } : null,
+      attributes: p.attributes as Record<string, string> | null,
+      tags: Array.isArray(p.tags) ? p.tags.filter((t): t is string => typeof t === 'string') : [],
+    }
+  })
+  
+  return { products, total: total || 0 }
 }
 
 export default async function CategoryPage({
@@ -344,7 +368,7 @@ export default async function CategoryPage({
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {products.map((product: any) => (
+            {products.map((product) => (
               <ProductCard
                 key={product.id}
                 id={product.id}

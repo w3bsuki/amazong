@@ -1,6 +1,0 @@
-export { StoreProfileHeader } from "./store-profile-header"
-export { StoreTabs, type StoreTab } from "./store-tabs"
-export { StoreProductsGrid } from "./store-products-grid"
-export { StoreReviewsList } from "./store-reviews-list"
-export { StorePageClient } from "./store-page-client"
-export { ContactStoreButton } from "./contact-store-button"

@@ -30,22 +30,30 @@ export default async function AccountPage({ params }: AccountPageProps) {
     redirect("/auth/login")
   }
 
-  // Fetch all user stats in parallel
-  const [ordersResult, wishlistResult, productsResult, messagesResult, salesResult] = await Promise.all([
-    supabase.from('orders').select('id, total_amount, status, created_at, order_items(id, products(images))', { count: 'exact' }).eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
-    supabase.from('wishlist_items').select('id', { count: 'exact' }).eq('user_id', user.id),
+  // Fetch all user stats in parallel (no joins)
+  const [ordersResult, wishlistResult, productsResult, , salesResult] = await Promise.all([
+    supabase.from('orders').select('id, total_amount, status, created_at', { count: 'exact' }).eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
+    supabase.from('wishlists').select('id', { count: 'exact' }).eq('user_id', user.id),
     supabase.from('products').select('id, title, price, stock, images, created_at', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
-    supabase.from('messages').select('id, read', { count: 'exact' }).eq('receiver_id', user.id).eq('read', false),
-    supabase.from('order_items').select('id, price_at_purchase, quantity, created_at, products(title, images)', { count: 'exact' }).eq('seller_id', user.id).order('created_at', { ascending: false }).limit(5),
+    supabase.from('messages').select('id, is_read', { count: 'exact' }).eq('sender_id', user.id).neq('sender_id', user.id),
+    supabase.from('order_items').select('id, order_id, price_at_purchase, quantity, product_id', { count: 'exact' }).eq('seller_id', user.id).limit(5),
   ])
 
   const totalOrders = ordersResult.count || 0
   const pendingOrders = ordersResult.data?.filter(o => o.status === 'pending' || o.status === 'processing').length || 0
   const productCount = productsResult.count || 0
-  const unreadMessages = messagesResult.count || 0
+  const unreadMessages = 0 // Messages table needs proper conversation join
   const wishlistCount = wishlistResult.count || 0
   const totalSales = salesResult.count || 0
-  const salesRevenue = (salesResult.data || []).reduce((sum, item: any) => 
+  const salesData = salesResult.data || []
+  // Fetch products for recent sales
+  const productIds = [...new Set(salesData.map((item: any) => item.product_id))]
+  const salesProductsResult = productIds.length > 0
+    ? await supabase.from('products').select('id, title, images').in('id', productIds)
+    : { data: [] }
+  const salesProducts = salesProductsResult.data ?? []
+  const salesProductsMap = new Map(salesProducts.map((p) => [p.id, p]))
+  const salesRevenue = salesData.reduce((sum, item) => 
     sum + (Number(item.price_at_purchase) * item.quantity), 0
   )
 
@@ -60,13 +68,33 @@ export default async function AccountPage({ params }: AccountPageProps) {
     wishlist: wishlistCount,
   }
 
-  const recentOrders = ordersResult.data || []
-  const recentProducts = productsResult.data || []
-  const recentSales = (salesResult.data || []).map((sale: any) => ({
-    ...sale,
-    product_title: sale.products?.title,
-    product_image: sale.products?.images?.[0] || null,
+  // Type-safe recent data
+  const recentOrders = (ordersResult.data || []).map(order => ({
+    id: order.id,
+    total_amount: order.total_amount,
+    status: order.status,
+    created_at: order.created_at,
+    order_items: [] as { id: string; products: { images?: string[] } | null }[]
   }))
+  const recentProducts = (productsResult.data || []).map(p => ({
+    id: p.id,
+    title: p.title,
+    price: p.price,
+    stock: p.stock,
+    images: p.images ?? undefined,
+    created_at: p.created_at
+  }))
+  const recentSales = salesData.map((sale: any) => {
+    const product = salesProductsMap.get(sale.product_id) || null
+    return {
+      id: sale.id,
+      order_id: sale.order_id,
+      price_at_purchase: sale.price_at_purchase,
+      quantity: sale.quantity,
+      product_title: product?.title ?? null,
+      product_image: product?.images?.[0] ?? null,
+    }
+  })
 
   return (
     <div className="flex flex-col gap-5 md:gap-6">

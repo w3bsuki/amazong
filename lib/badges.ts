@@ -141,12 +141,12 @@ export function calculateSellerTrustScore(
   
   // Performance points (max 60)
   if (stats) {
-    if (stats.total_sales >= 10) performanceScore += 10
-    if (stats.total_sales >= 50) performanceScore += 10
-    if (stats.average_rating >= 4.0) performanceScore += 10
-    if (stats.average_rating >= 4.5) performanceScore += 10
-    if (stats.positive_feedback_pct >= 95) performanceScore += 10
-    if (stats.shipped_on_time_pct >= 95) performanceScore += 10
+    if ((stats.total_sales ?? 0) >= 10) performanceScore += 10
+    if ((stats.total_sales ?? 0) >= 50) performanceScore += 10
+    if ((stats.average_rating ?? 0) >= 4.0) performanceScore += 10
+    if ((stats.average_rating ?? 0) >= 4.5) performanceScore += 10
+    if ((stats.positive_feedback_pct ?? 0) >= 95) performanceScore += 10
+    if ((stats.shipped_on_time_pct ?? 0) >= 95) performanceScore += 10
   }
   
   const total = Math.min(verificationScore + performanceScore, 100)
@@ -173,9 +173,9 @@ export function calculateBuyerTrustScore(
   
   // Performance points (max 70)
   if (stats) {
-    if (stats.total_orders >= 1) performanceScore += 20 // Payment verified
-    if (stats.total_orders >= 5 && stats.disputes_opened === 0) performanceScore += 25 // Established
-    if (stats.total_orders >= 20 && stats.disputes_opened === 0 && stats.average_rating >= 4.5) {
+    if ((stats.total_orders ?? 0) >= 1) performanceScore += 20 // Payment verified
+    if ((stats.total_orders ?? 0) >= 5 && stats.disputes_opened === 0) performanceScore += 25 // Established
+    if ((stats.total_orders ?? 0) >= 20 && stats.disputes_opened === 0 && (stats.average_rating ?? 0) >= 4.5) {
       performanceScore += 25 // Trusted
     }
   }
@@ -438,8 +438,8 @@ export function toDisplayBadge(badge: BadgeDefinition, locale: "en" | "bg" = "en
     icon: badge.icon || "🏅",
     color: badge.color || BADGE_COLORS[badge.code] || "bg-gray-500 text-white",
     description: locale === "bg" && badge.description_bg ? badge.description_bg : badge.description || "",
-    tier: badge.tier,
-    category: badge.category,
+    tier: badge.tier ?? 0,
+    category: badge.category as BadgeCategory,
   }
 }
 
@@ -556,10 +556,12 @@ export function getTopBadgesForDisplay(
   const sortedBadges = badges
     .filter(b => b.badge_definition && !b.revoked_at)
     .sort((a, b) => {
-      const priorityA = priorityOrder[a.badge_definition!.category] || 0
-      const priorityB = priorityOrder[b.badge_definition!.category] || 0
+      const catA = a.badge_definition!.category as BadgeCategory
+      const catB = b.badge_definition!.category as BadgeCategory
+      const priorityA = priorityOrder[catA] || 0
+      const priorityB = priorityOrder[catB] || 0
       if (priorityA !== priorityB) return priorityB - priorityA
-      return b.badge_definition!.tier - a.badge_definition!.tier
+      return (b.badge_definition!.tier ?? 0) - (a.badge_definition!.tier ?? 0)
     })
     .slice(0, limit)
   

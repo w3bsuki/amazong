@@ -1,11 +1,12 @@
 /**
  * Badge Data Fetching Functions
- * Server-side functions for fetching badge data from Supabase
+ * 
+ * READ operations use 'use cache' for static caching
+ * WRITE operations use 'use server' for mutations
  */
 
-"use server"
-
-import { createClient } from "@/lib/supabase/server"
+import { cacheTag, cacheLife } from 'next/cache'
+import { createStaticClient } from '@/lib/supabase/server'
 import type {
   BadgeDefinition,
   UserBadge,
@@ -18,11 +19,15 @@ import type {
 } from "@/lib/types/badges"
 
 // =====================================================
-// BADGE DEFINITIONS
+// BADGE DEFINITIONS - Read operations (cached)
 // =====================================================
 
 export async function getAllBadgeDefinitions(): Promise<BadgeDefinition[]> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('badges', 'badge-definitions')
+  cacheLife('categories') // Badge definitions rarely change
+  
+  const supabase = createStaticClient()
   if (!supabase) return []
 
   const { data, error } = await supabase
@@ -36,13 +41,21 @@ export async function getAllBadgeDefinitions(): Promise<BadgeDefinition[]> {
     return []
   }
 
-  return data || []
+  // Transform DB row to BadgeDefinition type (criteria is Json in DB)
+  return (data || []).map(row => ({
+    ...row,
+    criteria: (row.criteria || {}) as Record<string, unknown>,
+  }))
 }
 
 export async function getBadgeDefinitionsByCategory(
   category: string
 ): Promise<BadgeDefinition[]> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('badges', `badge-definitions-${category}`)
+  cacheLife('categories')
+  
+  const supabase = createStaticClient()
   if (!supabase) return []
 
   const { data, error } = await supabase
@@ -57,13 +70,20 @@ export async function getBadgeDefinitionsByCategory(
     return []
   }
 
-  return data || []
+  return (data || []).map(row => ({
+    ...row,
+    criteria: (row.criteria || {}) as Record<string, unknown>,
+  }))
 }
 
 export async function getBadgeDefinitionsByAccountType(
   accountType: "personal" | "business" | "buyer"
 ): Promise<BadgeDefinition[]> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('badges', `badge-definitions-${accountType}`)
+  cacheLife('categories')
+  
+  const supabase = createStaticClient()
   if (!supabase) return []
 
   const { data, error } = await supabase
@@ -78,15 +98,22 @@ export async function getBadgeDefinitionsByAccountType(
     return []
   }
 
-  return data || []
+  return (data || []).map(row => ({
+    ...row,
+    criteria: (row.criteria || {}) as Record<string, unknown>,
+  }))
 }
 
 // =====================================================
-// USER BADGES
+// USER BADGES - Read operations (cached)
 // =====================================================
 
 export async function getUserBadges(userId: string): Promise<UserBadge[]> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('user-badges', `badges-${userId}`)
+  cacheLife('user')
+  
+  const supabase = createStaticClient()
   if (!supabase) return []
 
   const { data, error } = await supabase
@@ -104,7 +131,24 @@ export async function getUserBadges(userId: string): Promise<UserBadge[]> {
     return []
   }
 
-  return data || []
+  // Transform DB rows to UserBadge type
+  return (data || []).map(row => {
+    const badgeDef = row.badge_definition
+    return {
+      id: row.id,
+      user_id: row.user_id,
+      badge_id: row.badge_id,
+      awarded_at: row.awarded_at,
+      awarded_by: row.awarded_by,
+      revoked_at: row.revoked_at,
+      revoke_reason: row.revoke_reason,
+      metadata: (row.metadata || {}) as Record<string, unknown>,
+      badge_definition: badgeDef ? {
+        ...badgeDef,
+        criteria: (badgeDef.criteria || {}) as Record<string, unknown>,
+      } : undefined,
+    }
+  })
 }
 
 export async function getSellerBadges(sellerId: string): Promise<UserBadge[]> {
@@ -112,12 +156,18 @@ export async function getSellerBadges(sellerId: string): Promise<UserBadge[]> {
   return getUserBadges(sellerId)
 }
 
+// =====================================================
+// USER BADGES - Write operations (server actions)
+// =====================================================
+
 export async function awardBadge(
   userId: string,
   badgeId: string,
   awardedBy?: string,
   metadata?: Record<string, unknown>
 ): Promise<{ success: boolean; error?: string }> {
+  'use server'
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
   if (!supabase) return { success: false, error: "No database connection" }
 
@@ -128,7 +178,7 @@ export async function awardBadge(
       badge_id: badgeId,
       awarded_at: new Date().toISOString(),
       awarded_by: awardedBy || null,
-      metadata: metadata || {},
+      metadata: (metadata || {}) as unknown as import("@/lib/supabase/database.types").Json,
       revoked_at: null,
       revoke_reason: null,
     }, {
@@ -148,6 +198,8 @@ export async function revokeBadge(
   badgeId: string,
   reason: string
 ): Promise<{ success: boolean; error?: string }> {
+  'use server'
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
   if (!supabase) return { success: false, error: "No database connection" }
 
@@ -169,11 +221,15 @@ export async function revokeBadge(
 }
 
 // =====================================================
-// VERIFICATION
+// VERIFICATION - Read operations (cached)
 // =====================================================
 
 export async function getUserVerification(userId: string): Promise<UserVerification | null> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('verification', `user-verification-${userId}`)
+  cacheLife('user')
+  
+  const supabase = createStaticClient()
   if (!supabase) return null
 
   const { data, error } = await supabase
@@ -191,7 +247,11 @@ export async function getUserVerification(userId: string): Promise<UserVerificat
 }
 
 export async function getBusinessVerification(sellerId: string): Promise<BusinessVerification | null> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('verification', `business-verification-${sellerId}`)
+  cacheLife('user')
+  
+  const supabase = createStaticClient()
   if (!supabase) return null
 
   const { data, error } = await supabase
@@ -208,10 +268,16 @@ export async function getBusinessVerification(sellerId: string): Promise<Busines
   return data || null
 }
 
+// =====================================================
+// VERIFICATION - Write operations (server actions)
+// =====================================================
+
 export async function upsertUserVerification(
   userId: string,
   updates: Partial<UserVerification>
 ): Promise<{ success: boolean; error?: string }> {
+  'use server'
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
   if (!supabase) return { success: false, error: "No database connection" }
 
@@ -237,6 +303,8 @@ export async function upsertBusinessVerification(
   sellerId: string,
   updates: Partial<BusinessVerification>
 ): Promise<{ success: boolean; error?: string }> {
+  'use server'
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
   if (!supabase) return { success: false, error: "No database connection" }
 
@@ -259,11 +327,15 @@ export async function upsertBusinessVerification(
 }
 
 // =====================================================
-// STATS
+// STATS - Read operations (cached)
 // =====================================================
 
 export async function getSellerStats(sellerId: string): Promise<SellerStats | null> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('seller-stats', `stats-${sellerId}`)
+  cacheLife('products')
+  
+  const supabase = createStaticClient()
   if (!supabase) return null
 
   const { data, error } = await supabase
@@ -281,7 +353,11 @@ export async function getSellerStats(sellerId: string): Promise<SellerStats | nu
 }
 
 export async function getBuyerStats(userId: string): Promise<BuyerStats | null> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('buyer-stats', `stats-${userId}`)
+  cacheLife('products')
+  
+  const supabase = createStaticClient()
   if (!supabase) return null
 
   const { data, error } = await supabase
@@ -298,10 +374,16 @@ export async function getBuyerStats(userId: string): Promise<BuyerStats | null> 
   return data || null
 }
 
+// =====================================================
+// STATS - Write operations (server actions)
+// =====================================================
+
 export async function upsertSellerStats(
   sellerId: string,
   stats: Partial<SellerStats>
 ): Promise<{ success: boolean; error?: string }> {
+  'use server'
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
   if (!supabase) return { success: false, error: "No database connection" }
 
@@ -327,6 +409,8 @@ export async function upsertBuyerStats(
   userId: string,
   stats: Partial<BuyerStats>
 ): Promise<{ success: boolean; error?: string }> {
+  'use server'
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
   if (!supabase) return { success: false, error: "No database connection" }
 
@@ -349,14 +433,18 @@ export async function upsertBuyerStats(
 }
 
 // =====================================================
-// FEEDBACK
+// FEEDBACK - Read operations (cached)
 // =====================================================
 
 export async function getSellerFeedbackList(
   sellerId: string,
   options?: { limit?: number; offset?: number }
 ): Promise<{ feedback: SellerFeedback[]; total: number }> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('seller-feedback', `feedback-list-${sellerId}`)
+  cacheLife('products')
+  
+  const supabase = createStaticClient()
   if (!supabase) return { feedback: [], total: 0 }
 
   const { limit = 10, offset = 0 } = options || {}
@@ -386,7 +474,11 @@ export async function getBuyerFeedbackList(
   buyerId: string,
   options?: { limit?: number; offset?: number }
 ): Promise<{ feedback: BuyerFeedback[]; total: number }> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('buyer-feedback', `feedback-list-${buyerId}`)
+  cacheLife('products')
+  
+  const supabase = createStaticClient()
   if (!supabase) return { feedback: [], total: 0 }
 
   const { limit = 10, offset = 0 } = options || {}
@@ -395,7 +487,7 @@ export async function getBuyerFeedbackList(
     .from("buyer_feedback")
     .select(`
       *,
-      seller:sellers!buyer_feedback_seller_id_fkey(store_name, store_slug)
+      seller:profiles!buyer_feedback_seller_id_fkey(display_name, username)
     `, { count: "exact" })
     .eq("buyer_id", buyerId)
     .order("created_at", { ascending: false })
@@ -412,6 +504,10 @@ export async function getBuyerFeedbackList(
   }
 }
 
+// =====================================================
+// FEEDBACK - Write operations (server actions)
+// =====================================================
+
 export async function submitSellerFeedback(
   feedback: {
     buyer_id: string
@@ -424,6 +520,8 @@ export async function submitSellerFeedback(
     communication?: boolean
   }
 ): Promise<{ success: boolean; error?: string }> {
+  'use server'
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
   if (!supabase) return { success: false, error: "No database connection" }
 
@@ -456,6 +554,8 @@ export async function submitBuyerFeedback(
     reasonable_expectations?: boolean
   }
 ): Promise<{ success: boolean; error?: string }> {
+  'use server'
+  const { createClient } = await import('@/lib/supabase/server')
   const supabase = await createClient()
   if (!supabase) return { success: false, error: "No database connection" }
 
@@ -489,19 +589,23 @@ export interface SellerProfileData {
 }
 
 export async function getSellerProfileData(sellerId: string): Promise<SellerProfileData | null> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('seller-profile-data', `seller-profile-${sellerId}`)
+  cacheLife('user')
+  
+  const supabase = createStaticClient()
   if (!supabase) return null
 
-  // First get seller info to determine account type
-  const { data: seller } = await supabase
-    .from("sellers")
-    .select("account_type")
+  // Get profile to determine account type
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("account_type, is_seller")
     .eq("id", sellerId)
     .single()
 
-  if (!seller) return null
+  if (!profile) return null
 
-  const accountType = (seller.account_type as "personal" | "business") || "personal"
+  const accountType = (profile.account_type as "personal" | "business") || "personal"
 
   // Fetch all data in parallel
   const [badges, stats, verification, businessVerification] = await Promise.all([
@@ -527,7 +631,11 @@ export interface BuyerProfileData {
 }
 
 export async function getBuyerProfileData(userId: string): Promise<BuyerProfileData | null> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('buyer-profile-data', `buyer-profile-${userId}`)
+  cacheLife('user')
+  
+  const supabase = createStaticClient()
   if (!supabase) return null
 
   // Fetch all data in parallel

@@ -23,13 +23,21 @@ import {
 async function getSellerDetails(sellerId: string) {
   const supabase = await createClient()
   
-  const { data: seller } = await supabase
-    .from('sellers')
+  const { data: profile } = await supabase
+    .from('profiles')
     .select('*')
     .eq('id', sellerId)
     .single()
   
-  return seller
+  // Map profile fields to expected seller format
+  if (profile) {
+    return {
+      ...profile,
+      store_name: profile.display_name || profile.business_name || profile.username,
+      bio: profile.bio || '',
+    }
+  }
+  return profile
 }
 
 export default async function BusinessSettingsPage() {
@@ -89,10 +97,10 @@ export default async function BusinessSettingsPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">Store Description</Label>
+              <Label htmlFor="bio">Store Description</Label>
               <Textarea 
-                id="description" 
-                defaultValue={sellerDetails?.description || ''} 
+                id="bio" 
+                defaultValue={sellerDetails?.bio || ''} 
                 placeholder="Tell customers about your store..."
                 rows={3}
               />
@@ -106,14 +114,7 @@ export default async function BusinessSettingsPage() {
                   placeholder="BG123456789"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="eik">EIK (Bulgarian ID)</Label>
-                <Input 
-                  id="eik" 
-                  defaultValue={sellerDetails?.eik || ''} 
-                  placeholder="123456789"
-                />
-              </div>
+              {/* EIK field removed: not present in profiles table */}
             </div>
             <Button>Save Store Information</Button>
           </CardContent>
@@ -202,15 +203,7 @@ export default async function BusinessSettingsPage() {
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="address">Business Address</Label>
-              <Textarea 
-                id="address" 
-                defaultValue={sellerDetails?.address || ''} 
-                placeholder="Your business address..."
-                rows={2}
-              />
-            </div>
+            {/* Address field removed: not present in profiles table */}
             <Button>Save Contact Information</Button>
           </CardContent>
         </Card>

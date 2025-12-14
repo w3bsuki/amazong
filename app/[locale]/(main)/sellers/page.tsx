@@ -33,47 +33,61 @@ export default async function SellersPage({
   setRequestLocale(locale)
   const supabase = await createClient()
   
-  // Fetch sellers with product count and average rating
-  let sellers: any[] = []
+  // Fetch sellers (profiles with is_seller=true) with product count and average rating
+  type SellerQueryResult = {
+    id: string
+    username: string | null
+    display_name: string | null
+    business_name: string | null
+    bio: string | null
+    verified: boolean | null
+    created_at: string
+    avatar_url: string | null
+    products: { id: string; rating: number | null }[]
+  }
+  
+  let sellers: SellerQueryResult[] = []
   if (supabase) {
     const { data } = await supabase
-      .from("sellers")
+      .from("profiles")
       .select(`
         id,
-        store_name,
-        description,
+        username,
+        display_name,
+        business_name,
+        bio,
         verified,
         created_at,
-        profiles!sellers_id_fkey (
-          avatar_url
-        ),
+        avatar_url,
         products (
           id,
           rating
         )
       `)
+      .eq("is_seller", true)
+      .not("username", "is", null)
       .order("verified", { ascending: false })
       .order("created_at", { ascending: false })
-    sellers = data || []
+    sellers = (data || []) as SellerQueryResult[]
   }
   
   // Transform data to include product count and average rating
-  const sellersWithStats: Seller[] = (sellers || []).map((seller: any) => {
+  const sellersWithStats: Seller[] = sellers.map((seller) => {
     const products = seller.products || []
-    const validRatings = products.filter((p: any) => p.rating !== null && p.rating > 0)
+    const validRatings = products.filter((p) => p.rating !== null && p.rating > 0)
     const avgRating = validRatings.length > 0 
-      ? validRatings.reduce((sum: number, p: any) => sum + p.rating, 0) / validRatings.length
+      ? validRatings.reduce((sum, p) => sum + (p.rating || 0), 0) / validRatings.length
       : null
     
     return {
       id: seller.id,
-      store_name: seller.store_name,
-      description: seller.description,
-      verified: seller.verified,
+      store_name: seller.display_name || seller.business_name || seller.username || 'Unknown',
+      description: seller.bio,
+      verified: seller.verified || false,
       created_at: seller.created_at,
       product_count: products.length,
       total_rating: avgRating,
-      avatar_url: seller.profiles?.avatar_url || null
+      avatar_url: seller.avatar_url || null
     }
   })
   

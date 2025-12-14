@@ -52,31 +52,42 @@ export function useBusinessAccount(): UseBusinessAccountResult {
         return
       }
       
-      // Get seller info
-      const { data: sellerData, error: sellerError } = await supabase
-        .from('sellers')
+      // Get seller info from profiles
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
         .select(`
           id,
-          store_name,
+          username,
+          display_name,
+          business_name,
           account_type,
           is_verified_business,
-          business_name,
           tier,
           avatar_url,
-          rating,
-          total_reviews,
-          total_sales
+          is_seller
         `)
         .eq('id', user.id)
         .single()
       
-      if (sellerError) {
-        // User is not a seller
+      if (profileError || !profileData) {
+        // Profile not found
         setSeller(null)
         return
       }
       
-      setSeller(sellerData as BusinessAccountInfo)
+      // Map profile data to seller info format
+      setSeller({
+        id: profileData.id,
+        store_name: profileData.display_name || profileData.business_name || profileData.username || '',
+        account_type: profileData.account_type || 'personal',
+        is_verified_business: profileData.is_verified_business || false,
+        business_name: profileData.business_name,
+        tier: profileData.tier || 'free',
+        avatar_url: profileData.avatar_url,
+        rating: 0, // These will need to be fetched from seller_stats if needed
+        total_reviews: 0,
+        total_sales: 0,
+      } as BusinessAccountInfo)
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch seller info'))
       setSeller(null)

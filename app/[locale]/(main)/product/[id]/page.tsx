@@ -161,22 +161,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // Build query - can lookup by id or slug
   let query = supabase
     .from("products")
-    .select(`
-      *,
-      categories (
-        id,
-        name,
-        slug,
-        parent_id
-      ),
-      sellers (
-        id,
-        store_name,
-        store_slug,
-        verified,
-        created_at
-      )
-    `)
+    .select("*")
   
   if (isFullUUID) {
     query = query.eq("id", id)
@@ -194,22 +179,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     if (shortId && shortId.length === 8) {
       const { data: byShortId } = await supabase
         .from("products")
-        .select(`
-          *,
-          categories (
-            id,
-            name,
-            slug,
-            parent_id
-          ),
-          sellers (
-            id,
-            store_name,
-            store_slug,
-            verified,
-            created_at
-          )
-        `)
+        .select("*")
         .ilike("id", `${shortId}%`)
         .single()
       product = byShortId
@@ -221,14 +191,42 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound()
   }
 
-  const category = product.categories
-  const seller = product.sellers
+  // Fetch category separately (no FK relation in types)
+  let category = null
+  if (product.category_id) {
+    const { data: categoryData } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("id", product.category_id)
+      .single()
+    category = categoryData
+  }
 
-  // SEO: Redirect to SEO-friendly URL with store slug (301 redirect)
-  // All old URLs (UUID, product-slug only) redirect to /product/{storeSlug}/{productSlug}
+  // Fetch seller (profile) and their stats separately
+  let seller = null
+  let sellerStats = null
+  if (product.seller_id) {
+    const { data: sellerData } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", product.seller_id)
+      .single()
+    seller = sellerData
+
+    // Fetch seller stats
+    const { data: statsData } = await supabase
+      .from("seller_stats")
+      .select("*")
+      .eq("seller_id", product.seller_id)
+      .single()
+    sellerStats = statsData
+  }
+
+  // SEO: Redirect to SEO-friendly URL with username (301 redirect)
+  // All old URLs (UUID, product-slug only) redirect to /product/{username}/{productSlug}
   // This helps Google consolidate page authority to the canonical URL
-  if (product.slug && seller?.store_slug) {
-    redirect(`/${locale}/product/${seller.store_slug}/${product.slug}`)
+  if (product.slug && seller?.username) {
+    redirect(`/${locale}/product/${seller.username}/${product.slug}`)
   }
 
   // Fetch parent category if exists
@@ -242,12 +240,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
     parentCategory = parent
   }
 
-  // Fetch related products (with seller's store_slug for URLs)
-  const { data: relatedProducts } = await supabase
+  // Fetch related products
+  const { data: relatedProductsRaw } = await supabase
     .from("products")
-    .select("*, sellers(store_slug)")
+    .select("*")
     .neq("id", id)
     .limit(6)
+
+  // For each related product, fetch its seller profile (for URLs)
+  const relatedProducts = relatedProductsRaw
+    ? await Promise.all(relatedProductsRaw.map(async (p) => {
+        const { data: relSeller } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", p.seller_id)
+          .single()
+        return { ...p, seller: relSeller }
+      }))
+    : []
 
   // Prepare translations for client component
   const translations = {
@@ -261,7 +271,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     secureTransaction: t("secureTransaction"),
     aboutThisItem: t("aboutThisItem"),
     ratingLabel: t("ratingLabel", { rating: product.rating || 0, max: 5 }),
-    ratings: t("ratings", { count: product.reviews_count || 0 }),
+    ratings: t("ratings", { count: product.review_count || 0 }),
   }
 
   // Breadcrumb items
@@ -275,8 +285,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
           id: product.id,
           title: product.title,
           price: product.price,
-          image: product.images?.[0] || product.image || null,
-          slug: product.id,
+          image: product.images?.[0] || null,
+          slug: product.slug || product.id,
+          storeSlug: seller?.username,
         }}
       />
 
@@ -300,15 +311,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
             title: product.title,
             description: product.description,
             price: product.price,
-            original_price: product.original_price,
+            original_price: product.list_price,
             images: product.images || [],
             rating: product.rating || 0,
-            reviews_count: product.reviews_count || 0,
+            reviews_count: product.review_count || 0,
             tags: product.tags || [],
             is_boosted: product.is_boosted || false,
             seller_id: product.seller_id,
           }}
-          seller={seller}
+          seller={seller ? {
+            id: seller.id,
+            store_name: seller.display_name || seller.username || 'Seller',
+            store_slug: seller.username ?? undefined,
+            verified: seller.verified ?? false,
+            created_at: seller.created_at,
+            stats: sellerStats || null,
+          } : null}
           locale={locale}
           currentUserId={currentUserId}
           formattedDeliveryDate={formattedDeliveryDate}
@@ -326,13 +344,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {/* Mobile: Horizontal scroll with 2 cards visible */}
           <div className="lg:hidden -mx-3 px-3">
             <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2">
-              {relatedProducts.map((p: any, idx: number) => (
+              {relatedProducts.map((p, idx) => (
                 <div key={p.id} className="shrink-0 w-[calc(50%-5px)] snap-start">
                   <ProductCard
                     id={p.id}
                     title={p.title}
                     price={p.price}
-                    image={p.images?.[0] || p.image || "/placeholder.svg"}
+                    image={p.images?.[0] || "/placeholder.svg"}
                     rating={p.rating || 0}
                     reviews={p.review_count || 0}
                     originalPrice={p.list_price}
@@ -340,7 +358,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     index={idx}
                     variant="compact"
                     slug={p.slug}
-                    storeSlug={p.sellers?.store_slug}
+                    storeSlug={p.seller?.username}
                   />
                 </div>
               ))}
@@ -349,13 +367,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
           
           {/* Desktop: Grid layout */}
           <div className="hidden lg:grid lg:grid-cols-5 xl:grid-cols-6 gap-3">
-            {relatedProducts.map((p: any, idx: number) => (
+            {relatedProducts.map((p, idx) => (
               <ProductCard
                 key={p.id}
                 id={p.id}
                 title={p.title}
                 price={p.price}
-                image={p.images?.[0] || p.image || "/placeholder.svg"}
+                image={p.images?.[0] || "/placeholder.svg"}
                 rating={p.rating || 0}
                 reviews={p.review_count || 0}
                 originalPrice={p.list_price}
@@ -363,7 +381,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 index={idx}
                 variant="compact"
                 slug={p.slug}
-                storeSlug={p.sellers?.store_slug}
+                storeSlug={p.seller?.username}
               />
             ))}
           </div>

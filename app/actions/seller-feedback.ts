@@ -190,7 +190,7 @@ export async function submitSellerFeedback(
 
     // Revalidate seller profile
     revalidatePath(`/seller/${data.sellerId}`)
-    revalidateTag(`seller-${data.sellerId}`)
+    revalidateTag(`seller-${data.sellerId}`, "max")
 
     return { success: true, data: { id: feedback.id } }
   } catch (error) {
@@ -242,7 +242,7 @@ export async function updateSellerFeedback(
     }
 
     // Check if feedback is within 30 days
-    const feedbackDate = new Date(feedback.created_at)
+    const feedbackDate = new Date(feedback.created_at || Date.now())
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
@@ -274,7 +274,7 @@ export async function updateSellerFeedback(
 
     // Revalidate seller profile
     revalidatePath(`/seller/${feedback.seller_id}`)
-    revalidateTag(`seller-${feedback.seller_id}`)
+    revalidateTag(`seller-${feedback.seller_id}`, "max")
 
     return { success: true }
   } catch (error) {
@@ -344,7 +344,7 @@ export async function deleteSellerFeedback(feedbackId: string): Promise<ActionRe
 
     // Revalidate seller profile
     revalidatePath(`/seller/${feedback.seller_id}`)
-    revalidateTag(`seller-${feedback.seller_id}`)
+    revalidateTag(`seller-${feedback.seller_id}`, "max")
 
     return { success: true }
   } catch (error) {
@@ -439,7 +439,7 @@ export async function getSellerFeedback(
     return {
       success: true,
       data: {
-        feedback: (data as SellerFeedback[]) || [],
+        feedback: ((data || []) as unknown as SellerFeedback[]),
         total: count || 0,
         stats,
       },

@@ -1,6 +1,45 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
+// Types for badge evaluation
+interface BadgeCriteria {
+  account_type?: string
+  min_sales?: number
+  min_listings?: number
+  min_rating?: number
+  min_reviews?: number
+  min_positive_feedback_pct?: number
+  email_verified?: boolean
+  phone_verified?: boolean
+  id_verified?: boolean
+  min_months?: number
+  min_followers?: number
+  min_response_rate?: number
+  min_repeat_customers_pct?: number
+}
+
+interface UserStats {
+  total_sales?: number
+  total_purchases?: number
+  total_listings?: number
+  average_rating?: number
+  total_reviews?: number
+  reviews_given?: number
+  positive_feedback_pct?: number
+  follower_count?: number
+  response_rate_pct?: number
+  repeat_customer_pct?: number
+  created_at?: string
+}
+
+interface UserVerification {
+  email_verified?: boolean | null
+  phone_verified?: boolean | null
+  id_verified?: boolean | null
+  address_verified?: boolean | null
+  created_at?: string | null
+}
+
 /**
  * POST /api/badges/evaluate
  * Evaluates and awards badges to a user based on their current stats
@@ -26,11 +65,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
     
-    // Get the user's seller profile
-    const { data: seller } = await supabase
-      .from("sellers")
+    // Get the user's profile (seller fields are now on profiles)
+    const { data: profile } = await supabase
+      .from("profiles")
       .select("id, account_type")
-      .eq("user_id", userId)
+      .eq("id", userId)
       .single()
     
     // Get applicable badge definitions based on context
@@ -39,9 +78,9 @@ export async function POST(request: Request) {
       .select("*")
       .eq("is_active", true)
     
-    if (seller) {
+    if (profile) {
       // Seller badges
-      if (seller.account_type === "business") {
+      if (profile.account_type === "business") {
         badgeQuery = badgeQuery.in("category", [
           "seller_milestone_personal", 
           "seller_milestone_business",
@@ -86,17 +125,17 @@ export async function POST(request: Request) {
     const existingBadgeIds = new Set((existingBadges || []).map(b => b.badge_id))
     
     // Get stats based on user type
-    let stats: any = null
+    let stats: UserStats | null = null
     
-    if (seller) {
+    if (profile) {
       // Get seller stats
       const { data: sellerStats } = await supabase
         .from("seller_stats")
         .select("*")
-        .eq("seller_id", seller.id)
+        .eq("seller_id", profile.id)
         .single()
       
-      stats = sellerStats
+      stats = sellerStats as UserStats | null
     } else {
       // Get buyer stats
       const { data: buyerStats } = await supabase
@@ -105,7 +144,7 @@ export async function POST(request: Request) {
         .eq("user_id", userId)
         .single()
       
-      stats = buyerStats
+      stats = buyerStats as UserStats | null
     }
     
     // Get verification status
@@ -128,7 +167,7 @@ export async function POST(request: Request) {
       let earned = false
       
       if (stats) {
-        earned = evaluateCriteria(criteria, stats, verification, seller?.account_type)
+        earned = evaluateCriteria(criteria, stats, verification, profile?.account_type ?? undefined)
       } else if (verification) {
         // Verification-only badges for new users
         earned = evaluateCriteria(criteria, {}, verification, "personal")
@@ -177,9 +216,9 @@ export async function POST(request: Request) {
  * Evaluate badge criteria against user stats
  */
 function evaluateCriteria(
-  criteria: any,
-  stats: any,
-  verification: any,
+  criteria: BadgeCriteria | null | undefined,
+  stats: UserStats | null,
+  verification: UserVerification | null,
   accountType?: string
 ): boolean {
   if (!criteria) return false

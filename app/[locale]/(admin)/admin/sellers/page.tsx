@@ -22,12 +22,13 @@ import { IconCheck, IconX } from "@tabler/icons-react"
 async function getSellers() {
   const adminClient = createAdminClient()
   
-  const { data: sellers, error } = await adminClient
-    .from('sellers')
+  const { data: profiles, error } = await adminClient
+    .from('profiles')
     .select(`
       id,
-      store_name,
-      description,
+      username,
+      display_name,
+      bio,
       verified,
       tier,
       is_verified_business,
@@ -35,11 +36,10 @@ async function getSellers() {
       commission_rate,
       country_code,
       created_at,
-      profiles (
-        email,
-        full_name
-      )
+      email,
+      full_name
     `)
+    .eq('is_seller', true)
     .order('created_at', { ascending: false })
   
   if (error) {
@@ -47,7 +47,23 @@ async function getSellers() {
     return []
   }
   
-  return sellers
+  // Map profiles to expected seller format
+  return (profiles || []).map(profile => ({
+    id: profile.id,
+    store_name: profile.display_name || profile.business_name || profile.username || 'Unknown',
+    description: profile.bio,
+    verified: profile.verified,
+    tier: profile.tier,
+    is_verified_business: profile.is_verified_business,
+    business_name: profile.business_name,
+    commission_rate: profile.commission_rate,
+    country_code: profile.country_code,
+    created_at: profile.created_at,
+    profiles: {
+      email: profile.email,
+      full_name: profile.full_name,
+    }
+  }))
 }
 
 export default async function AdminSellersPage() {

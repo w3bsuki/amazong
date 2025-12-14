@@ -25,19 +25,25 @@ export default async function PaymentsPage({
     }
 
     // Fetch user payment methods
-    const { data: paymentMethods } = await supabase
+    const { data: paymentMethodsData } = await supabase
         .from('user_payment_methods')
         .select('*')
         .eq('user_id', user.id)
         .order('is_default', { ascending: false })
         .order('created_at', { ascending: false })
 
+    // Transform to handle is_default: boolean | null -> boolean
+    const paymentMethods = (paymentMethodsData || []).map((pm) => ({
+        ...pm,
+        is_default: pm.is_default ?? false,
+    }))
+
     return (
         <div className="flex flex-col gap-4 md:gap-6">
             <h1 className="sr-only">{locale === 'bg' ? 'Начини на плащане' : 'Payment Methods'}</h1>
             <PaymentsContent 
                 locale={locale}
-                initialPaymentMethods={paymentMethods || []}
+                initialPaymentMethods={paymentMethods}
             />
         </div>
     )

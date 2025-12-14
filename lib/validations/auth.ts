@@ -13,6 +13,30 @@ export const emailSchema = z
   .min(1, { message: "Email is required" })
   .email({ message: "Please enter a valid email address" })
 
+// Username validation schema
+export const usernameSchema = z
+  .string()
+  .min(3, { message: "Username must be at least 3 characters" })
+  .max(30, { message: "Username must be less than 30 characters" })
+  .regex(/^[a-z0-9]/, { message: "Username must start with a letter or number" })
+  .regex(/^[a-z0-9_]+$/, { message: "Username can only contain lowercase letters, numbers, and underscores" })
+  .refine((val) => !val.includes("__"), { message: "Username cannot have consecutive underscores" })
+  .refine((val) => !val.endsWith("_"), { message: "Username cannot end with an underscore" })
+
+// Reserved usernames
+export const RESERVED_USERNAMES = [
+  "admin", "administrator", "support", "help", "info", "contact",
+  "amazong", "store", "shop", "seller", "buyer", "user", "users",
+  "account", "settings", "profile", "members", "member", "api",
+  "auth", "login", "signup", "register", "logout", "signout",
+  "home", "index", "about", "terms", "privacy", "legal",
+  "search", "explore", "discover", "trending", "popular",
+  "checkout", "cart", "order", "orders", "payment", "payments",
+  "sell", "selling", "buy", "buying", "deals", "offers",
+  "messages", "notifications", "inbox", "outbox",
+  "test", "demo", "example", "null", "undefined", "root",
+]
+
 // Login schema
 export const loginSchema = z.object({
   email: emailSchema,
@@ -32,6 +56,15 @@ export const signUpSchema = z
       .min(1, { message: "Name is required" })
       .min(2, { message: "Name must be at least 2 characters" })
       .max(50, { message: "Name must be less than 50 characters" }),
+    username: z
+      .string()
+      .min(3, { message: "Username must be at least 3 characters" })
+      .max(30, { message: "Username must be less than 30 characters" })
+      .regex(/^[a-z0-9]/, { message: "Username must start with a letter or number" })
+      .regex(/^[a-z0-9_]+$/, { message: "Only lowercase letters, numbers, and underscores" })
+      .refine((val) => !val.includes("__"), { message: "No consecutive underscores" })
+      .refine((val) => !val.endsWith("_"), { message: "Cannot end with underscore" })
+      .refine((val) => !RESERVED_USERNAMES.includes(val), { message: "This username is reserved" }),
     email: emailSchema,
     password: z
       .string()

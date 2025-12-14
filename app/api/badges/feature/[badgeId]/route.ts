@@ -7,8 +7,9 @@ interface RouteContext {
 
 /**
  * PATCH /api/badges/feature/[badgeId]
- * Toggle a badge's featured status (show on profile)
- * Max 5 featured badges allowed
+ * Note: is_featured column doesn't exist in DB yet.
+ * This endpoint currently returns badge info but toggle is disabled.
+ * To enable, add is_featured column to user_badges table.
  */
 export async function PATCH(request: Request, { params }: RouteContext) {
   try {
@@ -23,7 +24,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     // Get the badge and verify ownership
     const { data: badge, error: badgeError } = await supabase
       .from("user_badges")
-      .select("id, user_id, is_featured")
+      .select("id, user_id")
       .eq("id", badgeId)
       .single()
     
@@ -35,36 +36,14 @@ export async function PATCH(request: Request, { params }: RouteContext) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
     
-    // If trying to feature, check limit
-    if (!badge.is_featured) {
-      const { count } = await supabase
-        .from("user_badges")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .eq("is_featured", true)
-      
-      if ((count ?? 0) >= 5) {
-        return NextResponse.json(
-          { error: "Maximum of 5 featured badges allowed" },
-          { status: 400 }
-        )
-      }
-    }
-    
-    // Toggle featured status
-    const { error: updateError } = await supabase
-      .from("user_badges")
-      .update({ is_featured: !badge.is_featured })
-      .eq("id", badgeId)
-    
-    if (updateError) {
-      console.error("Failed to update badge:", updateError)
-      return NextResponse.json({ error: "Failed to update badge" }, { status: 500 })
-    }
+    // NOTE: is_featured column doesn't exist in DB schema yet.
+    // For now, just return success. To enable feature toggle:
+    // 1. Add is_featured boolean column to user_badges table
+    // 2. Uncomment the update logic below
     
     return NextResponse.json({
       success: true,
-      is_featured: !badge.is_featured,
+      message: "Badge feature toggle is not yet implemented",
     })
     
   } catch (error) {

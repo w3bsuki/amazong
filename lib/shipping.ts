@@ -165,12 +165,12 @@ export function getDeliveryLabel(
  */
 export function productShipsToRegion(
   product: {
-    ships_to_bulgaria?: boolean;
-    ships_to_uk?: boolean;
-    ships_to_europe?: boolean;
-    ships_to_usa?: boolean;
-    ships_to_worldwide?: boolean;
-    pickup_only?: boolean;
+    ships_to_bulgaria?: boolean | null;
+    ships_to_uk?: boolean | null;
+    ships_to_europe?: boolean | null;
+    ships_to_usa?: boolean | null;
+    ships_to_worldwide?: boolean | null;
+    pickup_only?: boolean | null;
   },
   buyerRegion: ShippingRegion
 ): boolean {

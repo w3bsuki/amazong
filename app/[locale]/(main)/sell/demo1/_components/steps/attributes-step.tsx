@@ -35,10 +35,10 @@ export function AttributesStep({ form }: { form: UseFormReturn<SellFormData> }) 
     setLoading(true)
     const data = await getCategoryAttributes(catId)
     // Parse options if they are strings
-    const parsedData = data.map((attr: any) => ({
+    const parsedData = data.map((attr) => ({
       ...attr,
       options: typeof attr.options === 'string' ? JSON.parse(attr.options) : attr.options
-    }))
+    })) as Attribute[]
     setAttributes(parsedData)
     setLoading(false)
   }

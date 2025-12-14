@@ -158,7 +158,7 @@ export async function submitReview(
 
     // Revalidate product page cache
     revalidatePath(`/product/${data.productId}`)
-    revalidateTag(`product-${data.productId}`)
+    revalidateTag(`product-${data.productId}`, "max")
 
     return { success: true, data: { id: review.id } }
   } catch (error) {
@@ -238,7 +238,7 @@ export async function updateReview(
 
     // Revalidate product page cache
     revalidatePath(`/product/${review.product_id}`)
-    revalidateTag(`product-${review.product_id}`)
+    revalidateTag(`product-${review.product_id}`, "max")
 
     return { success: true }
   } catch (error) {
@@ -305,7 +305,7 @@ export async function deleteReview(reviewId: string): Promise<ActionResult> {
 
     // Revalidate product page cache
     revalidatePath(`/product/${review.product_id}`)
-    revalidateTag(`product-${review.product_id}`)
+    revalidateTag(`product-${review.product_id}`, "max")
 
     return { success: true }
   } catch (error) {
@@ -394,7 +394,7 @@ export async function getProductReviews(
     return {
       success: true,
       data: {
-        reviews: (data as Review[]) || [],
+        reviews: ((data || []) as unknown as Review[]),
         total: count || 0,
       },
     }
@@ -419,10 +419,8 @@ export async function markReviewHelpful(reviewId: string): Promise<ActionResult<
       return { success: false, error: "Invalid review ID" }
     }
 
-    // Get current user (optional - can be anonymous)
-    const { data: { user } } = await supabase.auth.getUser()
-
     // For now, simple increment without tracking who voted
+    // In production, use supabase.auth.getUser() to track who voted
     // In production, you'd want a review_votes table to prevent duplicates
     const { data, error } = await supabase.rpc("increment_helpful_count", {
       review_id: reviewId,
@@ -496,7 +494,7 @@ export async function getUserReviews(options?: {
     return {
       success: true,
       data: {
-        reviews: (data as ReviewWithProduct[]) || [],
+        reviews: ((data || []) as unknown as ReviewWithProduct[]),
         total: count || 0,
       },
     }
@@ -555,7 +553,7 @@ export async function respondToReview(
       return { success: false, error: "Review not found" }
     }
 
-    const productSellerId = (review.products as { seller_id: string })?.seller_id
+    const productSellerId = (review.products as unknown as { seller_id: string })?.seller_id
 
     if (productSellerId !== user.id) {
       return { success: false, error: "Only the product seller can respond to reviews" }

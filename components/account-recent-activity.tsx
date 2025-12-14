@@ -31,8 +31,8 @@ interface RecentSale {
   id: string
   price_at_purchase: number
   quantity: number
-  created_at: string
-  product_title?: string
+  created_at?: string | null
+  product_title?: string | null
   product_image?: string | null
 }
 
@@ -369,9 +369,11 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                   <p className="text-sm font-semibold text-account-stat-value truncate">
                     {sale.product_title || `Item #${sale.id.slice(0, 6)}`}
                   </p>
-                  <p className="text-xs text-account-stat-label mt-0.5">
-                    {formatDistanceToNow(new Date(sale.created_at), { addSuffix: true, locale: dateLocale })}
-                  </p>
+                  {sale.created_at && (
+                    <p className="text-xs text-account-stat-label mt-0.5">
+                      {formatDistanceToNow(new Date(sale.created_at), { addSuffix: true, locale: dateLocale })}
+                    </p>
+                  )}
                 </div>
                 <span className="text-sm font-bold text-emerald-500">
                   +{formatCurrency(sale.price_at_purchase * sale.quantity)}

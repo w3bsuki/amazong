@@ -17,22 +17,15 @@ export async function GET() {
     }
 
     // Get user's stripe_customer_id from profile (for buyer purchases)
+    // Get profile's stripe_customer_id (seller fields are now on profiles)
     const { data: profile } = await supabase
       .from('profiles')
       .select('stripe_customer_id')
       .eq('id', user.id)
       .single()
 
-    // Get seller's stripe_customer_id (for subscriptions/boosts)
-    const { data: seller } = await supabase
-      .from('sellers')
-      .select('stripe_customer_id')
-      .eq('id', user.id)
-      .single()
-
     const customerIds = [
       profile?.stripe_customer_id,
-      seller?.stripe_customer_id,
     ].filter(Boolean) as string[]
 
     if (customerIds.length === 0) {

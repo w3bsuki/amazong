@@ -34,9 +34,9 @@ export default async function UpgradePage({
     redirect("/auth/login")
   }
 
-  // Fetch seller info
-  const { data: seller } = await supabase
-    .from('sellers')
+  // Fetch profile info (seller fields are now on profiles)
+  const { data: profile } = await supabase
+    .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
@@ -48,7 +48,15 @@ export default async function UpgradePage({
     .eq('is_active', true)
     .order('price_monthly', { ascending: true })
 
-  const currentTier = seller?.tier || 'basic'
+  const currentTier = profile?.tier || 'free'
+
+  // Map profile to seller interface expected by UpgradeContent
+  const seller = profile ? {
+    id: profile.id,
+    tier: profile.tier || 'free',
+    commission_rate: Number(profile.commission_rate) || 12,
+    stripe_customer_id: profile.stripe_customer_id,
+  } : null
 
   return (
     <div className="p-4 lg:p-6 max-w-4xl mx-auto">
@@ -75,7 +83,7 @@ export default async function UpgradePage({
       
       <UpgradeContent 
         locale={locale}
-        plans={plans || []}
+        plans={(plans || []) as Parameters<typeof UpgradeContent>[0]['plans']}
         currentTier={currentTier}
         seller={seller}
       />

@@ -40,15 +40,15 @@ export async function POST(req: Request) {
     const duration = durationDays as BoostDuration
     const pricing = BOOST_PRICING[duration]
 
-    // Get seller info
-    const { data: seller } = await supabase
-      .from('sellers')
+    // Get profile info (seller fields are now on profiles)
+    const { data: profile } = await supabase
+      .from('profiles')
       .select('*')
       .eq('id', user.id)
       .single()
 
-    if (!seller) {
-      return NextResponse.json({ error: 'Seller account not found' }, { status: 404 })
+    if (!profile) {
+      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
     // Verify product belongs to seller
@@ -69,23 +69,23 @@ export async function POST(req: Request) {
     }
 
     // Create or get Stripe customer
-    let customerId = seller.stripe_customer_id
+    let customerId = profile.stripe_customer_id
 
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: user.email,
         metadata: {
-          seller_id: seller.id,
+          profile_id: profile.id,
           supabase_user_id: user.id,
         },
       })
       customerId = customer.id
 
-      // Save customer ID to seller
+      // Save customer ID to profile
       await supabase
-        .from('sellers')
+        .from('profiles')
         .update({ stripe_customer_id: customerId })
-        .eq('id', seller.id)
+        .eq('id', profile.id)
     }
 
     // Create Stripe Checkout Session for one-time boost payment
@@ -108,7 +108,7 @@ export async function POST(req: Request) {
         },
       ],
       metadata: {
-        seller_id: seller.id,
+        profile_id: profile.id,
         product_id: productId,
         duration_days: durationDays,
         type: 'listing_boost',

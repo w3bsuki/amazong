@@ -26,19 +26,25 @@ export default async function AddressesPage({
     }
 
     // Fetch user addresses
-    const { data: addresses } = await supabase
+    const { data: addressesData } = await supabase
         .from('user_addresses')
         .select('*')
         .eq('user_id', user.id)
         .order('is_default', { ascending: false })
         .order('created_at', { ascending: false })
 
+    // Transform to handle is_default: boolean | null -> boolean
+    const addresses = (addressesData || []).map((addr) => ({
+        ...addr,
+        is_default: addr.is_default ?? false,
+    }))
+
     return (
         <div className="flex flex-col gap-4 md:gap-6">
             <h1 className="sr-only">{locale === "bg" ? "Адреси" : "Addresses"}</h1>
             <AddressesContent 
                 locale={locale}
-                initialAddresses={addresses || []}
+                initialAddresses={addresses}
             />
         </div>
     )

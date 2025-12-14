@@ -58,16 +58,22 @@ export default async function SellingPage({ params }: SellingPageProps) {
     redirect("/auth/login")
   }
 
-  // Check if user has a seller account
-  const { data: seller } = await supabase
-    .from("sellers")
+  // Check if user has a seller profile (has username)
+  const { data: profile } = await supabase
+    .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single()
 
-  // If no seller account, redirect to sell page to create one
-  if (!seller) {
+  // If no username, redirect to sell page to set one up
+  if (!profile || !profile.username) {
     redirect(`/${locale}/sell`)
+  }
+  
+  // Map profile to seller format for compatibility
+  const seller = {
+    ...profile,
+    store_name: profile.display_name || profile.business_name || profile.username,
   }
 
   // Fetch seller's products

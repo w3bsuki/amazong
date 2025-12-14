@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
 
 export interface Notification {
@@ -92,7 +92,7 @@ export async function markNotificationAsRead(notificationId: string) {
   }
 
   // Revalidate notifications cache
-  revalidateTag("notifications")
+  revalidatePath('/[locale]/(main)', 'layout')
   
   return { success: true, error: null }
 }
@@ -113,7 +113,7 @@ export async function markAllNotificationsAsRead() {
   }
 
   // Revalidate notifications cache
-  revalidateTag("notifications")
+  revalidatePath('/[locale]/(main)', 'layout')
   
   return { success: true, count: data || 0, error: null }
 }
@@ -140,7 +140,7 @@ export async function deleteNotification(notificationId: string) {
   }
 
   // Revalidate notifications cache
-  revalidateTag("notifications")
+  revalidatePath('/[locale]/(main)', 'layout')
   
   return { success: true, error: null }
 }
@@ -170,7 +170,7 @@ export async function createNotification(notification: {
       type: notification.type,
       title: notification.title,
       body: notification.body || null,
-      data: notification.data || {},
+      data: (notification.data || {}) as import('@/lib/supabase/database.types').Json,
       order_id: notification.order_id || null,
       product_id: notification.product_id || null,
       conversation_id: notification.conversation_id || null,
@@ -185,7 +185,7 @@ export async function createNotification(notification: {
   }
 
   // Revalidate notifications cache
-  revalidateTag("notifications")
+  revalidatePath('/[locale]/(main)', 'layout')
   
   return { success: true, data, error: null }
 }

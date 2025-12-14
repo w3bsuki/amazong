@@ -255,18 +255,18 @@ export async function getAvailableUpgrades(): Promise<ActionResult<string[]>> {
       return { success: false, error: "Not authenticated" }
     }
 
-    // Get seller's current tier
-    const { data: seller } = await supabase
-      .from("sellers")
+    // Get user's current tier from profile
+    const { data: profile } = await supabase
+      .from("profiles")
       .select("tier, account_type")
       .eq("id", user.id)
       .single()
 
-    if (!seller) {
+    if (!profile) {
       return { success: true, data: TIER_ORDER.slice(1) } // All paid tiers
     }
 
-    const currentTierIndex = TIER_ORDER.indexOf(seller.tier || "free")
+    const currentTierIndex = TIER_ORDER.indexOf(profile.tier || "free")
     const upgradeTiers = TIER_ORDER.slice(currentTierIndex + 1)
 
     return { success: true, data: upgradeTiers }

@@ -53,12 +53,12 @@ export async function GET(request: Request) {
     }
 
     // Group by category_id and take only the first (best rated) product per category
-    const productsByCategory: Record<string, any> = {}
+    const productsByCategory: Record<string, { id: string; title: string; price: number; list_price: number | null; image: string | null; rating: number | null; slug: string | null }> = {}
     
     if (products) {
       for (const product of products) {
         const catId = product.category_id
-        if (!productsByCategory[catId]) {
+        if (catId && !productsByCategory[catId]) {
           productsByCategory[catId] = {
             id: product.id,
             title: product.title,
@@ -73,8 +73,9 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json({ products: productsByCategory })
-  } catch (error: any) {
+  } catch (error) {
     console.error("Categories Products API Error:", error)
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 })
+    const message = error instanceof Error ? error.message : "Internal Server Error"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

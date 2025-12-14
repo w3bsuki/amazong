@@ -7,10 +7,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-11-17.clover",
 })
 
-// PRODUCTION: Use centralized admin client for consistency
-const supabase = createAdminClient()
-
 export async function POST(req: Request) {
+  // Create admin client inside handler (not at module level)
+  const supabase = createAdminClient()
+  
   const body = await req.text()
   const headersList = await headers()
   const sig = headersList.get('stripe-signature')
@@ -91,12 +91,12 @@ export async function POST(req: Request) {
         // HANDLE SUBSCRIPTION PAYMENTS (recurring)
         // ============================================================
         if (session.mode === 'subscription') {
-          const sellerId = session.metadata?.seller_id
+          const profileId = session.metadata?.profile_id || session.metadata?.seller_id // Support both for backwards compat
           const planTier = session.metadata?.plan_tier as 'premium' | 'business'
           const billingPeriod = session.metadata?.billing_period as 'monthly' | 'yearly'
           const subscriptionId = session.subscription as string
 
-          if (sellerId && planTier && subscriptionId) {
+          if (profileId && planTier && subscriptionId) {
             // Get subscription details from Stripe
             const subscriptionResponse = await stripe.subscriptions.retrieve(subscriptionId)
             const subscription = subscriptionResponse as unknown as { current_period_end: number }
@@ -111,13 +111,18 @@ export async function POST(req: Request) {
               .eq('tier', planTier)
               .single()
 
+            if (!plan) {
+              console.error('Plan not found:', planTier)
+              break
+            }
+
             const price = billingPeriod === 'yearly' ? plan.price_yearly : plan.price_monthly
 
             // Create subscription record
             const { error: subError } = await supabase
               .from('subscriptions')
               .insert({
-                seller_id: sellerId,
+                seller_id: profileId,
                 plan_type: planTier,
                 status: 'active',
                 price_paid: price,
@@ -132,9 +137,9 @@ export async function POST(req: Request) {
               console.error('Error creating subscription:', subError)
             }
 
-            // Update seller tier and ALL fee fields from plan
-            const { error: sellerError } = await supabase
-              .from('sellers')
+            // Update profile tier and ALL fee fields from plan
+            const { error: profileError } = await supabase
+              .from('profiles')
               .update({
                 tier: planTier,
                 commission_rate: plan.final_value_fee || plan.commission_rate || 12.00,
@@ -142,13 +147,13 @@ export async function POST(req: Request) {
                 insertion_fee: plan.insertion_fee || 0,
                 per_order_fee: plan.per_order_fee || 0,
               })
-              .eq('id', sellerId)
+              .eq('id', profileId)
 
-            if (sellerError) {
-              console.error('Error updating seller:', sellerError)
+            if (profileError) {
+              console.error('Error updating profile:', profileError)
             }
 
-            console.log(`✅ Subscription activated for seller ${sellerId}: ${planTier}, FVF: ${plan.final_value_fee || plan.commission_rate}%`)
+            console.log(`✅ Subscription activated for profile ${profileId}: ${planTier}, FVF: ${plan.final_value_fee || plan.commission_rate}%`)
           }
         }
         break
@@ -193,11 +198,11 @@ export async function POST(req: Request) {
             })
             .eq('id', existingSub.id)
 
-          // IMPORTANT: Only downgrade seller when subscription is ACTUALLY cancelled/expired
+          // IMPORTANT: Only downgrade profile when subscription is ACTUALLY cancelled/expired
           // NOT when cancel_at_period_end is set (user still has access until period ends)
           if (newStatus === 'cancelled' || newStatus === 'expired') {
             await supabase
-              .from('sellers')
+              .from('profiles')
               .update({
                 tier: 'free',
                 commission_rate: 12.00,
@@ -207,9 +212,9 @@ export async function POST(req: Request) {
               })
               .eq('id', existingSub.seller_id)
             
-            console.log(`⬇️ Subscription ${newStatus} for seller ${existingSub.seller_id} - downgraded to free tier`)
+            console.log(`⬇️ Subscription ${newStatus} for profile ${existingSub.seller_id} - downgraded to free tier`)
           } else if (newStatus === 'active' && !autoRenew) {
-            console.log(`⏳ Subscription scheduled for cancellation at ${expiresAt} for seller ${existingSub.seller_id}`)
+            console.log(`⏳ Subscription scheduled for cancellation at ${expiresAt} for profile ${existingSub.seller_id}`)
           }
         }
         break
@@ -237,9 +242,9 @@ export async function POST(req: Request) {
             })
             .eq('id', existingSub.id)
 
-          // NOW downgrade seller to free tier (subscription has actually ended)
+          // NOW downgrade profile to free tier (subscription has actually ended)
           await supabase
-            .from('sellers')
+            .from('profiles')
             .update({
               tier: 'free',
               commission_rate: 12.00,
@@ -249,7 +254,7 @@ export async function POST(req: Request) {
             })
             .eq('id', existingSub.seller_id)
           
-          console.log(`🔚 Subscription ended for seller ${existingSub.seller_id} - downgraded to free tier`)
+          console.log(`🔚 Subscription ended for profile ${existingSub.seller_id} - downgraded to free tier`)
         }
         break
       }

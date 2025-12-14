@@ -1,6 +1,22 @@
-"use server"
+import { cacheTag, cacheLife } from 'next/cache'
+import { createStaticClient } from '@/lib/supabase/server'
 
-import { createClient } from "@/lib/supabase/server"
+// Type for profile with seller fields (seller fields have been merged into profiles)
+// Note: Database types may need regeneration to include all new fields
+interface ProfileWithSellerFields {
+  id: string
+  display_name?: string | null
+  business_name?: string | null
+  username?: string | null
+  bio?: string | null
+  is_verified_business?: boolean | null
+  tier?: string | null
+  account_type?: string | null
+  created_at: string
+  avatar_url?: string | null
+  // Fallback fields for compatibility
+  full_name?: string | null
+}
 
 export interface StoreInfo {
   id: string
@@ -41,7 +57,7 @@ export interface SellerFeedback {
   order_id: string | null
   rating: number
   comment: string | null
-  created_at: string
+  created_at: string | null
   buyer: {
     full_name: string | null
     avatar_url: string | null
@@ -49,84 +65,56 @@ export interface SellerFeedback {
 }
 
 /**
- * Fetch store info by store slug or seller ID
+ * Fetch store info by username or seller ID
+ * Note: seller fields are now on profiles table
+ * Uses 'use cache' for static caching per Next.js 16 best practices
  */
-export async function getStoreInfo(storeSlugOrId: string): Promise<StoreInfo | null> {
-  const supabase = await createClient()
+export async function getStoreInfo(usernameOrId: string): Promise<StoreInfo | null> {
+  'use cache'
+  cacheTag('stores', `store-${usernameOrId}`)
+  cacheLife('products') // Use products cache profile (5 min stale, 5 min revalidate)
+
+  const supabase = createStaticClient()
   if (!supabase) return null
 
-  // Try to find by store_slug first, then by ID
-  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(storeSlugOrId)
+  // Try to find by username first, then by ID
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(usernameOrId)
   
+  // Select all profile fields - new seller fields may exist on profiles
   let query = supabase
-    .from("sellers")
-    .select(`
-      id,
-      store_name,
-      store_slug,
-      description,
-      verified,
-      tier,
-      account_type,
-      created_at,
-      profiles!sellers_id_fkey (
-        avatar_url
-      )
-    `)
+    .from("profiles")
+    .select("*")
   
   if (isUUID) {
-    query = query.eq("id", storeSlugOrId)
+    query = query.eq("id", usernameOrId)
   } else {
-    query = query.eq("store_slug", storeSlugOrId)
+    // Try username field if it exists, otherwise fall through to full_name search
+    query = query.or(`username.eq.${usernameOrId},full_name.ilike.${usernameOrId.replace(/-/g, ' ')}`)
   }
   
-  const { data: seller, error } = await query.single()
+  const { data: profile, error } = await query.maybeSingle()
   
-  if (error || !seller) {
-    // Fallback: try by store_name if slug doesn't exist
-    if (!isUUID) {
-      const { data: sellerByName } = await supabase
-        .from("sellers")
-        .select(`
-          id,
-          store_name,
-          store_slug,
-          description,
-          verified,
-          tier,
-          account_type,
-          created_at,
-          profiles!sellers_id_fkey (
-            avatar_url
-          )
-        `)
-        .ilike("store_name", storeSlugOrId.replace(/-/g, ' '))
-        .single()
-      
-      if (sellerByName) {
-        return formatStoreInfo(supabase, sellerByName)
-      }
-    }
+  if (error || !profile) {
     return null
   }
 
-  return formatStoreInfo(supabase, seller)
+  return formatStoreInfo(supabase, profile as unknown as ProfileWithSellerFields)
 }
 
-async function formatStoreInfo(supabase: Awaited<ReturnType<typeof createClient>>, seller: any): Promise<StoreInfo | null> {
+async function formatStoreInfo(supabase: ReturnType<typeof createStaticClient>, profile: ProfileWithSellerFields): Promise<StoreInfo | null> {
   if (!supabase) return null
   
   // Fetch product stats
   const { count: productCount } = await supabase
     .from("products")
     .select("*", { count: "exact", head: true })
-    .eq("seller_id", seller.id)
+    .eq("seller_id", profile.id)
   
   // Fetch order item stats (sales)
   const { data: orderItems } = await supabase
     .from("order_items")
     .select("quantity")
-    .eq("seller_id", seller.id)
+    .eq("seller_id", profile.id)
   
   const totalSales = orderItems?.reduce((sum, item) => sum + (item.quantity || 0), 0) || 0
   
@@ -134,7 +122,7 @@ async function formatStoreInfo(supabase: Awaited<ReturnType<typeof createClient>
   const { data: feedback } = await supabase
     .from("seller_feedback")
     .select("rating")
-    .eq("seller_id", seller.id)
+    .eq("seller_id", profile.id)
   
   let averageRating = 0
   let reviewCount = 0
@@ -154,18 +142,21 @@ async function formatStoreInfo(supabase: Awaited<ReturnType<typeof createClient>
   const { count: followerCount } = await supabase
     .from("store_followers")
     .select("*", { count: "exact", head: true })
-    .eq("seller_id", seller.id)
+    .eq("seller_id", profile.id)
 
+  // Get store name from display_name, business_name, username, or full_name (fallback)
+  const storeName = profile.display_name || profile.business_name || profile.username || profile.full_name || 'Unknown Store'
+  
   return {
-    id: seller.id,
-    store_name: seller.store_name,
-    store_slug: seller.store_slug || seller.store_name.toLowerCase().replace(/\s+/g, '-'),
-    description: seller.description,
-    verified: seller.verified || false,
-    tier: seller.tier || 'basic',
-    account_type: seller.account_type || 'personal',
-    created_at: seller.created_at,
-    avatar_url: seller.profiles?.avatar_url || null,
+    id: profile.id,
+    store_name: storeName,
+    store_slug: profile.username || String(storeName).toLowerCase().replace(/\s+/g, '-'),
+    description: profile.bio || null,
+    verified: Boolean(profile.is_verified_business) || false,
+    tier: (profile.tier || 'basic') as StoreInfo['tier'],
+    account_type: (profile.account_type || 'personal') as StoreInfo['account_type'],
+    created_at: profile.created_at,
+    avatar_url: profile.avatar_url || null,
     total_products: productCount || 0,
     total_sales: totalSales,
     average_rating: Math.round(averageRating * 10) / 10,
@@ -177,6 +168,7 @@ async function formatStoreInfo(supabase: Awaited<ReturnType<typeof createClient>
 
 /**
  * Fetch store products with pagination
+ * Cached for improved performance
  */
 export async function getStoreProducts(
   sellerId: string,
@@ -187,7 +179,11 @@ export async function getStoreProducts(
     ascending?: boolean
   }
 ): Promise<{ products: StoreProduct[]; total: number }> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('products', `store-products-${sellerId}`)
+  cacheLife('products')
+
+  const supabase = createStaticClient()
   if (!supabase) return { products: [], total: 0 }
   
   const {
@@ -237,6 +233,7 @@ export async function getStoreProducts(
 
 /**
  * Fetch seller feedback/reviews
+ * Cached for improved performance
  */
 export async function getSellerFeedback(
   sellerId: string,
@@ -245,7 +242,11 @@ export async function getSellerFeedback(
     offset?: number
   }
 ): Promise<{ feedback: SellerFeedback[]; total: number }> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('seller-feedback', `feedback-${sellerId}`)
+  cacheLife('products')
+
+  const supabase = createStaticClient()
   if (!supabase) return { feedback: [], total: 0 }
   
   const { limit = 10, offset = 0 } = options || {}
@@ -301,6 +302,7 @@ export async function getSellerFeedback(
 
 /**
  * Get store badge data including badges, verification, and trust score
+ * Cached for improved performance
  */
 export async function getStoreBadgeData(sellerId: string): Promise<{
   badges: Array<{
@@ -315,25 +317,29 @@ export async function getStoreBadgeData(sellerId: string): Promise<{
     category: string
   }>
   verification: {
-    email_verified: boolean
-    phone_verified: boolean
-    id_verified: boolean
-    trust_score: number
+    email_verified: boolean | null
+    phone_verified: boolean | null
+    id_verified: boolean | null
+    trust_score: number | null
   } | null
   businessVerification: {
-    vat_verified: boolean
-    registration_verified: boolean
-    verification_level: number
+    vat_verified: boolean | null
+    registration_verified: boolean | null
+    verification_level: number | null
   } | null
   stats: {
-    total_listings: number
-    active_listings: number
-    total_sales: number
-    average_rating: number
-    total_reviews: number
+    total_listings: number | null
+    active_listings: number | null
+    total_sales: number | null
+    average_rating: number | null
+    total_reviews: number | null
   } | null
 } | null> {
-  const supabase = await createClient()
+  'use cache'
+  cacheTag('store-badges', `badges-${sellerId}`)
+  cacheLife('user')
+
+  const supabase = createStaticClient()
   if (!supabase) return null
 
   // Fetch badges with their definitions

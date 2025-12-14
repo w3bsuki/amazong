@@ -17,21 +17,27 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Get seller info
-    const { data: seller } = await supabase
-      .from("sellers")
-      .select("id, tier, account_type, store_name")
+    // Get profile info
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id, tier, account_type, username, display_name, business_name")
       .eq("id", user.id)
       .single()
 
-    if (!seller) {
+    if (!profile || !profile.username) {
       return NextResponse.json({ error: "Not a seller" }, { status: 404 })
+    }
+    
+    // Map profile fields to expected seller fields
+    const seller = {
+      ...profile,
+      store_name: profile.display_name || profile.business_name || profile.username,
     }
 
     // Get listing info using the helper function
     const { data: limitInfo, error: limitError } = await supabase.rpc(
       "get_seller_listing_info",
-      { p_seller_id: user.id }
+      { seller_uuid: user.id }
     )
 
     if (limitError) {
@@ -56,24 +62,26 @@ export async function GET() {
       })
     }
 
+    // DB returns: { current_listings, max_listings, tier }
     const info = limitInfo?.[0] || {
-      current_count: 0,
-      max_allowed: 50,
-      remaining: 50,
-      is_unlimited: false,
+      current_listings: 0,
+      max_listings: 50,
+      tier: 'free',
     }
+    const isUnlimited = info.max_listings === -1
+    const remaining = isUnlimited ? 999 : Math.max(info.max_listings - info.current_listings, 0)
 
     return NextResponse.json({
       sellerId: seller.id,
       storeName: seller.store_name,
-      tier: seller.tier || "free",
+      tier: info.tier || "free",
       accountType: seller.account_type || "personal",
-      currentListings: info.current_count,
-      maxListings: info.max_allowed,
-      remainingListings: info.remaining,
-      isUnlimited: info.is_unlimited,
-      canAddListing: info.is_unlimited || info.remaining > 0,
-      needsUpgrade: !info.is_unlimited && info.remaining <= 0,
+      currentListings: info.current_listings,
+      maxListings: info.max_listings,
+      remainingListings: remaining,
+      isUnlimited,
+      canAddListing: isUnlimited || remaining > 0,
+      needsUpgrade: !isUnlimited && remaining <= 0,
     })
   } catch (error) {
     console.error("Seller limits API error:", error)

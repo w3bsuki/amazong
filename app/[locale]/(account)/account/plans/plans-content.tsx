@@ -26,25 +26,26 @@ interface SubscriptionPlan {
   id: string
   tier: string
   name: string
-  account_type?: "personal" | "business"
+  account_type?: string | null
   price_monthly: number
   price_yearly: number
   // Fee structure (all paid by seller from earnings)
-  final_value_fee?: number      // % of sale when item sells
-  insertion_fee?: number        // Per listing after free allowance
-  per_order_fee?: number        // Flat fee per transaction (payment processing)
-  commission_rate?: number      // Legacy field for backward compatibility
+  final_value_fee?: number | null
+  insertion_fee?: number | null
+  per_order_fee?: number | null
+  commission_rate?: number | null
   max_listings?: number | null
-  boosts_included?: number
-  priority_support?: boolean
-  analytics_access?: string
+  boosts_included?: number | null
+  priority_support?: boolean | null
+  analytics_access?: string | null
   badge_type?: string | null
-  description?: string
-  description_bg?: string
-  features: string[]
-  stripe_monthly_price_id: string | null
-  stripe_yearly_price_id: string | null
-  is_active: boolean
+  description?: string | null
+  description_bg?: string | null
+  features: unknown // Json type from DB
+  // DB column names
+  stripe_price_monthly_id?: string | null
+  stripe_price_yearly_id?: string | null
+  is_active?: boolean | null
 }
 
 interface Seller {
@@ -79,11 +80,19 @@ interface PlansContentProps {
 
 // Convert SubscriptionPlan to Plan interface for shared component
 function toPlan(sp: SubscriptionPlan): Plan {
+  // Validate account_type is a valid literal type
+  const accountType = sp.account_type === "business" ? "business" : "personal"
+  
+  // Parse features from Json to string array
+  const features: string[] = Array.isArray(sp.features) 
+    ? sp.features.filter((f): f is string => typeof f === "string")
+    : []
+  
   return {
     id: sp.id,
     name: sp.name,
     tier: sp.tier,
-    account_type: sp.account_type || "personal",
+    account_type: accountType,
     price_monthly: sp.price_monthly,
     price_yearly: sp.price_yearly,
     max_listings: sp.max_listings ?? null,
@@ -91,14 +100,14 @@ function toPlan(sp: SubscriptionPlan): Plan {
     final_value_fee: sp.final_value_fee ?? sp.commission_rate ?? 12,
     insertion_fee: 0,  // No longer used
     per_order_fee: 0,  // No longer used
-    commission_rate: sp.commission_rate,  // Legacy compat
+    commission_rate: sp.commission_rate ?? undefined,  // Legacy compat
     boosts_included: sp.boosts_included ?? 0,
     priority_support: sp.priority_support ?? false,
     analytics_access: sp.analytics_access ?? "none",
     badge_type: sp.badge_type ?? null,
     description: sp.description ?? "",
     description_bg: sp.description_bg ?? "",
-    features: sp.features,
+    features,
   }
 }
 

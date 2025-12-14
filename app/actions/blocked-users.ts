@@ -29,7 +29,7 @@ export async function blockUser(userId: string, reason?: string) {
 
   const { data, error } = await supabase.rpc("block_user", {
     p_user_to_block: userId,
-    p_reason: reason || null
+    p_reason: reason || undefined
   })
 
   if (error) {
@@ -38,8 +38,8 @@ export async function blockUser(userId: string, reason?: string) {
   }
 
   // Revalidate relevant caches
-  revalidateTag("blocked-users")
-  revalidateTag("conversations")
+  revalidateTag("blocked-users", "max")
+  revalidateTag("conversations", "max")
 
   return { success: data === true, error: null }
 }
@@ -61,8 +61,8 @@ export async function unblockUser(userId: string) {
   }
 
   // Revalidate relevant caches
-  revalidateTag("blocked-users")
-  revalidateTag("conversations")
+  revalidateTag("blocked-users", "max")
+  revalidateTag("conversations", "max")
 
   return { success: data === true, error: null }
 }

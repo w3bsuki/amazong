@@ -62,22 +62,23 @@ export interface BadgeDefinition {
   name_bg: string | null
   description: string | null
   description_bg: string | null
-  category: BadgeCategory
-  account_type: BadgeAccountType | null
+  // DB returns string, we accept it broadly for compatibility
+  category: string
+  account_type: string | null
   icon: string | null
   color: string | null
-  tier: number
-  is_automatic: boolean
-  is_active: boolean
-  criteria: BadgeCriteria
-  created_at: string
+  tier: number | null
+  is_automatic: boolean | null
+  is_active: boolean | null
+  criteria: Record<string, unknown>
+  created_at: string | null
 }
 
 export interface UserBadge {
   id: string
   user_id: string
   badge_id: string
-  awarded_at: string
+  awarded_at: string | null
   awarded_by: string | null
   revoked_at: string | null
   revoke_reason: string | null
@@ -95,17 +96,18 @@ export type IdDocumentType = "passport" | "id_card" | "drivers_license"
 export interface UserVerification {
   id: string
   user_id: string
-  email_verified: boolean
-  phone_verified: boolean
+  email_verified: boolean | null
+  phone_verified: boolean | null
   phone_number: string | null
-  id_verified: boolean
-  id_document_type: IdDocumentType | null
+  id_verified: boolean | null
+  // DB returns string, but we validate against IdDocumentType
+  id_document_type: string | null
   id_verified_at: string | null
-  address_verified: boolean
+  address_verified: boolean | null
   address_verified_at: string | null
-  trust_score: number
-  created_at: string
-  updated_at: string
+  trust_score: number | null
+  created_at: string | null
+  updated_at: string | null
 }
 
 export interface BusinessVerification {
@@ -114,18 +116,18 @@ export interface BusinessVerification {
   legal_name: string | null
   vat_number: string | null
   eik_number: string | null
-  vat_verified: boolean
+  vat_verified: boolean | null
   vat_verified_at: string | null
   registration_doc_url: string | null
-  registration_verified: boolean
+  registration_verified: boolean | null
   registration_verified_at: string | null
   verified_by: string | null
-  bank_verified: boolean
+  bank_verified: boolean | null
   bank_verified_at: string | null
-  verification_level: number
+  verification_level: number | null
   verification_notes: string | null
-  created_at: string
-  updated_at: string
+  created_at: string | null
+  updated_at: string | null
 }
 
 // =====================================================
@@ -134,42 +136,42 @@ export interface BusinessVerification {
 
 export interface SellerStats {
   seller_id: string
-  total_listings: number
-  active_listings: number
-  total_sales: number
-  total_revenue: number
-  average_rating: number
-  total_reviews: number
-  five_star_reviews: number
-  positive_feedback_pct: number
-  item_described_pct: number
-  shipping_speed_pct: number
-  communication_pct: number
-  follower_count: number
+  total_listings: number | null
+  active_listings: number | null
+  total_sales: number | null
+  total_revenue: number | null
+  average_rating: number | null
+  total_reviews: number | null
+  five_star_reviews: number | null
+  positive_feedback_pct: number | null
+  item_described_pct: number | null
+  shipping_speed_pct: number | null
+  communication_pct: number | null
+  follower_count: number | null
   response_time_hours: number | null
-  response_rate_pct: number
-  shipped_on_time_pct: number
-  repeat_customer_pct: number
+  response_rate_pct: number | null
+  shipped_on_time_pct: number | null
+  repeat_customer_pct: number | null
   first_sale_at: string | null
   last_sale_at: string | null
-  updated_at: string
+  updated_at: string | null
 }
 
 export interface BuyerStats {
   user_id: string
-  total_orders: number
-  total_spent: number
-  average_rating: number
-  total_ratings: number
-  reviews_written: number
-  stores_following: number
-  wishlist_count: number
-  conversations_started: number
-  disputes_opened: number
-  disputes_won: number
+  total_orders: number | null
+  total_spent: number | null
+  average_rating: number | null
+  total_ratings: number | null
+  reviews_written: number | null
+  stores_following: number | null
+  wishlist_count: number | null
+  conversations_started: number | null
+  disputes_opened: number | null
+  disputes_won: number | null
   first_purchase_at: string | null
   last_purchase_at: string | null
-  updated_at: string
+  updated_at: string | null
 }
 
 // =====================================================
@@ -183,13 +185,13 @@ export interface SellerFeedback {
   order_id: string | null
   rating: number
   comment: string | null
-  item_as_described: boolean
-  shipping_speed: boolean
-  communication: boolean
+  item_as_described: boolean | null
+  shipping_speed: boolean | null
+  communication: boolean | null
   buyer_response: string | null
   buyer_response_at: string | null
-  created_at: string
-  updated_at: string
+  created_at: string | null
+  updated_at: string | null
   // Joined data
   buyer?: {
     full_name: string | null
@@ -204,17 +206,17 @@ export interface BuyerFeedback {
   order_id: string | null
   rating: number
   comment: string | null
-  payment_promptness: boolean
-  communication: boolean
-  reasonable_expectations: boolean
+  payment_promptness: boolean | null
+  communication: boolean | null
+  reasonable_expectations: boolean | null
   seller_response: string | null
   seller_response_at: string | null
-  created_at: string
-  updated_at: string
-  // Joined data
+  created_at: string | null
+  updated_at: string | null
+  // Joined data from profiles
   seller?: {
-    store_name: string
-    store_slug: string | null
+    display_name: string | null
+    username: string | null
   }
 }
 

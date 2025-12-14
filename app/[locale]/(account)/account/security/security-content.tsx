@@ -74,9 +74,10 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
             toast.success(locale === 'bg' ? 'Паролата е променена успешно' : 'Password changed successfully')
             setIsChangePasswordOpen(false)
             setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error changing password:', error)
-            toast.error(error.message || (locale === 'bg' ? 'Грешка при промяна на паролата' : 'Error changing password'))
+            const message = error instanceof Error ? error.message : (locale === 'bg' ? 'Грешка при промяна на паролата' : 'Error changing password')
+            toast.error(message)
         } finally {
             setIsLoading(false)
         }
@@ -105,9 +106,10 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
             )
             setIsChangeEmailOpen(false)
             setEmailData({ newEmail: "", password: "" })
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error changing email:', error)
-            toast.error(error.message || (locale === 'bg' ? 'Грешка при промяна на имейла' : 'Error changing email'))
+            const message = error instanceof Error ? error.message : (locale === 'bg' ? 'Грешка при промяна на имейла' : 'Error changing email')
+            toast.error(message)
         } finally {
             setIsLoading(false)
         }
@@ -128,9 +130,10 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                     ? 'Изпратен е имейл с инструкции за нулиране на паролата' 
                     : 'Password reset email sent'
             )
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error sending reset email:', error)
-            toast.error(error.message || (locale === 'bg' ? 'Грешка при изпращане на имейл' : 'Error sending email'))
+            const message = error instanceof Error ? error.message : (locale === 'bg' ? 'Грешка при изпращане на имейл' : 'Error sending email')
+            toast.error(message)
         } finally {
             setIsLoading(false)
         }

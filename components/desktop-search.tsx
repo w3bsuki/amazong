@@ -67,9 +67,10 @@ export function DesktopSearch() {
     return `/product/${product.slug || product.id}`
   }, [])
 
-  const handleSelectProduct = useCallback((product: any) => {
+  const handleSelectProduct = useCallback((product: { id: string; slug?: string; storeSlug?: string | null; title: string; price: number; images: string[] }) => {
     if (product) {
-      saveProduct(product)
+      // Ensure slug has a fallback for saveProduct which expects required slug
+      saveProduct({ ...product, slug: product.slug || product.id })
     }
     setIsOpen(false)
     setQuery("")

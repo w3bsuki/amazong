@@ -67,32 +67,41 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // 2. Check if user is a seller
-    const { data: seller } = await supabaseUser
-      .from("sellers")
-      .select("id, store_name")
+    // 2. Check if user has a username (required to sell)
+    const { data: profile } = await supabaseUser
+      .from("profiles")
+      .select("id, username, display_name, business_name")
       .eq("id", user.id)
       .single()
 
-    if (!seller) {
+    if (!profile || !profile.username) {
       return NextResponse.json({ 
-        error: "You must create a seller account first" 
+        error: "You must set up a username to sell items" 
       }, { status: 403 })
+    }
+    
+    // Map profile to seller format - keeping for compatibility reference
+    const _seller = {
+      id: profile.id,
+      store_name: profile.display_name || profile.business_name || profile.username,
     }
 
     // 2.5. Check listing limit before proceeding
     const { data: limitInfo } = await supabaseUser.rpc('get_seller_listing_info', {
-      p_seller_id: user.id
+      seller_uuid: user.id
     })
     
     if (limitInfo && limitInfo.length > 0) {
       const info = limitInfo[0]
-      if (!info.is_unlimited && info.remaining <= 0) {
+      // max_listings=-1 means unlimited
+      const isUnlimited = info.max_listings === -1
+      const remaining = isUnlimited ? 999 : Math.max(info.max_listings - info.current_listings, 0)
+      if (!isUnlimited && remaining <= 0) {
         return NextResponse.json({ 
           error: "LISTING_LIMIT_REACHED",
-          message: `You have reached your listing limit (${info.current_count} of ${info.max_allowed}). Please upgrade your plan to add more listings.`,
-          currentCount: info.current_count,
-          maxAllowed: info.max_allowed,
+          message: `You have reached your listing limit (${info.current_listings} of ${info.max_listings}). Please upgrade your plan to add more listings.`,
+          currentCount: info.current_listings,
+          maxAllowed: info.max_listings,
           upgradeRequired: true
         }, { status: 403 })
       }

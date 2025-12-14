@@ -19,8 +19,7 @@ export async function GET(request: Request, { params }: RouteContext) {
       .from("user_badges")
       .select(`
         id,
-        earned_at,
-        is_featured,
+        awarded_at,
         badge_definitions (
           id,
           code,
@@ -29,25 +28,25 @@ export async function GET(request: Request, { params }: RouteContext) {
           icon,
           color,
           category,
-          tier,
-          sort_order
+          tier
         )
       `)
       .eq("user_id", userId)
-      .order("earned_at", { ascending: false })
+      .is("revoked_at", null)
+      .order("awarded_at", { ascending: false })
     
     if (error) {
       console.error("Failed to fetch badges:", error)
       return NextResponse.json({ error: "Failed to fetch badges" }, { status: 500 })
     }
     
-    // Transform the data - only return featured badges and verification
+    // Transform the data - return verification badges and top-tier ones
     const transformedBadges = (badges || [])
-      .filter(b => b.is_featured || (b.badge_definitions as any)?.category === 'verification')
+      .filter(b => (b.badge_definitions as any)?.category === 'verification' || (b.badge_definitions as any)?.tier >= 2)
+      .slice(0, 5) // Limit to 5 featured badges
       .map(b => ({
         id: b.id,
-        earned_at: b.earned_at,
-        is_featured: b.is_featured,
+        awarded_at: b.awarded_at,
         ...(b.badge_definitions as any),
       }))
     

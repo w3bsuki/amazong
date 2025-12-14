@@ -21,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
   User,
   Camera,
@@ -34,6 +35,8 @@ import {
   MapPin,
   Phone,
   Globe,
+  UserCircle,
+  GearSix,
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import { 
@@ -44,19 +47,35 @@ import {
   updatePassword 
 } from "@/app/actions/profile"
 import { validatePassword, validateEmail } from "@/lib/validations/auth"
+import { PublicProfileEditor } from "./public-profile-editor"
 
 interface ProfileContentProps {
   locale: string
   profile: {
     id: string
-    email: string
+    email: string | null
     full_name: string | null
     avatar_url: string | null
     phone: string | null
     shipping_region: string | null
     country_code: string | null
-    role: string
-    created_at: string
+    role: string | null
+    created_at: string | null
+    // New unified profile fields
+    username: string | null
+    display_name: string | null
+    bio: string | null
+    banner_url: string | null
+    location: string | null
+    website_url: string | null
+    social_links: Record<string, string> | null
+    account_type: string | null
+    is_seller: boolean | null
+    is_verified_business: boolean | null
+    business_name: string | null
+    vat_number: string | null
+    last_username_change: string | null
+    tier?: string | null
   }
 }
 
@@ -240,7 +259,43 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
   const isPasswordValid = validatePassword(passwordData.newPassword, locale).valid
 
   return (
-    <div className="space-y-6">
+    <Tabs defaultValue="account" className="space-y-6">
+      <TabsList className="grid w-full grid-cols-2 max-w-md">
+        <TabsTrigger value="account" className="gap-2">
+          <GearSix className="size-4" />
+          {locale === "bg" ? "Акаунт" : "Account"}
+        </TabsTrigger>
+        <TabsTrigger value="public" className="gap-2">
+          <UserCircle className="size-4" />
+          {locale === "bg" ? "Публичен профил" : "Public Profile"}
+        </TabsTrigger>
+      </TabsList>
+      
+      {/* Public Profile Tab */}
+      <TabsContent value="public" className="space-y-6 mt-0">
+        <PublicProfileEditor 
+          locale={locale} 
+          profile={{
+            id: profile.id,
+            username: profile.username,
+            display_name: profile.display_name,
+            bio: profile.bio,
+            banner_url: profile.banner_url,
+            location: profile.location,
+            website_url: profile.website_url,
+            social_links: profile.social_links,
+            account_type: profile.account_type === "business" ? "business" : profile.account_type === "personal" ? "personal" : null,
+            is_seller: profile.is_seller ?? false,
+            verified_business: profile.is_verified_business ?? false,
+            business_name: profile.business_name,
+            vat_number: profile.vat_number,
+            last_username_change: profile.last_username_change,
+          }} 
+        />
+      </TabsContent>
+      
+      {/* Account Settings Tab */}
+      <TabsContent value="account" className="space-y-6 mt-0">
       {/* Avatar & Basic Info Card */}
       <Card>
         <CardHeader>
@@ -445,6 +500,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
           </button>
         </CardContent>
       </Card>
+      </TabsContent>
 
       {/* Change Email Dialog */}
       <Dialog open={isChangeEmailOpen} onOpenChange={setIsChangeEmailOpen}>
@@ -561,6 +617,6 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </Tabs>
   )
 }

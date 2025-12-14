@@ -158,19 +158,25 @@ async function getCategories(): Promise<CategoryNode[]> {
   return getCategoriesCached();
 }
 
-// Check if user is a seller
+// Check if user is a seller (has username)
 async function getSellerData(userId: string) {
   try {
     const supabase = await createClient();
     if (!supabase) return null;
     
     const { data } = await supabase
-      .from("sellers")
-      .select("id, store_name, store_slug")
+      .from("profiles")
+      .select("id, username, display_name, business_name")
       .eq("id", userId)
       .single();
     
-    return data;
+    if (!data?.username) return null;
+    
+    return {
+      id: data.id,
+      store_name: data.display_name || data.business_name || data.username,
+      store_slug: data.username,
+    };
   } catch {
     return null;
   }

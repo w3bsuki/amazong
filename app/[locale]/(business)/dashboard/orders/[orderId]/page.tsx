@@ -17,8 +17,10 @@ async function getOrderDetails(orderId: string, sellerId: string) {
     .select(`
       id,
       quantity,
-      price_at_time,
-      created_at,
+      price_at_purchase,
+      status,
+      tracking_number,
+      shipping_carrier,
       product:products(
         id,
         title,
@@ -41,12 +43,8 @@ async function getOrderDetails(orderId: string, sellerId: string) {
       id,
       status,
       created_at,
-      updated_at,
+      total_amount,
       shipping_address,
-      billing_address,
-      shipping_method,
-      shipping_cost,
-      notes,
       user:profiles(
         id,
         email,
@@ -61,10 +59,36 @@ async function getOrderDetails(orderId: string, sellerId: string) {
     return null
   }
   
+  // Cast to correct types
+  const typedItems = orderItems as unknown as Array<{
+    id: string
+    quantity: number
+    price_at_purchase: number
+    status: string | null
+    tracking_number: string | null
+    shipping_carrier: string | null
+    product: { id: string; title: string; images: string[] | null; sku: string | null; price: number } | null
+  }>
+  
   return {
-    order,
-    items: orderItems,
-    subtotal: orderItems.reduce((sum, item) => sum + (item.price_at_time * item.quantity), 0),
+    order: order as unknown as {
+      id: string
+      status: string | null
+      created_at: string
+      total_amount: number
+      shipping_address: Record<string, unknown> | null
+      user: { id: string; email: string | null; full_name: string | null; phone: string | null } | null
+    },
+    items: typedItems.map(item => ({
+      id: item.id,
+      quantity: item.quantity,
+      price_at_time: item.price_at_purchase, // Map to expected interface name
+      status: item.status,
+      tracking_number: item.tracking_number,
+      shipping_carrier: item.shipping_carrier,
+      product: item.product,
+    })),
+    subtotal: typedItems.reduce((sum, item) => sum + (item.price_at_purchase * item.quantity), 0),
   }
 }
 

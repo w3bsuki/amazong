@@ -8,6 +8,7 @@ import { bg, enUS } from "date-fns/locale"
 import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
+import { BuyerOrderActions } from "@/components/buyer-order-actions"
 import { Button } from "@/components/ui/button"
 import { OrderStatusBadge } from "@/components/order-status-badge"
 import type { OrderItemStatus } from "@/lib/order-status"
@@ -359,8 +360,21 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                       📍 {item.tracking_number} {item.shipping_carrier && `(${item.shipping_carrier})`}
                                     </p>
                                   )}
-                                  {/* Chat link */}
-                                  {item.seller_id && conversationMap.get(order.id) && (
+                                  {/* Buyer Actions: Confirm Delivery & Rate Seller */}
+                                  {item.seller_id && (itemStatus === 'shipped' || itemStatus === 'delivered') && (
+                                    <div className="mt-2">
+                                      <BuyerOrderActions
+                                        orderItemId={item.id}
+                                        currentStatus={itemStatus as OrderItemStatus}
+                                        sellerId={item.seller_id}
+                                        conversationId={conversationMap.get(order.id)}
+                                        locale={locale}
+                                        orderId={order.id}
+                                      />
+                                    </div>
+                                  )}
+                                  {/* Chat link (shown for other statuses) */}
+                                  {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
                                     <Link
                                       href={`/${locale}/chat?conversation=${conversationMap.get(order.id)}`}
                                       className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2"
@@ -578,7 +592,8 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                       {t.viewProduct}
                                       <IconChevronRight className="size-3 ml-0.5" />
                                     </Link>
-                                    {item.seller_id && conversationMap.get(order.id) && (
+                                    {/* Show chat only if NOT showing buyer actions */}
+                                    {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
                                       <Link
                                         href={`/${locale}/chat?conversation=${conversationMap.get(order.id)}`}
                                         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
@@ -588,6 +603,19 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                       </Link>
                                     )}
                                   </div>
+                                  {/* Buyer Actions: Confirm Delivery & Rate Seller */}
+                                  {item.seller_id && (itemStatus === 'shipped' || itemStatus === 'delivered') && (
+                                    <div className="mt-3 pt-3 border-t">
+                                      <BuyerOrderActions
+                                        orderItemId={item.id}
+                                        currentStatus={itemStatus as OrderItemStatus}
+                                        sellerId={item.seller_id}
+                                        conversationId={conversationMap.get(order.id)}
+                                        locale={locale}
+                                        orderId={order.id}
+                                      />
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             )
