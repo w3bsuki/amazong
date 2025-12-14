@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
 import { WishlistButton } from "@/components/wishlist-button"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -36,6 +37,8 @@ export function AddToCart({
 }: AddToCartProps) {
     const { addToCart } = useCart()
     const t = useTranslations('Product')
+    const locale = useLocale()
+    const router = useRouter()
     const [isPending, setIsPending] = useState(false)
 
     // Check if user is trying to buy their own product
@@ -77,8 +80,8 @@ export function AddToCart({
             slug: product.slug,
             storeSlug: product.storeSlug,
         })
-        // Redirect to cart/checkout would happen here
-        window.location.href = "/cart"
+        // Navigate to cart with locale prefix
+        router.push(`/${locale}/cart`)
     }
 
     // eBay-style variant with larger buttons
