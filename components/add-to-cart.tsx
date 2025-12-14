@@ -71,7 +71,16 @@ export function AddToCart({
             toast.error("You cannot purchase your own products")
             return
         }
-        addToCart({
+        
+        // Get current cart from localStorage
+        const savedCart = localStorage.getItem("cart")
+        let currentItems: { id: string; quantity: number }[] = []
+        try {
+            if (savedCart) currentItems = JSON.parse(savedCart)
+        } catch { /* ignore parse errors */ }
+        
+        // Create new item
+        const newItem = {
             id: product.id,
             title: product.title,
             price: product.price,
@@ -79,7 +88,22 @@ export function AddToCart({
             quantity: 1,
             slug: product.slug,
             storeSlug: product.storeSlug,
-        })
+        }
+        
+        // Add or update item
+        const existingIndex = currentItems.findIndex(item => item.id === newItem.id)
+        if (existingIndex >= 0) {
+            currentItems[existingIndex].quantity += 1
+        } else {
+            currentItems.push(newItem)
+        }
+        
+        // Save synchronously to localStorage before navigation
+        localStorage.setItem("cart", JSON.stringify(currentItems))
+        
+        // Also update React state
+        addToCart(newItem)
+        
         // Navigate to cart with locale prefix
         router.push(`/${locale}/cart`)
     }
