@@ -2,10 +2,16 @@
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
-import { Link } from "@/i18n/routing"
+import { Link, useRouter, usePathname } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { MapPin } from "@phosphor-icons/react"
 import { useState } from "react"
+
+// Language options
+const LANGUAGES = [
+  { code: "bg", name: "Български", short: "BG", flag: "https://flagcdn.com/w40/bg.png" },
+  { code: "en", name: "English", short: "EN", flag: "https://flagcdn.com/w40/gb.png" },
+] as const
 interface LocationDropdownProps {
   country: string
   onCountryChange?: (code: string, name: string) => void
@@ -24,7 +30,16 @@ const SHIPPING_ZONES = [
 export function LocationDropdown({ country, onCountryChange }: LocationDropdownProps) {
   const t = useTranslations("LocationDropdown")
   const locale = useLocale()
+  const router = useRouter()
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+
+  // Find the current country's flag icon
+  const currentZone = SHIPPING_ZONES.find(
+    (loc) => country === loc.name || country === loc.nameLocal
+  )
+  const flagIcon = currentZone?.icon || "🇧🇬"
+  const langFlag = locale === "bg" ? "🇧🇬" : "🇬🇧"
 
   const handleLocationSelect = (loc: (typeof SHIPPING_ZONES)[number]) => {
     document.cookie = `user-country=${loc.code}; max-age=${60 * 60 * 24 * 365}; path=/; samesite=lax`
@@ -37,27 +52,54 @@ export function LocationDropdown({ country, onCountryChange }: LocationDropdownP
     window.location.reload()
   }
 
+  const handleLanguageSwitch = (newLocale: string) => {
+    setIsOpen(false)
+    router.replace(pathname, { locale: newLocale })
+  }
+
   return (
     <HoverCard open={isOpen} onOpenChange={setIsOpen} openDelay={50} closeDelay={100}>
       <HoverCardTrigger asChild>
         <Button
           variant="ghost"
-          className="h-11 px-3 gap-1.5 border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover [&_svg]:size-6!"
+          className="h-10 px-2 gap-1.5 rounded-md text-header-text hover:text-brand hover:bg-transparent"
+          title={`${locale.toUpperCase()} / ${country}`}
         >
-          <MapPin weight="fill" className="text-brand shrink-0" />
-          <span className="text-sm font-bold">{country}</span>
+          <span className="text-base">{langFlag}</span>
+          <span className="text-muted-foreground/60">/</span>
+          <MapPin weight="fill" className="text-brand shrink-0 size-4" />
+          <span className="text-sm font-medium">{country}</span>
         </Button>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-[300px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
+        className="w-[320px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
         align="start"
         sideOffset={8}
       >
-        <div className="p-4 bg-muted border-b border-border">
-          <h3 className="font-semibold text-base text-foreground">{t("chooseLocation")}</h3>
-          <p className="text-xs text-muted-foreground mt-1">{t("deliveryOptions")}</p>
+        {/* Language Toggle */}
+        <div className="p-3 border-b border-border">
+          <p className="text-xs font-medium text-muted-foreground uppercase mb-2">
+            {locale === "bg" ? "Език" : "Language"}
+          </p>
+          <div className="flex bg-muted rounded-md p-0.5">
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => handleLanguageSwitch(lang.code)}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded text-sm font-medium transition-all ${
+                  lang.code === locale
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <img src={lang.flag} alt={lang.name} width={16} height={12} className="rounded-sm" />
+                <span>{lang.short}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
+        {/* Shipping Zones */}
         <div className="p-2">
           <p className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase">{t("shippingZones")}</p>
           {SHIPPING_ZONES.map((loc) => {

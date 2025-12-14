@@ -197,7 +197,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
           .select("id, store_name")
           .in("id", sellerIds)
         
-        const sellerMap = new Map(sellerData?.map(s => [s.id, s.store_name]) || [])
+        const sellerMap = new Map(sellerData?.map((s: { id: string; store_name: string }) => [s.id, s.store_name]) || [])
         
         // Transform fallback data to expected format with actual seller names
         const transformed = (fallbackData || []).map((conv: RawConversation) => ({

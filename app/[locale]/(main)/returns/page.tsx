@@ -63,7 +63,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
       <div className="container py-8">
         {/* Return Policy Highlights */}
         <section className="mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-4">
             <Card className="border-brand-success/30 bg-brand-success-light/30">
               <CardContent className="p-5 text-center">
                 <Clock className="size-8 text-brand-success mx-auto mb-3" />
@@ -98,7 +98,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
         {/* How to Return Section */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6">{t('howToReturn')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 gap-3 md:gap-6 md:grid-cols-4">
             {/* Step 1 */}
             <Card className="relative">
               <CardContent className="p-6">

@@ -33,22 +33,24 @@ import {
 
 const faqItems = {
   en: [
+    { q: "Is it free to list?", a: "Yes! List for FREE within your plan's limit. You only pay when your item sells." },
+    { q: "When do I pay?", a: "Only when you make a sale. We deduct a small % from your earnings - you never pay upfront." },
+    { q: "How much is the fee?", a: "Free plan: 12%. Plus: 9%. Pro: 6%. Business Enterprise: just 3%. The more you sell, the more you save!" },
+    { q: "What if I exceed my listing limit?", a: "Simply upgrade to a higher plan for more listings and lower fees. No surprise charges!" },
     { q: "Can I switch between plans?", a: "Yes, upgrade or downgrade anytime. Changes take effect immediately." },
-    { q: "What are the fees when I sell?", a: "You pay a Sale Fee (% of price) + small Per-Order Fee (0-0.25 лв) when you make a sale. Enterprise plans have ZERO per-order fees!" },
-    { q: "What is the per-order fee for?", a: "It covers payment processing costs (Stripe charges us ~2.9% + fees). Our 0.25 лв is LOWER than eBay's $0.30. Enterprise plans absorb this cost entirely." },
-    { q: "What are free listings?", a: "Each plan includes free listings per month. Extra listings cost a small insertion fee. Higher plans = more free listings + lower fees." },
-    { q: "Why do insertion fees exist?", a: "They prevent spam and low-quality listings. Quality sellers stay within their free allowance - upgrade for more!" },
     { q: "Can I cancel anytime?", a: "Yes. Access continues until your billing period ends. No cancellation fees." },
-    { q: "What are boosts?", a: "Boosts increase your listing visibility in search results for 7 days. Other platforms charge extra - we include them free!" },
+    { q: "What are boosts?", a: "Boosts increase your listing visibility in search results for 7 days. Paid plans include free boosts!" },
+    { q: "Why should I pay for a plan?", a: "Free plan is great for casual sellers. Paid plans give you more listings, lower fees, and features like analytics and boosts." },
   ],
   bg: [
+    { q: "Безплатно ли е да обявя продукт?", a: "Да! Публикувай БЕЗПЛАТНО в рамките на лимита. Плащаш само когато продадеш." },
+    { q: "Кога плащам?", a: "Само при продажба. Удържаме малък % от печалбата ти - никога не плащаш предварително." },
+    { q: "Колко е таксата?", a: "Безплатен план: 12%. Plus: 9%. Pro: 6%. Business Enterprise: само 3%. Колкото повече продаваш, толкова повече спестяваш!" },
+    { q: "Какво става ако надвиша лимита?", a: "Просто надгради към по-висок план за повече обяви и по-ниски такси. Без изненади!" },
     { q: "Мога ли да сменям планове?", a: "Да, надградете или понижете по всяко време. Промените влизат в сила веднага." },
-    { q: "Какви са таксите при продажба?", a: "Плащате Такса продажба (% от цената) + малка Такса поръчка (0-0.25 лв) при продажба. Enterprise плановете имат НУЛЕВИ такси на поръчка!" },
-    { q: "За какво е таксата на поръчка?", a: "Покрива разходите за обработка на плащания (Stripe ни таксува ~2.9%+). Нашите 0.25 лв са ПО-НИСКИ от $0.30 на eBay. Enterprise плановете поемат този разход." },
-    { q: "Какво са безплатните обяви?", a: "Всеки план включва безплатни обяви на месец. Допълнителните струват малка такса. По-високи планове = повече обяви + по-ниски такси." },
-    { q: "Защо съществуват таксите за обяви?", a: "Предотвратяват спам и некачествени обяви. Качествените продавачи остават в безплатния лимит - надградете за повече!" },
     { q: "Мога ли да откажа по всяко време?", a: "Да. Достъпът продължава до края на платения период. Без такси за отказ." },
-    { q: "Какво са бустовете?", a: "Бустовете увеличават видимостта на обявите в търсенето за 7 дни. Други платформи таксуват допълнително - ние ги включваме безплатно!" },
+    { q: "Какво са бустовете?", a: "Бустовете увеличават видимостта на обявите за 7 дни. Платените планове включват безплатни бустове!" },
+    { q: "Защо да плащам за план?", a: "Безплатният план е страхотен за случайни продавачи. Платените дават повече обяви, по-ниски такси и функции като аналитика и бустове." },
   ],
 }
 
@@ -396,7 +398,7 @@ export default function PlansPage() {
           </p>
           
           {/* Fee Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4 mb-10">
             {/* Subscription */}
             <div className="bg-card border rounded-xl p-4 text-center">
               <div className="size-10 mx-auto mb-3 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -496,12 +498,51 @@ export default function PlansPage() {
             </div>
           </div>
           
-          {/* Comparison Banner */}
-          <div className="mt-8 bg-gradient-to-r from-primary/10 to-amber-500/10 border border-primary/20 rounded-xl p-4 text-center">
-            <p className="text-sm font-medium">
+          {/* Comparison Table */}
+          <div className="mt-8 bg-card border rounded-xl p-4 overflow-x-auto">
+            <h3 className="font-semibold text-center mb-4">
+              {locale === "bg" ? "Сравнение с други платформи" : "How we compare"}
+            </h3>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-2 pr-4">{locale === "bg" ? "Платформа" : "Platform"}</th>
+                  <th className="text-center py-2 px-2">{locale === "bg" ? "Такса продажба" : "Sale Fee"}</th>
+                  <th className="text-center py-2 px-2">{locale === "bg" ? "На поръчка" : "Per-Order"}</th>
+                  <th className="text-center py-2 pl-4">{locale === "bg" ? "Абонамент" : "Subscription"}</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground">
+                <tr className="border-b">
+                  <td className="py-2 pr-4 font-medium text-foreground">eBay</td>
+                  <td className="text-center py-2 px-2">12.7-14.9%</td>
+                  <td className="text-center py-2 px-2">$0.30-0.40</td>
+                  <td className="text-center py-2 pl-4">$4.95-299/mo</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="py-2 pr-4 font-medium text-foreground">Amazon</td>
+                  <td className="text-center py-2 px-2">8-17%*</td>
+                  <td className="text-center py-2 px-2">$0.99/item†</td>
+                  <td className="text-center py-2 pl-4">$39.99/mo</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="py-2 pr-4 font-medium text-foreground">Etsy</td>
+                  <td className="text-center py-2 px-2">6.5% + 3%</td>
+                  <td className="text-center py-2 px-2">$0.20</td>
+                  <td className="text-center py-2 pl-4">$15/mo</td>
+                </tr>
+                <tr className="bg-primary/5">
+                  <td className="py-2 pr-4 font-bold text-primary">Amazong</td>
+                  <td className="text-center py-2 px-2 font-bold text-primary">3-12%</td>
+                  <td className="text-center py-2 px-2 font-bold text-primary">0-0.25 лв</td>
+                  <td className="text-center py-2 pl-4 font-bold text-primary">$0-200/mo</td>
+                </tr>
+              </tbody>
+            </table>
+            <p className="text-[10px] text-muted-foreground mt-3 text-center">
               {locale === "bg" 
-                ? "🎉 Нашите такси са по-ниски от eBay (13.25% + $0.30), Amazon (15%), и Etsy (10%+)!"
-                : "🎉 Our fees are lower than eBay (13.25% + $0.30), Amazon (15%), and Etsy (10%+)!"}
+                ? "* Amazon: 8% за електроника, 15% за повечето, до 20% за бижута. † Без Pro план."
+                : "* Amazon: 8% electronics, 15% most categories, up to 20% jewelry. † Without Pro plan."}
             </p>
           </div>
         </div>

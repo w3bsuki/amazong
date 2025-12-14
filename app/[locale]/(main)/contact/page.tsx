@@ -65,7 +65,7 @@ export default async function ContactPage({
         {/* Quick Help Section */}
         <section className="mb-12">
           <h2 className="text-xl font-bold mb-6">{t('quickHelp')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3">
             {quickHelp.map((item, index) => (
               <Link key={index} href={item.href}>
                 <Card className="h-full hover:shadow-md hover:border-brand/30 transition-all cursor-pointer group">

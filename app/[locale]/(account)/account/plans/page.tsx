@@ -40,12 +40,14 @@ export default async function PlansPage({ params }: PlansPageProps) {
     .eq('is_active', true)
     .order('price_monthly', { ascending: true })
 
-  // Fetch current subscription if exists
+  // Fetch current subscription if exists (include cancelled-but-not-expired)
   const { data: currentSubscription } = await supabase
     .from('subscriptions')
-    .select('*')
+    .select('id, seller_id, plan_type, status, billing_period, expires_at, auto_renew, stripe_subscription_id')
     .eq('seller_id', user.id)
-    .eq('status', 'active')
+    .in('status', ['active']) // Active subscriptions only
+    .order('created_at', { ascending: false })
+    .limit(1)
     .single()
 
   const currentTier = seller?.tier || 'basic'

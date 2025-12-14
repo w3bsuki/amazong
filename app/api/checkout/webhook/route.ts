@@ -125,12 +125,49 @@ export async function POST(req: Request) {
             } else {
               console.log('Order items created:', validItems.length);
             }
+
+            // Decrement stock for each purchased product
+            for (const item of validItems) {
+              // Get current stock first
+              const { data: currentProduct } = await supabase
+                .from('products')
+                .select('stock, track_inventory')
+                .eq('id', item.product_id)
+                .single();
+
+              if (currentProduct && currentProduct.track_inventory !== false) {
+                const newStock = Math.max(0, (currentProduct.stock || 0) - item.quantity);
+                const { error: updateError } = await supabase
+                  .from('products')
+                  .update({ stock: newStock })
+                  .eq('id', item.product_id);
+
+                if (updateError) {
+                  console.error('Error decrementing stock for product:', item.product_id, updateError);
+                } else {
+                  console.log('Stock decremented for product:', item.product_id, 'from', currentProduct.stock, 'to', newStock);
+                }
+              }
+            }
+
+            // Create order conversations for buyer-seller communication
+            // This is handled by the create_order_conversation trigger on orders table
+            // Sellers will see the new order in their dashboard and can message buyers
+            console.log('Order created - conversation trigger should fire for order:', order.id);
+            
+            // Log seller IDs that will receive the order
+            const sellerIds = [...new Set(validItems.map(item => item.seller_id))];
+            console.log('Sellers notified via order:', sellerIds.join(', '));
           }
         }
       }
 
-      // Optional: Send confirmation email
-      // await sendOrderConfirmation(session.customer_details?.email, order);
+      // Send buyer confirmation email (placeholder - integrate with email service)
+      if (session.customer_details?.email) {
+        console.log('Would send confirmation email to:', session.customer_details.email);
+        // TODO: Integrate with email service (Resend, SendGrid, etc.)
+        // await sendOrderConfirmationEmail(session.customer_details.email, order);
+      }
 
     } catch (error) {
       console.error('Error processing checkout session:', error);

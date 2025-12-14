@@ -6,7 +6,7 @@ import {
     HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
-import { Link } from "@/i18n/routing"
+import { Link, useRouter, usePathname } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { User } from "@supabase/supabase-js"
 import { useCart } from "@/lib/cart-context"
@@ -504,7 +504,15 @@ export function LocationDropdown({ country, onCountryChange }: LocationDropdownP
     const t = useTranslations('LocationDropdown')
     const tNav = useTranslations('Navigation')
     const locale = useLocale()
+    const router = useRouter()
+    const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
+
+    // Language options
+    const languages = [
+        { code: 'bg', name: 'Български', flag: 'https://flagcdn.com/w40/bg.png' },
+        { code: 'en', name: 'English', flag: 'https://flagcdn.com/w40/gb.png' },
+    ]
 
     // Shipping zones - Updated December 2025: Added UK (post-Brexit)
     const shippingZones = [
@@ -529,25 +537,49 @@ export function LocationDropdown({ country, onCountryChange }: LocationDropdownP
         window.location.reload()
     }
 
+    const handleLanguageSwitch = (newLocale: string) => {
+        setIsOpen(false)
+        router.replace(pathname, { locale: newLocale })
+    }
+
+    const currentLang = languages.find(l => l.code === locale) || languages[1]
+    const langFlag = locale === 'bg' ? '🇧🇬' : '🇬🇧'
+
     return (
         <HoverCard open={isOpen} onOpenChange={setIsOpen} openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
-                <Button variant="ghost" className="h-12 hidden lg:flex flex-col items-start leading-none gap-0 text-header-text hover:text-brand text-xs p-2 px-3 border border-transparent hover:border-header-text/20 rounded-sm shrink-0 group">
-                    <span className="text-xs text-header-text-muted group-hover:text-brand">{tNav('deliverTo')}</span>
-                    <div className="flex items-center gap-1 font-medium text-sm text-header-text mt-0.5 group-hover:text-brand">
-                        <MapPin size={14} weight="fill" />
-                        <span>{country}</span>
-                    </div>
+                <Button variant="ghost" className="h-10 hidden lg:flex items-center gap-1.5 text-header-text hover:text-brand text-sm px-2 rounded-sm shrink-0 group">
+                    <span className="text-base">{langFlag}</span>
+                    <span className="text-muted-foreground">/</span>
+                    <MapPin size={14} weight="fill" className="text-brand" />
+                    <span className="font-medium">{country}</span>
                 </Button>
             </HoverCardTrigger>
-            <HoverCardContent className="w-[300px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden" align="start" sideOffset={8}>
-                <div className="p-4 bg-muted border-b border-border">
-                    <h3 className="font-semibold text-base text-foreground">{t('chooseLocation')}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{t('deliveryOptions')}</p>
+            <HoverCardContent className="w-[320px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden" align="start" sideOffset={8}>
+                {/* Language Toggle - Compact tabs */}
+                <div className="p-3 border-b border-border">
+                    <p className="text-xs font-medium text-muted-foreground uppercase mb-2">{locale === 'bg' ? 'Език' : 'Language'}</p>
+                    <div className="flex bg-muted rounded-md p-0.5">
+                        {languages.map((lang) => (
+                            <button
+                                key={lang.code}
+                                onClick={() => handleLanguageSwitch(lang.code)}
+                                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded text-sm font-medium transition-all ${
+                                    lang.code === locale 
+                                        ? 'bg-background text-foreground shadow-sm' 
+                                        : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                            >
+                                <img src={lang.flag} alt={lang.name} width={16} height={12} className="rounded-sm" />
+                                <span>{lang.code.toUpperCase()}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
-                
+
+                {/* Delivery Location Section */}
                 <div className="p-2">
-                    <p className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase">{t('shippingZones')}</p>
+                    <p className="px-2 py-2 text-xs font-medium text-muted-foreground uppercase">{t('shippingZones')}</p>
                     {shippingZones.map((loc) => {
                         const displayName = locale === 'bg' ? loc.nameLocal : loc.name
                         const isSelected = country === displayName || country === loc.name || country === loc.nameLocal
@@ -555,25 +587,27 @@ export function LocationDropdown({ country, onCountryChange }: LocationDropdownP
                             <button
                                 key={loc.code}
                                 onClick={() => handleLocationSelect(loc)}
-                                className={`w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted text-left transition-colors ${isSelected ? 'bg-brand/10' : ''}`}
+                                className={`w-full flex items-center gap-3 p-2.5 rounded-md hover:bg-muted text-left transition-colors ${isSelected ? 'bg-brand/10' : ''}`}
                             >
                                 {loc.flag ? (
                                     <img 
                                         src={loc.flag} 
                                         alt={loc.name} 
-                                        width={32} 
-                                        height={22} 
+                                        width={28} 
+                                        height={20} 
                                         className="rounded-sm border border-border"
                                     />
                                 ) : (
-                                    <span className="text-2xl w-8 text-center">{loc.icon}</span>
+                                    <span className="text-xl w-7 text-center">{loc.icon}</span>
                                 )}
-                                <div className="flex-1">
-                                    <p className="text-sm font-medium text-foreground">{loc.name}</p>
-                                    <p className="text-xs text-muted-foreground">{loc.nameLocal}</p>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-foreground truncate">{loc.name}</p>
+                                    {loc.name !== loc.nameLocal && (
+                                        <p className="text-xs text-muted-foreground truncate">{loc.nameLocal}</p>
+                                    )}
                                 </div>
                                 {isSelected && (
-                                    <div className="w-2 h-2 bg-brand rounded-full" />
+                                    <div className="w-2 h-2 bg-brand rounded-full shrink-0" />
                                 )}
                             </button>
                         )

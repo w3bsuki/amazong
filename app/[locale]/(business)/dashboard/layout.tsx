@@ -1,0 +1,78 @@
+import { BusinessSidebar } from "@/components/business/business-sidebar"
+import { BusinessHeader } from "@/components/business/business-header"
+import { 
+  requireBusinessSeller, 
+  getPendingTasksCount, 
+  getActiveSubscription,
+  hasDashboardAccess,
+} from "@/lib/auth/business"
+import { connection } from "next/server"
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@/components/ui/sidebar"
+
+export default async function BusinessDashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  // Ensure dynamic rendering
+  await connection()
+  
+  // This will redirect non-business sellers to account page
+  const businessSeller = await requireBusinessSeller("/account")
+  
+  // Check subscription status for dashboard access
+  const subscription = await getActiveSubscription(businessSeller.id)
+  const hasAccess = hasDashboardAccess(businessSeller.tier, subscription)
+  
+  // Note: Individual pages that require subscription access should use
+  // requireDashboardAccess() instead. The upgrade page is allowed for all
+  // business users so they can see pricing and upgrade.
+  
+  // Get pending orders count for sidebar badge
+  const tasks = await getPendingTasksCount(businessSeller.id)
+  
+  // Determine subscription tier for display
+  const subscriptionTier = subscription?.plan_tier || businessSeller.tier || 'free'
+  const subscriptionName = subscription?.plan_name || 'Business Free'
+
+  return (
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <BusinessSidebar 
+        variant="inset" 
+        storeName={businessSeller.store_name}
+        pendingOrdersCount={tasks.unfulfilled}
+        subscriptionTier={subscriptionTier}
+        subscriptionName={subscriptionName}
+        hasDashboardAccess={hasAccess}
+        user={{
+          name: businessSeller.business_name || businessSeller.store_name,
+          email: businessSeller.email,
+          avatar: businessSeller.avatar_url || "/avatars/business.jpg",
+        }}
+      />
+      <SidebarInset>
+        <BusinessHeader 
+          storeName={businessSeller.store_name}
+          isVerified={businessSeller.is_verified_business}
+          subscriptionTier={subscriptionTier}
+          hasDashboardAccess={hasAccess}
+        />
+        <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            {children}
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  )
+}

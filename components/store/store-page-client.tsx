@@ -6,6 +6,7 @@ import { StoreTabs, type StoreTab } from "@/components/store/store-tabs"
 import { StoreProductsGrid } from "@/components/store/store-products-grid"
 import { StoreReviewsList } from "@/components/store/store-reviews-list"
 import type { StoreInfo, StoreProduct, SellerFeedback } from "@/lib/data/store"
+import type { DisplayBadge, TrustScoreBreakdown } from "@/lib/types/badges"
 
 interface StorePageClientProps {
   store: StoreInfo
@@ -14,6 +15,12 @@ interface StorePageClientProps {
   initialReviews: SellerFeedback[]
   initialReviewsTotal: number
   locale: string
+  // Badge props
+  badges?: DisplayBadge[]
+  trustScore?: number
+  trustBreakdown?: TrustScoreBreakdown
+  verificationLevel?: "basic" | "verified" | "pro" | "enterprise"
+  accountType?: "personal" | "business"
 }
 
 const PRODUCTS_PER_PAGE = 12
@@ -25,7 +32,12 @@ export function StorePageClient({
   initialProductsTotal,
   initialReviews,
   initialReviewsTotal,
-  locale
+  locale,
+  badges = [],
+  trustScore,
+  trustBreakdown,
+  verificationLevel = "basic",
+  accountType = "personal",
 }: StorePageClientProps) {
   const [activeTab, setActiveTab] = useState<StoreTab>("products")
   const [products, setProducts] = useState<StoreProduct[]>(initialProducts)
@@ -78,7 +90,15 @@ export function StorePageClient({
   return (
     <div className="min-h-screen bg-background">
       {/* Profile Header */}
-      <StoreProfileHeader store={store} locale={locale} />
+      <StoreProfileHeader 
+        store={store} 
+        locale={locale}
+        badges={badges}
+        trustScore={trustScore}
+        trustBreakdown={trustBreakdown}
+        verificationLevel={verificationLevel}
+        accountType={accountType}
+      />
       
       {/* Tabs - sticky on scroll */}
       <StoreTabs

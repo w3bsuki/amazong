@@ -26,15 +26,19 @@ export function LanguageSwitcher() {
         router.replace(pathname, { locale: newLocale })
     }
 
+    // Flag emoji for compact display
+    const flagEmoji = currentLocale.code === 'bg' ? '🇧🇬' : '🇬🇧'
+
     return (
         <HoverCard openDelay={50} closeDelay={100}>
             <HoverCardTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="h-11 px-3 gap-1.5 border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover [&_svg]:size-6!"
+                    className="h-11 px-2.5 gap-1 border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover"
+                    title={currentLocale.name}
                 >
-                    <Globe weight="regular" className="shrink-0" />
-                    <span className="text-sm font-bold">{currentLocale.code === 'bg' ? 'BG' : 'EN'}</span>
+                    <Globe weight="regular" className="shrink-0 size-5" />
+                    <span className="text-lg">{flagEmoji}</span>
                 </Button>
             </HoverCardTrigger>
             <HoverCardContent align="start" sideOffset={8} className="w-44 p-1 bg-popover text-popover-foreground border border-border rounded-sm">

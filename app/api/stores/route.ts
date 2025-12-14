@@ -86,11 +86,17 @@ export async function POST(request: Request) {
         }
 
         // 6. Create new seller record with account type and business details
+        // All new sellers start on 'free' tier with default fees
         const sellerData: Record<string, unknown> = {
             id: user.id,
             store_name: trimmedName,
             description: description || null,
             account_type: accountType,
+            tier: 'free',
+            commission_rate: accountType === 'business' ? 10.00 : 12.00, // Business gets better rate
+            final_value_fee: accountType === 'business' ? 10.00 : 12.00,
+            insertion_fee: 0,
+            per_order_fee: 0,
         }
 
         // Add business-specific fields if business account

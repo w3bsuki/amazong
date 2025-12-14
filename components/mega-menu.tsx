@@ -142,24 +142,24 @@ export function MegaMenu() {
     <>
       {/* Main wrapper for hover state management */}
       <div 
-        className="relative"
+        className="relative border-0"
         ref={menuRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Trigger Button - uses negative margin to align icon with content edge, no hover bg to avoid overflow */}
-        <Button
-          variant="ghost"
+        {/* Trigger Button - icon only for clean header look */}
+        <button
+          type="button"
           className={cn(
-            "flex items-center gap-2 mega-menu-text font-normal px-3 py-2.5 h-10 -ml-3",
-            "text-header-text hover:text-brand hover:bg-transparent",
-            "rounded-sm",
+            "flex items-center justify-center p-2 h-10 w-10 cursor-pointer",
+            "text-foreground hover:text-brand transition-colors",
+            "border-0 outline-none bg-transparent",
             isOpen && "text-brand"
           )}
+          aria-label={locale === "bg" ? "Отвори меню с категории" : "Open categories menu"}
         >
-          <List size={18} weight="bold" />
-          <span>{locale === "bg" ? "Всички категории" : "All categories"}</span>
-        </Button>
+          <List size={22} weight="bold" />
+        </button>
 
         {/* Invisible bridge to prevent gap when moving to menu */}
         {isOpen && (

@@ -63,7 +63,7 @@ export const config = {
   // Match all pathnames except:
   // - API routes (/api/*)
   // - Next.js internals (/_next/*, /_vercel/*)
-  // - Auth callbacks
+  // - Auth callbacks and confirm routes
   // - Static files (files with extensions like .ico, .png, etc.)
-  matcher: ['/((?!api|_next|_vercel|auth/callback|.*\\..*).*)']
+  matcher: ['/((?!api|_next|_vercel|auth/callback|auth/confirm|.*\\..*).*)']
 };

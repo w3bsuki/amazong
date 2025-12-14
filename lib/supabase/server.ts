@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
+import type { Database } from "./database.types"
 
 // =============================================================================
 // Supabase Clients - Use the right one for your context
@@ -27,7 +28,7 @@ export async function createClient() {
   assertEnvVars()
   const cookieStore = await cookies()
 
-  return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  return createServerClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll: (cookiesToSet) => {
@@ -46,7 +47,7 @@ export async function createClient() {
 /** Static client for cached queries (no cookies, safe for 'use cache') */
 export function createStaticClient() {
   assertEnvVars()
-  return createSupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  return createSupabaseClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY)
 }
 
 /** Admin client bypassing RLS (use only after auth verification) */
@@ -55,5 +56,5 @@ export function createAdminClient() {
   if (!SUPABASE_SERVICE_KEY) {
     throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY")
   }
-  return createSupabaseClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+  return createSupabaseClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 }

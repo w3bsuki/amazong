@@ -7,11 +7,22 @@ import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile-menu-sheet"
+import { useMessages } from "@/lib/message-context"
 
 export function MobileTabBar() {
   const pathname = usePathname()
   const t = useTranslations("Navigation")
   const menuSheetRef = useRef<MobileMenuSheetHandle>(null)
+  
+  // Get unread message count from message context
+  let unreadCount = 0
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { totalUnreadCount } = useMessages()
+    unreadCount = totalUnreadCount
+  } catch {
+    // MessageProvider not available (e.g., not logged in) - default to 0
+  }
 
   // Hide tab bar on product pages - they have their own sticky buy box
   const isProductPage = pathname.startsWith("/product/")
@@ -86,15 +97,22 @@ export function MobileTabBar() {
           href="/chat"
           prefetch={true}
           className={cn(
-            "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
+            "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5 relative",
             "touch-action-manipulation tap-transparent",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
             isActive("/chat") ? "text-brand" : "text-muted-foreground"
           )}
-          aria-label={t("chat")}
+          aria-label={`${t("chat")}${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
           aria-current={isActive("/chat") ? "page" : undefined}
         >
-          <ChatCircle size={22} weight={isActive("/chat") ? "fill" : "regular"} />
+          <div className="relative">
+            <ChatCircle size={22} weight={isActive("/chat") ? "fill" : "regular"} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-destructive text-destructive-foreground text-[9px] font-bold rounded-full flex items-center justify-center px-1">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
+          </div>
           <span className="text-[10px] font-medium">{t("chat")}</span>
         </Link>
 

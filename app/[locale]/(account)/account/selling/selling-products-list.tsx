@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
+import { useState, useEffect, useTransition } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -14,9 +14,24 @@ import {
   Star,
   Tag,
   Lightning,
+  Trash,
+  Pause,
+  Play,
 } from "@phosphor-icons/react"
 import { BoostDialog } from "@/components/boost-dialog"
 import { toast } from "sonner"
+import { deleteProduct, bulkUpdateProductStatus } from "@/app/actions/products"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface Product {
   id: string
@@ -31,6 +46,7 @@ interface Product {
   created_at: string
   is_boosted: boolean
   boost_expires_at: string | null
+  status?: 'active' | 'draft' | 'archived' | 'out_of_stock'
   category?: {
     name: string
     slug: string
@@ -44,7 +60,54 @@ interface SellingProductsListProps {
 
 export function SellingProductsList({ products, locale }: SellingProductsListProps) {
   const searchParams = useSearchParams()
-  const [productsList] = useState(products)
+  const router = useRouter()
+  const [productsList, setProductsList] = useState(products)
+  const [_isPending, startTransition] = useTransition()
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [togglingId, setTogglingId] = useState<string | null>(null)
+
+  // Handle delete product
+  const handleDelete = async (productId: string) => {
+    setDeletingId(productId)
+    startTransition(async () => {
+      const result = await deleteProduct(productId)
+      if (result.success) {
+        toast.success(
+          locale === 'bg' 
+            ? 'Продуктът е изтрит успешно!' 
+            : 'Product deleted successfully!'
+        )
+        setProductsList(prev => prev.filter(p => p.id !== productId))
+        router.refresh()
+      } else {
+        toast.error(result.error || (locale === 'bg' ? 'Грешка при изтриване' : 'Failed to delete'))
+      }
+      setDeletingId(null)
+    })
+  }
+
+  // Handle pause/unpause (draft/active toggle)
+  const handleToggleStatus = async (productId: string, currentStatus?: string) => {
+    setTogglingId(productId)
+    const newStatus = currentStatus === 'active' ? 'draft' : 'active'
+    startTransition(async () => {
+      const result = await bulkUpdateProductStatus([productId], newStatus)
+      if (result.success) {
+        toast.success(
+          locale === 'bg' 
+            ? (newStatus === 'draft' ? 'Продуктът е поставен на пауза' : 'Продуктът е активен отново')
+            : (newStatus === 'draft' ? 'Product paused' : 'Product activated')
+        )
+        setProductsList(prev => prev.map(p => 
+          p.id === productId ? { ...p, status: newStatus } : p
+        ))
+        router.refresh()
+      } else {
+        toast.error(result.error || (locale === 'bg' ? 'Грешка при промяна' : 'Failed to update'))
+      }
+      setTogglingId(null)
+    })
+  }
 
   // Handle boost success/cancel URL params
   useEffect(() => {
@@ -220,11 +283,62 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                         }
                       />
                     )}
+                    {/* Pause/Unpause button */}
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="size-8"
+                      onClick={() => handleToggleStatus(product.id, product.status)}
+                      disabled={togglingId === product.id}
+                    >
+                      {product.status === 'draft' ? (
+                        <Play className="size-4 text-emerald-600" weight="fill" />
+                      ) : (
+                        <Pause className="size-4 text-amber-600" weight="fill" />
+                      )}
+                    </Button>
                     <Button asChild variant="ghost" size="icon" className="size-8">
                       <Link href={`/${locale}/account/selling/edit?id=${product.id}`}>
                         <Pencil className="size-4" />
                       </Link>
                     </Button>
+                    {/* Delete button */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="size-8 text-destructive hover:bg-destructive/10"
+                          disabled={deletingId === product.id}
+                        >
+                          <Trash className="size-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            {locale === 'bg' ? 'Изтриване на продукт' : 'Delete Product'}
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {locale === 'bg' 
+                              ? `Сигурни ли сте, че искате да изтриете "${product.title}"? Това действие не може да бъде отменено.`
+                              : `Are you sure you want to delete "${product.title}"? This action cannot be undone.`
+                            }
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>
+                            {locale === 'bg' ? 'Отказ' : 'Cancel'}
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(product.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            {locale === 'bg' ? 'Изтрий' : 'Delete'}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </div>
@@ -350,6 +464,24 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                   }
                 />
               )}
+              {/* Pause/Unpause Button */}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="size-9"
+                onClick={() => handleToggleStatus(product.id, product.status)}
+                disabled={togglingId === product.id}
+                title={product.status === 'draft' 
+                  ? (locale === 'bg' ? 'Активирай' : 'Activate') 
+                  : (locale === 'bg' ? 'Постави на пауза' : 'Pause')
+                }
+              >
+                {product.status === 'draft' ? (
+                  <Play className="size-4 text-emerald-600" weight="fill" />
+                ) : (
+                  <Pause className="size-4 text-amber-600" weight="fill" />
+                )}
+              </Button>
               <Button asChild variant="ghost" size="icon" className="size-9">
                 <Link href={`/${locale}/product/${product.id}`}>
                   <Eye className="size-4" />
@@ -362,6 +494,44 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                   <span className="sr-only">Edit</span>
                 </Link>
               </Button>
+              {/* Delete Button */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="size-9 text-destructive hover:bg-destructive/10"
+                    disabled={deletingId === product.id}
+                  >
+                    <Trash className="size-4" />
+                    <span className="sr-only">Delete</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {locale === 'bg' ? 'Изтриване на продукт' : 'Delete Product'}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {locale === 'bg' 
+                        ? `Сигурни ли сте, че искате да изтриете "${product.title}"? Това действие не може да бъде отменено.`
+                        : `Are you sure you want to delete "${product.title}"? This action cannot be undone.`
+                      }
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      {locale === 'bg' ? 'Отказ' : 'Cancel'}
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleDelete(product.id)}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {locale === 'bg' ? 'Изтрий' : 'Delete'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         )

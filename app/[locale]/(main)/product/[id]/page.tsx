@@ -2,12 +2,31 @@ import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
+import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { ProductPageContent } from "@/components/product-page-content-new"
 import { ProductCard } from "@/components/product-card"
 import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
-import { ReviewsSection } from "@/components/reviews-section"
+import { ReviewsSectionServer } from "@/components/reviews-section-server"
 import { ProductBreadcrumb } from "@/components/product-breadcrumb"
+import { Skeleton } from "@/components/ui/skeleton"
+
+// Reviews loading skeleton
+function ReviewsLoadingSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-11 w-32" />
+      </div>
+      <Skeleton className="h-24 w-full rounded-lg" />
+      <div className="space-y-4">
+        <Skeleton className="h-32 w-full rounded-lg" />
+        <Skeleton className="h-32 w-full rounded-lg" />
+      </div>
+    </div>
+  )
+}
 
 // UUID regex pattern to detect if the id is a full UUID
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -351,14 +370,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       )}
 
-      {/* Product Reviews Section - Full width, eBay style */}
+      {/* Product Reviews Section - Server Component with Suspense */}
       <div id="product-reviews-section" className="border-t bg-background scroll-mt-4">
         <div className="container py-8">
-          <ReviewsSection
-            rating={product.rating || 0}
-            reviewCount={product.reviews_count || 0}
-            productId={product.id}
-          />
+          <Suspense fallback={<ReviewsLoadingSkeleton />}>
+            <ReviewsSectionServer
+              rating={product.rating || 0}
+              reviewCount={product.review_count || 0}
+              productId={product.id}
+            />
+          </Suspense>
         </div>
       </div>
     </div>

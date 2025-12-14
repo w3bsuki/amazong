@@ -965,15 +965,18 @@ export function ProductPageContent({
       {/* ===== MOBILE STICKY BAR - Compact, 44px min touch targets ===== */}
       <div className="fixed bottom-0 inset-x-0 z-50 bg-background/95 backdrop-blur-sm border-t shadow-[0_-2px_10px_rgba(0,0,0,0.08)] lg:hidden pb-safe">
         <div className="px-3 py-2.5 flex items-center gap-2.5">
-          {/* Price - Compact */}
+          {/* Title & Price - Compact */}
           <div className="flex-1 min-w-0">
-            <span className="text-lg font-bold text-foreground tracking-tight">US ${product.price.toFixed(2)}</span>
-            {product.original_price && discountPercentage > 0 && (
-              <div className="flex items-center gap-1 text-xs">
-                <span className="text-muted-foreground line-through">US ${product.original_price.toFixed(2)}</span>
-                <span className="text-destructive font-semibold">-{discountPercentage}%</span>
-              </div>
-            )}
+            <p className="text-xs text-muted-foreground truncate leading-tight">{product.title}</p>
+            <div className="flex items-center gap-1.5">
+              <span className="text-base font-bold text-foreground tracking-tight">US ${product.price.toFixed(2)}</span>
+              {product.original_price && discountPercentage > 0 && (
+                <>
+                  <span className="text-xs text-muted-foreground line-through">US ${product.original_price.toFixed(2)}</span>
+                  <span className="text-xs text-destructive font-semibold">-{discountPercentage}%</span>
+                </>
+              )}
+            </div>
           </div>
           {/* Watchlist button */}
           <button 
@@ -1004,7 +1007,7 @@ export function ProductPageContent({
             currentUserId={currentUserId}
             variant="buyNowOnly"
             showBuyNow={true}
-            className="shrink-0 h-11 px-6 rounded-full font-semibold text-sm shadow-sm touch-manipulation"
+            className="flex-1 min-w-0 h-11 px-6 rounded-full font-semibold text-sm shadow-sm touch-manipulation"
           />
         </div>
       </div>

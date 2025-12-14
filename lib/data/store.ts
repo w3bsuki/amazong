@@ -17,6 +17,7 @@ export interface StoreInfo {
   review_count: number
   positive_feedback_percentage: number
   follower_count: number
+  account_type: "personal" | "business"
 }
 
 export interface StoreProduct {
@@ -66,6 +67,7 @@ export async function getStoreInfo(storeSlugOrId: string): Promise<StoreInfo | n
       description,
       verified,
       tier,
+      account_type,
       created_at,
       profiles!sellers_id_fkey (
         avatar_url
@@ -92,6 +94,7 @@ export async function getStoreInfo(storeSlugOrId: string): Promise<StoreInfo | n
           description,
           verified,
           tier,
+          account_type,
           created_at,
           profiles!sellers_id_fkey (
             avatar_url
@@ -160,6 +163,7 @@ async function formatStoreInfo(supabase: Awaited<ReturnType<typeof createClient>
     description: seller.description,
     verified: seller.verified || false,
     tier: seller.tier || 'basic',
+    account_type: seller.account_type || 'personal',
     created_at: seller.created_at,
     avatar_url: seller.profiles?.avatar_url || null,
     total_products: productCount || 0,
@@ -292,5 +296,131 @@ export async function getSellerFeedback(
       }
     }),
     total: count || 0
+  }
+}
+
+/**
+ * Get store badge data including badges, verification, and trust score
+ */
+export async function getStoreBadgeData(sellerId: string): Promise<{
+  badges: Array<{
+    code: string
+    name: string
+    name_bg: string | null
+    icon: string | null
+    color: string | null
+    description: string | null
+    description_bg: string | null
+    tier: number
+    category: string
+  }>
+  verification: {
+    email_verified: boolean
+    phone_verified: boolean
+    id_verified: boolean
+    trust_score: number
+  } | null
+  businessVerification: {
+    vat_verified: boolean
+    registration_verified: boolean
+    verification_level: number
+  } | null
+  stats: {
+    total_listings: number
+    active_listings: number
+    total_sales: number
+    average_rating: number
+    total_reviews: number
+  } | null
+} | null> {
+  const supabase = await createClient()
+  if (!supabase) return null
+
+  // Fetch badges with their definitions
+  const { data: userBadges } = await supabase
+    .from("user_badges")
+    .select(`
+      badge_id,
+      badge_definitions (
+        code,
+        name,
+        name_bg,
+        icon,
+        color,
+        description,
+        description_bg,
+        tier,
+        category
+      )
+    `)
+    .eq("user_id", sellerId)
+    .is("revoked_at", null)
+
+  // Fetch verification
+  const { data: verification } = await supabase
+    .from("user_verification")
+    .select("email_verified, phone_verified, id_verified, trust_score")
+    .eq("user_id", sellerId)
+    .single()
+
+  // Fetch business verification
+  const { data: businessVerification } = await supabase
+    .from("business_verification")
+    .select("vat_verified, registration_verified, verification_level")
+    .eq("seller_id", sellerId)
+    .single()
+
+  // Fetch seller stats
+  const { data: stats } = await supabase
+    .from("seller_stats")
+    .select("total_listings, active_listings, total_sales, average_rating, total_reviews")
+    .eq("seller_id", sellerId)
+    .single()
+
+  // Process badges - extract from join and flatten
+  // badge_definitions may come back as array or single object depending on Supabase client version
+  type BadgeDef = {
+    code: string
+    name: string
+    name_bg: string | null
+    icon: string | null
+    color: string | null
+    description: string | null
+    description_bg: string | null
+    tier: number
+    category: string
+  }
+  
+  const processedBadges: BadgeDef[] = []
+  
+  for (const ub of userBadges || []) {
+    const badgeDef = ub.badge_definitions
+    if (!badgeDef) continue
+    
+    // Handle both array and single object cases
+    const def = Array.isArray(badgeDef) ? badgeDef[0] : badgeDef
+    if (def && typeof def === "object" && "code" in def) {
+      processedBadges.push({
+        code: String(def.code || ""),
+        name: String(def.name || ""),
+        name_bg: def.name_bg ? String(def.name_bg) : null,
+        icon: def.icon ? String(def.icon) : null,
+        color: def.color ? String(def.color) : null,
+        description: def.description ? String(def.description) : null,
+        description_bg: def.description_bg ? String(def.description_bg) : null,
+        tier: typeof def.tier === "number" ? def.tier : 0,
+        category: String(def.category || ""),
+      })
+    }
+  }
+  
+  // Sort by tier descending (higher tier = more prestigious)
+  processedBadges.sort((a, b) => (b.tier ?? 0) - (a.tier ?? 0))
+
+  return {
+    badges: processedBadges,
+    verification,
+    businessVerification,
+    stats,
   }
 }

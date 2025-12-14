@@ -33,52 +33,52 @@ import {
 const adminNavItems = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: "/admin",
     icon: IconDashboard,
   },
   {
     title: "Users",
-    url: "/dashboard/users",
+    url: "/admin/users",
     icon: IconUsers,
   },
   {
     title: "Products",
-    url: "/dashboard/products",
+    url: "/admin/products",
     icon: IconBox,
   },
   {
     title: "Orders",
-    url: "/dashboard/orders",
+    url: "/admin/orders",
     icon: IconShoppingCart,
   },
   {
     title: "Sellers",
-    url: "/dashboard/sellers",
+    url: "/admin/sellers",
     icon: IconBuildingStore,
   },
   {
     title: "Categories",
-    url: "/dashboard/categories",
+    url: "/admin/categories",
     icon: IconCategory,
   },
   {
     title: "Brands",
-    url: "/dashboard/brands",
+    url: "/admin/brands",
     icon: IconTags,
   },
   {
     title: "Messages",
-    url: "/dashboard/messages",
+    url: "/admin/messages",
     icon: IconMessage,
   },
   {
     title: "Subscriptions",
-    url: "/dashboard/subscriptions",
+    url: "/admin/subscriptions",
     icon: IconCrown,
   },
   {
     title: "Analytics",
-    url: "/dashboard/analytics",
+    url: "/admin/analytics",
     icon: IconChartBar,
   },
 ]
@@ -91,7 +91,7 @@ const adminSecondaryNav = [
   },
   {
     title: "Settings",
-    url: "/dashboard/settings",
+    url: "/admin/settings",
     icon: IconSettings,
   },
 ]
@@ -114,7 +114,7 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
-              <Link href="/dashboard">
+              <Link href="/admin">
                 <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
                   A
                 </div>

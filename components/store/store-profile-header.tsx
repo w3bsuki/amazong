@@ -20,10 +20,17 @@ import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import type { StoreInfo } from "@/lib/data/store"
 import { ContactStoreButton } from "./contact-store-button"
+import { SellerBadgeGroup, VerificationBadge, TrustScore } from "@/components/badges"
+import type { DisplayBadge, TrustScoreBreakdown } from "@/lib/types/badges"
 
 interface StoreProfileHeaderProps {
   store: StoreInfo
   locale: string
+  badges?: DisplayBadge[]
+  trustScore?: number
+  trustBreakdown?: TrustScoreBreakdown
+  verificationLevel?: "basic" | "verified" | "pro" | "enterprise"
+  accountType?: "personal" | "business"
 }
 
 function getInitials(name: string): string {
@@ -68,7 +75,15 @@ function getTierBadge(tier: string, locale: string) {
   )
 }
 
-export function StoreProfileHeader({ store, locale }: StoreProfileHeaderProps) {
+export function StoreProfileHeader({ 
+  store, 
+  locale,
+  badges = [],
+  trustScore,
+  trustBreakdown,
+  verificationLevel,
+  accountType = "personal",
+}: StoreProfileHeaderProps) {
   const [isFollowing, setIsFollowing] = useState(false)
   const [isFollowLoading, setIsFollowLoading] = useState(false)
   const [followerCount, setFollowerCount] = useState(store.follower_count || 0)
@@ -86,7 +101,7 @@ export function StoreProfileHeader({ store, locale }: StoreProfileHeaderProps) {
         .select("id")
         .eq("follower_id", user.id)
         .eq("seller_id", store.id)
-        .single()
+        .maybeSingle()
       
       setIsFollowing(!!data)
     }
@@ -130,11 +145,15 @@ export function StoreProfileHeader({ store, locale }: StoreProfileHeaderProps) {
             : `You unfollowed ${store.store_name}`
         })
       } else {
-        // Follow
-        await supabase
+        // Follow - use upsert to handle if already following
+        const { error } = await supabase
           .from("store_followers")
-          .insert({ follower_id: user.id, seller_id: store.id })
+          .upsert(
+            { follower_id: user.id, seller_id: store.id },
+            { onConflict: "follower_id,seller_id", ignoreDuplicates: true }
+          )
         
+        if (error) throw error
         setIsFollowing(true)
         setFollowerCount(prev => prev + 1)
         toast({
@@ -245,8 +264,27 @@ export function StoreProfileHeader({ store, locale }: StoreProfileHeaderProps) {
           <div className="mt-3.5 space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold text-base">{store.store_name}</span>
+              {verificationLevel && (
+                <VerificationBadge
+                  level={verificationLevel}
+                  accountType={accountType}
+                  size="sm"
+                  locale={locale as "en" | "bg"}
+                />
+              )}
               {getTierBadge(store.tier, locale)}
             </div>
+            
+            {/* Badges row */}
+            {badges.length > 0 && (
+              <SellerBadgeGroup
+                badges={badges}
+                size="xs"
+                maxDisplay={3}
+                showLabel={false}
+                locale={locale as "en" | "bg"}
+              />
+            )}
             
             {/* Description */}
             {store.description && (
@@ -255,7 +293,7 @@ export function StoreProfileHeader({ store, locale }: StoreProfileHeaderProps) {
               </p>
             )}
             
-            {/* Rating & member since - improved layout */}
+            {/* Rating, Trust Score & member since - improved layout */}
             <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
               {store.average_rating > 0 && (
                 <div className="flex items-center gap-1">
@@ -265,6 +303,14 @@ export function StoreProfileHeader({ store, locale }: StoreProfileHeaderProps) {
                     ({store.positive_feedback_percentage}%)
                   </span>
                 </div>
+              )}
+              {trustScore !== undefined && (
+                <TrustScore
+                  score={trustScore}
+                  breakdown={trustBreakdown}
+                  size="sm"
+                  locale={locale as "en" | "bg"}
+                />
               )}
               <div className="flex items-center gap-1">
                 <CalendarBlank className="size-4" />
@@ -342,14 +388,29 @@ export function StoreProfileHeader({ store, locale }: StoreProfileHeaderProps) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl font-bold">{store.store_name}</h1>
-                {store.verified && (
-                  <Badge variant="secondary" className="gap-1">
-                    <ShieldCheck weight="fill" className="size-4 text-primary" />
-                    {locale === "bg" ? "Потвърден" : "Verified"}
-                  </Badge>
+                {verificationLevel && (
+                  <VerificationBadge
+                    level={verificationLevel}
+                    accountType={accountType}
+                    size="md"
+                    locale={locale as "en" | "bg"}
+                  />
                 )}
                 {getTierBadge(store.tier, locale)}
               </div>
+              
+              {/* Seller Badges */}
+              {badges.length > 0 && (
+                <div className="mt-2">
+                  <SellerBadgeGroup
+                    badges={badges}
+                    size="sm"
+                    maxDisplay={5}
+                    showLabel={true}
+                    locale={locale as "en" | "bg"}
+                  />
+                </div>
+              )}
               
               {store.description && (
                 <p className="text-muted-foreground mt-2 max-w-2xl">
@@ -383,6 +444,15 @@ export function StoreProfileHeader({ store, locale }: StoreProfileHeaderProps) {
                       ({store.positive_feedback_percentage}% {locale === "bg" ? "положителни" : "positive"})
                     </span>
                   </div>
+                )}
+                {trustScore !== undefined && (
+                  <TrustScore
+                    score={trustScore}
+                    breakdown={trustBreakdown}
+                    size="md"
+                    showLabel={true}
+                    locale={locale as "en" | "bg"}
+                  />
                 )}
               </div>
               

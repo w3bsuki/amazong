@@ -57,12 +57,9 @@ const translations = {
     downgrade: "Downgrade",
     popular: "Popular",
     bestValue: "Best Value",
-    listings: "free listings",
+    listings: "listings",
     unlimited: "Unlimited",
-    fvf: "per sale",           // Final Value Fee
-    perOrder: "per order",     // Per-order fee (payment processing)
-    insertionFee: "per extra", // Insertion fee after free listings
-    noFees: "No extra fees",   // For enterprise plans
+    fvf: "when sold",          // Simple: "X% when sold"
     boosts: "boosts/mo",
     included: "Included:",
     moreFeatures: "more",
@@ -77,12 +74,9 @@ const translations = {
     downgrade: "Понижи",
     popular: "Популярен",
     bestValue: "Най-добра цена",
-    listings: "безплатни обяви",
+    listings: "обяви",
     unlimited: "Неограничено",
-    fvf: "на продажба",        // Final Value Fee
-    perOrder: "на поръчка",    // Per-order fee
-    insertionFee: "за допълн.", // Insertion fee
-    noFees: "Без допълн. такси",
+    fvf: "при продажба",       // Simple: "X% при продажба"
     boosts: "буста/мес",
     included: "Включено:",
     moreFeatures: "още",
@@ -134,9 +128,10 @@ export function PlanCard({
 
   const formatPrice = (price: number) => {
     if (price === 0) return t.free
+    // Bulgaria joins Eurozone Jan 2026
     return new Intl.NumberFormat(locale, {
       style: "currency",
-      currency: "BGN",
+      currency: "EUR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price)
@@ -219,7 +214,7 @@ export function PlanCard({
         )}
       </div>
 
-      {/* Stats Row - Key fees: listings, FVF%, per-order fee */}
+      {/* Stats Row - Simple: listings + fee when sold + boosts */}
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-3 pb-3 border-b flex-wrap">
         {/* Free listings count */}
         <span className="inline-flex items-center gap-1">
@@ -229,27 +224,13 @@ export function PlanCard({
           {t.listings}
         </span>
         <span className="text-border">•</span>
-        {/* Final Value Fee (% per sale) */}
+        {/* Final Value Fee (% per sale) - THE ONLY FEE */}
         <span className="inline-flex items-center gap-1">
           <span className="font-semibold text-foreground">
             {plan.final_value_fee ?? plan.commission_rate}%
           </span>
           {t.fvf}
         </span>
-        <span className="text-border">•</span>
-        {/* Per-order fee OR "No fees" for enterprise */}
-        {(plan.per_order_fee ?? 0.25) > 0 ? (
-          <span className="inline-flex items-center gap-1">
-            <span className="font-semibold text-foreground">
-              {new Intl.NumberFormat(locale, { style: "currency", currency: "BGN", minimumFractionDigits: 2 }).format(plan.per_order_fee ?? 0.25)}
-            </span>
-            {t.perOrder}
-          </span>
-        ) : (
-          <span className="text-green-600 dark:text-green-400 font-medium">
-            {t.noFees}
-          </span>
-        )}
         {/* Boosts included */}
         {plan.boosts_included > 0 && (
           <>

@@ -45,12 +45,12 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error) {
-      // Successfully verified! Redirect to home with welcome flag
-      return NextResponse.redirect(`${redirectTo}${next}?welcome=true`)
+      // Successfully verified! Redirect to home with welcome flag (use /en/ locale as default)
+      return NextResponse.redirect(`${redirectTo}/en${next}?welcome=true`)
     }
     
     console.error("Code exchange error:", error.message)
-    return NextResponse.redirect(`${redirectTo}/auth/error?error=invalid_code`)
+    return NextResponse.redirect(`${redirectTo}/en/auth/error?error=invalid_code`)
   }
   
   // Handle token_hash flow (older method)
@@ -61,21 +61,21 @@ export async function GET(request: Request) {
     })
     
     if (!error) {
-      // Email verified successfully
+      // Email verified successfully (use /en/ locale as default)
       if (type === "signup" || type === "email") {
-        return NextResponse.redirect(`${redirectTo}${next}?welcome=true`)
+        return NextResponse.redirect(`${redirectTo}/en${next}?welcome=true`)
       } else if (type === "recovery") {
-        return NextResponse.redirect(`${redirectTo}/auth/reset-password`)
+        return NextResponse.redirect(`${redirectTo}/en/auth/reset-password`)
       } else if (type === "email_change") {
-        return NextResponse.redirect(`${redirectTo}/account/settings?email_changed=true`)
+        return NextResponse.redirect(`${redirectTo}/en/account/settings?email_changed=true`)
       }
       
-      return NextResponse.redirect(`${redirectTo}${next}`)
+      return NextResponse.redirect(`${redirectTo}/en${next}`)
     }
     
     console.error("Email verification error:", error.message)
   }
   
   // If verification fails, redirect to an error page
-  return NextResponse.redirect(`${redirectTo}/auth/error?error=verification_failed`)
+  return NextResponse.redirect(`${redirectTo}/en/auth/error?error=verification_failed`)
 }

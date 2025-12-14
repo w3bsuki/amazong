@@ -1,20 +1,26 @@
 "use client"
 
 import * as React from "react"
-import { useState, useCallback, useMemo, useRef } from "react"
-import { CaretDown, CaretRight, ArrowRight } from "@phosphor-icons/react"
+import { useState, useCallback, useMemo, useRef, useEffect } from "react"
+import { CaretDown, CaretRight, ArrowRight, List, ShoppingBag, Tag } from "@phosphor-icons/react"
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
 import { useLocale } from "next-intl"
+import Image from "next/image"
+import { categoryBlurDataURL } from "@/lib/image-utils"
 import { getCategoryIcon } from "@/config/category-icons"
-import { MEGA_MENU_CONFIG, MAX_MENU_ITEMS, MAX_VISIBLE_CATEGORIES } from "@/config/mega-menu-config"
+import { getSubcategoryImage } from "@/config/subcategory-images"
+import { MEGA_MENU_CONFIG, MAX_MENU_ITEMS, MAX_VISIBLE_CATEGORIES, PRIORITY_VISIBLE_CATEGORIES, HIDDEN_FROM_SUBHEADER } from "@/config/mega-menu-config"
 import { useCategoriesCache, getCategoryName, type Category } from "@/hooks/use-categories-cache"
+
+const MAX_VISIBLE_SUBCATEGORIES = 16
 
 // Custom hook for header height measurement
 function useHeaderHeight(): number {
@@ -38,9 +44,20 @@ export function CategorySubheader() {
   const { categories, isLoading } = useCategoriesCache({ depth: 2 })
   const headerHeight = useHeaderHeight()
   const [activeCategory, setActiveCategory] = useState<Category | null>(null)
+  const [isFullMenuOpen, setIsFullMenuOpen] = useState(false)
+  const [fullMenuActiveCategory, setFullMenuActiveCategory] = useState<Category | null>(null)
+  const [showAllCategories, setShowAllCategories] = useState(false)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const fullMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const getName = useCallback((cat: Category) => getCategoryName(cat, locale), [locale])
+
+  // Set first category as active in full menu when data loads
+  useEffect(() => {
+    if (categories.length > 0 && !fullMenuActiveCategory) {
+      setFullMenuActiveCategory(categories[0])
+    }
+  }, [categories, fullMenuActiveCategory])
 
   const handleMouseEnter = useCallback((category: Category) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
@@ -53,17 +70,46 @@ export function CategorySubheader() {
 
   const closeMenu = useCallback(() => setActiveCategory(null), [])
 
-  React.useEffect(() => {
+  // Full mega menu handlers
+  const handleFullMenuMouseEnter = useCallback(() => {
+    if (fullMenuTimeoutRef.current) clearTimeout(fullMenuTimeoutRef.current)
+    setIsFullMenuOpen(true)
+  }, [])
+
+  const handleFullMenuMouseLeave = useCallback(() => {
+    fullMenuTimeoutRef.current = setTimeout(() => setIsFullMenuOpen(false), 150)
+  }, [])
+
+  const closeFullMenu = useCallback(() => {
+    setIsFullMenuOpen(false)
+  }, [])
+
+  const handleCategoryHover = useCallback((category: Category) => {
+    setFullMenuActiveCategory(category)
+  }, [])
+
+  useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      if (fullMenuTimeoutRef.current) clearTimeout(fullMenuTimeoutRef.current)
     }
   }, [])
 
   // Compute visible categories and "more" overflow
   const maxVisible = locale === "bg" ? MAX_VISIBLE_CATEGORIES : MAX_VISIBLE_CATEGORIES - 1
-  const visibleCategories = categories.slice(0, maxVisible)
-  const moreCategories = categories.slice(maxVisible)
-  const showMoreButton = categories.length > maxVisible
+  // Filter out specific categories from visible row (they go to Всички dropdown)
+  const hiddenSet = new Set(HIDDEN_FROM_SUBHEADER)
+  const filteredForVisible = categories.filter(cat => !hiddenSet.has(cat.slug))
+  // Priority categories (like books) should always be visible - move them to front if not already in visible range
+  const prioritySet = new Set(PRIORITY_VISIBLE_CATEGORIES)
+  const priorityCats = filteredForVisible.filter(cat => prioritySet.has(cat.slug))
+  const nonPriorityCats = filteredForVisible.filter(cat => !prioritySet.has(cat.slug))
+  // Take non-priority cats up to (maxVisible - priorityCats.length), then add priority cats at end
+  const visibleCategories = [...nonPriorityCats.slice(0, maxVisible - priorityCats.length), ...priorityCats]
+  // All remaining categories (including jewelry-watches) go to Всички dropdown
+  const visibleSlugs = new Set(visibleCategories.map(c => c.slug))
+  const moreCategories = categories.filter(cat => !visibleSlugs.has(cat.slug))
+  const showMoreButton = moreCategories.length > 0
 
   const moreCategoryVirtual: Category = {
     id: "more-categories",
@@ -73,14 +119,54 @@ export function CategorySubheader() {
     children: moreCategories,
   }
 
+  // For full mega menu - limit visible categories
+  const MAX_FULL_MENU_CATEGORIES = 25
+  const fullMenuVisibleCategories = showAllCategories ? categories : categories.slice(0, MAX_FULL_MENU_CATEGORIES)
+  const hasMoreCategories = categories.length > MAX_FULL_MENU_CATEGORIES
+
   if (isLoading) {
     return <CategorySubheaderSkeleton />
   }
 
   return (
     <>
-      <NavigationMenu className="w-full" viewport={false}>
-        <NavigationMenuList className="flex items-center gap-0.5 flex-1 overflow-x-auto no-scrollbar justify-start">
+      <NavigationMenu viewport={false} className="w-full max-w-none -ml-2">
+        <NavigationMenuList className="flex items-center w-full gap-0">
+          {/* All Categories Button - Triggers Full Mega Menu */}
+          <NavigationMenuItem
+            onMouseEnter={handleFullMenuMouseEnter}
+            onMouseLeave={handleFullMenuMouseLeave}
+            className="shrink-0"
+          >
+            <Button
+              variant="ghost"
+              className={cn(
+                "flex items-center gap-1.5 pl-0 pr-2 py-2 h-auto text-sm font-medium rounded-sm",
+                "bg-transparent hover:bg-subheader-hover",
+                "text-foreground hover:text-brand",
+                isFullMenuOpen && "text-brand bg-subheader-hover"
+              )}
+              aria-expanded={isFullMenuOpen}
+              aria-haspopup="menu"
+            >
+              <List weight="bold" size={16} aria-hidden="true" />
+              <span className="hidden xl:inline">{locale === "bg" ? "Всички категории" : "All Categories"}</span>
+              <span className="xl:hidden">{locale === "bg" ? "Меню" : "Menu"}</span>
+              <CaretDown
+                size={10}
+                weight="fill"
+                className={cn("transition-transform duration-200 opacity-60", isFullMenuOpen && "rotate-180")}
+                aria-hidden="true"
+              />
+            </Button>
+          </NavigationMenuItem>
+
+          {/* Separator */}
+          <div className="h-5 w-px bg-border mx-1 shrink-0" aria-hidden="true" />
+
+          {/* Category items - flex-1 to fill remaining space, with centered distribution */}
+          <div className="flex items-center flex-1 min-w-0 overflow-x-auto no-scrollbar">
+
           {visibleCategories.map((category) => (
             <CategoryNavItem
               key={category.id}
@@ -92,27 +178,29 @@ export function CategorySubheader() {
             />
           ))}
 
+          </div>
+
           {showMoreButton && (
             <NavigationMenuItem
-              className="shrink-0"
               onMouseEnter={() => handleMouseEnter(moreCategoryVirtual)}
               onMouseLeave={handleMouseLeave}
+              className="shrink-0 ml-auto"
             >
               <NavigationMenuTrigger
                 className={cn(
-                  "flex items-center gap-1 px-2.5 py-2.5 text-sm font-medium bg-transparent hover:bg-transparent",
+                  "flex items-center gap-1 pl-2 pr-0 py-2.5 text-sm font-medium bg-transparent hover:bg-transparent",
                   "text-foreground hover:text-brand hover:underline data-[state=open]:bg-transparent",
                   activeCategory?.id === "more-categories" && "text-brand"
                 )}
               >
-                <span>{locale === "bg" ? "Всички" : "View All"}</span>
+                <span>{locale === "bg" ? "Всички" : "All"}</span>
               </NavigationMenuTrigger>
             </NavigationMenuItem>
           )}
         </NavigationMenuList>
       </NavigationMenu>
 
-      {/* Mega Menu Panel */}
+      {/* Individual Category Dropdown Panel */}
       {activeCategory && activeCategory.children && activeCategory.children.length > 0 && (
         <MegaMenuPanel
           activeCategory={activeCategory}
@@ -126,6 +214,24 @@ export function CategorySubheader() {
           locale={locale}
         />
       )}
+
+      {/* Full Mega Menu with Sidebar (All Categories) */}
+      <FullMegaMenu
+        isOpen={isFullMenuOpen}
+        headerHeight={headerHeight}
+        categories={fullMenuVisibleCategories}
+        activeCategory={fullMenuActiveCategory}
+        showAllCategories={showAllCategories}
+        hasMoreCategories={hasMoreCategories}
+        totalCategories={categories.length}
+        getName={getName}
+        locale={locale}
+        onCategoryHover={handleCategoryHover}
+        onShowAllCategories={() => setShowAllCategories(true)}
+        onClose={closeFullMenu}
+        onMouseEnter={handleFullMenuMouseEnter}
+        onMouseLeave={handleFullMenuMouseLeave}
+      />
     </>
   )
 }
@@ -133,11 +239,291 @@ export function CategorySubheader() {
 // Skeleton loading state
 function CategorySubheaderSkeleton() {
   return (
-    <div className="flex items-center gap-1 h-10 px-2" role="status" aria-label="Loading categories">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className="h-4 w-20 bg-muted animate-pulse rounded" />
+    <div className="flex items-center gap-2 h-10" role="status" aria-label="Loading categories">
+      <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+      <div className="h-5 w-px bg-border" />
+      {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div key={i} className="h-4 w-16 bg-muted animate-pulse rounded" />
       ))}
     </div>
+  )
+}
+
+// Full Mega Menu with Sidebar (triggered by "All Categories" button)
+interface FullMegaMenuProps {
+  isOpen: boolean
+  headerHeight: number
+  categories: Category[]
+  activeCategory: Category | null
+  showAllCategories: boolean
+  hasMoreCategories: boolean
+  totalCategories: number
+  getName: (cat: Category) => string
+  locale: string
+  onCategoryHover: (cat: Category) => void
+  onShowAllCategories: () => void
+  onClose: () => void
+  onMouseEnter: () => void
+  onMouseLeave: () => void
+}
+
+function FullMegaMenu({
+  isOpen,
+  headerHeight,
+  categories,
+  activeCategory,
+  showAllCategories,
+  hasMoreCategories,
+  totalCategories,
+  getName,
+  locale,
+  onCategoryHover,
+  onShowAllCategories,
+  onClose,
+  onMouseEnter,
+  onMouseLeave,
+}: FullMegaMenuProps) {
+  const MAX_FULL_MENU_CATEGORIES = 25
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className={cn(
+          "fixed inset-0 z-30 transition-opacity duration-150",
+          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+        style={{ top: `${headerHeight}px` }}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Full-width Mega Menu Panel */}
+      <div
+        className={cn(
+          "fixed left-0 right-0 z-40 bg-popover border-b border-border shadow-lg",
+          "transition-opacity duration-150 ease-out",
+          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+        style={{ top: `${headerHeight}px` }}
+        role="menu"
+        aria-label={locale === "bg" ? "Меню с категории" : "Categories menu"}
+      >
+        <div
+          className="container"
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+        >
+          <div className="flex overflow-hidden" style={{ maxHeight: "min(calc(100vh - 150px), 640px)" }}>
+            {/* Categories Sidebar */}
+            <nav
+              className="w-64 border-r border-border py-2 shrink-0 overflow-y-auto overscroll-contain"
+              aria-label={locale === "bg" ? "Категории" : "Categories"}
+            >
+              <ul role="menu" className="pb-2">
+                {categories.map((category) => (
+                  <FullMenuCategoryItem
+                    key={category.id}
+                    category={category}
+                    isActive={activeCategory?.id === category.id}
+                    getName={getName}
+                    onHover={onCategoryHover}
+                    onClose={onClose}
+                  />
+                ))}
+              </ul>
+
+              {!showAllCategories && hasMoreCategories && (
+                <button
+                  onClick={onShowAllCategories}
+                  className="flex items-center gap-2 px-3 py-2.5 w-full text-sm text-brand hover:text-brand/80 hover:bg-accent/50 transition-colors"
+                  aria-expanded={showAllCategories}
+                >
+                  <CaretDown size={16} weight="regular" aria-hidden="true" />
+                  <span>
+                    {locale === "bg"
+                      ? `Виж още ${totalCategories - MAX_FULL_MENU_CATEGORIES}`
+                      : `View ${totalCategories - MAX_FULL_MENU_CATEGORIES} more`}
+                  </span>
+                </button>
+              )}
+
+              {/* Footer Links */}
+              <div className="border-t border-border mt-2 pt-1">
+                <Link
+                  href="/categories"
+                  onClick={onClose}
+                  className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-brand hover:text-brand/80 hover:bg-accent/50 transition-colors"
+                >
+                  <ShoppingBag size={20} weight="regular" aria-hidden="true" />
+                  <span>{locale === "bg" ? "Всички категории" : "See All Categories"}</span>
+                  <CaretRight size={16} weight="regular" className="ml-auto" aria-hidden="true" />
+                </Link>
+                <Link
+                  href="/deals"
+                  onClick={onClose}
+                  className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-destructive hover:text-destructive/80 hover:bg-accent/50 transition-colors"
+                >
+                  <Tag size={20} weight="fill" aria-hidden="true" />
+                  <span>{locale === "bg" ? "Промоции" : "Deals"}</span>
+                  <CaretRight size={16} weight="regular" className="ml-auto" aria-hidden="true" />
+                </Link>
+              </div>
+            </nav>
+
+            {/* Subcategories Panel - Full width */}
+            <div className="flex-1 p-5 bg-popover overflow-y-auto overscroll-contain">
+              {activeCategory && (
+                <FullMenuSubcategoriesGrid
+                  category={activeCategory}
+                  getName={getName}
+                  onClose={onClose}
+                  locale={locale}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+// Category item for full menu sidebar
+interface FullMenuCategoryItemProps {
+  category: Category
+  isActive: boolean
+  getName: (cat: Category) => string
+  onHover: (cat: Category) => void
+  onClose: () => void
+}
+
+function FullMenuCategoryItem({ category, isActive, getName, onHover, onClose }: FullMenuCategoryItemProps) {
+  const name = getName(category)
+  const hasChildren = category.children && category.children.length > 0
+
+  return (
+    <li role="none">
+      <Link
+        href={`/categories/${category.slug}`}
+        role="menuitem"
+        title={name}
+        className={cn(
+          "flex items-center gap-2.5 px-3 py-2.5 text-sm group transition-colors",
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+          isActive
+            ? "bg-accent text-accent-foreground font-medium"
+            : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+        )}
+        onMouseEnter={() => onHover(category)}
+        onClick={onClose}
+        aria-current={isActive ? "true" : undefined}
+      >
+        <span
+          className={cn(
+            "shrink-0 transition-colors",
+            isActive ? "text-brand" : "text-muted-foreground group-hover:text-foreground"
+          )}
+          aria-hidden="true"
+        >
+          {getCategoryIcon(category.slug)}
+        </span>
+        <span className="flex-1 truncate">{name}</span>
+        {hasChildren && (
+          <CaretRight
+            size={16}
+            weight="regular"
+            className={cn("shrink-0 transition-transform", isActive && "translate-x-0.5 text-brand")}
+            aria-hidden="true"
+          />
+        )}
+      </Link>
+    </li>
+  )
+}
+
+// Subcategories grid for full mega menu
+interface FullMenuSubcategoriesGridProps {
+  category: Category
+  getName: (cat: Category) => string
+  onClose: () => void
+  locale: string
+}
+
+function FullMenuSubcategoriesGrid({ category, getName, onClose, locale }: FullMenuSubcategoriesGridProps) {
+  const hasChildren = category.children && category.children.length > 0
+  const visibleChildren = category.children?.slice(0, MAX_VISIBLE_SUBCATEGORIES) || []
+  const hasMoreChildren = (category.children?.length || 0) > MAX_VISIBLE_SUBCATEGORIES
+
+  if (!hasChildren) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+        <ShoppingBag size={40} weight="regular" className="mb-3 opacity-30" aria-hidden="true" />
+        <p className="text-sm">
+          {locale === "bg" ? "Разгледай категорията за продукти" : "Browse category for products"}
+        </p>
+        <Link
+          href={`/categories/${category.slug}`}
+          onClick={onClose}
+          className="mt-2 text-sm text-brand hover:text-brand/80"
+        >
+          {locale === "bg" ? "Отиди към категорията" : "Go to category"}
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <div
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+        role="list"
+        aria-label={getName(category)}
+      >
+        {visibleChildren.map((subcat) => (
+          <Link
+            key={subcat.id}
+            href={`/search?category=${subcat.slug}`}
+            onClick={onClose}
+            className="group flex flex-col items-center gap-2"
+            role="listitem"
+          >
+            {/* Circle Image */}
+            <div className="w-full aspect-square rounded-full overflow-hidden bg-muted group-hover:bg-muted/80 transition-colors">
+              <Image
+                src={getSubcategoryImage(subcat.slug, subcat.image_url)}
+                alt={getName(subcat)}
+                width={200}
+                height={200}
+                className="w-full h-full object-cover"
+                placeholder="blur"
+                blurDataURL={categoryBlurDataURL()}
+                loading="lazy"
+              />
+            </div>
+            {/* Label */}
+            <span className="text-sm text-center text-muted-foreground group-hover:text-foreground group-hover:underline font-normal line-clamp-2 leading-tight">
+              {getName(subcat)}
+            </span>
+          </Link>
+        ))}
+      </div>
+
+      {hasMoreChildren && (
+        <div className="mt-4 pt-2 border-t border-border">
+          <Link
+            href={`/categories/${category.slug}`}
+            onClick={onClose}
+            className="inline-flex items-center gap-1 text-sm font-normal text-brand hover:text-brand/80"
+          >
+            {locale === "bg"
+              ? `Виж всички ${category.children?.length}`
+              : `View all ${category.children?.length}`}
+            <CaretRight size={16} weight="regular" aria-hidden="true" />
+          </Link>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -155,9 +541,9 @@ function CategoryNavItem({ category, isActive, getName, onMouseEnter, onMouseLea
 
   return (
     <NavigationMenuItem
-      className="shrink-0"
       onMouseEnter={() => onMouseEnter(category)}
       onMouseLeave={onMouseLeave}
+      className="shrink-0"
     >
       <Link
         href={`/categories/${category.slug}`}

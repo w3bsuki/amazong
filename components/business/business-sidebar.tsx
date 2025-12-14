@@ -1,0 +1,362 @@
+"use client"
+
+import * as React from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import {
+  IconDashboard,
+  IconBox,
+  IconShoppingCart,
+  IconPackage,
+  IconChartBar,
+  IconReceipt,
+  IconSettings,
+  IconHome,
+  IconUsers,
+  IconBuildingStore,
+  IconTag,
+  IconSpeakerphone,
+} from "@tabler/icons-react"
+
+import { NavUser } from "@/components/nav-user"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+} from "@/components/ui/sidebar"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+
+// Shopify-style nav structure with grouped sections
+const salesChannelNav = [
+  {
+    title: "Home",
+    url: "/dashboard",
+    icon: IconDashboard,
+  },
+  {
+    title: "Orders",
+    url: "/dashboard/orders",
+    icon: IconShoppingCart,
+    badge: 0, // Will be dynamic
+  },
+]
+
+const productsNav = [
+  {
+    title: "Products",
+    url: "/dashboard/products",
+    icon: IconBox,
+  },
+  {
+    title: "Inventory",
+    url: "/dashboard/inventory",
+    icon: IconPackage,
+  },
+]
+
+const customersNav = [
+  {
+    title: "Customers",
+    url: "/dashboard/customers",
+    icon: IconUsers,
+  },
+]
+
+const marketingNav = [
+  {
+    title: "Discounts",
+    url: "/dashboard/discounts",
+    icon: IconTag,
+  },
+  {
+    title: "Marketing",
+    url: "/dashboard/marketing",
+    icon: IconSpeakerphone,
+  },
+]
+
+const analyticsNav = [
+  {
+    title: "Analytics",
+    url: "/dashboard/analytics",
+    icon: IconChartBar,
+  },
+  {
+    title: "Finances",
+    url: "/dashboard/accounting",
+    icon: IconReceipt,
+  },
+]
+
+const settingsNav = [
+  {
+    title: "Settings",
+    url: "/dashboard/settings",
+    icon: IconSettings,
+  },
+]
+
+interface BusinessSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  user: {
+    name: string
+    email: string
+    avatar: string
+  }
+  storeName?: string
+  pendingOrdersCount?: number
+  subscriptionTier?: string
+  subscriptionName?: string
+  hasDashboardAccess?: boolean
+}
+
+function NavItem({ 
+  item, 
+  isActive 
+}: { 
+  item: { title: string; url: string; icon: React.ElementType; badge?: number }
+  isActive: boolean 
+}) {
+  const Icon = item.icon
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        asChild
+        isActive={isActive}
+        className={cn(
+          "h-8 px-2 text-sm font-normal transition-colors",
+          isActive && "bg-accent font-medium"
+        )}
+      >
+        <Link href={item.url}>
+          <Icon className="size-4" />
+          <span className="flex-1">{item.title}</span>
+          {item.badge !== undefined && item.badge > 0 && (
+            <Badge 
+              variant="secondary" 
+              className="h-5 min-w-5 px-1.5 text-[10px] font-semibold bg-primary text-primary-foreground"
+            >
+              {item.badge > 99 ? '99+' : item.badge}
+            </Badge>
+          )}
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  )
+}
+
+// Subscription tier badge colors
+const tierColors: Record<string, string> = {
+  professional: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white',
+  enterprise: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white',
+  free: 'bg-muted text-muted-foreground',
+}
+
+const tierLabels: Record<string, string> = {
+  professional: 'Pro',
+  enterprise: 'Enterprise',
+  free: 'Free',
+}
+
+export function BusinessSidebar({ 
+  user, 
+  storeName, 
+  pendingOrdersCount = 0,
+  subscriptionTier = 'free',
+  subscriptionName: _subscriptionName = 'Business Free',
+  hasDashboardAccess = false,
+  ...props 
+}: BusinessSidebarProps) {
+  const pathname = usePathname()
+  
+  // Normalize pathname by removing locale prefix
+  const normalizedPath = pathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?/, '') || '/dashboard'
+  
+  const isActive = (url: string) => {
+    if (url === '/dashboard') {
+      return normalizedPath === '/dashboard' || normalizedPath === ''
+    }
+    return normalizedPath.startsWith(url)
+  }
+
+  // Update orders badge with pending count
+  const salesChannelNavWithBadges = salesChannelNav.map(item => ({
+    ...item,
+    badge: item.title === 'Orders' ? pendingOrdersCount : undefined
+  }))
+  
+  // Get tier display info
+  const tierColor = tierColors[subscriptionTier] || tierColors.free
+  const tierLabel = tierLabels[subscriptionTier] || 'Free'
+
+  return (
+    <Sidebar collapsible="offcanvas" {...props}>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className="h-12 px-2"
+            >
+              <Link href="/dashboard" className="flex items-center gap-2">
+                <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+                  <IconBuildingStore className="size-4" />
+                </div>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-sm font-semibold truncate">
+                    {storeName || 'My Store'}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <Badge 
+                      className={cn(
+                        "h-4 px-1.5 text-[9px] font-semibold border-0",
+                        tierColor
+                      )}
+                    >
+                      {tierLabel}
+                    </Badge>
+                    {!hasDashboardAccess && (
+                      <Link 
+                        href="/dashboard/upgrade"
+                        className="text-[9px] text-primary hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Upgrade
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+
+      <SidebarContent className="gap-0">
+        {/* Main Sales Section */}
+        <SidebarGroup className="py-2">
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-0.5">
+              {salesChannelNavWithBadges.map((item) => (
+                <NavItem 
+                  key={item.url} 
+                  item={item} 
+                  isActive={isActive(item.url)}
+                />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Products Section */}
+        <SidebarGroup className="py-2">
+          <SidebarGroupLabel className="h-7 px-2 text-xs font-medium text-muted-foreground">
+            Products
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-0.5">
+              {productsNav.map((item) => (
+                <NavItem 
+                  key={item.url} 
+                  item={item} 
+                  isActive={isActive(item.url)}
+                />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Customers Section */}
+        <SidebarGroup className="py-2">
+          <SidebarGroupLabel className="h-7 px-2 text-xs font-medium text-muted-foreground">
+            Customers
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-0.5">
+              {customersNav.map((item) => (
+                <NavItem 
+                  key={item.url} 
+                  item={item} 
+                  isActive={isActive(item.url)}
+                />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Marketing Section */}
+        <SidebarGroup className="py-2">
+          <SidebarGroupLabel className="h-7 px-2 text-xs font-medium text-muted-foreground">
+            Marketing
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-0.5">
+              {marketingNav.map((item) => (
+                <NavItem 
+                  key={item.url} 
+                  item={item} 
+                  isActive={isActive(item.url)}
+                />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Analytics Section */}
+        <SidebarGroup className="py-2">
+          <SidebarGroupLabel className="h-7 px-2 text-xs font-medium text-muted-foreground">
+            Analytics
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-0.5">
+              {analyticsNav.map((item) => (
+                <NavItem 
+                  key={item.url} 
+                  item={item} 
+                  isActive={isActive(item.url)}
+                />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Settings - at bottom */}
+        <SidebarGroup className="mt-auto py-2">
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-0.5">
+              {settingsNav.map((item) => (
+                <NavItem 
+                  key={item.url} 
+                  item={item} 
+                  isActive={isActive(item.url)}
+                />
+              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  className="h-8 px-2 text-sm font-normal text-muted-foreground hover:text-foreground"
+                >
+                  <Link href="/">
+                    <IconHome className="size-4" />
+                    <span>Back to Store</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter>
+        <NavUser user={user} />
+      </SidebarFooter>
+    </Sidebar>
+  )
+}

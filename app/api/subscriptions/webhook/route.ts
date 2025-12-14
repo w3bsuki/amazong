@@ -132,12 +132,15 @@ export async function POST(req: Request) {
               console.error('Error creating subscription:', subError)
             }
 
-            // Update seller tier and commission rate
+            // Update seller tier and ALL fee fields from plan
             const { error: sellerError } = await supabase
               .from('sellers')
               .update({
                 tier: planTier,
-                commission_rate: plan.commission_rate,
+                commission_rate: plan.final_value_fee || plan.commission_rate || 12.00,
+                final_value_fee: plan.final_value_fee || plan.commission_rate || 12.00,
+                insertion_fee: plan.insertion_fee || 0,
+                per_order_fee: plan.per_order_fee || 0,
               })
               .eq('id', sellerId)
 
@@ -145,7 +148,7 @@ export async function POST(req: Request) {
               console.error('Error updating seller:', sellerError)
             }
 
-            console.log(`Subscription activated for seller ${sellerId}: ${planTier}`)
+            console.log(`✅ Subscription activated for seller ${sellerId}: ${planTier}, FVF: ${plan.final_value_fee || plan.commission_rate}%`)
           }
         }
         break
@@ -156,7 +159,8 @@ export async function POST(req: Request) {
         const stripeSubId = subscriptionEvent.id
         const subscription = subscriptionEvent as unknown as { 
           status: string
-          current_period_end: number 
+          current_period_end: number
+          cancel_at_period_end: boolean
         }
 
         // Find the subscription in our database
@@ -167,37 +171,52 @@ export async function POST(req: Request) {
           .single()
 
         if (existingSub) {
+          // Map Stripe status to our status
+          // KEY: Don't downgrade when cancel_at_period_end is true - user keeps access until expiry
           const newStatus = subscription.status === 'active' ? 'active' 
             : subscription.status === 'canceled' ? 'cancelled'
             : subscription.status === 'past_due' ? 'expired'
             : existingSub.status
 
           const expiresAt = new Date(subscription.current_period_end * 1000).toISOString()
+          
+          // Track auto_renew based on cancel_at_period_end
+          const autoRenew = !subscription.cancel_at_period_end
 
           await supabase
             .from('subscriptions')
             .update({
               status: newStatus,
               expires_at: expiresAt,
+              auto_renew: autoRenew,
               updated_at: new Date().toISOString(),
             })
             .eq('id', existingSub.id)
 
-          // Update seller tier if cancelled
+          // IMPORTANT: Only downgrade seller when subscription is ACTUALLY cancelled/expired
+          // NOT when cancel_at_period_end is set (user still has access until period ends)
           if (newStatus === 'cancelled' || newStatus === 'expired') {
             await supabase
               .from('sellers')
               .update({
-                tier: 'basic',
-                commission_rate: 10.00,
+                tier: 'free',
+                commission_rate: 12.00,
+                final_value_fee: 12.00,
+                insertion_fee: 0,
+                per_order_fee: 0,
               })
               .eq('id', existingSub.seller_id)
+            
+            console.log(`⬇️ Subscription ${newStatus} for seller ${existingSub.seller_id} - downgraded to free tier`)
+          } else if (newStatus === 'active' && !autoRenew) {
+            console.log(`⏳ Subscription scheduled for cancellation at ${expiresAt} for seller ${existingSub.seller_id}`)
           }
         }
         break
       }
 
       case 'customer.subscription.deleted': {
+        // This fires when subscription period actually ends (after cancel_at_period_end)
         const subscriptionEvent = event.data.object as Stripe.Subscription
         const stripeSubId = subscriptionEvent.id
 
@@ -212,19 +231,25 @@ export async function POST(req: Request) {
           await supabase
             .from('subscriptions')
             .update({
-              status: 'cancelled',
+              status: 'expired', // Subscription has ended
+              auto_renew: false,
               updated_at: new Date().toISOString(),
             })
             .eq('id', existingSub.id)
 
-          // Reset seller to basic tier
+          // NOW downgrade seller to free tier (subscription has actually ended)
           await supabase
             .from('sellers')
             .update({
-              tier: 'basic',
-              commission_rate: 10.00,
+              tier: 'free',
+              commission_rate: 12.00,
+              final_value_fee: 12.00,
+              insertion_fee: 0,
+              per_order_fee: 0,
             })
             .eq('id', existingSub.seller_id)
+          
+          console.log(`🔚 Subscription ended for seller ${existingSub.seller_id} - downgraded to free tier`)
         }
         break
       }

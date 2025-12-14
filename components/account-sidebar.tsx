@@ -70,14 +70,22 @@ const getAccountNavItems = (locale: string) => [
     url: "/account/wishlist",
     icon: IconHeart,
   },
-  {
-    title: locale === 'bg' ? 'Съобщения' : 'Messages',
+  {    title: locale === 'bg' ? 'Следвани' : 'Following',
+    url: "/account/following",
+    icon: IconBuildingStore,
+  },
+  {    title: locale === 'bg' ? 'Съобщения' : 'Messages',
     url: "/chat",
     icon: IconMessage,
   },
 ]
 
 const getAccountManageItems = (locale: string) => [
+  {
+    title: locale === 'bg' ? 'Профил' : 'Profile',
+    url: "/account/profile",
+    icon: IconUser,
+  },
   {
     title: locale === 'bg' ? 'Сигурност' : 'Security',
     url: "/account/security",

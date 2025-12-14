@@ -1,0 +1,162 @@
+import { createAdminClient } from "@/lib/supabase/server"
+import { formatDistanceToNow } from "date-fns"
+import { connection } from "next/server"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { IconCheck, IconX } from "@tabler/icons-react"
+
+async function getSellers() {
+  const adminClient = createAdminClient()
+  
+  const { data: sellers, error } = await adminClient
+    .from('sellers')
+    .select(`
+      id,
+      store_name,
+      description,
+      verified,
+      tier,
+      is_verified_business,
+      business_name,
+      commission_rate,
+      country_code,
+      created_at,
+      profiles (
+        email,
+        full_name
+      )
+    `)
+    .order('created_at', { ascending: false })
+  
+  if (error) {
+    console.error('Failed to fetch sellers:', error)
+    return []
+  }
+  
+  return sellers
+}
+
+export default async function AdminSellersPage() {
+  await connection()
+  const sellers = await getSellers()
+  
+  const getTierBadge = (tier: string | null) => {
+    switch (tier) {
+      case 'business':
+        return 'bg-purple-100 text-purple-700 border-purple-200'
+      case 'premium':
+        return 'bg-amber-100 text-amber-700 border-amber-200'
+      default:
+        return 'bg-gray-100 text-gray-700 border-gray-200'
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Sellers</h1>
+          <p className="text-muted-foreground">
+            All seller accounts on the platform
+          </p>
+        </div>
+        <Badge variant="outline" className="text-base">
+          {sellers.length} sellers
+        </Badge>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>All Sellers</CardTitle>
+          <CardDescription>
+            View and manage seller accounts and their stores
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Store</TableHead>
+                <TableHead>Owner</TableHead>
+                <TableHead>Tier</TableHead>
+                <TableHead>Verified</TableHead>
+                <TableHead>Commission</TableHead>
+                <TableHead>Country</TableHead>
+                <TableHead>Joined</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sellers.map((seller) => (
+                <TableRow key={seller.id}>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">{seller.store_name}</p>
+                      {seller.business_name && (
+                        <p className="text-sm text-muted-foreground">
+                          {seller.business_name}
+                        </p>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium">
+                        {(seller.profiles as any)?.full_name || 'No name'}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {(seller.profiles as any)?.email}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={getTierBadge(seller.tier)}>
+                      {seller.tier || 'basic'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      {seller.verified ? (
+                        <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200">
+                          <IconCheck className="size-3 mr-1" />
+                          Verified
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="bg-gray-100 text-gray-500 border-gray-200">
+                          <IconX className="size-3 mr-1" />
+                          Not verified
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="tabular-nums">
+                    {seller.commission_rate}%
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {seller.country_code || 'BG'}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {formatDistanceToNow(new Date(seller.created_at), { addSuffix: true })}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

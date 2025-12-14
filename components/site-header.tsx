@@ -11,7 +11,6 @@ import {
 } from "@/components/dropdowns"
 
 // Navigation components
-import { MegaMenu } from "@/components/navigation/mega-menu"
 import { CategorySubheader } from "@/components/navigation/category-subheader"
 
 // Other components
@@ -20,7 +19,6 @@ import { MobileSearchOverlay } from "@/components/mobile-search-overlay"
 import { MobileCartDropdown } from "@/components/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/mobile-wishlist-button"
 import { DesktopSearch } from "@/components/desktop-search"
-import { LanguageSwitcher } from "@/components/language-switcher"
 import { MagnifyingGlass, Camera, CaretLeft } from "@phosphor-icons/react"
 
 // Utilities
@@ -129,18 +127,16 @@ export function SiteHeader({ user }: SiteHeaderProps) {
         />
       </div>
 
-      {/* Desktop Top Header - Light/White like eBay */}
+      {/* Desktop Top Header - CSS Grid for stable search bar alignment */}
       <div className="hidden md:block text-header-text">
-        <div className="container flex items-center h-14 md:h-16 gap-3">
-          {/* Left Section - Logo + Location + Language */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Logo - Dark text on light background */}
-            <Link href="/" prefetch={true} className="flex items-center shrink-0 hover:opacity-80 outline-none focus:ring-2 focus:ring-brand/30 rounded-sm py-1 min-h-11">
+        <div className="container grid grid-cols-[auto_1fr_auto] items-center h-14 md:h-16 gap-3">
+          {/* Left Section - Logo + Location */}
+          <div className="flex items-center gap-1">
+            <Link href="/" prefetch={true} className="flex items-center shrink-0 hover:opacity-80 outline-none">
               <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
             </Link>
-
-            {/* Deliver to - Compact */}
-            <div className="hidden lg:block shrink-0">
+            {/* Location dropdown */}
+            <div className="hidden lg:block">
               <LocationDropdown 
                 country={country} 
                 onCountryChange={(code, name) => {
@@ -149,20 +145,17 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                 }}
               />
             </div>
+          </div>
 
-            {/* Language Switcher - Compact */}
-            <div className="hidden lg:block shrink-0">
-              <LanguageSwitcher />
+          {/* Search Bar - Fixed grid column, doesn't shift */}
+          <div className="flex justify-center px-4">
+            <div className="w-full max-w-5xl">
+              <DesktopSearch />
             </div>
           </div>
 
-          {/* Search Bar - Desktop only - FILLS AVAILABLE SPACE */}
-          <div className="hidden md:flex flex-1 min-w-0">
-            <DesktopSearch />
-          </div>
-
           {/* Right Actions - Conditional based on auth state */}
-          <div className="flex items-center gap-0.5 shrink-0">
+          <div className="flex items-center justify-end gap-0.5">
             {user ? (
               <>
                 {/* Authenticated: Show all icon dropdowns */}
@@ -219,34 +212,22 @@ export function SiteHeader({ user }: SiteHeaderProps) {
         </div>
       </div>
 
-      {/* Category Subheader - eBay style with mega menus */}
+      {/* Category Subheader - Full container width, categories centered */}
       <nav className="hidden sm:block bg-subheader-bg text-sm border-t border-header-border relative">
-        <div className="container flex items-center text-subheader-text">
-          {/* Mobile/Tablet: Sidebar Menu (Sheet) */}
-          <div className="md:hidden shrink-0">
+        <div className="container text-subheader-text">
+          {/* Mobile/Tablet: Quick Links with Sidebar Menu */}
+          <div className="lg:hidden flex items-center gap-0.5 overflow-x-auto no-scrollbar">
             <SidebarMenu user={user} />
-          </div>
-          
-          {/* Desktop: All Categories Mega Menu (Hover) */}
-          <div className="hidden md:block shrink-0">
-            <MegaMenu />
-          </div>
-
-          {/* Separator */}
-          <div className="hidden md:block w-px h-5 bg-border/60 mx-1 shrink-0" />
-          
-          {/* Category Links with Mega Menus - flex-1 to take remaining space */}
-          <div className="hidden lg:flex flex-1 min-w-0">
-            <CategorySubheader />
-          </div>
-
-          {/* Quick Links - Show on smaller screens */}
-          <div className="lg:hidden flex items-center gap-0.5 min-w-0 flex-1">
             <Link href="/todays-deals" prefetch={true} className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('todaysDeals')}</Link>
             <Link href="/customer-service" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('customerService')}</Link>
             <Link href="/registry" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('registry')}</Link>
             <Link href="/gift-cards" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('giftCards')}</Link>
             <Link href="/sell" className="font-normal text-brand hover:text-brand-dark hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
+          </div>
+          
+          {/* Desktop: Categories fill container width */}
+          <div className="hidden lg:block">
+            <CategorySubheader />
           </div>
         </div>
       </nav>

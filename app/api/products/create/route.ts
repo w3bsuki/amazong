@@ -80,6 +80,24 @@ export async function POST(request: Request) {
       }, { status: 403 })
     }
 
+    // 2.5. Check listing limit before proceeding
+    const { data: limitInfo } = await supabaseUser.rpc('get_seller_listing_info', {
+      p_seller_id: user.id
+    })
+    
+    if (limitInfo && limitInfo.length > 0) {
+      const info = limitInfo[0]
+      if (!info.is_unlimited && info.remaining <= 0) {
+        return NextResponse.json({ 
+          error: "LISTING_LIMIT_REACHED",
+          message: `You have reached your listing limit (${info.current_count} of ${info.max_allowed}). Please upgrade your plan to add more listings.`,
+          currentCount: info.current_count,
+          maxAllowed: info.max_allowed,
+          upgradeRequired: true
+        }, { status: 403 })
+      }
+    }
+
     const body = await request.json()
     
     // 3. Parse and validate request body
@@ -149,6 +167,16 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error("Product Creation Error:", error)
+      
+      // Check for listing limit error (raised by check_listing_limit trigger)
+      if (error.message?.includes('LISTING_LIMIT_REACHED') || error.code === 'P0001') {
+        return NextResponse.json({ 
+          error: "LISTING_LIMIT_REACHED",
+          message: "You have reached your listing limit. Please upgrade your plan to add more listings.",
+          upgradeRequired: true
+        }, { status: 403 })
+      }
+      
       return NextResponse.json({ 
         error: error.message || "Failed to create product" 
       }, { status: 500 })

@@ -1,15 +1,26 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useTransition } from "react"
 import { useSearchParams } from "next/navigation"
-import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Lightning, ArrowUpRight, User, Buildings } from "@phosphor-icons/react"
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Lightning, User, Buildings, X, ArrowsClockwise, CalendarBlank, Warning } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { PlansGrid, type Plan } from "@/components/plan-card"
+import { cancelSubscription, reactivateSubscription } from "@/app/actions/subscriptions"
 
 interface SubscriptionPlan {
   id: string
@@ -51,6 +62,9 @@ interface Subscription {
   seller_id: string
   plan_type: string
   status: string
+  billing_period?: string
+  expires_at?: string
+  auto_renew?: boolean
   stripe_subscription_id: string | null
   [key: string]: unknown
 }
@@ -73,10 +87,10 @@ function toPlan(sp: SubscriptionPlan): Plan {
     price_monthly: sp.price_monthly,
     price_yearly: sp.price_yearly,
     max_listings: sp.max_listings ?? null,
-    // Fee structure (all paid by seller)
+    // Simple fee structure: just % when sold (no insertion or per-order fees)
     final_value_fee: sp.final_value_fee ?? sp.commission_rate ?? 12,
-    insertion_fee: sp.insertion_fee ?? 0.25,
-    per_order_fee: sp.per_order_fee ?? 0.25,
+    insertion_fee: 0,  // No longer used
+    per_order_fee: 0,  // No longer used
     commission_rate: sp.commission_rate,  // Legacy compat
     boosts_included: sp.boosts_included ?? 0,
     priority_support: sp.priority_support ?? false,
@@ -100,7 +114,22 @@ export function PlansContent({
   const [accountType, setAccountType] = useState<"personal" | "business">(
     seller?.account_type || "personal"
   )
+  const [isPending, startTransition] = useTransition()
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const searchParams = useSearchParams()
+
+  // Computed: Is this subscription set to cancel at period end?
+  const isCancelledButActive = currentSubscription?.status === "active" && currentSubscription?.auto_renew === false
+  const hasActiveSubscription = currentSubscription?.status === "active" && currentTier !== "free"
+  
+  // Format expiry date
+  const expiryDate = currentSubscription?.expires_at 
+    ? new Date(currentSubscription.expires_at).toLocaleDateString(locale === "bg" ? "bg-BG" : "en-US", {
+        year: "numeric",
+        month: "long", 
+        day: "numeric"
+      })
+    : null
 
   // Show toast notifications based on URL params (from Stripe redirect)
   useEffect(() => {
@@ -120,6 +149,39 @@ export function PlansContent({
       window.history.replaceState({}, "", window.location.pathname)
     }
   }, [searchParams, locale])
+  
+  // Handle subscription cancellation
+  const handleCancelSubscription = () => {
+    startTransition(async () => {
+      const result = await cancelSubscription()
+      if (result.success) {
+        toast.success(
+          locale === "bg"
+            ? "Абонаментът ще бъде прекратен в края на периода"
+            : "Subscription will be cancelled at the end of the billing period"
+        )
+        setCancelDialogOpen(false)
+      } else {
+        toast.error(result.error || (locale === "bg" ? "Грешка" : "Error"))
+      }
+    })
+  }
+
+  // Handle subscription reactivation
+  const handleReactivate = () => {
+    startTransition(async () => {
+      const result = await reactivateSubscription()
+      if (result.success) {
+        toast.success(
+          locale === "bg"
+            ? "Абонаментът е активиран отново!"
+            : "Subscription reactivated!"
+        )
+      } else {
+        toast.error(result.error || (locale === "bg" ? "Грешка" : "Error"))
+      }
+    })
+  }
 
   const handleSelectPlan = async (plan: Plan) => {
     if (plan.price_monthly === 0) {
@@ -202,33 +264,155 @@ export function PlansContent({
         </p>
       </div>
 
-      {/* Current Plan Badge & Actions */}
-      {seller && (
+      {/* Current Subscription Status Card */}
+      {seller && hasActiveSubscription && (
+        <Card className={cn(
+          "max-w-md mx-auto",
+          isCancelledButActive && "border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20"
+        )}>
+          <CardContent className="p-4">
+            <div className="flex flex-col gap-3">
+              {/* Plan Badge & Status */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Badge variant={isCancelledButActive ? "outline" : "secondary"} className="text-sm px-3 py-1">
+                    {locale === "bg" ? "Текущ план: " : "Current plan: "}
+                    <span className="font-semibold capitalize ml-1">{currentTier}</span>
+                  </Badge>
+                  {isCancelledButActive && (
+                    <Badge variant="outline" className="text-amber-600 border-amber-500">
+                      {locale === "bg" ? "Отменен" : "Cancelling"}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* Expiry Info */}
+              {expiryDate && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <CalendarBlank className="size-4" />
+                  {isCancelledButActive ? (
+                    <span>
+                      {locale === "bg" 
+                        ? `Достъпът приключва на ${expiryDate}` 
+                        : `Access ends on ${expiryDate}`}
+                    </span>
+                  ) : (
+                    <span>
+                      {locale === "bg" 
+                        ? `Следващо плащане: ${expiryDate}` 
+                        : `Next billing: ${expiryDate}`}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Cancellation Warning */}
+              {isCancelledButActive && (
+                <div className="flex items-start gap-2 p-2 rounded-md bg-amber-100/80 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-xs">
+                  <Warning className="size-4 shrink-0 mt-0.5" weight="fill" />
+                  <span>
+                    {locale === "bg"
+                      ? "След тази дата ще бъдете прехвърлени към безплатния план. Можете да се абонирате отново по всяко време."
+                      : "After this date, you'll be moved to the free plan. You can resubscribe anytime."}
+                  </span>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {isCancelledButActive ? (
+                  // Show Reactivate button if cancelled but not yet expired
+                  <Button 
+                    size="sm" 
+                    onClick={handleReactivate}
+                    disabled={isPending}
+                    className="gap-1.5"
+                  >
+                    <ArrowsClockwise className={cn("size-4", isPending && "animate-spin")} />
+                    {locale === "bg" ? "Активирай отново" : "Reactivate"}
+                  </Button>
+                ) : (
+                  // Show Cancel button for active subscriptions
+                  <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="gap-1.5 text-muted-foreground">
+                        <X className="size-4" />
+                        {locale === "bg" ? "Отмени абонамент" : "Cancel Subscription"}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          {locale === "bg" ? "Отмяна на абонамента" : "Cancel Subscription"}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="space-y-2">
+                          <p>
+                            {locale === "bg"
+                              ? "Сигурни ли сте? Вашият абонамент ще остане активен до края на текущия период за плащане."
+                              : "Are you sure? Your subscription will remain active until the end of the current billing period."}
+                          </p>
+                          {expiryDate && (
+                            <p className="font-medium">
+                              {locale === "bg"
+                                ? `Достъпът ви ще изтече на ${expiryDate}`
+                                : `Your access will expire on ${expiryDate}`}
+                            </p>
+                          )}
+                          <p className="text-xs text-muted-foreground">
+                            {locale === "bg"
+                              ? "Можете да се абонирате отново по всяко време, за да възстановите достъпа си."
+                              : "You can resubscribe anytime to restore your access."}
+                          </p>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>
+                          {locale === "bg" ? "Откажи" : "Keep Subscription"}
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleCancelSubscription}
+                          disabled={isPending}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          {isPending 
+                            ? (locale === "bg" ? "Обработка..." : "Processing...") 
+                            : (locale === "bg" ? "Да, отмени" : "Yes, Cancel")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+                
+                {/* Stripe Portal for payment method management */}
+                {currentSubscription?.stripe_subscription_id && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={handleManageSubscription}
+                    className="text-xs"
+                  >
+                    {locale === "bg" ? "Методи за плащане" : "Payment Methods"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Current Plan Badge for free tier users */}
+      {seller && !hasActiveSubscription && (
         <div className="flex flex-col items-center gap-3">
           <Badge variant="secondary" className="text-sm px-3 py-1">
             {locale === "bg" ? "Текущ план: " : "Current plan: "}
             <span className="font-semibold capitalize ml-1">{currentTier}</span>
           </Badge>
-          
-          <div className="flex items-center gap-2">
-            {currentTier !== "business" && (
-              <Link href="/account/plans/upgrade">
-                <Button size="sm" className="gap-1.5">
-                  <ArrowUpRight className="size-4" weight="bold" />
-                  {locale === "bg" ? "Надгради" : "Upgrade"}
-                </Button>
-              </Link>
-            )}
-            {currentSubscription?.stripe_subscription_id && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleManageSubscription}
-              >
-                {locale === "bg" ? "Управление на абонамента" : "Manage Subscription"}
-              </Button>
-            )}
-          </div>
+          <p className="text-sm text-muted-foreground text-center max-w-md">
+            {locale === "bg"
+              ? "Надградете плана си за по-ниски такси и повече обяви"
+              : "Upgrade your plan for lower fees and more listings"}
+          </p>
         </div>
       )}
 

@@ -5,6 +5,7 @@ import { AccountHeroCard } from "@/components/account-hero-card"
 import { AccountStatsCards } from "@/components/account-stats-cards"
 import { AccountChart } from "@/components/account-chart"
 import { AccountRecentActivity } from "@/components/account-recent-activity"
+import { AccountBadges } from "@/components/account-badges"
 
 interface AccountPageProps {
   params: Promise<{
@@ -76,6 +77,9 @@ export default async function AccountPage({ params }: AccountPageProps) {
       
       {/* Quick action buttons */}
       <AccountStatsCards totals={totals} locale={locale} />
+      
+      {/* User badges */}
+      <AccountBadges locale={locale as "en" | "bg"} />
       
       {/* Chart - desktop only */}
       <div className="hidden sm:block">

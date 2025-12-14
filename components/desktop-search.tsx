@@ -103,17 +103,17 @@ export function DesktopSearch() {
 
 
   return (
-    <div className="w-full h-11">
+    <div className="w-full h-10">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverAnchor asChild>
           <form 
             ref={formRef}
             onSubmit={handleSearch}
-            className="flex h-full w-full rounded-md overflow-visible bg-white border border-border focus-within:border-brand"
+            className="flex h-full w-full rounded-full overflow-hidden bg-muted border border-border focus-within:border-brand focus-within:bg-background transition-colors"
           >
             {/* Search Input */}
             <div className="relative flex-1 flex items-center">
-              <MagnifyingGlass size={16} weight="regular" className="absolute left-3 text-muted-foreground pointer-events-none" />
+              <MagnifyingGlass size={18} weight="regular" className="absolute left-4 text-muted-foreground pointer-events-none" />
               <Input
                 ref={inputRef}
                 type="text"
@@ -122,7 +122,7 @@ export function DesktopSearch() {
                     ? "Търси продукти, марки и още..."
                     : "Search products, brands, and more..."
                 }
-                className="h-full border-0 rounded-none focus-visible:ring-0 text-foreground pl-10 pr-10 text-base placeholder:text-muted-foreground bg-transparent"
+                className="h-full border-0 rounded-none focus-visible:ring-0 text-foreground pl-11 pr-10 text-sm placeholder:text-muted-foreground bg-transparent"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={() => setIsOpen(true)}
@@ -134,7 +134,7 @@ export function DesktopSearch() {
                 <button
                   type="button"
                   onClick={handleClearInput}
-                  className="absolute right-3 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <X size={16} weight="regular" />
                 </button>
@@ -145,9 +145,9 @@ export function DesktopSearch() {
             <Button
               type="submit"
               aria-label={t("searchPlaceholder")}
-              className="h-full w-12 bg-brand hover:bg-brand/90 text-white rounded-none rounded-r-md border-none flex items-center justify-center"
+              className="h-8 w-8 my-auto mr-1 bg-brand hover:bg-brand/90 text-white rounded-full p-0 border-none flex items-center justify-center shrink-0"
             >
-              <MagnifyingGlass size={20} weight="regular" />
+              <MagnifyingGlass size={14} weight="bold" />
             </Button>
           </form>
         </PopoverAnchor>

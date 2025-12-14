@@ -52,7 +52,7 @@ export default async function CustomerServicePage({ params }: { params: Promise<
 
                 <div className="mb-12">
                     <h2 className="text-xl font-bold mb-4">{t('helpTitle')}</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3">
                         {helpTopics.map((topic, i) => (
                             <Card key={i} className="hover:bg-muted cursor-pointer transition-colors">
                                 <CardContent className="flex items-center p-4 gap-4">

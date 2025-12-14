@@ -124,7 +124,7 @@ export default async function SellersPage({
         </p>
 
         {/* Sellers Grid */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
           {sellersWithStats.map((seller) => (
             <Link href={`/search?seller=${seller.id}`} key={seller.id}>
               <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer border-border rounded-lg overflow-hidden group">

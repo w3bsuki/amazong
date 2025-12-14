@@ -36,6 +36,7 @@ interface Product {
   created_at: string
   is_boosted: boolean
   boost_expires_at: string | null
+  status?: 'active' | 'draft' | 'archived' | 'out_of_stock'
   category?: {
     name: string
     slug: string
@@ -85,6 +86,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
       created_at,
       is_boosted,
       boost_expires_at,
+      status,
       category:categories(name, slug)
     `)
     .eq("seller_id", user.id)

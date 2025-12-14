@@ -207,6 +207,29 @@ export async function verifyAndCreateOrder(sessionId: string) {
         if (itemsError) {
           console.error('Error creating order items:', itemsError)
         }
+
+        // Decrement stock for each purchased product
+        for (const item of validItems) {
+          const { data: currentProduct } = await adminClient
+            .from('products')
+            .select('stock, track_inventory')
+            .eq('id', item.product_id)
+            .single()
+
+          if (currentProduct && currentProduct.track_inventory !== false) {
+            const newStock = Math.max(0, (currentProduct.stock || 0) - item.quantity)
+            const { error: updateError } = await adminClient
+              .from('products')
+              .update({ stock: newStock })
+              .eq('id', item.product_id)
+
+            if (updateError) {
+              console.error('Error decrementing stock for product:', item.product_id, updateError)
+            } else {
+              console.log('Stock decremented for product:', item.product_id, 'to', newStock)
+            }
+          }
+        }
       }
     }
 

@@ -26,11 +26,26 @@ export function MegaMenu() {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  // Measure header height for proper positioning
+  // Measure only the main header row height (excluding subheader) 
+  // so mega menu opens below main header and COVERS the subheader
   useEffect(() => {
     const updateHeaderHeight = () => {
-      const header = document.querySelector("header")
-      if (header) setHeaderHeight(header.offsetHeight)
+      // Find the desktop header container (the div with "hidden md:block")
+      // This is the main header row, not including the category subheader nav
+      const desktopHeader = document.querySelector("header > div.hidden.md\\:block") as HTMLElement
+      if (desktopHeader) {
+        // Get the position from top of header to bottom of main header row
+        const header = document.querySelector("header") as HTMLElement
+        if (header) {
+          const headerRect = header.getBoundingClientRect()
+          const desktopHeaderRect = desktopHeader.getBoundingClientRect()
+          // Height = bottom of desktop header row relative to top of viewport when header is at top
+          setHeaderHeight(desktopHeaderRect.bottom - headerRect.top)
+        }
+      } else {
+        // Fallback: assume ~64px for main header row only
+        setHeaderHeight(64)
+      }
     }
     updateHeaderHeight()
     window.addEventListener("resize", updateHeaderHeight)
@@ -82,17 +97,18 @@ export function MegaMenu() {
       >
         <Button
           variant="ghost"
+          size="icon-xl"
           className={cn(
-            "flex items-center gap-2 font-normal px-3 py-2.5 h-10 -ml-3",
-            "text-header-text hover:text-brand hover:bg-transparent rounded-sm",
+            "text-foreground hover:text-brand hover:bg-transparent",
+            "border-0",
+            "transition-colors duration-150",
             isOpen && "text-brand"
           )}
           aria-expanded={isOpen}
           aria-haspopup="menu"
           aria-label={locale === "bg" ? "Отвори меню с категории" : "Open categories menu"}
         >
-          <List size={18} weight="bold" aria-hidden="true" />
-          <span className="text-sm">{locale === "bg" ? "Всички категории" : "All categories"}</span>
+          <List weight="bold" aria-hidden="true" />
         </Button>
 
         {/* Invisible bridge */}

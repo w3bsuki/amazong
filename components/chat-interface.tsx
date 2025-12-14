@@ -21,14 +21,18 @@ import {
   Info,
   Image as ImageIcon,
   Heart,
-  Package
+  Package,
+  ProhibitInset
 } from "@phosphor-icons/react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { blockUser } from "@/app/actions/blocked-users"
+import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -60,9 +64,11 @@ export function ChatInterface({
     error
   } = useMessages()
 
+  const { toast } = useToast()
   const [inputValue, setInputValue] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [isBlocking, setIsBlocking] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   // Get current user
@@ -160,6 +166,44 @@ export function ChatInterface({
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
       }
+    }
+  }
+
+  // Handle blocking user
+  const handleBlockUser = async () => {
+    if (!currentConversation) return
+    
+    // Determine who to block (the other party)
+    const userToBlock = currentUserId === currentConversation.buyer_id 
+      ? currentConversation.seller_id 
+      : currentConversation.buyer_id
+    
+    setIsBlocking(true)
+    try {
+      const result = await blockUser(userToBlock)
+      if (result.success) {
+        toast({
+          title: locale === "bg" ? "Потребителят е блокиран" : "User blocked",
+          description: locale === "bg" 
+            ? "Този потребител вече не може да ви изпраща съобщения" 
+            : "This user can no longer message you"
+        })
+        // Close the conversation
+        await closeConversation(currentConversation.id)
+      } else {
+        throw new Error(result.error || "Failed to block user")
+      }
+    } catch (err) {
+      console.error('Error blocking user:', err)
+      toast({
+        title: locale === "bg" ? "Грешка" : "Error",
+        description: locale === "bg" 
+          ? "Неуспешно блокиране на потребителя" 
+          : "Failed to block user",
+        variant: "destructive"
+      })
+    } finally {
+      setIsBlocking(false)
     }
   }
 
@@ -292,6 +336,18 @@ export function ChatInterface({
                   <DropdownMenuItem>
                     <Archive size={16} weight="regular" className="mr-2" />
                     {t("archiveConversation")}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleBlockUser}
+                    disabled={isBlocking}
+                    className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                  >
+                    <ProhibitInset size={16} weight="regular" className="mr-2" />
+                    {isBlocking 
+                      ? (locale === "bg" ? "Блокиране..." : "Blocking...")
+                      : (locale === "bg" ? "Блокирай потребителя" : "Block user")
+                    }
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

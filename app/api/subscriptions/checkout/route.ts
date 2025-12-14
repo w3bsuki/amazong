@@ -73,15 +73,18 @@ export async function POST(req: Request) {
         .eq('id', seller.id)
     }
 
-    // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [
-        {
+    // Check if we have a pre-configured Stripe Price ID (recommended for production)
+    const stripePriceId = billingPeriod === 'yearly' 
+      ? plan.stripe_price_yearly_id 
+      : plan.stripe_price_monthly_id
+
+    // Build line_items - use Price ID if available, otherwise create inline price
+    // Note: Bulgaria joins Eurozone Jan 2026, all prices in EUR
+    const lineItems = stripePriceId
+      ? [{ price: stripePriceId, quantity: 1 }]
+      : [{
           price_data: {
-            currency: 'bgn',
+            currency: 'eur',
             product_data: {
               name: `${plan.name} Plan`,
               description: `${plan.name} seller subscription - ${billingPeriod}`,
@@ -92,15 +95,25 @@ export async function POST(req: Request) {
             },
           },
           quantity: 1,
-        },
-      ],
+        }]
+
+    // Create Stripe Checkout Session
+    const session = await stripe.checkout.sessions.create({
+      customer: customerId,
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: lineItems,
       metadata: {
         seller_id: seller.id,
         plan_id: planId,
         plan_tier: plan.tier,
         billing_period: billingPeriod,
-        commission_rate: plan.commission_rate.toString(),
+        commission_rate: (plan.final_value_fee || plan.commission_rate).toString(),
       },
+      // Allow promotion codes for discounts
+      allow_promotion_codes: true,
+      // Collect billing address for invoicing
+      billing_address_collection: 'required',
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/account/plans?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/account/plans?canceled=true`,
     })
