@@ -586,9 +586,21 @@ export function ProductPageContent({
 
             {/* ===== ACTION BUTTONS - Desktop only, mobile uses sticky bar ===== */}
             <div ref={buyBoxRef} className="hidden lg:block space-y-2 mt-4 pt-4 border-t border-border/50">
-              <Button className="w-full h-12 text-base font-semibold rounded-full bg-primary hover:bg-primary/90 touch-manipulation">
-                {locale === 'bg' ? 'Купи сега' : 'Buy It Now'}
-              </Button>
+              <AddToCart
+                product={{
+                  id: product.id,
+                  title: product.title,
+                  price: product.price,
+                  image: images[0],
+                  seller_id: product.seller_id,
+                  slug: product.slug,
+                  storeSlug: seller?.store_slug,
+                }}
+                currentUserId={currentUserId}
+                variant="buyNowOnly"
+                showBuyNow={true}
+                className="h-12 text-base font-semibold rounded-full touch-manipulation"
+              />
               <AddToCart
                 product={{
                   id: product.id,
@@ -979,12 +991,21 @@ export function ProductPageContent({
             <Heart className={cn("size-5", isWatching && "fill-current", isWishlistPending && "animate-pulse")} weight={isWatching ? "fill" : "regular"} />
           </button>
           {/* Buy Now button */}
-          <Button 
-            size="lg"
-            className="shrink-0 h-11 px-6 rounded-full bg-primary hover:bg-primary/90 font-semibold text-sm shadow-sm touch-manipulation"
-          >
-            {locale === 'bg' ? 'Купи' : 'Buy Now'}
-          </Button>
+          <AddToCart
+            product={{
+              id: product.id,
+              title: product.title,
+              price: product.price,
+              image: images[0],
+              seller_id: product.seller_id,
+              slug: product.slug,
+              storeSlug: seller?.store_slug,
+            }}
+            currentUserId={currentUserId}
+            variant="buyNowOnly"
+            showBuyNow={true}
+            className="shrink-0 h-11 px-6 rounded-full font-semibold text-sm shadow-sm touch-manipulation"
+          />
         </div>
       </div>
 
@@ -1023,9 +1044,21 @@ export function ProductPageContent({
           </div>
           {/* Quick Actions */}
           <div className="flex items-center gap-2">
-            <Button className="h-10 px-6 rounded-full bg-primary hover:bg-primary/90 font-semibold">
-              {locale === 'bg' ? 'Купи сега' : 'Buy It Now'}
-            </Button>
+            <AddToCart
+              product={{
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                image: images[0],
+                seller_id: product.seller_id,
+                slug: product.slug,
+                storeSlug: seller?.store_slug,
+              }}
+              currentUserId={currentUserId}
+              variant="buyNowOnly"
+              showBuyNow={true}
+              className="h-10 px-6 rounded-full font-semibold"
+            />
             <AddToCart
               product={{
                 id: product.id,

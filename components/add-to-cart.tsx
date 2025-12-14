@@ -20,8 +20,8 @@ interface AddToCartProps {
         storeSlug?: string | null
     }
     currentUserId?: string | null
-    /** Style variant - default is amazon style, ebay is for eBay-style layout */
-    variant?: "default" | "ebay" | "outline"
+    /** Style variant - default is amazon style, ebay is for eBay-style layout, buyNowOnly for just the buy now button */
+    variant?: "default" | "ebay" | "outline" | "buyNowOnly"
     /** Whether to show Buy Now button */
     showBuyNow?: boolean
     /** Custom class name */
@@ -146,6 +146,20 @@ export function AddToCart({
                 title={isOwnProduct ? "You cannot purchase your own products" : undefined}
             >
                 {isPending ? "Adding..." : isOwnProduct ? "Your Product" : t('addToCart')}
+            </Button>
+        )
+    }
+
+    // Buy Now only variant - just the buy now button (for separate placement)
+    if (variant === "buyNowOnly") {
+        return (
+            <Button
+                onClick={handleBuyNow}
+                disabled={isOwnProduct}
+                className={cn("w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 disabled:opacity-50", className)}
+                title={isOwnProduct ? "You cannot purchase your own products" : undefined}
+            >
+                {t('buyNow')}
             </Button>
         )
     }
