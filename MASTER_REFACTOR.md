@@ -353,11 +353,21 @@
 - [x] Can users track shipments? → Tracking number display + carrier link integration
 - [x] Can users request returns/refunds? → Return request dialog (UI complete, backend TODO)
 
-### Seller Following ✅
+### Seller Following ✅ (Fixed 2025-12-14)
 - [x] Can users follow sellers? → `followSeller()` server action in `app/actions/seller-follows.ts`
 - [x] Can users unfollow sellers? → `unfollowSeller()` server action
 - [x] Can users see their followed sellers? → `/account/following` page with grid view
 - [x] Does follow count update on seller profile? → Updates `seller_stats.follower_count` on follow/unfollow
+- [x] Does follow button persist state on page reload? → **FIXED** - `.maybeSingle()` + upsert
+
+**Database Fix (2025-12-14):**
+- Created `store_followers` table (was missing entirely!)
+- Added UNIQUE constraint on (follower_id, seller_id) to prevent duplicates
+- Added trigger `on_store_follower_change` to auto-update `seller_stats.follower_count`
+- Fixed `store-profile-header.tsx`:
+  - Changed `.single()` → `.maybeSingle()` (single throws error when no row)
+  - Changed `insert` → `upsert` with `ignoreDuplicates: true`
+- Regenerated `lib/supabase/database.types.ts` with new table
 
 ---
 
