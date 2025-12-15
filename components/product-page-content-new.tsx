@@ -45,6 +45,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { cn } from "@/lib/utils"
+import { formatPrice } from "@/lib/format-price"
 import { AddToCart } from "@/components/add-to-cart"
 import { ContactSellerButton } from "@/components/contact-seller-button"
 import { useWishlist } from "@/lib/wishlist-context"
@@ -63,6 +64,7 @@ interface ProductPageContentProps {
     is_boosted?: boolean
     seller_id?: string
     slug?: string
+    watch_count?: number
   }
   seller: {
     id: string
@@ -70,7 +72,25 @@ interface ProductPageContentProps {
     display_name: string
     verified: boolean
     created_at: string
+    // Real seller stats (optional - show empty state if null)
+    feedback_percentage?: number | null
+    total_sales?: number | null
+    feedback_score?: number | null
+    feedback_count?: number | null
+    ratings?: {
+      accuracy: number
+      shipping_cost: number
+      shipping_speed: number
+      communication: number
+    } | null
   } | null
+  sellerFeedback?: Array<{
+    id: string
+    user: string
+    score: number
+    text: string
+    date: string
+  }>
   locale: string
   currentUserId: string | null
   formattedDeliveryDate: string
@@ -86,16 +106,81 @@ interface ProductPageContentProps {
     aboutThisItem: string
     ratingLabel: string
     ratings: string
+    // New translation keys for product page
+    shipping: string
+    deliveryLabel: string
+    returnsLabel: string
+    payments: string
+    condition: string
+    conditionNew: string
+    seeDetails: string
+    viewStore: string
+    enlarge: string
+    addToWatchlist: string
+    removeFromWatchlist: string
+    watching: string
+    picture: string
+    of: string
+    popularItem: string
+    watchlistCount: string
+    freeShipping: string
+    locatedIn: string
+    estimatedDelivery: string
+    returns30Days: string
+    moneyBackGuarantee: string
+    getItemOrMoneyBack: string
+    learnMore: string
+    description: string
+    specifications: string
+    inTheBox: string
+    technicalSpecs: string
+    whatsInTheBox: string
+    itemNumber: string
+    brand: string
+    type: string
+    model: string
+    countryOfOrigin: string
+    warranty: string
+    months: string
+    mainProduct: string
+    userManual: string
+    warrantyCard: string
+    originalPackaging: string
+    detailedSellerRatings: string
+    averageLast12Months: string
+    accurateDescription: string
+    reasonableShippingCost: string
+    shippingSpeed: string
+    communication: string
+    sellerFeedback: string
+    allRatings: string
+    positive: string
+    neutral: string
+    negative: string
+    seeAllFeedback: string
+    noDescriptionAvailable: string
+    previousImage: string
+    nextImage: string
+    imagePreview: string
+    clickToEnlarge: string
+    sold: string
+    positivePercentage: string
+    moreFrom: string
+    similarProduct: string
+    viewAllItems: string
+    noFeedbackYet: string
+    noRatingsYet: string
   }
 }
 
 export function ProductPageContent({
   product,
   seller,
+  sellerFeedback = [],
   locale,
   currentUserId,
   formattedDeliveryDate,
-  t: _t, // TODO: Replace inline locale checks with t.* translations
+  t,
 }: ProductPageContentProps) {
   const [selectedImage, setSelectedImage] = useState(0)
   const [isZoomOpen, setIsZoomOpen] = useState(false)
@@ -142,56 +227,21 @@ export function ProductPageContent({
     ? Math.round((1 - product.price / product.original_price) * 100)
     : 0
 
-  // Social proof data - deterministic values based on product data for SSR hydration
-  const soldCount = product.reviews_count ? product.reviews_count * 12 : 150
-  const watchCount = Math.floor(soldCount * 0.15)
+  // Use real watch count from product or default to 0
+  const watchCount = product.watch_count ?? 0
 
-  // Enhanced seller data - deterministic values for SSR
+  // Enhanced seller data - uses real data from props, with fallbacks
   const sellerData = seller ? {
     ...seller,
     store_name: seller.display_name || seller.username || 'Seller',
     store_slug: seller.username,
-    positive_feedback_percentage: 100,
-    total_items_sold: 505000,
-    response_time_hours: 24,
-    feedback_score: 798,
-    feedback_count: 746,
+    positive_feedback_percentage: seller.feedback_percentage ?? null,
+    total_items_sold: seller.total_sales ?? null,
+    feedback_score: seller.feedback_score ?? null,
+    feedback_count: seller.feedback_count ?? null,
     member_since: new Date(seller.created_at).getFullYear().toString(),
-    ratings: {
-      accuracy: 5.0,
-      shipping_cost: 5.0,
-      shipping_speed: 5.0,
-      communication: 5.0,
-    }
+    ratings: seller.ratings ?? null,
   } : null
-
-  // Sample seller feedback data
-  const sampleFeedback = [
-    { 
-      user: "j***n", 
-      score: 156, 
-      text: locale === 'bg' 
-        ? 'Страхотен продавач! Бързо изпращане и добре опаковано.' 
-        : 'Great seller! Fast shipping and well packaged.',
-      date: locale === 'bg' ? 'Последните 6 месеца' : 'Past 6 months'
-    },
-    { 
-      user: "m***a", 
-      score: 89, 
-      text: locale === 'bg'
-        ? 'Продуктът отговаря на описанието. Препоръчвам!'
-        : 'Product matches description. Recommend!',
-      date: locale === 'bg' ? 'Последните 6 месеца' : 'Past 6 months'
-    },
-    { 
-      user: "s***k", 
-      score: 234, 
-      text: locale === 'bg'
-        ? 'Отлична комуникация, бърза доставка. Ще купя отново.'
-        : 'Excellent communication, fast delivery. Will buy again.',
-      date: locale === 'bg' ? 'Последните 6 месеца' : 'Past 6 months'
-    },
-  ]
 
   const images = product.images?.length > 0 ? product.images : ["/placeholder.svg"]
 
@@ -220,17 +270,29 @@ export function ProductPageContent({
                   )}
                 </div>
                 <div className="flex items-center gap-1 text-xs text-cta-trust-blue-text/80">
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} className="w-3 h-3 fill-amber-300 text-amber-300" weight="fill" />
-                    ))}
-                  </div>
-                  <span>{sellerData.positive_feedback_percentage}%</span>
-                  <span>·</span>
-                  <span>({sellerData.feedback_score})</span>
-                  {/* Desktop: Show items sold */}
-                  <span className="hidden lg:inline">·</span>
-                  <span className="hidden lg:inline">{(sellerData.total_items_sold / 1000).toFixed(0)}K {locale === 'bg' ? 'продадени' : 'sold'}</span>
+                  {sellerData.positive_feedback_percentage !== null && (
+                    <>
+                      <div className="flex items-center">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} className="w-3 h-3 fill-amber-300 text-amber-300" weight="fill" />
+                        ))}
+                      </div>
+                      <span>{sellerData.positive_feedback_percentage}%</span>
+                      {sellerData.feedback_score !== null && (
+                        <>
+                          <span>·</span>
+                          <span>({sellerData.feedback_score})</span>
+                        </>
+                      )}
+                      {/* Desktop: Show items sold */}
+                      {sellerData.total_items_sold !== null && (
+                        <>
+                          <span className="hidden lg:inline">·</span>
+                          <span className="hidden lg:inline">{(sellerData.total_items_sold / 1000).toFixed(0)}K {t.sold}</span>
+                        </>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </Link>
@@ -238,7 +300,7 @@ export function ProductPageContent({
               href={`/${locale}/${sellerData.store_slug || sellerData.id}`}
               className="shrink-0 px-3 py-1.5 lg:px-4 lg:py-2 text-xs lg:text-sm font-medium text-cta-trust-blue bg-white rounded-full hover:bg-white/90 active:bg-white/80 transition-colors"
             >
-              {locale === 'bg' ? 'Магазин' : 'View Store'}
+              {t.viewStore}
             </Link>
           </div>
         )}
@@ -287,14 +349,14 @@ export function ProductPageContent({
                     <TooltipTrigger asChild>
                       <button 
                         onClick={() => setIsZoomOpen(true)}
-                        aria-label={locale === 'bg' ? 'Увеличи снимка' : 'Enlarge image'}
+                        aria-label={t.enlarge}
                         className="w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white rounded-full touch-manipulation"
                       >
                         <MagnifyingGlassPlus className="w-5 h-5 text-foreground/70" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="left">
-                      <p>{locale === 'bg' ? 'Увеличи' : 'Enlarge'}</p>
+                      <p>{t.enlarge}</p>
                     </TooltipContent>
                   </Tooltip>
                   <div className="flex items-center gap-1 bg-white/80 hover:bg-white rounded-full px-2 py-1">
@@ -302,7 +364,7 @@ export function ProductPageContent({
                     <button 
                       onClick={handleWishlistToggle}
                       disabled={isWishlistPending}
-                      aria-label={isWatching ? (locale === 'bg' ? 'Премахни от списък' : 'Remove from watchlist') : (locale === 'bg' ? 'Добави в списък' : 'Add to watchlist')}
+                      aria-label={isWatching ? t.removeFromWatchlist : t.addToWatchlist}
                       aria-pressed={isWatching}
                       className={cn("w-7 h-7 flex items-center justify-center touch-manipulation", isWishlistPending && "opacity-50")}
                     >
@@ -318,14 +380,14 @@ export function ProductPageContent({
                 {images.length > 1 && (
                   <>
                     <button
-                      aria-label={locale === 'bg' ? 'Предишна снимка' : 'Previous image'}
+                      aria-label={t.previousImage}
                       className="absolute left-4 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center bg-white/80 lg:bg-white/90 hover:bg-white lg:border lg:border-border rounded-full lg:shadow-sm touch-manipulation"
                       onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : images.length - 1)}
                     >
                       <CaretLeft className="w-6 h-6" />
                     </button>
                     <button
-                      aria-label={locale === 'bg' ? 'Следваща снимка' : 'Next image'}
+                      aria-label={t.nextImage}
                       className="absolute right-4 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center bg-white/80 lg:bg-white/90 hover:bg-white lg:border lg:border-border rounded-full lg:shadow-sm touch-manipulation"
                       onClick={() => setSelectedImage(prev => prev < images.length - 1 ? prev + 1 : 0)}
                     >
@@ -342,7 +404,7 @@ export function ProductPageContent({
                     onKeyDown={(e) => e.key === 'Enter' && setIsZoomOpen(true)}
                     role="button"
                     tabIndex={0}
-                    aria-label={locale === 'bg' ? 'Натисни за увеличаване' : 'Click to enlarge'}
+                    aria-label={t.clickToEnlarge}
                   >
                     <Image
                       src={images[selectedImage]}
@@ -355,7 +417,7 @@ export function ProductPageContent({
                     {/* Image Counter - eBay style */}
                     {images.length > 1 && (
                       <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 rounded">
-                        {locale === 'bg' ? 'Снимка' : 'Picture'} {selectedImage + 1} {locale === 'bg' ? 'от' : 'of'} {images.length}
+                        {t.picture} {selectedImage + 1} {t.of} {images.length}
                       </div>
                     )}
                   </div>
@@ -385,10 +447,10 @@ export function ProductPageContent({
             <Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
               <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-white dark:bg-background">
                 <DialogTitle className="sr-only">
-                  {locale === 'bg' ? 'Преглед на снимка' : 'Image Preview'}
+                  {t.imagePreview}
                 </DialogTitle>
                 <DialogDescription className="sr-only">
-                  {product.title} - {locale === 'bg' ? 'Снимка' : 'Image'} {selectedImage + 1} {locale === 'bg' ? 'от' : 'of'} {images.length}
+                  {product.title} - {t.picture} {selectedImage + 1} {t.of} {images.length}
                 </DialogDescription>
                 <DialogClose className="absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-black/70 hover:bg-black rounded-full">
                   <X className="w-5 h-5 text-white" weight="bold" />
@@ -398,14 +460,14 @@ export function ProductPageContent({
                   {images.length > 1 && (
                     <>
                       <button
-                        aria-label={locale === 'bg' ? 'Предишна снимка' : 'Previous image'}
+                        aria-label={t.previousImage}
                         className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/70 hover:bg-black rounded-full"
                         onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : images.length - 1)}
                       >
                         <CaretLeft className="w-6 h-6 text-white" />
                       </button>
                       <button
-                        aria-label={locale === 'bg' ? 'Следваща снимка' : 'Next image'}
+                        aria-label={t.nextImage}
                         className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/70 hover:bg-black rounded-full"
                         onClick={() => setSelectedImage(prev => prev < images.length - 1 ? prev + 1 : 0)}
                       >
@@ -491,14 +553,14 @@ export function ProductPageContent({
 
             {/* Condition Row - Desktop only, moved up before price */}
             <div className="hidden lg:flex items-center gap-2 text-sm mt-2">
-              <span className="text-muted-foreground">{locale === 'bg' ? 'Състояние:' : 'Condition:'}</span>
-              <span className="font-medium text-foreground">{locale === 'bg' ? 'Ново' : 'New'}</span>
+              <span className="text-muted-foreground">{t.condition}</span>
+              <span className="font-medium text-foreground">{t.conditionNew}</span>
               <Tooltip>
                 <TooltipTrigger>
                   <Info className="w-4 h-4 text-muted-foreground" />
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">
-                  <p>{locale === 'bg' ? 'Чисто нов, неизползван продукт' : 'A brand-new, unused item'}</p>
+                  <p>{t.conditionNew}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -506,14 +568,14 @@ export function ProductPageContent({
             {/* Price Section - Hidden on mobile (shown in sticky bar) */}
             <div className="hidden lg:block mt-3">
               <span className="text-3xl font-bold text-foreground tracking-tight">
-                US ${product.price.toFixed(2)}
+                {formatPrice(product.price, { locale })}
               </span>
               {product.original_price && discountPercentage > 0 && (
                 <div className="flex items-center gap-2 text-sm mt-1">
                   <span className="text-muted-foreground line-through">
-                    US ${product.original_price.toFixed(2)}
+                    {formatPrice(product.original_price, { locale })}
                   </span>
-                  <span className="text-deal-text font-semibold">({discountPercentage}% off)</span>
+                  <span className="text-deal-text font-semibold">(-{discountPercentage}%)</span>
                 </div>
               )}
             </div>
@@ -542,9 +604,17 @@ export function ProductPageContent({
                         )}
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>{sellerData.positive_feedback_percentage}% {locale === 'bg' ? 'положителни' : 'positive'}</span>
-                        <span>·</span>
-                        <span>{(sellerData.total_items_sold / 1000).toFixed(0)}K {locale === 'bg' ? 'продадени' : 'sold'}</span>
+                        {sellerData.positive_feedback_percentage !== null && (
+                          <>
+                            <span>{sellerData.positive_feedback_percentage}% {t.positivePercentage}</span>
+                            {sellerData.total_items_sold !== null && (
+                              <>
+                                <span>·</span>
+                                <span>{(sellerData.total_items_sold / 1000).toFixed(0)}K {t.sold}</span>
+                              </>
+                            )}
+                          </>
+                        )}
                       </div>
                     </div>
                     <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
@@ -595,44 +665,43 @@ export function ProductPageContent({
                 onClick={handleWishlistToggle}
               >
                 <Heart className={cn("w-5 h-5", isWatching && "fill-current", isWishlistPending && "animate-pulse")} weight={isWatching ? "fill" : "regular"} />
-                {isWatching 
-                  ? (locale === 'bg' ? 'В списъка' : 'Watching') 
-                  : (locale === 'bg' ? 'Добави в списък' : 'Add to Watchlist')
-                }
+                {isWatching ? t.watching : t.addToWatchlist}
               </Button>
             </div>
 
             {/* Social Proof - eBay style with BLACK text */}
-            <div className="flex items-center gap-1.5 text-sm text-foreground mt-0.5">
-              <Lightning className="w-4 h-4 text-muted-foreground shrink-0" />
-              <span>
-                {locale === 'bg' ? 'Популярно.' : 'People are checking this out.'}
-                <span className="font-semibold"> {watchCount} </span>
-                {locale === 'bg' ? 'добавили в списъка.' : 'have added this to their watchlist.'}
-              </span>
-            </div>
+            {watchCount > 0 && (
+              <div className="flex items-center gap-1.5 text-sm text-foreground mt-0.5">
+                <Lightning className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span>
+                  {t.popularItem}
+                  <span className="font-semibold"> {watchCount} </span>
+                  {t.watchlistCount.replace('{count}', '')}
+                </span>
+              </div>
+            )}
 
             {/* ===== SHIPPING INFO ===== */}
             <div className="border-t border-b py-2.5 text-sm space-y-2 mt-2">
               <div className="flex gap-2">
-                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{locale === 'bg' ? 'Доставка:' : 'Shipping:'}</span>
+                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{t.shipping}</span>
                 <div className="flex-1">
-                  <span className="font-semibold text-shipping-free">{locale === 'bg' ? 'БЕЗПЛАТНА' : 'FREE'}</span>
+                  <span className="font-semibold text-shipping-free">{t.freeShipping}</span>
                   <span> Standard Shipping </span>
-                  <button className="text-primary hover:underline">{locale === 'bg' ? 'Виж детайли' : 'See details'}</button>
-                  <div className="text-muted-foreground text-xs mt-0.5">{locale === 'bg' ? 'Местоположение: София, България' : 'Located in: Sofia, Bulgaria'}</div>
+                  <button className="text-primary hover:underline">{t.seeDetails}</button>
+                  <div className="text-muted-foreground text-xs mt-0.5">{t.locatedIn} Sofia, Bulgaria</div>
                 </div>
               </div>
               <div className="flex gap-2">
-                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{locale === 'bg' ? 'Доставка:' : 'Delivery:'}</span>
-                <span>{locale === 'bg' ? 'Очаквано между' : 'Est.'} <span className="font-semibold">{formattedDeliveryDate}</span></span>
+                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{t.deliveryLabel}</span>
+                <span>{t.estimatedDelivery} <span className="font-semibold">{formattedDeliveryDate}</span></span>
               </div>
               <div className="flex gap-2">
-                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{locale === 'bg' ? 'Връщане:' : 'Returns:'}</span>
-                <span>{locale === 'bg' ? '30 дни безплатно връщане.' : '30 days returns.'} <button className="text-primary hover:underline">{locale === 'bg' ? 'Виж детайли' : 'See details'}</button></span>
+                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{t.returnsLabel}</span>
+                <span>{t.returns30Days} <button className="text-primary hover:underline">{t.seeDetails}</button></span>
               </div>
               <div className="flex gap-2 items-center">
-                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{locale === 'bg' ? 'Плащания:' : 'Payments:'}</span>
+                <span className="text-muted-foreground shrink-0 w-18 sm:w-20">{t.payments}</span>
                 <div className="flex items-center gap-1">
                   <div className="h-5 px-1.5 bg-brand-dark text-white text-xs font-bold flex items-center rounded-sm">PayPal</div>
                   <div className="h-5 px-1.5 bg-background border text-xs font-bold flex items-center rounded-sm text-muted-foreground">Visa</div>
@@ -645,9 +714,9 @@ export function ProductPageContent({
             <div className="flex items-start gap-1.5 py-1.5">
               <ShieldCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <p className="text-xs sm:text-sm">
-                <span className="font-medium">{locale === 'bg' ? 'Гаранция за връщане' : 'Money Back Guarantee'}</span>
-                <span className="text-muted-foreground"> {locale === 'bg' ? 'Получете артикула или парите си.' : 'Get item or money back.'}</span>
-                <Link href="#" className="text-primary hover:underline ml-1">{locale === 'bg' ? 'Научете повече' : 'Learn more'}</Link>
+                <span className="font-medium">{t.moneyBackGuarantee}</span>
+                <span className="text-muted-foreground"> {t.getItemOrMoneyBack}</span>
+                <Link href={`/${locale}/help/buyer-protection`} className="text-primary hover:underline ml-1">{t.learnMore}</Link>
               </p>
             </div>
           </div>
@@ -661,17 +730,17 @@ export function ProductPageContent({
             {/* Technical Specifications */}
             <div>
               <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                {locale === 'bg' ? 'Технически спецификации' : 'Technical Specifications'}
+                {t.technicalSpecs}
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
                 {[
-                  { label: locale === 'bg' ? 'Артикул №' : 'Item number', value: product.id.slice(0, 8) },
-                  { label: locale === 'bg' ? 'Състояние' : 'Condition', value: locale === 'bg' ? 'Ново' : 'New' },
-                  { label: locale === 'bg' ? 'Марка' : 'Brand', value: 'Generic' },
-                  { label: locale === 'bg' ? 'Тип' : 'Type', value: 'Standard' },
-                  { label: locale === 'bg' ? 'Модел' : 'Model', value: 'N/A' },
-                  { label: locale === 'bg' ? 'Произход' : 'Country of Origin', value: locale === 'bg' ? 'България' : 'Bulgaria' },
-                  { label: locale === 'bg' ? 'Гаранция' : 'Warranty', value: locale === 'bg' ? '12 месеца' : '12 months' },
+                  { label: t.itemNumber, value: product.id.slice(0, 8) },
+                  { label: t.condition.replace(':', ''), value: t.conditionNew },
+                  { label: t.brand, value: 'Generic' },
+                  { label: t.type, value: 'Standard' },
+                  { label: t.model, value: 'N/A' },
+                  { label: t.countryOfOrigin, value: 'Bulgaria' },
+                  { label: t.warranty, value: `12 ${t.months}` },
                 ].map((spec, idx) => (
                   <div key={idx} className="flex justify-between py-2 border-b border-border/50 last:border-0">
                     <span className="text-sm text-muted-foreground">{spec.label}</span>
@@ -684,14 +753,14 @@ export function ProductPageContent({
             {/* Package Contents */}
             <div>
               <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                {locale === 'bg' ? 'Съдържание на пакета' : "What's in the Box"}
+                {t.whatsInTheBox}
               </h4>
               <ul className="space-y-1.5">
                 {[
-                  locale === 'bg' ? '1x Основен продукт' : '1x Main Product',
-                  locale === 'bg' ? '1x Инструкции за употреба' : '1x User Manual',
-                  locale === 'bg' ? '1x Гаранционна карта' : '1x Warranty Card',
-                  locale === 'bg' ? 'Оригинална опаковка' : 'Original Packaging',
+                  `1x ${t.mainProduct}`,
+                  `1x ${t.userManual}`,
+                  `1x ${t.warrantyCard}`,
+                  t.originalPackaging,
                 ].map((item, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-sm text-foreground">
                     <span className="w-1.5 h-1.5 bg-foreground/40 rounded-full shrink-0" />
@@ -709,7 +778,7 @@ export function ProductPageContent({
               <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
                   <span className="w-1 h-4 bg-primary rounded-full" />
-                  {locale === 'bg' ? 'Описание' : 'Description'}
+                  {t.description}
                 </h3>
                 {product.description ? (
                   <p className="text-sm text-muted-foreground leading-relaxed">
@@ -717,7 +786,7 @@ export function ProductPageContent({
                   </p>
                 ) : (
                   <p className="text-sm text-muted-foreground/60 italic">
-                    {locale === 'bg' ? 'Няма налично описание.' : 'No description available.'}
+                    {t.noDescriptionAvailable}
                   </p>
                 )}
               </div>
@@ -726,15 +795,15 @@ export function ProductPageContent({
               <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
                   <span className="w-1 h-4 bg-info rounded-full" />
-                  {locale === 'bg' ? 'Спецификации' : 'Specifications'}
+                  {t.specifications}
                 </h3>
                 <div className="space-y-2.5">
                   {[
-                    { label: locale === 'bg' ? 'Артикул' : 'Item #', value: product.id.slice(0, 8) },
-                    { label: locale === 'bg' ? 'Състояние' : 'Condition', value: locale === 'bg' ? 'Ново' : 'New' },
-                    { label: locale === 'bg' ? 'Марка' : 'Brand', value: 'Generic' },
-                    { label: locale === 'bg' ? 'Произход' : 'Origin', value: locale === 'bg' ? 'България' : 'Bulgaria' },
-                    { label: locale === 'bg' ? 'Гаранция' : 'Warranty', value: locale === 'bg' ? '12 месеца' : '12 months' },
+                    { label: t.itemNumber, value: product.id.slice(0, 8) },
+                    { label: t.condition.replace(':', ''), value: t.conditionNew },
+                    { label: t.brand, value: 'Generic' },
+                    { label: t.countryOfOrigin, value: 'Bulgaria' },
+                    { label: t.warranty, value: `12 ${t.months}` },
                   ].map((spec, idx) => (
                     <div key={idx} className="flex justify-between items-center py-1.5 border-b border-border/30 last:border-0">
                       <span className="text-sm text-muted-foreground">{spec.label}</span>
@@ -748,14 +817,14 @@ export function ProductPageContent({
               <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-xl p-5">
                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
                   <span className="w-1 h-4 bg-success rounded-full" />
-                  {locale === 'bg' ? 'Съдържание' : 'In the Box'}
+                  {t.inTheBox}
                 </h3>
                 <ul className="space-y-2.5">
                   {[
-                    { qty: '1×', item: locale === 'bg' ? 'Основен продукт' : 'Main Product' },
-                    { qty: '1×', item: locale === 'bg' ? 'Инструкции' : 'User Manual' },
-                    { qty: '1×', item: locale === 'bg' ? 'Гаранционна карта' : 'Warranty Card' },
-                    { qty: '✓', item: locale === 'bg' ? 'Оригинална опаковка' : 'Original Packaging' },
+                    { qty: '1×', item: t.mainProduct },
+                    { qty: '1×', item: t.userManual },
+                    { qty: '1×', item: t.warrantyCard },
+                    { qty: '✓', item: t.originalPackaging },
                   ].map((content, idx) => (
                     <li key={idx} className="flex items-center gap-3 text-sm">
                       <span className="w-6 h-6 flex items-center justify-center bg-success/10 text-success text-xs font-semibold rounded-md shrink-0">
@@ -795,22 +864,26 @@ export function ProductPageContent({
                           <span className="font-semibold text-primary group-hover:underline truncate">
                             {sellerData.store_name}
                           </span>
-                          <span className="text-muted-foreground text-sm shrink-0">({sellerData.feedback_score})</span>
+                          {sellerData.feedback_score !== null && (
+                            <span className="text-muted-foreground text-sm shrink-0">({sellerData.feedback_score})</span>
+                          )}
                         </div>
-                        <div className="flex items-center gap-1">
-                          <div className="flex items-center gap-0.5">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                className="w-3.5 h-3.5 fill-amber-400 text-amber-400"
-                                weight="fill"
-                              />
-                            ))}
+                        {sellerData.positive_feedback_percentage !== null && (
+                          <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-0.5">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star
+                                  key={star}
+                                  className="w-3.5 h-3.5 fill-amber-400 text-amber-400"
+                                  weight="fill"
+                                />
+                              ))}
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {sellerData.positive_feedback_percentage}%
+                            </span>
                           </div>
-                          <span className="text-xs text-muted-foreground">
-                            {sellerData.positive_feedback_percentage}%
-                          </span>
-                        </div>
+                        )}
                       </div>
                       <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
                     </Link>
@@ -818,7 +891,7 @@ export function ProductPageContent({
                   <HoverCardContent align="start" className="w-72 p-0" sideOffset={8}>
                     <div className="p-3 border-b border-border">
                       <p className="text-sm font-medium">
-                        {locale === 'bg' ? 'Други артикули от' : 'More from'} {sellerData.store_name}
+                        {t.moreFrom} {sellerData.store_name}
                       </p>
                     </div>
                     <div className="p-2 space-y-1">
@@ -837,10 +910,10 @@ export function ProductPageContent({
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm truncate">
-                                {locale === 'bg' ? 'Подобен продукт' : 'Similar product'} #{idx + 1}
+                                {t.similarProduct} #{idx + 1}
                               </p>
                               <p className="text-sm font-semibold text-primary">
-                                ${(product.price * priceMultiplier).toFixed(2)}
+                                {formatPrice(product.price * priceMultiplier, { locale })}
                               </p>
                             </div>
                           </Link>
@@ -852,7 +925,7 @@ export function ProductPageContent({
                         href={`/${locale}/${sellerData.store_slug || sellerData.id}`}
                         className="block text-center text-sm text-primary hover:underline py-1"
                       >
-                        {locale === 'bg' ? 'Виж всички артикули' : 'View all items'} →
+                        {t.viewAllItems} →
                       </Link>
                     </div>
                   </HoverCardContent>
@@ -873,25 +946,33 @@ export function ProductPageContent({
                 {/* Detailed Ratings - Under buttons on left side */}
                 <div className="pt-3 border-t border-border">
                   <h3 className="font-semibold text-sm mb-2">
-                    {locale === 'bg' ? 'Подробни оценки' : 'Detailed seller ratings'}
+                    {t.detailedSellerRatings}
                   </h3>
                   <p className="text-xs text-muted-foreground mb-2">
-                    {locale === 'bg' ? 'Средно за последните 12 месеца' : 'Average for the last 12 months'}
+                    {t.averageLast12Months}
                   </p>
-                  <div className="space-y-2">
-                    {[
-                      { label: locale === 'bg' ? 'Точно описание' : 'Accurate description', value: sellerData.ratings.accuracy },
-                      { label: locale === 'bg' ? 'Цена за доставка' : 'Reasonable shipping cost', value: sellerData.ratings.shipping_cost },
-                      { label: locale === 'bg' ? 'Скорост на доставка' : 'Shipping speed', value: sellerData.ratings.shipping_speed },
-                      { label: locale === 'bg' ? 'Комуникация' : 'Communication', value: sellerData.ratings.communication },
-                    ].map((rating) => (
-                      <div key={rating.label} className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground flex-1">{rating.label}</span>
-                        <Progress value={(rating.value / 5) * 100} className="h-2 w-20" />
-                        <span className="text-sm font-medium w-8 text-right">{rating.value.toFixed(1)}</span>
-                      </div>
-                    ))}
-                  </div>
+                  {sellerData.ratings ? (
+                    <div className="space-y-2">
+                      {[
+                        { label: t.accurateDescription, value: sellerData.ratings.accuracy },
+                        { label: t.reasonableShippingCost, value: sellerData.ratings.shipping_cost },
+                        { label: t.shippingSpeed, value: sellerData.ratings.shipping_speed },
+                        { label: t.communication, value: sellerData.ratings.communication },
+                      ].map((rating) => (
+                        <div key={rating.label} className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground flex-1">{rating.label}</span>
+                          <Progress 
+                            value={(rating.value / 5) * 100} 
+                            className="h-2 w-20"
+                            aria-label={`${rating.label}: ${rating.value} out of 5`}
+                          />
+                          <span className="text-sm font-medium w-8 text-right">{rating.value.toFixed(1)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">{t.noRatingsYet}</p>
+                  )}
                 </div>
               </div>
 
@@ -899,47 +980,55 @@ export function ProductPageContent({
               <div className="flex flex-col">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-base font-semibold">
-                    {locale === 'bg' ? 'Обратна връзка за продавача' : 'Seller feedback'} 
-                    <span className="text-muted-foreground font-normal ml-1">({sellerData.feedback_count})</span>
+                    {t.sellerFeedback} 
+                    {sellerData.feedback_count !== null && (
+                      <span className="text-muted-foreground font-normal ml-1">({sellerData.feedback_count})</span>
+                    )}
                   </h3>
                   <Select defaultValue="all">
                     <SelectTrigger className="w-[130px] h-9 text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">{locale === 'bg' ? 'Всички оценки' : 'All ratings'}</SelectItem>
-                      <SelectItem value="positive">{locale === 'bg' ? 'Положителни' : 'Positive'}</SelectItem>
-                      <SelectItem value="neutral">{locale === 'bg' ? 'Неутрални' : 'Neutral'}</SelectItem>
-                      <SelectItem value="negative">{locale === 'bg' ? 'Отрицателни' : 'Negative'}</SelectItem>
+                      <SelectItem value="all">{t.allRatings}</SelectItem>
+                      <SelectItem value="positive">{t.positive}</SelectItem>
+                      <SelectItem value="neutral">{t.neutral}</SelectItem>
+                      <SelectItem value="negative">{t.negative}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 
                 {/* Feedback List - Compact spacing */}
-                <div className="divide-y divide-border">
-                  {sampleFeedback.map((feedback, idx) => (
-                    <div key={idx} className="py-3 first:pt-0">
-                      <div className="flex items-start gap-2">
-                        <CheckCircle className="w-5 h-5 text-success shrink-0 mt-0.5" weight="fill" />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                            <span className="text-sm text-muted-foreground">{feedback.user} ({feedback.score})</span>
-                            <span className="text-muted-foreground">·</span>
-                            <span className="text-sm text-muted-foreground">{feedback.date}</span>
+                {sellerFeedback.length > 0 ? (
+                  <div className="divide-y divide-border">
+                    {sellerFeedback.map((feedback) => (
+                      <div key={feedback.id} className="py-3 first:pt-0">
+                        <div className="flex items-start gap-2">
+                          <CheckCircle className="w-5 h-5 text-success shrink-0 mt-0.5" weight="fill" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                              <span className="text-sm text-muted-foreground">{feedback.user} ({feedback.score})</span>
+                              <span className="text-muted-foreground">·</span>
+                              <span className="text-sm text-muted-foreground">{feedback.date}</span>
+                            </div>
+                            <p className="text-sm text-foreground leading-relaxed">
+                              {feedback.text}
+                            </p>
                           </div>
-                          <p className="text-sm text-foreground leading-relaxed">
-                            {feedback.text}
-                          </p>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic py-4">{t.noFeedbackYet}</p>
+                )}
                 
                 {/* See all feedback button - tight margin */}
-                <Button variant="link" className="mt-1 mb-0 h-auto p-0 text-sm text-primary self-start">
-                  {locale === 'bg' ? 'Виж цялата обратна връзка' : 'See all feedback'} →
-                </Button>
+                {sellerFeedback.length > 0 && (
+                  <Button variant="link" className="mt-1 mb-0 h-auto p-0 text-sm text-primary self-start">
+                    {t.seeAllFeedback} →
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -953,10 +1042,10 @@ export function ProductPageContent({
           <div className="flex-1 min-w-0">
             <p className="text-xs text-muted-foreground truncate leading-tight">{product.title}</p>
             <div className="flex items-center gap-1.5">
-              <span className="text-base font-bold text-foreground tracking-tight">US ${product.price.toFixed(2)}</span>
+              <span className="text-base font-bold text-foreground tracking-tight">{formatPrice(product.price, { locale })}</span>
               {product.original_price && discountPercentage > 0 && (
                 <>
-                  <span className="text-xs text-muted-foreground line-through">US ${product.original_price.toFixed(2)}</span>
+                  <span className="text-xs text-muted-foreground line-through">{formatPrice(product.original_price, { locale })}</span>
                   <span className="text-xs text-destructive font-semibold">-{discountPercentage}%</span>
                 </>
               )}
@@ -973,7 +1062,7 @@ export function ProductPageContent({
                 : "border-input bg-background text-muted-foreground hover:text-foreground hover:border-foreground/20",
               isWishlistPending && "opacity-50"
             )}
-            aria-label={isWatching ? (locale === 'bg' ? 'В списъка' : 'Watching') : (locale === 'bg' ? 'Добави' : 'Watch')}
+            aria-label={isWatching ? t.watching : t.addToWatchlist}
           >
             <Heart className={cn("size-5", isWatching && "fill-current", isWishlistPending && "animate-pulse")} weight={isWatching ? "fill" : "regular"} />
           </button>
@@ -1020,11 +1109,11 @@ export function ProductPageContent({
             <p className="text-sm font-medium truncate max-w-md">{product.title}</p>
             <div className="flex items-center gap-2">
               <span className="text-xl font-bold text-primary">
-                {product.price.toLocaleString(locale === 'bg' ? 'bg-BG' : 'en-US', { style: 'currency', currency: 'BGN' })}
+                {formatPrice(product.price, { locale })}
               </span>
               {product.original_price && (
                 <span className="text-sm text-muted-foreground line-through">
-                  {product.original_price.toLocaleString(locale === 'bg' ? 'bg-BG' : 'en-US', { style: 'currency', currency: 'BGN' })}
+                  {formatPrice(product.original_price, { locale })}
                 </span>
               )}
             </div>

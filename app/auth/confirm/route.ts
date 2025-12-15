@@ -51,14 +51,16 @@ export async function GET(request: Request) {
       
       if (user) {
         // Check if user has completed onboarding
+        // Note: onboarding_completed column may be added to database later
         const { data: profile } = await supabase
           .from("profiles")
-          .select("onboarding_completed")
+          .select("*")
           .eq("id", user.id)
           .single()
         
         // If onboarding not completed, redirect to welcome page
-        if (!profile?.onboarding_completed) {
+        const profileData = profile as { onboarding_completed?: boolean } | null
+        if (!profileData?.onboarding_completed) {
           return NextResponse.redirect(`${redirectTo}/en/auth/welcome`)
         }
       }
@@ -86,11 +88,12 @@ export async function GET(request: Request) {
         if (user) {
           const { data: profile } = await supabase
             .from("profiles")
-            .select("onboarding_completed")
+            .select("*")
             .eq("id", user.id)
             .single()
           
-          if (!profile?.onboarding_completed) {
+          const profileData = profile as { onboarding_completed?: boolean } | null
+          if (!profileData?.onboarding_completed) {
             return NextResponse.redirect(`${redirectTo}/en/auth/welcome`)
           }
         }

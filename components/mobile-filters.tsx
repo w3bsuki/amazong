@@ -46,7 +46,6 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
   const currentMinPrice = searchParams.get("minPrice")
   const currentMaxPrice = searchParams.get("maxPrice")
   const currentRating = searchParams.get("minRating")
-  const currentPrime = searchParams.get("prime")
   const currentAvailability = searchParams.get("availability")
 
   // Determine the base path - use current pathname for category pages
@@ -73,17 +72,6 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
       params.delete(key)
     } else {
       params.set(key, value)
-    }
-    const queryString = params.toString()
-    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
-  }
-
-  const toggleParam = (key: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (params.has(key)) {
-      params.delete(key)
-    } else {
-      params.set(key, "true")
     }
     const queryString = params.toString()
     router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
@@ -139,8 +127,8 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
 
   // Count active attribute filters
   const activeAttrCount = visibleAttributes.filter(attr => getAttributeValues(attr.name).length > 0).length
-  const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentPrime || currentAvailability || activeAttrCount > 0
-  const filterCount = [currentMinPrice || currentMaxPrice, currentRating, currentPrime, currentAvailability].filter(Boolean).length + activeAttrCount
+  const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentAvailability || activeAttrCount > 0
+  const filterCount = [currentMinPrice || currentMaxPrice, currentRating, currentAvailability].filter(Boolean).length + activeAttrCount
 
   // Type for filter sections
   type BaseFilterSection = { id: string; label: string; attribute?: undefined }
@@ -149,7 +137,6 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
 
   // Build filter sections dynamically including category attributes
   const baseFilterSections: BaseFilterSection[] = [
-    { id: 'prime', label: t('deliveryDay') },
     { id: 'rating', label: t('customerReviews') },
     { id: 'price', label: t('price') },
     { id: 'availability', label: t('availability') },
@@ -241,24 +228,6 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
 
                   {activeSection === section.id && (
                     <div className="px-4 pb-4 space-y-2 bg-muted/30">
-                      {/* Prime/Delivery */}
-                      {section.id === 'prime' && (
-                        <>
-                          <label className="flex items-center gap-3 min-h-11 cursor-pointer hover:bg-muted rounded-lg px-2 -mx-2">
-                            <Checkbox
-                              checked={currentPrime === "true"}
-                              onCheckedChange={() => toggleParam("prime")}
-                              className="size-5"
-                            />
-                            <span className="text-sm">{t('getPrimeDelivery')}</span>
-                          </label>
-                          <label className="flex items-center gap-3 min-h-11 cursor-pointer hover:bg-muted rounded-lg px-2 -mx-2">
-                            <Checkbox className="size-5" />
-                            <span className="text-sm">{t('freeShipping')}</span>
-                          </label>
-                        </>
-                      )}
-
                       {/* Ratings */}
                       {section.id === 'rating' && (
                         <div className="space-y-0.5">

@@ -98,20 +98,6 @@ export function SearchFilters({
     }
   }
 
-  const toggleParam = (key: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (params.has(key)) {
-      params.delete(key)
-    } else {
-      params.set(key, "true")
-    }
-    if (basePath) {
-      router.push(`${basePath}?${params.toString()}`)
-    } else {
-      router.push(`/search?${params.toString()}`)
-    }
-  }
-
   const handlePriceClick = (min: string | null, max: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
     if (min) params.set("minPrice", min)

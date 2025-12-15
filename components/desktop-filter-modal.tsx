@@ -8,9 +8,6 @@ import {
   Star, 
   Check, 
   MagnifyingGlass, 
-  Truck, 
-  Lightning,
-  Package,
   Tag,
   CaretDown
 } from '@phosphor-icons/react'
@@ -72,9 +69,6 @@ export function DesktopFilterModal({
   const [pendingFilters, setPendingFilters] = React.useState<Record<string, string[]>>({})
   const [pendingPrice, setPendingPrice] = React.useState<{ min: string; max: string }>({ min: '', max: '' })
   const [pendingRating, setPendingRating] = React.useState<number | null>(null)
-  const [pendingPrime, setPendingPrime] = React.useState(false)
-  const [pendingDeals, setPendingDeals] = React.useState(false)
-  const [pendingFreeShipping, setPendingFreeShipping] = React.useState(false)
   
   // Filter only filterable attributes
   const filterableAttributes = attributes.filter(attr => attr.is_filterable)
@@ -86,9 +80,6 @@ export function DesktopFilterModal({
   const currentMinPrice = searchParams.get('minPrice')
   const currentMaxPrice = searchParams.get('maxPrice')
   const currentRating = searchParams.get('minRating')
-  const currentPrime = searchParams.get('prime') === 'true'
-  const currentDeals = searchParams.get('deals') === 'true'
-  const currentFreeShipping = searchParams.get('freeShipping') === 'true'
 
   // Get current filter values from URL
   const getCurrentAttrValues = (attrName: string): string[] => {
@@ -108,9 +99,6 @@ export function DesktopFilterModal({
       setPendingFilters(initial)
       setPendingPrice({ min: currentMinPrice || '', max: currentMaxPrice || '' })
       setPendingRating(currentRating ? parseInt(currentRating) : null)
-      setPendingPrime(currentPrime)
-      setPendingDeals(currentDeals)
-      setPendingFreeShipping(currentFreeShipping)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen])
@@ -123,9 +111,6 @@ export function DesktopFilterModal({
     })
     if (currentMinPrice || currentMaxPrice) count++
     if (currentRating) count++
-    if (currentPrime) count++
-    if (currentDeals) count++
-    if (currentFreeShipping) count++
     return count
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, filterableAttributes])
@@ -144,7 +129,7 @@ export function DesktopFilterModal({
     const params = new URLSearchParams()
     
     searchParams.forEach((value, key) => {
-      if (!key.startsWith('attr_') && !['minPrice', 'maxPrice', 'minRating', 'prime', 'deals', 'freeShipping'].includes(key)) {
+      if (!key.startsWith('attr_') && !['minPrice', 'maxPrice', 'minRating'].includes(key)) {
         params.append(key, value)
       }
     })
@@ -156,9 +141,6 @@ export function DesktopFilterModal({
     if (pendingPrice.min) params.set('minPrice', pendingPrice.min)
     if (pendingPrice.max) params.set('maxPrice', pendingPrice.max)
     if (pendingRating) params.set('minRating', pendingRating.toString())
-    if (pendingPrime) params.set('prime', 'true')
-    if (pendingDeals) params.set('deals', 'true')
-    if (pendingFreeShipping) params.set('freeShipping', 'true')
     
     const query = params.toString()
     router.push(`${basePath}${query ? `?${query}` : ''}`)
@@ -170,16 +152,12 @@ export function DesktopFilterModal({
     setPendingFilters({})
     setPendingPrice({ min: '', max: '' })
     setPendingRating(null)
-    setPendingPrime(false)
-    setPendingDeals(false)
-    setPendingFreeShipping(false)
   }
 
   const hasPendingFilters = 
     Object.values(pendingFilters).some(v => v.length > 0) ||
     pendingPrice.min || pendingPrice.max ||
-    pendingRating !== null ||
-    pendingPrime || pendingDeals || pendingFreeShipping
+    pendingRating !== null
 
   const priceRanges = [
     { label: t('under25'), min: '', max: '25' },
@@ -240,49 +218,7 @@ export function DesktopFilterModal({
         <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-track]:bg-transparent">
           <div className="p-6 space-y-4">
             
-            {/* Row 1: Quick Filter Toggle Cards - 3 columns */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Truck size={18} className="text-amber-500" weight="duotone" />
-                    <h5 className="text-sm font-semibold">Prime</h5>
-                  </div>
-                  <Switch
-                    checked={pendingPrime}
-                    onCheckedChange={setPendingPrime}
-                  />
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Package size={18} className="text-emerald-500" weight="duotone" />
-                    <h5 className="text-sm font-semibold">{locale === 'bg' ? 'Безплатна доставка' : 'Free Shipping'}</h5>
-                  </div>
-                  <Switch
-                    checked={pendingFreeShipping}
-                    onCheckedChange={setPendingFreeShipping}
-                  />
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Lightning size={18} className="text-rose-500" weight="duotone" />
-                    <h5 className="text-sm font-semibold">{locale === 'bg' ? 'Промоции' : 'Deals'}</h5>
-                  </div>
-                  <Switch
-                    checked={pendingDeals}
-                    onCheckedChange={setPendingDeals}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Row 2: Price & Rating - 2 columns 50/50 (compact) */}
+            {/* Row 1: Price & Rating - 2 columns 50/50 */}
             <div className="grid grid-cols-2 gap-4">
               {/* Price Card - Compact */}
               <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
