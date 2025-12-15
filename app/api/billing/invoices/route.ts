@@ -4,6 +4,7 @@ import { stripe } from '@/lib/stripe'
 
 export async function GET() {
   try {
+    // Create client inside handler to avoid prerender issues
     const supabase = await createClient()
     
     if (!supabase) {

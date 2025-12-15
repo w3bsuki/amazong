@@ -229,7 +229,7 @@
         "picture": "Снимка",
         "of": "от",
         "popularItem": "Популярно.",
-        "watchlistCount": "{count} добавили в списъка.",
+        "watchlistCount": "добавили в списъка.",
         "freeShipping": "БЕЗПЛАТНА",
         "locatedIn": "Местоположение:",
         "estimatedDelivery": "Очаквано между",
@@ -585,7 +585,12 @@
         "errorCode": "Код на грешка",
         "tryAgain": "Опитай отново",
         "needHelp": "Нуждаеш се от помощ?",
-        "contactSupport": "Свържи се с поддръжката"
+        "contactSupport": "Свържи се с поддръжката",
+        "username": "Потребителско име",
+        "usernamePlaceholder": "Изберете уникално потребителско име",
+        "usernameRequired": "Потребителското име е задължително",
+        "usernameInvalid": "Потребителското име може да съдържа само букви, цифри и долни черти",
+        "usernameTaken": "Това потребителско име вече е заето"
     },
     "Account": {
         "title": "Твоят акаунт",

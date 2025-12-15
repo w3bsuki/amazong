@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server"
  */
 export async function GET() {
   try {
+    // Create client inside handler to avoid prerender issues
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     

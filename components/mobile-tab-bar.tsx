@@ -25,7 +25,12 @@ export function MobileTabBar() {
   }
 
   // Hide tab bar on product pages - they have their own sticky buy box
-  const isProductPage = pathname.startsWith("/product/")
+  // Product pages use: /product/[id] OR /{username}/{productSlug} (SEO format)
+  const pathSegments = pathname.split('/').filter(Boolean)
+  const knownRoutes = ['categories', 'cart', 'checkout', 'account', 'chat', 'sell', 'help', 'auth', 'search', 'admin', 'dashboard', 'plans', 'wishlist', 'orders', 'settings', 'notifications']
+  const isProductPage = pathname.startsWith("/product/") || 
+    // /{username}/{slug} pattern: exactly 2 segments AND first segment is not a known route
+    (pathSegments.length === 2 && !knownRoutes.includes(pathSegments[0]))
   
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/"
@@ -57,7 +62,7 @@ export function MobileTabBar() {
             aria-current={pathname === "/" ? "page" : undefined}
           >
             <House size={22} weight={pathname === "/" ? "fill" : "regular"} />
-            <span className="text-2xs font-medium">{t("home")}</span>
+            <span className="text-xs font-medium">{t("home")}</span>
           </Link>
 
           {/* Categories - Opens drawer with category circles */}
@@ -72,7 +77,7 @@ export function MobileTabBar() {
             aria-label={t("categories")}
           >
             <SquaresFour size={22} weight={isActive("/categories") ? "fill" : "regular"} />
-            <span className="text-2xs font-medium">{t("categories")}</span>
+            <span className="text-xs font-medium">{t("categories")}</span>
           </button>
 
           {/* Sell */}
@@ -89,7 +94,7 @@ export function MobileTabBar() {
             aria-current={isActive("/sell") ? "page" : undefined}
           >
             <PlusCircle size={22} weight={isActive("/sell") ? "fill" : "regular"} />
-            <span className="text-2xs font-medium">{t("sell")}</span>
+            <span className="text-xs font-medium">{t("sell")}</span>
           </Link>
 
         {/* Chat */}
@@ -113,7 +118,7 @@ export function MobileTabBar() {
               </span>
             )}
           </div>
-          <span className="text-2xs font-medium">{t("chat")}</span>
+          <span className="text-xs font-medium">{t("chat")}</span>
         </Link>
 
         {/* Account */}
@@ -130,7 +135,7 @@ export function MobileTabBar() {
           aria-current={isActive("/account") ? "page" : undefined}
         >
           <User size={22} weight={isActive("/account") ? "fill" : "regular"} />
-          <span className="text-2xs font-medium">{t("account")}</span>
+          <span className="text-xs font-medium">{t("account")}</span>
         </Link>
       </div>
     </nav>
