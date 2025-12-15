@@ -156,7 +156,7 @@ export function AddToCart({
             <Button
                 onClick={handleBuyNow}
                 disabled={isOwnProduct}
-                className={cn("h-12 text-base font-semibold bg-primary hover:bg-primary/90 disabled:opacity-50", className)}
+                className={cn("w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 disabled:opacity-50", className)}
                 title={isOwnProduct ? "You cannot purchase your own products" : undefined}
             >
                 {t('buyNow')}

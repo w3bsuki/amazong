@@ -200,6 +200,8 @@ export default function SignUpPage() {
         }
 
         setIsSuccess(true)
+        // Redirect to check-email page (user needs to confirm email first)
+        // After email confirmation, they'll be redirected to welcome page
         setTimeout(() => router.push("/auth/sign-up-success"), 600)
       } catch {
         setServerError(t('error'))

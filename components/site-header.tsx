@@ -32,9 +32,10 @@ import { User } from "@supabase/supabase-js"
 
 interface SiteHeaderProps {
   user: User | null
+  hideSubheader?: boolean
 }
 
-export function SiteHeader({ user }: SiteHeaderProps) {
+export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
   const [country, setCountry] = useState("Bulgaria")
   const [, setCountryCode] = useState("BG") // Used for shipping zone filtering
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
@@ -44,7 +45,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
   const router = useRouter()
   
   // Product pages get special mobile UX: back button instead of hamburger, no search bar
-  const isProductPage = pathname.startsWith("/product/")
+  const isProductPage = pathname.startsWith("/product/") || hideSubheader
   
   const searchPlaceholder = locale === "bg" 
     ? "Какво търсиш днес?" 
@@ -212,25 +213,27 @@ export function SiteHeader({ user }: SiteHeaderProps) {
         </div>
       </div>
 
-      {/* Category Subheader - Full container width, categories centered */}
-      <nav className="hidden sm:block bg-subheader-bg text-sm border-t border-header-border relative">
-        <div className="container text-subheader-text">
-          {/* Mobile/Tablet: Quick Links with Sidebar Menu */}
-          <div className="lg:hidden flex items-center gap-0.5 overflow-x-auto no-scrollbar">
-            <SidebarMenu user={user} />
-            <Link href="/todays-deals" prefetch={true} className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('todaysDeals')}</Link>
-            <Link href="/customer-service" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('customerService')}</Link>
-            <Link href="/registry" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('registry')}</Link>
-            <Link href="/gift-cards" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('giftCards')}</Link>
-            <Link href="/sell" className="font-normal text-brand hover:text-brand-dark hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
+      {/* Category Subheader - Hide on category/product pages (eBay/Target pattern) */}
+      {!pathname.startsWith("/categories") && !pathname.startsWith("/product") && !hideSubheader && (
+        <nav className="hidden sm:block bg-subheader-bg text-sm border-t border-header-border relative">
+          <div className="container text-subheader-text">
+            {/* Mobile/Tablet: Quick Links with Sidebar Menu */}
+            <div className="lg:hidden flex items-center gap-0.5 overflow-x-auto no-scrollbar">
+              <SidebarMenu user={user} />
+              <Link href="/todays-deals" prefetch={true} className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('todaysDeals')}</Link>
+              <Link href="/customer-service" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('customerService')}</Link>
+              <Link href="/registry" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('registry')}</Link>
+              <Link href="/gift-cards" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('giftCards')}</Link>
+              <Link href="/sell" className="font-normal text-brand hover:text-brand-dark hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
+            </div>
+            
+            {/* Desktop: Categories fill container width */}
+            <div className="hidden lg:block">
+              <CategorySubheader />
+            </div>
           </div>
-          
-          {/* Desktop: Categories fill container width */}
-          <div className="hidden lg:block">
-            <CategorySubheader />
-          </div>
-        </div>
-      </nav>
+        </nav>
+      )}
     </header>
   )
 }

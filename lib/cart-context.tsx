@@ -10,6 +10,9 @@ export interface CartItem {
   image: string
   quantity: number
   slug?: string
+  /** Seller username for SEO-friendly URLs */
+  username?: string
+  /** @deprecated Use 'username' instead */
   storeSlug?: string | null
 }
 

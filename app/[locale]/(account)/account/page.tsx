@@ -46,14 +46,16 @@ export default async function AccountPage({ params }: AccountPageProps) {
   const wishlistCount = wishlistResult.count || 0
   const totalSales = salesResult.count || 0
   const salesData = salesResult.data || []
-  // Fetch products for recent sales
-  const productIds = [...new Set(salesData.map((item: any) => item.product_id))]
+  
+  // Fetch products for recent sales - with proper typing
+  interface SaleItem { id: string; order_id: string; price_at_purchase: number; quantity: number; product_id: string }
+  const productIds = [...new Set(salesData.map((item: SaleItem) => item.product_id))]
   const salesProductsResult = productIds.length > 0
     ? await supabase.from('products').select('id, title, images').in('id', productIds)
     : { data: [] }
   const salesProducts = salesProductsResult.data ?? []
   const salesProductsMap = new Map(salesProducts.map((p) => [p.id, p]))
-  const salesRevenue = salesData.reduce((sum, item) => 
+  const salesRevenue = salesData.reduce((sum: number, item: SaleItem) => 
     sum + (Number(item.price_at_purchase) * item.quantity), 0
   )
 
@@ -84,7 +86,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
     images: p.images ?? undefined,
     created_at: p.created_at
   }))
-  const recentSales = salesData.map((sale: any) => {
+  const recentSales = salesData.map((sale: SaleItem) => {
     const product = salesProductsMap.get(sale.product_id) || null
     return {
       id: sale.id,

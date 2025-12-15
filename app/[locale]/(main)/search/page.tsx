@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/server"
 import { ProductCard } from "@/components/product-card"
 import { SearchFilters } from "@/components/search-filters"
 import { SubcategoryTabs } from "@/components/subcategory-tabs"
@@ -71,7 +71,7 @@ interface Product {
 
 // Helper function to search products with ILIKE fallback and pagination
 async function searchProducts(
-  supabase: Awaited<ReturnType<typeof createClient>>, 
+  supabase: ReturnType<typeof createStaticClient>, 
   query: string, 
   categoryIds: string[] | null,
   filters: {
@@ -82,6 +82,7 @@ async function searchProducts(
     prime?: string
     availability?: string
     sort?: string
+    attributes?: Record<string, string | string[]>  // Dynamic attr_* filters
   },
   page: number = 1,
   limit: number = ITEMS_PER_PAGE,
@@ -129,6 +130,19 @@ async function searchProducts(
   if (filters.availability === "instock") {
     countQuery = countQuery.gt("stock", 0)
     dbQuery = dbQuery.gt("stock", 0)
+  }
+
+  // Apply attribute filters (uses idx_products_attr_* indexes)
+  if (filters.attributes) {
+    for (const [attrName, attrValue] of Object.entries(filters.attributes)) {
+      if (attrValue) {
+        const value = Array.isArray(attrValue) ? attrValue[0] : attrValue
+        if (value) {
+          countQuery = countQuery.contains('attributes', { [attrName]: value })
+          dbQuery = dbQuery.contains('attributes', { [attrName]: value })
+        }
+      }
+    }
   }
   
   // Apply text search if query exists
@@ -202,13 +216,14 @@ export default async function SearchPage({
     availability?: string
     sort?: string
     page?: string
+    [key: string]: string | string[] | undefined  // Dynamic attr_* params
   }>
 }) {
   await connection()
   const { locale } = await params
   setRequestLocale(locale)
   const searchParams = await searchParamsPromise
-  const supabase = await createClient()
+  const supabase = createStaticClient()
   const query = searchParams.q || ""
   const currentPage = Math.max(1, parseInt(searchParams.page || "1", 10))
   
@@ -270,6 +285,15 @@ export default async function SearchPage({
         // Get products from this category AND all its subcategories
         const categoryIds = [categoryData.id, ...subcategories.map(s => s.id)]
 
+        // Extract attr_* params for attribute filtering
+        const attributeFilters: Record<string, string | string[]> = {}
+        for (const [key, value] of Object.entries(searchParams)) {
+          if (key.startsWith('attr_') && value) {
+            const attrName = key.replace('attr_', '')
+            attributeFilters[attrName] = value
+          }
+        }
+
         // Use the helper function with pagination and shipping filter
         const result = await searchProducts(supabase, query, categoryIds, {
           minPrice: searchParams.minPrice,
@@ -279,12 +303,22 @@ export default async function SearchPage({
           prime: searchParams.prime,
           availability: searchParams.availability,
           sort: searchParams.sort,
+          attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
         }, currentPage, ITEMS_PER_PAGE, shippingFilter)
         products = result.products
         totalProducts = result.total
       }
     } else {
       // No category filter - get all products filtered by shipping zone
+      // Extract attr_* params for attribute filtering
+      const attributeFilters: Record<string, string | string[]> = {}
+      for (const [key, value] of Object.entries(searchParams)) {
+        if (key.startsWith('attr_') && value) {
+          const attrName = key.replace('attr_', '')
+          attributeFilters[attrName] = value
+        }
+      }
+
       const result = await searchProducts(supabase, query, null, {
         minPrice: searchParams.minPrice,
         maxPrice: searchParams.maxPrice,
@@ -293,6 +327,7 @@ export default async function SearchPage({
         prime: searchParams.prime,
         availability: searchParams.availability,
         sort: searchParams.sort,
+        attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
       }, currentPage, ITEMS_PER_PAGE, shippingFilter)
       products = result.products
       totalProducts = result.total

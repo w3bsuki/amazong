@@ -218,7 +218,7 @@ function SidebarSection({
         {typeof count === 'number' && count > 0 && (
           <Badge 
             variant="secondary" 
-            className="h-5 px-1.5 text-[10px] font-medium"
+            className="h-5 px-1.5 text-2xs font-medium"
           >
             {count}
           </Badge>

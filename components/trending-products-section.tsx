@@ -120,7 +120,7 @@ export function TrendingProductsSection({
                   key={tab.id}
                   value={tab.id}
                   className={cn(
-                    "px-3 py-1.5 text-[13px] font-medium rounded-full",
+                    "px-3 py-1.5 text-sm font-medium rounded-full",
                     "text-muted-foreground hover:text-foreground hover:bg-secondary/70",
                     "data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
                     "whitespace-nowrap min-h-9 flex items-center gap-1.5"

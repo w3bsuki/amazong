@@ -8,6 +8,9 @@ export interface RecentlyViewedProduct {
   price: number
   image: string | null
   slug: string
+  /** Seller username for SEO-friendly URLs */
+  username?: string | null
+  /** @deprecated Use 'username' instead */
   storeSlug?: string | null
   viewedAt: number
 }

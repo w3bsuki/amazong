@@ -45,8 +45,26 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error) {
-      // Successfully verified! Redirect to home with welcome flag (use /en/ locale as default)
-      return NextResponse.redirect(`${redirectTo}/en${next}?welcome=true`)
+      // Check if this is a new user (first time confirming email)
+      // Redirect to welcome page for onboarding
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        // Check if user has completed onboarding
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("id", user.id)
+          .single()
+        
+        // If onboarding not completed, redirect to welcome page
+        if (!profile?.onboarding_completed) {
+          return NextResponse.redirect(`${redirectTo}/en/auth/welcome`)
+        }
+      }
+      
+      // Otherwise redirect to intended destination
+      return NextResponse.redirect(`${redirectTo}/en${next}`)
     }
     
     console.error("Code exchange error:", error.message)
@@ -63,7 +81,20 @@ export async function GET(request: Request) {
     if (!error) {
       // Email verified successfully (use /en/ locale as default)
       if (type === "signup" || type === "email") {
-        return NextResponse.redirect(`${redirectTo}/en${next}?welcome=true`)
+        // Check if user needs onboarding
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("onboarding_completed")
+            .eq("id", user.id)
+            .single()
+          
+          if (!profile?.onboarding_completed) {
+            return NextResponse.redirect(`${redirectTo}/en/auth/welcome`)
+          }
+        }
+        return NextResponse.redirect(`${redirectTo}/en${next}`)
       } else if (type === "recovery") {
         return NextResponse.redirect(`${redirectTo}/en/auth/reset-password`)
       } else if (type === "email_change") {

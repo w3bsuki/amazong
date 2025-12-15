@@ -81,7 +81,7 @@ export function AccountTabBar() {
                 stroke={active && !isStore ? 2 : 1.5}
               />
               <span className={cn(
-                "text-[10px] leading-tight",
+                "text-2xs leading-tight",
                 active && !isStore ? "font-semibold" : "font-medium"
               )}>
                 {tab.label}

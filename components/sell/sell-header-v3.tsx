@@ -156,9 +156,9 @@ export function SellHeaderV3({
                   </DropdownMenuItem>
                   {storeSlug && (
                     <DropdownMenuItem asChild>
-                      <Link href={`/store/${storeSlug}`} className="flex items-center gap-2">
+                      <Link href={`/${storeSlug}`} className="flex items-center gap-2">
                         <Storefront className="size-4" />
-                        View My Store
+                        View My Profile
                       </Link>
                     </DropdownMenuItem>
                   )}

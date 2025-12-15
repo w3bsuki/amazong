@@ -9,6 +9,7 @@ import {
   SellErrorBoundary,
   SellForm,
   SellFormStepper,
+  SellerOnboardingWizard,
   type Category,
   type Seller
 } from "@/components/sell";
@@ -18,17 +19,23 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface SellPageClientProps {
   initialUser: { id: string; email?: string } | null;
   initialSeller: Seller | null;
+  initialNeedsOnboarding?: boolean;
+  initialUsername?: string | null;
   categories: Category[];
 }
 
 export function SellPageClient({ 
   initialUser, 
-  initialSeller, 
+  initialSeller,
+  initialNeedsOnboarding = false,
+  initialUsername = null,
   categories // Pre-fetched from server
 }: SellPageClientProps) {
   const [user, setUser] = useState(initialUser);
   const [seller, setSeller] = useState(initialSeller);
   const [isAuthChecking, setIsAuthChecking] = useState(!initialUser);
+  const [needsOnboarding, setNeedsOnboarding] = useState(initialNeedsOnboarding);
+  const [username, setUsername] = useState<string | null>(initialUsername);
   
   // Get locale and mobile state at top level (not conditionally)
   const params = useParams();
@@ -50,21 +57,29 @@ export function SellPageClient({
       setUser(currentUser ? { id: currentUser.id, email: currentUser.email } : null);
       
       if (currentUser && !seller) {
-        // Check if user has a profile with username (can sell)
+        // Check if user has a profile with username and is_seller status
         const { data: profileData } = await supabase
           .from("profiles")
-          .select("id, username, display_name, business_name")
+          .select("id, username, display_name, business_name, is_seller")
           .eq("id", currentUser.id)
           .single();
         
         if (profileData?.username) {
-          setSeller({
-            id: profileData.id,
-            store_name: profileData.display_name || profileData.business_name || profileData.username,
-          });
+          setUsername(profileData.username);
+          
+          // Check if user needs onboarding (has username but is_seller is false)
+          if (!profileData.is_seller) {
+            setNeedsOnboarding(true);
+          } else {
+            setSeller({
+              id: profileData.id,
+              store_name: profileData.display_name || profileData.business_name || profileData.username,
+            });
+          }
         }
       } else if (!currentUser) {
         setSeller(null);
+        setNeedsOnboarding(false);
       }
       
       setIsAuthChecking(false);
@@ -93,6 +108,41 @@ export function SellPageClient({
         <SellHeaderV3 />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto">
           <SignInPrompt />
+        </div>
+      </div>
+    );
+  }
+
+  // First-time seller onboarding
+  // User has username but hasn't set up their seller profile yet (is_seller = false)
+  if (needsOnboarding && user && username) {
+    const handleOnboardingComplete = async () => {
+      // Refresh seller data after onboarding
+      const supabase = createClient();
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("id, username, display_name, business_name")
+        .eq("id", user.id)
+        .single();
+      
+      if (profileData) {
+        setSeller({
+          id: profileData.id,
+          store_name: profileData.display_name || profileData.business_name || profileData.username,
+        });
+        setNeedsOnboarding(false);
+      }
+    };
+
+    return (
+      <div className="min-h-screen bg-linear-to-b from-amber-50/50 to-white flex flex-col">
+        <SellHeaderV3 user={{ email: user.email }} />
+        <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
+          <SellerOnboardingWizard
+            userId={user.id}
+            username={username}
+            onComplete={handleOnboardingComplete}
+          />
         </div>
       </div>
     );

@@ -26,6 +26,24 @@
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
 
+  /* === PROFESSIONAL TYPOGRAPHY SCALE (Amazon/eBay/Target inspired) ===
+   * Using Tailwind's font-size/line-height shorthand pattern
+   * Key principles:
+   * - 14px (text-sm) as body base - same as Amazon, eBay
+   * - Line-height 1.4-1.5 for body text (improves readability)
+   * - font-normal (400) for body, semibold (600) for prices
+   * - text-xs (12px) for captions, badges, meta
+   * - Custom text-2xs (10px) for tiny badges only
+   */
+  --font-size-2xs: 0.625rem;       /* 10px - badges, tiny labels */
+  --font-size-2xs--line-height: 0.875rem;  /* 14px line-height */
+  
+  /* Letter spacing for small text (improves legibility) */
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.01em;
+  --letter-spacing-wider: 0.02em;
+
   /* === BORDER RADIUS (eBay-style sharp: 2-4px) === */
   --radius-none: 0;
   --radius-xs: 0.0625rem;
@@ -215,6 +233,16 @@
   --color-product-wishlist: oklch(0.50 0.20 350);
   --color-product-wishlist-active: oklch(0.58 0.25 350);
 
+  /* Seller Card (product page) */
+  --color-seller-card: oklch(0.98 0.01 250);
+  --color-seller-card-border: oklch(0.90 0.01 250);
+  --color-seller-banner: oklch(0.50 0.20 255);
+  --color-seller-banner-text: oklch(1 0 0);
+
+  /* Product Page Unified Container */
+  --color-product-container-bg: oklch(1 0 0);
+  --color-product-container-border: oklch(0.90 0 0);
+
   /* Notifications */
   --color-notification: oklch(0.58 0.22 27);
   --color-cart-badge: oklch(0.58 0.22 27);
@@ -332,6 +360,16 @@
   --color-product-card-bg: oklch(0.22 0.02 250);
   --color-product-card-border: oklch(0.35 0.02 250);
 
+  /* Seller Card (product page) - dark mode */
+  --color-seller-card: oklch(0.22 0.01 250);
+  --color-seller-card-border: oklch(0.35 0.01 250);
+  --color-seller-banner: oklch(0.45 0.16 255);
+  --color-seller-banner-text: oklch(1 0 0);
+
+  /* Product Page Unified Container - dark mode */
+  --color-product-container-bg: oklch(0.18 0.01 250);
+  --color-product-container-border: oklch(0.30 0.02 250);
+
   --shadow-dropdown: 0 4px 16px 0 hsl(0 0% 0% / 0.25);
   --shadow-modal: 0 16px 48px 0 hsl(0 0% 0% / 0.35);
   --shadow-product: 0 2px 8px 0 hsl(0 0% 0% / 0.15);
@@ -426,6 +464,12 @@
 /* ===== UTILITY CLASSES ===== */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Custom text-2xs utility (10px) for badges & tiny labels - Amazon/eBay style */
+.text-2xs { 
+  font-size: 0.625rem;  /* 10px */
+  line-height: 0.875rem;  /* 14px - 1.4 ratio */
+}
 
 .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

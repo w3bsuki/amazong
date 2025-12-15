@@ -503,7 +503,7 @@ export function DetailsSection({
                 )}>
                   {isBg ? opt.labelBg : opt.label}
                 </span>
-                <span className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                <span className="text-xs text-muted-foreground mt-1 line-clamp-2">
                   {opt.description}
                 </span>
               </button>

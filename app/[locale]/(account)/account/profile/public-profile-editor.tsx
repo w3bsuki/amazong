@@ -249,10 +249,10 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                   {locale === "bg" ? "Твоят публичен профил" : "Your Public Profile"}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  amazong.com/u/{profile.username}
+                  amazong.com/{profile.username}
                 </p>
               </div>
-              <Link href={`/${locale}/u/${profile.username}`}>
+              <Link href={`/${locale}/${profile.username}`}>
                 <Button variant="outline" size="sm" className="gap-2">
                   {locale === "bg" ? "Виж профила" : "View Profile"}
                   <ArrowRight className="size-4" />

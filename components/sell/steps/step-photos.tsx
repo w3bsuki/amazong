@@ -149,7 +149,7 @@ function PhotoThumbnail({
 
       {/* Cover badge */}
       {isCover && (
-        <div className="absolute top-1 left-1 z-10 px-1 py-0.5 rounded bg-amber-500 text-white text-[9px] font-bold flex items-center gap-0.5">
+        <div className="absolute top-1 left-1 z-10 px-1 py-0.5 rounded bg-amber-500 text-white text-2xs font-bold flex items-center gap-0.5">
           <Star className="size-2.5" weight="fill" />
         </div>
       )}
@@ -177,7 +177,7 @@ function PhotoThumbnail({
       </div>
 
       {/* Position number */}
-      <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] font-medium px-1 py-0.5 rounded">
+      <div className="absolute bottom-1 right-1 bg-black/60 text-white text-2xs font-medium px-1 py-0.5 rounded">
         {index + 1}
       </div>
     </div>
@@ -209,7 +209,7 @@ function UploadPreview({
         {upload.status === "error" ? (
           <>
             <WarningCircle className="size-5 text-destructive" />
-            <span className="text-[9px] text-white text-center mt-0.5">{upload.error || "Failed"}</span>
+            <span className="text-2xs text-white text-center mt-0.5">{upload.error || "Failed"}</span>
           </>
         ) : upload.status === "done" ? (
           <CheckCircle className="size-5 text-green-500" weight="fill" />

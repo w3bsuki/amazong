@@ -82,7 +82,7 @@ function PriceSuggestionCard({
           onClick={() => onApply(suggestion.low)}
           className="flex-1 p-2 rounded-lg bg-background hover:bg-accent transition-colors text-center"
         >
-          <div className="text-[10px] text-muted-foreground mb-0.5">Low</div>
+          <div className="text-2xs text-muted-foreground mb-0.5">Low</div>
           <div className="text-sm font-semibold text-foreground">
             {symbol}{suggestion.low.toFixed(2)}
           </div>
@@ -93,7 +93,7 @@ function PriceSuggestionCard({
           onClick={() => onApply(suggestion.median)}
           className="flex-1 p-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors text-center ring-2 ring-primary/30"
         >
-          <div className="text-[10px] text-primary mb-0.5">Recommended</div>
+          <div className="text-2xs text-primary mb-0.5">Recommended</div>
           <div className="text-sm font-bold text-primary">
             {symbol}{suggestion.median.toFixed(2)}
           </div>
@@ -104,7 +104,7 @@ function PriceSuggestionCard({
           onClick={() => onApply(suggestion.high)}
           className="flex-1 p-2 rounded-lg bg-background hover:bg-accent transition-colors text-center"
         >
-          <div className="text-[10px] text-muted-foreground mb-0.5">High</div>
+          <div className="text-2xs text-muted-foreground mb-0.5">High</div>
           <div className="text-sm font-semibold text-foreground">
             {symbol}{suggestion.high.toFixed(2)}
           </div>

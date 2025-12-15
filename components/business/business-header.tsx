@@ -73,7 +73,7 @@ export function BusinessHeader({
         <div className="flex items-center gap-2">
           <h1 className="text-base font-semibold">{getPageTitle()}</h1>
           {isVerified && normalizedPath === '/dashboard' && (
-            <Badge variant="outline" className="text-[10px] h-5 bg-emerald-50 text-emerald-700 border-emerald-200">
+            <Badge variant="outline" className="text-2xs h-5 bg-emerald-50 text-emerald-700 border-emerald-200">
               Verified
             </Badge>
           )}
@@ -81,7 +81,7 @@ export function BusinessHeader({
             <Link href="/dashboard/upgrade">
               <Badge 
                 variant="outline" 
-                className="text-[10px] h-5 bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 cursor-pointer"
+                className="text-2xs h-5 bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 cursor-pointer"
               >
                 Upgrade to unlock
               </Badge>

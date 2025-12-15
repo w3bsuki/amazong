@@ -197,7 +197,7 @@ function PhotoThumbnail({
       {/* Cover Badge - Top left, always visible for first image */}
       {isCover && (
         <div className="absolute top-1.5 left-1.5 z-10">
-          <Badge className="bg-amber-500 hover:bg-amber-500 text-white text-[10px] px-1.5 py-0.5 gap-1 font-semibold">
+          <Badge className="bg-amber-500 hover:bg-amber-500 text-white text-2xs px-1.5 py-0.5 gap-1 font-semibold">
             <Star className="size-3" weight="fill" />
             COVER
           </Badge>
@@ -205,7 +205,7 @@ function PhotoThumbnail({
       )}
 
       {/* Position Number - Top right */}
-      <div className="absolute top-1.5 right-1.5 bg-black/60 text-white text-[10px] font-medium px-1.5 py-0.5 rounded-md">
+      <div className="absolute top-1.5 right-1.5 bg-black/60 text-white text-2xs font-medium px-1.5 py-0.5 rounded-md">
         {index + 1}
       </div>
 
@@ -238,14 +238,14 @@ function PhotoThumbnail({
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onSetCover(); }}
-              className="text-[11px] font-medium text-white bg-black/50 hover:bg-black/70 px-2.5 py-1.5 rounded-md transition-colors"
+              className="text-xs font-medium text-white bg-black/50 hover:bg-black/70 px-2.5 py-1.5 rounded-md transition-colors"
             >
               Set as cover
             </button>
           )}
           <div className={cn("flex items-center gap-1 text-white/80 ml-auto", !isCover && "ml-2")}>
             <DotsSixVertical className="size-4" />
-            <span className="text-[10px]">Drag</span>
+            <span className="text-2xs">Drag</span>
           </div>
         </div>
       </div>
@@ -621,7 +621,7 @@ export function PhotosSection({
               >
                 <input {...getInputProps()} />
                 <Plus className="h-6 w-6 text-muted-foreground" />
-                <span className="mt-1 text-[10px] text-muted-foreground">Add</span>
+                <span className="mt-1 text-2xs text-muted-foreground">Add</span>
               </div>
             )}
           </div>

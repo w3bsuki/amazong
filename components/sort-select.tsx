@@ -40,9 +40,9 @@ export function SortSelect() {
     <Select value={currentSort} onValueChange={handleSortChange}>
       <SelectTrigger 
         className={cn(
-          "w-full h-11 px-4 rounded-full",
+          "w-auto h-[38px] px-4 rounded-full gap-2",
           "bg-card border border-border",
-          "hover:bg-muted hover:border-border",
+          "hover:bg-muted hover:border-ring",
           "active:bg-muted",
           "text-sm font-medium text-foreground",
           "focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:border-ring",
@@ -50,8 +50,8 @@ export function SortSelect() {
         )}
       >
         <ArrowsDownUp size={16} weight="regular" className="text-muted-foreground shrink-0" />
-        <span className="truncate"><SelectValue placeholder={t('sortBy')} /></span>
-        <CaretDown size={16} weight="regular" className="text-muted-foreground shrink-0 ml-auto" />
+        <span className="whitespace-nowrap"><SelectValue placeholder={t('sortBy')} /></span>
+        <CaretDown size={16} weight="regular" className="text-muted-foreground shrink-0" />
       </SelectTrigger>
       <SelectContent className="rounded-lg border-border">
         <SelectItem value="featured" className="rounded-md">{t('featured')}</SelectItem>

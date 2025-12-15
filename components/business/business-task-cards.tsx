@@ -76,7 +76,7 @@ export function BusinessTaskCards({ tasks, className }: BusinessTaskCardsProps) 
           >
             <Icon className={cn("size-3", task.iconColor)} />
             <span className={cn("text-xs font-medium", task.textColor)}>{count}</span>
-            <span className={cn("text-[10px]", task.textColor, "opacity-70")}>{task.label}</span>
+            <span className={cn("text-2xs", task.textColor, "opacity-70")}>{task.label}</span>
           </Link>
         )
       })}

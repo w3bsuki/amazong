@@ -530,7 +530,7 @@ export function ProductFormModal({
                           className="object-cover"
                         />
                         {index === 0 && (
-                          <Badge className="absolute top-1 left-1 text-[10px] px-1.5 py-0" variant="secondary">
+                          <Badge className="absolute top-1 left-1 text-2xs px-1.5 py-0" variant="secondary">
                             Main
                           </Badge>
                         )}
@@ -568,7 +568,7 @@ export function ProductFormModal({
                       ) : (
                         <>
                           <IconUpload className="size-5" />
-                          <span className="text-[10px] font-medium">Add</span>
+                          <span className="text-2xs font-medium">Add</span>
                         </>
                       )}
                     </label>

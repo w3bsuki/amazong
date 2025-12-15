@@ -50,15 +50,15 @@ export function StartSellingBanner({ locale = "en", className }: StartSellingBan
       <div className="flex items-center justify-center gap-3 sm:gap-6 mt-2 md:mt-3">
         <div className="flex items-center gap-1 text-muted-foreground">
           <ShieldCheck className="size-3 sm:size-3.5 text-link" weight="fill" />
-          <span className="text-[9px] sm:text-[10px]">{isBg ? "Сигурно" : "Secure"}</span>
+          <span className="text-2xs">{isBg ? "Сигурно" : "Secure"}</span>
         </div>
         <div className="flex items-center gap-1 text-muted-foreground">
           <Wallet className="size-3 sm:size-3.5 text-link" weight="fill" />
-          <span className="text-[9px] sm:text-[10px]">{isBg ? "0% комисион" : "0% fees"}</span>
+          <span className="text-2xs">{isBg ? "0% комисион" : "0% fees"}</span>
         </div>
         <div className="flex items-center gap-1 text-muted-foreground">
           <TrendUp className="size-3 sm:size-3.5 text-link" weight="fill" />
-          <span className="text-[9px] sm:text-[10px]">{isBg ? "Растящ пазар" : "Growing"}</span>
+          <span className="text-2xs">{isBg ? "Растящ пазар" : "Growing"}</span>
         </div>
       </div>
     </div>

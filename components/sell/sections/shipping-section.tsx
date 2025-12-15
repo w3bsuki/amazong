@@ -169,7 +169,7 @@ function ShippingRegionCard({
             {region.carriers.map((carrier) => (
               <span
                 key={carrier}
-                className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
+                className="text-2xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
               >
                 {carrier}
               </span>

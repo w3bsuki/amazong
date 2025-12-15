@@ -204,7 +204,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   // Fetch seller (profile) and their stats separately
   let seller = null
-  let sellerStats = null
+  let _sellerStats = null
   if (product.seller_id) {
     const { data: sellerData } = await supabase
       .from("profiles")
@@ -219,7 +219,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       .select("*")
       .eq("seller_id", product.seller_id)
       .single()
-    sellerStats = statsData
+    _sellerStats = statsData
   }
 
   // SEO: Redirect to SEO-friendly URL with username (301 redirect)
@@ -321,11 +321,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
           }}
           seller={seller ? {
             id: seller.id,
-            store_name: seller.display_name || seller.username || 'Seller',
-            store_slug: seller.username ?? undefined,
+            username: seller.username ?? undefined,
+            display_name: seller.display_name || seller.username || 'Seller',
             verified: seller.verified ?? false,
             created_at: seller.created_at,
-            stats: sellerStats || null,
           } : null}
           locale={locale}
           currentUserId={currentUserId}

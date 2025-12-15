@@ -18,7 +18,17 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-async function getOrders() {
+// Type for admin order with profile info
+interface AdminOrder {
+  id: string
+  total_amount: number
+  status: string | null
+  created_at: string
+  user_id: string
+  profiles: { email: string | null; full_name: string | null } | null
+}
+
+async function getOrders(): Promise<AdminOrder[]> {
   const adminClient = createAdminClient()
   
   const { data: orders, error } = await adminClient
@@ -42,7 +52,7 @@ async function getOrders() {
     return []
   }
   
-  return orders
+  return (orders || []) as AdminOrder[]
 }
 
 export default async function AdminOrdersPage() {
@@ -127,10 +137,10 @@ export default async function AdminOrdersPage() {
                   <TableCell>
                     <div>
                       <p className="font-medium">
-                        {(order.profiles as any)?.full_name || 'No name'}
+                        {order.profiles?.full_name || 'No name'}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {(order.profiles as any)?.email}
+                        {order.profiles?.email}
                       </p>
                     </div>
                   </TableCell>

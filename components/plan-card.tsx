@@ -189,7 +189,7 @@ export function PlanCard({
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-base leading-tight truncate">{plan.name}</h3>
           {isCurrentPlan && (
-            <Badge variant="secondary" className="text-[10px] mt-0.5 px-1.5 py-0">
+            <Badge variant="secondary" className="text-2xs mt-0.5 px-1.5 py-0">
               {t.currentPlan}
             </Badge>
           )}
@@ -248,7 +248,7 @@ export function PlanCard({
       {/* Features */}
       <div className="mb-4 flex-1">
         {variant === "full" && (
-          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide mb-2">
+          <p className="text-2xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
             {t.included}
           </p>
         )}
@@ -267,7 +267,7 @@ export function PlanCard({
           ))}
         </ul>
         {hiddenCount > 0 && (
-          <p className="text-[10px] text-muted-foreground mt-1.5 text-center">
+          <p className="text-2xs text-muted-foreground mt-1.5 text-center">
             +{hiddenCount} {t.moreFeatures}
           </p>
         )}

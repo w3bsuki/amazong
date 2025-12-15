@@ -193,7 +193,7 @@ export function StepReview({
                 />
                 {idx === 0 && (
                   <div className="absolute bottom-0 inset-x-0 bg-linear-to-t from-black/60 to-transparent py-0.5 text-center">
-                    <span className="text-[8px] text-white font-bold">COVER</span>
+                    <span className="text-2xs text-white font-bold">COVER</span>
                   </div>
                 )}
               </div>

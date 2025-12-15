@@ -48,6 +48,15 @@ export default function CartPage() {
     }).format(price)
   }
 
+  // Generate SEO-friendly product URL: /{username}/{slug} or fallback to /product/{id}
+  const getProductUrl = (item: typeof items[0]) => {
+    if (item.username && item.slug) {
+      return `/${item.username}/${item.slug}`
+    }
+    // Fallback for older items without username/slug
+    return `/product/${item.id}`
+  }
+
   // Loading state
   if (!mounted) {
     return (
@@ -131,7 +140,7 @@ export default function CartPage() {
                   <div className="flex gap-4 p-4">
                     {/* Product Image */}
                     <Link 
-                      href={`/product/${item.id}`}
+                      href={getProductUrl(item)}
                       className="relative shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-lg overflow-hidden group"
                     >
                       <Image 
@@ -149,7 +158,7 @@ export default function CartPage() {
                       <div className="flex justify-between gap-4">
                         <div className="flex-1 min-w-0">
                           <Link
-                            href={`/product/${item.id}`}
+                            href={getProductUrl(item)}
                             className="font-medium hover:text-brand transition-colors line-clamp-2 text-sm sm:text-base"
                           >
                             {item.title}

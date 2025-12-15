@@ -4,6 +4,29 @@ import { connection } from "next/server"
 
 export type AccountType = 'personal' | 'business'
 
+// Internal types for order management - must match OrdersTable component expectations
+interface UserRecord {
+  id: string
+  email: string
+  full_name: string | null
+}
+
+interface OrderRecord {
+  id: string
+  status: string | null
+  created_at: string
+  shipping_address: Record<string, unknown> | null
+  user_id: string
+  user?: UserRecord | null
+}
+
+interface ProductRecord {
+  id: string
+  title: string
+  images: string[] | null
+  sku: string | null
+}
+
 // Tiers that have dashboard access (paid business plans)
 // starter = Business Starter (50лв), professional = Business Pro (100лв), enterprise = Business Enterprise (200лв)
 export const DASHBOARD_ALLOWED_TIERS = ['starter', 'professional', 'enterprise'] as const
@@ -576,31 +599,33 @@ export async function getBusinessOrders(
   // Fetch related orders and products
   const orderIds = (data || []).map(i => i.order_id).filter(Boolean)
   const productIds = (data || []).map(i => i.product_id).filter(Boolean)
-  let orders: any[] = []
-  let products: any[] = []
+  let orders: OrderRecord[] = []
+  let products: ProductRecord[] = []
   if (orderIds.length) {
     const { data: o } = await supabase.from('orders').select('id, status, created_at, shipping_address, user_id').in('id', orderIds)
-    orders = o || []
+    orders = (o || []) as OrderRecord[]
   }
   if (productIds.length) {
     const { data: p } = await supabase.from('products').select('id, title, images, sku').in('id', productIds)
-    products = p || []
+    products = (p || []) as ProductRecord[]
   }
   // Fetch users for orders
   const userIds = (orders || []).map(o => o.user_id).filter(Boolean)
-  let users: any[] = []
+  let users: UserRecord[] = []
   if (userIds.length) {
     const { data: u } = await supabase.from('profiles').select('id, email, full_name').in('id', userIds)
-    users = u || []
+    users = (u || []) as UserRecord[]
   }
   const ordersMap = new Map(orders.map(o => [o.id, o]))
   const productsMap = new Map(products.map(p => [p.id, p]))
   const usersMap = new Map(users.map(u => [u.id, u]))
-  // Compose final orders array
+  // Compose final orders array - include user inside order object for component compatibility
   const ordersWithDetails = (data || []).map(item => {
-    const order = ordersMap.get(item.order_id) || null
+    const orderBase = ordersMap.get(item.order_id)
     const product = productsMap.get(item.product_id) || null
-    const user = order ? usersMap.get(order.user_id) || null : null
+    const user = orderBase ? usersMap.get(orderBase.user_id) || null : null
+    // Nest user inside order for component compatibility
+    const order = orderBase ? { ...orderBase, user } : null
     return {
       ...item,
       order,

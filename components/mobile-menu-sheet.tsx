@@ -281,7 +281,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                         <Icon size={24} weight="duotone" className="text-foreground/80 group-hover:text-brand transition-colors" />
                       </div>
                       {/* Category name */}
-                      <span className="text-[10px] font-medium text-center text-foreground leading-tight line-clamp-2 max-w-[60px] group-hover:text-brand transition-colors">
+                      <span className="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 max-w-[60px] group-hover:text-brand transition-colors">
                         {getCategoryName(cat)}
                       </span>
                     </Link>

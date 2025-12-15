@@ -21,7 +21,19 @@ import {
 import { Button } from "@/components/ui/button"
 import { IconExternalLink } from "@tabler/icons-react"
 
-async function getProducts() {
+// Type for admin product with seller info
+interface AdminProduct {
+  id: string
+  title: string
+  price: number
+  stock: number
+  is_boosted: boolean | null
+  created_at: string
+  seller_id: string
+  profiles: { business_name: string | null; display_name: string | null } | null
+}
+
+async function getProducts(): Promise<AdminProduct[]> {
   const adminClient = createAdminClient()
   
   const { data: products, error } = await adminClient
@@ -34,8 +46,9 @@ async function getProducts() {
       is_boosted,
       created_at,
       seller_id,
-      sellers (
-        store_name
+      profiles!products_seller_id_fkey (
+        business_name,
+        display_name
       )
     `)
     .order('created_at', { ascending: false })
@@ -46,7 +59,7 @@ async function getProducts() {
     return []
   }
   
-  return products
+  return (products || []) as AdminProduct[]
 }
 
 export default async function AdminProductsPage() {
@@ -104,7 +117,7 @@ export default async function AdminProductsPage() {
                     </p>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {(product.sellers as any)?.store_name || 'Unknown'}
+                    {product.profiles?.business_name || product.profiles?.display_name || 'Unknown'}
                   </TableCell>
                   <TableCell className="font-medium text-emerald-600">
                     {formatCurrency(product.price)}

@@ -424,7 +424,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                   }
                 </span>
                 {product.category && (
-                  <span className="text-muted-foreground">{(product.category as any).name}</span>
+                  <span className="text-muted-foreground">{product.category.name}</span>
                 )}
               </div>
               {/* Rating */}

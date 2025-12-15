@@ -81,7 +81,7 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
         <div className="p-2 md:p-2.5 flex-1 flex flex-col">
           {/* Deal Badge */}
           <div className="flex items-center gap-1.5 mb-1">
-            <span className="bg-deal-light text-deal font-medium text-[10px] uppercase px-1.5 py-0.5 rounded-full md:text-xs">
+            <span className="bg-deal-light text-deal font-medium text-2xs uppercase px-1.5 py-0.5 rounded-full md:text-xs">
               {t('deal')}
             </span>
           </div>

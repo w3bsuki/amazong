@@ -39,9 +39,7 @@ interface Product {
   stock: number;
   images: string[];
   created_at: string;
-  category?: {
-    name: string;
-  };
+  category?: { name: string } | null;
 }
 
 export default function SellerDashboard() {
@@ -321,7 +319,7 @@ export default function SellerDashboard() {
                       {product.category && (
                         <>
                           <span>•</span>
-                          <span>{(product.category as any).name}</span>
+                          <span>{product.category.name}</span>
                         </>
                       )}
                     </div>

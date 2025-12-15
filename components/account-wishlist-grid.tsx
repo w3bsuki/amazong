@@ -4,6 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
+import { getProductUrl } from "@/lib/url-utils"
 import { toast } from "sonner"
 import { 
   Heart, 
@@ -43,6 +44,10 @@ export interface WishlistItem {
   category_id?: string | null
   category_name?: string | null
   category_slug?: string | null
+  /** Product slug for SEO-friendly URLs */
+  slug?: string | null
+  /** Seller username for SEO-friendly URLs */
+  username?: string | null
 }
 
 interface WishlistGridProps {
@@ -202,13 +207,13 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 ) : (
                   <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500 shadow-lg shadow-orange-500/25">
                     <XCircle weight="fill" className="size-3 text-white" />
-                    <span className="text-[10px] font-semibold text-white">{labels.outOfStock}</span>
+                    <span className="text-2xs font-semibold text-white">{labels.outOfStock}</span>
                   </div>
                 )}
                 {/* Category badge */}
                 {item.category_name && (
                   <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm">
-                    <span className="text-[10px] font-medium text-white">{item.category_name}</span>
+                    <span className="text-2xs font-medium text-white">{item.category_name}</span>
                   </div>
                 )}
                 {/* Quick add to cart button overlay */}
@@ -320,7 +325,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     asChild 
                     className="flex-1 h-11"
                   >
-                    <Link href={`/product/${item.product_id}`}>
+                    <Link href={getProductUrl({ id: item.product_id, slug: item.slug, username: item.username })}>
                       <Eye className="size-4 mr-2" />
                       {labels.viewProduct}
                     </Link>
@@ -351,7 +356,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
             className="group relative flex flex-col rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden transition-all hover:shadow-md hover:border-account-accent"
           >
             {/* Product Image */}
-            <Link href={`/product/${item.product_id}`} className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">
+            <Link href={getProductUrl({ id: item.product_id, slug: item.slug, username: item.username })} className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">
               <Image 
                 src={item.image} 
                 alt={item.title} 
@@ -388,7 +393,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     className="bg-white text-foreground hover:bg-gray-100 shadow-lg"
                     asChild
                   >
-                    <Link href={`/product/${item.product_id}`}>
+                    <Link href={getProductUrl({ id: item.product_id, slug: item.slug, username: item.username })}>
                       <Eye className="size-4 mr-1.5" />
                       {labels.viewProduct}
                     </Link>
@@ -400,7 +405,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
             {/* Product Info */}
             <div className="flex flex-col p-4 flex-1">
               <Link 
-                href={`/product/${item.product_id}`}
+                href={getProductUrl({ id: item.product_id, slug: item.slug, username: item.username })}
                 className="text-sm font-medium text-foreground line-clamp-2 leading-tight hover:text-primary transition-colors mb-2"
               >
                 {item.title}

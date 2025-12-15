@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Star, CaretDown, CaretRight, Check, Package, Percent, Truck } from "@phosphor-icons/react"
+import { Star, CaretDown, CaretRight, Check, Package } from "@phosphor-icons/react"
 import { useLocale, useTranslations } from "next-intl"
 import { Link } from "@/i18n/routing"
 import { useState, useEffect } from "react"
@@ -32,7 +32,7 @@ export function SearchFilters({
   currentCategory,
   parentCategory,
   allCategoriesWithSubs = [],
-  brands = [],
+  brands: _brands = [],
   basePath
 }: SearchFiltersProps) {
   const router = useRouter()
@@ -43,8 +43,6 @@ export function SearchFilters({
   const currentMinPrice = searchParams.get("minPrice")
   const currentMaxPrice = searchParams.get("maxPrice")
   const currentRating = searchParams.get("minRating")
-  const currentPrime = searchParams.get("prime")
-  const currentDeals = searchParams.get("deals")
   const currentBrand = searchParams.get("brand")
   const currentAvailability = searchParams.get("availability")
   
@@ -142,7 +140,7 @@ export function SearchFilters({
     }
   }
 
-  const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentPrime || currentDeals || currentBrand || currentAvailability
+  const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentBrand || currentAvailability
 
   // Get subcategories for a given category from allCategoriesWithSubs
   const getSubcategoriesFor = (categoryId: string) => {
@@ -163,179 +161,143 @@ export function SearchFilters({
   const validSubcategories = subcategories.filter(isValidCategory)
 
   return (
-    <div className="space-y-5 text-foreground">
-      {/* Clear Filters Button */}
-      {hasActiveFilters && (
-        <button
-          onClick={clearAllFilters}
-          className="w-full text-left text-base text-link hover:text-primary hover:underline font-medium min-h-10 flex items-center"
-        >
-          {t('clearAllFilters')}
-        </button>
-      )}
-
-      {/* Delivery & Prime Section */}
+    <div className="text-foreground">
+      {/* ================================================================
+          SECTION 1: Category Title & Navigation (TOP PRIORITY)
+          ================================================================ */}
       <div className="pb-4 border-b border-border">
-        <h3 className="font-semibold text-base mb-3">{t('deliveryDay')}</h3>
-        <div className="space-y-1">
-          <label htmlFor="prime" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
-            <Checkbox 
-              id="prime" 
-              checked={currentPrime === "true"}
-              onCheckedChange={() => toggleParam("prime")}
-              className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
-            />
-            <span className="text-base font-medium flex items-center gap-1.5">
-              <img src="https://m.media-amazon.com/images/G/01/prime/marketing/slashPrime/amazon-prime-delivery-checkmark._CB611051915_.png" alt="Prime" className="h-4" />
-              <span className="text-primary">{t('getPrimeDelivery')}</span>
-            </span>
-          </label>
-          <label htmlFor="freeShipping" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
-            <Checkbox 
-              id="freeShipping" 
-              className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
-            />
-            <span className="text-base flex items-center gap-1.5">
-              <Truck size={18} weight="regular" className="text-muted-foreground" />
-              {t('freeShipping')}
-            </span>
-          </label>
-        </div>
-      </div>
-
-      {/* Department/Category Navigation - Context-aware */}
-      <div className="pb-4 border-b border-border">
-        <h3 className="font-semibold text-base mb-3">{t('department')}</h3>
-        
-        <div className="space-y-0.5">
-          {/* Context-aware navigation */}
-          {currentCategory ? (
-            <>
-              {/* Back/Toggle link - to parent or show all categories inline */}
-              {parentCategory ? (
-                // Has parent - show back link to parent
-                <Link
-                  href={`/categories/${parentCategory.slug}`}
-                  className="text-sm text-muted-foreground hover:text-primary hover:underline min-h-8 flex items-center gap-1"
-                >
-                  <CaretRight size={14} weight="bold" className="rotate-180" />
-                  {getCategoryName(parentCategory)}
-                </Link>
-              ) : (
-                // No parent (L0 category) - toggle to show all categories inline
-                <button
-                  onClick={() => setShowAllCategories(!showAllCategories)}
-                  className="text-sm text-muted-foreground hover:text-primary min-h-8 flex items-center gap-1 w-full"
-                >
-                  <CaretRight size={14} weight="bold" className={showAllCategories ? "rotate-90" : "rotate-180"} />
-                  <span className="hover:underline">
-                    {locale === 'bg' ? 'Всички категории' : 'All Categories'}
-                  </span>
-                </button>
-              )}
-              
-              {/* Show all L0 categories when expanded */}
-              {showAllCategories && !parentCategory && (
-                <div className="ml-2 mt-1 space-y-0.5 border-l-2 border-border pl-3 py-1">
-                  {validCategories.map((cat) => (
-                    <Link
-                      key={cat.id}
-                      href={`/categories/${cat.slug}`}
-                      className={`text-sm cursor-pointer min-h-8 flex items-center ${
-                        cat.id === currentCategory.id 
-                          ? 'font-semibold text-primary' 
-                          : 'text-muted-foreground hover:text-primary hover:underline'
-                      }`}
-                    >
-                      {getCategoryName(cat)}
-                    </Link>
-                  ))}
-                </div>
-              )}
-              
-              {/* Current category title */}
-              <div className="font-semibold text-lg text-foreground py-1">
-                {getCategoryName(currentCategory)}
+        {/* Context-aware navigation */}
+        {currentCategory ? (
+          <>
+            {/* Back link - to parent or show all categories */}
+            {parentCategory ? (
+              <Link
+                href={`/categories/${parentCategory.slug}`}
+                className="text-sm text-muted-foreground hover:text-primary hover:underline min-h-8 flex items-center gap-1 mb-2"
+              >
+                <CaretRight size={14} weight="bold" className="rotate-180" />
+                {getCategoryName(parentCategory)}
+              </Link>
+            ) : (
+              <button
+                onClick={() => setShowAllCategories(!showAllCategories)}
+                className="text-sm text-muted-foreground hover:text-primary min-h-8 flex items-center gap-1 w-full mb-2"
+              >
+                <CaretRight size={14} weight="bold" className={showAllCategories ? "rotate-90" : "rotate-180"} />
+                <span className="hover:underline">
+                  {locale === 'bg' ? 'Всички категории' : 'All Categories'}
+                </span>
+              </button>
+            )}
+            
+            {/* Show all L0 categories when expanded */}
+            {showAllCategories && !parentCategory && (
+              <div className="ml-2 mb-3 space-y-0.5 border-l-2 border-border pl-3 py-1">
+                {validCategories.map((cat) => (
+                  <Link
+                    key={cat.id}
+                    href={`/categories/${cat.slug}`}
+                    className={`text-sm cursor-pointer min-h-8 flex items-center ${
+                      cat.id === currentCategory.id 
+                        ? 'font-semibold text-primary' 
+                        : 'text-muted-foreground hover:text-primary hover:underline'
+                    }`}
+                  >
+                    {getCategoryName(cat)}
+                  </Link>
+                ))}
               </div>
-              
-              {/* Subcategories of current category (filtered) */}
-              {validSubcategories.length > 0 && (
-                <div className="space-y-0.5 pt-1">
-                  {validSubcategories.map((subcat) => (
-                    <Link
-                      key={subcat.id}
-                      href={`/categories/${subcat.slug}`}
-                      className="text-base cursor-pointer text-muted-foreground hover:text-primary hover:underline min-h-9 flex items-center"
-                    >
-                      {getCategoryName(subcat)}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            /* Full category list for search page or no category selected */
-            validCategories.map((cat) => {
-              const isExpanded = expandedCategories.includes(cat.slug)
-              const catSubs = allCategoriesWithSubs.length > 0 
-                ? getSubcategoriesFor(cat.id).filter(isValidCategory)
-                : []
-              const hasSubs = catSubs.length > 0
-              
-              return (
-                <div key={cat.id}>
-                  <div className="flex items-center justify-between group">
-                    <Link
-                      href={`/categories/${cat.slug}`}
-                      className="text-base cursor-pointer hover:text-primary flex-1 min-h-9 flex items-center text-foreground"
-                    >
-                      {getCategoryName(cat)}
-                    </Link>
-                    {hasSubs && (
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          toggleCategory(cat.slug)
-                        }}
-                        className="min-h-9 min-w-9 flex items-center justify-center hover:bg-muted rounded-md"
+            )}
+            
+            {/* Current category title - THE MAIN HEADER */}
+            <h2 className="font-bold text-lg text-foreground mb-3">
+              {getCategoryName(currentCategory)}
+            </h2>
+            
+            {/* Subcategories of current category */}
+            {validSubcategories.length > 0 && (
+              <nav className="space-y-0.5">
+                {validSubcategories.map((subcat) => (
+                  <Link
+                    key={subcat.id}
+                    href={`/categories/${subcat.slug}`}
+                    className="text-sm cursor-pointer text-muted-foreground hover:text-primary hover:underline min-h-8 flex items-center"
+                  >
+                    {getCategoryName(subcat)}
+                  </Link>
+                ))}
+              </nav>
+            )}
+          </>
+        ) : (
+          /* Full category list for search page */
+          <>
+            <h3 className="font-semibold text-base mb-3">{t('department')}</h3>
+            <nav className="space-y-0.5">
+              {validCategories.map((cat) => {
+                const isExpanded = expandedCategories.includes(cat.slug)
+                const catSubs = allCategoriesWithSubs.length > 0 
+                  ? getSubcategoriesFor(cat.id).filter(isValidCategory)
+                  : []
+                const hasSubs = catSubs.length > 0
+                
+                return (
+                  <div key={cat.id}>
+                    <div className="flex items-center justify-between group">
+                      <Link
+                        href={`/categories/${cat.slug}`}
+                        className="text-sm cursor-pointer hover:text-primary flex-1 min-h-8 flex items-center text-foreground"
                       >
-                        {isExpanded ? (
-                          <CaretDown size={18} weight="regular" className="text-muted-foreground" />
-                        ) : (
-                          <CaretRight size={18} weight="regular" className="text-muted-foreground" />
-                        )}
-                      </button>
+                        {getCategoryName(cat)}
+                      </Link>
+                      {hasSubs && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            toggleCategory(cat.slug)
+                          }}
+                          className="min-h-8 min-w-8 flex items-center justify-center hover:bg-muted rounded-md"
+                        >
+                          {isExpanded ? (
+                            <CaretDown size={16} weight="regular" className="text-muted-foreground" />
+                          ) : (
+                            <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                    
+                    {/* Subcategories */}
+                    {isExpanded && hasSubs && (
+                      <div className="ml-3 mt-1 space-y-0.5 border-l-2 border-border pl-3">
+                        {catSubs.map((subcat) => (
+                          <Link
+                            key={subcat.id}
+                            href={`/categories/${subcat.slug}`}
+                            className="text-sm cursor-pointer hover:text-primary min-h-8 flex items-center text-muted-foreground"
+                          >
+                            {getCategoryName(subcat)}
+                          </Link>
+                        ))}
+                      </div>
                     )}
                   </div>
-                  
-                  {/* Subcategories */}
-                  {isExpanded && hasSubs && (
-                    <div className="ml-3 mt-1 space-y-0.5 border-l-2 border-border pl-3">
-                      {catSubs.map((subcat) => (
-                        <Link
-                          key={subcat.id}
-                          href={`/categories/${subcat.slug}`}
-                          className="text-base cursor-pointer hover:text-primary min-h-9 flex items-center text-muted-foreground"
-                        >
-                          {getCategoryName(subcat)}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )
-            })
-          )}
-        </div>
+                )
+              })}
+            </nav>
+          </>
+        )}
       </div>
 
-      {/* Customer Reviews */}
-      <div className="pb-4 border-b border-border">
-        <h3 className="font-semibold text-base mb-3">{t('customerReviews')}</h3>
+      {/* ================================================================
+          SECTION 2: Customer Reviews
+          ================================================================ */}
+      <div className="py-4 border-b border-border">
+        <h3 className="font-semibold text-sm mb-2">{t('customerReviews')}</h3>
         {[4, 3, 2, 1].map((stars) => (
           <button
             key={stars}
-            className={`min-h-10 w-full flex items-center gap-1.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1 group ${
+            className={`min-h-9 w-full flex items-center gap-1.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1 group ${
               currentRating === stars.toString() ? 'font-semibold' : ''
             }`}
             onClick={() => updateParams("minRating", currentRating === stars.toString() ? null : stars.toString())}
@@ -344,59 +306,25 @@ export function SearchFilters({
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  size={18}
+                  size={16}
                   weight={i < stars ? "fill" : "regular"}
                 />
               ))}
             </div>
-            <span className="text-base text-link group-hover:text-primary group-hover:underline">{t('andUp')}</span>
+            <span className="text-sm text-link group-hover:text-primary group-hover:underline">{t('andUp')}</span>
             {currentRating === stars.toString() && (
-              <Check size={18} weight="regular" className="text-primary ml-1" />
+              <Check size={16} weight="regular" className="text-primary ml-1" />
             )}
           </button>
         ))}
-        {currentRating && (
-          <button
-            className="pt-1 text-primary text-sm hover:underline min-h-8 flex items-center"
-            onClick={() => updateParams("minRating", null)}
-          >
-            {t('clearRating')}
-          </button>
-        )}
       </div>
 
-      {/* Brands - only show if brands are available */}
-      {brands.length > 0 && (
-        <div className="pb-4 border-b border-border">
-          <h3 className="font-semibold text-base mb-3">{t('brand')}</h3>
-          <div className="space-y-1 max-h-48 overflow-y-auto">
-            {brands.slice(0, 10).map((brand) => (
-              <label key={brand} htmlFor={`brand-${brand}`} className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
-                <Checkbox 
-                  id={`brand-${brand}`}
-                  checked={currentBrand === brand}
-                  onCheckedChange={() => updateParams("brand", currentBrand === brand ? null : brand)}
-                  className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
-                />
-                <span className="text-base">{brand}</span>
-              </label>
-            ))}
-          </div>
-          {currentBrand && (
-            <button
-              className="pt-2 text-primary text-sm hover:underline min-h-8 flex items-center"
-              onClick={() => updateParams("brand", null)}
-            >
-              {t('clearBrand')}
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Price */}
-      <div className="pb-4 border-b border-border">
-        <h3 className="font-semibold text-base mb-3">{t('price')}</h3>
-        <div className="space-y-0.5 text-base text-foreground">
+      {/* ================================================================
+          SECTION 3: Price
+          ================================================================ */}
+      <div className="py-4 border-b border-border">
+        <h3 className="font-semibold text-sm mb-2">{t('price')}</h3>
+        <div className="space-y-0.5 text-sm text-foreground">
           {[
             { label: t('under25'), min: null, max: "25" },
             { label: t('range2550'), min: "25", max: "50" },
@@ -408,107 +336,50 @@ export function SearchFilters({
             return (
               <button
                 key={label}
-                className={`min-h-10 w-full text-left cursor-pointer hover:text-primary hover:underline flex items-center gap-1.5 px-1 -mx-1 hover:bg-muted/50 rounded-md ${isActive ? 'font-semibold text-primary' : ''}`}
+                className={`min-h-8 w-full text-left cursor-pointer hover:text-primary hover:underline flex items-center gap-1.5 px-1 -mx-1 hover:bg-muted/50 rounded-md ${isActive ? 'font-semibold text-primary' : ''}`}
                 onClick={() => handlePriceClick(min, max)}
               >
                 {label}
-                {isActive && <Check size={18} weight="regular" />}
+                {isActive && <Check size={16} weight="regular" />}
               </button>
             )
           })}
         </div>
-        
-        {/* Custom price range input */}
-        <div className="mt-3 flex items-center gap-2">
-          <div className="flex items-center">
-            <span className="text-base text-muted-foreground mr-1">$</span>
-            <input 
-              type="number" 
-              placeholder={t('min')}
-              className="w-16 text-base border border-input rounded-md px-2 py-2 min-h-10 focus:border-ring focus:ring-1 focus:ring-ring outline-none bg-background"
-            />
-          </div>
-          <span className="text-base text-muted-foreground">-</span>
-          <div className="flex items-center">
-            <span className="text-base text-muted-foreground mr-1">$</span>
-            <input 
-              type="number" 
-              placeholder={t('max')}
-              className="w-16 text-base border border-input rounded-md px-2 py-2 min-h-10 focus:border-ring focus:ring-1 focus:ring-ring outline-none bg-background"
-            />
-          </div>
-          <button className="text-base px-3 min-h-10 bg-secondary border border-border rounded-md hover:bg-muted transition-colors font-medium">
-            {t('go')}
-          </button>
-        </div>
-        
-        {(currentMinPrice || currentMaxPrice) && (
-          <button
-            className="pt-2 text-primary text-sm hover:underline min-h-8 flex items-center"
-            onClick={() => handlePriceClick(null, null)}
-          >
-            {t('clearPrice')}
-          </button>
-        )}
       </div>
 
-      {/* Deals & Discounts */}
-      <div className="pb-4 border-b border-border">
-        <h3 className="font-semibold text-base mb-3">{t('dealsDiscounts')}</h3>
-        <div className="space-y-1">
-          <label htmlFor="deals" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
-            <Checkbox 
-              id="deals" 
-              checked={currentDeals === "true"}
-              onCheckedChange={() => toggleParam("deals")}
-              className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
-            />
-            <span className="text-base flex items-center gap-1.5">
-              <Percent size={18} weight="regular" className="text-deal" />
-              {t('todaysDeals')}
-            </span>
-          </label>
-          <label htmlFor="lightning" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
-            <Checkbox 
-              id="lightning" 
-              className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
-            />
-            <span className="text-base">{t('lightningDeals')}</span>
-          </label>
-        </div>
-      </div>
-
-      {/* Availability */}
-      <div className="pb-4 border-b border-border">
-        <h3 className="font-semibold text-base mb-3">{t('availability')}</h3>
-        <div className="space-y-1">
-          <label htmlFor="instock" className="min-h-10 flex items-center gap-2.5 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
+      {/* ================================================================
+          SECTION 4: Availability
+          Note: Shipping zone is handled by header location selector
+          ================================================================ */}
+      <div className="py-4">
+        <h3 className="font-semibold text-sm mb-2">{t('availability')}</h3>
+        <div className="space-y-0.5">
+          <label htmlFor="instock" className="min-h-9 flex items-center gap-2 cursor-pointer hover:bg-muted/50 rounded-md px-1 -mx-1">
             <Checkbox 
               id="instock" 
               checked={currentAvailability === "instock"}
               onCheckedChange={() => updateParams("availability", currentAvailability === "instock" ? null : "instock")}
-              className="size-5 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
+              className="size-4 border-muted-foreground data-[state=checked]:bg-primary data-[state=checked]:border-primary" 
             />
-            <span className="text-base flex items-center gap-1.5">
-              <Package size={18} weight="regular" className="text-stock-available" />
+            <span className="text-sm flex items-center gap-1.5">
+              <Package size={16} weight="regular" className="text-stock-available" />
               {t('includeOutOfStock')}
             </span>
           </label>
         </div>
       </div>
 
-      {/* New Arrivals */}
-      <div>
-        <h3 className="font-semibold text-base mb-3">{t('newArrivals')}</h3>
-        <div className="space-y-0.5 text-base">
-          <button className="min-h-10 w-full text-left cursor-pointer text-foreground hover:text-primary hover:underline px-1 -mx-1 hover:bg-muted/50 rounded-md flex items-center">
-            {t('last30Days')}
-          </button>
-          <button className="min-h-10 w-full text-left cursor-pointer text-foreground hover:text-primary hover:underline px-1 -mx-1 hover:bg-muted/50 rounded-md flex items-center">
-            {t('last90Days')}
+      {/* Clear All Filters Button - Show at bottom when filters are active */}
+      {hasActiveFilters && (
+        <div className="pt-4 border-t border-border">
+          <button
+            onClick={clearAllFilters}
+            className="w-full text-sm text-center text-primary hover:underline font-medium py-2"
+          >
+            {t('clearAllFilters')}
           </button>
         </div>
-      </div>
+      )}
     </div>
   )
 }

@@ -141,7 +141,7 @@ function NavItem({
           {item.badge !== undefined && item.badge > 0 && (
             <Badge 
               variant="secondary" 
-              className="h-5 min-w-5 px-1.5 text-[10px] font-semibold bg-primary text-primary-foreground"
+              className="h-5 min-w-5 px-1.5 text-2xs font-semibold bg-primary text-primary-foreground"
             >
               {item.badge > 99 ? '99+' : item.badge}
             </Badge>
@@ -216,7 +216,7 @@ export function BusinessSidebar({
                   <div className="flex items-center gap-1.5">
                     <Badge 
                       className={cn(
-                        "h-4 px-1.5 text-[9px] font-semibold border-0",
+                        "h-4 px-1.5 text-2xs font-semibold border-0",
                         tierColor
                       )}
                     >
@@ -225,7 +225,7 @@ export function BusinessSidebar({
                     {!hasDashboardAccess && (
                       <Link 
                         href="/dashboard/upgrade"
-                        className="text-[9px] text-primary hover:underline"
+                        className="text-2xs text-primary hover:underline"
                         onClick={(e) => e.stopPropagation()}
                       >
                         Upgrade

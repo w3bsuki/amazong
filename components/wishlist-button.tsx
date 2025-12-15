@@ -2,6 +2,7 @@
 
 import { Heart } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import { useWishlist } from "@/lib/wishlist-context"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
@@ -47,13 +48,14 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
           className
         )}
       >
-        <Heart
-          size={16}
-          weight={inWishlist ? "fill" : "regular"}
-          className={cn(
-            isPending && "opacity-50"
-          )}
-        />
+        {isPending ? (
+          <Spinner className="size-4" />
+        ) : (
+          <Heart
+            size={16}
+            weight={inWishlist ? "fill" : "regular"}
+          />
+        )}
         {inWishlist ? "Saved" : "Save for Later"}
       </Button>
     )
@@ -71,14 +73,15 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
       )}
       aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
     >
-      <Heart
-        size={20}
-        weight={inWishlist ? "fill" : "regular"}
-        className={cn(
-          inWishlist ? "text-deal" : "text-muted-foreground",
-          isPending && "opacity-50"
-        )}
-      />
+      {isPending ? (
+        <Spinner className="size-5" />
+      ) : (
+        <Heart
+          size={20}
+          weight={inWishlist ? "fill" : "regular"}
+          className={inWishlist ? "text-deal" : "text-muted-foreground"}
+        />
+      )}
     </button>
   )
 }

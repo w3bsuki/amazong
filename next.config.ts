@@ -104,6 +104,28 @@ const nextConfig: NextConfig = {
 
   // Strict mode for better development warnings
   reactStrictMode: true,
+
+  // ===========================================
+  // SEO Redirects - 301 permanent redirects for old URLs
+  // ===========================================
+  async redirects() {
+    return [
+      // Redirect old /u/{username} to /{username}
+      {
+        source: '/:locale/u/:username',
+        destination: '/:locale/:username',
+        permanent: true,
+      },
+      // Redirect old /product/{username}/{slug} to /{username}/{slug}
+      {
+        source: '/:locale/product/:username/:slug',
+        destination: '/:locale/:username/:slug',
+        permanent: true,
+      },
+      // Redirect old /product/{id} (UUID) to lookup endpoint
+      // This will be handled by middleware for dynamic lookup
+    ]
+  },
 } satisfies NextConfig;
 
 export default withBundleAnalyzer(withNextIntl(nextConfig));

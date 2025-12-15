@@ -158,7 +158,7 @@ async function getCategories(): Promise<CategoryNode[]> {
   return getCategoriesCached();
 }
 
-// Check if user is a seller (has username)
+// Check if user is a seller (has username and is_seller flag)
 async function getSellerData(userId: string) {
   try {
     const supabase = await createClient();
@@ -166,16 +166,19 @@ async function getSellerData(userId: string) {
     
     const { data } = await supabase
       .from("profiles")
-      .select("id, username, display_name, business_name")
+      .select("id, username, display_name, business_name, is_seller")
       .eq("id", userId)
       .single();
     
     if (!data?.username) return null;
     
+    // Return seller data with onboarding status
     return {
       id: data.id,
       store_name: data.display_name || data.business_name || data.username,
       store_slug: data.username,
+      is_seller: data.is_seller ?? false,
+      username: data.username,
     };
   } catch {
     return null;
@@ -211,10 +214,15 @@ export default async function SellPage({
     seller = await getSellerData(user.id);
   }
   
+  // Determine if user needs onboarding (has username but is_seller is false)
+  const needsOnboarding = seller && !seller.is_seller;
+  
   return (
     <SellPageClient 
       initialUser={user ? { id: user.id, email: user.email || undefined } : null}
-      initialSeller={seller}
+      initialSeller={seller && seller.is_seller ? { id: seller.id, store_name: seller.store_name } : null}
+      initialNeedsOnboarding={needsOnboarding ?? false}
+      initialUsername={seller?.username ?? null}
       categories={categories}
     />
   );

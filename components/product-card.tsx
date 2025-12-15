@@ -71,14 +71,14 @@ const contentVariants = cva(
 )
 
 const titleVariants = cva(
-  "text-foreground group-hover:underline decoration-muted-foreground/40 underline-offset-2 truncate",
+  "text-foreground group-hover:underline decoration-muted-foreground/40 underline-offset-2 truncate leading-snug",
   {
     variants: {
       variant: {
-        default: "text-[13px] sm:text-sm",
-        grid: "text-[13px] sm:text-sm",
-        compact: "text-[13px]",
-        featured: "text-[13px]",
+        default: "text-sm",
+        grid: "text-sm",
+        compact: "text-sm",
+        featured: "text-sm",
       },
     },
     defaultVariants: {
@@ -117,7 +117,9 @@ export interface ProductCardProps extends VariantProps<typeof productCardVariant
   buyerRegion?: ShippingRegion
   /** SEO-friendly slug for the product URL */
   slug?: string | null
-  /** Store slug for the seller (for SEO-friendly URLs) */
+  /** Seller username for SEO-friendly URLs: /{username}/{slug} */
+  username?: string | null
+  /** @deprecated Use 'username' instead */
   storeSlug?: string | null
   /** Seller tier for badge display */
   sellerTier?: 'basic' | 'premium' | 'business'
@@ -164,7 +166,8 @@ export function ProductCard({
   sellerCountryCode: _sellerCountryCode = 'BG',
   buyerRegion: _buyerRegion = 'BG',
   slug,
-  storeSlug,
+  username,
+  storeSlug, // deprecated alias
   sellerTier: _sellerTier,
   showWishlist,
   showAddToCart,
@@ -202,10 +205,11 @@ export function ProductCard({
     ? Math.round(((effectiveOriginalPrice - price) / effectiveOriginalPrice) * 100) 
     : 0
 
-  // URL construction
-  const productUrl = storeSlug && slug 
-    ? `/product/${storeSlug}/${slug}` 
-    : `/product/${slug || id}`
+  // URL construction - SEO-optimized: /{username}/{slug}
+  const sellerUsername = username || storeSlug // backward compatibility
+  const productUrl = sellerUsername && slug 
+    ? `/${sellerUsername}/${slug}` 
+    : `/product/${slug || id}` // fallback for products without username
 
   // Check if user is trying to buy their own product
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
@@ -229,7 +233,7 @@ export function ProductCard({
       image,
       quantity: 1,
       slug: slug || undefined,
-      storeSlug: storeSlug || undefined,
+      username: sellerUsername || undefined,
     })
     toast.success(tCart('itemAdded'))
   }
@@ -265,7 +269,7 @@ export function ProductCard({
               />
               {/* Discount Badge - only show if significant */}
               {hasDiscount && discountPercent >= 10 && (
-                <div className="absolute top-1.5 left-1.5 z-10 bg-deal text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">
+                <div className="absolute top-1.5 left-1.5 z-10 bg-deal text-white text-2xs font-semibold px-1.5 py-0.5 rounded">
                   -{discountPercent}%
                 </div>
               )}
@@ -287,7 +291,7 @@ export function ProductCard({
             <div className="flex items-center justify-between">
               <div>
                 <span className={cn(
-                  "text-sm font-bold",
+                  "text-sm font-semibold leading-tight",
                   hasDiscount ? "text-deal" : "text-foreground"
                 )}>
                   {formatPrice(price)}
@@ -343,7 +347,7 @@ export function ProductCard({
           
           {/* Discount Badge - only show if significant */}
           {hasDiscount && discountPercent >= 10 && (
-            <div className="absolute top-1.5 left-1.5 z-20 bg-deal text-white text-[10px] font-semibold px-1.5 py-0.5 rounded">
+            <div className="absolute top-1.5 left-1.5 z-20 bg-deal text-white text-2xs font-semibold px-1.5 py-0.5 rounded">
               -{discountPercent}%
             </div>
           )}

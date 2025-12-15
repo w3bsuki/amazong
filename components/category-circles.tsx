@@ -327,7 +327,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
                 </div>
               </div>
               {/* Category name below circle - wider for longer Bulgarian names */}
-              <span className="mt-1.5 md:mt-2.5 text-foreground font-medium text-[11px] md:text-base text-center max-w-[74px] md:max-w-28 leading-tight line-clamp-2 group-hover:text-link transition-colors duration-200">
+              <span className="mt-1.5 md:mt-2.5 text-foreground font-medium text-xs md:text-base text-center max-w-[74px] md:max-w-28 leading-tight line-clamp-2 group-hover:text-link transition-colors duration-200">
                 {getCategoryName(category)}
               </span>
             </Link>

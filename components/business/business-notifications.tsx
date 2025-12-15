@@ -132,7 +132,7 @@ export function BusinessNotifications({
           <IconBell className="size-4" />
           {unreadCount > 0 && (
             <Badge 
-              className="absolute -top-1 -right-1 size-4 p-0 flex items-center justify-center text-[10px] bg-red-500"
+              className="absolute -top-1 -right-1 size-4 p-0 flex items-center justify-center text-2xs bg-red-500"
             >
               {unreadCount > 9 ? "9+" : unreadCount}
             </Badge>
@@ -219,7 +219,7 @@ export function BusinessNotifications({
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
                           {notification.message}
                         </p>
-                        <p className="text-[10px] text-muted-foreground mt-1">
+                        <p className="text-2xs text-muted-foreground mt-1">
                           {formatDistanceToNow(new Date(notification.timestamp), { addSuffix: true })}
                         </p>
                       </Link>

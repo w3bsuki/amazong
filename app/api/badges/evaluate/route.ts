@@ -163,7 +163,7 @@ export async function POST(request: Request) {
       if (existingBadgeIds.has(badge.id)) continue
       
       // Evaluate criteria
-      const criteria = badge.criteria as any
+      const criteria = badge.criteria as BadgeCriteria
       let earned = false
       
       if (stats) {

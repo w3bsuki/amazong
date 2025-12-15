@@ -12,6 +12,10 @@ export interface WishlistItem {
   price: number
   image: string
   created_at: string
+  /** Product slug for SEO-friendly URLs */
+  slug?: string
+  /** Seller username for SEO-friendly URLs */
+  username?: string
 }
 
 interface WishlistContextType {
@@ -55,7 +59,9 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           products (
             title,
             price,
-            images
+            images,
+            slug,
+            seller:profiles!products_seller_id_fkey(username)
           )
         `)
         .eq("user_id", user.id)
@@ -65,7 +71,18 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         console.error("Error fetching wishlist:", error)
         setItems([])
       } else if (data) {
-        setItems(data.map((item: { id: string; product_id: string; created_at: string; products: { title: string; price: number; images: string[] | null } | null }) => {
+        setItems(data.map((item: { 
+          id: string
+          product_id: string
+          created_at: string
+          products: { 
+            title: string
+            price: number
+            images: string[] | null
+            slug: string | null
+            seller: { username: string | null } | null
+          } | null 
+        }) => {
           const prod = item.products
           return {
             id: item.id,
@@ -74,6 +91,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
             price: prod?.price || 0,
             image: prod?.images?.[0] || "/placeholder.svg",
             created_at: item.created_at,
+            slug: prod?.slug || undefined,
+            username: prod?.seller?.username || undefined,
           }
         }))
       }

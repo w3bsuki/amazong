@@ -366,7 +366,7 @@ export function DesktopFilterModal({
                             />
                           ))}
                         </div>
-                        <span className="text-[10px] font-medium text-muted-foreground">& Up</span>
+                        <span className="text-2xs font-medium text-muted-foreground">& Up</span>
                       </button>
                     )
                   })}
@@ -415,7 +415,7 @@ export function DesktopFilterModal({
                         value={[value]}
                         onValueChange={([v]) => handleAttrChange(attr.name, [v.toString()])}
                       />
-                      <div className="flex justify-between text-[10px] text-muted-foreground">
+                      <div className="flex justify-between text-2xs text-muted-foreground">
                         <span>{min}</span>
                         <span>{max}</span>
                       </div>

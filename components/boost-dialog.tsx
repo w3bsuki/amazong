@@ -188,7 +188,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
                   >
                     {option.popular && (
                       <Badge 
-                        className="absolute -top-2 left-1/2 -translate-x-1/2 text-[10px] px-1.5 py-0"
+                        className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xs px-1.5 py-0"
                         variant="default"
                       >
                         {t.popular}
@@ -202,7 +202,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
                     )}>
                       {formatPrice(option.price)}
                     </span>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-2xs text-muted-foreground">
                       {formatPrice(pricePerDay)}{t.perDay}
                     </span>
                   </button>

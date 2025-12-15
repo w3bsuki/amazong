@@ -208,7 +208,7 @@ export function CategorySubheader() {
                 <Link
                   href={`/categories/${category.slug}`}
                   className={cn(
-                    "flex items-center gap-1 px-2 py-2.5 text-sm font-medium transition-colors whitespace-nowrap",
+                    "flex items-center gap-1 px-2 py-2.5 text-sm leading-tight transition-colors whitespace-nowrap",
                     "text-foreground hover:text-brand hover:underline",
                     isActive && "text-brand"
                   )}
@@ -238,7 +238,7 @@ export function CategorySubheader() {
           >
             <button
               className={cn(
-                "flex items-center gap-1 px-2.5 py-2.5 text-sm font-medium transition-colors whitespace-nowrap",
+                "flex items-center gap-1 px-2.5 py-2.5 text-sm leading-tight transition-colors whitespace-nowrap",
                 "text-foreground hover:text-brand hover:underline",
                 activeCategory?.id === "more-categories" && "text-brand"
               )}

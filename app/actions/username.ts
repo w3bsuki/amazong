@@ -167,7 +167,7 @@ export async function setUsername(username: string): Promise<{
     
     revalidatePath("/account")
     revalidatePath("/account/profile")
-    revalidatePath(`/u/${normalizedUsername}`)
+    revalidatePath(`/${normalizedUsername}`)
     
     return { success: true }
   } catch (error) {
@@ -244,7 +244,7 @@ export async function updatePublicProfile(data: z.infer<typeof publicProfileSche
     revalidatePath("/account")
     revalidatePath("/account/profile")
     if (profile?.username) {
-      revalidatePath(`/u/${profile.username}`)
+      revalidatePath(`/${profile.username}`)
     }
     revalidatePath("/members")
     
@@ -458,26 +458,20 @@ export async function getPublicProfile(username: string): Promise<{
   success: boolean
   data?: {
     id: string
-    username: string
+    username: string | null
     display_name: string | null
     avatar_url: string | null
     banner_url: string | null
     bio: string | null
-    account_type: "personal" | "business"
-    is_seller: boolean
-    verified_business: boolean
+    account_type: string | null
+    is_seller: boolean | null
+    is_verified_business: boolean | null
+    verified: boolean | null
     location: string | null
     business_name: string | null
     website_url: string | null
     social_links: Record<string, string> | null
-    total_sales: number
-    total_purchases: number
-    seller_rating: number
-    seller_rating_count: number
-    buyer_rating: number
-    buyer_rating_count: number
     created_at: string
-    last_active_at: string | null
   }
   error?: string
 }> {
@@ -514,6 +508,10 @@ export async function getPublicProfile(username: string): Promise<{
     }
     
     // Hide business fields if personal account
+    const socialLinksData = profile.social_links && typeof profile.social_links === 'object' && !Array.isArray(profile.social_links)
+      ? profile.social_links as Record<string, string>
+      : null
+    
     const publicData = {
       id: profile.id,
       username: profile.username,
@@ -528,11 +526,11 @@ export async function getPublicProfile(username: string): Promise<{
       location: profile.location,
       business_name: profile.account_type === "business" ? profile.business_name : null,
       website_url: profile.account_type === "business" ? profile.website_url : null,
-      social_links: profile.account_type === "business" ? profile.social_links : null,
+      social_links: profile.account_type === "business" ? socialLinksData : null,
       created_at: profile.created_at,
     }
     
-    return { success: true, data: publicData as typeof publicData & { account_type: "personal" | "business" } }
+    return { success: true, data: publicData }
   } catch (error) {
     console.error("getPublicProfile error:", error)
     return { success: false, error: "An unexpected error occurred" }

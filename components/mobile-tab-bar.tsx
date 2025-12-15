@@ -57,7 +57,7 @@ export function MobileTabBar() {
             aria-current={pathname === "/" ? "page" : undefined}
           >
             <House size={22} weight={pathname === "/" ? "fill" : "regular"} />
-            <span className="text-[10px] font-medium">{t("home")}</span>
+            <span className="text-2xs font-medium">{t("home")}</span>
           </Link>
 
           {/* Categories - Opens drawer with category circles */}
@@ -72,7 +72,7 @@ export function MobileTabBar() {
             aria-label={t("categories")}
           >
             <SquaresFour size={22} weight={isActive("/categories") ? "fill" : "regular"} />
-            <span className="text-[10px] font-medium">{t("categories")}</span>
+            <span className="text-2xs font-medium">{t("categories")}</span>
           </button>
 
           {/* Sell */}
@@ -89,7 +89,7 @@ export function MobileTabBar() {
             aria-current={isActive("/sell") ? "page" : undefined}
           >
             <PlusCircle size={22} weight={isActive("/sell") ? "fill" : "regular"} />
-            <span className="text-[10px] font-medium">{t("sell")}</span>
+            <span className="text-2xs font-medium">{t("sell")}</span>
           </Link>
 
         {/* Chat */}
@@ -108,12 +108,12 @@ export function MobileTabBar() {
           <div className="relative">
             <ChatCircle size={22} weight={isActive("/chat") ? "fill" : "regular"} />
             {unreadCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-destructive text-destructive-foreground text-[9px] font-bold rounded-full flex items-center justify-center px-1">
+              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-destructive text-destructive-foreground text-2xs font-bold rounded-full flex items-center justify-center px-1">
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
           </div>
-          <span className="text-[10px] font-medium">{t("chat")}</span>
+          <span className="text-2xs font-medium">{t("chat")}</span>
         </Link>
 
         {/* Account */}
@@ -130,7 +130,7 @@ export function MobileTabBar() {
           aria-current={isActive("/account") ? "page" : undefined}
         >
           <User size={22} weight={isActive("/account") ? "fill" : "regular"} />
-          <span className="text-[10px] font-medium">{t("account")}</span>
+          <span className="text-2xs font-medium">{t("account")}</span>
         </Link>
       </div>
     </nav>

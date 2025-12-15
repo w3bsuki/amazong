@@ -181,7 +181,7 @@ export function PlansModal({
         <div className="px-4 pt-4 pb-3 sm:px-6 sm:pt-5">
           <DialogHeader className="text-center sm:text-center space-y-1">
             <div className="flex items-center justify-center">
-              <Badge variant="secondary" className="text-[10px] px-2 py-0.5">
+              <Badge variant="secondary" className="text-2xs px-2 py-0.5">
                 <SealCheck weight="fill" className="size-2.5 mr-1 text-primary" />
                 {t.noHiddenFees}
               </Badge>
@@ -249,7 +249,7 @@ export function PlansModal({
                 )}
               >
                 {t.yearly}
-                <Badge variant="secondary" className="text-[9px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-1 py-0">
+                <Badge variant="secondary" className="text-2xs bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-1 py-0">
                   {t.save}
                 </Badge>
               </button>

@@ -159,7 +159,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                               sizes="140px"
                             />
                             {itemCount > 1 && (
-                              <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-black/60 backdrop-blur-sm text-[10px] font-bold text-white">
+                              <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-black/60 backdrop-blur-sm text-2xs font-bold text-white">
                                 +{itemCount - 1}
                               </div>
                             )}
@@ -174,10 +174,10 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                       <p className="text-sm font-bold text-foreground mb-0.5">
                         {formatCurrency(order.total_amount)}
                       </p>
-                      <p className="text-[11px] text-muted-foreground mb-2">
+                      <p className="text-xs text-muted-foreground mb-2">
                         {formatDistanceToNow(new Date(order.created_at), { addSuffix: false, locale: dateLocale })}
                       </p>
-                      <Badge variant="outline" className={`text-[10px] font-medium w-fit ${getStatusColor(order.status)}`}>
+                      <Badge variant="outline" className={`text-2xs font-medium w-fit ${getStatusColor(order.status)}`}>
                         {getStatusText(order.status)}
                       </Badge>
                     </Link>
@@ -216,7 +216,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                               sizes="44px"
                             />
                             {itemCount > 1 && (
-                              <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-account-accent text-[9px] font-bold text-white shadow-sm">
+                              <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-account-accent text-2xs font-bold text-white shadow-sm">
                                 +{itemCount - 1}
                               </div>
                             )}
@@ -235,7 +235,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                           {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: dateLocale })}
                         </p>
                       </div>
-                      <Badge variant="outline" className={`text-[10px] font-medium shrink-0 ${getStatusColor(order.status)}`}>
+                      <Badge variant="outline" className={`text-2xs font-medium shrink-0 ${getStatusColor(order.status)}`}>
                         {getStatusText(order.status)}
                       </Badge>
                     </Link>
@@ -277,7 +277,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                       </div>
                     )}
                     {/* Stock badge */}
-                    <div className="absolute top-2 right-2 flex items-center justify-center px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-[10px] font-medium text-white">
+                    <div className="absolute top-2 right-2 flex items-center justify-center px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-2xs font-medium text-white">
                       {product.stock} {t.inStock}
                     </div>
                   </div>
@@ -355,7 +355,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                         sizes="44px"
                       />
                       {/* Quantity badge overlay */}
-                      <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white shadow-sm">
+                      <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-emerald-500 text-2xs font-bold text-white shadow-sm">
                         {sale.quantity}
                       </div>
                     </>

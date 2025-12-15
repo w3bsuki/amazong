@@ -489,16 +489,16 @@ export function ChatInterface({
                           {/* Header row */}
                           <div className="flex items-center gap-1.5">
                             <Package size={12} weight="fill" className="text-primary shrink-0" />
-                            <span className="text-[11px] font-medium text-primary">
+                            <span className="text-xs font-medium text-primary">
                               {locale === 'bg' ? 'Поръчка' : 'Order'}
                             </span>
-                            <span className="text-[10px] text-muted-foreground ml-auto">
+                            <span className="text-2xs text-muted-foreground ml-auto">
                               {format(new Date(message.created_at), "MMM d, HH:mm", { locale: dateLocale })}
                             </span>
                           </div>
                           
                           {/* Product title */}
-                          <p className="text-[13px] font-medium text-foreground truncate mt-0.5">
+                          <p className="text-sm font-medium text-foreground truncate mt-0.5">
                             {currentConversation.product.title}
                           </p>
                           
@@ -510,11 +510,11 @@ export function ChatInterface({
                               </span>
                             )}
                             {quantity !== '1' && (
-                              <span className="text-[11px] text-muted-foreground">
+                              <span className="text-xs text-muted-foreground">
                                 × {quantity}
                               </span>
                             )}
-                            <span className="inline-flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-500 ml-auto">
+                            <span className="inline-flex items-center gap-1 text-2xs text-amber-600 dark:text-amber-500 ml-auto">
                               <span className="size-1.5 rounded-full bg-amber-500 animate-pulse" />
                               {locale === 'bg' ? 'Изчаква' : 'Pending'}
                             </span>
@@ -541,7 +541,7 @@ export function ChatInterface({
                       <span className="text-xs text-muted-foreground">
                         {message.content.replace(/\*\*/g, '').replace(/_/g, '').split('\n')[0]}
                       </span>
-                      <span className="text-[10px] text-muted-foreground/70">
+                      <span className="text-2xs text-muted-foreground/70">
                         {format(new Date(message.created_at), "HH:mm")}
                       </span>
                     </div>
@@ -571,7 +571,7 @@ export function ChatInterface({
                             className="size-7 rounded-full object-cover"
                           />
                         ) : (
-                          <div className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-purple-600 text-[10px] font-semibold text-white">
+                          <div className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-purple-600 text-2xs font-semibold text-white">
                             {initials}
                           </div>
                         )
@@ -608,7 +608,7 @@ export function ChatInterface({
                         />
                       </a>
                     ) : (
-                      <p className="text-[15px] leading-snug whitespace-pre-wrap break-words">
+                      <p className="text-base leading-snug whitespace-pre-wrap break-words">
                         {message.content}
                       </p>
                     )}
@@ -620,7 +620,7 @@ export function ChatInterface({
                         isOwn ? "justify-end" : "justify-start"
                       )}>
                         <span className={cn(
-                          "text-[10px]",
+                          "text-2xs",
                           isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
                         )}>
                           {format(new Date(message.created_at), "HH:mm")}
@@ -693,7 +693,7 @@ export function ChatInterface({
                 placeholder={t("typeMessage")}
                 disabled={isSending || isUploadingImage}
                 rows={1}
-                className="flex-1 bg-transparent text-[15px] placeholder:text-muted-foreground resize-none outline-none min-h-[24px] max-h-[120px] py-0.5"
+                className="flex-1 bg-transparent text-base placeholder:text-muted-foreground resize-none outline-none min-h-[24px] max-h-[120px] py-0.5"
               />
             </div>
 

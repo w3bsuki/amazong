@@ -19,7 +19,25 @@ import {
 } from "@/components/ui/table"
 import { IconCheck, IconX } from "@tabler/icons-react"
 
-async function getSellers() {
+// Define seller type to avoid 'any'
+interface Seller {
+  id: string
+  store_name: string
+  description: string | null
+  verified: boolean | null
+  tier: string | null
+  is_verified_business: boolean | null
+  business_name: string | null
+  commission_rate: number | null
+  country_code: string | null
+  created_at: string
+  profiles: {
+    email: string | null
+    full_name: string | null
+  }
+}
+
+async function getSellers(): Promise<Seller[]> {
   const adminClient = createAdminClient()
   
   const { data: profiles, error } = await adminClient
@@ -131,10 +149,10 @@ export default async function AdminSellersPage() {
                   <TableCell>
                     <div>
                       <p className="font-medium">
-                        {(seller.profiles as any)?.full_name || 'No name'}
+                        {seller.profiles.full_name || 'No name'}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {(seller.profiles as any)?.email}
+                        {seller.profiles.email}
                       </p>
                     </div>
                   </TableCell>

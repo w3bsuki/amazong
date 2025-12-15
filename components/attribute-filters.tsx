@@ -293,7 +293,7 @@ function FilterSection({
           {hasActiveFilter && (
             <span className={cn(
               'inline-flex size-4 items-center justify-center',
-              'rounded-full bg-sidebar-primary text-[10px] font-semibold',
+              'rounded-full bg-sidebar-primary text-2xs font-semibold',
               'text-sidebar-primary-foreground'
             )}>
               {currentValue.length}

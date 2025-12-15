@@ -24,14 +24,14 @@ interface SellerBadgeProps {
 }
 
 const sizeClasses = {
-  xs: "h-4 px-1 text-[9px] gap-0.5",
-  sm: "h-5 px-1.5 text-[10px] gap-0.5",
+  xs: "h-4 px-1 text-2xs gap-0.5",
+  sm: "h-5 px-1.5 text-2xs gap-0.5",
   md: "h-6 px-2 text-xs gap-1",
   lg: "h-7 px-3 text-sm gap-1.5",
 }
 
 const iconSizes = {
-  xs: "text-[10px]",
+  xs: "text-2xs",
   sm: "text-xs",
   md: "text-sm",
   lg: "text-base",
@@ -277,7 +277,7 @@ export function MiniBadge({ badge, className }: MiniBadgeProps) {
         <TooltipTrigger asChild>
           <span
             className={cn(
-              "inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px]",
+              "inline-flex items-center justify-center w-5 h-5 rounded-full text-2xs",
               color,
               className
             )}

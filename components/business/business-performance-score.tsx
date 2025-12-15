@@ -131,7 +131,7 @@ export function BusinessPerformanceScore({
               <span className={cn("text-2xl font-bold", getScoreColor(overallScore))}>
                 {overallScore}
               </span>
-              <span className="text-[10px] text-muted-foreground uppercase">
+              <span className="text-2xs text-muted-foreground uppercase">
                 Score
               </span>
             </div>

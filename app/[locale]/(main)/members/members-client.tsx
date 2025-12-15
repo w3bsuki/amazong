@@ -67,7 +67,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
   const initials = displayName.substring(0, 2).toUpperCase()
   
   return (
-    <Link href={`/${locale}/u/${member.username || "unknown"}`}>
+    <Link href={`/${locale}/${member.username || "unknown"}`}>
       <Card className="h-full hover:shadow-md transition-shadow cursor-pointer group">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">

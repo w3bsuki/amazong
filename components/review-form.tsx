@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Star, ShoppingBag } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -251,7 +252,7 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
                 className="bg-brand-blue hover:bg-brand-blue-dark text-white"
                 disabled={isSubmitting || rating === 0}
               >
-                {isSubmitting ? t("submitting") : t("submitReview")}
+                {isSubmitting ? <><Spinner className="size-4 mr-2" />{t("submitting")}</> : t("submitReview")}
               </Button>
             </div>
           </form>

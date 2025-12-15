@@ -268,12 +268,12 @@ export function OrdersTable({
   }
 
   const handleBulkStatusUpdate = async (newStatus: string) => {
-    setIsLoading(true)
+    _setIsLoading(true)
     // TODO: Implement bulk status update action
     toast.success(`${selectedIds.size} order(s) updated to ${newStatus}`)
     setSelectedIds(new Set())
     setIsAllSelected(false)
-    setIsLoading(false)
+    _setIsLoading(false)
     router.refresh()
   }
 
@@ -312,7 +312,7 @@ export function OrdersTable({
             className="px-3 py-1.5 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
           >
             All
-            <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-[10px]">
+            <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-2xs">
               {statusCounts.all || 0}
             </Badge>
           </TabsTrigger>
@@ -322,7 +322,7 @@ export function OrdersTable({
           >
             Unfulfilled
             {(statusCounts.pending || 0) > 0 && (
-              <Badge className="ml-1.5 h-5 px-1.5 text-[10px] bg-yellow-500">
+              <Badge className="ml-1.5 h-5 px-1.5 text-2xs bg-yellow-500">
                 {statusCounts.pending}
               </Badge>
             )}
@@ -333,7 +333,7 @@ export function OrdersTable({
           >
             In Progress
             {(statusCounts.processing || 0) > 0 && (
-              <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-[10px]">
+              <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-2xs">
                 {statusCounts.processing}
               </Badge>
             )}
@@ -344,7 +344,7 @@ export function OrdersTable({
           >
             Shipped
             {(statusCounts.shipped || 0) > 0 && (
-              <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-[10px]">
+              <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-2xs">
                 {statusCounts.shipped}
               </Badge>
             )}
@@ -355,7 +355,7 @@ export function OrdersTable({
           >
             Delivered
             {(statusCounts.delivered || 0) > 0 && (
-              <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-[10px]">
+              <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-2xs">
                 {statusCounts.delivered}
               </Badge>
             )}

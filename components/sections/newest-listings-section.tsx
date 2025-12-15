@@ -215,7 +215,7 @@ export function NewestListingsSection({
               onClick={() => setActiveTab(tab.id)}
               className={cn(
                 "relative z-10 flex-1 flex items-center justify-center gap-1.5",
-                "rounded-lg text-[13px] font-semibold tracking-tight",
+                "rounded-lg text-sm font-semibold tracking-tight",
                 "transition-colors duration-200",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:ring-offset-1",
                 "active:scale-[0.98]",

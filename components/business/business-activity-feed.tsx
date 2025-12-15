@@ -142,7 +142,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                     {/* Meta info */}
                     <div className="flex items-center gap-2 flex-wrap">
                       {activity.meta?.status && (
-                        <Badge variant="outline" className="text-[10px] h-5 px-1.5">
+                        <Badge variant="outline" className="text-2xs h-5 px-1.5">
                           {activity.meta.status}
                         </Badge>
                       )}
@@ -159,7 +159,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                           ))}
                         </div>
                       )}
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="text-2xs text-muted-foreground">
                         {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
                       </span>
                     </div>

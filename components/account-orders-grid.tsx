@@ -239,7 +239,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                             </div>
                           )}
                           {item.quantity > 1 && (
-                            <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-account-accent text-[9px] font-bold text-white shadow-sm">
+                            <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-account-accent text-2xs font-bold text-white shadow-sm">
                               x{item.quantity}
                             </div>
                           )}
@@ -256,7 +256,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                   {/* Footer: Status + Item count + View link */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={`text-[10px] font-medium ${getStatusColor(status)}`}>
+                      <Badge variant="outline" className={`text-2xs font-medium ${getStatusColor(status)}`}>
                         {getStatusText(status)}
                       </Badge>
                       <span className="text-xs text-muted-foreground">

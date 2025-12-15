@@ -1,4 +1,4 @@
-import { createClient, createStaticClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/server"
 import { ProductCard } from "@/components/product-card"
 import { SubcategoryTabs } from "@/components/subcategory-tabs"
 import { MobileFilters } from "@/components/mobile-filters"
@@ -89,7 +89,7 @@ export async function generateMetadata({
 
 // Helper function to search products with pagination
 async function searchProducts(
-  supabase: Awaited<ReturnType<typeof createClient>>, 
+  supabase: ReturnType<typeof createStaticClient>, 
   categoryIds: string[],
   filters: {
     minPrice?: string
@@ -99,6 +99,7 @@ async function searchProducts(
     prime?: string
     availability?: string
     sort?: string
+    attributes?: Record<string, string | string[]>  // Dynamic attr_* filters
   },
   page: number = 1,
   limit: number = ITEMS_PER_PAGE,
@@ -144,6 +145,20 @@ async function searchProducts(
   if (filters.availability === "instock") {
     countQuery = countQuery.gt("stock", 0)
     dbQuery = dbQuery.gt("stock", 0)
+  }
+
+  // Apply attribute filters (uses idx_products_attr_* indexes)
+  if (filters.attributes) {
+    for (const [attrName, attrValue] of Object.entries(filters.attributes)) {
+      if (attrValue) {
+        // For single value, use JSONB containment which uses GIN index
+        const value = Array.isArray(attrValue) ? attrValue[0] : attrValue
+        if (value) {
+          countQuery = countQuery.contains('attributes', { [attrName]: value })
+          dbQuery = dbQuery.contains('attributes', { [attrName]: value })
+        }
+      }
+    }
   }
   
   // Get total count
@@ -213,6 +228,7 @@ export default async function CategoryPage({
     availability?: string
     sort?: string
     page?: string
+    [key: string]: string | string[] | undefined  // Dynamic attr_* params
   }>
 }) {
   await connection()
@@ -222,7 +238,7 @@ export default async function CategoryPage({
   setRequestLocale(locale)
   const currentPage = Math.max(1, parseInt(searchParams.page || "1", 10))
   
-  const supabase = await createClient()
+  const supabase = createStaticClient()
   
   // Read shipping zone from cookie (set by header "Доставка до" dropdown)
   // Only filter if user has selected a specific zone (not WW = worldwide = show all)
@@ -262,6 +278,15 @@ export default async function CategoryPage({
   // Get products from this category AND all its subcategories
   const categoryIds = [currentCategory.id, ...subcategories.map(s => s.id)]
 
+  // Extract attr_* params for attribute filtering
+  const attributeFilters: Record<string, string | string[]> = {}
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (key.startsWith('attr_') && value) {
+      const attrName = key.replace('attr_', '')
+      attributeFilters[attrName] = value
+    }
+  }
+
   const result = await searchProducts(supabase, categoryIds, {
     minPrice: searchParams.minPrice,
     maxPrice: searchParams.maxPrice,
@@ -270,6 +295,7 @@ export default async function CategoryPage({
     prime: searchParams.prime,
     availability: searchParams.availability,
     sort: searchParams.sort,
+    attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
   }, currentPage, ITEMS_PER_PAGE, shippingFilter)
   products = result.products
   totalProducts = result.total
@@ -283,12 +309,18 @@ export default async function CategoryPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container py-4 sm:py-6">
+      <div className="container py-4">
+        {/* No breadcrumb needed - sidebar provides all navigation context:
+            - Category title at top
+            - Back link to parent/all categories  
+            - Subcategory navigation
+            Breadcrumb would be redundant (Amazon pattern) */}
+
         {/* Layout: Sidebar (desktop) + Main Content */}
-        <div className="flex gap-6">
+        <div className="flex gap-0">
           {/* Sidebar Filters - Desktop Only */}
-          <aside className="w-64 hidden lg:block shrink-0 border-r border-border">
-            <div className="sticky top-28 py-4 pr-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
+          <aside className="w-56 hidden lg:block shrink-0 border-r border-border">
+            <div className="sticky top-16 pr-4 py-1 max-h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar">
               <Suspense>
                 <SearchFilters
                   categories={allCategories}
@@ -304,8 +336,8 @@ export default async function CategoryPage({
           </aside>
           
           {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            {/* Category Header with Subcategory Tabs */}
+          <div className="flex-1 min-w-0 lg:pl-5">
+            {/* Subcategory Circles - only show if subcategories exist */}
             <Suspense>
               <SubcategoryTabs
                 currentCategory={currentCategory}
@@ -316,7 +348,7 @@ export default async function CategoryPage({
             </Suspense>
 
             {/* Active Filter Pills */}
-            <div className="mb-4">
+            <div className="mb-2">
               <Suspense>
                 <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} />
               </Suspense>

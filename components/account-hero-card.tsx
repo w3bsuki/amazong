@@ -89,15 +89,15 @@ export function AccountHeroCard({ totals, locale, userName }: AccountHeroCardPro
         <div className="grid grid-cols-3 gap-3 pt-4 border-t border-background/10">
           <div>
             <p className="text-lg sm:text-xl font-bold">{totals.pendingOrders}</p>
-            <p className="text-[11px] text-background/60">{t.pendingOrders}</p>
+            <p className="text-xs text-background/60">{t.pendingOrders}</p>
           </div>
           <div>
             <p className="text-lg sm:text-xl font-bold">{totals.products}</p>
-            <p className="text-[11px] text-background/60">{t.activeListing}</p>
+            <p className="text-xs text-background/60">{t.activeListing}</p>
           </div>
           <div>
             <p className="text-lg sm:text-xl font-bold">{totals.messages}</p>
-            <p className="text-[11px] text-background/60">{t.newMessages}</p>
+            <p className="text-xs text-background/60">{t.newMessages}</p>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import { Link } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { CaretRight, GridFour } from "@phosphor-icons/react/dist/ssr"
-import { createClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/server"
 import type { Metadata } from 'next'
 import { connection } from "next/server"
 
@@ -78,7 +78,7 @@ export default async function CategoriesPage({
   const { locale } = await params
   setRequestLocale(locale)
   
-  const supabase = await createClient()
+  const supabase = createStaticClient()
   
   // Fetch categories directly in server component
   let categories: Category[] = []

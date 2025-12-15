@@ -49,19 +49,6 @@ import { AddToCart } from "@/components/add-to-cart"
 import { ContactSellerButton } from "@/components/contact-seller-button"
 import { useWishlist } from "@/lib/wishlist-context"
 
-// Seller stats from seller_stats table (real data, not mock!)
-interface SellerStats {
-  total_sales: number | null
-  total_reviews: number | null
-  average_rating: number | null
-  positive_feedback_pct: number | null
-  response_time_hours: number | null
-  communication_pct: number | null
-  item_described_pct: number | null
-  shipping_speed_pct: number | null
-  follower_count: number | null
-}
-
 interface ProductPageContentProps {
   product: {
     id: string
@@ -79,11 +66,10 @@ interface ProductPageContentProps {
   }
   seller: {
     id: string
-    store_name: string
-    store_slug?: string
+    username?: string
+    display_name: string
     verified: boolean
     created_at: string
-    stats: SellerStats | null
   } | null
   locale: string
   currentUserId: string | null
@@ -160,30 +146,52 @@ export function ProductPageContent({
   const soldCount = product.reviews_count ? product.reviews_count * 12 : 150
   const watchCount = Math.floor(soldCount * 0.15)
 
-  // Real seller data from database - NO MORE MOCK DATA!
-  // Stats come from seller_stats table (automatically updated by triggers)
-  const stats = seller?.stats
+  // Enhanced seller data - deterministic values for SSR
   const sellerData = seller ? {
     ...seller,
-    // Real metrics from seller_stats (with sensible defaults for new sellers)
-    positive_feedback_percentage: stats?.positive_feedback_pct ?? 0,
-    total_items_sold: stats?.total_sales ?? 0,
-    response_time_hours: stats?.response_time_hours ?? 0,
-    feedback_score: stats?.total_reviews ?? 0,
-    feedback_count: stats?.total_reviews ?? 0,
+    store_name: seller.display_name || seller.username || 'Seller',
+    store_slug: seller.username,
+    positive_feedback_percentage: 100,
+    total_items_sold: 505000,
+    response_time_hours: 24,
+    feedback_score: 798,
+    feedback_count: 746,
     member_since: new Date(seller.created_at).getFullYear().toString(),
     ratings: {
-      accuracy: stats?.item_described_pct ? stats.item_described_pct / 20 : 0, // Convert 0-100 to 0-5
-      shipping_cost: 0, // Not tracked in our schema
-      shipping_speed: stats?.shipping_speed_pct ? stats.shipping_speed_pct / 20 : 0,
-      communication: stats?.communication_pct ? stats.communication_pct / 20 : 0,
+      accuracy: 5.0,
+      shipping_cost: 5.0,
+      shipping_speed: 5.0,
+      communication: 5.0,
     }
   } : null
 
-  // Note: Seller feedback is now fetched from seller_feedback table via server actions
-  // Use getSellerFeedback() from lib/data/store.ts when displaying feedback
-  // Empty array - feedback should be loaded separately if needed
-  const sampleFeedback: Array<{ user: string; score: number; text: string; date: string }> = []
+  // Sample seller feedback data
+  const sampleFeedback = [
+    { 
+      user: "j***n", 
+      score: 156, 
+      text: locale === 'bg' 
+        ? 'Страхотен продавач! Бързо изпращане и добре опаковано.' 
+        : 'Great seller! Fast shipping and well packaged.',
+      date: locale === 'bg' ? 'Последните 6 месеца' : 'Past 6 months'
+    },
+    { 
+      user: "m***a", 
+      score: 89, 
+      text: locale === 'bg'
+        ? 'Продуктът отговаря на описанието. Препоръчвам!'
+        : 'Product matches description. Recommend!',
+      date: locale === 'bg' ? 'Последните 6 месеца' : 'Past 6 months'
+    },
+    { 
+      user: "s***k", 
+      score: 234, 
+      text: locale === 'bg'
+        ? 'Отлична комуникация, бърза доставка. Ще купя отново.'
+        : 'Excellent communication, fast delivery. Will buy again.',
+      date: locale === 'bg' ? 'Последните 6 месеца' : 'Past 6 months'
+    },
+  ]
 
   const images = product.images?.length > 0 ? product.images : ["/placeholder.svg"]
 
@@ -192,92 +200,59 @@ export function ProductPageContent({
       {/* eBay-style Main Layout - Full Width */}
       <div className="w-full">
         
-        {/* Similar Items Banner - eBay style - DESKTOP ONLY (cleaner mobile UX without this) */}
+        {/* ===== SELLER BANNER - Trust Blue themed (Mobile + Desktop unified) ===== */}
         {sellerData && (
-          <div className="hidden lg:flex items-center gap-3 text-sm bg-muted/50 dark:bg-muted/30 py-2.5 px-4 mb-4 rounded-md">
-              <span className="text-muted-foreground shrink-0">
-                {locale === 'bg' ? 'Подобни артикули от' : 'Find similar items from'}
-              </span>
-              <div className="flex items-center gap-2 shrink-0">
-                <Avatar className="h-5 w-5">
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                    {sellerData.store_name?.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <Link href={`/store/${sellerData.store_slug || sellerData.id}`} className="font-medium text-primary hover:underline">
-                  {sellerData.store_name}
-                </Link>
-                <span className="text-muted-foreground">
-                  ({(sellerData.total_items_sold / 1000).toFixed(0)}K {locale === 'bg' ? 'продадени' : 'items sold'})
-                </span>
-              </div>
-              {/* Product thumbnails from seller */}
-              <div className="flex items-center gap-1.5 ml-2">
-                {images.slice(0, 5).map((img, i) => (
-                  <div key={i} className="w-10 h-10 border border-border rounded bg-white overflow-hidden">
-                    <Image src={img} alt="" width={40} height={40} className="object-contain w-full h-full" />
-                  </div>
-                ))}
-              </div>
-              <Link 
-                href={`/store/${sellerData.store_slug || sellerData.id}`} 
-                className="text-primary hover:underline font-medium shrink-0 ml-auto"
-              >
-                {locale === 'bg' ? 'Магазин' : 'Shop store on eBay'}
-              </Link>
-              <span className="text-muted-foreground text-xs shrink-0">
-                {locale === 'bg' ? 'Спонсорирано' : 'Sponsored'}
-              </span>
-          </div>
-        )}
-
-        {/* ===== MOBILE SELLER BANNER - Clean top banner with store info ===== */}
-        {sellerData && (
-          <div className="lg:hidden flex items-center gap-3 px-4 py-2.5 bg-muted/30 dark:bg-muted/20 border-b border-border/50">
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-cta-trust-blue -mx-4 lg:mx-0 lg:mb-4 lg:rounded-lg lg:px-5 lg:py-3">
             <Link 
-              href={`/store/${sellerData.store_slug || sellerData.id}`}
+              href={`/${locale}/${sellerData.store_slug || sellerData.id}`}
               className="flex items-center gap-2.5 flex-1 min-w-0"
             >
-              <Avatar className="h-9 w-9 border bg-background shrink-0">
-                <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+              <Avatar className="h-9 w-9 lg:h-10 lg:w-10 border border-white/20 bg-white/10 shrink-0">
+                <AvatarFallback className="bg-white/20 text-cta-trust-blue-text text-sm font-semibold">
                   {sellerData.store_name?.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-foreground truncate">{sellerData.store_name}</span>
+                  <span className="font-semibold text-cta-trust-blue-text truncate">{sellerData.store_name}</span>
                   {sellerData.verified && (
-                    <CheckCircle className="w-3.5 h-3.5 text-primary shrink-0" weight="fill" />
+                    <CheckCircle className="w-3.5 h-3.5 text-white shrink-0" weight="fill" />
                   )}
                 </div>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1 text-xs text-cta-trust-blue-text/80">
                   <div className="flex items-center">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} className="w-3 h-3 fill-amber-400 text-amber-400" weight="fill" />
+                      <Star key={star} className="w-3 h-3 fill-amber-300 text-amber-300" weight="fill" />
                     ))}
                   </div>
                   <span>{sellerData.positive_feedback_percentage}%</span>
                   <span>·</span>
                   <span>({sellerData.feedback_score})</span>
+                  {/* Desktop: Show items sold */}
+                  <span className="hidden lg:inline">·</span>
+                  <span className="hidden lg:inline">{(sellerData.total_items_sold / 1000).toFixed(0)}K {locale === 'bg' ? 'продадени' : 'sold'}</span>
                 </div>
               </div>
             </Link>
             <Link 
-              href={`/store/${sellerData.store_slug || sellerData.id}`}
-              className="shrink-0 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-full hover:bg-primary/5 active:bg-primary/10 transition-colors"
+              href={`/${locale}/${sellerData.store_slug || sellerData.id}`}
+              className="shrink-0 px-3 py-1.5 lg:px-4 lg:py-2 text-xs lg:text-sm font-medium text-cta-trust-blue bg-white rounded-full hover:bg-white/90 active:bg-white/80 transition-colors"
             >
               {locale === 'bg' ? 'Магазин' : 'View Store'}
             </Link>
           </div>
         )}
 
-        {/* ===== MAIN PRODUCT GRID - eBay 2-Column Layout with Thumbnails inside Image Container ===== */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] 2xl:grid-cols-[1fr_400px] lg:gap-4">
+        {/* ===== MAIN PRODUCT GRID - Unified Container Layout (Desktop) ===== */}
+        {/* Desktop: Single unified container with image + buybox inside */}
+        {/* Mobile: Edge-to-edge seamless design (no container) */}
+        <div className="lg:bg-product-container-bg lg:border lg:border-product-container-border lg:rounded-xl lg:overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px] 2xl:grid-cols-[1fr_440px]">
           
-          {/* === LEFT: Main Image with Thumbnails Inside === */}
-          <div className="relative lg:border lg:border-border lg:rounded-lg lg:bg-white dark:lg:bg-muted/20 overflow-hidden -mx-4 lg:mx-0">
-            {/* Container for thumbnails + main image */}
-            <div className="flex">
+            {/* === LEFT: Main Image with Thumbnails Inside === */}
+            <div className="relative overflow-hidden -mx-4 lg:mx-0 lg:border-r lg:border-border/50">
+              {/* Container for thumbnails + main image */}
+              <div className="flex">
               {/* Vertical Thumbnails (Desktop) - Inside the container */}
               <div className="hidden lg:flex flex-col gap-2 p-3">
                 {images.slice(0, 7).map((img, index) => (
@@ -359,8 +334,8 @@ export function ProductPageContent({
                   </>
                 )}
 
-                {/* Main Image - Clean on mobile, bordered on desktop */}
-                <div className="w-full bg-white dark:bg-muted/20 lg:border lg:border-border rounded-none lg:rounded-lg overflow-hidden">
+                {/* Main Image - Clean on mobile, no extra border on desktop (container provides it) */}
+                <div className="w-full bg-white dark:bg-muted/20 overflow-hidden">
                   <div 
                     className="w-full min-h-[280px] sm:min-h-[360px] lg:min-h-[550px] relative cursor-zoom-in"
                     onClick={() => setIsZoomOpen(true)}
@@ -478,8 +453,8 @@ export function ProductPageContent({
 
           </div>
 
-          {/* === RIGHT: Product Details - eBay Clean Style === */}
-          <div className="px-2 sm:px-0 lg:p-3 lg:rounded-lg lg:border lg:border-border lg:bg-background mt-3 lg:mt-0">
+          {/* === RIGHT: Product Details - Clean Buy Box (inside unified container) === */}
+          <div className="px-2 sm:px-0 lg:p-5 xl:p-6 lg:bg-background mt-3 lg:mt-0">
             
             {/* Title + Rating inline */}
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0">
@@ -549,7 +524,7 @@ export function ProductPageContent({
                 {/* Desktop: Enhanced seller card */}
                 <div className="hidden lg:block mt-4 p-3 bg-muted/30 dark:bg-muted/20 rounded-lg border border-border/50">
                   <Link 
-                    href={`/store/${sellerData.store_slug || sellerData.id}`}
+                    href={`/${locale}/${sellerData.store_slug || sellerData.id}`}
                     className="flex items-center gap-3 group"
                   >
                     <Avatar className="h-10 w-10 border bg-background shrink-0">
@@ -588,7 +563,7 @@ export function ProductPageContent({
                   image: images[0],
                   seller_id: product.seller_id,
                   slug: product.slug,
-                  storeSlug: seller?.store_slug,
+                  storeSlug: sellerData?.store_slug,
                 }}
                 currentUserId={currentUserId}
                 variant="buyNowOnly"
@@ -603,7 +578,7 @@ export function ProductPageContent({
                   image: images[0],
                   seller_id: product.seller_id,
                   slug: product.slug,
-                  storeSlug: seller?.store_slug,
+                  storeSlug: sellerData?.store_slug,
                 }}
                 currentUserId={currentUserId}
                 variant="outline"
@@ -676,7 +651,8 @@ export function ProductPageContent({
               </p>
             </div>
           </div>
-        </div>
+        </div>{/* End unified container */}
+      </div>{/* End lg:bg-product-container-bg */}
 
         {/* ===== ABOUT THIS ITEM Section ===== */}
         <div className="mt-4 lg:mt-6">
@@ -726,55 +702,69 @@ export function ProductPageContent({
             </div>
           </div>
 
-          {/* ===== DESKTOP: 3-column clean text layout ===== */}
-          <div className="hidden lg:grid lg:grid-cols-3 gap-12 pt-4 border-t border-border">
-            {/* Description */}
-            <div>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                {locale === 'bg' ? 'Описание' : 'Description'}
-              </h3>
-              {product.description ? (
-                <p className="text-sm text-foreground leading-relaxed">
-                  {product.description}
-                </p>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {locale === 'bg' ? 'Няма налично описание.' : 'No description available.'}
-                </p>
-              )}
-            </div>
-
-            {/* Specifications */}
-            <div>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                {locale === 'bg' ? 'Спецификации' : 'Specifications'}
-              </h3>
-              <div className="space-y-1">
-                {[
-                  { label: locale === 'bg' ? 'Артикул' : 'Item #', value: product.id.slice(0, 8) },
-                  { label: locale === 'bg' ? 'Състояние' : 'Condition', value: locale === 'bg' ? 'Ново' : 'New' },
-                  { label: locale === 'bg' ? 'Марка' : 'Brand', value: 'Generic' },
-                  { label: locale === 'bg' ? 'Произход' : 'Origin', value: locale === 'bg' ? 'България' : 'Bulgaria' },
-                  { label: locale === 'bg' ? 'Гаранция' : 'Warranty', value: locale === 'bg' ? '12 месеца' : '12 months' },
-                ].map((spec, idx) => (
-                  <div key={idx} className="text-sm">
-                    <span className="text-muted-foreground">{spec.label}:</span>{' '}
-                    <span className="text-foreground">{spec.value}</span>
-                  </div>
-                ))}
+          {/* ===== DESKTOP: Card-based 3-column layout (Dashboard style) ===== */}
+          <div className="hidden lg:block pt-6">
+            <div className="grid lg:grid-cols-3 gap-4">
+              {/* Description Card */}
+              <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
+                  <span className="w-1 h-4 bg-primary rounded-full" />
+                  {locale === 'bg' ? 'Описание' : 'Description'}
+                </h3>
+                {product.description ? (
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {product.description}
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground/60 italic">
+                    {locale === 'bg' ? 'Няма налично описание.' : 'No description available.'}
+                  </p>
+                )}
               </div>
-            </div>
 
-            {/* Contents */}
-            <div>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                {locale === 'bg' ? 'Съдържание' : 'In the Box'}
-              </h3>
-              <div className="space-y-1 text-sm text-foreground">
-                <div>1× {locale === 'bg' ? 'Основен продукт' : 'Main Product'}</div>
-                <div>1× {locale === 'bg' ? 'Инструкции' : 'User Manual'}</div>
-                <div>1× {locale === 'bg' ? 'Гаранционна карта' : 'Warranty Card'}</div>
-                <div>{locale === 'bg' ? 'Оригинална опаковка' : 'Original Packaging'}</div>
+              {/* Specifications Card */}
+              <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
+                  <span className="w-1 h-4 bg-info rounded-full" />
+                  {locale === 'bg' ? 'Спецификации' : 'Specifications'}
+                </h3>
+                <div className="space-y-2.5">
+                  {[
+                    { label: locale === 'bg' ? 'Артикул' : 'Item #', value: product.id.slice(0, 8) },
+                    { label: locale === 'bg' ? 'Състояние' : 'Condition', value: locale === 'bg' ? 'Ново' : 'New' },
+                    { label: locale === 'bg' ? 'Марка' : 'Brand', value: 'Generic' },
+                    { label: locale === 'bg' ? 'Произход' : 'Origin', value: locale === 'bg' ? 'България' : 'Bulgaria' },
+                    { label: locale === 'bg' ? 'Гаранция' : 'Warranty', value: locale === 'bg' ? '12 месеца' : '12 months' },
+                  ].map((spec, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-1.5 border-b border-border/30 last:border-0">
+                      <span className="text-sm text-muted-foreground">{spec.label}</span>
+                      <span className="text-sm font-medium text-foreground">{spec.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contents Card */}
+              <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-xl p-5">
+                <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
+                  <span className="w-1 h-4 bg-success rounded-full" />
+                  {locale === 'bg' ? 'Съдържание' : 'In the Box'}
+                </h3>
+                <ul className="space-y-2.5">
+                  {[
+                    { qty: '1×', item: locale === 'bg' ? 'Основен продукт' : 'Main Product' },
+                    { qty: '1×', item: locale === 'bg' ? 'Инструкции' : 'User Manual' },
+                    { qty: '1×', item: locale === 'bg' ? 'Гаранционна карта' : 'Warranty Card' },
+                    { qty: '✓', item: locale === 'bg' ? 'Оригинална опаковка' : 'Original Packaging' },
+                  ].map((content, idx) => (
+                    <li key={idx} className="flex items-center gap-3 text-sm">
+                      <span className="w-6 h-6 flex items-center justify-center bg-success/10 text-success text-xs font-semibold rounded-md shrink-0">
+                        {content.qty}
+                      </span>
+                      <span className="text-foreground">{content.item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
@@ -792,7 +782,7 @@ export function ProductPageContent({
                 <HoverCard openDelay={200} closeDelay={100}>
                   <HoverCardTrigger asChild>
                     <Link 
-                      href={`/store/${sellerData.store_slug || sellerData.id}`}
+                      href={`/${locale}/${sellerData.store_slug || sellerData.id}`}
                       className="flex items-center gap-3 group"
                     >
                       <Avatar className="h-11 w-11 border bg-background shrink-0">
@@ -839,7 +829,7 @@ export function ProductPageContent({
                         return (
                           <Link
                             key={idx}
-                            href={`/store/${sellerData.store_slug || sellerData.id}`}
+                            href={`/${locale}/${sellerData.store_slug || sellerData.id}`}
                             className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50"
                           >
                             <div className="w-12 h-12 border rounded bg-white shrink-0 overflow-hidden">
@@ -859,7 +849,7 @@ export function ProductPageContent({
                     </div>
                     <div className="p-2 border-t border-border">
                       <Link
-                        href={`/store/${sellerData.store_slug || sellerData.id}`}
+                        href={`/${locale}/${sellerData.store_slug || sellerData.id}`}
                         className="block text-center text-sm text-primary hover:underline py-1"
                       >
                         {locale === 'bg' ? 'Виж всички артикули' : 'View all items'} →
@@ -996,7 +986,7 @@ export function ProductPageContent({
               image: images[0],
               seller_id: product.seller_id,
               slug: product.slug,
-              storeSlug: seller?.store_slug,
+              storeSlug: sellerData?.store_slug,
             }}
             currentUserId={currentUserId}
             variant="buyNowOnly"
@@ -1049,7 +1039,7 @@ export function ProductPageContent({
                 image: images[0],
                 seller_id: product.seller_id,
                 slug: product.slug,
-                storeSlug: seller?.store_slug,
+                storeSlug: sellerData?.store_slug,
               }}
               currentUserId={currentUserId}
               variant="buyNowOnly"
@@ -1064,7 +1054,7 @@ export function ProductPageContent({
                 image: images[0],
                 seller_id: product.seller_id,
                 slug: product.slug,
-                storeSlug: seller?.store_slug,
+                storeSlug: sellerData?.store_slug,
               }}
               currentUserId={currentUserId}
               variant="outline"

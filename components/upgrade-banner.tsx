@@ -180,7 +180,7 @@ export function UpgradeBanner({
           <div>
             <div className="flex items-center gap-2 mb-0.5">
               <h3 className="font-semibold">{content.title}</h3>
-              <Badge variant="secondary" className="text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+              <Badge variant="secondary" className="text-2xs bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
                 {t.badge}
               </Badge>
             </div>

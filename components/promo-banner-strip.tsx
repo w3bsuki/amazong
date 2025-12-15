@@ -75,7 +75,7 @@ export function PromoBannerStrip({ locale = "en" }: PromoBannerStripProps) {
                 {card.title}
               </h3>
               <p className={cn(
-                "text-[11px] mt-1 leading-snug",
+                "text-xs mt-1 leading-snug",
                 card.variant === "primary" 
                   ? "text-white/80" 
                   : "text-muted-foreground"

@@ -31,6 +31,15 @@ export default function WishlistPage() {
     }).format(price)
   }
 
+  // Generate SEO-friendly product URL: /{username}/{slug} or fallback to /product/{id}
+  const getProductUrl = (item: typeof items[0]) => {
+    if (item.username && item.slug) {
+      return `/${item.username}/${item.slug}`
+    }
+    // Fallback for older items without username/slug
+    return `/product/${item.product_id}`
+  }
+
   const handleMoveToCart = (item: typeof items[0]) => {
     addToCart({
       id: item.product_id,
@@ -38,6 +47,8 @@ export default function WishlistPage() {
       price: item.price,
       image: item.image,
       quantity: 1,
+      slug: item.slug,
+      username: item.username,
     })
     removeFromWishlist(item.product_id)
     toast.success(locale === 'bg' ? 'Преместено в количката' : 'Moved to cart')
@@ -51,6 +62,8 @@ export default function WishlistPage() {
         price: item.price,
         image: item.image,
         quantity: 1,
+        slug: item.slug,
+        username: item.username,
       })
     })
     toast.success(locale === 'bg' ? 'Всички продукти добавени в количката' : 'All items added to cart')
@@ -208,7 +221,7 @@ export default function WishlistPage() {
               className="group bg-card rounded-lg border border-border overflow-hidden hover:shadow-md transition-shadow"
             >
               {/* Image */}
-              <Link href={`/product/${item.product_id}`} className="block">
+              <Link href={getProductUrl(item)} className="block">
                 <div className="relative aspect-square bg-secondary overflow-hidden">
                   <Image
                     src={item.image}
@@ -236,7 +249,7 @@ export default function WishlistPage() {
               {/* Content */}
               <div className="p-2 sm:p-3">
                 {/* Title */}
-                <Link href={`/product/${item.product_id}`}>
+                <Link href={getProductUrl(item)}>
                   <h3 className="text-sm font-medium text-foreground line-clamp-2 mb-1 group-hover:text-brand transition-colors min-h-[2.5rem]">
                     {item.title}
                   </h3>
