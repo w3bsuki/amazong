@@ -34,7 +34,16 @@ interface Product {
   category_id: string | null
   image_url?: string | null
   slug?: string | null
-  sellers?: { store_slug: string | null } | null
+  sellers?: {
+    store_slug: string | null
+    display_name: string | null
+    business_name: string | null
+    avatar_url: string | null
+    tier: string | null
+    account_type: string | null
+    is_verified_business: boolean | null
+    id?: string | null
+  } | null
   /** Product attributes JSONB (condition, brand, make, model, year, location) */
   attributes?: Record<string, string> | null
   /** Product tags for display */
@@ -109,7 +118,7 @@ async function searchProducts(
   
   // Build count query
   let countQuery = supabase.from("products").select("*", { count: "exact", head: true })
-  let dbQuery = supabase.from("products").select("*, profiles!products_seller_id_fkey(username)")
+  let dbQuery = supabase.from("products").select("*, profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)")
   
   if (categoryIds.length > 0) {
     countQuery = countQuery.in("category_id", categoryIds)
@@ -202,7 +211,16 @@ async function searchProducts(
       category_id: p.category_id,
       image_url: p.images?.[0] || null,
       slug: p.slug,
-      sellers: profile ? { store_slug: profile.username } : null,
+      sellers: profile ? {
+        id: profile.id ?? null,
+        store_slug: profile.username ?? null,
+        display_name: profile.display_name ?? null,
+        business_name: profile.business_name ?? null,
+        avatar_url: profile.avatar_url ?? null,
+        tier: profile.tier ?? null,
+        account_type: profile.account_type ?? null,
+        is_verified_business: profile.is_verified_business ?? null,
+      } : null,
       attributes: p.attributes as Record<string, string> | null,
       tags: Array.isArray(p.tags) ? p.tags.filter((t): t is string => typeof t === 'string') : [],
     }
@@ -411,9 +429,14 @@ export default async function CategoryPage({
                 reviews={product.review_count || 0}
                 originalPrice={product.list_price}
                 tags={product.tags || []}
-                variant="grid"
+                variant="marketplace"
                 slug={product.slug}
                 storeSlug={product.sellers?.store_slug}
+                sellerId={product.sellers?.id || undefined}
+                sellerName={(product.sellers?.display_name || product.sellers?.business_name || product.sellers?.store_slug) || undefined}
+                sellerAvatarUrl={product.sellers?.avatar_url || null}
+                sellerTier={product.sellers?.account_type === 'business' ? 'business' : (product.sellers?.tier === 'premium' ? 'premium' : 'basic')}
+                sellerVerified={Boolean(product.sellers?.is_verified_business)}
                 categorySlug={slug}
                 condition={product.attributes?.condition}
                 brand={product.attributes?.brand}

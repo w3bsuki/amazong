@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/routing"
+import Image from "next/image"
 import { setRequestLocale } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { CaretRight, GridFour } from "@phosphor-icons/react/dist/ssr"
@@ -154,9 +155,11 @@ export default async function CategoriesPage({
                   <Card className="border-border hover:border-primary transition-colors">
                     <CardContent className="p-4 flex items-center gap-4">
                       <div className="size-14 sm:size-16 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0">
-                        <img 
+                        <Image 
                           src={imageUrl} 
                           alt={categoryName}
+                          width={64}
+                          height={64}
                           className="w-full h-full object-cover"
                         />
                       </div>

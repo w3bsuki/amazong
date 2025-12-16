@@ -256,10 +256,15 @@ export function NewestListingsSection({
               image={product.image}
               rating={product.rating}
               reviews={product.reviews}
-              variant="compact"
+              variant="marketplace"
               index={index}
               slug={product.slug}
               storeSlug={product.storeSlug}
+              sellerId={product.sellerId || undefined}
+              sellerName={(product.sellerName || product.storeSlug) || undefined}
+              sellerAvatarUrl={product.sellerAvatarUrl || null}
+              sellerTier={product.sellerTier}
+              sellerVerified={product.sellerVerified}
               condition={product.condition}
               brand={product.brand}
               categorySlug={product.categorySlug}
@@ -267,6 +272,7 @@ export function NewestListingsSection({
               model={product.model}
               year={product.year}
               location={product.location}
+              attributes={product.attributes}
             />
           ))}
         </div>

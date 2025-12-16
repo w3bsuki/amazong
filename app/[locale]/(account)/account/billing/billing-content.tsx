@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -702,9 +703,11 @@ export function BillingContent({
                               <TableCell>
                                 <div className="flex items-center gap-3">
                                   {boost.products?.images?.[0] && (
-                                    <img 
+                                    <Image 
                                       src={boost.products.images[0]} 
                                       alt=""
+                                      width={40}
+                                      height={40}
                                       className="size-10 rounded object-cover"
                                     />
                                   )}

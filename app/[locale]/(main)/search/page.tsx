@@ -1,4 +1,5 @@
 import { createStaticClient } from "@/lib/supabase/server"
+import { Link } from "@/i18n/routing"
 import { ProductCard } from "@/components/product-card"
 import { SearchFilters } from "@/components/search-filters"
 import { SubcategoryTabs } from "@/components/subcategory-tabs"
@@ -62,7 +63,16 @@ interface Product {
   tags?: string[]
   slug?: string | null
   store_slug?: string | null
-  sellers?: { store_slug: string | null } | null
+  profiles?: {
+    id: string | null
+    username: string | null
+    display_name: string | null
+    business_name: string | null
+    avatar_url: string | null
+    tier: string | null
+    account_type: string | null
+    is_verified_business: boolean | null
+  } | null
   /** Product attributes JSONB (condition, brand, make, model, year, location) */
   attributes?: Record<string, string> | null
   /** Category info from join */
@@ -92,7 +102,7 @@ async function searchProducts(
   
   // Build base query with count
   let countQuery = supabase.from("products").select("*", { count: "exact", head: true })
-  let dbQuery = supabase.from("products").select("*, sellers(store_slug), attributes, categories(slug)")
+  let dbQuery = supabase.from("products").select("*, profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), attributes, categories(slug)")
   
   // Apply shipping zone filter if provided
   if (shippingFilter) {
@@ -448,9 +458,14 @@ export default async function SearchPage({
                 reviews={product.review_count || 0}
                 originalPrice={product.list_price}
                 tags={product.tags || []}
-                variant="grid"
+                variant="marketplace"
                 slug={product.slug}
-                storeSlug={product.sellers?.store_slug}
+                storeSlug={product.profiles?.username}
+                sellerId={product.profiles?.id || undefined}
+                sellerName={(product.profiles?.display_name || product.profiles?.business_name || product.profiles?.username) || undefined}
+                sellerAvatarUrl={product.profiles?.avatar_url || null}
+                sellerTier={product.profiles?.account_type === 'business' ? 'business' : (product.profiles?.tier === 'premium' ? 'premium' : 'basic')}
+                sellerVerified={Boolean(product.profiles?.is_verified_business)}
                 categorySlug={product.categories?.slug || currentCategory?.slug}
                 condition={product.attributes?.condition}
                 brand={product.attributes?.brand}
@@ -487,27 +502,27 @@ export default async function SearchPage({
                 }
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <a href="/search">
+                <Link href="/search">
                   <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-brand hover:bg-brand/90 text-foreground h-10 px-4 py-2 gap-2">
                     Clear All Filters
                   </button>
-                </a>
-                <a href="/">
+                </Link>
+                <Link href="/">
                   <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
                     Browse All Products
                   </button>
-                </a>
+                </Link>
               </div>
               <div className="mt-8 pt-6 border-t border-border max-w-md mx-auto">
                 <p className="text-sm text-muted-foreground mb-3">Popular categories:</p>
                 <div className="flex flex-wrap justify-center gap-2">
-                  <a href="/search?category=electronics" className="text-sm text-link hover:underline">Electronics</a>
+                  <Link href="/search?category=electronics" className="text-sm text-link hover:underline">Electronics</Link>
                   <span className="text-muted-foreground">•</span>
-                  <a href="/search?category=fashion" className="text-sm text-link hover:underline">Fashion</a>
+                  <Link href="/search?category=fashion" className="text-sm text-link hover:underline">Fashion</Link>
                   <span className="text-muted-foreground">•</span>
-                  <a href="/search?category=home" className="text-sm text-link hover:underline">Home</a>
+                  <Link href="/search?category=home" className="text-sm text-link hover:underline">Home</Link>
                   <span className="text-muted-foreground">•</span>
-                  <a href="/todays-deals" className="text-sm text-link hover:underline">Today's Deals</a>
+                  <Link href="/todays-deals" className="text-sm text-link hover:underline">Today&apos;s Deals</Link>
                 </div>
               </div>
             </div>

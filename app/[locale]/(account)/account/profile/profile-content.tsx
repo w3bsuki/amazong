@@ -43,6 +43,7 @@ import {
   updateProfile, 
   uploadAvatar, 
   deleteAvatar, 
+  setAvatarUrl,
   updateEmail, 
   updatePassword 
 } from "@/app/actions/profile"
@@ -85,6 +86,17 @@ const SHIPPING_REGIONS = [
   { value: "EU", label: "Europe", labelBg: "Европа" },
   { value: "US", label: "United States", labelBg: "САЩ" },
   { value: "WW", label: "Worldwide", labelBg: "Целият свят" },
+]
+
+const PRESET_AVATARS = [
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Nova",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Riley",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Kai",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Zoe",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Max",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Luna",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Aria",
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=Theo",
 ]
 
 export function ProfileContent({ locale, profile }: ProfileContentProps) {
@@ -174,6 +186,27 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
     } else {
       toast.error(result.error || (locale === "bg" ? "Грешка при премахване" : "Error removing avatar"))
     }
+  }
+
+  const handleChoosePresetAvatar = (url: string) => {
+    setAvatarPreview(url)
+    setIsUploadingAvatar(true)
+
+    const formData = new FormData()
+    formData.set("avatar_url", url)
+
+    startTransition(async () => {
+      const result = await setAvatarUrl(formData)
+      setIsUploadingAvatar(false)
+
+      if (result.success) {
+        setAvatarPreview(result.avatarUrl || url)
+        toast.success(locale === "bg" ? "Аватарът е обновен" : "Avatar updated")
+      } else {
+        setAvatarPreview(profile.avatar_url)
+        toast.error(result.error || (locale === "bg" ? "Грешка при обновяване" : "Error updating avatar"))
+      }
+    })
   }
 
   // Handle email change
@@ -357,6 +390,30 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
                   {locale === "bg" ? "Премахни" : "Remove"}
                 </Button>
               )}
+            </div>
+          </div>
+
+          <div className="mt-5">
+            <p className="text-sm font-medium">
+              {locale === "bg" ? "Избери аватар" : "Choose an avatar"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {locale === "bg" ? "Бърз избор без качване" : "Quick pick without uploading"}
+            </p>
+
+            <div className="mt-3 grid grid-cols-4 sm:grid-cols-8 gap-2">
+              {PRESET_AVATARS.map((url) => (
+                <button
+                  key={url}
+                  type="button"
+                  onClick={() => handleChoosePresetAvatar(url)}
+                  disabled={isUploadingAvatar}
+                  className="size-10 rounded-full overflow-hidden border bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50"
+                  aria-label={locale === "bg" ? "Избери този аватар" : "Choose this avatar"}
+                >
+                  <Image src={url} alt="" width={40} height={40} className="size-full object-cover" />
+                </button>
+              ))}
             </div>
           </div>
         </CardContent>

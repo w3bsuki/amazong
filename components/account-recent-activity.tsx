@@ -7,6 +7,22 @@ import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { IconChevronRight, IconPackage, IconPhoto, IconShoppingBag } from "@tabler/icons-react"
 
+// Extracted to avoid creating component during render
+function SectionHeader({ title, href, viewAllText }: { title: string; href: string; viewAllText: string }) {
+  return (
+    <div className="flex items-center justify-between px-1 mb-3">
+      <span className="font-semibold text-base text-foreground">{title}</span>
+      <Link 
+        href={href} 
+        className="text-xs font-medium text-account-accent hover:text-account-accent/80 transition-colors flex items-center gap-0.5"
+      >
+        {viewAllText}
+        <IconChevronRight className="size-3.5" />
+      </Link>
+    </div>
+  )
+}
+
 interface RecentOrder {
   id: string
   total_amount: number
@@ -100,25 +116,11 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
     activity: locale === 'bg' ? 'Активност' : 'Activity',
   }
 
-  // Minimal section header - Revolut style
-  const SectionHeader = ({ title, href }: { title: string; href: string }) => (
-    <div className="flex items-center justify-between px-1 mb-3">
-      <span className="font-semibold text-base text-foreground">{title}</span>
-      <Link 
-        href={href} 
-        className="text-xs font-medium text-account-accent hover:text-account-accent/80 transition-colors flex items-center gap-0.5"
-      >
-        {t.viewAll}
-        <IconChevronRight className="size-3.5" />
-      </Link>
-    </div>
-  )
-
   return (
     <div className="space-y-6">
       {/* Recent Orders Section - Horizontal scroll on mobile */}
       <div>
-        <SectionHeader title={t.recentOrders} href="/account/orders" />
+        <SectionHeader title={t.recentOrders} href="/account/orders" viewAllText={t.viewAll} />
         {orders.length === 0 ? (
           <div className="rounded-2xl bg-account-stat-bg border border-account-stat-border p-8 text-center">
             <div className="flex size-14 mx-auto items-center justify-center rounded-2xl bg-account-stat-icon-bg border border-account-stat-border mb-3">
@@ -250,7 +252,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       {/* My Products Section - Only show if has products */}
       {products.length > 0 && (
         <div>
-          <SectionHeader title={t.myProducts} href="/account/selling" />
+          <SectionHeader title={t.myProducts} href="/account/selling" viewAllText={t.viewAll} />
           
           {/* Mobile: Horizontal scroll cards */}
           <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
@@ -338,7 +340,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       {/* Recent Sales Section - Only show if has sales */}
       {sales.length > 0 && (
         <div>
-          <SectionHeader title={t.recentSales} href="/account/sales" />
+          <SectionHeader title={t.recentSales} href="/account/sales" viewAllText={t.viewAll} />
           <div className="rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden">
             <div className="divide-y divide-account-stat-border/50">
             {sales.slice(0, 3).map((sale, index) => (

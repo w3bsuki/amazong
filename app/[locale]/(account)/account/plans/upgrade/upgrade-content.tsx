@@ -8,7 +8,6 @@ import { Check, Crown, Buildings, User, SpinnerGap } from "@phosphor-icons/react
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 interface SubscriptionPlan {

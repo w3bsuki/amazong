@@ -156,6 +156,7 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
       banner_url,
       bio,
       account_type,
+      tier,
       is_seller,
       is_verified_business,
       verified,

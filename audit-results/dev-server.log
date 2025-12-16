@@ -1,0 +1,139 @@
+
+> amazong-marketplace@1.0.0 dev J:\amazong
+> next dev --turbopack
+
+   ▲ Next.js 16.0.7 (Turbopack, Cache Components)
+   - Local:         http://localhost:3000
+   - Network:       http://192.168.1.4:3000
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+     · serverActions
+
+ ✓ Starting...
+ ✓ Ready in 1657ms
+ ○ Compiling /[locale]/demo ...
+ GET /en/demo 200 in 7.6s (compile: 4.8s, proxy.ts: 218ms, render: 2.5s)
+ GET /en/demo 200 in 7.4s (compile: 4.5s, proxy.ts: 255ms, render: 2.6s)
+ GET /api/categories 200 in 1237ms (compile: 814ms, render: 423ms)
+[API] Found 24 root categories
+[API] Found 24 root categories
+ GET /demo 200 in 1375ms (compile: 89ms, proxy.ts: 91ms, render: 1195ms)
+ GET /api/categories 200 in 1273ms (compile: 763ms, render: 510ms)
+[API] Found 285 L1 categories
+[API] Found 285 L1 categories
+[API] Found 3025 L2 categories (from 6 batches)
+ GET /api/categories?children=true&depth=2 200 in 1584ms (compile: 323ms, render: 1261ms)
+[API] Found 3025 L2 categories (from 6 batches)
+ GET /api/categories?children=true&depth=2 200 in 1620ms (compile: 333ms, render: 1287ms)
+[API] Found 24 root categories
+ GET /api/categories 200 in 817ms (compile: 325ms, render: 492ms)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 3.8s (compile: 3.3s, render: 504ms)
+[API] Found 285 L1 categories
+ GET /en/demo 200 in 2.2s (compile: 39ms, proxy.ts: 94ms, render: 2.1s)
+ GET /api/categories 200 in 99ms (compile: 5ms, render: 93ms)
+[API] Found 24 root categories
+[API] Found 3025 L2 categories (from 6 batches)
+ GET /api/categories?children=true&depth=2 200 in 1940ms (compile: 318ms, render: 1622ms)
+[API] Found 285 L1 categories
+[API] Found 3025 L2 categories (from 6 batches)
+ GET /api/categories?children=true&depth=2 200 in 824ms (compile: 3ms, render: 821ms)
+ GET /demo 200 in 521ms (compile: 23ms, proxy.ts: 119ms, render: 379ms)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 342ms (compile: 14ms, render: 329ms)
+ GET /demo 200 in 293ms (compile: 22ms, proxy.ts: 76ms, render: 194ms)
+ GET /demo 200 in 1359ms (compile: 229ms, proxy.ts: 923ms, render: 207ms)
+ GET /demo/cards 200 in 3.4s (compile: 1590ms, proxy.ts: 89ms, render: 1699ms)
+ GET /demo 200 in 321ms (compile: 38ms, proxy.ts: 77ms, render: 206ms)
+ GET /demo 200 in 261ms (compile: 23ms, proxy.ts: 93ms, render: 144ms)
+[API] Found 24 root categories
+ GET /demo 200 in 198ms (compile: 7ms, proxy.ts: 67ms, render: 125ms)
+[API] Found 285 L1 categories
+[API] Found 3025 L2 categories (from 6 batches)
+ GET /api/categories?children=true&depth=2 200 in 1458ms (compile: 4ms, render: 1454ms)
+ GET /demo/cards 200 in 453ms (compile: 24ms, proxy.ts: 106ms, render: 323ms)
+ GET /demo 200 in 473ms (compile: 171ms, proxy.ts: 110ms, render: 191ms)
+ GET /demo 200 in 506ms (compile: 14ms, proxy.ts: 96ms, render: 397ms)
+ GET /demo/cards 200 in 467ms (compile: 22ms, proxy.ts: 92ms, render: 353ms)
+ GET /demo 200 in 467ms (compile: 33ms, proxy.ts: 235ms, render: 198ms)
+ GET /demo/cards 200 in 272ms (compile: 7ms, proxy.ts: 72ms, render: 194ms)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 262ms (compile: 16ms, render: 246ms)
+ ✓ Compiled in 654ms
+ GET /demo 200 in 1101ms (compile: 146ms, proxy.ts: 167ms, render: 788ms)
+ GET /demo/cards 200 in 1107ms (compile: 107ms, proxy.ts: 699ms, render: 301ms)
+ GET /demo/cards 200 in 221ms (compile: 7ms, proxy.ts: 67ms, render: 147ms)
+ ✓ Compiled in 230ms
+ GET /demo/cards 200 in 831ms (compile: 20ms, proxy.ts: 123ms, render: 688ms)
+ GET /demo 200 in 828ms (compile: 226ms, proxy.ts: 263ms, render: 339ms)
+ GET /demo/cards 200 in 460ms (compile: 24ms, proxy.ts: 115ms, render: 321ms)
+ GET /demo 200 in 493ms (compile: 155ms, proxy.ts: 118ms, render: 220ms)
+ GET /demo/cards 200 in 412ms (compile: 10ms, proxy.ts: 71ms, render: 332ms)
+ ✓ Compiled in 187ms
+ ✓ Compiled in 231ms
+ GET /demo/cards 200 in 1599ms (compile: 213ms, proxy.ts: 329ms, render: 1058ms)
+ GET /demo 200 in 1585ms (compile: 902ms, proxy.ts: 307ms, render: 376ms)
+ GET /demo/cards 200 in 261ms (compile: 10ms, proxy.ts: 70ms, render: 180ms)
+ GET /demo 200 in 706ms (compile: 56ms, proxy.ts: 117ms, render: 533ms)
+ GET /demo/cards 200 in 732ms (compile: 92ms, proxy.ts: 127ms, render: 513ms)
+ GET /demo/cards 200 in 416ms (compile: 28ms, proxy.ts: 74ms, render: 314ms)
+ GET /demo 200 in 416ms (compile: 40ms, proxy.ts: 108ms, render: 269ms)
+ GET /demo/cards 200 in 449ms (compile: 154ms, proxy.ts: 115ms, render: 180ms)
+ GET /demo/cards 200 in 413ms (compile: 11ms, proxy.ts: 79ms, render: 323ms)
+ GET /demo 200 in 414ms (compile: 20ms, proxy.ts: 123ms, render: 271ms)
+ GET /demo/cards 200 in 419ms (compile: 93ms, proxy.ts: 128ms, render: 198ms)
+ GET /demo/cards 200 in 495ms (compile: 15ms, proxy.ts: 80ms, render: 400ms)
+ GET /demo/cards 200 in 345ms (compile: 24ms, proxy.ts: 125ms, render: 196ms)
+ GET /demo 200 in 386ms (compile: 101ms, proxy.ts: 121ms, render: 165ms)
+ GET /demo/cards 200 in 392ms (compile: 55ms, proxy.ts: 70ms, render: 267ms)
+ GET /demo/cards 200 in 402ms (compile: 24ms, proxy.ts: 110ms, render: 268ms)
+ GET /demo 200 in 433ms (compile: 128ms, proxy.ts: 101ms, render: 204ms)
+ GET /demo/cards 200 in 331ms (compile: 8ms, proxy.ts: 78ms, render: 245ms)
+ GET /demo 200 in 339ms (compile: 18ms, proxy.ts: 114ms, render: 207ms)
+ GET /demo/cards 200 in 378ms (compile: 40ms, proxy.ts: 117ms, render: 221ms)
+ GET /demo/cards 200 in 817ms (compile: 93ms, proxy.ts: 80ms, render: 644ms)
+ GET /demo 200 in 315ms (compile: 22ms, proxy.ts: 106ms, render: 187ms)
+ GET /demo/cards 200 in 361ms (compile: 115ms, proxy.ts: 115ms, render: 132ms)
+ GET /demo/cards 200 in 294ms (compile: 20ms, proxy.ts: 70ms, render: 204ms)
+ GET /demo 200 in 504ms (compile: 19ms, proxy.ts: 67ms, render: 418ms)
+ GET /demo/cards 200 in 494ms (compile: 47ms, proxy.ts: 182ms, render: 264ms)
+ GET /demo 200 in 291ms (compile: 14ms, proxy.ts: 75ms, render: 202ms)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 899ms (compile: 253ms, render: 646ms)
+ GET /demo 200 in 2.6s (compile: 16ms, proxy.ts: 65ms, render: 2.5s)
+ GET /demo/cards 200 in 397ms (compile: 48ms, proxy.ts: 88ms, render: 261ms)
+ GET /demo/cards 200 in 364ms (compile: 27ms, proxy.ts: 88ms, render: 249ms)
+ GET /demo/cards 200 in 249ms (compile: 9ms, proxy.ts: 72ms, render: 168ms)
+ GET /api/categories 200 in 99ms (compile: 5ms, render: 95ms)
+[API] Found 24 root categories
+[API] Found 285 L1 categories
+[API] Found 3025 L2 categories (from 6 batches)
+ GET /api/categories?children=true&depth=2 200 in 1067ms (compile: 3ms, render: 1064ms)
+ GET /demo/cards 200 in 418ms (compile: 21ms, proxy.ts: 173ms, render: 224ms)
+ GET /demo 200 in 438ms (compile: 16ms, proxy.ts: 269ms, render: 153ms)
+ GET /demo/cards 200 in 359ms (compile: 21ms, proxy.ts: 89ms, render: 249ms)
+ GET /demo 200 in 476ms (compile: 21ms, proxy.ts: 82ms, render: 373ms)
+ GET /demo/cards 200 in 451ms (compile: 23ms, proxy.ts: 172ms, render: 256ms)
+ GET /demo 200 in 315ms (compile: 22ms, proxy.ts: 76ms, render: 216ms)
+ GET /demo 200 in 244ms (compile: 9ms, proxy.ts: 69ms, render: 165ms)
+ GET /demo/cards 200 in 386ms (compile: 35ms, proxy.ts: 144ms, render: 206ms)
+ GET /demo 200 in 413ms (compile: 125ms, proxy.ts: 144ms, render: 144ms)
+ GET /demo 200 in 469ms (compile: 85ms, proxy.ts: 84ms, render: 300ms)
+ GET /demo 200 in 358ms (compile: 20ms, proxy.ts: 116ms, render: 222ms)
+ GET /demo/cards 200 in 425ms (compile: 21ms, proxy.ts: 237ms, render: 167ms)
+ GET /demo 200 in 382ms (compile: 78ms, proxy.ts: 67ms, render: 237ms)
+ GET /demo/cards 200 in 374ms (compile: 35ms, proxy.ts: 80ms, render: 259ms)
+ GET /demo 200 in 420ms (compile: 50ms, proxy.ts: 87ms, render: 284ms)
+ GET /demo 200 in 493ms (compile: 13ms, proxy.ts: 71ms, render: 409ms)
+ GET /demo/cards 200 in 353ms (compile: 19ms, proxy.ts: 109ms, render: 226ms)
+ GET /demo 200 in 394ms (compile: 100ms, proxy.ts: 110ms, render: 185ms)
+ GET /demo 200 in 598ms (compile: 104ms, proxy.ts: 107ms, render: 387ms)
+ GET /demo 200 in 291ms (compile: 17ms, proxy.ts: 99ms, render: 176ms)
+ GET /demo/cards 200 in 338ms (compile: 76ms, proxy.ts: 102ms, render: 160ms)
+ GET /demo 200 in 321ms (compile: 10ms, proxy.ts: 80ms, render: 231ms)
+ GET /demo/cards 200 in 350ms (compile: 24ms, proxy.ts: 74ms, render: 252ms)
+ GET /demo 200 in 401ms (compile: 111ms, proxy.ts: 74ms, render: 216ms)
+ GET /demo 200 in 389ms (compile: 74ms, proxy.ts: 95ms, render: 220ms)
+ GET /demo/cards 200 in 489ms (compile: 26ms, proxy.ts: 113ms, render: 351ms)
+ GET /demo 200 in 496ms (compile: 154ms, proxy.ts: 116ms, render: 225ms)
+ GET /demo 200 in 657ms (compile: 154ms, proxy.ts: 102ms, render: 402ms)
+ ✓ Compiled in 214ms
+ ✓ Compiled in 279ms
+[?25h

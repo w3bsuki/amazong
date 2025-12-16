@@ -252,7 +252,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ? await Promise.all(relatedProductsRaw.map(async (p) => {
         const { data: relSeller } = await supabase
           .from("profiles")
-          .select("username")
+          .select("id, username, display_name, business_name, avatar_url, tier, account_type, is_verified_business")
           .eq("id", p.seller_id)
           .single()
         return { ...p, seller: relSeller }
@@ -422,6 +422,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     variant="compact"
                     slug={p.slug}
                     storeSlug={p.seller?.username}
+                    sellerId={p.seller?.id}
+                    sellerName={(p.seller?.display_name || p.seller?.business_name || p.seller?.username) || undefined}
+                    sellerAvatarUrl={p.seller?.avatar_url || null}
+                    sellerTier={p.seller?.account_type === 'business' ? 'business' : (p.seller?.tier === 'premium' ? 'premium' : 'basic')}
+                    sellerVerified={Boolean(p.seller?.is_verified_business)}
                   />
                 </div>
               ))}
@@ -445,6 +450,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 variant="compact"
                 slug={p.slug}
                 storeSlug={p.seller?.username}
+                sellerId={p.seller?.id}
+                sellerName={(p.seller?.display_name || p.seller?.business_name || p.seller?.username) || undefined}
+                sellerAvatarUrl={p.seller?.avatar_url || null}
+                sellerTier={p.seller?.account_type === 'business' ? 'business' : (p.seller?.tier === 'premium' ? 'premium' : 'basic')}
+                sellerVerified={Boolean(p.seller?.is_verified_business)}
               />
             ))}
           </div>

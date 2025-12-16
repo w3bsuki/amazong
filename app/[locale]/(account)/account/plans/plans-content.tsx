@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useTransition } from "react"
 import { useSearchParams } from "next/navigation"
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -549,9 +550,9 @@ export function PlansContent({
       <div className="mt-8 text-center">
         <p className="text-sm text-muted-foreground">
           {locale === 'bg' ? 'Имате въпроси? ' : 'Have questions? '}
-          <a href="/customer-service" className="text-link hover:underline">
+          <Link href="/customer-service" className="text-link hover:underline">
             {locale === 'bg' ? 'Свържете се с нас' : 'Contact us'}
-          </a>
+          </Link>
         </p>
       </div>
     </div>

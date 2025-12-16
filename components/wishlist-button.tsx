@@ -21,6 +21,7 @@ interface WishlistButtonProps {
 export function WishlistButton({ product, variant = "icon", className }: WishlistButtonProps) {
   const { isInWishlist, toggleWishlist } = useWishlist()
   const [isPending, setIsPending] = useState(false)
+  const MIN_SPINNER_MS = 650
   
   const inWishlist = isInWishlist(product.id)
 
@@ -28,10 +29,16 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
     e.preventDefault()
     e.stopPropagation()
     
+    const startedAt = Date.now()
     setIsPending(true)
     try {
       await toggleWishlist(product)
     } finally {
+      const elapsed = Date.now() - startedAt
+      const remaining = MIN_SPINNER_MS - elapsed
+      if (remaining > 0) {
+        await new Promise((r) => setTimeout(r, remaining))
+      }
       setIsPending(false)
     }
   }

@@ -92,10 +92,6 @@ async function compressImage(
             lastModified: Date.now(),
           });
 
-          console.log(
-            `[Image Compression] ${file.name}: ${(file.size / 1024).toFixed(0)}KB → ${(compressedFile.size / 1024).toFixed(0)}KB (${((1 - compressedFile.size / file.size) * 100).toFixed(0)}% reduction)`
-          );
-
           resolve(compressedFile);
         },
         type,

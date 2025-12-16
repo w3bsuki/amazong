@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { 
   SignInPrompt, 
@@ -160,12 +161,12 @@ export function SellPageClient({
             <p className="text-muted-foreground">
               You need a username before you can start selling. Visit your account settings to set one up.
             </p>
-            <a 
+            <Link 
               href="/account/profile" 
               className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             >
               Go to Settings
-            </a>
+            </Link>
           </div>
         </div>
       </div>

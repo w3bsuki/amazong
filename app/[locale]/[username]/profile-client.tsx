@@ -40,6 +40,7 @@ interface PublicProfileClientProps {
     banner_url: string | null
     bio: string | null
     account_type: string | null
+    tier?: string | null
     is_seller: boolean | null
     is_verified_business: boolean | null
     verified?: boolean | null
@@ -352,6 +353,11 @@ export function PublicProfileClient({
                         sellerId={product.seller_id}
                         slug={product.slug}
                         condition={product.condition}
+                        storeSlug={profile.username}
+                        sellerName={displayName}
+                        sellerAvatarUrl={profile.avatar_url}
+                        sellerVerified={Boolean(profile.is_verified_business)}
+                        sellerTier={profile.account_type === 'business' ? 'business' : (profile.tier === 'premium' ? 'premium' : 'basic')}
                       />
                     ))}
                   </div>

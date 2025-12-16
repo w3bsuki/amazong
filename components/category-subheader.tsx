@@ -78,7 +78,6 @@ export function CategorySubheader() {
       .then((res) => res.json())
       .then((data) => {
         const cats = data.categories || []
-        console.log(`[CategorySubheader] Fetched ${cats.length} categories:`, cats.map((c: Category) => c.slug))
         categoriesCache = cats
         cacheTimestamp = Date.now()
         setCategories(cats)

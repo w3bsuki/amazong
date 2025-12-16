@@ -24,7 +24,6 @@ export function AuthStateListener() {
             const isWelcome = searchParams?.get('welcome') === 'true'
             if (isWelcome && session?.user?.email_confirmed_at) {
                 // User just verified their email - they're now fully authenticated
-                console.log('Email verified successfully, user is now authenticated')
             }
             
             // If we're still on a protected page after refresh, force a hard reload
@@ -54,7 +53,7 @@ export function AuthStateListener() {
             
             // If user just confirmed their email, the session will now have email_confirmed_at
             if (session?.user?.email_confirmed_at) {
-                console.log('User email confirmed at:', session.user.email_confirmed_at)
+                // Email confirmed - session updated
             }
         }
     }, [router, pathname, searchParams])

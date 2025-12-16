@@ -34,6 +34,10 @@ const passwordSchema = z.object({
   path: ["confirmPassword"],
 })
 
+const avatarUrlSchema = z.object({
+  avatar_url: z.string().url("Invalid avatar URL").max(500, "Avatar URL too long"),
+})
+
 // =====================================================
 // GET PROFILE
 // =====================================================
@@ -221,6 +225,61 @@ export async function uploadAvatar(formData: FormData): Promise<{
     return { success: true, avatarUrl: publicUrl }
   } catch (error) {
     console.error("uploadAvatar error:", error)
+    return { success: false, error: "An unexpected error occurred" }
+  }
+}
+
+// =====================================================
+// SET AVATAR URL (Preset avatars)
+// =====================================================
+export async function setAvatarUrl(formData: FormData): Promise<{
+  success: boolean
+  avatarUrl?: string
+  error?: string
+}> {
+  try {
+    const supabase = await createClient()
+    if (!supabase) {
+      return { success: false, error: "Failed to connect to database" }
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: "Not authenticated" }
+    }
+
+    const rawData = {
+      avatar_url: formData.get("avatar_url") as string | null,
+    }
+
+    const validationResult = avatarUrlSchema.safeParse(rawData)
+    if (!validationResult.success) {
+      return {
+        success: false,
+        error: validationResult.error.errors[0]?.message || "Invalid input",
+      }
+    }
+
+    const avatarUrl = validationResult.data.avatar_url
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({
+        avatar_url: avatarUrl,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", user.id)
+
+    if (updateError) {
+      console.error("setAvatarUrl error:", updateError)
+      return { success: false, error: "Failed to update avatar" }
+    }
+
+    revalidatePath("/account")
+    revalidatePath("/account/profile")
+    return { success: true, avatarUrl }
+  } catch (error) {
+    console.error("setAvatarUrl error:", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }

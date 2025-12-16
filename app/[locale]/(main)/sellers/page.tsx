@@ -5,6 +5,7 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import Image from "next/image"
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -147,9 +148,11 @@ export default async function SellersPage({
                   <div className="flex items-start gap-3 mb-3">
                     <div className="size-14 rounded-full bg-linear-to-br from-brand to-brand/70 flex items-center justify-center text-white font-bold text-xl shrink-0 overflow-hidden">
                       {seller.avatar_url ? (
-                        <img 
+                        <Image 
                           src={seller.avatar_url} 
                           alt={seller.store_name}
+                          width={56}
+                          height={56}
                           className="w-full h-full object-cover"
                         />
                       ) : (

@@ -1,6 +1,7 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState, useTransition } from "react"
 import { createClient } from "@/lib/supabase/client"
@@ -283,9 +284,11 @@ export default function WelcomePage() {
                 <div className="flex justify-center">
                   <div className="relative">
                     {useCustomAvatar && avatarPreview ? (
-                      <img 
+                      <Image 
                         src={avatarPreview} 
                         alt="Avatar preview"
+                        width={96}
+                        height={96}
                         className="size-24 rounded-full object-cover border-4 border-blue-100"
                       />
                     ) : (
@@ -389,7 +392,7 @@ export default function WelcomePage() {
               <div className="p-6 space-y-5">
                 <div className="flex justify-center mb-2">
                   {useCustomAvatar && avatarPreview ? (
-                    <img src={avatarPreview} alt="Avatar" className="size-16 rounded-full object-cover" />
+                    <Image src={avatarPreview} alt="Avatar" width={64} height={64} className="size-16 rounded-full object-cover" />
                   ) : (
                     <Avatar size={64} name={profile?.username || "user"} variant={selectedVariant} colors={COLOR_PALETTES[selectedPalette]} />
                   )}

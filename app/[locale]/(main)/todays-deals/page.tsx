@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -239,9 +240,10 @@ export default function TodaysDealsPage() {
                             <CardContent className="p-2 sm:p-3 md:p-4">
                                 {/* Image with discount badge */}
                                 <div className="aspect-square relative mb-2 sm:mb-3 bg-secondary rounded-lg overflow-hidden">
-                                    <img
+                                    <Image
                                         src={deal.image}
                                         alt={deal.title}
+                                        fill
                                         className="object-contain w-full h-full mix-blend-multiply"
                                     />
                                     {/* Discount badge */}

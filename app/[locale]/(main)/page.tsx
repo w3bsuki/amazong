@@ -1,21 +1,24 @@
 import { Suspense } from "react"
-import { HeroCarousel } from "@/components/hero-carousel"
 import { Link } from "@/i18n/routing"
+import Image from "next/image"
 import { CategoryCircles } from "@/components/category-circles"
 import { StartSellingBanner } from "@/components/start-selling-banner"
 import type { Metadata } from 'next'
 import { PromoCard } from "@/components/promo-card"
-import { getTranslations } from "next-intl/server"
+import { MobileCategoryRail, DesktopCategoryRail } from "@/components/mobile-category-rail"
+
+// Desktop-only components
+import { DesktopHeroCTA } from "@/components/desktop-hero-cta"
+import { TabbedProductFeed, TabbedProductFeedSkeleton } from "@/components/tabbed-product-feed"
 
 // Async sections using cached data
-import { TrendingSection, FeaturedSection, DealsWrapper, SignInCTA, NewestListings, NewestListingsSectionSkeleton } from "@/components/sections"
+import { 
+  SignInCTA, 
+  NewestListings, 
+  NewestListingsSectionSkeleton,
+} from "@/components/sections"
 
 // Skeleton fallbacks
-import { 
-  TrendingSectionSkeleton, 
-  DealsSectionSkeleton, 
-  FeaturedSectionSkeleton 
-} from "@/components/skeletons"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -31,173 +34,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 // =============================================================================
 // Static Components - No data fetching, rendered immediately
 // =============================================================================
-
-function CategoryCards({ locale, t }: { locale: string; t: (key: string) => string }) {
-  return (
-    <div className="pt-1 pb-0.5 sm:pt-2 sm:pb-1">
-      {/* Section Header */}
-      <div className="flex items-center justify-between px-3 mb-1.5 sm:px-0 sm:mb-2">
-        <h2 className="text-base font-semibold text-foreground sm:text-lg">
-          {locale === "bg" ? "Разгледай по категория" : "Shop by Department"}
-        </h2>
-        <Link 
-          href="/categories" 
-          className="text-xs text-brand-blue hover:underline sm:text-sm"
-        >
-          {locale === "bg" ? "Виж всички" : "See all"}
-        </Link>
-      </div>
-      
-      {/* Scrollable container on mobile, grid on desktop */}
-      <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory pb-2 px-3 no-scrollbar scroll-pl-3 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 sm:overflow-visible sm:pb-0 sm:px-0">
-        
-        {/* Computers Card */}
-        <div className="w-[70%] min-w-[70%] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3">
-          <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
-            {locale === "bg" ? "Компютри" : "Computers"}
-          </h3>
-          <div className="grid grid-cols-2 gap-2 md:gap-2">
-            <Link href="/search?category=laptops" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&q=80" alt="Laptops" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Лаптопи" : "Laptops"}</span>
-            </Link>
-            <Link href="/search?category=desktops" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1593062096033-9a26b09da705?w=300&q=80" alt="Desktops" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Настолни" : "Desktops"}</span>
-            </Link>
-            <Link href="/search?category=monitors" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300&q=80" alt="Monitors" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Монитори" : "Monitors"}</span>
-            </Link>
-            <Link href="/search?category=accessories" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1625723044792-44de16ccb4e9?w=300&q=80" alt="Accessories" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Аксесоари" : "Accessories"}</span>
-            </Link>
-          </div>
-          <Link href="/search?category=computers" className="text-brand-blue hover:underline text-xs mt-2 sm:mt-2.5 min-h-8 sm:min-h-10 flex items-center font-medium">
-            {t('sections.seeMore')}
-          </Link>
-        </div>
-
-        {/* Home & Kitchen Card */}
-        <div className="w-[70%] min-w-[70%] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3">
-          <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
-            {locale === "bg" ? "Дом и кухня" : "Home"}
-          </h3>
-          <div className="grid grid-cols-2 gap-2 md:gap-2">
-            <Link href="/search?category=kitchen" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300&q=80" alt="Kitchen" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Кухня" : "Kitchen"}</span>
-            </Link>
-            <Link href="/search?category=furniture" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&q=80" alt="Furniture" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Мебели" : "Furniture"}</span>
-            </Link>
-            <Link href="/search?category=bedding" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=300&q=80" alt="Bedding" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Спално бельо" : "Bedding"}</span>
-            </Link>
-            <Link href="/search?category=decor" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300&q=80" alt="Decor" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Декорация" : "Decor"}</span>
-            </Link>
-          </div>
-          <Link href="/search?category=home" className="text-brand-blue hover:underline text-xs mt-2 sm:mt-2.5 min-h-8 sm:min-h-10 flex items-center font-medium">
-            {t('sections.seeMore')}
-          </Link>
-        </div>
-
-        {/* Fashion Card */}
-        <div className="w-[70%] min-w-[70%] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3">
-          <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
-            {locale === "bg" ? "Мода" : "Fashion"}
-          </h3>
-          <div className="grid grid-cols-2 gap-2 md:gap-2">
-            <Link href="/search?category=women" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=300&q=80" alt="Women" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Дамски" : "Women"}</span>
-            </Link>
-            <Link href="/search?category=men" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=300&q=80" alt="Men" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Мъжки" : "Men"}</span>
-            </Link>
-            <Link href="/search?category=shoes" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&q=80" alt="Shoes" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Обувки" : "Shoes"}</span>
-            </Link>
-            <Link href="/search?category=bags" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=300&q=80" alt="Bags" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Чанти" : "Bags"}</span>
-            </Link>
-          </div>
-          <Link href="/search?category=fashion" className="text-brand-blue hover:underline text-xs mt-2 sm:mt-2.5 min-h-8 sm:min-h-10 flex items-center font-medium">
-            {t('sections.seeMore')}
-          </Link>
-        </div>
-
-        {/* Beauty Card */}
-        <div className="w-[70%] min-w-[70%] shrink-0 snap-start sm:w-auto sm:min-w-0 bg-card rounded-lg border border-border p-2.5 sm:p-3 mr-1 sm:mr-0">
-          <h3 className="text-sm sm:text-base font-bold text-foreground mb-2 sm:mb-2.5">
-            {locale === "bg" ? "Красота" : "Beauty"}
-          </h3>
-          <div className="grid grid-cols-2 gap-2 md:gap-2">
-            <Link href="/search?category=skincare" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=300&q=80" alt="Skincare" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Грижа" : "Skincare"}</span>
-            </Link>
-            <Link href="/search?category=makeup" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1596462502278-27bfdd403348?w=300&q=80" alt="Makeup" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Грим" : "Makeup"}</span>
-            </Link>
-            <Link href="/search?category=haircare" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&q=80" alt="Haircare" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Коса" : "Haircare"}</span>
-            </Link>
-            <Link href="/search?category=fragrance" className="group">
-              <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
-                <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=300&q=80" alt="Fragrance" className="size-full object-cover" />
-              </div>
-              <span className="text-xs text-foreground group-hover:text-link group-hover:underline block mt-1.5 font-medium">{locale === "bg" ? "Парфюми" : "Fragrance"}</span>
-            </Link>
-          </div>
-          <Link href="/search?category=beauty" className="text-brand-blue hover:underline text-xs mt-2 sm:mt-2.5 min-h-8 sm:min-h-10 flex items-center font-medium">
-            {t('sections.seeMore')}
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 function PromoCards({ locale }: { locale: string }) {
   return (
@@ -269,7 +105,7 @@ function MoreWaysToShop({ locale }: { locale: string }) {
   ]
 
   return (
-    <div className="mt-1.5 px-3 sm:mt-4 sm:px-0">
+    <div className="mt-1.5 px-3 sm:mt-0 sm:px-0">
       <h2 className="text-base font-semibold text-foreground mb-1.5 sm:text-lg sm:mb-3">
         {locale === "bg" ? "Още начини за пазаруване" : "More ways to shop"}
       </h2>
@@ -282,10 +118,11 @@ function MoreWaysToShop({ locale }: { locale: string }) {
             href={card.href} 
             className="group relative aspect-4/3 rounded-lg overflow-hidden"
           >
-            <img 
+            <Image 
               src={card.image} 
               alt={card.title}
-              className="absolute inset-0 size-full object-cover"
+              fill
+              className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/70 to-black/10" />
@@ -321,10 +158,7 @@ function SignInCtaSkeleton() {
 // =============================================================================
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
-  // Get locale from URL params instead of getLocale() to avoid uncached data warning
-  // The [locale] segment already contains this information
   const { locale } = await params
-  const t = await getTranslations('Home')
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background md:bg-muted pb-20">
@@ -333,94 +167,74 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         1. Header (compact)
         2. Category Circles (quick navigation)
         3. CTA Banner (seller/buyer actions)
-        4. Промотирани Section (promoted products)
-        5. Най-нови обяви (infinite scroll - THE MAIN CONTENT)
+        4. Най-нови обяви (infinite scroll - THE MAIN CONTENT)
         
-        DESKTOP LAYOUT (keeps existing Amazon-style):
-        Full hero carousel + all sections
+        DESKTOP LAYOUT (10/10 UX - Tabbed Product Feed):
+        1. Hero CTA Banner
+        2. Category Circles
+        3. Tabbed Product Feed (All/Newest/Promoted/Deals)
+        4. Promo Cards
+        5. More Ways to Shop
+        6. Sign In CTA
       */}
       
-      {/* Category Circles - First thing after header on mobile */}
+      {/* ================================================================
+          MOBILE: Original layout - UNTOUCHED
+          ================================================================ */}
       <div className="w-full md:hidden">
-        <CategoryCircles locale={locale} />
-        {/* Start Selling CTA - Promote seller signup for new marketplace */}
+        {/* Category Circles - First thing after header */}
+        <MobileCategoryRail locale={locale} />
+        
+        {/* Start Selling CTA - Promote seller signup */}
         <StartSellingBanner locale={locale} />
+        
+        {/* Newest Listings with Infinite Scroll */}
+        <Suspense fallback={<NewestListingsSectionSkeleton />}>
+          <NewestListings />
+        </Suspense>
+        
+        {/* Sign In CTA - At the end on mobile */}
+        <div className="px-3 pt-3">
+          <Suspense fallback={<SignInCtaSkeleton />}>
+            <SignInCTA />
+          </Suspense>
+        </div>
       </div>
-      
-      {/* Desktop: Full hero carousel */}
+
+      {/* ================================================================
+          DESKTOP: Optimized layout with proper spacing tokens
+          - Uses consistent gap-6 (24px) between sections
+          - Proper container padding (px-4 default, px-6 lg)
+          - Semantic sectioning with proper ARIA
+          ================================================================ */}
       <div className="hidden md:block w-full">
-        <HeroCarousel locale={locale} />
-      </div>
-
-      {/* Main Content Container - overlaps hero like Amazon on desktop */}
-      <div className="w-full px-0 md:container relative z-10 pb-6 md:-mt-28 lg:-mt-32">
-        
-        {/* Desktop: Category Circles after hero */}
-        <div className="hidden md:block md:mt-4">
-          <CategoryCircles locale={locale} />
+        {/* Hero CTA Banner - top section */}
+        <div className="container px-4 lg:px-6 pt-5">
+          <DesktopHeroCTA locale={locale} />
         </div>
 
-        {/* 2. Trending/Popular Products - Desktop only (mobile uses tabbed infinite feed) */}
-        <div className="hidden md:block md:mt-6 md:mx-0">
-          <Suspense fallback={<TrendingSectionSkeleton />}>
-            <TrendingSection />
+        {/* Main Content Container - consistent vertical rhythm */}
+        <div className="container px-4 lg:px-6 relative z-10 pb-8 space-y-6">
+          {/* Category Navigation - Cards layout with chevrons */}
+          <div className="pt-6">
+            <DesktopCategoryRail locale={locale} />
+          </div>
+
+          {/* Main Product Feed - Single container with tabs */}
+          <Suspense fallback={<TabbedProductFeedSkeleton />}>
+            <TabbedProductFeed locale={locale} />
           </Suspense>
-        </div>
 
-        {/* ================================================================
-            MOBILE: Infinite Scroll "Newest Listings" replaces all below
-            DESKTOP: Keep all sections for rich browsing experience
-            ================================================================ */}
-        
-        {/* MOBILE ONLY: Newest Listings with Infinite Scroll */}
-        <div className="md:hidden">
-          <Suspense fallback={<NewestListingsSectionSkeleton />}>
-            <NewestListings />
-          </Suspense>
-          
-          {/* Sign In CTA - At the end on mobile */}
-          <div className="px-3 pt-3">
-            <Suspense fallback={<SignInCtaSkeleton />}>
-              <SignInCTA />
-            </Suspense>
-          </div>
-        </div>
+          {/* Promo Cards Grid */}
+          <PromoCards locale={locale} />
 
-        {/* DESKTOP ONLY: Full browsing experience */}
-        <div className="hidden md:block">
-          {/* 3. Shop by Department Cards - Grid on desktop */}
-          <div className="mt-6">
-            <CategoryCards locale={locale} t={(key) => t(key)} />
-          </div>
-
-          {/* 4. Featured/Recommended Products - Async with Suspense */}
-          <div className="mt-6 mx-0">
-            <Suspense fallback={<FeaturedSectionSkeleton />}>
-              <FeaturedSection />
-            </Suspense>
-          </div>
-
-          {/* 5. Promo Cards - Static, no data fetching */}
-          <div className="mt-6">
-            <PromoCards locale={locale} />
-          </div>
-
-          {/* 6. Deals of the Day - Async with Suspense */}
-          <div className="mt-6 mx-0">
-            <Suspense fallback={<DealsSectionSkeleton />}>
-              <DealsWrapper />
-            </Suspense>
-          </div>
-
-          {/* 7. More Ways to Shop - Static, no data fetching */}
+          {/* More Ways to Shop */}
           <MoreWaysToShop locale={locale} />
 
-          {/* 8. Sign In CTA - Async with Suspense (only section needing auth) */}
-          <div className="mt-6 px-0">
-            <Suspense fallback={<SignInCtaSkeleton />}>
-              <SignInCTA />
-            </Suspense>
-          </div>
+          {/* Sign In CTA */}
+          <Suspense fallback={<SignInCtaSkeleton />}>
+            <SignInCTA />
+          </Suspense>
         </div>
       </div>
     </main>

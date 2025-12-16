@@ -28,6 +28,7 @@ export async function GET(request: Request) {
         title,
         price,
         images,
+        product_images(image_url,thumbnail_url,display_order,is_primary),
         slug,
         seller:profiles(username)
       `)
@@ -41,14 +42,35 @@ export async function GET(request: Request) {
     }
 
     // Transform to include storeSlug at top level for easier client consumption
-    const transformedProducts = (products || []).map((p) => ({
-      id: p.id,
-      title: p.title,
-      price: p.price,
-      images: p.images,
-      slug: p.slug,
-      storeSlug: p.seller?.username || null,
-    }))
+    const transformedProducts = (products || []).map((p) => {
+      const productImages = (p as any).product_images as
+        | Array<{ image_url: string; display_order?: number | null; is_primary?: boolean | null }>
+        | null
+
+      const normalizedImages = Array.isArray(p.images) && p.images.length > 0
+        ? p.images
+        : (productImages || [])
+            .filter((img) => !!img?.image_url)
+            .slice()
+            .sort((a, b) => {
+              const ap = a.is_primary ? 1 : 0
+              const bp = b.is_primary ? 1 : 0
+              if (ap !== bp) return bp - ap
+              const ao = a.display_order ?? 0
+              const bo = b.display_order ?? 0
+              return ao - bo
+            })
+            .map((img) => img.image_url)
+
+      return {
+        id: p.id,
+        title: p.title,
+        price: p.price,
+        images: normalizedImages,
+        slug: p.slug,
+        storeSlug: p.seller?.username || null,
+      }
+    })
 
     return NextResponse.json({ products: transformedProducts })
   } catch (error) {

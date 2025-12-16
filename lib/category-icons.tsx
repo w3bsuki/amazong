@@ -53,8 +53,100 @@ import {
   Desktop,
   Lightning,
   Plant,
-  Cpu
+  Cpu,
+  type Icon as PhosphorIcon
 } from "@phosphor-icons/react"
+
+// Component-level icon mapping used by card/circle UIs.
+// Returns the icon component so callers can control size/weight/className.
+const categoryIconComponents: Record<string, PhosphorIcon> = {
+  // Electronics & Computers
+  electronics: Monitor,
+  computers: Laptop,
+  "smart-home": Lightbulb,
+  phones: DeviceMobile,
+  tv: Television,
+  audio: Headphones,
+  cameras: Camera,
+  software: Code,
+  "software-services": Code,
+
+  // Fashion & Accessories
+  fashion: TShirt,
+  "jewelry-watches": Diamond,
+  watches: Watch,
+
+  // Home & Living
+  home: House,
+  "home-kitchen": ForkKnife,
+  garden: Leaf,
+  "garden-outdoor": Flower,
+  tools: Wrench,
+  "tools-home": Hammer,
+  lighting: Lightbulb,
+  "real-estate": Buildings,
+
+  // Sports & Gaming
+  gaming: GameController,
+  sports: Barbell,
+  "sports-outdoors": Barbell,
+
+  // Health & Beauty
+  beauty: PaintBrush,
+  health: Heart,
+  "health-wellness": Pill,
+  "cbd-wellness": Leaf,
+
+  // Family & Pets
+  baby: Baby,
+  "baby-kids": Baby,
+  pets: Dog,
+  "pet-supplies": Dog,
+  toys: Gift,
+
+  // Media & Entertainment
+  books: BookOpen,
+  music: MusicNotes,
+  "musical-instruments": Guitar,
+  "movies-music": FilmStrip,
+
+  // Business & Office
+  office: Briefcase,
+  "office-school": GraduationCap,
+  "industrial-scientific": Flask,
+  services: Briefcase,
+
+  // Shopping & Deals
+  grocery: ShoppingCart,
+  handmade: Palette,
+  collectibles: Trophy,
+  "gift-cards": Gift,
+  tickets: Ticket,
+
+  // Automotive & Transport
+  automotive: Car,
+  "e-mobility": Lightning,
+  wholesale: Truck,
+
+  // Regional & Special
+  "bulgarian-traditional": Flag,
+  hobbies: Guitar,
+
+  // Default fallback
+  default: Package,
+}
+
+export function getCategoryIconForSlug(slug: string): PhosphorIcon {
+  if (categoryIconComponents[slug]) return categoryIconComponents[slug]
+
+  const slugLower = slug.toLowerCase()
+  for (const [key, icon] of Object.entries(categoryIconComponents)) {
+    if (key === "default") continue
+    if (slugLower.includes(key) || key.includes(slugLower)) return icon
+  }
+
+  return categoryIconComponents.default
+}
 
 export type IconSize = 16 | 20 | 24
 
