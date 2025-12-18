@@ -16,6 +16,7 @@ import {
 } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import type { SellFormDataV4, ProductImage } from "@/lib/sell-form-schema-v4";
@@ -145,7 +146,7 @@ function PhotoThumbnail({
 
       {/* Cover badge */}
       {isCover && (
-        <div className="absolute top-1 left-1 z-10 px-1 py-0.5 rounded bg-amber-500 text-white text-2xs font-bold flex items-center gap-0.5">
+        <div className="absolute top-1 left-1 z-10 px-1 py-0.5 rounded bg-cover-badge text-cover-badge-foreground text-2xs font-bold flex items-center gap-0.5">
           <Star className="size-2.5" weight="fill" />
         </div>
       )}
@@ -173,7 +174,7 @@ function PhotoThumbnail({
       </div>
 
       {/* Position number */}
-      <div className="absolute bottom-1 right-1 bg-black/60 text-white text-2xs font-medium px-1 py-0.5 rounded">
+      <div className="absolute bottom-1 right-1 bg-foreground/70 text-background text-2xs font-medium px-1 py-0.5 rounded">
         {index + 1}
       </div>
     </div>
@@ -482,14 +483,14 @@ export function StepPhotos({ form, locale = "en", onValidityChange }: StepPhotos
         <Label htmlFor="description" className="text-sm font-semibold">
           {isBg ? "Описание" : "Description"}
         </Label>
-        <textarea
+        <Textarea
           id="description"
           value={description}
           onChange={(e) => form.setValue("description", e.target.value, { shouldValidate: true })}
           placeholder={isBg
             ? "Опишете състоянието, особеностите..."
             : "Describe the condition, features..."}
-          className="w-full min-h-24 p-3 text-sm rounded-lg border border-input bg-background resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full min-h-24 resize-none"
           maxLength={2000}
         />
         <div className="flex justify-end">

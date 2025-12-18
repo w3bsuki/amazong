@@ -1,5 +1,5 @@
 
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 
 export default function MergedCardsPage() {
   const carProduct = {
@@ -47,43 +47,37 @@ export default function MergedCardsPage() {
       <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold tracking-tight">The Merged Solution</h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Using the production <code>ProductCard</code> with the new <code>variant="marketplace"</code>.
-          Best of both worlds: Final 3 Design + Production Infrastructure.
+          Using the production <code>ProductCard</code> with <code>variant="featured"</code>.
+          Clean Target-style design with seller header for promoted listings.
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         <ProductCard 
           {...carProduct} 
-          variant="marketplace" 
-          showSellerRow={true} 
-          showMetaLine={true}
-          showTagChips={true}
+          variant="featured" 
+          showPills={true}
         />
         <ProductCard 
           {...techProduct} 
-          variant="marketplace" 
-          showSellerRow={true} 
-          showMetaLine={true}
-          showTagChips={true}
+          variant="featured" 
+          showPills={true}
         />
         <ProductCard 
           {...techProduct} 
           title="Sony WH-1000XM5" 
           price={599} 
           image="https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800&q=80"
-          variant="marketplace" 
-          showSellerRow={true} 
-          showMetaLine={true}
+          variant="featured" 
+          showPills={true}
         />
          <ProductCard 
           {...carProduct} 
           title="Audi A4 Avant"
           price={22500}
           image="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80"
-          variant="marketplace" 
-          showSellerRow={true} 
-          showMetaLine={true}
+          variant="featured" 
+          showPills={true}
         />
       </div>
     </div>

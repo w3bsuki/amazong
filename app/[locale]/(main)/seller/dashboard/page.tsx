@@ -27,9 +27,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 interface Seller {
   id: string;
   store_name: string;
-  description: string | null;
-  verified: boolean;
-  created_at: string;
+  description?: string | null;
+  verified?: boolean | null;
+  created_at?: string;
+  [key: string]: unknown; // Allow profile fields
 }
 
 interface Product {
@@ -184,7 +185,7 @@ export default function SellerDashboard() {
                   </Badge>
                 )}
                 <span className="text-sm text-gray-500">
-                  Member since {new Date(seller.created_at).toLocaleDateString()}
+                  Member since {seller.created_at ? new Date(seller.created_at).toLocaleDateString() : 'N/A'}
                 </span>
               </div>
             </div>

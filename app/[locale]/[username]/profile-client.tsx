@@ -29,7 +29,7 @@ import {
   Heart,
   ArrowRight,
 } from "@phosphor-icons/react"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 
 interface PublicProfileClientProps {
   profile: {

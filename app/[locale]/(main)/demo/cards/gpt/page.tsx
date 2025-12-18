@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 import { cn } from "@/lib/utils"
 import {
   Heart,
@@ -143,29 +143,23 @@ export default function GptCardsDemoPage() {
 
         <div className="space-y-6">
           <div className="space-y-2">
-            <div className="text-sm font-semibold">16 · Compact</div>
+            <div className="text-sm font-semibold">16 · Default (Clean Target Style)</div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 xl:gap-4">
               {products.map((p, index) => (
                 <ProductCard
-                  key={`compact-${p.id}`}
+                  key={`default-${p.id}`}
                   id={p.id}
                   title={p.title}
                   price={p.price}
-                  listPrice={p.listPrice}
+                  originalPrice={p.listPrice}
                   image={p.image}
                   rating={4.7}
                   reviews={2847}
-                  variant="compact"
                   index={index}
                   slug={null}
-                  storeSlug={(p as { storeSlug?: string }).storeSlug ?? null}
+                  username={(p as { storeSlug?: string }).storeSlug ?? null}
                   sellerName={(p as { sellerName?: string }).sellerName}
                   sellerVerified={(p as { sellerVerified?: boolean }).sellerVerified}
-                  showSellerRow={true}
-                  showMetaLine={true}
-                  showTagChips={true}
-                  showAttributePills={true}
-                  showHoverActions={true}
                   isBoosted={(p as { isBoosted?: boolean }).isBoosted}
                   tags={[...(p.tags || [])]}
                   categorySlug={(p as { categorySlug?: string }).categorySlug}
@@ -181,29 +175,25 @@ export default function GptCardsDemoPage() {
           </div>
 
           <div className="space-y-2">
-            <div className="text-sm font-semibold">17 · Ultimate</div>
+            <div className="text-sm font-semibold">17 · Featured (Seller Header)</div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 xl:gap-4">
               {products.map((p, index) => (
                 <ProductCard
-                  key={`ultimate-${p.id}`}
+                  key={`featured-${p.id}`}
                   id={p.id}
                   title={p.title}
                   price={p.price}
-                  listPrice={p.listPrice}
+                  originalPrice={p.listPrice}
                   image={p.image}
                   rating={4.7}
                   reviews={2847}
-                  variant="ultimate"
+                  variant="featured"
                   index={index}
                   slug={null}
-                  storeSlug={(p as { storeSlug?: string }).storeSlug ?? null}
+                  username={(p as { storeSlug?: string }).storeSlug ?? null}
                   sellerName={(p as { sellerName?: string }).sellerName}
                   sellerVerified={(p as { sellerVerified?: boolean }).sellerVerified}
-                  showSellerRow={true}
-                  showMetaLine={true}
-                  showTagChips={true}
-                  showAttributePills={true}
-                  showHoverActions={true}
+                  showPills={true}
                   isBoosted={(p as { isBoosted?: boolean }).isBoosted}
                   tags={[...(p.tags || [])]}
                   categorySlug={(p as { categorySlug?: string }).categorySlug}

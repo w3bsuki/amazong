@@ -29,7 +29,7 @@ const categoryImages: Record<string, string> = {
   "fashion": "https://images.unsplash.com/photo-1445205170230-053b83016050?w=200&h=200&fit=crop",
   "home-garden": "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=200&h=200&fit=crop",
   "home": "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=200&h=200&fit=crop",
-  "sports": "https://images.unsplash.com/photo-1461896836934-28e4b8f0e1e7?w=200&h=200&fit=crop",
+  "sports": "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=200&h=200&fit=crop",
   "beauty": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=200&h=200&fit=crop",
   "toys": "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=200&h=200&fit=crop",
   "books": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=200&h=200&fit=crop",
@@ -45,8 +45,8 @@ const categoryImages: Record<string, string> = {
   "baby-kids": "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=200&h=200&fit=crop",
   "jewelry": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=200&h=200&fit=crop",
   "jewelry-watches": "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=200&h=200&fit=crop",
-  "tools": "https://images.unsplash.com/photo-1581147036324-c1c1a55c31e4?w=200&h=200&fit=crop",
-  "tools-home": "https://images.unsplash.com/photo-1581147036324-c1c1a55c31e4?w=200&h=200&fit=crop",
+  "tools": "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=200&h=200&fit=crop",
+  "tools-home": "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=200&h=200&fit=crop",
   "music": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=200&h=200&fit=crop",
   "musical-instruments": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=200&h=200&fit=crop",
   // New categories
@@ -108,7 +108,7 @@ export default async function CategoriesPage({
         <div className="container">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-sm text-primary-foreground/70 mb-4">
-            <Link href="/" className="hover:text-primary-foreground transition-colors">
+            <Link href="/" className="text-primary-foreground/90 hover:text-primary-foreground transition-colors">
               {locale === "bg" ? "Начало" : "Home"}
             </Link>
             <CaretRight className="size-3.5" />

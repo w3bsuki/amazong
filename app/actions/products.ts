@@ -31,6 +31,15 @@ interface ActionResult<T = void> {
   error?: string
 }
 
+const setDiscountSchema = z.object({
+  productId: z.string().min(1),
+  newPrice: z.coerce.number().positive(),
+})
+
+const clearDiscountSchema = z.object({
+  productId: z.string().min(1),
+})
+
 /**
  * Create a new product
  */
@@ -281,6 +290,142 @@ export async function bulkUpdateProductStatus(
     return { success: true, data: { updated: data?.length || 0 } }
   } catch (error) {
     console.error("[bulkUpdateProductStatus] Error:", error)
+    return { success: false, error: "An unexpected error occurred" }
+  }
+}
+
+/**
+ * Set a discounted price for a product.
+ * - If product is not yet discounted, moves current price into list_price.
+ * - Sets price to the new discounted price.
+ */
+export async function setProductDiscountPrice(
+  productId: string,
+  newPrice: number
+): Promise<ActionResult> {
+  try {
+    const parsed = setDiscountSchema.safeParse({ productId, newPrice })
+    if (!parsed.success) {
+      return { success: false, error: parsed.error.errors[0]?.message || "Invalid input" }
+    }
+
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: "You must be logged in to update a product" }
+    }
+
+    const { data: product, error: fetchError } = await supabase
+      .from("products")
+      .select("id, seller_id, price, list_price")
+      .eq("id", parsed.data.productId)
+      .single()
+
+    if (fetchError || !product) {
+      return { success: false, error: "Product not found" }
+    }
+    if (product.seller_id !== user.id) {
+      return { success: false, error: "You don't have permission to edit this product" }
+    }
+
+    const currentPrice = Number(product.price)
+    const currentListPrice = product.list_price == null ? null : Number(product.list_price)
+    const compareAt = currentListPrice && currentListPrice > currentPrice ? currentListPrice : currentPrice
+
+    if (!(parsed.data.newPrice < compareAt)) {
+      return { success: false, error: "Discount price must be lower than the original price" }
+    }
+
+    const nextListPrice = currentListPrice && currentListPrice > currentPrice ? currentListPrice : currentPrice
+
+    const { error: updateError } = await supabase
+      .from("products")
+      .update({
+        price: parsed.data.newPrice,
+        list_price: nextListPrice,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", parsed.data.productId)
+
+    if (updateError) {
+      console.error("[setProductDiscountPrice] Update error:", updateError)
+      return { success: false, error: updateError.message || "Failed to update product" }
+    }
+
+    revalidatePath("/account/selling")
+    revalidatePath("/[locale]/account/selling", "page")
+    revalidatePath(`/product/${parsed.data.productId}`)
+    revalidatePath(`/[locale]/product/${parsed.data.productId}`, "page")
+
+    return { success: true }
+  } catch (error) {
+    console.error("[setProductDiscountPrice] Error:", error)
+    return { success: false, error: "An unexpected error occurred" }
+  }
+}
+
+/**
+ * Clear a product discount.
+ * - Restores price from list_price and sets list_price to null.
+ */
+export async function clearProductDiscount(
+  productId: string
+): Promise<ActionResult> {
+  try {
+    const parsed = clearDiscountSchema.safeParse({ productId })
+    if (!parsed.success) {
+      return { success: false, error: parsed.error.errors[0]?.message || "Invalid input" }
+    }
+
+    const supabase = await createClient()
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: "You must be logged in to update a product" }
+    }
+
+    const { data: product, error: fetchError } = await supabase
+      .from("products")
+      .select("id, seller_id, price, list_price")
+      .eq("id", parsed.data.productId)
+      .single()
+
+    if (fetchError || !product) {
+      return { success: false, error: "Product not found" }
+    }
+    if (product.seller_id !== user.id) {
+      return { success: false, error: "You don't have permission to edit this product" }
+    }
+
+    if (product.list_price == null) {
+      return { success: true }
+    }
+
+    const restorePrice = Number(product.list_price)
+
+    const { error: updateError } = await supabase
+      .from("products")
+      .update({
+        price: restorePrice,
+        list_price: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", parsed.data.productId)
+
+    if (updateError) {
+      console.error("[clearProductDiscount] Update error:", updateError)
+      return { success: false, error: updateError.message || "Failed to update product" }
+    }
+
+    revalidatePath("/account/selling")
+    revalidatePath("/[locale]/account/selling", "page")
+    revalidatePath(`/product/${parsed.data.productId}`)
+    revalidatePath(`/[locale]/product/${parsed.data.productId}`, "page")
+
+    return { success: true }
+  } catch (error) {
+    console.error("[clearProductDiscount] Error:", error)
     return { success: false, error: "An unexpected error occurred" }
   }
 }

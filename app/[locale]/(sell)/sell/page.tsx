@@ -4,6 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { SellPageClient } from "./client";
 import { unstable_cache } from "next/cache";
+import { redirect } from "next/navigation";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -207,6 +208,11 @@ export default async function SellPage({
   
   const categories = categoriesResult;
   const user = authResult.data.user;
+
+  // Auth-gated: redirect logged-out users to login.
+  if (!user) {
+    redirect(`/${locale}/auth/login`);
+  }
   
   // Fetch seller data only if user is authenticated
   let seller = null;

@@ -1,20 +1,20 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { NextRequest, NextResponse } from "next/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 
 /**
  * GET /api/seller/limits
  * Returns the current user's listing limits and subscription status
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { supabase, applyCookies } = createRouteHandlerClient(request)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
+
   try {
-    const supabase = await createClient()
-    if (!supabase) {
-      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
-    }
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return json({ error: "Unauthorized" }, { status: 401 })
     }
 
     // Get profile info
@@ -25,7 +25,7 @@ export async function GET() {
       .single()
 
     if (!profile || !profile.username) {
-      return NextResponse.json({ error: "Not a seller" }, { status: 404 })
+      return json({ error: "Not a seller" }, { status: 404 })
     }
     
     // Map profile fields to expected seller fields
@@ -48,7 +48,7 @@ export async function GET() {
         .select("*", { count: "exact", head: true })
         .eq("seller_id", user.id)
 
-      return NextResponse.json({
+      return json({
         sellerId: seller.id,
         storeName: seller.store_name,
         tier: seller.tier || "free",
@@ -71,7 +71,7 @@ export async function GET() {
     const isUnlimited = info.max_listings === -1
     const remaining = isUnlimited ? 999 : Math.max(info.max_listings - info.current_listings, 0)
 
-    return NextResponse.json({
+    return json({
       sellerId: seller.id,
       storeName: seller.store_name,
       tier: info.tier || "free",
@@ -85,7 +85,7 @@ export async function GET() {
     })
   } catch (error) {
     console.error("Seller limits API error:", error)
-    return NextResponse.json(
+    return json(
       { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 }
     )

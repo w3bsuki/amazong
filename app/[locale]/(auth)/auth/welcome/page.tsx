@@ -154,9 +154,10 @@ export default function WelcomePage() {
 
     startTransition(async () => {
       const supabase = createClient()
+      // Note: onboarding_completed may be added to database schema later
       await supabase
         .from("profiles")
-        .update({ onboarding_completed: true })
+        .update({ onboarding_completed: true } as Record<string, unknown>)
         .eq("id", userId)
       router.push("/")
     })

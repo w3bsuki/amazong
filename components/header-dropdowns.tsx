@@ -164,9 +164,9 @@ export function CartDropdown() {
     const displayItems = mounted ? totalItems : 0
 
     const formatPrice = (price: number) => {
-        return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
+        return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
             style: 'currency',
-            currency: locale === 'bg' ? 'BGN' : 'EUR',
+            currency: 'EUR',
         }).format(price)
     }
 
@@ -827,9 +827,9 @@ export function SearchDropdown({
     ]
 
     const formatPrice = (price: number) => {
-        return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
+        return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
             style: 'currency',
-            currency: locale === 'bg' ? 'BGN' : 'USD',
+            currency: 'EUR',
         }).format(price)
     }
 

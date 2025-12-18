@@ -21,7 +21,7 @@ export interface Category {
  */
 export interface Seller {
   id: string;
-  store_name: string;
+  store_name: string | null;
   store_slug?: string;
 }
 

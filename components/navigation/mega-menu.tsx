@@ -135,7 +135,7 @@ export function MegaMenu() {
         )}
         style={{ top: `${headerHeight}px` }}
         role="menu"
-        aria-label={locale === "bg" ? "Меню с категории" : "Categories menu"}
+        aria-label={locale === "bg" ? "Категории" : "Categories"}
       >
         <div
           className="container"

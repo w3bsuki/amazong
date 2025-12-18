@@ -57,7 +57,7 @@ export const subcategoryImages = {
   "exercise-fitness": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200&q=80",
   outdoor: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=200&q=80",
   "outdoor-recreation": "https://images.unsplash.com/photo-1551632811-561732d1e306?w=200&q=80",
-  "team-sports": "https://images.unsplash.com/photo-1461896836934-28e9b70b7d32?w=200&q=80",
+  "team-sports": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=200&q=80",
   "sports-equipment": "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=200&q=80",
   cycling: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=200&q=80",
   // Toys
@@ -130,7 +130,7 @@ export const subcategoryImages = {
   "keyboards-pianos": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=200&q=80",
   "drums-percussion": "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=200&q=80",
   "dj-equipment": "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=200&q=80",
-  "wind-instruments": "https://images.unsplash.com/photo-1558584673-90d3e2c6f626?w=200&q=80",
+  "wind-instruments": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=200&q=80",
   "recording-equipment": "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=200&q=80",
   // Movies, Music & Media
   "bluray-dvd": "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=200&q=80",
@@ -150,7 +150,7 @@ export const subcategoryImages = {
   "trading-cards": "https://images.unsplash.com/photo-1606503153255-59d8b8b82176?w=200&q=80",
   "coins-currency": "https://images.unsplash.com/photo-1621981386829-9b458a2cddde?w=200&q=80",
   stamps: "https://images.unsplash.com/photo-1584727638096-042c45049ebe?w=200&q=80",
-  "sports-memorabilia": "https://images.unsplash.com/photo-1461896836934-28e9b70b7d32?w=200&q=80",
+  "sports-memorabilia": "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=200&q=80",
   "vintage-antiques": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80",
   "figurines-models": "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=200&q=80",
   "comic-books": "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=200&q=80",

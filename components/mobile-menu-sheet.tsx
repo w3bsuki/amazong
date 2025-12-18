@@ -127,7 +127,9 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
             setCategories(data.categories)
           }
         })
-        .catch(err => console.error('Failed to fetch categories:', err))
+        .catch(() => {
+          // Avoid console.error noise; menu can render without categories.
+        })
     }, [])
 
     const getCategoryName = (cat: Category) => {

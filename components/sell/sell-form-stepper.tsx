@@ -52,6 +52,7 @@ export function SellFormStepper({
   onClose,
 }: SellFormStepperProps) {
   const router = useRouter();
+  const contentScrollRef = useRef<HTMLElement | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [stepValidity, setStepValidity] = useState<Record<number, boolean>>({
     1: false,
@@ -162,28 +163,36 @@ export function SellFormStepper({
     });
   }, []);
 
+  const scrollStepToTop = useCallback(() => {
+    const el = contentScrollRef.current;
+    if (el) {
+      el.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+
   // Navigation
   const goToStep = useCallback((step: number) => {
     if (step >= 1 && step <= STEPS.length) {
       setCurrentStep(step);
-      // Scroll to top when navigating between steps
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      scrollStepToTop();
     }
-  }, []);
+  }, [scrollStepToTop]);
 
   const handleBack = useCallback(() => {
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      scrollStepToTop();
     }
-  }, [currentStep]);
+  }, [currentStep, scrollStepToTop]);
 
   const handleNext = useCallback(() => {
     if (currentStep < STEPS.length && stepValidity[currentStep]) {
       setCurrentStep(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      scrollStepToTop();
     }
-  }, [currentStep, stepValidity]);
+  }, [currentStep, stepValidity, scrollStepToTop]);
 
   // Submit
   const handleSubmit = useCallback(() => {
@@ -217,7 +226,7 @@ export function SellFormStepper({
         // Show success screen instead of redirecting
         setCreatedProductId(result.product.id);
         setShowSuccess(true);
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        scrollStepToTop();
       } catch (error) {
         console.error("Submit error:", error);
         toast.error(
@@ -227,7 +236,7 @@ export function SellFormStepper({
         );
       }
     });
-  }, [form, isBg, sellerId]);
+  }, [form, isBg, sellerId, scrollStepToTop]);
 
   // Handle close with confirmation
   const handleClose = useCallback(() => {
@@ -264,6 +273,7 @@ export function SellFormStepper({
           <StepCategory
             form={form}
             categories={categories}
+            sellerId={sellerId}
             locale={locale}
             onValidityChange={handleStep2Validity}
           />
@@ -418,7 +428,7 @@ export function SellFormStepper({
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
       {/* Header */}
       <StepperHeader
         currentStep={currentStep}
@@ -429,9 +439,11 @@ export function SellFormStepper({
       />
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-lg mx-auto px-4 py-6">
-          {renderStep()}
+      <main ref={(node) => { contentScrollRef.current = node; }} className="flex-1 overflow-y-auto">
+        <div className="max-w-lg mx-auto px-4 py-4">
+          <div className="rounded-2xl border border-border bg-card p-4">
+            {renderStep()}
+          </div>
         </div>
       </main>
 

@@ -19,18 +19,13 @@ import {
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 
-const tones = [
-  { surface: "bg-blue-50 dark:bg-blue-950/40", icon: "text-blue-600 dark:text-blue-400" },
-  { surface: "bg-pink-50 dark:bg-pink-950/40", icon: "text-pink-600 dark:text-pink-400" },
-  { surface: "bg-amber-50 dark:bg-amber-950/40", icon: "text-amber-600 dark:text-amber-400" },
-  { surface: "bg-violet-50 dark:bg-violet-950/40", icon: "text-violet-600 dark:text-violet-400" },
-  { surface: "bg-emerald-50 dark:bg-emerald-950/40", icon: "text-emerald-600 dark:text-emerald-400" },
-  { surface: "bg-red-50 dark:bg-red-950/40", icon: "text-red-600 dark:text-red-400" },
-  { surface: "bg-cyan-50 dark:bg-cyan-950/40", icon: "text-cyan-600 dark:text-cyan-400" },
-  { surface: "bg-slate-50 dark:bg-slate-950/40", icon: "text-slate-600 dark:text-slate-400" },
-  { surface: "bg-orange-50 dark:bg-orange-950/40", icon: "text-orange-600 dark:text-orange-400" },
-  { surface: "bg-indigo-50 dark:bg-indigo-950/40", icon: "text-indigo-600 dark:text-indigo-400" },
-]
+// Clean trust-blue token theming - no rainbow gradients
+const tone = {
+  surface: "bg-brand-muted",
+  icon: "text-link",
+  iconHover: "group-hover:text-brand",
+  accent: "text-cta-trust-blue",
+}
 
 const categories = [
   { id: "1", name: "Electronics", name_bg: "Електроника", slug: "electronics", icon: Laptop },
@@ -54,9 +49,8 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
   return (
     <div className="px-4">
       <div className="flex overflow-x-auto no-scrollbar gap-3 pb-4 -mx-4 px-4 snap-x snap-mandatory scroll-pl-4">
-        {categories.map((cat, index) => {
+        {categories.map((cat) => {
           const Icon = cat.icon
-          const tone = tones[index % tones.length]
           return (
             <Link
               key={cat.slug}
@@ -66,30 +60,31 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
                 "w-[156px]",
                 "rounded-2xl border border-border bg-card overflow-hidden",
                 "touch-action-manipulation",
-                "active:bg-accent/40"
+                "active:bg-accent/40",
+                "transition-all duration-200"
               )}
             >
               <div className={cn("h-12 px-3 flex items-center justify-between", tone.surface)}>
                 <div
                   className={cn(
                     "size-8 rounded-xl",
-                    "bg-background/70 border border-border/50",
+                    "bg-background/80 border border-border/50",
                     "flex items-center justify-center"
                   )}
                   aria-hidden="true"
                 >
-                  <Icon className={cn("size-4.5", tone.icon)} weight="fill" />
+                  <Icon className={cn("size-4.5", tone.icon, tone.iconHover)} weight="fill" />
                 </div>
-                <span className={cn("text-2xs font-semibold", tone.icon)}>Featured</span>
+                <span className={cn("text-2xs font-semibold", tone.accent)}>Featured</span>
               </div>
 
               <div className="px-3 py-3">
-                <div className="text-sm font-semibold text-foreground leading-tight line-clamp-2">
+                <div className="text-sm font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-brand transition-colors">
                   {locale === "bg" ? cat.name_bg : cat.name}
                 </div>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-2xs text-muted-foreground">Shop now</span>
-                  <ArrowRight className={cn("size-3.5", tone.icon)} weight="bold" />
+                  <ArrowRight className={cn("size-3.5", tone.icon, tone.iconHover)} weight="bold" />
                 </div>
               </div>
             </Link>
@@ -175,9 +170,8 @@ export function DesktopCategoryRail({ locale }: MobileCategoryRailProps) {
         ref={scrollRef}
         className="flex overflow-x-auto no-scrollbar gap-4 scroll-smooth"
       >
-        {categories.map((cat, index) => {
+        {categories.map((cat) => {
           const Icon = cat.icon
-          const tone = tones[index % tones.length]
           return (
             <Link
               key={cat.slug}
@@ -186,30 +180,30 @@ export function DesktopCategoryRail({ locale }: MobileCategoryRailProps) {
                 "group shrink-0",
                 "w-[156px]",
                 "rounded-2xl border border-border bg-card overflow-hidden",
-                "hover:shadow-md hover:border-border/80 transition-all duration-200"
+                "hover:shadow-md hover:border-ring/30 transition-all duration-200"
               )}
             >
               <div className={cn("h-12 px-3 flex items-center justify-between", tone.surface)}>
                 <div
                   className={cn(
                     "size-8 rounded-xl",
-                    "bg-background/70 border border-border/50",
+                    "bg-background/80 border border-border/50",
                     "flex items-center justify-center"
                   )}
                   aria-hidden="true"
                 >
-                  <Icon className={cn("size-4.5", tone.icon)} weight="fill" />
+                  <Icon className={cn("size-4.5", tone.icon, tone.iconHover)} weight="fill" />
                 </div>
-                <span className={cn("text-2xs font-semibold", tone.icon)}>Featured</span>
+                <span className={cn("text-2xs font-semibold", tone.accent)}>Featured</span>
               </div>
 
               <div className="px-3 py-3">
-                <div className="text-sm font-semibold text-foreground leading-tight line-clamp-2">
+                <div className="text-sm font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-brand transition-colors">
                   {locale === "bg" ? cat.name_bg : cat.name}
                 </div>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-2xs text-muted-foreground">Shop now</span>
-                  <ArrowRight className={cn("size-3.5", tone.icon)} weight="bold" />
+                  <ArrowRight className={cn("size-3.5", tone.icon, tone.iconHover)} weight="bold" />
                 </div>
               </div>
             </Link>

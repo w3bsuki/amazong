@@ -94,7 +94,7 @@ function MoreWaysToShop({ locale }: { locale: string }) {
     },
     {
       href: "/gift-cards",
-      image: "https://images.unsplash.com/photo-1512389142860-9c449e58a814?w=400&q=80",
+      image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&q=80",
       title: locale === "bg" ? "Подаръци" : "Gifts",
     },
     {

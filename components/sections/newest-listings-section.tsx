@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState, useRef, useCallback } from "react"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLocale } from "next-intl"
 import type { UIProduct } from "@/lib/data/products"
@@ -256,7 +256,6 @@ export function NewestListingsSection({
               image={product.image}
               rating={product.rating}
               reviews={product.reviews}
-              variant="marketplace"
               index={index}
               slug={product.slug}
               storeSlug={product.storeSlug}

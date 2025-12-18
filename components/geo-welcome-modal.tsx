@@ -71,11 +71,18 @@ interface GeoWelcomeModalProps {
 
 export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
   const t = useTranslations('GeoWelcome');
-  const [mounted, setMounted] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Use a small timeout to ensure React hydration has fully completed.
+    // Dialogs add aria-hidden to siblings which causes hydration mismatches
+    // if they open before hydration finishes.
+    const timer = setTimeout(() => {
+      setHydrated(true);
+    }, 100);
+    return () => clearTimeout(timer);
   }, []);
+
   const {
     isOpen,
     isLoading,
@@ -87,8 +94,9 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
     closeModal,
   } = useGeoWelcome();
 
-  // Avoid SSR/client mismatches by only rendering after mount.
-  if (!mounted || isLoading || !isOpen) {
+  // Avoid SSR/client mismatches by only rendering after hydration completes.
+  // The hydrated check ensures we don't open the dialog during React's hydration phase.
+  if (!hydrated || isLoading || !isOpen) {
     return null;
   }
 
@@ -133,7 +141,10 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
                 value={selectedRegion}
                 onValueChange={(value) => setSelectedRegion(value as ShippingRegion)}
               >
-                <SelectTrigger className="w-full h-10 bg-background border border-input rounded-lg focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 transition-colors">
+                <SelectTrigger
+                  className="w-full h-10 bg-background border border-input rounded-lg focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 transition-colors"
+                  aria-label={t('selectRegion')}
+                >
                   <SelectValue>
                     <span className="flex items-center gap-2">
                       <span className="text-base">{REGION_FLAGS[selectedRegion]}</span>
@@ -175,7 +186,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
             </button>
 
             {/* Footer note */}
-            <p className="text-xs text-muted-foreground/70 text-center">
+            <p className="text-xs text-muted-foreground text-center">
               {t('changeAnytime')}
             </p>
           </div>

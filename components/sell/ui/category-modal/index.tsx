@@ -11,6 +11,9 @@ import {
 import {
   Drawer,
   DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -151,8 +154,29 @@ export function CategorySelector({
       <>
         {TriggerButton}
         <Drawer open={isOpen} onOpenChange={setIsOpen} snapPoints={[1]}>
-          <DrawerContent>
-            <CategoryModalContent {...contentProps} isMobile />
+          <DrawerContent className="p-0 h-[80vh] overflow-hidden">
+            <div className="flex h-full min-h-0 flex-col">
+              <DrawerHeader className="px-4 py-3 border-b">
+                <div className="flex items-center justify-between gap-2">
+                  <DrawerTitle className="text-base font-semibold">
+                    {locale === "bg" ? "Избери категория" : "Select Category"}
+                  </DrawerTitle>
+                  <DrawerClose asChild>
+                    <button
+                      type="button"
+                      className={cn(
+                        "inline-flex items-center justify-center rounded-md p-2",
+                        "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      )}
+                      aria-label={locale === "bg" ? "Затвори" : "Close"}
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </DrawerClose>
+                </div>
+              </DrawerHeader>
+              <CategoryModalContent {...contentProps} isMobile />
+            </div>
           </DrawerContent>
         </Drawer>
       </>
@@ -199,9 +223,60 @@ function CategoryModalContent({
   const [searchQuery, setSearchQuery] = useState("");
   const [navigationPath, setNavigationPath] = useState<Category[]>([]);
   const [activeL1, setActiveL1] = useState<Category | null>(categories[0] || null);
+  const [childrenById, setChildrenById] = useState<Record<string, Category[]>>({});
+  const [loadingChildrenById, setLoadingChildrenById] = useState<Record<string, boolean>>({});
 
   const getName = (cat: Category) =>
     locale === "bg" && cat.name_bg ? cat.name_bg : cat.name;
+
+  const selectCategory = useCallback(
+    (cat: Category) => {
+      const path = [...navigationPath, cat];
+      const fullPath = path.map(getName).join(" › ");
+      const flat: FlatCategory = {
+        ...cat,
+        path,
+        fullPath,
+        searchText: `${cat.name} ${cat.name_bg || ""} ${cat.slug}`.toLowerCase(),
+      };
+      onSelect(flat);
+    },
+    [getName, navigationPath, onSelect]
+  );
+
+  const getChildren = useCallback(
+    (cat: Category | null): Category[] => {
+      if (!cat) return [];
+      return childrenById[cat.id] ?? cat.children ?? [];
+    },
+    [childrenById]
+  );
+
+  const ensureChildrenLoaded = useCallback(
+    async (cat: Category): Promise<Category[]> => {
+      const existing = getChildren(cat);
+      if (existing.length > 0) return existing;
+      if (loadingChildrenById[cat.id]) return existing;
+
+      setLoadingChildrenById((prev) => ({ ...prev, [cat.id]: true }));
+      try {
+        const res = await fetch(
+          `/api/categories?parent=${encodeURIComponent(cat.slug)}&depth=1`,
+          { method: "GET" }
+        );
+        if (!res.ok) return [];
+        const data = await res.json();
+        const children = (data?.categories ?? []) as Category[];
+        setChildrenById((prev) => ({ ...prev, [cat.id]: children }));
+        return children;
+      } catch {
+        return [];
+      } finally {
+        setLoadingChildrenById((prev) => ({ ...prev, [cat.id]: false }));
+      }
+    },
+    [getChildren, loadingChildrenById]
+  );
 
   // Search results
   const searchResults = useMemo(() => {
@@ -217,21 +292,47 @@ function CategoryModalContent({
     if (isMobile) {
       if (navigationPath.length === 0) return categories;
       const lastInPath = navigationPath[navigationPath.length - 1];
-      return lastInPath.children || [];
+      return getChildren(lastInPath);
     } else {
-      return activeL1?.children || [];
+      return getChildren(activeL1);
     }
-  }, [categories, navigationPath, activeL1, isMobile]);
+  }, [categories, navigationPath, activeL1, isMobile, getChildren]);
 
   // Navigation handlers
-  const handleNavigate = useCallback((cat: Category) => {
-    if (cat.children?.length) {
+  const handleNavigate = useCallback(async (cat: Category) => {
+    const knownChildren = getChildren(cat);
+
+    if (knownChildren.length > 0) {
       setNavigationPath((prev) => [...prev, cat]);
-    } else {
-      const flatCat = flatCategories.find((c) => c.id === cat.id);
-      if (flatCat) onSelect(flatCat);
+      return;
     }
-  }, [flatCategories, onSelect]);
+
+    const loadedChildren = await ensureChildrenLoaded(cat);
+    if (loadedChildren.length > 0) {
+      setNavigationPath((prev) => [...prev, cat]);
+      return;
+    }
+
+    // Leaf (or no children): select even if not present in the initial flat list.
+    selectCategory(cat);
+  }, [ensureChildrenLoaded, getChildren, selectCategory]);
+
+  const handleDesktopNavigate = useCallback(async (cat: Category) => {
+    const knownChildren = getChildren(cat);
+    if (knownChildren.length > 0) {
+      setActiveL1(cat);
+      return;
+    }
+
+    const loadedChildren = await ensureChildrenLoaded(cat);
+    if (loadedChildren.length > 0) {
+      setActiveL1(cat);
+      return;
+    }
+
+    // Leaf (or no children): select even if not present in the initial flat list.
+    selectCategory(cat);
+  }, [ensureChildrenLoaded, getChildren, selectCategory]);
 
   const handleBack = useCallback(() => {
     setNavigationPath((prev) => prev.slice(0, -1));
@@ -243,6 +344,7 @@ function CategoryModalContent({
 
   // ===== MOBILE LAYOUT =====
   if (isMobile) {
+    const currentStep = navigationPath.length + 1;
     return (
       <div className="flex flex-col min-h-0 flex-1">
         {/* Search */}
@@ -257,6 +359,20 @@ function CategoryModalContent({
             />
           </div>
         </div>
+
+        {/* Step indicator */}
+        {!searchQuery.trim() && (
+          <div className="px-3 py-2 border-b bg-muted/30 shrink-0">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">
+                {locale === "bg" ? "Стъпка" : "Step"} {currentStep}
+              </span>
+              <span className="font-medium text-foreground">
+                {locale === "bg" ? "Ниво" : "Level"} {Math.max(0, currentStep - 1)}
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Breadcrumb - compact */}
         {navigationPath.length > 0 && !searchQuery && (
@@ -330,7 +446,7 @@ function CategoryModalContent({
                     key={cat.id}
                     category={cat}
                     isSelected={value === cat.id}
-                    hasChildren={!!cat.children?.length}
+                    hasChildren={getChildren(cat).length > 0}
                     onClick={() => handleNavigate(cat)}
                     locale={locale}
                   />
@@ -363,7 +479,7 @@ function CategoryModalContent({
                 )}
               >
                 <span className="truncate">{getName(cat)}</span>
-                {cat.children?.length ? (
+                {getChildren(cat).length > 0 ? (
                   <CaretRight className="size-3.5 text-muted-foreground shrink-0" />
                 ) : null}
               </button>
@@ -427,14 +543,9 @@ function CategoryModalContent({
                     key={cat.id}
                     category={cat}
                     isSelected={value === cat.id}
-                    hasChildren={!!cat.children?.length}
+                    hasChildren={getChildren(cat).length > 0}
                     onClick={() => {
-                      if (cat.children?.length) {
-                        setActiveL1(cat);
-                      } else {
-                        const flatCat = flatCategories.find((c) => c.id === cat.id);
-                        if (flatCat) onSelect(flatCat);
-                      }
+                      void handleDesktopNavigate(cat);
                     }}
                     locale={locale}
                   />

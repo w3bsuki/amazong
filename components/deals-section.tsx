@@ -46,7 +46,7 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
+      currency: 'EUR',
     }).format(price)
   }
 

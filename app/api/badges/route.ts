@@ -1,18 +1,20 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { NextRequest, NextResponse } from "next/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 
 /**
  * GET /api/badges
  * Returns the current user's badges with definitions
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Create client inside handler to avoid prerender issues
-    const supabase = await createClient()
+    const { supabase, applyCookies } = createRouteHandlerClient(request)
+    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+      applyCookies(NextResponse.json(body, init))
+
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return json({ badges: [], total: 0 })
     }
     
     // Get user's badges with definitions
@@ -39,7 +41,7 @@ export async function GET() {
     
     if (error) {
       console.error("Failed to fetch badges:", error)
-      return NextResponse.json({ error: "Failed to fetch badges" }, { status: 500 })
+      return json({ error: "Failed to fetch badges" }, { status: 500 })
     }
     
     // Transform the data
@@ -49,7 +51,7 @@ export async function GET() {
       awarded_at: b.awarded_at,
     }))
     
-    return NextResponse.json({
+    return json({
       badges: transformedBadges,
       total: transformedBadges.length,
     })

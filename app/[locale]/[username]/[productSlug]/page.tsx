@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { ProductPageContent } from "@/components/product-page-content-new"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
 import { ReviewsSection } from "@/components/reviews-section"
 import { ProductBreadcrumb } from "@/components/product-breadcrumb"
@@ -460,7 +460,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       originalPrice={p.list_price}
                       tags={p.tags || []}
                       index={idx}
-                      variant="compact"
                       slug={p.slug}
                       username={p.seller?.username}
                       categorySlug={p.category?.slug}
@@ -493,7 +492,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   originalPrice={p.list_price}
                   tags={p.tags || []}
                   index={idx}
-                  variant="compact"
                   slug={p.slug}
                   username={p.seller?.username}
                   categorySlug={p.category?.slug}

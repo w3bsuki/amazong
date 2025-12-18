@@ -5,7 +5,7 @@ import { connection } from "next/server"
 import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { ProductPageContent } from "@/components/product-page-content-new"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
 import { ReviewsSectionServer } from "@/components/reviews-section-server"
 import { ProductBreadcrumb } from "@/components/product-breadcrumb"
@@ -419,7 +419,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     originalPrice={p.list_price}
                     tags={p.tags || []}
                     index={idx}
-                    variant="compact"
                     slug={p.slug}
                     storeSlug={p.seller?.username}
                     sellerId={p.seller?.id}
@@ -447,7 +446,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 originalPrice={p.list_price}
                 tags={p.tags || []}
                 index={idx}
-                variant="compact"
                 slug={p.slug}
                 storeSlug={p.seller?.username}
                 sellerId={p.seller?.id}

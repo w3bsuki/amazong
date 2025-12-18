@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
+import type { NextRequest, NextResponse } from "next/server"
 import type { Database } from "./database.types"
 
 // =============================================================================
@@ -42,6 +43,34 @@ export async function createClient() {
       },
     },
   })
+}
+
+/**
+ * Route Handler client (app/api/*) that reads cookies from the incoming request.
+ *
+ * IMPORTANT: In Cache Components mode, `next/headers`'s `cookies()` can reject during prerender.
+ * Route handlers should not rely on it; use request cookies instead.
+ */
+export function createRouteHandlerClient(request: NextRequest) {
+  assertEnvVars()
+
+  const pendingCookies: Array<{ name: string; value: string; options?: unknown }> = []
+
+  const supabase = createServerClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    cookies: {
+      getAll: () => request.cookies.getAll(),
+      setAll: (cookiesToSet) => {
+        pendingCookies.push(...cookiesToSet)
+      },
+    },
+  })
+
+  const applyCookies = <TBody>(response: NextResponse<TBody>) => {
+    pendingCookies.forEach(({ name, value, options }) => response.cookies.set(name, value, options as any))
+    return response
+  }
+
+  return { supabase, applyCookies }
 }
 
 /** Static client for cached queries (no cookies, safe for 'use cache') */

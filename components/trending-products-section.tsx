@@ -6,7 +6,7 @@ import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CaretLeft, CaretRight, TrendUp, Tag, CurrencyCircleDollar } from "@phosphor-icons/react"
 import { useLocale } from "next-intl"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 
 interface Product {
   id: string
@@ -179,7 +179,6 @@ export function TrendingProductsSection({
                       className="w-[calc(50%-0.5rem)] min-w-[calc(50%-0.5rem)] shrink-0 snap-start sm:w-[32%] sm:min-w-[32%] md:w-48 md:min-w-48"
                     >
                       <ProductCard
-                        variant="compact"
                         index={index}
                         {...product}
                       />

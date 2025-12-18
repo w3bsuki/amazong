@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
+import { normalizeImageUrls } from "@/lib/normalize-image-url"
 import { NextResponse } from "next/server"
 import { connection } from "next/server"
 
@@ -66,7 +67,7 @@ export async function GET(request: Request) {
         id: p.id,
         title: p.title,
         price: p.price,
-        images: normalizedImages,
+        images: normalizeImageUrls(normalizedImages),
         slug: p.slug,
         storeSlug: p.seller?.username || null,
       }

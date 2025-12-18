@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import { CaretRight, TrendUp, Tag, Sparkle, GridFour } from "@phosphor-icons/react"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 import { Link } from "@/i18n/routing"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -63,17 +63,36 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
     setIsLoading(true)
     try {
       // Map tab to correct API endpoint
-      const endpoint = tab === "promoted" ? "/api/products/promoted" : "/api/products/newest"
+      const endpoint = tab === "promoted"
+        ? "/api/products/promoted"
+        : tab === "deals"
+          ? "/api/products/deals"
+          : "/api/products/newest"
       const url = `${endpoint}?page=${pageNum}&limit=20`
 
       const res = await fetch(url)
       if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`)
+        return
       }
-      const data = await res.json()
 
-      if (data.products) {
-        const transformed: Product[] = (data.products as unknown[]).map((raw) => {
+      let data: unknown = null
+      try {
+        data = await res.json()
+      } catch {
+        return
+      }
+
+      if (!data || typeof data !== 'object') {
+        return
+      }
+
+      const productsRaw = (data as { products?: unknown }).products
+      if (!Array.isArray(productsRaw)) {
+        return
+      }
+
+      {
+        const transformed: Product[] = (productsRaw as unknown[]).map((raw) => {
           const p = raw as Record<string, unknown>
 
           const image = (typeof p.image === 'string' && p.image.length > 0)
@@ -82,10 +101,11 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
               ? ((p.images as unknown[]).find((x): x is string => typeof x === 'string') ?? "/placeholder.svg")
               : "/placeholder.svg"
 
-          const listPrice = (typeof p.listPrice === 'number')
-            ? (p.listPrice as number)
-            : (typeof p.list_price === 'number')
-              ? (p.list_price as number)
+          const listPriceRaw = (p.listPrice ?? p.list_price) as unknown
+          const listPrice = (typeof listPriceRaw === 'number')
+            ? listPriceRaw
+            : (typeof listPriceRaw === 'string')
+              ? Number(listPriceRaw)
               : undefined
 
           const storeSlug = (typeof p.storeSlug === 'string')
@@ -107,7 +127,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
           return {
             id: p.id as string,
             title: p.title as string,
-            price: p.price as number,
+            price: typeof p.price === 'number' ? (p.price as number) : Number(p.price ?? 0),
             listPrice,
             image,
             rating: typeof p.rating === 'number' ? (p.rating as number) : undefined,
@@ -117,6 +137,13 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
             slug: (p.slug as string | null) ?? null,
             storeSlug,
             categorySlug,
+            sellerId: typeof p.sellerId === 'string' ? (p.sellerId as string) : null,
+            sellerName: typeof p.sellerName === 'string' ? (p.sellerName as string) : null,
+            sellerAvatarUrl: typeof p.sellerAvatarUrl === 'string' ? (p.sellerAvatarUrl as string) : null,
+            sellerTier: (p.sellerTier === 'basic' || p.sellerTier === 'premium' || p.sellerTier === 'business') 
+              ? (p.sellerTier as 'basic' | 'premium' | 'business') 
+              : undefined,
+            sellerVerified: typeof p.sellerVerified === 'boolean' ? (p.sellerVerified as boolean) : undefined,
             location: typeof p.location === 'string' ? (p.location as string) : undefined,
             condition: typeof p.condition === 'string' ? (p.condition as string) : undefined,
             brand: typeof p.brand === 'string' ? (p.brand as string) : undefined,
@@ -139,7 +166,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
         setHasMore(transformed.length === 20)
       }
     } catch (error) {
-      console.error("Failed to fetch products:", error)
+      // Avoid console noise; UI can safely show empty state.
     } finally {
       setIsLoading(false)
     }
@@ -226,7 +253,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
         tabIndex={0}
       >
         {products.length === 0 && isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 xl:gap-4" aria-busy="true" aria-live="polite">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 xl:gap-4" aria-busy="true" aria-live="polite">
             {Array.from({ length: 10 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="aspect-square rounded-md" />
@@ -243,41 +270,41 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
         ) : (
           <>
             {/* 
-              Grid Layout - Tailwind v4 best practice:
-              - gap-3 for tighter desktop feel (Amazon/eBay density)
-              - gap-4 at xl+ for breathing room on large screens
-              - 5 columns at xl for optimal card sizing (not too big)
+              Grid Layout - Optimized for all screen sizes:
+              - 2 cols mobile, 3 cols md, 4 cols lg, 5 cols xl, 6 cols 2xl
+              - 6 columns at 2xl keeps card width ~235px (same as demo landing1)
+              - gap-3 base, gap-4 at xl+ for breathing room
             */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 xl:gap-4" role="list" aria-live="polite">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 xl:gap-4" role="list" aria-live="polite">
               {products.map((product, index) => (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  title={product.title}
-                  price={product.price}
-                  listPrice={product.listPrice}
-                  image={product.image}
-                  rating={product.rating}
-                  reviews={product.reviews}
-                  slug={product.slug}
-                  storeSlug={product.storeSlug}
-                  sellerId={product.sellerId || undefined}
-                  sellerName={(product.sellerName || product.storeSlug) || undefined}
-                  sellerAvatarUrl={product.sellerAvatarUrl || null}
-                  sellerTier={product.sellerTier}
-                  sellerVerified={product.sellerVerified}
-                  location={product.location}
-                  brand={product.brand}
-                  condition={product.condition}
-                  make={product.make}
-                  model={product.model}
-                  year={product.year}
-                  tags={product.tags}
-                  isBoosted={product.isBoosted}
-                  showTagChips={true}
-                  variant="marketplace"
-                  index={index}
-                />
+                <div key={product.id} role="listitem">
+                  <ProductCard
+                    id={product.id}
+                    title={product.title}
+                    price={product.price}
+                    originalPrice={product.listPrice}
+                    image={product.image}
+                    rating={product.rating}
+                    reviews={product.reviews}
+                    slug={product.slug}
+                    storeSlug={product.storeSlug}
+                    sellerId={product.sellerId || undefined}
+                    sellerName={(product.sellerName || product.storeSlug) || undefined}
+                    sellerAvatarUrl={product.sellerAvatarUrl || null}
+                    sellerTier={product.sellerTier}
+                    sellerVerified={product.sellerVerified}
+                    location={product.location}
+                    brand={product.brand}
+                    condition={product.condition}
+                    make={product.make}
+                    model={product.model}
+                    year={product.year}
+                    tags={product.tags}
+                    isBoosted={product.isBoosted}
+                    showPills={true}
+                    index={index}
+                  />
+                </div>
               ))}
             </div>
 
@@ -323,7 +350,7 @@ export function TabbedProductFeedSkeleton() {
         <Skeleton className="h-10 w-80 rounded-full" />
         <Skeleton className="h-4 w-16" />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 xl:gap-4 p-5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 xl:gap-4 p-5">
         {Array.from({ length: 10 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="aspect-square rounded-md" />

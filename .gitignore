@@ -34,3 +34,11 @@ tsconfig.tsbuildinfo
 
 # playwright screenshots
 .playwright-mcp/
+
+# Playwright test output
+/playwright-report/
+/test-results/
+/blob-report/
+
+# Lighthouse CI output
+/.lighthouseci/

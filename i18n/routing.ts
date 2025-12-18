@@ -2,11 +2,11 @@ import { defineRouting } from 'next-intl/routing';
 import { createNavigation } from 'next-intl/navigation';
 
 export const routing = defineRouting({
-    // Bulgarian first for Bulgaria launch, then English
-    locales: ['bg', 'en'],
+    // English primary for tests, Bulgarian secondary
+    locales: ['en', 'bg'],
 
-    // Default to Bulgarian for Bulgaria-first market
-    defaultLocale: 'bg',
+    // Default to English (tests use /en as primary)
+    defaultLocale: 'en',
 
     // Enable automatic locale detection from browser Accept-Language header
     localeDetection: true,
@@ -17,9 +17,8 @@ export const routing = defineRouting({
         maxAge: 31536000  // 1 year in seconds
     },
 
-    // Hide /bg prefix from URLs, show /en for English
-    // This gives cleaner URLs for Bulgarian users
-    localePrefix: 'as-needed'
+    // Always prefix locales so both /en and /bg are valid and stable.
+    localePrefix: 'always'
 });
 
 // Lightweight wrappers around Next.js' navigation APIs

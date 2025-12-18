@@ -1,0 +1,635 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { formatDistanceToNow } from "date-fns"
+import { bg, enUS } from "date-fns/locale"
+import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle } from "@tabler/icons-react"
+
+import { Badge } from "@/components/ui/badge"
+import { BuyerOrderActions } from "@/components/buyer-order-actions"
+import { Button } from "@/components/ui/button"
+import { OrderStatusBadge } from "@/components/order-status-badge"
+import type { OrderItemStatus } from "@/lib/order-status"
+import { getOrderConversation } from "@/app/actions/orders"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
+
+type OrderStatus =
+  | "pending"
+  | "processing"
+  | "paid"
+  | "shipped"
+  | "delivered"
+  | "cancelled"
+  | string
+
+type OrderProduct = {
+  id: string
+  title: string | null
+  images: string[] | null
+  price?: number | null
+}
+
+type OrderItemRow = {
+  id: string
+  product_id: string
+  seller_id?: string
+  quantity: number
+  price_at_purchase?: number
+  product?: OrderProduct | null
+  // New status fields
+  status?: OrderItemStatus
+  tracking_number?: string | null
+  shipping_carrier?: string | null
+  shipped_at?: string | null
+}
+
+type OrderRow = {
+  id: string
+  created_at: string
+  status: OrderStatus | null
+  total_amount: number | string | null
+  order_items: OrderItemRow[]
+}
+
+interface AccountOrdersGridProps {
+  orders: OrderRow[]
+  locale: string
+}
+
+export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
+  const dateLocale = locale === "bg" ? bg : enUS
+  const [conversationMap, setConversationMap] = useState<Map<string, string>>(new Map())
+  
+  // Fetch conversation IDs for each order
+  useEffect(() => {
+    async function fetchConversations() {
+      const map = new Map<string, string>()
+      for (const order of orders) {
+        try {
+          const result = await getOrderConversation(order.id, '')
+          if (result.conversationId) {
+            map.set(order.id, result.conversationId)
+          }
+        } catch {
+          // Ignore errors
+        }
+      }
+      setConversationMap(map)
+    }
+    
+    if (orders.length > 0) {
+      fetchConversations()
+    }
+  }, [orders])
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: locale === "bg" ? "BGN" : "EUR",
+      maximumFractionDigits: 2,
+    }).format(value)
+
+  const getStatusColor = (status: OrderStatus | null) => {
+    switch (status) {
+      case "paid":
+        return "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800"
+      case "pending":
+        return "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-950/50 dark:text-yellow-400 dark:border-yellow-800"
+      case "processing":
+        return "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-800"
+      case "shipped":
+        return "bg-account-info-soft text-account-info border-account-stat-border"
+      case "delivered":
+        return "bg-green-100 text-green-700 border-green-200 dark:bg-green-950/50 dark:text-green-400 dark:border-green-800"
+      case "cancelled":
+        return "bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800"
+      default:
+        return "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-950/50 dark:text-gray-400 dark:border-gray-800"
+    }
+  }
+
+  const getStatusText = (status: OrderStatus | null) => {
+    if (locale === "bg") {
+      switch (status) {
+        case "paid":
+          return "Платена"
+        case "pending":
+          return "Изчакване"
+        case "processing":
+          return "Обработка"
+        case "shipped":
+          return "Изпратена"
+        case "delivered":
+          return "Доставена"
+        case "cancelled":
+          return "Отменена"
+        default:
+          return status || "Неизвестен"
+      }
+    }
+    return status ? status.charAt(0).toUpperCase() + status.slice(1) : "Unknown"
+  }
+
+  const t = {
+    order: locale === "bg" ? "Поръчка" : "Order",
+    items: locale === "bg" ? "артикула" : "items",
+    item: locale === "bg" ? "артикул" : "item",
+    viewOrder: locale === "bg" ? "Виж поръчката" : "View order",
+    orderDetails: locale === "bg" ? "Детайли за поръчката" : "Order Details",
+    placed: locale === "bg" ? "Направена" : "Placed",
+    status: locale === "bg" ? "Статус" : "Status",
+    total: locale === "bg" ? "Общо" : "Total",
+    qty: locale === "bg" ? "Количество" : "Qty",
+    viewProduct: locale === "bg" ? "Виж продукта" : "View product",
+    noOrders: locale === "bg" ? "Няма поръчки" : "No orders found",
+    noOrdersDesc: locale === "bg" ? "Когато направите поръчка, тя ще се появи тук." : "When you place an order, it will appear here.",
+    startShopping: locale === "bg" ? "Към магазина" : "Start shopping",
+    moreItems: locale === "bg" ? "още" : "more",
+  }
+
+  // Empty state
+  if (orders.length === 0) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="flex size-16 items-center justify-center rounded-full bg-muted mb-4">
+            <IconShoppingBag className="size-8 text-muted-foreground" />
+          </div>
+          <h3 className="font-semibold text-lg">{t.noOrders}</h3>
+          <p className="text-muted-foreground text-sm mt-1 max-w-sm">
+            {t.noOrdersDesc}
+          </p>
+          <Button asChild className="mt-6">
+            <Link href="/">{t.startShopping}</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <>
+      {/* Mobile: Revolut-style order cards */}
+      <div className="space-y-3 md:hidden">
+        {orders.map((order) => {
+          const status = (order.status || "pending") as OrderStatus
+          const itemCount = order.order_items.reduce(
+            (sum, i) => sum + Number(i.quantity || 0),
+            0
+          )
+          const orderTotal = Number(order.total_amount || 0)
+          const visibleItems = order.order_items.slice(0, 3)
+          const remainingCount = order.order_items.length - 3
+
+          return (
+            <Sheet key={order.id}>
+              <SheetTrigger asChild>
+                <button className="w-full text-left rounded-2xl bg-account-stat-bg border border-account-stat-border p-4 transition-all active:scale-[0.99]">
+                  {/* Header: Price + Date */}
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-lg font-bold text-foreground tabular-nums">
+                      {formatCurrency(orderTotal)}
+                    </p>
+                    <span className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(order.created_at), {
+                        addSuffix: false,
+                        locale: dateLocale,
+                      })}
+                    </span>
+                  </div>
+
+                  {/* Product Images Row */}
+                  <div className="flex items-center gap-2 mb-3">
+                    {visibleItems.map((item) => {
+                      const image = item.product?.images?.[0]
+                      return (
+                        <div
+                          key={item.id}
+                          className="relative size-14 rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0"
+                        >
+                          {image ? (
+                            <Image
+                              src={image}
+                              alt=""
+                              fill
+                              className="object-cover"
+                              sizes="56px"
+                            />
+                          ) : (
+                            <div className="flex size-full items-center justify-center">
+                              <IconPackage className="size-6 text-muted-foreground/40" strokeWidth={1.5} />
+                            </div>
+                          )}
+                          {item.quantity > 1 && (
+                            <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-account-accent text-2xs font-bold text-white shadow-sm">
+                              x{item.quantity}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                    {remainingCount > 0 && (
+                      <div className="flex size-14 items-center justify-center rounded-xl bg-muted/50 text-sm font-medium text-muted-foreground">
+                        +{remainingCount}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer: Status + Item count + View link */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className={`text-2xs font-medium ${getStatusColor(status)}`}>
+                        {getStatusText(status)}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {itemCount} {itemCount === 1 ? t.item : t.items}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs font-medium text-account-accent">
+                      <span>{t.viewOrder}</span>
+                      <IconChevronRight className="size-3.5" />
+                    </div>
+                  </div>
+                </button>
+              </SheetTrigger>
+                  <SheetContent side="bottom" className="h-[85vh] rounded-t-xl">
+                    <SheetHeader className="pb-4 border-b">
+                      <SheetTitle className="flex items-center gap-2">
+                        <IconPackage className="size-5" />
+                        {t.order} #{order.id.slice(0, 8)}
+                      </SheetTitle>
+                      <SheetDescription>
+                        <Badge
+                          variant="outline"
+                          className={getStatusColor(status)}
+                        >
+                          {getStatusText(status)}
+                        </Badge>
+                      </SheetDescription>
+                    </SheetHeader>
+                    <ScrollArea className="flex-1 -mx-6 px-6">
+                      <div className="py-4 space-y-4">
+                        {/* Order info */}
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <p className="text-muted-foreground">{t.placed}</p>
+                            <p className="font-medium">
+                              {new Date(order.created_at).toLocaleDateString(
+                                locale,
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                }
+                              )}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">{t.total}</p>
+                            <p className="font-semibold tabular-nums">
+                              {formatCurrency(orderTotal)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        {/* Items */}
+                        <div className="space-y-4">
+                          {order.order_items.map((item) => {
+                            const product = item.product
+                            const image =
+                              product?.images?.[0] || "/placeholder.svg"
+                            const title =
+                              product?.title ||
+                              (locale === "bg" ? "Продукт" : "Product")
+                            const href = `/product/${item.product_id}`
+                            const itemStatus = item.status || 'pending'
+
+                            return (
+                              <div key={item.id} className="flex gap-3">
+                                <Link href={href} className="shrink-0">
+                                  <div className="relative size-16 overflow-hidden rounded-lg border bg-muted">
+                                    <Image
+                                      src={image}
+                                      alt={title}
+                                      fill
+                                      className="object-contain"
+                                    />
+                                  </div>
+                                </Link>
+                                <div className="min-w-0 flex-1">
+                                  <Link
+                                    href={href}
+                                    className="text-sm font-medium hover:underline line-clamp-2"
+                                  >
+                                    {title}
+                                  </Link>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <OrderStatusBadge status={itemStatus as OrderItemStatus} size="sm" />
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {t.qty}: {item.quantity}
+                                  </p>
+                                  {item.price_at_purchase && (
+                                    <p className="text-sm font-medium mt-1 tabular-nums">
+                                      {formatCurrency(item.price_at_purchase)}
+                                    </p>
+                                  )}
+                                  {/* Tracking info */}
+                                  {item.tracking_number && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      📍 {item.tracking_number} {item.shipping_carrier && `(${item.shipping_carrier})`}
+                                    </p>
+                                  )}
+                                  {/* Buyer Actions: Confirm Delivery & Rate Seller */}
+                                  {item.seller_id && (itemStatus === 'shipped' || itemStatus === 'delivered') && (
+                                    <div className="mt-2">
+                                      <BuyerOrderActions
+                                        orderItemId={item.id}
+                                        currentStatus={itemStatus as OrderItemStatus}
+                                        sellerId={item.seller_id}
+                                        conversationId={conversationMap.get(order.id)}
+                                        locale={locale}
+                                        orderId={order.id}
+                                      />
+                                    </div>
+                                  )}
+                                  {/* Chat link (shown for other statuses) */}
+                                  {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
+                                    <Link
+                                      href={`/${locale}/chat?conversation=${conversationMap.get(order.id)}`}
+                                      className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2"
+                                    >
+                                      <IconMessageCircle className="size-3" />
+                                      {locale === "bg" ? "Чат с продавача" : "Chat with seller"}
+                                    </Link>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </ScrollArea>
+                  </SheetContent>
+                </Sheet>
+              )
+            })}
+        </div>
+
+        {/* Desktop: Table-like layout in Card */}
+        <Card className="hidden shadow-none md:block">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base">{t.order}s</CardTitle>
+            <CardDescription>
+              {orders.length} {orders.length === 1 ? t.item : t.items}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y">
+              {orders.map((order) => {
+                const status = (order.status || "pending") as OrderStatus
+                const itemCount = order.order_items.reduce(
+                  (sum, i) => sum + Number(i.quantity || 0),
+                  0
+                )
+                const orderTotal = Number(order.total_amount || 0)
+                const visibleItems = order.order_items.slice(0, 4)
+                const remainingCount = order.order_items.length - 4
+
+                return (
+                  <Sheet key={order.id}>
+                    <div className="flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors">
+                    {/* Product thumbnails - fixed width for alignment */}
+                    <div className="w-40 shrink-0">
+                      <div className="flex -space-x-2">
+                        {visibleItems.map((item) => {
+                          const image =
+                            item.product?.images?.[0] || "/placeholder.svg"
+                          return (
+                            <div
+                              key={item.id}
+                              className="relative size-10 rounded-md border-2 border-background bg-muted overflow-hidden ring-1 ring-border"
+                            >
+                              <Image
+                                src={image}
+                                alt=""
+                                fill
+                                className="object-contain"
+                              />
+                            </div>
+                          )
+                        })}
+                        {remainingCount > 0 && (
+                          <div className="flex size-10 items-center justify-center rounded-md border-2 border-background bg-muted text-xs font-medium text-muted-foreground ring-1 ring-border">
+                            +{remainingCount}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Order info */}
+                    <div className="flex-1 min-w-0 grid grid-cols-4 gap-4 items-center">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium font-mono">
+                          #{order.id.slice(0, 8)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {itemCount} {itemCount === 1 ? t.item : t.items}
+                        </p>
+                      </div>
+                      <div>
+                        <Badge
+                          variant="outline"
+                          className={getStatusColor(status)}
+                        >
+                          {getStatusText(status)}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {formatDistanceToNow(new Date(order.created_at), {
+                          addSuffix: true,
+                          locale: dateLocale,
+                        })}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold tabular-nums">
+                          {formatCurrency(orderTotal)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Action */}
+                    <SheetTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        {t.viewOrder}
+                        <IconChevronRight className="size-4 ml-1" />
+                      </Button>
+                    </SheetTrigger>
+                  </div>
+
+                  <SheetContent className="sm:max-w-lg">
+                    <SheetHeader className="pb-4 border-b">
+                      <SheetTitle className="flex items-center gap-2">
+                        <IconPackage className="size-5" />
+                        {t.order} #{order.id.slice(0, 8)}
+                      </SheetTitle>
+                      <SheetDescription className="flex items-center gap-2">
+                        <Badge
+                          variant="outline"
+                          className={getStatusColor(status)}
+                        >
+                          {getStatusText(status)}
+                        </Badge>
+                        <span className="text-muted-foreground">
+                          {new Date(order.created_at).toLocaleDateString(
+                            locale,
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }
+                          )}
+                        </span>
+                      </SheetDescription>
+                    </SheetHeader>
+                    <ScrollArea className="flex-1 -mx-6 px-6 h-[calc(100vh-12rem)]">
+                      <div className="py-6 space-y-6">
+                        {/* Summary */}
+                        <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                          <div>
+                            <p className="text-sm text-muted-foreground">
+                              {t.total}
+                            </p>
+                            <p className="text-xl font-semibold tabular-nums">
+                              {formatCurrency(orderTotal)}
+                            </p>
+                          </div>
+                          <Badge variant="outline">
+                            {itemCount} {itemCount === 1 ? t.item : t.items}
+                          </Badge>
+                        </div>
+
+                        {/* Items */}
+                        <div className="space-y-4">
+                          {order.order_items.map((item) => {
+                            const product = item.product
+                            const image =
+                              product?.images?.[0] || "/placeholder.svg"
+                            const title =
+                              product?.title ||
+                              (locale === "bg" ? "Продукт" : "Product")
+                            const href = `/product/${item.product_id}`
+                            const itemStatus = item.status || 'pending'
+
+                            return (
+                              <div
+                                key={item.id}
+                                className="flex gap-4 p-3 rounded-lg border bg-card"
+                              >
+                                <Link href={href} className="shrink-0">
+                                  <div className="relative size-20 overflow-hidden rounded-lg border bg-muted">
+                                    <Image
+                                      src={image}
+                                      alt={title}
+                                      fill
+                                      className="object-contain"
+                                    />
+                                  </div>
+                                </Link>
+                                <div className="min-w-0 flex-1">
+                                  <Link
+                                    href={href}
+                                    className="font-medium hover:underline line-clamp-2"
+                                  >
+                                    {title}
+                                  </Link>
+                                  {/* Item Status */}
+                                  <div className="flex items-center gap-2 mt-1.5">
+                                    <OrderStatusBadge status={itemStatus as OrderItemStatus} size="sm" />
+                                  </div>
+                                  <p className="text-sm text-muted-foreground mt-1">
+                                    {t.qty}: {item.quantity}
+                                  </p>
+                                  {item.price_at_purchase && (
+                                    <p className="text-sm font-semibold mt-2 tabular-nums">
+                                      {formatCurrency(item.price_at_purchase)}
+                                    </p>
+                                  )}
+                                  {/* Tracking info */}
+                                  {item.tracking_number && (
+                                    <div className="text-sm text-muted-foreground mt-2 flex items-center gap-1">
+                                      <span>📍</span>
+                                      <span className="font-mono">{item.tracking_number}</span>
+                                      {item.shipping_carrier && <span>({item.shipping_carrier})</span>}
+                                    </div>
+                                  )}
+                                  {/* Actions */}
+                                  <div className="flex items-center gap-3 mt-3">
+                                    <Link
+                                      href={href}
+                                      className="inline-flex items-center text-sm text-primary hover:underline"
+                                    >
+                                      {t.viewProduct}
+                                      <IconChevronRight className="size-3 ml-0.5" />
+                                    </Link>
+                                    {/* Show chat only if NOT showing buyer actions */}
+                                    {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
+                                      <Link
+                                        href={`/${locale}/chat?conversation=${conversationMap.get(order.id)}`}
+                                        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+                                      >
+                                        <IconMessageCircle className="size-4" />
+                                        {locale === "bg" ? "Чат" : "Chat"}
+                                      </Link>
+                                    )}
+                                  </div>
+                                  {/* Buyer Actions: Confirm Delivery & Rate Seller */}
+                                  {item.seller_id && (itemStatus === 'shipped' || itemStatus === 'delivered') && (
+                                    <div className="mt-3 pt-3 border-t">
+                                      <BuyerOrderActions
+                                        orderItemId={item.id}
+                                        currentStatus={itemStatus as OrderItemStatus}
+                                        sellerId={item.seller_id}
+                                        conversationId={conversationMap.get(order.id)}
+                                        locale={locale}
+                                        orderId={order.id}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </ScrollArea>
+                  </SheetContent>
+                </Sheet>
+              )
+            })}
+            </div>
+          </CardContent>
+        </Card>
+    </>
+  )
+}

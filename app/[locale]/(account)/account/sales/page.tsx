@@ -253,7 +253,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
+      currency: 'EUR',
     }).format(value)
   }
 

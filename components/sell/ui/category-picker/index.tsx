@@ -140,7 +140,7 @@ export function CategoryPicker({
       {selectedCategory && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50 border border-border">
           <div className="flex items-center gap-2">
-            <Check className="h-4 w-4 text-green-600" weight="bold" />
+            <Check className="h-4 w-4 text-success" weight="bold" />
             <span className="text-sm">
               {selectedCategory.path.map((c) => c.name).join(" › ")}
             </span>

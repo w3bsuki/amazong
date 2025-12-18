@@ -56,7 +56,7 @@ export function StepperNavigation({
             type="button"
             onClick={onSubmit}
             disabled={!isStepValid || isSubmitting}
-            className="h-12 px-6 gap-2 font-semibold bg-green-600 hover:bg-green-700 text-white"
+            className="h-12 px-6 gap-2 font-semibold"
           >
             {isSubmitting ? (
               <>

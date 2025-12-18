@@ -65,7 +65,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
+      currency: 'EUR',
       maximumFractionDigits: 2,
     }).format(value)
   }
@@ -147,7 +147,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                     <Link 
                       key={order.id} 
                       href={`/account/orders/${order.id}`}
-                      className="flex flex-col w-[140px] rounded-2xl bg-account-stat-bg border border-account-stat-border p-3 active:scale-[0.98] transition-all"
+                      className="flex flex-col w-[140px] rounded-2xl bg-account-stat-bg border border-account-stat-border p-3 active:bg-muted/30 transition-colors"
                     >
                       {/* Order Image */}
                       <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border mb-3">

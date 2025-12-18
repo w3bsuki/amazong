@@ -53,10 +53,10 @@ function ReviewSection({
         <div className="flex items-center gap-2">
           <Icon className={cn(
             "size-5",
-            isComplete ? "text-green-600" : "text-muted-foreground"
+            isComplete ? "text-status-complete" : "text-muted-foreground"
           )} weight="fill" />
           <span className="text-sm font-semibold">{title}</span>
-          {isComplete && <CheckCircle className="size-4 text-green-600" weight="fill" />}
+          {isComplete && <CheckCircle className="size-4 text-status-complete" weight="fill" />}
         </div>
         {onEdit && (
           <Button
@@ -150,14 +150,14 @@ export function StepReview({
 
       {/* Validation warnings */}
       {!isValid && (
-        <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+        <div className="p-4 rounded-xl bg-warning/10 dark:bg-warning/5 border border-warning/30 dark:border-warning/20">
           <div className="flex items-start gap-3">
-            <Warning className="size-5 text-amber-600 shrink-0 mt-0.5" weight="fill" />
+            <Warning className="size-5 text-warning shrink-0 mt-0.5" weight="fill" />
             <div>
-              <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+              <p className="text-sm font-semibold text-warning">
                 {isBg ? "Попълнете задължителните полета" : "Complete required fields"}
               </p>
-              <ul className="text-sm text-amber-700 dark:text-amber-300 mt-1 space-y-0.5">
+              <ul className="text-sm text-warning/90 dark:text-warning/80 mt-1 space-y-0.5">
                 {!hasPhotos && <li>• {isBg ? "Добавете поне 1 снимка" : "Add at least 1 photo"}</li>}
                 {!hasTitle && <li>• {isBg ? "Добавете заглавие" : "Add a title"}</li>}
                 {!hasCategory && <li>• {isBg ? "Изберете категория" : "Select a category"}</li>}
@@ -303,7 +303,7 @@ export function StepReview({
 
           {/* Accept offers */}
           {acceptOffers && (
-            <div className="flex items-center gap-2 text-sm text-green-600">
+            <div className="flex items-center gap-2 text-sm text-success">
               <CheckCircle className="size-4" weight="fill" />
               {isBg ? "Приема оферти" : "Accepts offers"}
             </div>

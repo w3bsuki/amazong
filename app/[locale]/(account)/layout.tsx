@@ -66,16 +66,22 @@ export default async function AccountLayout({
     setRequestLocale(locale);
     
     // Check auth on server side
-    const supabase = await createClient();
-    
-    if (!supabase) {
-        redirect("/auth/login");
+    let user: unknown = null;
+    try {
+        const supabase = await createClient();
+        const authResult = await Promise.race([
+            supabase.auth.getUser(),
+            new Promise<{ data: { user: null } }>((resolve) =>
+                setTimeout(() => resolve({ data: { user: null } }), 1500)
+            ),
+        ]);
+        user = authResult.data.user;
+    } catch {
+        user = null;
     }
-    
-    const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) {
-        redirect("/auth/login");
+        redirect(`/${locale}/auth/login`);
     }
 
     return (

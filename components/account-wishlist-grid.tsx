@@ -65,7 +65,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
+      currency: 'EUR',
     }).format(value)
   }
 
@@ -185,7 +185,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
           <Sheet key={item.id} open={selectedItem?.id === item.id} onOpenChange={(open) => !open && setSelectedItem(null)}>
             <button
               onClick={() => setSelectedItem(item)}
-              className="flex flex-col rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden transition-all active:scale-[0.98] text-left"
+              className="flex flex-col rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden transition-colors active:bg-muted/30 text-left"
             >
               {/* Product Image */}
               <div className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">
@@ -223,7 +223,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                       e.stopPropagation()
                       handleMoveToCart(item)
                     }}
-                    className="absolute bottom-2 right-2 flex size-8 items-center justify-center rounded-full bg-foreground transition-transform hover:scale-110 active:scale-95"
+                    className="absolute bottom-2 right-2 flex size-8 items-center justify-center rounded-full bg-foreground transition-colors hover:bg-foreground/90 active:bg-foreground/80"
                   >
                     <ShoppingCart weight="fill" className="size-4 text-white" />
                   </button>
@@ -362,7 +362,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 alt={item.title} 
                 fill 
                 className={cn(
-                  "object-cover transition-all group-hover:scale-105",
+                  "object-cover transition-opacity",
                   item.stock <= 0 && "opacity-60 grayscale-[30%]"
                 )}
                 sizes="(max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"

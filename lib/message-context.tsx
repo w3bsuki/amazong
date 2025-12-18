@@ -59,7 +59,7 @@ export interface Message {
   }
 }
 
-// Raw conversation from Supabase
+// Raw conversation from Supabase (nullable fields aligned with database schema)
 interface RawConversation {
   id: string
   buyer_id: string
@@ -67,30 +67,17 @@ interface RawConversation {
   product_id: string | null
   order_id: string | null
   subject: string | null
-  status: "open" | "closed" | "archived"
-  last_message_at: string
-  buyer_unread_count: number
-  seller_unread_count: number
+  status: string | null // Database allows null, normalized to "open" in code
+  last_message_at: string | null
+  buyer_unread_count: number | null
+  seller_unread_count: number | null
   created_at: string
   updated_at: string
   product?: {
     id: string
     title: string
-    images: string[]
+    images: string[] | null
   } | null
-}
-
-// Raw message from Supabase
-interface RawMessage {
-  id: string
-  conversation_id: string
-  sender_id: string
-  content: string
-  message_type: "text" | "image" | "order_update" | "system"
-  attachment_url: string | null
-  is_read: boolean
-  read_at: string | null
-  created_at: string
 }
 
 interface MessageContextValue {
@@ -117,9 +104,29 @@ const MessageContext = createContext<MessageContextValue | undefined>(undefined)
 
 export function useMessages() {
   const context = useContext(MessageContext)
+
+  // Outside of chat routes, many layouts render UI (e.g., MobileTabBar) without
+  // the MessageProvider. Return a safe default instead of throwing to keep SSR
+  // and hydration stable.
   if (!context) {
-    throw new Error("useMessages must be used within a MessageProvider")
+    return {
+      conversations: [],
+      currentConversation: null,
+      messages: [],
+      totalUnreadCount: 0,
+      isLoading: false,
+      isLoadingMessages: false,
+      error: null,
+      loadConversations: async () => {},
+      selectConversation: async () => {},
+      sendMessage: async () => {},
+      markAsRead: async () => {},
+      startConversation: async () => "",
+      closeConversation: async () => {},
+      refreshUnreadCount: async () => {},
+    } satisfies MessageContextValue
   }
+
   return context
 }
 
@@ -200,16 +207,33 @@ export function MessageProvider({ children }: MessageProviderProps) {
         const sellerMap = new Map(sellerData?.map((s: { id: string; display_name: string | null; username: string | null; business_name: string | null }) => [s.id, s.display_name || s.business_name || s.username || "Seller"]) || [])
         
         // Transform fallback data to expected format with actual seller names
+        // Use unknown cast since fallback data has nullable fields that don't perfectly match Conversation type
         const transformed = (fallbackData || []).map((conv: RawConversation) => ({
-          ...conv,
-          buyer: { id: conv.buyer_id, full_name: null, avatar_url: null },
+          id: conv.id,
+          buyer_id: conv.buyer_id,
+          seller_id: conv.seller_id,
+          product_id: conv.product_id,
+          order_id: conv.order_id,
+          subject: conv.subject,
+          status: (conv.status || "open") as "open" | "closed" | "archived",
+          last_message_at: conv.last_message_at || conv.created_at,
+          buyer_unread_count: conv.buyer_unread_count ?? 0,
+          seller_unread_count: conv.seller_unread_count ?? 0,
+          created_at: conv.created_at,
+          updated_at: conv.updated_at,
+          buyer: { id: conv.buyer_id, full_name: "User", avatar_url: null },
           seller: { 
             id: conv.seller_id, 
             business_name: sellerMap.get(conv.seller_id) || "Seller",
             user_id: conv.seller_id,
-            profile: null 
+            profile: undefined
           },
-          last_message: null
+          product: conv.product ? {
+            id: conv.product.id,
+            title: conv.product.title,
+            images: conv.product.images || []
+          } : undefined,
+          last_message: undefined
         })) as Conversation[]
         
         setConversations(transformed)
@@ -225,7 +249,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
         return
       }
 
-      // Transform RPC result to Conversation type
+      // Transform RPC result to Conversation type (database returns string types for enums)
       const conversationsWithProfiles = data.map((row: {
         id: string
         buyer_id: string
@@ -233,7 +257,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
         product_id: string | null
         order_id: string | null
         subject: string | null
-        status: "open" | "closed" | "archived"
+        status: string // Database returns string, we cast below
         last_message_at: string
         buyer_unread_count: number
         seller_unread_count: number
@@ -259,7 +283,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
         product_id: row.product_id,
         order_id: row.order_id,
         subject: row.subject,
-        status: row.status,
+        status: (row.status || "open") as "open" | "closed" | "archived",
         last_message_at: row.last_message_at,
         buyer_unread_count: row.buyer_unread_count,
         seller_unread_count: row.seller_unread_count,
@@ -307,6 +331,41 @@ export function MessageProvider({ children }: MessageProviderProps) {
     }
   }, [supabase, refreshUnreadCount])
 
+  // Mark messages as read
+  const markAsRead = useCallback(async (conversationId: string) => {
+    try {
+      await supabase.rpc("mark_messages_read", {
+        p_conversation_id: conversationId
+      })
+
+      // Update local state
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.conversation_id === conversationId && !msg.is_read
+            ? { ...msg, is_read: true, read_at: new Date().toISOString() }
+            : msg
+        )
+      )
+
+      // Refresh unread count
+      await refreshUnreadCount()
+
+      // Update conversations list
+      setConversations((prev) =>
+        prev.map((conv) => {
+          if (conv.id !== conversationId) return conv
+          return {
+            ...conv,
+            buyer_unread_count: 0,
+            seller_unread_count: 0
+          }
+        })
+      )
+    } catch (err) {
+      console.error("Error marking messages as read:", err)
+    }
+  }, [supabase, refreshUnreadCount])
+
   // Select a conversation and load its messages
   const selectConversation = useCallback(async (conversationId: string) => {
     setIsLoadingMessages(true)
@@ -319,30 +378,41 @@ export function MessageProvider({ children }: MessageProviderProps) {
         setCurrentConversation(conversation)
       }
 
-      // Fetch messages
+      // Fetch messages with sender profiles using RPC (eliminates N+1 query)
       const { data: messagesData, error: fetchError } = await supabase
-        .from("messages")
-        .select("*")
-        .eq("conversation_id", conversationId)
-        .order("created_at", { ascending: true })
+        .rpc("get_conversation_messages", { p_conversation_id: conversationId })
 
       if (fetchError) throw fetchError
 
-      // Fetch sender profiles for each message
-      const messagesWithSenders = await Promise.all(
-        (messagesData || []).map(async (msg: RawMessage) => {
-          const { data: senderProfile } = await supabase
-            .from("profiles")
-            .select("id, full_name, avatar_url")
-            .eq("id", msg.sender_id)
-            .single()
-
-          return {
-            ...msg,
-            sender: senderProfile
-          } as Message
-        })
-      )
+      // Transform RPC response to Message format (database returns string types for enums)
+      // Note: messages table doesn't have attachment_url or updated_at columns
+      const messagesWithSenders: Message[] = (messagesData || []).map((msg: {
+        id: string
+        conversation_id: string
+        sender_id: string
+        content: string
+        message_type: string // Database returns string, we cast below
+        is_read: boolean
+        read_at: string | null
+        created_at: string
+        sender_full_name: string | null
+        sender_avatar_url: string | null
+      }) => ({
+        id: msg.id,
+        conversation_id: msg.conversation_id,
+        sender_id: msg.sender_id,
+        content: msg.content,
+        message_type: (msg.message_type || "text") as "text" | "image" | "order_update" | "system",
+        attachment_url: null, // Not in database schema
+        is_read: msg.is_read ?? false,
+        read_at: msg.read_at,
+        created_at: msg.created_at,
+        sender: {
+          id: msg.sender_id,
+          full_name: msg.sender_full_name || "Unknown User",
+          avatar_url: msg.sender_avatar_url
+        }
+      }))
 
       setMessages(messagesWithSenders)
 
@@ -354,7 +424,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
     } finally {
       setIsLoadingMessages(false)
     }
-  }, [supabase, conversations])
+  }, [supabase, conversations, markAsRead])
 
   // Send a message
   const sendMessage = useCallback(async (content: string, attachmentUrl?: string) => {
@@ -405,41 +475,6 @@ export function MessageProvider({ children }: MessageProviderProps) {
     }
   }, [supabase, currentConversation, loadConversations])
 
-  // Mark messages as read
-  const markAsRead = useCallback(async (conversationId: string) => {
-    try {
-      await supabase.rpc("mark_messages_read", {
-        p_conversation_id: conversationId
-      })
-
-      // Update local state
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.conversation_id === conversationId && !msg.is_read
-            ? { ...msg, is_read: true, read_at: new Date().toISOString() }
-            : msg
-        )
-      )
-
-      // Refresh unread count
-      await refreshUnreadCount()
-
-      // Update conversations list
-      setConversations((prev) =>
-        prev.map((conv) => {
-          if (conv.id !== conversationId) return conv
-          return {
-            ...conv,
-            buyer_unread_count: 0,
-            seller_unread_count: 0
-          }
-        })
-      )
-    } catch (err) {
-      console.error("Error marking messages as read:", err)
-    }
-  }, [supabase, refreshUnreadCount])
-
   // Start a new conversation
   const startConversation = useCallback(async (
     sellerId: string,
@@ -451,9 +486,9 @@ export function MessageProvider({ children }: MessageProviderProps) {
         "get_or_create_conversation",
         {
           p_seller_id: sellerId,
-          p_product_id: productId || null,
-          p_order_id: null,
-          p_subject: subject || null
+          p_product_id: productId,
+          p_order_id: undefined,
+          p_subject: subject
         }
       )
 

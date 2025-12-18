@@ -7,14 +7,15 @@ import {
   Globe,
   GlobeHemisphereEast,
   House,
-  Check,
   Info,
   Calculator,
+  Check,
 } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { SellFormDataV4 } from "@/lib/sell-form-schema-v4";
 
@@ -117,25 +118,21 @@ function ShippingRegionCard({
   const isBg = locale === "bg";
 
   return (
-    <button
-      type="button"
-      onClick={onToggle}
+    <label
       className={cn(
-        "relative flex items-start gap-3 p-4 rounded-lg border-2 text-left transition-colors w-full",
+        "relative flex items-start gap-3 p-4 rounded-lg border-2 text-left transition-colors w-full cursor-pointer",
         isSelected
           ? "border-primary bg-primary/5"
           : "border-border hover:border-primary/30"
       )}
     >
       {/* Checkbox indicator */}
-      <div className={cn(
-        "h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors",
-        isSelected
-          ? "bg-primary border-primary"
-          : "border-muted-foreground/30"
-      )}>
-        {isSelected && <Check className="h-3 w-3 text-white" weight="bold" />}
-      </div>
+      <Checkbox
+        checked={isSelected}
+        onCheckedChange={() => onToggle()}
+        className="mt-0.5 shrink-0"
+        aria-label={isBg ? region.labelBg : region.label}
+      />
 
       {/* Icon */}
       <div className={cn(
@@ -177,7 +174,7 @@ function ShippingRegionCard({
           </div>
         )}
       </div>
-    </button>
+    </label>
   );
 }
 
@@ -387,26 +384,24 @@ export function ShippingSection({
         {(shipsToBulgaria || shipsToEurope || shipsToWorldwide) && (
           <div className="pt-4 border-t border-border">
             {/* Free Shipping Toggle */}
-            <button
-              type="button"
-              onClick={() => form.setValue("freeShipping", !freeShipping, { shouldValidate: true })}
+            <label
               className={cn(
-                "w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-colors mb-4",
+                "w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-colors mb-4 cursor-pointer",
                 freeShipping
-                  ? "border-green-500 bg-green-500/10"
-                  : "border-border hover:border-green-500/30"
+                  ? "border-success bg-success/10"
+                  : "border-border hover:border-success/30"
               )}
             >
-              <div className={cn(
-                "h-5 w-5 rounded-md border-2 flex items-center justify-center shrink-0",
-                freeShipping ? "bg-green-500 border-green-500" : "border-muted-foreground/30"
-              )}>
-                {freeShipping && <Check className="h-3 w-3 text-white" weight="bold" />}
-              </div>
+              <Checkbox
+                checked={freeShipping ?? false}
+                onCheckedChange={(checked) => form.setValue("freeShipping", !!checked, { shouldValidate: true })}
+                className="shrink-0"
+                aria-label={isBg ? "Безплатна доставка" : "Free shipping"}
+              />
               <div className="flex-1 text-left">
                 <span className={cn(
                   "font-medium text-sm",
-                  freeShipping ? "text-green-600" : "text-foreground"
+                  freeShipping ? "text-success" : "text-foreground"
                 )}>
                   {isBg ? "Безплатна доставка" : "Free shipping"}
                 </span>
@@ -414,7 +409,7 @@ export function ShippingSection({
                   {isBg ? "Увеличава продажбите с до 20%" : "Increases sales by up to 20%"}
                 </p>
               </div>
-            </button>
+            </label>
 
             {/* Shipping Price Input */}
             {!freeShipping && (

@@ -1,612 +1,746 @@
-"use client"
+﻿"use client"
 
-import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useEffect, useMemo, useState, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
 import { 
-  Buildings, 
-  User, 
-  ArrowLeft,
-  Package,
-  SignOut,
-  UserCircle,
-  SpinnerGap,
-  Check,
-  CaretRight,
+  ArrowLeft, 
+  Check, 
+  CreditCard, 
+  ChartBar, 
+  Question, 
+  ShieldCheck,
+  Sparkle,
+  Lightning,
   Rocket,
+  User,
+  Storefront,
+  Crown,
+  Star
 } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
-import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase/client"
-import type { User as SupabaseUser } from "@supabase/supabase-js"
-import { PlansGrid, PlansGridSkeleton, type Plan } from "@/components/plan-card"
-import { toast } from "sonner"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import * as PricingCard from "@/components/ui/pricing-card"
+import { createClient } from "@/lib/supabase/client"
+import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
-const faqItems = {
-  en: [
-    { q: "Is it free to list?", a: "Yes! List for FREE within your plan's limit. You only pay when your item sells." },
-    { q: "When do I pay?", a: "Only when you make a sale. We deduct a small % from your earnings - you never pay upfront." },
-    { q: "How much is the fee?", a: "Free plan: 12%. Plus: 9%. Pro: 6%. Business Enterprise: just 3%. The more you sell, the more you save!" },
-    { q: "What if I exceed my listing limit?", a: "Simply upgrade to a higher plan for more listings and lower fees. No surprise charges!" },
-    { q: "Can I switch between plans?", a: "Yes, upgrade or downgrade anytime. Changes take effect immediately." },
-    { q: "Can I cancel anytime?", a: "Yes. Access continues until your billing period ends. No cancellation fees." },
-    { q: "What are boosts?", a: "Boosts increase your listing visibility in search results for 7 days. Paid plans include free boosts!" },
-    { q: "Why should I pay for a plan?", a: "Free plan is great for casual sellers. Paid plans give you more listings, lower fees, and features like analytics and boosts." },
-  ],
-  bg: [
-    { q: "Безплатно ли е да обявя продукт?", a: "Да! Публикувай БЕЗПЛАТНО в рамките на лимита. Плащаш само когато продадеш." },
-    { q: "Кога плащам?", a: "Само при продажба. Удържаме малък % от печалбата ти - никога не плащаш предварително." },
-    { q: "Колко е таксата?", a: "Безплатен план: 12%. Plus: 9%. Pro: 6%. Business Enterprise: само 3%. Колкото повече продаваш, толкова повече спестяваш!" },
-    { q: "Какво става ако надвиша лимита?", a: "Просто надгради към по-висок план за повече обяви и по-ниски такси. Без изненади!" },
-    { q: "Мога ли да сменям планове?", a: "Да, надградете или понижете по всяко време. Промените влизат в сила веднага." },
-    { q: "Мога ли да откажа по всяко време?", a: "Да. Достъпът продължава до края на платения период. Без такси за отказ." },
-    { q: "Какво са бустовете?", a: "Бустовете увеличават видимостта на обявите за 7 дни. Платените планове включват безплатни бустове!" },
-    { q: "Защо да плащам за план?", a: "Безплатният план е страхотен за случайни продавачи. Платените дават повече обяви, по-ниски такси и функции като аналитика и бустове." },
-  ],
+// =============================================================================
+// Types
+// =============================================================================
+
+interface SubscriptionPlanRow {
+  id: string
+  name?: string | null
+  tier?: string | null
+  account_type?: string | null
+  price_monthly?: number | null
+  price_yearly?: number | null
+  final_value_fee?: number | null
+  commission_rate?: number | null
+  max_listings?: number | null
+  boosts_included?: number | null
+  priority_support?: boolean | null
+  description?: string | null
+  features?: unknown
 }
 
-const translations = {
+// Plan icons mapping
+const planIcons: Record<string, React.ReactNode> = {
+  free: <User weight="regular" className="size-4" />,
+  basic: <User weight="regular" className="size-4" />,
+  starter: <Storefront weight="regular" className="size-4" />,
+  premium: <Crown weight="regular" className="size-4" />,
+  pro: <Star weight="regular" className="size-4" />,
+  ultimate: <Rocket weight="regular" className="size-4" />,
+}
+
+// =============================================================================
+// Content
+// =============================================================================
+
+const content = {
   en: {
+    back: "Back",
     title: "Choose your plan",
-    subtitle: "No hidden fees. Cancel anytime.",
+    subtitle: "Start free, upgrade when you're ready. Only pay a fee when you sell.",
     personal: "Personal",
     business: "Business",
     monthly: "Monthly",
     yearly: "Yearly",
-    save: "Save 17%",
-    backToHome: "Back",
-    currentPlan: "Your current plan",
-    signIn: "Sign In",
-    signOut: "Sign Out",
-    faq: "Questions?",
-    startSelling: "Start selling today",
-    startSellingDesc: "Join thousands of sellers. Create your store in minutes.",
-    createStore: "Create Your Store",
-    signUpFree: "Sign Up Free",
+    saveLabel: "Save 20%",
+    getStarted: "Get Started",
+    current: "Current",
+    feeLabel: "fee when sold",
+    nav: {
+      pricing: "Pricing",
+      comparison: "Compare",
+      features: "Features",
+      faq: "FAQ",
+      guarantee: "Guarantee",
+    },
+    features: {
+      title: "Why upgrade?",
+      subtitle: "Unlock powerful tools to grow your business",
+      items: [
+        { icon: "lightning", title: "Lower fees", desc: "Keep more of your earnings with reduced commission rates" },
+        { icon: "rocket", title: "More visibility", desc: "Monthly boosts to get your listings seen by more buyers" },
+        { icon: "sparkle", title: "Priority support", desc: "Get help faster with dedicated support channels" },
+      ],
+    },
+    guarantee: {
+      title: "30-day money-back guarantee",
+      desc: "Try any paid plan risk-free. If you're not satisfied, we'll refund your subscription - no questions asked.",
+    },
+    comparison: {
+      title: "Compare plans side by side",
+      subtitle: "See exactly what's included in each plan",
+      plan: "Plan",
+      price: "Price",
+      fee: "Fee when sold",
+      listings: "Active listings",
+      boosts: "Boosts/month",
+      support: "Priority support",
+      unlimited: "Unlimited",
+      free: "Free",
+    },
+    faq: {
+      title: "Frequently asked questions",
+      subtitle: "Everything you need to know about our plans",
+      items: [
+        {
+          q: "Do I pay anything upfront?",
+          a: "No. Start on the free plan and only pay when you sell. Subscriptions are optional and unlock lower fees.",
+        },
+        {
+          q: "What is the fee when sold?",
+          a: "It's a percentage of the sale price, only charged after a successful sale. No sale = no fee.",
+        },
+        {
+          q: "Can I switch plans anytime?",
+          a: "Yes. Upgrade or downgrade whenever you want. Changes apply immediately with prorated billing.",
+        },
+        {
+          q: "What payment methods do you accept?",
+          a: "We accept Visa, Mastercard, Amex, Apple Pay, and Google Pay via Stripe.",
+        },
+        {
+          q: "Is there a contract or commitment?",
+          a: "No contracts. Cancel anytime. Monthly plans renew monthly, yearly plans renew annually.",
+        },
+        {
+          q: "What happens when I cancel?",
+          a: "You keep your benefits until the end of your billing period. After that, you'll be moved to the free plan.",
+        },
+      ],
+    },
   },
   bg: {
+    back: "Назад",
     title: "Изберете план",
-    subtitle: "Без скрити такси. Отказ по всяко време.",
+    subtitle: "Започнете безплатно, надградете когато сте готови. Плащате само при продажба.",
     personal: "Личен",
     business: "Бизнес",
     monthly: "Месечно",
     yearly: "Годишно",
-    save: "Спестете 17%",
-    backToHome: "Назад",
-    currentPlan: "Вашият текущ план",
-    signIn: "Вход",
-    signOut: "Изход",
-    faq: "Въпроси?",
-    startSelling: "Започнете да продавате днес",
-    startSellingDesc: "Присъединете се към хиляди продавачи. Създайте магазин за минути.",
-    createStore: "Създайте магазин",
-    signUpFree: "Регистрация",
-  }
+    saveLabel: "Спестете 20%",
+    getStarted: "Започни",
+    current: "Текущ",
+    feeLabel: "такса при продажба",
+    nav: {
+      pricing: "Цени",
+      comparison: "Сравнение",
+      features: "Предимства",
+      faq: "Въпроси",
+      guarantee: "Гаранция",
+    },
+    features: {
+      title: "Защо да надградите?",
+      subtitle: "Отключете мощни инструменти за растеж",
+      items: [
+        { icon: "lightning", title: "По-ниски такси", desc: "Запазете повече от приходите си с намалени комисиони" },
+        { icon: "rocket", title: "Повече видимост", desc: "Месечни бустове за повече гледания на обявите ви" },
+        { icon: "sparkle", title: "Приоритетна поддръжка", desc: "Получете помощ по-бързо с директна връзка" },
+      ],
+    },
+    guarantee: {
+      title: "30-дневна гаранция за връщане",
+      desc: "Пробвайте всеки платен план без риск. Ако не сте доволни, ще възстановим сумата.",
+    },
+    comparison: {
+      title: "Сравнете плановете",
+      subtitle: "Вижте точно какво включва всеки план",
+      plan: "План",
+      price: "Цена",
+      fee: "Такса при продажба",
+      listings: "Активни обяви",
+      boosts: "Бустове/месец",
+      support: "Приоритетна поддръжка",
+      unlimited: "Неограничено",
+      free: "Безплатно",
+    },
+    faq: {
+      title: "Често задавани въпроси",
+      subtitle: "Всичко, което трябва да знаете за плановете",
+      items: [
+        {
+          q: "Плащам ли нещо предварително?",
+          a: "Не. Започнете с безплатен план и плащайте само при продажба.",
+        },
+        {
+          q: "Каква е таксата при продажба?",
+          a: "Процент от продажната цена, само след успешна продажба. Няма продажба = няма такса.",
+        },
+        {
+          q: "Мога ли да сменя плана?",
+          a: "Да. Надградете или понижете когато искате. Промените са незабавни с пропорционално фактуриране.",
+        },
+        {
+          q: "Какви методи на плащане приемате?",
+          a: "Приемаме Visa, Mastercard, Amex, Apple Pay и Google Pay чрез Stripe.",
+        },
+        {
+          q: "Има ли договор или ангажимент?",
+          a: "Без договори. Откажете по всяко време. Месечните планове се подновяват месечно, годишните - годишно.",
+        },
+        {
+          q: "Какво става при отказ?",
+          a: "Запазвате предимствата до края на периода. След това преминавате към безплатен план.",
+        },
+      ],
+    },
+  },
+}
+
+// =============================================================================
+// Page
+// =============================================================================
+
+// Navigation items for sidebar
+const navItems = [
+  { id: "pricing", icon: CreditCard },
+  { id: "features", icon: Sparkle },
+  { id: "comparison", icon: ChartBar },
+  { id: "guarantee", icon: ShieldCheck },
+  { id: "faq", icon: Question },
+] as const
+
+// Feature icons mapping
+const featureIcons = {
+  lightning: Lightning,
+  rocket: Rocket,
+  sparkle: Sparkle,
 }
 
 export default function PlansPage() {
   const params = useParams()
   const router = useRouter()
   const locale = (params?.locale as string) || "en"
-  const t = translations[locale as keyof typeof translations] || translations.en
-  
+  const t = content[locale as keyof typeof content] || content.en
+
   const [accountType, setAccountType] = useState<"personal" | "business">("personal")
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly")
-  const [plans, setPlans] = useState<Plan[]>([])
+  const [yearly, setYearly] = useState(false)
+  const [plans, setPlans] = useState<SubscriptionPlanRow[]>([])
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<SupabaseUser | null>(null)
-  const [authLoading, setAuthLoading] = useState(true)
-  const [isSigningOut, setIsSigningOut] = useState(false)
-  const [currentTier, setCurrentTier] = useState<string>("basic")
-  const [subscribingPlanId, setSubscribingPlanId] = useState<string | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
+  const [currentTier, setCurrentTier] = useState<string>("free")
+  const [subscribingId, setSubscribingId] = useState<string | null>(null)
+  const [activeSection, setActiveSection] = useState("pricing")
 
-  // Check auth state + fetch seller tier
-  useEffect(() => {
-    const supabase = createClient()
-    
-    async function loadUserAndSeller() {
-      const { data: { user: authUser } } = await supabase.auth.getUser()
-      setUser(authUser)
-      setAuthLoading(false)
-      
-      if (authUser) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('tier, account_type')
-          .eq('id', authUser.id)
-          .single()
-        
-        if (profile) {
-          setCurrentTier(profile.tier || 'basic')
-          if (profile.account_type) {
-            setAccountType(profile.account_type)
-          }
-        }
-      }
+  // Refs for sections
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
+
+  // Scroll to section
+  const scrollToSection = (id: string) => {
+    const el = sectionRefs.current[id]
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" })
     }
-    
-    loadUserAndSeller()
+  }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event: string, session: { user: SupabaseUser | null } | null) => {
-        setUser(session?.user ?? null)
-      }
+  // Track active section on scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id)
+          }
+        })
+      },
+      { rootMargin: "-20% 0px -60% 0px" }
     )
 
-    return () => subscription.unsubscribe()
-  }, [])
+    navItems.forEach(({ id }) => {
+      const el = sectionRefs.current[id]
+      if (el) observer.observe(el)
+    })
 
+    return () => observer.disconnect()
+  }, [loading])
+
+  // Load user & plans
   useEffect(() => {
-    async function fetchPlans() {
-      try {
-        const res = await fetch("/api/plans")
-        if (res.ok) {
-          const data = await res.json()
-          setPlans(data)
-        }
-      } catch (error) {
-        console.error("Failed to fetch plans:", error)
-      } finally {
-        setLoading(false)
+    const supabase = createClient()
+
+    async function init() {
+      const [{ data: { user } }, plansRes] = await Promise.all([
+        supabase.auth.getUser(),
+        fetch("/api/plans"),
+      ])
+
+      if (user) {
+        setUserId(user.id)
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("tier")
+          .eq("id", user.id)
+          .single()
+        if (profile?.tier) setCurrentTier(profile.tier)
       }
+
+      if (plansRes.ok) {
+        const data = await plansRes.json()
+        setPlans(Array.isArray(data) ? data : [])
+      }
+
+      setLoading(false)
     }
-    fetchPlans()
+
+    init()
   }, [])
 
-  const handleSignOut = async () => {
-    setIsSigningOut(true)
+  // Filter plans by account type
+  const filteredPlans = useMemo(() => {
+    return plans.filter((p) => !p.account_type || p.account_type === accountType)
+  }, [plans, accountType])
+
+  // Handle plan selection
+  const handleSelect = async (planId: string, price: number, isCurrent: boolean) => {
+    if (!userId) {
+      router.push(`/${locale}/auth/login?next=/${locale}/plans`)
+      return
+    }
+
+    if (isCurrent) return
+
+    setSubscribingId(planId)
+
     try {
-      const supabase = createClient()
-      await supabase.auth.signOut()
-      setUser(null)
-    } catch (error) {
-      console.error('Sign out error:', error)
+      if (price === 0) {
+        // Free plan - direct downgrade
+        const supabase = createClient()
+        const { error } = await supabase
+          .from("profiles")
+          .update({ tier: "free" })
+          .eq("id", userId)
+
+        if (error) throw error
+
+        setCurrentTier("free")
+        toast.success(locale === "bg" ? "Планът е сменен" : "Plan changed")
+      } else {
+        // Paid plan - redirect to Stripe
+        const res = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            planId,
+            yearly,
+            locale,
+          }),
+        })
+
+        if (!res.ok) throw new Error("Checkout failed")
+
+        const { url } = await res.json()
+        if (url) window.location.href = url
+      }
+    } catch {
+      toast.error(locale === "bg" ? "Грешка" : "Error")
     } finally {
-      setIsSigningOut(false)
+      setSubscribingId(null)
     }
   }
 
-  const handleSelectPlan = async (plan: Plan) => {
-    // If not logged in, redirect to sell page (which handles auth)
-    if (!user) {
-      router.push(`/${locale}/sell`)
-      return
-    }
-
-    // If already on this plan, do nothing
-    if (plan.tier === currentTier) {
-      return
-    }
-
-    // Free plan - just show info
-    if (plan.price_monthly === 0) {
-      toast.info(locale === "bg" ? "Това е безплатният план" : "This is the free plan")
-      return
-    }
-
-    setSubscribingPlanId(plan.id)
-    
-    try {
-      const response = await fetch('/api/subscriptions/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          planId: plan.id,
-          billingPeriod,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session')
-      }
-
-      if (data.url) {
-        window.location.href = data.url
-      }
-    } catch (error) {
-      console.error('Checkout error:', error)
-      toast.error(locale === "bg" ? "Грешка при плащане" : "Payment error")
-    } finally {
-      setSubscribingPlanId(null)
-    }
+  // Format price
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-US", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price)
   }
-
-  const filteredPlans = plans.filter(p => p.account_type === accountType)
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Minimal Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b">
-        <div className="container max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link 
-            href={`/${locale}`}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="size-4" />
-            <span className="text-sm font-medium">{t.backToHome}</span>
-          </Link>
-          
-          <Link href={`/${locale}`} className="flex items-center gap-2">
-            <div className="size-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-              <Package weight="bold" className="size-5 text-white" />
-            </div>
-            <span className="font-bold text-lg hidden sm:block">Amazong</span>
-          </Link>
-          
-          {authLoading ? (
-            <div className="w-20 h-9 bg-muted rounded-md animate-pulse" />
-          ) : user ? (
-            <div className="flex items-center gap-2">
-              <Link href={`/${locale}/account`}>
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <UserCircle className="size-4" weight="fill" />
-                  <span className="hidden sm:inline max-w-24 truncate">
-                    {user.email?.split('@')[0]}
-                  </span>
-                </Button>
-              </Link>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={handleSignOut}
-                disabled={isSigningOut}
-                className="text-muted-foreground"
-              >
-                {isSigningOut ? (
-                  <SpinnerGap className="size-4 animate-spin" />
-                ) : (
-                  <SignOut className="size-4" />
-                )}
-              </Button>
-            </div>
-          ) : (
-            <Link href={`/${locale}/auth/login`}>
-              <Button variant="outline" size="sm">
-                {t.signIn}
-              </Button>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href={`/${locale}`}>
+              <ArrowLeft className="mr-2 size-4" />
+              {t.back}
             </Link>
-          )}
+          </Button>
+
+          {/* Navigation */}
+          <nav className="hidden items-center gap-1 md:flex">
+            {navItems.map(({ id, icon: Icon }) => (
+              <Button
+                key={id}
+                variant="ghost"
+                size="sm"
+                onClick={() => scrollToSection(id)}
+                className={cn(
+                  "gap-2 text-muted-foreground",
+                  activeSection === id && "bg-muted text-foreground"
+                )}
+              >
+                <Icon className="size-4" weight={activeSection === id ? "fill" : "regular"} />
+                <span className="text-sm">{t.nav[id as keyof typeof t.nav]}</span>
+              </Button>
+            ))}
+          </nav>
+
+          <div className="w-20" /> {/* Spacer for balance */}
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container max-w-5xl mx-auto px-4 py-8 md:py-12 flex-1">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-2">
-            {t.title}
-          </h1>
-          <p className="text-muted-foreground">
-            {t.subtitle}
-          </p>
-        </div>
-
-        {/* Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-          {/* Account Type Toggle */}
-          <div className="inline-flex p-1 rounded-xl bg-muted/60 border">
-            <button
-              onClick={() => setAccountType("personal")}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
-                accountType === "personal"
-                  ? "bg-background shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <User weight={accountType === "personal" ? "fill" : "regular"} className="size-4" />
-              {t.personal}
-            </button>
-            <button
-              onClick={() => setAccountType("business")}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
-                accountType === "business"
-                  ? "bg-background shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Buildings weight={accountType === "business" ? "fill" : "regular"} className="size-4" />
-              {t.business}
-            </button>
-          </div>
-
-          <div className="hidden sm:block w-px h-8 bg-border" />
-
-          {/* Billing Toggle */}
-          <div className="flex items-center gap-3">
-            <span className={cn(
-              "text-sm font-medium transition-colors",
-              billingPeriod === "monthly" ? "text-foreground" : "text-muted-foreground"
-            )}>
-              {t.monthly}
-            </span>
-            <Switch 
-              checked={billingPeriod === "yearly"}
-              onCheckedChange={(checked) => setBillingPeriod(checked ? "yearly" : "monthly")}
-            />
-            <span className={cn(
-              "text-sm font-medium transition-colors flex items-center gap-1.5",
-              billingPeriod === "yearly" ? "text-foreground" : "text-muted-foreground"
-            )}>
-              {t.yearly}
-              <Badge variant="secondary" className="text-xs bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
-                {t.save}
-              </Badge>
-            </span>
-          </div>
-        </div>
-
-        {/* Current Plan Indicator (when logged in) */}
-        {user && currentTier !== "basic" && (
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Badge variant="outline" className="gap-1.5 px-3 py-1.5">
-              <Check weight="bold" className="size-3 text-emerald-500" />
-              {t.currentPlan}: <span className="font-semibold capitalize">{currentTier}</span>
-            </Badge>
-          </div>
-        )}
-
-        {/* Plans Grid */}
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={accountType}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
+      <main className="mx-auto max-w-7xl px-4 py-12">
+          {/* Hero */}
+          <section 
+            id="pricing" 
+            ref={(el) => { sectionRefs.current.pricing = el }}
+            className="mb-12 scroll-mt-20 text-center"
           >
-            {loading ? (
-              <PlansGridSkeleton count={accountType === "personal" ? 2 : 3} variant="full" />
-            ) : (
-              <PlansGrid
-                plans={filteredPlans}
-                locale={locale}
-                billingPeriod={billingPeriod}
-                currentTier={currentTier}
-                loadingPlanId={subscribingPlanId}
-                onSelectPlan={handleSelectPlan}
-                variant="full"
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{t.title}</h1>
+            <p className="mx-auto mt-3 max-w-md text-muted-foreground">{t.subtitle}</p>
+          </section>
 
+          {/* Toggles */}
+          <div className="mb-10 flex flex-col items-center justify-center gap-6 sm:flex-row sm:gap-10">
+            {/* Account Type Toggle */}
+            <div className="flex items-center gap-3 rounded-full border bg-muted/30 p-1">
+              <button
+                onClick={() => setAccountType("personal")}
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                  accountType === "personal"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {t.personal}
+              </button>
+              <button
+                onClick={() => setAccountType("business")}
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                  accountType === "business"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {t.business}
+              </button>
+            </div>
+
+            {/* Billing Toggle */}
+            <div className="flex items-center gap-3">
+              <span className={cn("text-sm", !yearly && "font-medium")}>{t.monthly}</span>
+              <Switch checked={yearly} onCheckedChange={setYearly} />
+              <span className={cn("text-sm", yearly && "font-medium")}>{t.yearly}</span>
+              {yearly && (
+                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                  {t.saveLabel}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Plans Grid */}
+          <section className="mb-16">
+            <div>
+              {loading ? (
+                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="rounded-xl border p-1.5">
+                      <div className="rounded-xl bg-muted/50 p-4">
+                        <div className="mb-6 h-5 w-20 animate-pulse rounded bg-muted" />
+                        <div className="mb-3 h-8 w-16 animate-pulse rounded bg-muted" />
+                        <div className="h-9 w-full animate-pulse rounded bg-muted" />
+                      </div>
+                      <div className="space-y-2 p-3">
+                        {Array.from({ length: 4 }).map((_, j) => (
+                          <div key={j} className="h-4 w-full animate-pulse rounded bg-muted" />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {filteredPlans.map((plan) => {
+                    const price = yearly ? (plan.price_yearly ?? 0) : (plan.price_monthly ?? 0)
+                    const originalPrice = yearly ? (plan.price_monthly ?? 0) * 12 : null
+                    const isCurrent = plan.tier === currentTier || (currentTier === "free" && plan.tier === "basic")
+                    const isPopular = plan.tier === "premium"
+                    const features = Array.isArray(plan.features) ? (plan.features as string[]).slice(0, 5) : []
+                    const fee = plan.final_value_fee ?? plan.commission_rate ?? 0
+                    const icon = planIcons[plan.tier?.toLowerCase() ?? "basic"] ?? <User weight="regular" className="size-4" />
+
+                    return (
+                      <PricingCard.Card key={plan.id}>
+                        <PricingCard.Header>
+                          <PricingCard.Plan>
+                            <PricingCard.PlanName>
+                              {icon}
+                              <span>{plan.name}</span>
+                            </PricingCard.PlanName>
+                            {isPopular && <PricingCard.Badge>Popular</PricingCard.Badge>}
+                            {isCurrent && <PricingCard.Badge>{t.current}</PricingCard.Badge>}
+                          </PricingCard.Plan>
+                          <PricingCard.Price>
+                            <PricingCard.MainPrice>
+                              {price === 0 ? t.comparison.free : `€${price}`}
+                            </PricingCard.MainPrice>
+                            {price > 0 && (
+                              <PricingCard.Period>
+                                /{yearly ? (locale === "bg" ? "год" : "yr") : (locale === "bg" ? "мес" : "mo")}
+                              </PricingCard.Period>
+                            )}
+                            {yearly && originalPrice && originalPrice > price && (
+                              <PricingCard.OriginalPrice>€{originalPrice}</PricingCard.OriginalPrice>
+                            )}
+                          </PricingCard.Price>
+                          <PricingCard.Fee>{fee}% {t.feeLabel}</PricingCard.Fee>
+                          <Button
+                            className="mt-3 w-full"
+                            size="sm"
+                            disabled={isCurrent || subscribingId === plan.id}
+                            onClick={() => handleSelect(plan.id, price, isCurrent)}
+                          >
+                            {subscribingId === plan.id ? "..." : isCurrent ? t.current : t.getStarted}
+                          </Button>
+                        </PricingCard.Header>
+
+                        <PricingCard.Body>
+                          <PricingCard.Description>{plan.description}</PricingCard.Description>
+                          <PricingCard.List>
+                            {features.map((feature, i) => (
+                              <PricingCard.ListItem key={i}>
+                                <Check weight="bold" className="mt-0.5 size-3.5 shrink-0" />
+                                <span>{feature}</span>
+                              </PricingCard.ListItem>
+                            ))}
+                          </PricingCard.List>
+                        </PricingCard.Body>
+                      </PricingCard.Card>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Features Section */}
+          <section 
+            id="features" 
+            ref={(el) => { sectionRefs.current.features = el }}
+            className="mb-16 scroll-mt-20"
+          >
+            <div className="mb-10 text-center">
+              <h2 className="text-2xl font-bold tracking-tight">{t.features.title}</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">{t.features.subtitle}</p>
+            </div>
+
+            <div className="grid gap-px overflow-hidden rounded-xl border bg-border sm:grid-cols-3">
+              {t.features.items.map((feature, i) => {
+                const Icon = featureIcons[feature.icon as keyof typeof featureIcons]
+                return (
+                  <div key={i} className="flex flex-col items-center bg-background p-8 text-center">
+                    <div className="mb-4 flex size-11 items-center justify-center rounded-lg bg-primary/10">
+                      <Icon className="size-5 text-primary" weight="fill" />
+                    </div>
+                    <h3 className="text-sm font-semibold">{feature.title}</h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{feature.desc}</p>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+
+          {/* Comparison Table */}
+          <section 
+            id="comparison" 
+            ref={(el) => { sectionRefs.current.comparison = el }}
+            className="mb-16 scroll-mt-20"
+          >
+            <div className="mb-10 text-center">
+              <h2 className="text-2xl font-bold tracking-tight">{t.comparison.title}</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">{t.comparison.subtitle}</p>
+            </div>
+
+            <div className="overflow-hidden rounded-xl border">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="h-12 w-[220px] pl-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.comparison.plan}</TableHead>
+                    <TableHead className="h-12 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.comparison.price}</TableHead>
+                    <TableHead className="h-12 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.comparison.fee}</TableHead>
+                    <TableHead className="h-12 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.comparison.listings}</TableHead>
+                    <TableHead className="h-12 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.comparison.boosts}</TableHead>
+                    <TableHead className="h-12 pr-4 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.comparison.support}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredPlans.map((plan, index) => {
+                    const price = yearly ? (plan.price_yearly ?? 0) : (plan.price_monthly ?? 0)
+                    const isCurrent = plan.tier === currentTier || (currentTier === "free" && plan.tier === "basic")
+                    const isPopular = plan.tier === "premium"
+                    
+                    return (
+                      <TableRow 
+                        key={plan.id} 
+                        className={cn(
+                          "h-16",
+                          index === filteredPlans.length - 1 && "border-0",
+                          isPopular && "bg-primary/5"
+                        )}
+                      >
+                        <TableCell className="pl-4">
+                          <div className="flex items-center gap-3">
+                            <div className={cn(
+                              "flex size-9 items-center justify-center rounded-lg",
+                              isPopular ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                            )}>
+                              {planIcons[plan.tier ?? "free"]}
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="font-medium">{plan.name}</span>
+                              {(isCurrent || isPopular) && (
+                                <span className={cn(
+                                  "text-xs",
+                                  isCurrent ? "text-primary" : "text-muted-foreground"
+                                )}>
+                                  {isCurrent ? t.current : "Most popular"}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <span className="text-base font-bold tabular-nums">
+                            {price === 0 ? t.comparison.free : formatPrice(price)}
+                          </span>
+                          {price > 0 && (
+                            <span className="text-xs text-muted-foreground">
+                              /{yearly ? (locale === "bg" ? "год" : "yr") : (locale === "bg" ? "мес" : "mo")}
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <span className="font-semibold tabular-nums">{plan.final_value_fee ?? plan.commission_rate ?? 0}%</span>
+                        </TableCell>
+                        <TableCell className="text-center tabular-nums">
+                          {plan.max_listings == null || plan.max_listings >= 9999
+                            ? <span className="text-primary font-medium">{t.comparison.unlimited}</span>
+                            : plan.max_listings}
+                        </TableCell>
+                        <TableCell className="text-center tabular-nums">
+                          {(plan.boosts_included ?? 0) >= 999 
+                            ? <span className="text-primary font-medium">∞</span> 
+                            : plan.boosts_included ?? 0}
+                        </TableCell>
+                        <TableCell className="pr-4 text-center">
+                          {plan.priority_support ? (
+                            <Check weight="bold" className="mx-auto size-5 text-primary" />
+                          ) : (
+                            <span className="text-muted-foreground/40">—</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </section>
+
+          {/* Guarantee Section */}
+          <section 
+            id="guarantee" 
+            ref={(el) => { sectionRefs.current.guarantee = el }}
+            className="mb-16 scroll-mt-20"
+          >
+            <div className="flex flex-col items-center gap-4 rounded-xl border border-primary/20 bg-primary/5 p-8 text-center sm:flex-row sm:text-left">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                <ShieldCheck className="size-6 text-primary" weight="fill" />
+              </div>
+              <div>
+                <h3 className="font-semibold">{t.guarantee.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{t.guarantee.desc}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* FAQ */}
+          <section 
+            id="faq" 
+            ref={(el) => { sectionRefs.current.faq = el }}
+            className="scroll-mt-20"
+          >
+            <div className="mb-10 text-center">
+              <h2 className="text-2xl font-bold tracking-tight">{t.faq.title}</h2>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">{t.faq.subtitle}</p>
+            </div>
+
+            <div className="overflow-hidden rounded-xl border">
+              <Accordion type="single" collapsible className="w-full">
+                {t.faq.items.map((item, i) => (
+                  <AccordionItem key={i} value={`q${i}`} className="border-b px-0 last:border-0">
+                    <AccordionTrigger className="px-5 py-4 text-left text-sm hover:no-underline data-[state=open]:bg-muted/30">
+                      {item.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="px-5 pb-4 text-sm text-muted-foreground">
+                      {item.a}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </section>
       </main>
 
-      {/* How Fees Work Section */}
-      <section className="py-12 md:py-16 bg-gradient-to-b from-background to-muted/30">
-        <div className="container max-w-4xl mx-auto px-4">
-          <h2 className="text-xl md:text-2xl font-bold text-center mb-2">
-            {locale === "bg" ? "Как работят таксите?" : "How do fees work?"}
-          </h2>
-          <p className="text-muted-foreground text-center mb-8 max-w-xl mx-auto">
-            {locale === "bg" 
-              ? "Всички такси се плащат от продавача. Купувачите никога не плащат такси."
-              : "All fees are paid by sellers from their earnings. Buyers never pay fees."}
-          </p>
-          
-          {/* Fee Cards */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4 mb-10">
-            {/* Subscription */}
-            <div className="bg-card border rounded-xl p-4 text-center">
-              <div className="size-10 mx-auto mb-3 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Package weight="duotone" className="size-5 text-primary" />
-              </div>
-              <h3 className="font-semibold mb-1 text-sm">
-                {locale === "bg" ? "Абонамент" : "Subscription"}
-              </h3>
-              <p className="text-xs text-muted-foreground mb-2">
-                {locale === "bg" ? "Месечна/годишна такса за план" : "Monthly/yearly plan fee"}
-              </p>
-              <p className="text-lg font-bold text-primary">$0 - $200</p>
-              <p className="text-[10px] text-muted-foreground mt-1">
-                {locale === "bg" ? "По-високи планове = по-ниски такси" : "Higher plans = lower fees"}
-              </p>
-            </div>
-            
-            {/* Final Value Fee */}
-            <div className="bg-card border rounded-xl p-4 text-center">
-              <div className="size-10 mx-auto mb-3 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                <span className="text-lg font-bold text-amber-500">%</span>
-              </div>
-              <h3 className="font-semibold mb-1 text-sm">
-                {locale === "bg" ? "Такса продажба" : "Sale Fee (FVF)"}
-              </h3>
-              <p className="text-xs text-muted-foreground mb-2">
-                {locale === "bg" ? "% от цената при продажба" : "% of price when item sells"}
-              </p>
-              <p className="text-lg font-bold text-amber-500">3% - 12%</p>
-              <p className="text-[10px] text-muted-foreground mt-1">
-                {locale === "bg" ? "По-нисък от eBay (13%)" : "Lower than eBay (13%)"}
-              </p>
-            </div>
-            
-            {/* Per-Order Fee */}
-            <div className="bg-card border rounded-xl p-4 text-center">
-              <div className="size-10 mx-auto mb-3 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                <span className="text-lg font-bold text-emerald-500">$</span>
-              </div>
-              <h3 className="font-semibold mb-1 text-sm">
-                {locale === "bg" ? "Такса поръчка" : "Per-Order Fee"}
-              </h3>
-              <p className="text-xs text-muted-foreground mb-2">
-                {locale === "bg" ? "Фиксирана такса за обработка" : "Flat fee for payment processing"}
-              </p>
-              <p className="text-lg font-bold text-emerald-500">0 - 0.25 лв</p>
-              <p className="text-[10px] text-muted-foreground mt-1">
-                {locale === "bg" ? "Enterprise: БЕЗ такса!" : "Enterprise: NO fee!"}
-              </p>
-            </div>
-            
-            {/* Insertion Fee */}
-            <div className="bg-card border rounded-xl p-4 text-center">
-              <div className="size-10 mx-auto mb-3 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <span className="text-lg font-bold text-blue-500">+</span>
-              </div>
-              <h3 className="font-semibold mb-1 text-sm">
-                {locale === "bg" ? "Такса обява" : "Insertion Fee"}
-              </h3>
-              <p className="text-xs text-muted-foreground mb-2">
-                {locale === "bg" ? "За обяви над безплатния лимит" : "For listings over free allowance"}
-              </p>
-              <p className="text-lg font-bold text-blue-500">0 - 0.30 лв</p>
-              <p className="text-[10px] text-muted-foreground mt-1">
-                {locale === "bg" ? "Безплатни обяви: 50-∞" : "Free listings: 50-∞"}
-              </p>
-            </div>
-          </div>
-          
-          {/* Example Calculation */}
-          <div className="bg-card border rounded-xl p-5 max-w-md mx-auto">
-            <h3 className="font-semibold mb-3 text-center">
-              {locale === "bg" ? "Пример: Продажба на 50 лв" : "Example: Selling a 50 лв item"}
-            </h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{locale === "bg" ? "Цена на артикула" : "Item price"}</span>
-                <span className="font-medium">50.00 лв</span>
-              </div>
-              <div className="flex justify-between text-amber-600">
-                <span>{locale === "bg" ? "Такса продажба (8%)" : "Sale fee (8%)"}</span>
-                <span>-4.00 лв</span>
-              </div>
-              <div className="flex justify-between text-emerald-600">
-                <span>{locale === "bg" ? "Такса поръчка" : "Per-order fee"}</span>
-                <span>-0.20 лв</span>
-              </div>
-              <div className="border-t pt-2 flex justify-between font-bold">
-                <span>{locale === "bg" ? "Вие получавате" : "You receive"}</span>
-                <span className="text-lg">45.80 лв</span>
-              </div>
-              <p className="text-[10px] text-muted-foreground text-center pt-2">
-                {locale === "bg" 
-                  ? "* Пример с Basic план ($15/мес). По-високите планове = по-малко такси!"
-                  : "* Example with Basic plan ($15/mo). Higher plans = even less fees!"}
-              </p>
-            </div>
-          </div>
-          
-          {/* Comparison Table */}
-          <div className="mt-8 bg-card border rounded-xl p-4 overflow-x-auto">
-            <h3 className="font-semibold text-center mb-4">
-              {locale === "bg" ? "Сравнение с други платформи" : "How we compare"}
-            </h3>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2 pr-4">{locale === "bg" ? "Платформа" : "Platform"}</th>
-                  <th className="text-center py-2 px-2">{locale === "bg" ? "Такса продажба" : "Sale Fee"}</th>
-                  <th className="text-center py-2 px-2">{locale === "bg" ? "На поръчка" : "Per-Order"}</th>
-                  <th className="text-center py-2 pl-4">{locale === "bg" ? "Абонамент" : "Subscription"}</th>
-                </tr>
-              </thead>
-              <tbody className="text-muted-foreground">
-                <tr className="border-b">
-                  <td className="py-2 pr-4 font-medium text-foreground">eBay</td>
-                  <td className="text-center py-2 px-2">12.7-14.9%</td>
-                  <td className="text-center py-2 px-2">$0.30-0.40</td>
-                  <td className="text-center py-2 pl-4">$4.95-299/mo</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-2 pr-4 font-medium text-foreground">Amazon</td>
-                  <td className="text-center py-2 px-2">8-17%*</td>
-                  <td className="text-center py-2 px-2">$0.99/item†</td>
-                  <td className="text-center py-2 pl-4">$39.99/mo</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-2 pr-4 font-medium text-foreground">Etsy</td>
-                  <td className="text-center py-2 px-2">6.5% + 3%</td>
-                  <td className="text-center py-2 px-2">$0.20</td>
-                  <td className="text-center py-2 pl-4">$15/mo</td>
-                </tr>
-                <tr className="bg-primary/5">
-                  <td className="py-2 pr-4 font-bold text-primary">Amazong</td>
-                  <td className="text-center py-2 px-2 font-bold text-primary">3-12%</td>
-                  <td className="text-center py-2 px-2 font-bold text-primary">0-0.25 лв</td>
-                  <td className="text-center py-2 pl-4 font-bold text-primary">$0-200/mo</td>
-                </tr>
-              </tbody>
-            </table>
-            <p className="text-[10px] text-muted-foreground mt-3 text-center">
-              {locale === "bg" 
-                ? "* Amazon: 8% за електроника, 15% за повечето, до 20% за бижута. † Без Pro план."
-                : "* Amazon: 8% electronics, 15% most categories, up to 20% jewelry. † Without Pro plan."}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-12 md:py-16 bg-muted/30">
-        <div className="container max-w-2xl mx-auto px-4">
-          <h2 className="text-xl font-semibold text-center mb-6">{t.faq}</h2>
-          <Accordion type="single" collapsible className="space-y-2">
-            {faqItems[locale as keyof typeof faqItems]?.map((item, i) => (
-              <AccordionItem 
-                key={i} 
-                value={`faq-${i}`}
-                className="bg-card border rounded-lg px-4 data-[state=open]:shadow-sm"
-              >
-                <AccordionTrigger className="text-left text-sm font-medium py-3 hover:no-underline">
-                  {item.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground pb-3">
-                  {item.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      {!user && (
-        <section className="py-12 md:py-16 px-4">
-          <div className="container max-w-3xl mx-auto text-center">
-            <div className="bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 rounded-2xl p-6 md:p-10 border border-primary/20">
-              <div className="inline-flex items-center justify-center size-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 mb-4">
-                <Rocket weight="fill" className="size-6 text-white" />
-              </div>
-              <h2 className="text-xl md:text-2xl font-bold mb-2">{t.startSelling}</h2>
-              <p className="text-muted-foreground text-sm mb-5 max-w-md mx-auto">
-                {t.startSellingDesc}
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Button size="lg" onClick={() => router.push(`/${locale}/sell`)}>
-                  {t.createStore}
-                  <CaretRight className="size-4 ml-1" />
-                </Button>
-                <Button size="lg" variant="outline" onClick={() => router.push(`/${locale}/auth/sign-up`)}>
-                  {t.signUpFree}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Footer */}
-      <footer className="border-t mt-auto">
-        <div className="container max-w-5xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© 2025 Amazong</p>
-          <div className="flex items-center gap-6">
-            <Link href={`/${locale}/terms`} className="hover:text-foreground transition-colors">
+      <footer className="border-t">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row">
+          <span className="text-sm text-muted-foreground">© 2025 Amazong</span>
+          <div className="flex gap-6 text-sm">
+            <Link href={`/${locale}/terms`} className="text-muted-foreground hover:text-foreground">
               {locale === "bg" ? "Условия" : "Terms"}
             </Link>
-            <Link href={`/${locale}/privacy`} className="hover:text-foreground transition-colors">
+            <Link href={`/${locale}/privacy`} className="text-muted-foreground hover:text-foreground">
               {locale === "bg" ? "Поверителност" : "Privacy"}
+            </Link>
+            <Link href={`/${locale}/contact`} className="text-muted-foreground hover:text-foreground">
+              {locale === "bg" ? "Контакт" : "Contact"}
             </Link>
           </div>
         </div>

@@ -19,7 +19,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login")
+    redirect(`/${locale}/auth/login`)
   }
 
   const {
@@ -27,7 +27,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login")
+    redirect(`/${locale}/auth/login`)
   }
 
   // Fetch all user stats in parallel (no joins)

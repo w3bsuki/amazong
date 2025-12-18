@@ -91,7 +91,7 @@ function ProgressHeader({
               />
               <span className={cn(
                 "text-xs font-semibold tabular-nums min-w-[3rem] text-right",
-                isComplete ? "text-green-600" : "text-muted-foreground"
+                isComplete ? "text-status-complete" : "text-muted-foreground"
               )}>
                 {progressPercent}%
               </span>
@@ -114,8 +114,8 @@ function ProgressHeader({
                 </>
               ) : autoSaved ? (
                 <>
-                  <CloudCheck className="size-3.5 text-green-600" />
-                  <span className="text-green-600 hidden sm:inline">
+                  <CloudCheck className="size-3.5 text-status-complete" />
+                  <span className="text-status-complete hidden sm:inline">
                     {isBg ? "Запазено" : "Saved"}
                   </span>
                 </>
@@ -145,7 +145,7 @@ function ProgressHeader({
             <Progress value={progressPercent} className="h-1.5 flex-1" />
             <span className={cn(
               "text-xs font-medium tabular-nums",
-              isComplete ? "text-green-600" : "text-muted-foreground"
+              isComplete ? "text-status-complete" : "text-muted-foreground"
             )}>
               {progressPercent}%
             </span>
@@ -185,7 +185,7 @@ function ChecklistSidebar({
             <div className={cn(
               "size-6 rounded-full flex items-center justify-center shrink-0 transition-all",
               item.completed 
-                ? "bg-green-600 text-white" 
+                ? "bg-status-complete text-white" 
                 : "border-2 border-border text-transparent"
             )}>
               {item.completed && <Check className="size-3.5" weight="bold" />}
@@ -233,7 +233,7 @@ function MobileFooter({
           className={cn(
             "w-full h-12 text-base font-semibold rounded-lg gap-2 transition-colors",
             isComplete
-              ? "bg-green-600 hover:bg-green-700"
+              ? "bg-success hover:bg-success/90"
               : "bg-primary hover:bg-primary/90"
           )}
         >
@@ -527,7 +527,7 @@ export function SellForm({
                   className={cn(
                     "w-full h-12 text-base font-semibold rounded-lg gap-2 transition-colors",
                     progressPercent === 100
-                      ? "bg-green-600 hover:bg-green-700"
+                      ? "bg-success hover:bg-success/90"
                       : "bg-primary hover:bg-primary/90"
                   )}
                 >
@@ -575,15 +575,15 @@ export function SellForm({
                 </div>
                 <ul className="space-y-2 text-xs text-muted-foreground">
                   <li className="flex items-start gap-2">
-                    <Check className="size-3.5 mt-0.5 text-green-600 shrink-0" />
+                    <Check className="size-3.5 mt-0.5 text-status-complete shrink-0" />
                     {isBg ? "Качествени снимки увеличават продажбите" : "Quality photos increase sales"}
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="size-3.5 mt-0.5 text-green-600 shrink-0" />
+                    <Check className="size-3.5 mt-0.5 text-status-complete shrink-0" />
                     {isBg ? "Подробно описание изгражда доверие" : "Detailed descriptions build trust"}
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="size-3.5 mt-0.5 text-green-600 shrink-0" />
+                    <Check className="size-3.5 mt-0.5 text-status-complete shrink-0" />
                     {isBg ? "Конкурентна цена привлича купувачи" : "Competitive pricing attracts buyers"}
                   </li>
                 </ul>

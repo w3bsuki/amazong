@@ -120,7 +120,7 @@ export function CookieConsent() {
                         <div className="flex items-center gap-4 shrink-0">
                             <button 
                                 onClick={handleManagePreferences}
-                                className="text-sm text-primary-foreground/60 hover:text-primary-foreground hover:underline underline-offset-2 whitespace-nowrap transition-colors"
+                                className="text-sm text-primary-foreground/90 hover:text-primary-foreground hover:underline underline-offset-2 whitespace-nowrap transition-colors"
                             >
                                 {t('managePreferences')}
                             </button>

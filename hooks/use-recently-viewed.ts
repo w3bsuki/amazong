@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { safeJsonParse } from "@/lib/safe-json"
 
 export interface RecentlyViewedProduct {
   id: string
@@ -28,14 +29,19 @@ export function useRecentlyViewed() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY)
         if (saved) {
-          const parsed = JSON.parse(saved) as RecentlyViewedProduct[]
+          const parsed = safeJsonParse<unknown>(saved)
+          if (!Array.isArray(parsed)) {
+            localStorage.removeItem(STORAGE_KEY)
+            setIsLoaded(true)
+            return
+          }
           // Filter out items older than 30 days
           const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000
-          const filtered = parsed.filter((p) => p.viewedAt > thirtyDaysAgo)
+          const filtered = (parsed as RecentlyViewedProduct[]).filter((p) => p.viewedAt > thirtyDaysAgo)
           setProducts(filtered)
         }
-      } catch (e) {
-        console.error("Failed to load recently viewed products:", e)
+      } catch {
+        // Ignore storage errors
       }
       setIsLoaded(true)
     }

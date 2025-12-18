@@ -93,6 +93,14 @@ export default async function LocaleLayout({
     return (
         <html lang={locale}>
             <head>
+          <meta
+            name="description"
+            content={
+              locale === "bg"
+                ? "Открийте най-добрите продукти на достъпни цени. Бърза доставка в България."
+                : "Discover the best products at affordable prices. Fast delivery."
+            }
+          />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>

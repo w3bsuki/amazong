@@ -9,6 +9,7 @@ import {
   TrendUp,
   Package,
   ArrowRight,
+  Sparkle,
 } from "@phosphor-icons/react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -17,6 +18,7 @@ import { useLocale } from "next-intl"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useProductSearch } from "@/hooks/use-product-search"
+import { AiSearchDialog } from "@/components/ai-search-dialog"
 
 interface MobileSearchOverlayProps {
   className?: string
@@ -53,6 +55,7 @@ export function MobileSearchOverlay({
 
   // State - use external control if provided
   const [internalOpen, setInternalOpen] = React.useState(false)
+  const [isAiOpen, setIsAiOpen] = React.useState(false)
   const isOpen = externalOpen !== undefined ? externalOpen : internalOpen
   
   const setIsOpen = React.useCallback((open: boolean) => {
@@ -199,6 +202,13 @@ export function MobileSearchOverlay({
 
   return (
     <>
+      <AiSearchDialog
+        open={isAiOpen}
+        onOpenChange={(open) => {
+          setIsAiOpen(open)
+          if (open) setIsOpen(false)
+        }}
+      />
       {/* Search Trigger Button - hidden when using external trigger */}
       {!hideDefaultTrigger && (
         <button
@@ -249,7 +259,17 @@ export function MobileSearchOverlay({
           {/* Search Header */}
           <header className="shrink-0 bg-background border-b border-border">
             {/* Close Button Row */}
-            <div className="flex justify-end px-2 pt-2">
+            <div className="flex items-center justify-end gap-2 px-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAiOpen(true)}
+                className="h-10 rounded-full px-3"
+              >
+                <Sparkle size={16} weight="fill" />
+                AI
+              </Button>
               <Button
                 type="button"
                 variant="ghost"

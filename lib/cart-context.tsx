@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
+import { safeJsonParse } from "@/lib/safe-json"
 
 export interface CartItem {
   id: string
@@ -34,12 +35,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Load cart from local storage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem("cart")
-    if (savedCart) {
-      try {
-        setItems(JSON.parse(savedCart))
-      } catch {
-        console.error("Failed to parse cart from local storage")
+    try {
+      const parsed = safeJsonParse<CartItem[]>(savedCart)
+      if (parsed) {
+        setItems(parsed)
+      } else if (savedCart) {
+        // Corrupt/partial data: clear it so it can't break the app or tests.
+        localStorage.removeItem("cart")
       }
+    } catch {
+      // Ignore storage access errors
     }
   }, [])
 

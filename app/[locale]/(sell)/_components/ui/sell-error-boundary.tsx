@@ -1,0 +1,136 @@
+"use client";
+
+import { Component, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { WarningCircle, ArrowCounterClockwise, FloppyDisk, House } from "@phosphor-icons/react";
+import Link from "next/link";
+
+interface SellErrorBoundaryProps {
+  children: ReactNode;
+  /** Callback when error occurs - useful for analytics */
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+  /** Seller ID for draft recovery */
+  sellerId?: string;
+}
+
+interface SellErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+  hasDraft: boolean;
+}
+
+/**
+ * SellErrorBoundary - Error boundary specifically for the sell form
+ * 
+ * Features:
+ * - Checks for saved drafts in localStorage
+ * - Provides recovery options
+ * - Styled to match sell page design
+ */
+export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErrorBoundaryState> {
+  constructor(props: SellErrorBoundaryProps) {
+    super(props);
+    this.state = { 
+      hasError: false, 
+      error: null,
+      hasDraft: false 
+    };
+  }
+
+  static getDerivedStateFromError(error: Error): Partial<SellErrorBoundaryState> {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("[SellErrorBoundary] Error caught:", error, errorInfo);
+    
+    // Check if there's a draft saved
+    if (this.props.sellerId) {
+      const draftKey = `sell-draft-${this.props.sellerId}`;
+      const hasDraft = !!localStorage.getItem(draftKey);
+      this.setState({ hasDraft });
+    }
+    
+    this.props.onError?.(error, errorInfo);
+  }
+
+  handleRetry = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">
+          <Card className="max-w-md w-full rounded-xl">
+            <CardHeader className="text-center pb-2">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
+                <WarningCircle className="h-8 w-8 text-destructive" weight="duotone" />
+              </div>
+              <CardTitle className="text-lg font-semibold">
+                Something went wrong
+              </CardTitle>
+              <CardDescription className="text-sm">
+                {this.state.error?.message || "An unexpected error occurred while loading the sell form."}
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="space-y-4 pt-2">
+              {/* Draft recovery notice */}
+              {this.state.hasDraft && (
+                <div className="flex items-start gap-3 rounded-lg bg-green-50 dark:bg-green-950/30 p-3 text-sm">
+                  <FloppyDisk className="h-5 w-5 text-green-600 shrink-0 mt-0.5" weight="duotone" />
+                  <div>
+                    <p className="font-medium text-green-800 dark:text-green-200">
+                      Draft available
+                    </p>
+                    <p className="text-green-700 dark:text-green-300 text-xs mt-0.5">
+                      Your progress was saved. It will be restored when you retry.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex flex-col gap-2">
+                <Button 
+                  onClick={this.handleRetry}
+                  className="w-full h-touch gap-2"
+                >
+                  <ArrowCounterClockwise className="h-4 w-4" />
+                  Try again
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  asChild
+                  className="w-full h-touch gap-2"
+                >
+                  <Link href="/">
+                    <House className="h-4 w-4" />
+                    Go to homepage
+                  </Link>
+                </Button>
+              </div>
+
+              {/* Technical details (collapsed by default) */}
+              {process.env.NODE_ENV === "development" && this.state.error && (
+                <details className="mt-4">
+                  <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
+                    Technical details
+                  </summary>
+                  <pre className="mt-2 rounded-lg bg-muted p-3 text-xs overflow-auto max-h-40">
+                    {this.state.error.stack}
+                  </pre>
+                </details>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}

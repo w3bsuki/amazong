@@ -28,7 +28,6 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
       link: "/todays-deals",
       image: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=2070&auto=format&fit=crop",
       gradient: "from-black/70 via-black/40 to-black/20",
-      accent: "bg-badge-deal",
     },
     {
       id: 2,
@@ -37,7 +36,6 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
       link: "/search?category=electronics",
       image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop",
       gradient: "from-slate-900/80 via-slate-900/50 to-slate-900/20",
-      accent: "bg-interactive",
     },
     {
       id: 3,
@@ -46,7 +44,6 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
       link: "/search?category=home",
       image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=2158&auto=format&fit=crop",
       gradient: "from-emerald-900/70 via-emerald-900/40 to-emerald-900/20",
-      accent: "bg-interactive",
     },
     {
       id: 4,
@@ -55,7 +52,6 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
       link: "/customer-service",
       image: "https://images.unsplash.com/photo-1580674285054-bed31e145f59?q=80&w=2070&auto=format&fit=crop",
       gradient: "from-indigo-900/75 via-indigo-900/45 to-indigo-900/20",
-      accent: "bg-interactive",
     },
   ]
 
@@ -161,7 +157,7 @@ export function HeroCarousel({ locale = "en" }: HeroCarouselProps) {
                 
                 <Link 
                   href={slide.link}
-                  className={`inline-flex items-center gap-1 sm:gap-2 ${slide.accent} hover:opacity-90 text-white font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-sm text-xs sm:text-sm tap-transparent`}
+                  className="inline-flex items-center gap-1 sm:gap-2 bg-cta-trust-blue hover:bg-cta-trust-blue-hover active:scale-[0.98] text-cta-trust-blue-text font-medium px-4 sm:px-5 py-2 sm:py-2.5 rounded-md text-xs sm:text-sm tap-transparent transition-all duration-200 ease-out shadow-sm hover:shadow-md"
                 >
                   {slide.cta}
                   <CaretRight size={14} weight="regular" className="sm:size-4" />

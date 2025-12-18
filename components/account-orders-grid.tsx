@@ -202,7 +202,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
           return (
             <Sheet key={order.id}>
               <SheetTrigger asChild>
-                <button className="w-full text-left rounded-2xl bg-account-stat-bg border border-account-stat-border p-4 transition-all active:scale-[0.99]">
+                <button className="w-full text-left rounded-2xl bg-account-stat-bg border border-account-stat-border p-4 transition-colors active:bg-muted/30">
                   {/* Header: Price + Date */}
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-lg font-bold text-foreground tabular-nums">

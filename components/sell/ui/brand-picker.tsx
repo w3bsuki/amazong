@@ -156,7 +156,7 @@ export function BrandPicker({
             )}
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Check className="h-4 w-4 text-green-600" weight="bold" />
+            <Check className="h-4 w-4 text-success" weight="bold" />
             <button
               type="button"
               onClick={(e) => {

@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import {
-  CaretDown,
   Sparkle,
   TextB,
   TextItalic,
@@ -16,6 +15,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { CategorySelector } from "@/components/sell/ui/category-modal";
 import { BrandPicker } from "@/components/sell/ui/brand-picker";
@@ -146,10 +152,12 @@ function ItemSpecificsSection({
     const fetchAttributes = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/categories/${categoryId}/attributes`);
+        const response = await fetch(
+          `/api/categories/attributes?categoryId=${encodeURIComponent(categoryId)}&includeParents=true`
+        );
         if (response.ok) {
           const data = await response.json();
-          setCategoryAttributes(data || []);
+          setCategoryAttributes((data?.attributes || []) as CategoryAttribute[]);
         }
       } catch (error) {
         console.error("Failed to fetch category attributes:", error);
@@ -263,21 +271,21 @@ function ItemSpecificsSection({
                   </label>
                   
                   {attr.attribute_type === "select" && attr.options?.length ? (
-                    <div className="relative">
-                      <select
-                        value={currentValue}
-                        onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                        className="block w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary/20 focus:outline-none"
-                      >
-                        <option value="">Select {getName(attr)}</option>
+                    <Select
+                      value={currentValue || undefined}
+                      onValueChange={(value) => handleAttributeChange(attr, value)}
+                    >
+                      <SelectTrigger className="w-full h-10 rounded-lg">
+                        <SelectValue placeholder={`Select ${getName(attr)}`} />
+                      </SelectTrigger>
+                      <SelectContent>
                         {attr.options.map((opt, i) => (
-                          <option key={opt} value={opt}>
+                          <SelectItem key={opt} value={opt}>
                             {locale === "bg" && attr.options_bg?.[i] ? attr.options_bg[i] : opt}
-                          </option>
+                          </SelectItem>
                         ))}
-                      </select>
-                      <CaretDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    </div>
+                      </SelectContent>
+                    </Select>
                   ) : (
                     <Input
                       value={currentValue}

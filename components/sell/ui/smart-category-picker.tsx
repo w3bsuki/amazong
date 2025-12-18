@@ -224,7 +224,7 @@ export function SmartCategoryPicker({
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Check className="size-4 text-green-600" weight="bold" />
+            <Check className="size-4 text-success" weight="bold" />
             <span
               role="button"
               tabIndex={0}

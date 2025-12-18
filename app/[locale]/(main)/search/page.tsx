@@ -1,6 +1,6 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { Link } from "@/i18n/routing"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 import { SearchFilters } from "@/components/search-filters"
 import { SubcategoryTabs } from "@/components/subcategory-tabs"
 import { SearchHeader } from "@/components/search-header"
@@ -10,7 +10,7 @@ import { FilterChips } from "@/components/filter-chips"
 import { SortSelect } from "@/components/sort-select"
 import { SearchPagination } from "@/components/search-pagination"
 import { Suspense } from "react"
-import { setRequestLocale } from "next-intl/server"
+import { setRequestLocale, getTranslations } from "next-intl/server"
 import { connection } from "next/server"
 import { cookies } from "next/headers"
 import type { Metadata } from 'next'
@@ -348,6 +348,9 @@ export default async function SearchPage({
     // brands = [...new Set(products.map(p => p.brand).filter(Boolean))]
   }
 
+  // Get translations for search page UI
+  const t = await getTranslations('SearchFilters')
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container">
@@ -421,14 +424,14 @@ export default async function SearchPage({
             {/* Results count - right aligned, hidden on mobile since it clutters the UI */}
             <p className="hidden sm:block text-sm text-muted-foreground ml-auto whitespace-nowrap">
               <span className="font-semibold text-foreground">{totalProducts}</span>
-              <span> results</span>
+              <span> {t('results')}</span>
               {query && (
                 <span className="hidden lg:inline">
-                  {" "}for <span className="font-medium text-primary">"{query}"</span>
+                  {" "}{t('for')} <span className="font-medium text-primary">&quot;{query}&quot;</span>
                 </span>
               )}
               {currentCategory && !query && (
-                <span className="hidden lg:inline"> in <span className="font-medium">{currentCategory.name}</span></span>
+                <span className="hidden lg:inline"> {t('in')} <span className="font-medium">{locale === 'bg' && currentCategory.name_bg ? currentCategory.name_bg : currentCategory.name}</span></span>
               )}
             </p>
           </div>
@@ -436,7 +439,7 @@ export default async function SearchPage({
           {/* Mobile Results Info Strip */}
           <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2.5">
             <span>
-              <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? 'product' : 'products'}
+              <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? t('product') : t('products')}
             </span>
             {currentCategory && (
               <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
@@ -458,7 +461,6 @@ export default async function SearchPage({
                 reviews={product.review_count || 0}
                 originalPrice={product.list_price}
                 tags={product.tags || []}
-                variant="marketplace"
                 slug={product.slug}
                 storeSlug={product.profiles?.username}
                 sellerId={product.profiles?.id || undefined}
@@ -494,35 +496,35 @@ export default async function SearchPage({
                   />
                 </svg>
               </div>
-              <h2 className="text-xl font-semibold text-foreground mb-2">No products found</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-2">{t('noProductsFound')}</h2>
               <p className="text-muted-foreground max-w-md mx-auto mb-6">
                 {query 
-                  ? `We couldn't find any results for "${query}". Try checking your spelling or use more general terms.`
-                  : "We couldn't find any products matching your filters. Try adjusting your search criteria."
+                  ? t('noResultsForQuery', { query })
+                  : t('noResultsForFilters')
                 }
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/search">
                   <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-brand hover:bg-brand/90 text-foreground h-10 px-4 py-2 gap-2">
-                    Clear All Filters
+                    {t('clearAllFiltersButton')}
                   </button>
                 </Link>
                 <Link href="/">
                   <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
-                    Browse All Products
+                    {t('browseAllProducts')}
                   </button>
                 </Link>
               </div>
               <div className="mt-8 pt-6 border-t border-border max-w-md mx-auto">
-                <p className="text-sm text-muted-foreground mb-3">Popular categories:</p>
+                <p className="text-sm text-muted-foreground mb-3">{t('popularCategories')}</p>
                 <div className="flex flex-wrap justify-center gap-2">
-                  <Link href="/search?category=electronics" className="text-sm text-link hover:underline">Electronics</Link>
+                  <Link href="/search?category=electronics" className="text-sm text-link hover:underline">{locale === 'bg' ? 'Електроника' : 'Electronics'}</Link>
                   <span className="text-muted-foreground">•</span>
-                  <Link href="/search?category=fashion" className="text-sm text-link hover:underline">Fashion</Link>
+                  <Link href="/search?category=fashion" className="text-sm text-link hover:underline">{locale === 'bg' ? 'Мода' : 'Fashion'}</Link>
                   <span className="text-muted-foreground">•</span>
-                  <Link href="/search?category=home" className="text-sm text-link hover:underline">Home</Link>
+                  <Link href="/search?category=home" className="text-sm text-link hover:underline">{locale === 'bg' ? 'Дом' : 'Home'}</Link>
                   <span className="text-muted-foreground">•</span>
-                  <Link href="/todays-deals" className="text-sm text-link hover:underline">Today&apos;s Deals</Link>
+                  <Link href="/todays-deals" className="text-sm text-link hover:underline">{locale === 'bg' ? 'Оферти днес' : 'Today\'s Deals'}</Link>
                 </div>
               </div>
             </div>

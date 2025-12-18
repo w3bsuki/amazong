@@ -53,7 +53,7 @@ interface Address {
     state: string | null
     postal_code: string
     country: string
-    is_default: boolean
+    is_default: boolean | null
     created_at: string
 }
 
@@ -131,7 +131,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
             state: address.state || "",
             postal_code: address.postal_code,
             country: address.country,
-            is_default: address.is_default
+            is_default: address.is_default ?? false
         })
         setIsDialogOpen(true)
     }
@@ -314,7 +314,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
 
             {/* Grid */}
             <AccountAddressesGrid
-                addresses={addresses}
+                addresses={addresses.map(addr => ({ ...addr, is_default: addr.is_default ?? false }))}
                 locale={locale}
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}

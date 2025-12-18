@@ -32,8 +32,8 @@ export function SellPreview({
       <div className="border-b border-border/50 bg-muted/30 px-4 py-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-foreground">Live Preview</h3>
-          <span className="inline-flex items-center gap-1.5 text-xs text-green-600">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+          <span className="inline-flex items-center gap-1.5 text-xs text-success">
+            <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
             Updating
           </span>
         </div>
@@ -69,7 +69,7 @@ export function SellPreview({
             {/* New Seller Badge */}
             <div className="absolute bottom-2.5 left-2.5">
               <span className="inline-flex items-center rounded-full bg-background/90 backdrop-blur-sm px-2 py-0.5 text-xs font-medium shadow-sm">
-                <Star className="h-3 w-3 text-amber-500 mr-1" weight="fill" />
+                <Star className="h-3 w-3 text-rating mr-1" weight="fill" />
                 New Seller
               </span>
             </div>

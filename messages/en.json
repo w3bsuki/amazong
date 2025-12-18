@@ -490,7 +490,7 @@
         "yourPrivacyChoices": "Your Privacy Choices",
         "interestBasedAds": "Interest Based Ads",
         
-        "copyright": "TM & Â© {year} AMZN, Inc. or its affiliates"
+        "copyright": "TM & © {year} AMZN, Inc. or its affiliates"
     },
     "Common": {
         "search": "Search",
@@ -533,7 +533,7 @@
         "privacyNotice": "Privacy Notice",
         "and": "and",
         "help": "Help Center",
-        "copyright": "Â© 1996-{year}, Amazon.com, Inc. or its affiliates",
+        "copyright": "© 1996-{year}, Amazon.com, Inc. or its affiliates",
         "error": "An unexpected error occurred. Please try again.",
         "signInDescription": "Enter your credentials to access your account",
         "signUpDescription": "Create your account to start shopping",
@@ -740,13 +740,26 @@
         "usa": "USA",
         "worldwide": "Worldwide",
         "clearShipping": "Clear shipping filter",
-        "anyLocation": "Any location"
+        "anyLocation": "Any location",
+        "noProductsFound": "No products found",
+        "noResultsForQuery": "We couldn't find any results for \"{query}\". Try checking your spelling or use more general terms.",
+        "noResultsForFilters": "We couldn't find any products matching your filters. Try adjusting your search criteria.",
+        "clearAllFiltersButton": "Clear All Filters",
+        "browseAllProducts": "Browse All Products",
+        "popularCategories": "Popular categories:",
+        "results": "results",
+        "in": "in",
+        "for": "for",
+        "product": "product",
+        "products": "products",
+        "noResultsInCategory": "We couldn't find any products in this category. Try adjusting your filters or browse other categories.",
+        "browseAllCategories": "Browse All Categories"
     },
     "Cookies": {
         "title": "We use cookies",
         "description": "We use cookies and similar technologies to help personalize content, tailor and measure ads, and provide a better experience. By clicking 'Accept All', you agree to this.",
         "descriptionShort": "We use cookies to personalize content, tailor ads, and provide a better experience.",
-        "learnMore": "Learn more",
+        "learnMore": "Learn more about cookies",
         "acceptAll": "Accept All Cookies",
         "declineOptional": "Decline Optional",
         "managePreferences": "Manage Preferences",

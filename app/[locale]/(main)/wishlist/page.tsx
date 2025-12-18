@@ -25,9 +25,9 @@ export default function WishlistPage() {
   const [linkCopied, setLinkCopied] = useState(false)
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
+    return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
       style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
+      currency: 'EUR',
     }).format(price)
   }
 

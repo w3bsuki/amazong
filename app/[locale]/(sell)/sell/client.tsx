@@ -136,7 +136,7 @@ export function SellPageClient({
     };
 
     return (
-      <div className="min-h-screen bg-linear-to-b from-amber-50/50 to-white flex flex-col">
+      <div className="min-h-screen bg-muted/30 flex flex-col">
         <SellHeaderV3 user={{ email: user.email }} />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <SellerOnboardingWizard

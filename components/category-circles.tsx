@@ -273,7 +273,9 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
           setCategories(data.categories)
         }
       })
-      .catch(err => console.error('Failed to fetch categories:', err))
+      .catch(() => {
+        // Avoid console.error noise; circles can render without categories.
+      })
   }, [])
 
   // Full name (for desktop/tooltips)

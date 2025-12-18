@@ -206,7 +206,7 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
                         onClick={() => handleToggleFeatured(badge.id)}
                         disabled={updating === badge.id}
                         className={cn(
-                          "relative flex items-center justify-center size-10 rounded-full transition-all hover:scale-110",
+                          "relative flex items-center justify-center size-10 rounded-full transition-opacity",
                           badge.color || "bg-muted",
                           updating === badge.id && "opacity-50",
                           !badge.is_featured && "opacity-70 hover:opacity-100"

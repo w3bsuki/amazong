@@ -21,21 +21,15 @@ export function DesktopHeroCTA({ locale = "en" }: DesktopHeroCTAProps) {
       className="w-full"
       aria-label={isBg ? "Добре дошли в AMZN" : "Welcome to AMZN"}
     >
-      {/* Compact CTA Banner */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-brand via-brand-dark to-brand">
-        {/* Subtle pattern overlay - decorative only */}
-        <div className="absolute inset-0 opacity-10" aria-hidden="true">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }} />
-        </div>
+      {/* Compact CTA Banner - Clean trust-blue solid color */}
+      <div className="relative overflow-hidden rounded-xl bg-cta-trust-blue">
 
         <div className="relative px-6 py-6 lg:px-8 lg:py-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             {/* Left Content */}
             <div className="text-center lg:text-left">
               {/* Badge - social proof */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-white text-sm font-medium mb-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-sm font-medium mb-3">
                 <Users weight="fill" className="size-4" aria-hidden="true" />
                 <span>{isBg ? "Присъедини се към 10,000+ потребители" : "Join 10,000+ users"}</span>
               </div>
@@ -48,7 +42,7 @@ export function DesktopHeroCTA({ locale = "en" }: DesktopHeroCTAProps) {
               </h1>
 
               {/* Subtitle - lighter weight for visual hierarchy */}
-              <p className="text-sm lg:text-base text-white/80 font-normal">
+              <p className="text-sm lg:text-base text-white/90 font-normal">
                 {isBg 
                   ? "Купувай и продавай лесно. Безплатно публикуване, без комисиони за продавачи." 
                   : "Buy and sell easily. Free listings, no seller fees."}
@@ -60,12 +54,12 @@ export function DesktopHeroCTA({ locale = "en" }: DesktopHeroCTAProps) {
               <Link
                 href="/sell"
                 className={cn(
-                  "inline-flex items-center gap-2 px-5 py-2.5 rounded-lg",
-                  "bg-white text-brand font-semibold text-sm",
-                  "hover:bg-white/90 transition-all duration-200",
-                  "shadow-lg hover:shadow-xl hover:scale-[1.02]",
+                  "inline-flex items-center gap-2 px-5 py-2.5 rounded-md",
+                  "bg-white text-cta-trust-blue font-semibold text-sm",
+                  "hover:bg-white/95 transition-all duration-200 ease-out",
+                  "shadow-sm hover:shadow-md",
                   "active:scale-[0.98]",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand"
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-cta-trust-blue"
                 )}
               >
                 <Storefront weight="fill" className="size-4" aria-hidden="true" />
@@ -75,11 +69,11 @@ export function DesktopHeroCTA({ locale = "en" }: DesktopHeroCTAProps) {
               <Link
                 href="/search"
                 className={cn(
-                  "inline-flex items-center gap-2 px-5 py-2.5 rounded-lg",
-                  "bg-white/20 text-white font-semibold text-sm border border-white/30",
-                  "hover:bg-white/30 transition-all duration-200",
+                  "inline-flex items-center gap-2 px-5 py-2.5 rounded-md",
+                  "bg-white/15 text-white font-semibold text-sm border border-white/25",
+                  "hover:bg-white/25 transition-all duration-200 ease-out",
                   "active:scale-[0.98]",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand"
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-cta-trust-blue"
                 )}
               >
                 <ShoppingBag weight="fill" className="size-4" aria-hidden="true" />

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useLocale } from "next-intl"
+import { safeJsonParse } from "@/lib/safe-json"
 
 /* =============================================================================
    TYPES & INTERFACES
@@ -112,26 +113,30 @@ export function useProductSearch(maxResults: number = 8) {
     try {
       const saved = localStorage.getItem(RECENT_SEARCHES_KEY)
       if (saved) {
-        const parsed = JSON.parse(saved)
+        const parsed = safeJsonParse<unknown>(saved)
         if (Array.isArray(parsed)) {
-          setRecentSearches(parsed.slice(0, MAX_RECENT_SEARCHES))
+          setRecentSearches(parsed.slice(0, MAX_RECENT_SEARCHES) as string[])
+        } else {
+          localStorage.removeItem(RECENT_SEARCHES_KEY)
         }
       }
-    } catch (e) {
-      console.error("Failed to parse recent searches:", e)
+    } catch {
+      // Ignore storage access issues
     }
 
     // Load recent products
     try {
       const savedProducts = localStorage.getItem(RECENT_PRODUCTS_KEY)
       if (savedProducts) {
-        const parsed = JSON.parse(savedProducts)
+        const parsed = safeJsonParse<unknown>(savedProducts)
         if (Array.isArray(parsed)) {
-          setRecentProducts(parsed.slice(0, MAX_RECENT_PRODUCTS))
+          setRecentProducts(parsed.slice(0, MAX_RECENT_PRODUCTS) as RecentSearchedProduct[])
+        } else {
+          localStorage.removeItem(RECENT_PRODUCTS_KEY)
         }
       }
-    } catch (e) {
-      console.error("Failed to parse recent products:", e)
+    } catch {
+      // Ignore storage access issues
     }
   }, [])
 
@@ -149,13 +154,21 @@ export function useProductSearch(maxResults: number = 8) {
       `/api/products/search?q=${encodeURIComponent(debouncedQuery)}&limit=${maxResults}`,
       { signal: controller.signal }
     )
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) return null
+        try {
+          return await res.json()
+        } catch {
+          return null
+        }
+      })
       .then((data) => {
-        setProducts(data.products || [])
+        setProducts((data && Array.isArray((data as { products?: unknown }).products))
+          ? ((data as { products: SearchProduct[] }).products)
+          : [])
       })
       .catch((err) => {
         if (err.name !== "AbortError") {
-          console.error("Failed to search products:", err)
           setProducts([])
         }
       })
@@ -184,8 +197,8 @@ export function useProductSearch(maxResults: number = 8) {
       if (typeof window !== "undefined") {
         try {
           localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated))
-        } catch (e) {
-          console.error("Failed to save recent searches:", e)
+        } catch {
+          // Ignore storage errors
         }
       }
     },
@@ -215,8 +228,8 @@ export function useProductSearch(maxResults: number = 8) {
       if (typeof window !== "undefined") {
         try {
           localStorage.setItem(RECENT_PRODUCTS_KEY, JSON.stringify(updated))
-        } catch (e) {
-          console.error("Failed to save recent product:", e)
+        } catch {
+          // Ignore storage errors
         }
       }
     },
@@ -229,8 +242,8 @@ export function useProductSearch(maxResults: number = 8) {
     if (typeof window !== "undefined") {
       try {
         localStorage.removeItem(RECENT_SEARCHES_KEY)
-      } catch (e) {
-        console.error("Failed to clear recent searches:", e)
+      } catch {
+        // Ignore storage errors
       }
     }
   }, [])
@@ -241,8 +254,8 @@ export function useProductSearch(maxResults: number = 8) {
     if (typeof window !== "undefined") {
       try {
         localStorage.removeItem(RECENT_PRODUCTS_KEY)
-      } catch (e) {
-        console.error("Failed to clear recent products:", e)
+      } catch {
+        // Ignore storage errors
       }
     }
   }, [])

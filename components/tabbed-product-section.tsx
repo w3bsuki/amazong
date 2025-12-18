@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CaretLeft, CaretRight } from "@phosphor-icons/react"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 
 interface Product {
   id: string
@@ -166,7 +166,6 @@ export function TabbedProductSection({
                     className="w-[43%] min-w-[43%] shrink-0 snap-start sm:w-[32%] sm:min-w-[32%] md:w-48 md:min-w-48 group"
                   >
                     <ProductCard
-                      variant="compact"
                       index={index}
                       {...product}
                     />

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 import { cn } from "@/lib/utils"
 import { 
   Heart, 
@@ -352,16 +352,11 @@ export default function CardsDemoPage() {
               image={p.image}
               rating={4.7}
               reviews={2847}
-              variant="compact"
               index={index}
               slug={null}
-              storeSlug={(p as { storeSlug?: string }).storeSlug ?? null}
+              username={(p as { storeSlug?: string }).storeSlug ?? null}
               sellerName={(p as { sellerName?: string }).sellerName}
               sellerVerified={(p as { sellerVerified?: boolean }).sellerVerified}
-              showSellerRow={!(p as { hideSeller?: boolean }).hideSeller}
-              showMetaLine={true}
-              showTagChips={true}
-              showHoverActions={true}
               isBoosted={(p as { isBoosted?: boolean }).isBoosted}
               tags={[...(p.tags || [])]}
               categorySlug={(p as { categorySlug?: string }).categorySlug}
@@ -376,35 +371,32 @@ export default function CardsDemoPage() {
         </div>
       </section>
 
-      {/* 17. ULTIMATE PRODUCTION (RECOMMENDED) */}
+      {/* 17. FEATURED PRODUCTION (RECOMMENDED) */}
       <section className="space-y-4">
         <div className="flex items-center gap-3">
           <span className="bg-foreground text-background text-xs font-bold px-2 py-1 rounded">17</span>
-          <h2 className="text-lg font-semibold">Ultimate Production (Recommended)</h2>
+          <h2 className="text-lg font-semibold">Featured Production (Recommended)</h2>
           <span className="text-xs text-muted-foreground">Seller-first header + tighter body + cleaner CTA</span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 xl:gap-4">
           {finalCardProducts.map((p, index) => (
             <ProductCard
-              key={`ultimate-${p.id}`}
+              key={`featured-${p.id}`}
               id={p.id}
               title={p.title}
               price={p.price}
-              listPrice={p.listPrice}
+              originalPrice={p.listPrice}
               image={p.image}
               rating={4.7}
               reviews={2847}
-              variant="ultimate"
+              variant="featured"
               index={index}
               slug={null}
-              storeSlug={(p as { storeSlug?: string }).storeSlug ?? null}
+              username={(p as { storeSlug?: string }).storeSlug ?? null}
               sellerName={(p as { sellerName?: string }).sellerName}
               sellerVerified={(p as { sellerVerified?: boolean }).sellerVerified}
-              showSellerRow={!(p as { hideSeller?: boolean }).hideSeller}
-              showMetaLine={true}
-              showTagChips={true}
-              showHoverActions={true}
+              showPills={true}
               isBoosted={(p as { isBoosted?: boolean }).isBoosted}
               tags={[...(p.tags || [])]}
               categorySlug={(p as { categorySlug?: string }).categorySlug}

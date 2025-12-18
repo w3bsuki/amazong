@@ -108,7 +108,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
+      currency: 'EUR',
     }).format(value)
   }
 

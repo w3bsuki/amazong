@@ -1,5 +1,5 @@
 import { createStaticClient } from "@/lib/supabase/server"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 import { SubcategoryTabs } from "@/components/subcategory-tabs"
 import { MobileFilters } from "@/components/mobile-filters"
 import { DesktopFilters } from "@/components/desktop-filters"
@@ -8,7 +8,7 @@ import { SortSelect } from "@/components/sort-select"
 import { SearchPagination } from "@/components/search-pagination"
 import { SearchFilters } from "@/components/search-filters"
 import { Suspense } from "react"
-import { setRequestLocale } from "next-intl/server"
+import { setRequestLocale, getTranslations } from "next-intl/server"
 import { connection } from "next/server"
 import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
@@ -325,6 +325,9 @@ export default async function CategoryPage({
   // Extract filterable attributes for the filter toolbar
   const filterableAttributes = categoryContext.attributes.filter(attr => attr.is_filterable)
 
+  // Get translations for category page UI
+  const t = await getTranslations('SearchFilters')
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container py-4">
@@ -401,15 +404,15 @@ export default async function CategoryPage({
             {/* Results Count */}
             <p className="hidden sm:block text-sm text-muted-foreground ml-auto whitespace-nowrap">
               <span className="font-semibold text-foreground">{totalProducts}</span>
-              <span> results</span>
-              <span className="hidden lg:inline"> in <span className="font-medium">{categoryName}</span></span>
+              <span> {t('results')}</span>
+              <span className="hidden lg:inline"> {t('in')} <span className="font-medium">{categoryName}</span></span>
             </p>
           </div>
           
           {/* Mobile Results Info Strip */}
           <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2.5">
             <span>
-              <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? 'product' : 'products'}
+              <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? t('product') : t('products')}
             </span>
             <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
               {categoryName}
@@ -429,7 +432,6 @@ export default async function CategoryPage({
                 reviews={product.review_count || 0}
                 originalPrice={product.list_price}
                 tags={product.tags || []}
-                variant="marketplace"
                 slug={product.slug}
                 storeSlug={product.sellers?.store_slug}
                 sellerId={product.sellers?.id || undefined}
@@ -465,19 +467,19 @@ export default async function CategoryPage({
                   />
                 </svg>
               </div>
-              <h2 className="text-xl font-semibold text-foreground mb-2">No products found</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-2">{t('noProductsFound')}</h2>
               <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                We couldn&apos;t find any products in this category. Try adjusting your filters or browse other categories.
+                {t('noResultsInCategory')}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href={`/categories/${slug}`}>
                   <button className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-brand hover:bg-brand/90 text-foreground h-10 px-4 py-2 gap-2">
-                    Clear All Filters
+                    {t('clearAllFiltersButton')}
                   </button>
                 </Link>
                 <Link href="/categories">
                   <button className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
-                    Browse All Categories
+                    {t('browseAllCategories')}
                   </button>
                 </Link>
               </div>

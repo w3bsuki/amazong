@@ -39,7 +39,7 @@ interface SavedAddress {
   state: string | null
   postal_code: string
   country: string
-  is_default: boolean
+  is_default: boolean | null
 }
 
 export default function CheckoutPage() {
@@ -92,7 +92,7 @@ export default function CheckoutPage() {
 
     if (addresses && addresses.length > 0) {
       setSavedAddresses(addresses)
-      const defaultAddress = addresses.find((a: { is_default: boolean }) => a.is_default) || addresses[0]
+      const defaultAddress = addresses.find((a) => a.is_default) || addresses[0]
       setSelectedAddressId(defaultAddress.id)
     } else {
       setUseNewAddress(true)
@@ -113,9 +113,9 @@ export default function CheckoutPage() {
   const total = subtotal + shippingCost + tax
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
+    return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
       style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'USD',
+      currency: 'EUR',
     }).format(price)
   }
 

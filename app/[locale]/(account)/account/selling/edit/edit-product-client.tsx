@@ -14,7 +14,7 @@ import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import {
   ArrowLeft,
   Package,
@@ -32,13 +32,14 @@ interface Product {
   price: number
   list_price: number | null
   stock: number
-  images: string[]
-  is_boosted: boolean
-  is_featured: boolean
-  ships_to_bulgaria: boolean
-  ships_to_europe: boolean
-  ships_to_usa: boolean
-  ships_to_worldwide: boolean
+  images: string[] | null
+  is_boosted: boolean | null
+  is_featured: boolean | null
+  ships_to_bulgaria: boolean | null
+  ships_to_europe: boolean | null
+  ships_to_usa: boolean | null
+  ships_to_worldwide: boolean | null
+  [key: string]: unknown // Allow other DB fields
 }
 
 interface EditProductClientProps {

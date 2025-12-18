@@ -6,6 +6,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Plus,
   Package,
@@ -20,7 +22,7 @@ import {
 } from "@phosphor-icons/react"
 import { BoostDialog } from "@/components/boost-dialog"
 import { toast } from "sonner"
-import { deleteProduct, bulkUpdateProductStatus } from "@/app/actions/products"
+import { deleteProduct, bulkUpdateProductStatus, setProductDiscountPrice, clearProductDiscount } from "@/app/actions/products"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,6 +34,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 interface Product {
   id: string
@@ -65,6 +75,13 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
   const [_isPending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [togglingId, setTogglingId] = useState<string | null>(null)
+  const [discountProductId, setDiscountProductId] = useState<string | null>(null)
+  const [discountPrice, setDiscountPrice] = useState<string>("")
+  const [discountingId, setDiscountingId] = useState<string | null>(null)
+
+  const activeDiscountProduct = discountProductId
+    ? productsList.find((p) => p.id === discountProductId) || null
+    : null
 
   // Handle delete product
   const handleDelete = async (productId: string) => {
@@ -132,8 +149,92 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'EUR',
+      currency: 'EUR',
     }).format(value)
+  }
+
+  const openDiscountDialog = (product: Product) => {
+    setDiscountProductId(product.id)
+    setDiscountPrice(String(Number(product.price)))
+  }
+
+  const closeDiscountDialog = () => {
+    setDiscountProductId(null)
+    setDiscountPrice("")
+  }
+
+  const handleApplyDiscount = async () => {
+    if (!activeDiscountProduct) return
+
+    const newPrice = Number(discountPrice)
+    if (!Number.isFinite(newPrice) || newPrice <= 0) {
+      toast.error(locale === 'bg' ? 'Въведете валидна цена' : 'Enter a valid price')
+      return
+    }
+
+    const base = (activeDiscountProduct.list_price && activeDiscountProduct.list_price > activeDiscountProduct.price)
+      ? Number(activeDiscountProduct.list_price)
+      : Number(activeDiscountProduct.price)
+
+    if (!(newPrice < base)) {
+      toast.error(locale === 'bg' ? 'Новата цена трябва да е по-ниска' : 'New price must be lower')
+      return
+    }
+
+    setDiscountingId(activeDiscountProduct.id)
+    startTransition(async () => {
+      const result = await setProductDiscountPrice(activeDiscountProduct.id, newPrice)
+      if (result.success) {
+        toast.success(locale === 'bg' ? 'Отстъпката е запазена' : 'Discount saved')
+
+        setProductsList((prev) =>
+          prev.map((p) => {
+            if (p.id !== activeDiscountProduct.id) return p
+
+            const wasDiscounted = p.list_price != null && Number(p.list_price) > Number(p.price)
+            const nextListPrice = wasDiscounted ? Number(p.list_price) : Number(p.price)
+            return {
+              ...p,
+              price: newPrice,
+              list_price: nextListPrice,
+            }
+          })
+        )
+        router.refresh()
+        closeDiscountDialog()
+      } else {
+        toast.error(result.error || (locale === 'bg' ? 'Грешка при запазване' : 'Failed to save'))
+      }
+      setDiscountingId(null)
+    })
+  }
+
+  const handleClearDiscount = async () => {
+    if (!activeDiscountProduct) return
+
+    setDiscountingId(activeDiscountProduct.id)
+    startTransition(async () => {
+      const result = await clearProductDiscount(activeDiscountProduct.id)
+      if (result.success) {
+        toast.success(locale === 'bg' ? 'Отстъпката е премахната' : 'Discount removed')
+        setProductsList((prev) =>
+          prev.map((p) => {
+            if (p.id !== activeDiscountProduct.id) return p
+            if (p.list_price == null) return p
+            return {
+              ...p,
+              price: Number(p.list_price),
+              list_price: null,
+            }
+          })
+        )
+        router.refresh()
+        closeDiscountDialog()
+      } else {
+        toast.error(result.error || (locale === 'bg' ? 'Грешка при премахване' : 'Failed to remove'))
+      }
+      setDiscountingId(null)
+    })
   }
 
   // Check if boost is active (not expired)
@@ -268,6 +369,15 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
 
                   {/* Mobile Actions */}
                   <div className="flex flex-col gap-1.5 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8"
+                      onClick={() => openDiscountDialog(product)}
+                      title={locale === 'bg' ? 'Отстъпка' : 'Discount'}
+                    >
+                      <Tag className="size-4" weight="bold" />
+                    </Button>
                     {!boosted && (
                       <BoostDialog 
                         product={product} 
@@ -464,6 +574,16 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                   }
                 />
               )}
+              {/* Discount Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-9"
+                onClick={() => openDiscountDialog(product)}
+                title={locale === 'bg' ? 'Отстъпка' : 'Discount'}
+              >
+                <Tag className="size-4" weight="bold" />
+              </Button>
               {/* Pause/Unpause Button */}
               <Button 
                 variant="ghost" 
@@ -537,6 +657,75 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
         )
       })}
       </div>
+
+      {/* Discount Dialog */}
+      <Dialog open={!!discountProductId} onOpenChange={(open) => { if (!open) closeDiscountDialog() }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{locale === 'bg' ? 'Задай отстъпка' : 'Set discount'}</DialogTitle>
+            <DialogDescription>
+              {activeDiscountProduct
+                ? (locale === 'bg'
+                  ? `Въведете новата цена за "${activeDiscountProduct.title}".`
+                  : `Enter the new price for "${activeDiscountProduct.title}".`)
+                : (locale === 'bg' ? 'Въведете новата цена.' : 'Enter the new price.')}
+            </DialogDescription>
+          </DialogHeader>
+
+          {activeDiscountProduct && (
+            <div className="space-y-4">
+              <div className="text-sm text-muted-foreground">
+                <span className="font-medium text-foreground">
+                  {locale === 'bg' ? 'Текуща цена:' : 'Current price:'}
+                </span>{" "}
+                {formatCurrency(Number(activeDiscountProduct.price))}
+                {activeDiscountProduct.list_price && Number(activeDiscountProduct.list_price) > Number(activeDiscountProduct.price) && (
+                  <>
+                    {" "}·{" "}
+                    <span className="line-through">
+                      {formatCurrency(Number(activeDiscountProduct.list_price))}
+                    </span>
+                  </>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="discount-price">{locale === 'bg' ? 'Нова цена' : 'New price'}</Label>
+                <Input
+                  id="discount-price"
+                  inputMode="decimal"
+                  value={discountPrice}
+                  onChange={(e) => setDiscountPrice(e.target.value)}
+                  placeholder={locale === 'bg' ? 'напр. 49.99' : 'e.g. 49.99'}
+                />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            {activeDiscountProduct?.list_price && Number(activeDiscountProduct.list_price) > Number(activeDiscountProduct.price) ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClearDiscount}
+                disabled={discountingId === activeDiscountProduct.id}
+              >
+                {locale === 'bg' ? 'Премахни отстъпка' : 'Remove discount'}
+              </Button>
+            ) : null}
+            <Button type="button" variant="outline" onClick={closeDiscountDialog}>
+              {locale === 'bg' ? 'Отказ' : 'Cancel'}
+            </Button>
+            <Button
+              type="button"
+              onClick={handleApplyDiscount}
+              disabled={!!activeDiscountProduct && discountingId === activeDiscountProduct.id}
+            >
+              {locale === 'bg' ? 'Запази' : 'Save'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

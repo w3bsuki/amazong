@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { safeJsonParse } from "@/lib/safe-json"
 
 interface AddToCartProps {
     product: {
@@ -76,7 +77,7 @@ export function AddToCart({
         const savedCart = localStorage.getItem("cart")
         let currentItems: { id: string; quantity: number }[] = []
         try {
-            if (savedCart) currentItems = JSON.parse(savedCart)
+            if (savedCart) currentItems = safeJsonParse(savedCart) ?? []
         } catch { /* ignore parse errors */ }
         
         // Create new item

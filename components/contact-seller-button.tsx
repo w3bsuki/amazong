@@ -67,7 +67,7 @@ export function ContactSellerButton({
         {
           p_seller_id: sellerId,
           p_product_id: productId,
-          p_order_id: null,
+          p_order_id: undefined,
           p_subject: `Question about: ${productTitle}`
         }
       )

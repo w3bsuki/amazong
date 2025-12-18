@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse, connection } from "next/server"
+import { normalizeImageUrl } from "@/lib/normalize-image-url"
 
 // Type for the RPC return
 interface CategoryHierarchyRow {
@@ -51,7 +52,7 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
       name_bg: row.name_bg,
       slug: row.slug,
       icon: row.icon,
-      image_url: row.image_url,
+      image_url: normalizeImageUrl(row.image_url),
       display_order: row.display_order,
       children: []
     })
@@ -217,7 +218,7 @@ export async function GET(request: Request) {
           name_bg: cat.name_bg,
           slug: cat.slug,
           icon: cat.icon,
-          image_url: cat.image_url,
+          image_url: normalizeImageUrl(cat.image_url),
           display_order: cat.display_order,
           children: []
         })
@@ -276,7 +277,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ categories: categories || [] })
+    return NextResponse.json({
+      categories: (categories || []).map(cat => ({
+        ...cat,
+        image_url: normalizeImageUrl(cat.image_url)
+      }))
+    })
   } catch (error) {
     console.error("Categories API Error:", error)
     const message = error instanceof Error ? error.message : "Internal Server Error"

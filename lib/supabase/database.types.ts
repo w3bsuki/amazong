@@ -1970,6 +1970,23 @@ export type Database = {
           slug: string
         }[]
       }
+      get_conversation_messages: {
+        Args: { p_conversation_id: string }
+        Returns: {
+          id: string
+          conversation_id: string
+          sender_id: string
+          content: string
+          message_type: string
+          attachment_url: string | null
+          is_read: boolean
+          read_at: string | null
+          created_at: string
+          updated_at: string | null
+          sender_full_name: string | null
+          sender_avatar_url: string | null
+        }[]
+      }
       get_or_create_conversation: {
         Args: {
           p_order_id?: string

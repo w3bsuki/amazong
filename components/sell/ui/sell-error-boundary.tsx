@@ -79,13 +79,13 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
             <CardContent className="space-y-4 pt-2">
               {/* Draft recovery notice */}
               {this.state.hasDraft && (
-                <div className="flex items-start gap-3 rounded-lg bg-green-50 dark:bg-green-950/30 p-3 text-sm">
-                  <FloppyDisk className="h-5 w-5 text-green-600 shrink-0 mt-0.5" weight="duotone" />
+                <div className="flex items-start gap-3 rounded-lg bg-success/10 dark:bg-success/5 p-3 text-sm">
+                  <FloppyDisk className="h-5 w-5 text-success shrink-0 mt-0.5" weight="duotone" />
                   <div>
-                    <p className="font-medium text-green-800 dark:text-green-200">
+                    <p className="font-medium text-success">
                       Draft available
                     </p>
-                    <p className="text-green-700 dark:text-green-300 text-xs mt-0.5">
+                    <p className="text-success/80 dark:text-success/70 text-xs mt-0.5">
                       Your progress was saved. It will be restored when you retry.
                     </p>
                   </div>

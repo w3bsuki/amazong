@@ -164,7 +164,9 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                         setCategories(data.categories)
                     }
                 })
-                .catch(err => console.error('Failed to fetch categories:', err))
+                .catch(() => {
+                    // Avoid console.error noise; menu can render without categories.
+                })
                 .finally(() => setIsLoading(false))
         }
     }, [open, categories.length])
@@ -192,7 +194,6 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
             // Force hard navigation to clear all state
             window.location.href = '/'
         } catch (error) {
-            console.error('Sign out error:', error)
             setIsSigningOut(false)
         }
     }

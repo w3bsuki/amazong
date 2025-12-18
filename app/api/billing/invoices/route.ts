@@ -1,20 +1,18 @@
-import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { createRouteHandlerClient } from '@/lib/supabase/server'
 import { stripe } from '@/lib/stripe'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { supabase, applyCookies } = createRouteHandlerClient(request)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
+
   try {
-    // Create client inside handler to avoid prerender issues
-    const supabase = await createClient()
-    
-    if (!supabase) {
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
-    }
     
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get user's stripe_customer_id from profile (for buyer purchases)
@@ -30,7 +28,7 @@ export async function GET() {
     ].filter(Boolean) as string[]
 
     if (customerIds.length === 0) {
-      return NextResponse.json({ invoices: [], charges: [] })
+      return json({ invoices: [], charges: [] })
     }
 
     // Fetch invoices and charges from all customer IDs
@@ -114,13 +112,13 @@ export async function GET() {
     allInvoices.sort((a, b) => b.created - a.created)
     allCharges.sort((a, b) => b.created - a.created)
 
-    return NextResponse.json({ 
+    return json({ 
       invoices: allInvoices,
       charges: allCharges,
     })
   } catch (error) {
     console.error('Error fetching billing data:', error)
-    return NextResponse.json(
+    return json(
       { error: 'Failed to fetch billing data' },
       { status: 500 }
     )

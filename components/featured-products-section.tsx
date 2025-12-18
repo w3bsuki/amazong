@@ -4,7 +4,7 @@ import { useRef, useState, useCallback } from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CaretLeft, CaretRight } from "@phosphor-icons/react"
-import { ProductCard } from "@/components/product-card"
+import { ProductCard } from "@/components/ui/product-card"
 
 interface FeaturedProduct {
   id: string

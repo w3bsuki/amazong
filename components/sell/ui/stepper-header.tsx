@@ -64,7 +64,7 @@ export function StepperHeader({
           <Progress value={progressPercent} className="h-1.5 flex-1" />
           <span className={cn(
             "text-xs font-semibold tabular-nums min-w-[2.5rem] text-right",
-            progressPercent === 100 ? "text-green-600" : "text-muted-foreground"
+            progressPercent === 100 ? "text-status-complete" : "text-muted-foreground"
           )}>
             {progressPercent}%
           </span>

@@ -42,9 +42,12 @@ export default function CartPage() {
   }
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
+    // EUR is the base currency (Bulgaria joined Eurozone Jan 1, 2025)
+    return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
       style: 'currency',
-      currency: locale === 'bg' ? 'BGN' : 'USD',
+      currency: 'EUR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(price)
   }
 

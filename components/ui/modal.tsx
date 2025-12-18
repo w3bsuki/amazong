@@ -1,32 +1,3 @@
-"use client"
-
-import { useRouter } from "next/navigation"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-
-interface ModalProps {
-  children: React.ReactNode
-  title?: string
-  description?: string
-}
-
-export function Modal({ children, title, description }: ModalProps) {
-  const router = useRouter()
-
-  const handleClose = () => {
-    router.back()
-  }
-
-  return (
-    <Dialog open onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        {(title || description) && (
-          <DialogHeader>
-            {title && <DialogTitle>{title}</DialogTitle>}
-            {description && <DialogDescription>{description}</DialogDescription>}
-          </DialogHeader>
-        )}
-        {children}
-      </DialogContent>
-    </Dialog>
-  )
-}
+// Re-export shim - canonical location is @/components/common/modal
+// TODO: Update imports to use @/components/common directly
+export { Modal } from "@/components/common/modal"

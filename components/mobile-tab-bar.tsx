@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { House, SquaresFour, ChatCircle, User, PlusCircle } from "@phosphor-icons/react"
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
@@ -10,19 +10,19 @@ import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile
 import { useMessages } from "@/lib/message-context"
 
 export function MobileTabBar() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
   const pathname = usePathname()
   const t = useTranslations("Navigation")
   const menuSheetRef = useRef<MobileMenuSheetHandle>(null)
   
   // Get unread message count from message context
-  let unreadCount = 0
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { totalUnreadCount } = useMessages()
-    unreadCount = totalUnreadCount
-  } catch {
-    // MessageProvider not available (e.g., not logged in) - default to 0
-  }
+  const { totalUnreadCount } = useMessages()
+  const unreadCount = totalUnreadCount
+
+  // Avoid SSR/hydration mismatches caused by client-only UI (drawers/portals).
+  if (!mounted) return null
 
   // Hide tab bar on product pages - they have their own sticky buy box
   // Product pages use: /product/[id] OR /{username}/{productSlug} (SEO format)
@@ -46,6 +46,7 @@ export function MobileTabBar() {
         className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border md:hidden pb-safe"
         role="navigation"
         aria-label="Mobile navigation"
+        data-testid="mobile-tab-bar"
       >
         <div className="flex items-center justify-around h-14 px-2 relative">
           {/* Home */}
