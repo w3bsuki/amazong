@@ -51,6 +51,35 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
+  const [pageSize, setPageSize] = useState(12)
+
+  // Keep the homepage module compact: target ~2 rows at each desktop breakpoint.
+  // md=3 cols => 6 items, lg=4 => 8, xl=5 => 10, 2xl=7 => 14
+  useEffect(() => {
+    const computePageSize = () => {
+      const w = window.innerWidth
+      if (w >= 1536) return 14
+      if (w >= 1280) return 10
+      if (w >= 1024) return 8
+      if (w >= 768) return 6
+      return 4
+    }
+
+    const apply = () => setPageSize(computePageSize())
+    apply()
+
+    let t: ReturnType<typeof setTimeout> | null = null
+    const onResize = () => {
+      if (t) clearTimeout(t)
+      t = setTimeout(apply, 150)
+    }
+
+    window.addEventListener("resize", onResize)
+    return () => {
+      if (t) clearTimeout(t)
+      window.removeEventListener("resize", onResize)
+    }
+  }, [])
 
   const tabs: { id: FeedTab; label: string; icon: typeof GridFour }[] = [
     { id: "all", label: locale === "bg" ? "Всички" : "All", icon: GridFour },
@@ -59,7 +88,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
     { id: "deals", label: locale === "bg" ? "Оферти" : "Deals", icon: Tag },
   ]
 
-  const fetchProducts = useCallback(async (tab: FeedTab, pageNum: number, append = false) => {
+  const fetchProducts = useCallback(async (tab: FeedTab, pageNum: number, limit: number, append = false) => {
     setIsLoading(true)
     try {
       // Map tab to correct API endpoint
@@ -68,7 +97,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
         : tab === "deals"
           ? "/api/products/deals"
           : "/api/products/newest"
-      const url = `${endpoint}?page=${pageNum}&limit=20`
+      const url = `${endpoint}?page=${pageNum}&limit=${limit}`
 
       const res = await fetch(url)
       if (!res.ok) {
@@ -158,12 +187,17 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
           }
         })
 
+        const hasMoreRaw = (data as { hasMore?: unknown }).hasMore
+        const hasMoreFromApi = typeof hasMoreRaw === 'boolean' ? hasMoreRaw : undefined
+
         if (append) {
           setProducts(prev => [...prev, ...transformed])
         } else {
           setProducts(transformed)
         }
-        setHasMore(transformed.length === 20)
+
+        // Prefer API-provided pagination hint; fall back to heuristic.
+        setHasMore(hasMoreFromApi ?? (transformed.length === limit))
       }
     } catch (error) {
       // Avoid console noise; UI can safely show empty state.
@@ -176,14 +210,14 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
   useEffect(() => {
     setPage(1)
     setProducts([])
-    fetchProducts(activeTab, 1, false)
-  }, [activeTab, fetchProducts])
+    fetchProducts(activeTab, 1, pageSize, false)
+  }, [activeTab, pageSize, fetchProducts])
 
   const loadMore = () => {
     if (!isLoading && hasMore) {
       const nextPage = page + 1
       setPage(nextPage)
-      fetchProducts(activeTab, nextPage, true)
+      fetchProducts(activeTab, nextPage, pageSize, true)
     }
   }
 
@@ -193,10 +227,10 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
       aria-label={locale === "bg" ? "Обяви" : "Listings"}
     >
       {/* Header with Tabs */}
-      <div className="px-5 py-4 border-b border-border">
+      <div className="px-5 pt-4 pb-2">
         <div className="flex items-center justify-between gap-4">
           {/* Title - muted, lighter weight for subheader pattern */}
-          <h2 className="text-sm font-medium text-muted-foreground tracking-wide shrink-0">
+          <h2 className="text-lg font-semibold text-foreground shrink-0">
             {locale === "bg" ? "Обяви" : "Listings"}
           </h2>
 
@@ -236,7 +270,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
           {/* See All Link */}
           <Link
             href={`/search?sort=${activeTab === "deals" ? "deals" : activeTab === "promoted" ? "promoted" : "newest"}`}
-            className="text-xs font-medium text-link hover:text-link-hover hover:underline underline-offset-2 inline-flex items-center gap-1 shrink-0 transition-colors"
+            className="text-sm font-medium text-link hover:text-link-hover hover:underline underline-offset-2 inline-flex items-center gap-1 shrink-0 transition-colors"
           >
             {locale === "bg" ? "Виж всички" : "See all"}
             <CaretRight size={14} weight="bold" aria-hidden="true" />
@@ -246,15 +280,15 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 
       {/* Product Grid - with proper tabpanel ARIA */}
       <div 
-        className="p-5"
+        className="px-5 pt-2 pb-4"
         role="tabpanel"
         id={`tabpanel-${activeTab}`}
         aria-labelledby={`tab-${activeTab}`}
         tabIndex={0}
       >
         {products.length === 0 && isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 xl:gap-4" aria-busy="true" aria-live="polite">
-            {Array.from({ length: 10 }).map((_, i) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-3 xl:gap-4" aria-busy="true" aria-live="polite">
+            {Array.from({ length: 14 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="aspect-square rounded-md" />
                 <Skeleton className="h-3.5 w-full" />
@@ -272,10 +306,10 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
             {/* 
               Grid Layout - Optimized for all screen sizes:
               - 2 cols mobile, 3 cols md, 4 cols lg, 5 cols xl, 6 cols 2xl
-              - 6 columns at 2xl keeps card width ~235px (same as demo landing1)
+              - 7 columns at 2xl better matches the carousel density on wide screens
               - gap-3 base, gap-4 at xl+ for breathing room
             */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 xl:gap-4" role="list" aria-live="polite">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-3 xl:gap-4" role="list" aria-live="polite">
               {products.map((product, index) => (
                 <div key={product.id} role="listitem">
                   <ProductCard
@@ -310,7 +344,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 
             {/* Load More Button */}
             {hasMore && (
-              <div className="mt-6 text-center">
+              <div className="mt-4 text-center">
                 <button
                   onClick={loadMore}
                   disabled={isLoading}
@@ -345,13 +379,13 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 export function TabbedProductFeedSkeleton() {
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden">
-      <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+      <div className="px-5 pt-4 pb-2 flex items-center justify-between">
         <Skeleton className="h-6 w-24" />
         <Skeleton className="h-10 w-80 rounded-full" />
         <Skeleton className="h-4 w-16" />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 xl:gap-4 p-5">
-        {Array.from({ length: 10 }).map((_, i) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-3 xl:gap-4 px-5 pt-2 pb-4">
+        {Array.from({ length: 14 }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="aspect-square rounded-md" />
             <Skeleton className="h-3.5 w-full" />

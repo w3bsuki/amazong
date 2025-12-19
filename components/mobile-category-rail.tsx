@@ -46,6 +46,9 @@ interface MobileCategoryRailProps {
 
 // Mobile version - horizontal scroll rail
 export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
+  const featuredLabel = locale === "bg" ? "Избрано" : "Featured"
+  const shopNowLabel = locale === "bg" ? "Разгледай" : "Shop now"
+
   return (
     <div className="px-4">
       <div className="flex overflow-x-auto no-scrollbar gap-3 pb-4 -mx-4 px-4 snap-x snap-mandatory scroll-pl-4">
@@ -75,7 +78,7 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
                 >
                   <Icon className={cn("size-4.5", tone.icon, tone.iconHover)} weight="fill" />
                 </div>
-                <span className={cn("text-2xs font-semibold", tone.accent)}>Featured</span>
+                <span className={cn("text-2xs font-semibold", tone.accent)}>{featuredLabel}</span>
               </div>
 
               <div className="px-3 py-3">
@@ -83,7 +86,7 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
                   {locale === "bg" ? cat.name_bg : cat.name}
                 </div>
                 <div className="mt-1 flex items-center justify-between">
-                  <span className="text-2xs text-muted-foreground">Shop now</span>
+                  <span className="text-2xs text-muted-foreground">{shopNowLabel}</span>
                   <ArrowRight className={cn("size-3.5", tone.icon, tone.iconHover)} weight="bold" />
                 </div>
               </div>
@@ -97,6 +100,9 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
 
 // Desktop version - horizontal scroll with chevron navigation
 export function DesktopCategoryRail({ locale }: MobileCategoryRailProps) {
+  const featuredLabel = locale === "bg" ? "Избрано" : "Featured"
+  const shopNowLabel = locale === "bg" ? "Разгледай" : "Shop now"
+
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
@@ -194,7 +200,7 @@ export function DesktopCategoryRail({ locale }: MobileCategoryRailProps) {
                 >
                   <Icon className={cn("size-4.5", tone.icon, tone.iconHover)} weight="fill" />
                 </div>
-                <span className={cn("text-2xs font-semibold", tone.accent)}>Featured</span>
+                <span className={cn("text-2xs font-semibold", tone.accent)}>{featuredLabel}</span>
               </div>
 
               <div className="px-3 py-3">
@@ -202,7 +208,7 @@ export function DesktopCategoryRail({ locale }: MobileCategoryRailProps) {
                   {locale === "bg" ? cat.name_bg : cat.name}
                 </div>
                 <div className="mt-1 flex items-center justify-between">
-                  <span className="text-2xs text-muted-foreground">Shop now</span>
+                  <span className="text-2xs text-muted-foreground">{shopNowLabel}</span>
                   <ArrowRight className={cn("size-3.5", tone.icon, tone.iconHover)} weight="bold" />
                 </div>
               </div>

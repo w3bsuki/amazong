@@ -96,7 +96,7 @@ export function ProductCarouselSection({
         "rounded-xl border border-border overflow-hidden",
         variant === "highlighted" ? "bg-card" : "bg-card"
       )}>
-        <div className="px-5 py-4 border-b border-border">
+        <div className="px-5 pt-4 pb-2">
           <h2 className="text-lg font-semibold text-foreground">{title}</h2>
         </div>
         <div className="px-5 py-8 text-center text-muted-foreground">
@@ -116,7 +116,7 @@ export function ProductCarouselSection({
       onMouseLeave={() => setIsHovering(false)}
     >
       {/* Header */}
-      <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+      <div className="px-5 pt-4 pb-2 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-foreground">{title}</h2>
         {ctaText && ctaHref && (
           <Link
@@ -168,7 +168,7 @@ export function ProductCarouselSection({
         {/* Products Scroll Container */}
         <div
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scroll-smooth px-5 py-4 no-scrollbar"
+          className="flex gap-4 overflow-x-auto scroll-smooth px-5 pt-2 pb-4 no-scrollbar"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {products.map((product) => (
