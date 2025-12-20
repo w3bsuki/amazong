@@ -9,3 +9,6 @@ export { NewestListingsSectionSkeleton } from './newest-listings-section'
 export { NewestCarousel } from './newest-carousel'
 export { PromotedCarousel } from './promoted-carousel'
 export { DealsCarousel } from './deals-carousel'
+
+// Category Carousels
+export { CategoryCarousel } from './category-carousel'

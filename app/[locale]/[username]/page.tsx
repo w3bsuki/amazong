@@ -207,13 +207,13 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
   // Fetch seller feedback/reviews if seller
   let reviews: SellerReview[] = []
   let reviewCount = 0
-  let sellerStats: { total_sales: number | null; average_rating: number | null } | null = null
+  let sellerStats: { total_sales: number | null; average_rating: number | null; follower_count: number | null } | null = null
 
   if (profile.is_seller) {
     // Get seller stats
     const { data: stats } = await supabase
       .from("seller_stats")
-      .select("total_sales, average_rating")
+      .select("total_sales, average_rating, follower_count")
       .eq("seller_id", profile.id)
       .single()
     sellerStats = stats
@@ -283,6 +283,18 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
   const { data: { user: currentUser } } = await supabase.auth.getUser()
   const isOwnProfile = currentUser?.id === profile.id
 
+  // Check if current user is following this seller
+  let isFollowing = false
+  if (currentUser && profile.is_seller && !isOwnProfile) {
+    const { data: followData } = await supabase
+      .from("store_followers")
+      .select("id")
+      .eq("follower_id", currentUser.id)
+      .eq("seller_id", profile.id)
+      .maybeSingle()
+    isFollowing = !!followData
+  }
+
   // Transform social_links from Json to Record<string, string>
   const socialLinks = profile.social_links && typeof profile.social_links === 'object' && !Array.isArray(profile.social_links)
     ? profile.social_links as Record<string, string>
@@ -309,6 +321,7 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
     total_sales: sellerStats?.total_sales ?? 0,
     average_rating: sellerStats?.average_rating ?? null,
     total_purchases: buyerStats?.total_orders ?? 0,
+    follower_count: sellerStats?.follower_count ?? 0,
   }
 
   return (
@@ -321,6 +334,7 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
       buyerReviews={buyerReviews}
       buyerReviewCount={buyerReviewCount}
       isOwnProfile={isOwnProfile}
+      isFollowing={isFollowing}
       locale={locale}
     />
   )

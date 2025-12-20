@@ -36,22 +36,29 @@ export function SortSelect() {
     router.push(queryString ? `${pathname}?${queryString}` : pathname)
   }, [router, pathname, searchParams])
 
+  const isSorted = currentSort !== 'featured'
+
   return (
     <Select value={currentSort} onValueChange={handleSortChange}>
       <SelectTrigger 
         className={cn(
-          "w-auto h-[38px] px-4 rounded-full gap-2",
-          "bg-card border border-border",
-          "hover:bg-muted hover:border-ring",
-          "active:bg-muted",
+          "w-full lg:w-auto h-touch-sm px-4 rounded-full gap-2",
+          "border border-input bg-background",
+          "hover:bg-accent hover:text-accent-foreground",
+          "active:bg-accent/80",
+          isSorted && "border-primary bg-primary/5",
           "text-sm font-medium text-foreground",
-          "focus:ring-2 focus:ring-offset-2 focus:ring-ring focus:border-ring",
+          "focus:ring-2 focus:ring-offset-1 focus:ring-ring focus:border-input",
           "[&>svg:last-child]:hidden"
         )}
+        aria-label={t('sortBy')}
       >
-        <ArrowsDownUp size={16} weight="regular" className="text-muted-foreground shrink-0" />
+        <ArrowsDownUp size={16} weight="regular" className={cn(
+          isSorted ? "text-primary" : "text-muted-foreground",
+          "shrink-0"
+        )} aria-hidden="true" />
         <span className="whitespace-nowrap"><SelectValue placeholder={t('sortBy')} /></span>
-        <CaretDown size={16} weight="regular" className="text-muted-foreground shrink-0" />
+        <CaretDown size={16} weight="regular" className="text-muted-foreground shrink-0" aria-hidden="true" />
       </SelectTrigger>
       <SelectContent className="rounded-lg border-border">
         <SelectItem value="featured" className="rounded-md">{t('featured')}</SelectItem>

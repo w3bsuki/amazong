@@ -8,6 +8,7 @@ import {
   SellingDropdown,
   LocationDropdown,
   MessagesDropdown,
+  NotificationsDropdown,
 } from "@/components/dropdowns"
 
 // Navigation components
@@ -168,6 +169,11 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
                 {/* Selling - With Dropdown */}
                 <div className="hidden lg:block">
                   <SellingDropdown user={user} />
+                </div>
+
+                {/* Notifications - With Dropdown */}
+                <div className="hidden md:block">
+                  <NotificationsDropdown user={user} />
                 </div>
 
                 {/* Messages - With Dropdown */}

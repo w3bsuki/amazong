@@ -27,17 +27,17 @@ export async function SignInCTA() {
   }
   
   return (
-    <div className="bg-primary rounded-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div className="bg-primary rounded-xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg shadow-primary/10">
       <div className="text-center sm:text-left">
-        <h3 className="text-lg sm:text-xl font-bold text-primary-foreground mb-1">
+        <h3 className="text-lg sm:text-xl font-bold text-primary-foreground mb-1 tracking-tight">
           {locale === "bg" ? "Влез в акаунта си" : "Sign in for the best experience"}
         </h3>
-        <p className="text-primary-foreground/80 text-sm">
+        <p className="text-primary-foreground/80 text-sm leading-relaxed">
           {locale === "bg" ? "Персонализирани препоръки и по-бързо пазаруване" : "Personalized recommendations and faster checkout"}
         </p>
       </div>
-      <Link href="/auth/login">
-        <Button className="min-h-11 px-6 bg-white hover:bg-muted text-primary text-sm font-semibold rounded-full">
+      <Link href="/auth/login" className="w-full sm:w-auto">
+        <Button className="w-full min-h-11 px-8 bg-white hover:bg-white/90 text-primary text-sm font-bold rounded-full transition-transform active:scale-[0.98]">
           {t('sections.signInSecurely')}
         </Button>
       </Link>

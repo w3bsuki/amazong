@@ -161,9 +161,30 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   // Get current user (requires auth client with cookies)
   let currentUserId: string | null = null
+  let isFollowingSeller = false
   if (authClient) {
     const { data: { user } } = await authClient.auth.getUser()
     currentUserId = user?.id || null
+    
+    // Check if user follows this seller
+    if (currentUserId) {
+      // First get the seller profile to get their id
+      const { data: sellerProfile } = await supabase
+        .from("profiles")
+        .select("id")
+        .ilike("username", username)
+        .single()
+      
+      if (sellerProfile && currentUserId !== sellerProfile.id) {
+        const { data: followData } = await authClient
+          .from("store_followers")
+          .select("id")
+          .eq("follower_id", currentUserId)
+          .eq("seller_id", sellerProfile.id)
+          .maybeSingle()
+        isFollowingSeller = !!followData
+      }
+    }
   }
 
   // Format delivery date
@@ -431,6 +452,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           } : null}
           locale={locale}
           currentUserId={currentUserId}
+          isFollowingSeller={isFollowingSeller}
           formattedDeliveryDate={formattedDeliveryDate}
           t={translations}
         />

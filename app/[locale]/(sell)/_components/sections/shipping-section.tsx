@@ -120,53 +120,45 @@ function ShippingRegionCard({
   return (
     <label
       className={cn(
-        "relative flex items-start gap-3 p-4 rounded-lg border-2 text-left transition-colors w-full cursor-pointer",
+        "relative flex items-start gap-3.5 p-4 rounded-xl border text-left transition-all w-full cursor-pointer shadow-xs",
         isSelected
-          ? "border-primary bg-primary/5"
-          : "border-border hover:border-primary/30"
+          ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+          : "border-border bg-background hover:border-primary/30"
       )}
     >
-      {/* Checkbox indicator */}
-      <Checkbox
-        checked={isSelected}
-        onCheckedChange={() => onToggle()}
-        className="mt-0.5 shrink-0"
-        aria-label={isBg ? region.labelBg : region.label}
-      />
-
       {/* Icon */}
       <div className={cn(
-        "h-10 w-10 rounded-lg flex items-center justify-center shrink-0",
-        isSelected ? "bg-primary/20" : "bg-muted"
+        "size-10 rounded-lg flex items-center justify-center shrink-0 border",
+        isSelected ? "bg-primary/10 border-primary/20" : "bg-muted/30 border-border/50"
       )}>
         <Icon className={cn(
-          "h-5 w-5",
+          "size-5",
           isSelected ? "text-primary" : "text-muted-foreground"
-        )} weight="duotone" />
+        )} weight="bold" />
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <span className={cn(
-            "font-semibold text-sm",
+            "font-bold text-sm tracking-tight",
             isSelected ? "text-primary" : "text-foreground"
           )}>
             {isBg ? region.labelBg : region.label}
           </span>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
             {isBg ? region.deliveryTimeBg : region.deliveryTime}
           </span>
         </div>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <p className="text-[11px] font-medium text-muted-foreground/70 mt-0.5">
           {isBg ? region.descriptionBg : region.description}
         </p>
         {region.carriers.length > 0 && isSelected && (
-          <div className="flex flex-wrap gap-1 mt-2">
+          <div className="flex flex-wrap gap-1.5 mt-2.5">
             {region.carriers.map((carrier) => (
               <span
                 key={carrier}
-                className="text-2xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
+                className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-muted/50 border border-border/50 text-muted-foreground/80"
               >
                 {carrier}
               </span>
@@ -174,6 +166,14 @@ function ShippingRegionCard({
           </div>
         )}
       </div>
+
+      {/* Checkbox indicator */}
+      <Checkbox
+        checked={isSelected}
+        onCheckedChange={() => onToggle()}
+        className="size-5 rounded-md"
+        aria-label={isBg ? region.labelBg : region.label}
+      />
     </label>
   );
 }
@@ -203,97 +203,97 @@ function DimensionsInput({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label className="text-sm font-medium">
+        <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
           {isBg ? "Размери на пратката" : "Package dimensions"}
-          <span className="text-muted-foreground font-normal ml-1">({isBg ? "по избор" : "optional"})</span>
+          <span className="text-muted-foreground/60 font-medium ml-1">({isBg ? "по избор" : "optional"})</span>
         </Label>
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="h-7 text-xs gap-1.5"
+          className="h-7 text-[10px] font-bold uppercase tracking-wider gap-1.5 hover:bg-muted/50"
         >
-          <Calculator className="h-3.5 w-3.5" />
+          <Calculator className="size-3.5" weight="bold" />
           {isBg ? "Калкулатор" : "Calculate"}
         </Button>
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+      <div className="grid grid-cols-4 gap-2.5">
+        <div className="space-y-1.5">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
             {isBg ? "Дължина" : "Length"}
           </label>
-          <div className="relative">
+          <div className="relative group">
             <Input
               type="number"
               value={dimensions?.lengthCm ?? ""}
               onChange={(e) => handleChange("lengthCm", e.target.value)}
               placeholder="0"
-              className="pr-8 h-10 rounded-lg"
+              className="pr-8 h-10 rounded-md text-sm font-bold bg-muted/5 border-border/60 focus:bg-background transition-all"
               min={0}
               step={0.1}
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/50">
               cm
             </span>
           </div>
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="space-y-1.5">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
             {isBg ? "Ширина" : "Width"}
           </label>
-          <div className="relative">
+          <div className="relative group">
             <Input
               type="number"
               value={dimensions?.widthCm ?? ""}
               onChange={(e) => handleChange("widthCm", e.target.value)}
               placeholder="0"
-              className="pr-8 h-10 rounded-lg"
+              className="pr-8 h-10 rounded-md text-sm font-bold bg-muted/5 border-border/60 focus:bg-background transition-all"
               min={0}
               step={0.1}
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/50">
               cm
             </span>
           </div>
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="space-y-1.5">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
             {isBg ? "Височина" : "Height"}
           </label>
-          <div className="relative">
+          <div className="relative group">
             <Input
               type="number"
               value={dimensions?.heightCm ?? ""}
               onChange={(e) => handleChange("heightCm", e.target.value)}
               placeholder="0"
-              className="pr-8 h-10 rounded-lg"
+              className="pr-8 h-10 rounded-md text-sm font-bold bg-muted/5 border-border/60 focus:bg-background transition-all"
               min={0}
               step={0.1}
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/50">
               cm
             </span>
           </div>
         </div>
 
-        <div>
-          <label className="block text-xs text-muted-foreground mb-1">
+        <div className="space-y-1.5">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
             {isBg ? "Тегло" : "Weight"}
           </label>
-          <div className="relative">
+          <div className="relative group">
             <Input
               type="number"
               value={dimensions?.weightKg ?? ""}
               onChange={(e) => handleChange("weightKg", e.target.value)}
               placeholder="0"
-              className="pr-8 h-10 rounded-lg"
+              className="pr-8 h-10 rounded-md text-sm font-bold bg-muted/5 border-border/60 focus:bg-background transition-all"
               min={0}
               step={0.01}
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground/50">
               kg
             </span>
           </div>
@@ -342,33 +342,33 @@ export function ShippingSection({
   };
 
   return (
-    <section className="rounded-lg border border-border bg-card">
-      <div className="pb-3 pt-5 px-5">
+    <section className="rounded-xl border border-border bg-background overflow-hidden shadow-xs">
+      <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-orange-500/10">
-              <Truck className="size-5 text-orange-600" weight="duotone" />
+          <div className="flex items-center gap-3.5">
+            <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
+              <Truck className="size-5 text-muted-foreground" weight="bold" />
             </div>
             <div>
-              <h3 className="text-base font-semibold">
+              <h3 className="text-sm font-bold tracking-tight text-foreground">
                 {isBg ? "Доставка" : "Shipping"}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs font-medium text-muted-foreground">
                 {isBg ? "Изберете къде доставяте" : "Choose where you'll ship to"}
               </p>
             </div>
           </div>
           {!hasShipping && (
-            <Badge variant="outline" className="text-xs font-medium text-destructive border-destructive/30">
+            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-wider text-destructive border-destructive/30 bg-destructive/5">
               {isBg ? "Задължително" : "Required"}
             </Badge>
           )}
         </div>
       </div>
 
-      <div className="space-y-6 px-5 pb-6 pt-0">
+      <div className="space-y-6 p-6">
         {/* Shipping Regions */}
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {SHIPPING_REGIONS.map((region) => (
             <ShippingRegionCard
               key={region.id}
@@ -382,43 +382,52 @@ export function ShippingSection({
 
         {/* Shipping Cost */}
         {(shipsToBulgaria || shipsToEurope || shipsToWorldwide) && (
-          <div className="pt-4 border-t border-border">
+          <div className="pt-6 border-t border-border/50 space-y-5">
             {/* Free Shipping Toggle */}
             <label
               className={cn(
-                "w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-colors mb-4 cursor-pointer",
+                "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-all cursor-pointer shadow-xs",
                 freeShipping
-                  ? "border-green-500 bg-green-500/10"
-                  : "border-border hover:border-green-500/30"
+                  ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                  : "border-border bg-background hover:border-primary/30"
               )}
             >
+              <div className={cn(
+                "size-10 rounded-lg flex items-center justify-center shrink-0 border",
+                freeShipping ? "bg-primary/10 border-primary/20" : "bg-muted/30 border-border/50"
+              )}>
+                <Check className={cn(
+                  "size-5",
+                  freeShipping ? "text-primary" : "text-muted-foreground"
+                )} weight="bold" />
+              </div>
+              <div className="flex-1 text-left">
+                <div className={cn(
+                  "font-bold text-sm tracking-tight",
+                  freeShipping ? "text-primary" : "text-foreground"
+                )}>
+                  {isBg ? "Безплатна доставка" : "Free shipping"}
+                </div>
+                <div className="text-[11px] font-medium text-muted-foreground/70">
+                  {isBg ? "Увеличава продажбите с до 20%" : "Increases sales by up to 20%"}
+                </div>
+              </div>
               <Checkbox
                 checked={freeShipping ?? false}
                 onCheckedChange={(checked) => form.setValue("freeShipping", !!checked, { shouldValidate: true })}
-                className="shrink-0"
+                className="size-5 rounded-md"
                 aria-label={isBg ? "Безплатна доставка" : "Free shipping"}
               />
-              <div className="flex-1 text-left">
-                <span className={cn(
-                  "font-medium text-sm",
-                  freeShipping ? "text-green-600" : "text-foreground"
-                )}>
-                  {isBg ? "Безплатна доставка" : "Free shipping"}
-                </span>
-                <p className="text-xs text-muted-foreground">
-                  {isBg ? "Увеличава продажбите с до 20%" : "Increases sales by up to 20%"}
-                </p>
-              </div>
             </label>
 
             {/* Shipping Price Input */}
             {!freeShipping && (
-              <div>
-                <Label className="text-sm font-medium mb-1.5 block">
+              <div className="space-y-2">
+                <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 block">
                   {isBg ? "Цена за доставка" : "Shipping price"}
                 </Label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                <div className="relative group">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground font-bold text-sm transition-colors group-focus-within:text-primary">
                     лв
                   </span>
                   <Input
@@ -427,7 +436,7 @@ export function ShippingSection({
                     placeholder="0.00"
                     type="text"
                     inputMode="decimal"
-                    className="pl-10 h-11 rounded-lg"
+                    className="pl-9 h-11 rounded-md text-base font-bold bg-muted/5 border-border/60 focus:bg-background transition-all"
                   />
                 </div>
               </div>
@@ -436,21 +445,21 @@ export function ShippingSection({
         )}
 
         {/* Processing Time */}
-        <div>
-          <Label className="text-sm font-medium mb-1.5 block">
+        <div className="space-y-3">
+          <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 block">
             {isBg ? "Време за обработка" : "Processing time"}
           </Label>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-5 gap-2">
             {[1, 2, 3, 5, 7].map((days) => (
               <button
                 key={days}
                 type="button"
                 onClick={() => form.setValue("processingDays", days, { shouldValidate: true })}
                 className={cn(
-                  "flex-1 py-2 px-3 rounded-lg border-2 text-sm font-medium transition-colors",
+                  "py-2.5 px-3 rounded-lg border text-xs font-bold transition-all shadow-xs",
                   processingDays === days
-                    ? "border-primary bg-primary/5 text-primary"
-                    : "border-border hover:border-primary/30 text-foreground"
+                    ? "border-primary bg-primary/5 text-primary ring-1 ring-primary/20"
+                    : "border-border bg-background hover:border-primary/30 text-muted-foreground"
                 )}
               >
                 {days} {isBg ? (days === 1 ? "ден" : "дни") : (days === 1 ? "day" : "days")}
@@ -467,9 +476,11 @@ export function ShippingSection({
         />
 
         {/* Info */}
-        <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 border border-border">
-          <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-          <p className="text-xs text-muted-foreground">
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-muted/5 border border-border/50 shadow-xs">
+          <div className="size-8 rounded-md bg-background border border-border flex items-center justify-center shrink-0">
+            <Info className="size-4 text-muted-foreground" weight="bold" />
+          </div>
+          <p className="text-xs font-medium text-muted-foreground leading-relaxed">
             {isBg 
               ? "Препоръчваме да използвате Speedy или Econt за доставки в България - най-ниски цени и бърза доставка."
               : "We recommend Speedy or Econt for Bulgaria deliveries - lowest prices and fast delivery."}

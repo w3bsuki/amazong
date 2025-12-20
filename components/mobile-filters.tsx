@@ -1,17 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
-import { Sliders, Star, Check, CaretDown } from "@phosphor-icons/react"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Sliders, Star, Check, CaretRight, CaretLeft } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetClose,
-} from "@/components/ui/sheet"
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+} from "@/components/ui/drawer"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import type { CategoryAttribute } from "@/lib/data/categories"
@@ -66,69 +65,112 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
     return searchParams.getAll(`attr_${attrName}`)
   }
 
-  const updateParams = (key: string, value: string | null) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (value === null) {
-      params.delete(key)
-    } else {
-      params.set(key, value)
-    }
-    const queryString = params.toString()
-    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
-  }
+  // ---------------------------------------------------------------------------
+  // Pending state (mobile drawer UX)
+  // - Users can select multiple options, then tap "Show results" to apply.
+  // - Prevents a full navigation on every tap and matches the button label.
+  // ---------------------------------------------------------------------------
 
-  const handlePriceClick = (min: string | null, max: string | null) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (min) params.set("minPrice", min)
-    else params.delete("minPrice")
-    if (max) params.set("maxPrice", max)
-    else params.delete("maxPrice")
-    const queryString = params.toString()
-    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
-    setIsOpen(false)
-  }
+  const [pendingPrice, setPendingPrice] = useState<{ min: string | null; max: string | null }>({
+    min: null,
+    max: null,
+  })
+  const [pendingRating, setPendingRating] = useState<string | null>(null)
+  const [pendingAvailability, setPendingAvailability] = useState<string | null>(null)
+  const [pendingAttrs, setPendingAttrs] = useState<Record<string, string[]>>({})
 
-  // Handle attribute filter changes
-  const handleAttributeChange = (attrName: string, value: string | string[] | boolean) => {
-    const params = new URLSearchParams(searchParams.toString())
-    const paramKey = `attr_${attrName}`
-    
-    if (Array.isArray(value)) {
-      params.delete(paramKey)
-      if (value.length > 0) {
-        value.forEach(v => params.append(paramKey, v))
+  useEffect(() => {
+    if (!isOpen) return
+    setActiveSection(null)
+    setPendingPrice({ min: currentMinPrice, max: currentMaxPrice })
+    setPendingRating(currentRating)
+    setPendingAvailability(currentAvailability)
+    const initialAttrs: Record<string, string[]> = {}
+    for (const attr of visibleAttributes) {
+      const values = getAttributeValues(attr.name)
+      if (values.length > 0) {
+        initialAttrs[attr.name] = values
       }
-    } else if (typeof value === 'boolean') {
-      if (value) {
-        params.set(paramKey, 'true')
+    }
+    setPendingAttrs(initialAttrs)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen])
+
+  const shouldForceMultiSelect = (attr: CategoryAttribute) => {
+    const name = attr.name.trim().toLowerCase()
+    return name === 'brand' || name === 'make' || name === 'model'
+  }
+
+  const getPendingAttrValues = (attrName: string): string[] => {
+    return pendingAttrs[attrName] || []
+  }
+
+  const setPendingAttrValues = (attrName: string, values: string[]) => {
+    setPendingAttrs((prev) => {
+      const next = { ...prev }
+      if (values.length === 0) {
+        delete next[attrName]
       } else {
-        params.delete(paramKey)
+        next[attrName] = values
       }
-    } else if (value) {
-      params.set(paramKey, value)
-    } else {
-      params.delete(paramKey)
+      return next
+    })
+  }
+
+  const clearAllPendingFilters = () => {
+    setPendingPrice({ min: null, max: null })
+    setPendingRating(null)
+    setPendingAvailability(null)
+    setPendingAttrs({})
+  }
+
+  const applyPendingFilters = () => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    // Remove all filter params
+    params.delete('minPrice')
+    params.delete('maxPrice')
+    params.delete('minRating')
+    params.delete('availability')
+    params.delete('page')
+    for (const key of Array.from(params.keys())) {
+      if (key.startsWith('attr_')) params.delete(key)
     }
-    
+
+    // Apply pending base filters
+    if (pendingPrice.min) params.set('minPrice', pendingPrice.min)
+    if (pendingPrice.max) params.set('maxPrice', pendingPrice.max)
+    if (pendingRating) params.set('minRating', pendingRating)
+    if (pendingAvailability) params.set('availability', pendingAvailability)
+
+    // Apply pending attribute filters
+    for (const [attrName, values] of Object.entries(pendingAttrs)) {
+      const paramKey = `attr_${attrName}`
+      for (const v of values) {
+        if (v) params.append(paramKey, v)
+      }
+    }
+
     const queryString = params.toString()
     router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
   }
 
-  const clearAllFilters = () => {
-    const params = new URLSearchParams()
-    const category = searchParams.get("category")
-    const q = searchParams.get("q")
-    if (category) params.set("category", category)
-    if (q) params.set("q", q)
-    const queryString = params.toString()
-    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
-    setIsOpen(false)
-  }
+  // Count active filters (current URL) - used for trigger badge
+  const activeAttrCount = useMemo(() => {
+    return visibleAttributes.filter(attr => getAttributeValues(attr.name).length > 0).length
+  }, [visibleAttributes, searchParams])
 
-  // Count active attribute filters
-  const activeAttrCount = visibleAttributes.filter(attr => getAttributeValues(attr.name).length > 0).length
-  const hasActiveFilters = currentMinPrice || currentMaxPrice || currentRating || currentAvailability || activeAttrCount > 0
-  const filterCount = [currentMinPrice || currentMaxPrice, currentRating, currentAvailability].filter(Boolean).length + activeAttrCount
+  const hasActiveFilters = Boolean(
+    currentMinPrice || currentMaxPrice || currentRating || currentAvailability || activeAttrCount > 0
+  )
+
+  const filterCount =
+    [currentMinPrice || currentMaxPrice, currentRating, currentAvailability].filter(Boolean).length +
+    activeAttrCount
+
+  const hasPendingFilters = Boolean(
+    pendingPrice.min || pendingPrice.max || pendingRating || pendingAvailability || Object.keys(pendingAttrs).length > 0
+  )
 
   // Type for filter sections
   type BaseFilterSection = { id: string; label: string; attribute?: undefined }
@@ -151,6 +193,28 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
   
   const filterSections: FilterSection[] = [...baseFilterSections, ...attrFilterSections]
 
+  const getSelectedSummary = (section: FilterSection) => {
+    if (section.id === 'rating') {
+      return pendingRating ? `${pendingRating}+ ${t('stars')}` : null
+    }
+    if (section.id === 'price') {
+      if (pendingPrice.min && pendingPrice.max) return `$${pendingPrice.min} - $${pendingPrice.max}`
+      if (pendingPrice.min) return `$${pendingPrice.min}+`
+      if (pendingPrice.max) return `${t('under')} $${pendingPrice.max}`
+      return null
+    }
+    if (section.id === 'availability') {
+      return pendingAvailability === 'instock' ? t('inStock') : null
+    }
+    if ('attribute' in section && section.attribute) {
+      const values = getPendingAttrValues(section.attribute.name)
+      if (values.length === 0) return null
+      if (values.length === 1) return values[0]
+      return `${values.length} ${t('selected')}`
+    }
+    return null
+  }
+
   const priceRanges = [
     { label: t('under25'), min: null, max: "25" },
     { label: t('range2550'), min: "25", max: "50" },
@@ -166,7 +230,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
         variant="outline"
         onClick={() => setIsOpen(true)}
         className={cn(
-          "h-11 rounded-full px-4",
+          "w-full h-touch-sm rounded-full px-4",
           filterCount > 0 && "border-primary bg-primary/5"
         )}
       >
@@ -181,214 +245,237 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
         )}
       </Button>
 
-      {/* Bottom Sheet using shadcn Sheet */}
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent 
-          side="bottom" 
-          className="max-h-[85vh] flex flex-col rounded-t-2xl px-0 pb-0 lg:hidden"
+      {/* Bottom Sheet using shadcn Drawer (Vaul) for drag-to-close */}
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <DrawerContent 
+          className="max-h-[90vh] flex flex-col rounded-t-2xl px-0 pb-0 lg:hidden"
         >
-          {/* Drag Handle */}
-          <div className="flex justify-center pb-2">
-            <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full" />
-          </div>
-
-          <SheetHeader className="px-4 pb-3 border-b border-border">
-            <div className="flex items-center justify-between">
-              <SheetTitle className="text-lg font-bold">{t('filters')}</SheetTitle>
-              {hasActiveFilters && (
+          <DrawerHeader className={cn(
+            "px-4 pb-3 border-b border-border/50",
+            activeSection ? "pt-4" : "pt-1"
+          )}>
+            <div className="flex items-center justify-between min-h-touch-sm">
+              {activeSection ? (
+                <button 
+                  onClick={() => setActiveSection(null)}
+                  className="flex items-center gap-2 text-foreground font-semibold active:opacity-70 transition-opacity"
+                >
+                  <CaretLeft size={20} weight="bold" />
+                  <span className="text-lg">
+                    {filterSections.find(s => s.id === activeSection)?.label}
+                  </span>
+                </button>
+              ) : (
+                <DrawerTitle className="text-lg font-bold">{t('filters')}</DrawerTitle>
+              )}
+              
+              {hasPendingFilters && !activeSection && (
                 <button
-                  onClick={clearAllFilters}
-                  className="text-sm font-medium text-primary hover:underline"
+                  onClick={clearAllPendingFilters}
+                  className="text-sm font-medium text-primary active:opacity-70 transition-opacity"
                 >
                   {t('clearAllFilters')}
                 </button>
               )}
             </div>
-          </SheetHeader>
+          </DrawerHeader>
 
-          {/* Filter Sections */}
-          <div className="flex-1 overflow-y-auto bg-muted/30">
-            <div className="divide-y divide-border">
-              {filterSections.map((section) => (
-                <div key={section.id} className="bg-card">
-                  <button
-                    onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
-                    className="w-full flex items-center justify-between px-4 py-3.5 min-h-12 hover:bg-muted transition-colors"
-                  >
-                    <span className="font-medium text-foreground">{section.label}</span>
-                    <CaretDown 
-                      size={20}
-                      weight="regular"
-                      className={cn(
-                        "text-muted-foreground transition-transform",
-                        activeSection === section.id && "rotate-180"
-                      )} 
-                    />
-                  </button>
-
-                  {activeSection === section.id && (
-                    <div className="px-4 pb-4 space-y-2 bg-muted/30">
-                      {/* Ratings */}
-                      {section.id === 'rating' && (
-                        <div className="space-y-0.5">
-                          {[4, 3, 2, 1].map((stars) => (
-                            <button
-                              key={stars}
-                              onClick={() => {
-                                updateParams("minRating", currentRating === stars.toString() ? null : stars.toString())
-                              }}
-                              className={cn(
-                                "w-full flex items-center gap-2 px-3 py-2.5 min-h-11 rounded-lg",
-                                currentRating === stars.toString()
-                                  ? "bg-primary/10"
-                                  : "hover:bg-muted"
-                              )}
-                            >
-                              <div className="flex text-rating">
-                                {[...Array(5)].map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    size={16}
-                                    weight={i < stars ? "fill" : "regular"}
-                                  />
-                                ))}
-                              </div>
-                              <span className="text-sm">{t('andUp')}</span>
-                              {currentRating === stars.toString() && (
-                                <Check size={16} weight="regular" className="ml-auto text-primary" />
-                              )}
-                            </button>
+          {/* Filter Content */}
+          <div className="flex-1 overflow-y-auto overscroll-contain bg-background">
+            {!activeSection ? (
+              /* Main List View */
+              <div className="divide-y divide-border/30">
+                {filterSections.map((section) => {
+                  const summary = getSelectedSummary(section)
+                  return (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className="w-full flex items-center justify-between px-4 h-touch active:bg-muted/50 transition-colors text-left"
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium text-sm text-foreground">{section.label}</span>
+                        {summary && (
+                          <span className="text-xs text-primary font-medium">{summary}</span>
+                        )}
+                      </div>
+                      <CaretRight 
+                        size={16}
+                        weight="bold"
+                        className="text-muted-foreground/60" 
+                      />
+                    </button>
+                  )
+                })}
+              </div>
+            ) : (
+              /* Sub-view for specific filter */
+              <div className="p-4 space-y-2">
+                {/* Ratings */}
+                {activeSection === 'rating' && (
+                  <div className="space-y-1">
+                    {[4, 3, 2, 1].map((stars) => (
+                      <button
+                        key={stars}
+                        onClick={() => {
+                          setPendingRating(pendingRating === stars.toString() ? null : stars.toString())
+                        }}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-3 h-touch rounded-md transition-colors",
+                          pendingRating === stars.toString()
+                            ? "bg-primary/5 text-primary"
+                            : "active:bg-muted"
+                        )}
+                        aria-pressed={pendingRating === stars.toString()}
+                      >
+                        <div className="flex text-rating">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              size={18}
+                              weight={i < stars ? "fill" : "regular"}
+                            />
                           ))}
                         </div>
-                      )}
+                        <span className="text-sm font-medium">{t('andUp')}</span>
+                        {pendingRating === stars.toString() && (
+                          <Check size={16} weight="bold" className="ml-auto" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
 
-                      {/* Price */}
-                      {section.id === 'price' && (
-                        <div className="space-y-0.5">
-                          {priceRanges.map(({ label, min, max }) => {
-                            const isActive = currentMinPrice === min && currentMaxPrice === max
-                            return (
-                              <button
-                                key={label}
-                                onClick={() => handlePriceClick(min, max)}
-                                className={cn(
-                                  "w-full text-left px-3 py-2.5 min-h-11 rounded-lg text-sm flex items-center justify-between",
-                                  isActive
-                                    ? "bg-primary/10 text-primary font-medium"
-                                    : "hover:bg-muted"
-                                )}
-                              >
-                                {label}
-                                {isActive && <Check className="h-4 w-4" />}
-                              </button>
-                            )
-                          })}
-                        </div>
-                      )}
+                {/* Price */}
+                {activeSection === 'price' && (
+                  <div className="space-y-1">
+                    {priceRanges.map(({ label, min, max }) => {
+                      const isActive = pendingPrice.min === min && pendingPrice.max === max
+                      return (
+                        <button
+                          key={label}
+                          onClick={() => setPendingPrice(isActive ? { min: null, max: null } : { min, max })}
+                          className={cn(
+                            "w-full flex items-center justify-between px-3 h-touch rounded-md transition-colors",
+                            isActive
+                              ? "bg-primary/5 text-primary font-medium"
+                              : "active:bg-muted"
+                          )}
+                          aria-pressed={isActive}
+                        >
+                          <span className="text-sm">{label}</span>
+                          {isActive && <Check size={16} weight="bold" />}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
 
-                      {/* Availability */}
-                      {section.id === 'availability' && (
-                        <label className="flex items-center gap-3 min-h-11 cursor-pointer hover:bg-muted rounded-lg px-2 -mx-2">
-                          <Checkbox
-                            checked={currentAvailability === "instock"}
-                            onCheckedChange={() => updateParams("availability", currentAvailability === "instock" ? null : "instock")}
-                            className="size-5"
-                          />
-                          <span className="text-sm">{t('includeOutOfStock')}</span>
-                        </label>
-                      )}
-
-                      {/* Category Attribute Filters */}
-                      {'attribute' in section && section.attribute && (
-                        <>
-                          {/* Boolean attributes */}
-                          {section.attribute.attribute_type === 'boolean' && (
-                            <label className="flex items-center gap-3 min-h-11 cursor-pointer hover:bg-muted rounded-lg px-2 -mx-2">
-                              <Checkbox
-                                checked={getAttributeValues(section.attribute.name).includes('true')}
-                                onCheckedChange={(checked) => handleAttributeChange(section.attribute!.name, !!checked)}
-                                className="size-5"
-                              />
-                              <span className="text-sm">{locale === 'bg' ? 'Да' : 'Yes'}</span>
-                            </label>
-                          )}
-                          
-                          {/* Select attributes */}
-                          {section.attribute.attribute_type === 'select' && getAttrOptions(section.attribute) && (
-                            <div className="space-y-0.5">
-                              {getAttrOptions(section.attribute)!.map((option, idx) => {
-                                const isActive = getAttributeValues(section.attribute!.name).includes(option)
-                                return (
-                                  <button
-                                    key={idx}
-                                    onClick={() => handleAttributeChange(section.attribute!.name, isActive ? '' : option)}
-                                    className={cn(
-                                      "w-full text-left px-3 py-2.5 min-h-11 rounded-lg text-sm flex items-center justify-between",
-                                      isActive
-                                        ? "bg-primary/10 text-primary font-medium"
-                                        : "hover:bg-muted"
-                                    )}
-                                  >
-                                    {option}
-                                    {isActive && <Check className="h-4 w-4" />}
-                                  </button>
-                                )
-                              })}
-                            </div>
-                          )}
-                          
-                          {/* Multiselect attributes */}
-                          {section.attribute.attribute_type === 'multiselect' && getAttrOptions(section.attribute) && (
-                            <div className="space-y-0.5">
-                              {getAttrOptions(section.attribute)!.map((option, idx) => {
-                                const currentValues = getAttributeValues(section.attribute!.name)
-                                const isChecked = currentValues.includes(option)
-                                return (
-                                  <label
-                                    key={idx}
-                                    className={cn(
-                                      "flex items-center gap-3 min-h-11 cursor-pointer hover:bg-muted rounded-lg px-2 -mx-2",
-                                      isChecked && "bg-primary/5"
-                                    )}
-                                  >
-                                    <Checkbox
-                                      checked={isChecked}
-                                      onCheckedChange={(checked) => {
-                                        const newValues = checked
-                                          ? [...currentValues, option]
-                                          : currentValues.filter(v => v !== option)
-                                        handleAttributeChange(section.attribute!.name, newValues)
-                                      }}
-                                      className="size-5"
-                                    />
-                                    <span className="text-sm">{option}</span>
-                                  </label>
-                                )
-                              })}
-                            </div>
-                          )}
-                        </>
-                      )}
+                {/* Availability */}
+                {activeSection === 'availability' && (
+                  <button
+                    onClick={() => setPendingAvailability(pendingAvailability === 'instock' ? null : 'instock')}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 h-touch rounded-md transition-colors",
+                      pendingAvailability === "instock" ? "bg-primary/5 text-primary" : "active:bg-muted"
+                    )}
+                    aria-pressed={pendingAvailability === 'instock'}
+                  >
+                    <div className={cn(
+                      "size-5 rounded border flex items-center justify-center transition-colors",
+                      pendingAvailability === "instock" ? "bg-primary border-primary" : "border-input"
+                    )}>
+                      {pendingAvailability === "instock" && <Check size={12} weight="bold" className="text-primary-foreground" />}
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                    <span className="text-sm font-medium">{t('inStock')}</span>
+                  </button>
+                )}
+
+                {/* Category Attribute Filters */}
+                {filterSections.find(s => s.id === activeSection)?.attribute && (
+                  <div className="space-y-1">
+                    {(() => {
+                      const section = filterSections.find(s => s.id === activeSection) as AttrFilterSection
+                      const attr = section.attribute
+                      
+                      if (attr.attribute_type === 'boolean') {
+                        const isChecked = getPendingAttrValues(attr.name).includes('true')
+                        return (
+                          <button
+                            onClick={() => setPendingAttrValues(attr.name, isChecked ? [] : ['true'])}
+                            className={cn(
+                              "w-full flex items-center gap-3 px-3 h-touch rounded-md transition-colors",
+                              isChecked ? "bg-primary/5 text-primary" : "active:bg-muted"
+                            )}
+                            aria-pressed={isChecked}
+                          >
+                            <div className={cn(
+                              "size-5 rounded border flex items-center justify-center transition-colors",
+                              isChecked ? "bg-primary border-primary" : "border-input"
+                            )}>
+                              {isChecked && <Check size={12} weight="bold" className="text-primary-foreground" />}
+                            </div>
+                            <span className="text-sm font-medium">{locale === 'bg' ? 'Да' : 'Yes'}</span>
+                          </button>
+                        )
+                      }
+                      
+                      if ((attr.attribute_type === 'select' || attr.attribute_type === 'multiselect') && getAttrOptions(attr)) {
+                        const allowMulti = attr.attribute_type === 'multiselect' || shouldForceMultiSelect(attr)
+                        return getAttrOptions(attr)!.map((option, idx) => {
+                          const currentValues = getPendingAttrValues(attr.name)
+                          const isActive = currentValues.includes(option)
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => {
+                                if (!allowMulti) {
+                                  setPendingAttrValues(attr.name, isActive ? [] : [option])
+                                  return
+                                }
+                                const newValues = isActive
+                                  ? currentValues.filter(v => v !== option)
+                                  : [...currentValues, option]
+                                setPendingAttrValues(attr.name, newValues)
+                              }}
+                              className={cn(
+                                "w-full flex items-center justify-between px-3 h-touch rounded-md transition-colors",
+                                isActive ? "bg-primary/5 text-primary font-medium" : "active:bg-muted"
+                              )}
+                              aria-pressed={isActive}
+                            >
+                              <span className="text-sm">{option}</span>
+                              {isActive && <Check size={16} weight="bold" />}
+                            </button>
+                          )
+                        })
+                      }
+                      return null
+                    })()}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Footer with Show Results button */}
-          <div className="p-4 border-t border-border bg-card">
-            <SheetClose asChild>
-              <Button className="w-full h-12 rounded-full">
+          <div className="p-4 pb-6 border-t border-border/50 bg-background">
+            <DrawerClose asChild>
+              <Button
+                className="w-full h-touch rounded-md text-sm font-bold shadow-sm"
+                onClick={() => {
+                  applyPendingFilters()
+                }}
+              >
                 {resultsCount > 0 
-                  ? (locale === 'bg' ? `Покажи ${resultsCount}` : `Show ${resultsCount} results`)
+                  ? (locale === 'bg' ? `Покажи ${resultsCount} резултата` : `Show ${resultsCount} results`)
                   : t('showResults')
                 }
               </Button>
-            </SheetClose>
+            </DrawerClose>
           </div>
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
     </>
   )
 }

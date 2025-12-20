@@ -30,6 +30,7 @@ import {
   ArrowRight,
 } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/ui/product-card"
+import { FollowSellerButton } from "@/components/follow-seller-button"
 
 interface PublicProfileClientProps {
   profile: {
@@ -51,6 +52,7 @@ interface PublicProfileClientProps {
     total_sales: number
     total_purchases: number
     average_rating?: number | null
+    follower_count?: number
     created_at: string
   }
   products: any[]
@@ -60,6 +62,7 @@ interface PublicProfileClientProps {
   buyerReviews: any[]
   buyerReviewCount: number
   isOwnProfile: boolean
+  isFollowing: boolean
   locale: string
 }
 
@@ -96,6 +99,7 @@ export function PublicProfileClient({
   buyerReviews,
   buyerReviewCount,
   isOwnProfile,
+  isFollowing,
   locale,
 }: PublicProfileClientProps) {
   const [activeTab, setActiveTab] = useState(profile.is_seller ? "listings" : "reviews")
@@ -178,16 +182,22 @@ export function PublicProfileClient({
                     {locale === "bg" ? "Редактирай" : "Edit Profile"}
                   </Button>
                 </Link>
-              ) : (
+              ) : profile.is_seller ? (
                 <>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Heart className="size-4" />
-                    {locale === "bg" ? "Следвай" : "Follow"}
-                  </Button>
+                  <FollowSellerButton
+                    sellerId={profile.id}
+                    initialIsFollowing={isFollowing}
+                    locale={locale}
+                    size="sm"
+                  />
                   <Button variant="ghost" size="icon" className="size-9">
                     <ShareNetwork className="size-4" />
                   </Button>
                 </>
+              ) : (
+                <Button variant="ghost" size="icon" className="size-9">
+                  <ShareNetwork className="size-4" />
+                </Button>
               )}
             </div>
           </div>
@@ -270,6 +280,13 @@ export function PublicProfileClient({
                           {locale === "bg" ? "Няма отзиви" : "No reviews yet"}
                         </span>
                       )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                        <Heart className="size-4" />
+                        {locale === "bg" ? "Последователи" : "Followers"}
+                      </span>
+                      <span className="font-semibold">{profile.follower_count ?? 0}</span>
                     </div>
                     <Separator />
                   </div>

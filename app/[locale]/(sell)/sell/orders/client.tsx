@@ -234,10 +234,36 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                               </div>
                             )}
 
-                            {/* Shipping Address */}
-                            {item.order?.shipping_address?.address && (
-                              <div className="text-sm text-muted-foreground mb-3">
-                                📍 {item.order.shipping_address.address.city}, {item.order.shipping_address.address.country}
+                            {/* Shipping Address - Full details for seller to ship */}
+                            {item.order?.shipping_address && (
+                              <div className="text-sm bg-muted/50 rounded-lg p-3 mb-3 space-y-1">
+                                <div className="flex items-center gap-1.5 font-medium text-foreground">
+                                  📍 Ship To:
+                                </div>
+                                {item.order.shipping_address.name && (
+                                  <div>{item.order.shipping_address.name}</div>
+                                )}
+                                {item.order.shipping_address.address?.line1 && (
+                                  <div className="text-muted-foreground">{item.order.shipping_address.address.line1}</div>
+                                )}
+                                {item.order.shipping_address.address?.line2 && (
+                                  <div className="text-muted-foreground">{item.order.shipping_address.address.line2}</div>
+                                )}
+                                {item.order.shipping_address.address && (
+                                  <div className="text-muted-foreground">
+                                    {[
+                                      item.order.shipping_address.address.city,
+                                      item.order.shipping_address.address.state,
+                                      item.order.shipping_address.address.postal_code,
+                                    ].filter(Boolean).join(', ')}
+                                  </div>
+                                )}
+                                {item.order.shipping_address.address?.country && (
+                                  <div className="text-muted-foreground font-medium">{item.order.shipping_address.address.country}</div>
+                                )}
+                                {item.order.shipping_address.email && (
+                                  <div className="text-xs text-muted-foreground mt-1">✉️ {item.order.shipping_address.email}</div>
+                                )}
                               </div>
                             )}
 

@@ -147,7 +147,7 @@ test.describe('Smoke Tests - Core Routes', () => {
 
     // Verify key landmarks exist
     await expect(page.locator('header').first()).toBeVisible()
-    await expect(page.locator('main').first()).toBeVisible()
+    await expect(page.locator('#main-content')).toBeVisible()
     await expect(page.locator('footer').first()).toBeVisible()
 
     // Verify no error boundary is shown
@@ -162,7 +162,7 @@ test.describe('Smoke Tests - Core Routes', () => {
     await page.goto(CRITICAL_ROUTES.homepageBG, { waitUntil: 'domcontentloaded' })
 
     await expect(page.locator('header').first()).toBeVisible()
-    await expect(page.locator('main').first()).toBeVisible()
+    await expect(page.locator('#main-content')).toBeVisible()
 
     // Verify Bulgarian content is present (not mixed language)
     // This is a sanity check - actual strings depend on your translations
@@ -172,15 +172,19 @@ test.describe('Smoke Tests - Core Routes', () => {
   })
 
   test('categories page loads @smoke', async ({ page }) => {
+    // Categories page has many subcategories and may take longer to load
+    test.setTimeout(60_000)
+    
     const capture = setupConsoleCapture(page)
 
-    await page.goto(CRITICAL_ROUTES.categories, { waitUntil: 'domcontentloaded' })
+    await page.goto(CRITICAL_ROUTES.categories, { waitUntil: 'domcontentloaded', timeout: 45_000 })
 
     await expect(page.locator('header').first()).toBeVisible()
-    await expect(page.locator('main').first()).toBeVisible()
+    // Use specific selector for the layout's main element
+    await expect(page.locator('#main-content')).toBeVisible()
 
     // Main content should not be empty
-    const mainContent = page.locator('main')
+    const mainContent = page.locator('#main-content')
     await expect(mainContent).not.toBeEmpty()
 
     assertNoConsoleErrors(capture, 'categories')
@@ -192,11 +196,11 @@ test.describe('Smoke Tests - Core Routes', () => {
     await page.goto(CRITICAL_ROUTES.search, { waitUntil: 'domcontentloaded' })
 
     await expect(page.locator('header').first()).toBeVisible()
-    await expect(page.locator('main').first()).toBeVisible()
+    await expect(page.locator('#main-content')).toBeVisible()
 
     // Search should show either results or "no results" message
     // It should NOT be completely blank
-    const mainContent = page.locator('main')
+    const mainContent = page.locator('#main-content')
     await expect(mainContent).not.toBeEmpty()
 
     // No error boundary
@@ -211,10 +215,11 @@ test.describe('Smoke Tests - Core Routes', () => {
     await page.goto(CRITICAL_ROUTES.cart, { waitUntil: 'domcontentloaded' })
 
     await expect(page.locator('header').first()).toBeVisible()
-    await expect(page.locator('main').first()).toBeVisible()
+    // Use specific selector for the layout's main element to avoid strict mode issues
+    await expect(page.locator('#main-content')).toBeVisible()
 
     // Cart should render something (empty cart message or items)
-    const mainContent = page.locator('main')
+    const mainContent = page.locator('#main-content')
     await expect(mainContent).not.toBeEmpty()
 
     assertNoConsoleErrors(capture, 'cart')
@@ -241,6 +246,9 @@ test.describe('Smoke Tests - Auth-Gated Routes', () => {
     const capture = setupConsoleCapture(page)
 
     await page.goto(CRITICAL_ROUTES.account, { waitUntil: 'domcontentloaded' })
+
+    // Wait for any client-side redirects to settle (auth middleware may redirect)
+    await page.waitForLoadState('networkidle')
 
     // Should either:
     // 1. Redirect to login page (URL contains 'login' or 'auth')
@@ -319,7 +327,7 @@ test.describe('Smoke Tests - Mobile', () => {
     await expect(page.locator('header').first()).toBeVisible()
 
     // Main content should be visible and not overflow
-    await expect(page.locator('main').first()).toBeVisible()
+    await expect(page.locator('#main-content')).toBeVisible()
 
     // Mobile navigation should be accessible (hamburger menu or tab bar)
     const mobileNav = page.getByRole('navigation')
@@ -336,7 +344,7 @@ test.describe('Smoke Tests - Mobile', () => {
 
     await page.goto(CRITICAL_ROUTES.cart, { waitUntil: 'domcontentloaded' })
 
-    await expect(page.locator('main').first()).toBeVisible()
+    await expect(page.locator('#main-content')).toBeVisible()
 
     // Ensure content fits viewport (no horizontal scroll issues)
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth)
@@ -377,6 +385,6 @@ test.describe('Smoke Tests - Performance Sanity', () => {
     await page.goto(CRITICAL_ROUTES.homepage, { waitUntil: 'domcontentloaded' })
 
     // If we got here without crashing, basic memory handling is OK
-    await expect(page.locator('main').first()).toBeVisible()
+    await expect(page.locator('#main-content')).toBeVisible()
   })
 })

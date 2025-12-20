@@ -259,6 +259,44 @@ export async function POST(req: Request) {
         break
       }
 
+      case 'invoice.paid': {
+        // Successful recurring payment - extend subscription
+        const invoice = event.data.object as Stripe.Invoice
+        const invoiceData = invoice as unknown as { 
+          subscription: string | null
+          lines?: { data?: Array<{ period?: { end?: number } }> }
+        }
+        const subscriptionId = invoiceData.subscription
+
+        if (subscriptionId) {
+          const { data: existingSub } = await supabase
+            .from('subscriptions')
+            .select('*')
+            .eq('stripe_subscription_id', subscriptionId)
+            .single()
+
+          if (existingSub) {
+            // Get the period end from invoice lines
+            const periodEnd = invoiceData.lines?.data?.[0]?.period?.end
+            const newExpiresAt = periodEnd 
+              ? new Date(periodEnd * 1000).toISOString()
+              : existingSub.expires_at
+
+            await supabase
+              .from('subscriptions')
+              .update({
+                status: 'active',
+                expires_at: newExpiresAt,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', existingSub.id)
+
+            console.log(`💰 Invoice paid for subscription ${subscriptionId}, extended to ${newExpiresAt}`)
+          }
+        }
+        break
+      }
+
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice
         const invoiceData = invoice as unknown as { subscription: string | null }
@@ -280,6 +318,8 @@ export async function POST(req: Request) {
                 updated_at: new Date().toISOString(),
               })
               .eq('id', existingSub.id)
+            
+            console.log(`❌ Invoice payment failed for subscription ${subscriptionId}`)
           }
         }
         break

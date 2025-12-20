@@ -534,3 +534,339 @@ export async function canSellerRateBuyer(
     return { canRate: false, hasRated: false }
   }
 }
+
+// =====================================================
+// BUYER ORDER MANAGEMENT ACTIONS
+// For buyers to manage their orders
+// =====================================================
+
+/**
+ * Request cancellation of an order item (buyer only)
+ * Can only cancel items that are not yet shipped
+ */
+export async function requestOrderCancellation(
+  orderItemId: string,
+  reason?: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient()
+    if (!supabase) {
+      return { success: false, error: "Failed to connect to database" }
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: "Not authenticated" }
+    }
+
+    // Verify the order item belongs to this user's order and check status
+    const { data: orderItem, error: fetchError } = await supabase
+      .from('order_items')
+      .select(`
+        id,
+        status,
+        seller_id,
+        product:products(title),
+        order:orders!inner(id, user_id, status)
+      `)
+      .eq('id', orderItemId)
+      .single()
+
+    if (fetchError || !orderItem) {
+      return { success: false, error: "Order item not found" }
+    }
+
+    const order = orderItem.order as unknown as { id: string; user_id: string; status: string }
+    
+    // Verify user owns this order
+    if (order.user_id !== user.id) {
+      return { success: false, error: "Not authorized to cancel this order" }
+    }
+
+    // Check if cancellation is allowed (not shipped or delivered)
+    const nonCancellableStatuses = ['shipped', 'delivered']
+    const currentStatus = orderItem.status || 'pending'
+    if (nonCancellableStatuses.includes(currentStatus)) {
+      return { 
+        success: false, 
+        error: currentStatus === 'shipped' 
+          ? "Cannot cancel - item has already been shipped"
+          : "Cannot cancel - item has already been delivered"
+      }
+    }
+
+    if (currentStatus === 'cancelled') {
+      return { success: false, error: "This item has already been cancelled" }
+    }
+
+    // Update order item status to cancelled
+    const { error: updateError } = await supabase
+      .from('order_items')
+      .update({ 
+        status: 'cancelled',
+        // Store cancellation reason in a metadata field if needed
+      })
+      .eq('id', orderItemId)
+
+    if (updateError) {
+      console.error('Error cancelling order item:', updateError)
+      return { success: false, error: "Failed to cancel order" }
+    }
+
+    // Create a notification for the seller
+    const { error: notifyError } = await supabase
+      .from('notifications')
+      .insert({
+        user_id: orderItem.seller_id,
+        type: 'order_status',
+        title: 'Order Cancellation Request',
+        body: `A buyer has cancelled their order${reason ? `: ${reason}` : ''}`,
+        data: { 
+          order_item_id: orderItemId, 
+          order_id: order.id,
+          reason 
+        },
+        order_id: order.id,
+      })
+
+    if (notifyError) {
+      console.error('Error creating cancellation notification:', notifyError)
+      // Don't fail the cancellation if notification fails
+    }
+
+    // Revalidate pages
+    revalidatePath('/[locale]/account/orders', 'page')
+    revalidatePath('/[locale]/sell/orders', 'page')
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error in requestOrderCancellation:', error)
+    return { success: false, error: "An unexpected error occurred" }
+  }
+}
+
+/**
+ * Report an issue with an order item (buyer only)
+ */
+export type IssueType = 
+  | 'not_received' 
+  | 'wrong_item' 
+  | 'damaged' 
+  | 'not_as_described' 
+  | 'missing_parts'
+  | 'other'
+
+export async function reportOrderIssue(
+  orderItemId: string,
+  issueType: IssueType,
+  description: string
+): Promise<{ success: boolean; error?: string; conversationId?: string }> {
+  try {
+    const supabase = await createClient()
+    if (!supabase) {
+      return { success: false, error: "Failed to connect to database" }
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: "Not authenticated" }
+    }
+
+    if (!description || description.trim().length < 10) {
+      return { success: false, error: "Please provide a detailed description (minimum 10 characters)" }
+    }
+
+    // Verify the order item belongs to this user's order
+    const { data: orderItem, error: fetchError } = await supabase
+      .from('order_items')
+      .select(`
+        id,
+        status,
+        seller_id,
+        product:products(id, title),
+        order:orders!inner(id, user_id)
+      `)
+      .eq('id', orderItemId)
+      .single()
+
+    if (fetchError || !orderItem) {
+      return { success: false, error: "Order item not found" }
+    }
+
+    const order = orderItem.order as unknown as { id: string; user_id: string }
+    const product = orderItem.product as unknown as { id: string; title: string } | null
+    
+    // Verify user owns this order
+    if (order.user_id !== user.id) {
+      return { success: false, error: "Not authorized to report issues for this order" }
+    }
+
+    // Map issue type to readable subject
+    const issueSubjects: Record<IssueType, string> = {
+      'not_received': 'Item Not Received',
+      'wrong_item': 'Wrong Item Received',
+      'damaged': 'Item Damaged',
+      'not_as_described': 'Item Not As Described',
+      'missing_parts': 'Missing Parts',
+      'other': 'Order Issue',
+    }
+
+    const subject = `${issueSubjects[issueType]}${product?.title ? ` - ${product.title}` : ''}`
+
+    // Create or find existing conversation with the seller
+    const { data: existingConversation } = await supabase
+      .from('conversations')
+      .select('id')
+      .eq('buyer_id', user.id)
+      .eq('seller_id', orderItem.seller_id)
+      .eq('order_id', order.id)
+      .single()
+
+    let conversationId = existingConversation?.id
+
+    if (!conversationId) {
+      // Create new conversation
+      const { data: newConversation, error: convError } = await supabase
+        .from('conversations')
+        .insert({
+          buyer_id: user.id,
+          seller_id: orderItem.seller_id,
+          product_id: product?.id || null,
+          order_id: order.id,
+          subject,
+          status: 'open',
+          last_message_at: new Date().toISOString(),
+          seller_unread_count: 1,
+        })
+        .select('id')
+        .single()
+
+      if (convError || !newConversation) {
+        console.error('Error creating conversation:', convError)
+        return { success: false, error: "Failed to create conversation" }
+      }
+
+      conversationId = newConversation.id
+    }
+
+    // Send the issue report as a message
+    const messageContent = `⚠️ **Issue Report: ${issueSubjects[issueType]}**\n\n${description}`
+    
+    const { error: messageError } = await supabase
+      .from('messages')
+      .insert({
+        conversation_id: conversationId,
+        sender_id: user.id,
+        content: messageContent,
+        message_type: 'text',
+      })
+
+    if (messageError) {
+      console.error('Error creating message:', messageError)
+      return { success: false, error: "Failed to send issue report" }
+    }
+
+    // Update conversation last_message_at and unread count
+    await supabase
+      .from('conversations')
+      .update({
+        last_message_at: new Date().toISOString(),
+        seller_unread_count: 1, // Set unread
+        status: 'open',
+      })
+      .eq('id', conversationId)
+
+    // Create notification for seller
+    await supabase
+      .from('notifications')
+      .insert({
+        user_id: orderItem.seller_id,
+        type: 'message',
+        title: `Issue Report: ${issueSubjects[issueType]}`,
+        body: `A buyer has reported an issue with their order`,
+        data: { 
+          order_item_id: orderItemId, 
+          order_id: order.id,
+          issue_type: issueType,
+          conversation_id: conversationId
+        },
+        order_id: order.id,
+        conversation_id: conversationId,
+      })
+
+    // Revalidate pages
+    revalidatePath('/[locale]/account/orders', 'page')
+    revalidatePath('/[locale]/chat', 'page')
+
+    return { success: true, conversationId }
+  } catch (error) {
+    console.error('Error in reportOrderIssue:', error)
+    return { success: false, error: "An unexpected error occurred" }
+  }
+}
+
+/**
+ * Get detailed order information for a buyer
+ */
+export async function getBuyerOrderDetails(
+  orderId: string
+): Promise<{ 
+  order: {
+    id: string
+    status: string
+    total_amount: number
+    shipping_address: Record<string, unknown> | null
+    created_at: string
+    items: OrderItem[]
+  } | null
+  error?: string 
+}> {
+  try {
+    const supabase = await createClient()
+    if (!supabase) {
+      return { order: null, error: "Failed to connect to database" }
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { order: null, error: "Not authenticated" }
+    }
+
+    // Get order with all items
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .select(`
+        id,
+        status,
+        total_amount,
+        shipping_address,
+        created_at,
+        order_items (
+          *,
+          product:products(id, title, images, slug),
+          seller:profiles!order_items_seller_id_fkey(id, full_name, avatar_url, username)
+        )
+      `)
+      .eq('id', orderId)
+      .eq('user_id', user.id)
+      .single()
+
+    if (orderError || !order) {
+      return { order: null, error: "Order not found" }
+    }
+
+    return {
+      order: {
+        id: order.id,
+        status: order.status || 'pending',
+        total_amount: order.total_amount,
+        shipping_address: order.shipping_address as Record<string, unknown> | null,
+        created_at: order.created_at,
+        items: order.order_items as unknown as OrderItem[],
+      }
+    }
+  } catch (error) {
+    console.error('Error in getBuyerOrderDetails:', error)
+    return { order: null, error: "An unexpected error occurred" }
+  }
+}

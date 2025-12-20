@@ -1,7 +1,7 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { Storefront, ArrowRight, ShieldCheck, Wallet, TrendUp } from "@phosphor-icons/react"
+import { Storefront, ArrowRight } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface StartSellingBannerProps {
@@ -13,16 +13,16 @@ export function StartSellingBanner({ locale = "en", className }: StartSellingBan
   const isBg = locale === "bg"
   
   return (
-    <div className={cn("px-3 md:px-4 py-2 md:py-3", className)}>
+    <div className={cn("px-3 md:px-4 py-1 md:py-3", className)}>
       <Link
         href="/sell"
         className={cn(
-          "group flex items-center gap-3 p-3 md:p-4 rounded-xl",
+          "group flex items-center gap-3 p-2.5 md:p-4 rounded-xl",
           "bg-link", // Uses the brand blue color
           "ring-1 ring-link/20",
           "transition-all duration-200",
           "hover:brightness-110 hover:shadow-md hover:shadow-link/30",
-          "active:scale-[0.99]"
+          "active:scale-[0.98]"
         )}
       >
         {/* Icon */}
@@ -45,22 +45,6 @@ export function StartSellingBanner({ locale = "en", className }: StartSellingBan
           <ArrowRight className="size-4 text-white" weight="bold" />
         </div>
       </Link>
-      
-      {/* Trust badges - visible on all sizes, compact on small screens */}
-      <div className="flex items-center justify-center gap-3 sm:gap-6 mt-2 md:mt-3">
-        <div className="flex items-center gap-1 text-muted-foreground">
-          <ShieldCheck className="size-3 sm:size-3.5 text-link" weight="fill" />
-          <span className="text-2xs">{isBg ? "Сигурно" : "Secure"}</span>
-        </div>
-        <div className="flex items-center gap-1 text-muted-foreground">
-          <Wallet className="size-3 sm:size-3.5 text-link" weight="fill" />
-          <span className="text-2xs">{isBg ? "0% комисион" : "0% fees"}</span>
-        </div>
-        <div className="flex items-center gap-1 text-muted-foreground">
-          <TrendUp className="size-3 sm:size-3.5 text-link" weight="fill" />
-          <span className="text-2xs">{isBg ? "Растящ пазар" : "Growing"}</span>
-        </div>
-      </div>
     </div>
   )
 }

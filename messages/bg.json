@@ -590,7 +590,9 @@
         "usernamePlaceholder": "Изберете уникално потребителско име",
         "usernameRequired": "Потребителското име е задължително",
         "usernameInvalid": "Потребителското име може да съдържа само букви, цифри и долни черти",
-        "usernameTaken": "Това потребителско име вече е заето"
+        "usernameTaken": "Това потребителско име вече е заето",
+        "usernameAlreadyTaken": "Това потребителско име вече е заето",
+        "rememberMe": "Запомни ме"
     },
     "Account": {
         "title": "Твоят акаунт",
@@ -726,6 +728,7 @@
         "showResults": "Покажи резултатите",
         "stars": "Звезди",
         "under": "Под",
+        "back": "Назад",
         "activeFilters": "Активни филтри",
         "sortBy": "Сортирай по",
         "featured": "Препоръчани",
@@ -787,6 +790,13 @@
         "notifications": "Известия",
         "notificationsDesc": "Актуализации за поръчки и сигнали",
         "viewAllMessages": "Виж всички съобщения"
+    },
+    "NotificationsDropdown": {
+        "title": "Известия",
+        "loading": "Зареждане...",
+        "noNotifications": "Все още няма известия",
+        "markAllRead": "Маркирай като прочетени",
+        "viewAll": "Виж всички известия"
     },
     "ReturnsDropdown": {
         "title": "Твоите поръчки",

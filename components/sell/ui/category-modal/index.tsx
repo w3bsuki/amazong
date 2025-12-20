@@ -187,9 +187,9 @@ export function CategorySelector({
     <>
       {TriggerButton}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-2xl max-h-[75vh] p-0 gap-0 rounded-lg">
-          <DialogHeader className="px-4 py-3 border-b">
-            <DialogTitle className="text-base font-semibold">
+        <DialogContent className="sm:max-w-7xl w-full h-[90vh] p-0 gap-0 flex flex-col">
+          <DialogHeader className="px-6 py-4 border-b shrink-0">
+            <DialogTitle className="text-lg font-semibold">
               {locale === "bg" ? "Избери категория" : "Select Category"}
             </DialogTitle>
           </DialogHeader>
@@ -449,6 +449,7 @@ function CategoryModalContent({
                     hasChildren={getChildren(cat).length > 0}
                     onClick={() => handleNavigate(cat)}
                     locale={locale}
+                    size="sm"
                   />
                 ))}
               </div>
@@ -461,18 +462,18 @@ function CategoryModalContent({
 
   // ===== DESKTOP LAYOUT (Two-Panel) =====
   return (
-    <div className="flex h-[400px]">
+    <div className="flex flex-1 min-h-0">
       {/* Left Panel - L1 Categories */}
-      <div className="w-48 border-r bg-muted/30">
-        <ScrollArea className="h-full">
-          <div className="p-1.5">
+      <div className="w-72 border-r bg-muted/30 flex flex-col shrink-0">
+        <ScrollArea className="flex-1">
+          <div className="p-2">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveL1(cat)}
                 className={cn(
-                  "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors",
+                  "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-colors",
                   activeL1?.id === cat.id
                     ? "bg-primary/10 text-primary font-medium"
                     : "text-foreground hover:bg-muted"
@@ -480,7 +481,7 @@ function CategoryModalContent({
               >
                 <span className="truncate">{getName(cat)}</span>
                 {getChildren(cat).length > 0 ? (
-                  <CaretRight className="size-3.5 text-muted-foreground shrink-0" />
+                  <CaretRight className="size-4 text-muted-foreground shrink-0" />
                 ) : null}
               </button>
             ))}
@@ -489,28 +490,42 @@ function CategoryModalContent({
       </div>
 
       {/* Right Panel - Subcategories */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Search */}
-        <div className="px-3 py-2 border-b">
+        <div className="px-4 py-3 border-b">
           <div className="relative">
-            <MagnifyingGlass className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={locale === "bg" ? "Търси..." : "Search..."}
-              className="pl-9 h-9 text-sm"
+              placeholder={locale === "bg" ? "Търси категории..." : "Search categories..."}
+              className="pl-10 h-10"
             />
           </div>
         </div>
 
+        {/* Breadcrumb for selected L1 */}
+        {activeL1 && !searchQuery.trim() && (
+          <div className="px-4 py-2 border-b bg-muted/30">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">
+                {locale === "bg" ? "Категория:" : "Category:"}
+              </span>
+              <span className="font-medium text-foreground">
+                {getName(activeL1)}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Content */}
         <ScrollArea className="flex-1">
-          <div className="p-3">
+          <div className="p-4">
             {searchQuery.trim() ? (
               searchResults.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
+                <div className="py-12 text-center text-muted-foreground">
                   <p className="text-sm">
-                    {locale === "bg" ? "Няма резултати" : "No results"}
+                    {locale === "bg" ? "Няма резултати за" : "No results for"} &ldquo;{searchQuery}&rdquo;
                   </p>
                 </div>
               ) : (
@@ -521,23 +536,29 @@ function CategoryModalContent({
                       type="button"
                       onClick={() => handleSearchSelect(cat)}
                       className={cn(
-                        "w-full flex flex-col items-start gap-0.5 px-3 py-2 rounded-md text-left transition-colors",
+                        "w-full flex flex-col items-start gap-1 px-4 py-3 rounded-lg text-left transition-colors",
                         "hover:bg-muted",
-                        value === cat.id && "bg-primary/10"
+                        value === cat.id && "bg-primary/10 border border-primary/20"
                       )}
                     >
-                      <span className="text-sm font-medium">
+                      <span className="text-sm font-medium text-foreground">
                         {getName(cat)}
                       </span>
-                      <span className="text-xs text-muted-foreground truncate w-full">
+                      <span className="text-xs text-muted-foreground">
                         {cat.fullPath}
                       </span>
                     </button>
                   ))}
                 </div>
               )
+            ) : currentCategories.length === 0 ? (
+              <div className="py-12 text-center text-muted-foreground">
+                <p className="text-sm">
+                  {locale === "bg" ? "Изберете категория от ляво" : "Select a category from the left"}
+                </p>
+              </div>
             ) : (
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                 {currentCategories.map((cat) => (
                   <CategoryCard
                     key={cat.id}
@@ -548,6 +569,7 @@ function CategoryModalContent({
                       void handleDesktopNavigate(cat);
                     }}
                     locale={locale}
+                    size="default"
                   />
                 ))}
               </div>
@@ -560,7 +582,7 @@ function CategoryModalContent({
 }
 
 // ============================================================================
-// Category Card Component - Compact, clean design
+// Category Card Component - Clean, touch-friendly design
 // ============================================================================
 interface CategoryCardProps {
   category: Category;
@@ -568,6 +590,7 @@ interface CategoryCardProps {
   hasChildren: boolean;
   onClick: () => void;
   locale: string;
+  size?: "sm" | "default";
 }
 
 function CategoryCard({
@@ -576,6 +599,7 @@ function CategoryCard({
   hasChildren,
   onClick,
   locale,
+  size = "default",
 }: CategoryCardProps) {
   const name = locale === "bg" && category.name_bg ? category.name_bg : category.name;
 
@@ -584,19 +608,27 @@ function CategoryCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "relative flex items-center justify-between gap-1 w-full p-2.5 rounded-lg border text-left transition-colors",
-        "hover:bg-muted/50 hover:border-primary/30",
+        "relative flex items-center justify-between w-full rounded-lg border text-left transition-all",
+        "hover:bg-muted/50 hover:border-primary/40",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        isSelected ? "border-primary bg-primary/5" : "border-border"
+        isSelected 
+          ? "border-primary bg-primary/5 shadow-sm" 
+          : "border-border",
+        size === "sm" 
+          ? "gap-2 px-3 py-2.5 min-h-11"
+          : "gap-3 px-5 py-4 min-h-14"
       )}
     >
-      <span className="text-sm font-medium line-clamp-2 flex-1">
+      <span className={cn(
+        "font-medium text-foreground break-words",
+        size === "sm" ? "text-sm" : "text-base"
+      )}>
         {name}
       </span>
       {hasChildren ? (
-        <CaretRight className="size-3.5 text-muted-foreground shrink-0" />
+        <CaretRight className={cn("text-muted-foreground shrink-0", size === "sm" ? "size-4" : "size-5")} />
       ) : isSelected ? (
-        <Check className="size-3.5 text-primary shrink-0" weight="bold" />
+        <Check className={cn("text-primary shrink-0", size === "sm" ? "size-4" : "size-5")} weight="bold" />
       ) : null}
     </button>
   );

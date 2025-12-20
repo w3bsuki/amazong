@@ -1,6 +1,13 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
+const AUTH_COOKIE_DOMAIN = process.env.AUTH_COOKIE_DOMAIN
+
+function withAuthCookieDomain(options: unknown): unknown {
+  if (!AUTH_COOKIE_DOMAIN || !options || typeof options !== 'object') return options
+  return { ...(options as Record<string, unknown>), domain: AUTH_COOKIE_DOMAIN }
+}
+
 export async function updateSession(request: NextRequest, response?: NextResponse) {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     console.warn("Supabase environment variables are missing. Skipping session update.")
@@ -26,7 +33,7 @@ export async function updateSession(request: NextRequest, response?: NextRespons
           supabaseResponse = response || NextResponse.next({
             request,
           })
-          cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options))
+          cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, withAuthCookieDomain(options) as any))
         },
       },
     },

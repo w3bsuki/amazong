@@ -44,7 +44,7 @@ export function MobileSearchBar({ className }: MobileSearchBarProps) {
             "w-full flex items-center gap-2 h-10 px-3 rounded-full",
             "bg-muted border border-border",
             "text-muted-foreground text-sm text-left",
-            "active:bg-muted/80",
+            "active:bg-accent",
             "transition-colors duration-150",
             "touch-action-manipulation tap-transparent"
           )}
@@ -52,11 +52,11 @@ export function MobileSearchBar({ className }: MobileSearchBarProps) {
           aria-haspopup="dialog"
           aria-expanded={isSearchOpen}
         >
-          <MagnifyingGlass size={18} weight="regular" className="text-muted-foreground shrink-0" />
+          <MagnifyingGlass size={18} weight="bold" className="text-muted-foreground shrink-0" />
           <span className="flex-1 truncate">{placeholder}</span>
           <div className="flex items-center gap-1 shrink-0">
             <div className="w-px h-5 bg-border" />
-            <Camera size={18} weight="regular" className="text-muted-foreground ml-1" />
+            <Camera size={18} weight="regular" className="text-muted-foreground/70 ml-1" />
           </div>
         </button>
       </div>

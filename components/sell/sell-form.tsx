@@ -35,6 +35,7 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import type { Category } from "./types";
 import { Link } from "@/i18n/routing";
+import { AiSearchDialog } from "@/components/ai-search-dialog";
 
 interface SellFormProps {
   locale?: string;
@@ -53,6 +54,7 @@ function ProgressHeader({
   hasUnsavedChanges,
   onSaveDraft,
   locale,
+  onOpenAiAssistant,
 }: {
   progressPercent: number;
   autoSaved: boolean;
@@ -60,6 +62,7 @@ function ProgressHeader({
   hasUnsavedChanges: boolean;
   onSaveDraft: () => void;
   locale: string;
+  onOpenAiAssistant: () => void;
 }) {
   const isBg = locale === "bg";
   const isComplete = progressPercent === 100;
@@ -100,6 +103,17 @@ function ProgressHeader({
 
           {/* Right: Save status + Actions */}
           <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={onOpenAiAssistant}
+              className="hidden sm:inline-flex h-9 px-3 gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <Sparkle className="size-4" />
+              <span>{isBg ? "AI помощ" : "AI-assisted"}</span>
+            </Button>
+
             {/* Save status indicator */}
             <div className={cn(
               "flex items-center gap-1.5 text-xs transition-opacity",
@@ -283,6 +297,7 @@ export function SellForm({
   const [autoSaved, setAutoSaved] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSavedRef = useRef<string>("");
@@ -478,6 +493,7 @@ export function SellForm({
         hasUnsavedChanges={hasUnsavedChanges}
         onSaveDraft={handleSaveDraft}
         locale={locale}
+        onOpenAiAssistant={() => setAiDialogOpen(true)}
       />
 
       {/* Main Content */}
@@ -600,6 +616,13 @@ export function SellForm({
         isSubmitting={isPending}
         onSubmit={handleMobileSubmit}
         locale={locale}
+      />
+
+      <AiSearchDialog
+        open={aiDialogOpen}
+        onOpenChange={setAiDialogOpen}
+        initialMode="sell"
+        autoSendGreeting={false}
       />
     </div>
   );

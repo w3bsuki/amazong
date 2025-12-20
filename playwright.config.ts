@@ -103,7 +103,7 @@ export default defineConfig({
       ? 'pnpm start' 
       : 'cross-env NEXT_PUBLIC_E2E=true pnpm exec next dev',
     url: baseURL,
-    reuseExistingServer: false,
+    reuseExistingServer: !isCI, // Reuse existing server for local development
     timeout: 120_000,
     stdout: 'pipe',
     stderr: 'pipe',

@@ -208,8 +208,13 @@ export function DesktopFilterModal({
             </div>
           </div>
           <DialogClose asChild>
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
-              <X size={20} weight="bold" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+              aria-label={locale === 'bg' ? 'Затвори филтрите' : 'Close filters'}
+            >
+              <X size={20} weight="bold" aria-hidden="true" />
             </Button>
           </DialogClose>
         </div>

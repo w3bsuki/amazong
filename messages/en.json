@@ -590,7 +590,9 @@
         "usernamePlaceholder": "Choose a unique username",
         "usernameRequired": "Username is required",
         "usernameInvalid": "Username can only contain letters, numbers, and underscores",
-        "usernameTaken": "This username is already taken"
+        "usernameTaken": "This username is already taken",
+        "usernameAlreadyTaken": "This username is already taken",
+        "rememberMe": "Remember me"
     },
     "Account": {
         "title": "Your Account",
@@ -726,6 +728,7 @@
         "showResults": "Show Results",
         "stars": "Stars",
         "under": "Under",
+        "back": "Back",
         "activeFilters": "Active filters",
         "sortBy": "Sort by",
         "featured": "Featured",
@@ -787,6 +790,13 @@
         "notifications": "Notifications",
         "notificationsDesc": "Order updates and alerts",
         "viewAllMessages": "View All Messages"
+    },
+    "NotificationsDropdown": {
+        "title": "Notifications",
+        "loading": "Loading...",
+        "noNotifications": "No notifications yet",
+        "markAllRead": "Mark all read",
+        "viewAll": "View All Notifications"
     },
     "ReturnsDropdown": {
         "title": "Your Orders",

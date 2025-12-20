@@ -16,6 +16,7 @@ import {
   SignInCTA, 
   NewestListings, 
   NewestListingsSectionSkeleton,
+  CategoryCarousel,
 } from "@/components/sections"
 
 // Skeleton fallbacks
@@ -179,11 +180,13 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       */}
       
       {/* ================================================================
-          MOBILE: Original layout - UNTOUCHED
+          MOBILE: Ultra-compact layout for maximum information density
           ================================================================ */}
-      <div className="w-full md:hidden">
+      <div className="w-full md:hidden space-y-1">
         {/* Category Circles - First thing after header */}
-        <MobileCategoryRail locale={locale} />
+        <div className="pt-1">
+          <MobileCategoryRail locale={locale} />
+        </div>
         
         {/* Start Selling CTA - Promote seller signup */}
         <StartSellingBanner locale={locale} />
@@ -194,7 +197,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </Suspense>
         
         {/* Sign In CTA - At the end on mobile */}
-        <div className="px-3 pt-3">
+        <div className="px-3 pb-4">
           <Suspense fallback={<SignInCtaSkeleton />}>
             <SignInCTA />
           </Suspense>
@@ -224,6 +227,33 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <Suspense fallback={<TabbedProductFeedSkeleton />}>
             <TabbedProductFeed locale={locale} />
           </Suspense>
+
+          {/* Category Sections - identical carousel containers */}
+          <CategoryCarousel
+            locale={locale}
+            categorySlug="fashion"
+            title={locale === "bg" ? "Мода" : "Fashion"}
+          />
+          <CategoryCarousel
+            locale={locale}
+            categorySlug="pets"
+            title={locale === "bg" ? "Домашни любимци" : "Pets"}
+          />
+          <CategoryCarousel
+            locale={locale}
+            categorySlug="automotive"
+            title={locale === "bg" ? "Автомобили" : "Automotive"}
+          />
+          <CategoryCarousel
+            locale={locale}
+            categorySlug="gaming"
+            title={locale === "bg" ? "Гейминг" : "Gaming"}
+          />
+          <CategoryCarousel
+            locale={locale}
+            categorySlug="electronics"
+            title={locale === "bg" ? "Електроника" : "Electronics"}
+          />
 
           {/* Promo Cards Grid */}
           <PromoCards locale={locale} />

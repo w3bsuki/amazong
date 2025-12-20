@@ -18,6 +18,13 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
+const AUTH_COOKIE_DOMAIN = process.env.AUTH_COOKIE_DOMAIN
+
+function withAuthCookieDomain(options: unknown): unknown {
+  if (!AUTH_COOKIE_DOMAIN || !options || typeof options !== 'object') return options
+  return { ...(options as Record<string, unknown>), domain: AUTH_COOKIE_DOMAIN }
+}
+
 function assertEnvVars() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY")
@@ -34,8 +41,8 @@ export async function createClient() {
       getAll: () => cookieStore.getAll(),
       setAll: (cookiesToSet) => {
         try {
-          cookiesToSet.forEach(({ name, value, options }) => 
-            cookieStore.set(name, value, options)
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, withAuthCookieDomain(options) as any)
           )
         } catch {
           // Called from Server Component - middleware handles session refresh
@@ -66,7 +73,7 @@ export function createRouteHandlerClient(request: NextRequest) {
   })
 
   const applyCookies = <TBody>(response: NextResponse<TBody>) => {
-    pendingCookies.forEach(({ name, value, options }) => response.cookies.set(name, value, options as any))
+    pendingCookies.forEach(({ name, value, options }) => response.cookies.set(name, value, withAuthCookieDomain(options) as any))
     return response
   }
 

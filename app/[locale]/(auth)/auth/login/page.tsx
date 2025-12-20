@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/client"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
-import { useState, useTransition } from "react"
+import { useState, useTransition, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth"
@@ -41,6 +41,7 @@ export default function LoginPage() {
   const [serverError, setServerError] = useState<string | null>(null)
   const [isSuccess, setIsSuccess] = useState(false)
   const [isPending, startTransition] = useTransition()
+  const [rememberMe, setRememberMe] = useState(false)
   const t = useTranslations('Auth')
   const locale = useLocale()
 
@@ -49,6 +50,20 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
     mode: "onChange",
   })
+
+  // Load remember me preference and saved email
+  useEffect(() => {
+    try {
+      const savedRememberMe = localStorage.getItem('remember-me') === 'true'
+      const savedEmail = localStorage.getItem('remembered-email')
+      setRememberMe(savedRememberMe)
+      if (savedRememberMe && savedEmail) {
+        form.setValue('email', savedEmail)
+      }
+    } catch {
+      // localStorage not available
+    }
+  }, [form])
 
   const { isValid, errors } = form.formState
 
@@ -72,6 +87,19 @@ export default function LoginPage() {
             setServerError(error.message)
           }
           return
+        }
+        
+        // Save remember me preference
+        try {
+          if (rememberMe) {
+            localStorage.setItem('remember-me', 'true')
+            localStorage.setItem('remembered-email', data.email)
+          } else {
+            localStorage.removeItem('remember-me')
+            localStorage.removeItem('remembered-email')
+          }
+        } catch {
+          // localStorage not available
         }
         
         setIsSuccess(true)
@@ -180,6 +208,20 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
+
+                {/* Remember Me Checkbox */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="remember-me"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="size-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  />
+                  <label htmlFor="remember-me" className="text-sm text-gray-600 cursor-pointer select-none">
+                    {t('rememberMe') || 'Remember me'}
+                  </label>
+                </div>
 
                 {/* Server Error */}
                 {serverError && (

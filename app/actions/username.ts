@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/lib/supabase/server"
+import { createClient, createAdminClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
@@ -398,9 +398,21 @@ export async function upgradeToBusinessAccount(data: z.infer<typeof businessUpgr
       console.error("upgradeToBusinessAccount error:", updateError)
       return { success: false, error: "Failed to upgrade account" }
     }
+
+    // Create business_verification record for future verification
+    const adminClient = createAdminClient()
+    await adminClient
+      .from("business_verification")
+      .upsert({
+        seller_id: user.id,
+        legal_name: data.business_name,
+        vat_number: data.vat_number || null,
+        verification_level: 0,
+      }, { onConflict: "seller_id" })
     
     revalidatePath("/account")
     revalidatePath("/account/profile")
+    revalidatePath("/dashboard")
     
     return { success: true }
   } catch (error) {
@@ -426,12 +438,30 @@ export async function downgradeToPersonalAccount(): Promise<{
     if (authError || !user) {
       return { success: false, error: "Not authenticated" }
     }
+
+    // Check for active business subscription
+    const adminClient = createAdminClient()
+    const { data: subscription } = await adminClient
+      .from("subscriptions")
+      .select("id, status, plan_type")
+      .eq("seller_id", user.id)
+      .eq("status", "active")
+      .single()
+
+    if (subscription && subscription.plan_type !== "free") {
+      return { 
+        success: false, 
+        error: "Please cancel your business subscription first before downgrading" 
+      }
+    }
     
-    // Update to personal account (keep business data but switch type)
+    // Update to personal account (reset business-related fields)
     const { error: updateError } = await supabase
       .from("profiles")
       .update({
         account_type: "personal",
+        is_verified_business: false,
+        tier: "free",
         updated_at: new Date().toISOString(),
       })
       .eq("id", user.id)
@@ -443,6 +473,7 @@ export async function downgradeToPersonalAccount(): Promise<{
     
     revalidatePath("/account")
     revalidatePath("/account/profile")
+    revalidatePath("/dashboard")
     
     return { success: true }
   } catch (error) {

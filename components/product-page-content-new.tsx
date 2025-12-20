@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import {
   Heart,
   Lightning,
@@ -79,6 +78,7 @@ interface ProductPageContentProps {
   }>
   locale: string
   currentUserId: string | null
+  isFollowingSeller?: boolean
   formattedDeliveryDate: string
   t: {
     inStock: string
@@ -164,6 +164,7 @@ export function ProductPageContent({
   sellerFeedback = [],
   locale,
   currentUserId,
+  isFollowingSeller = false,
   formattedDeliveryDate,
   t,
 }: ProductPageContentProps) {
@@ -303,6 +304,8 @@ export function ProductPageContent({
             productImages={images}
             variant="banner"
             locale={locale}
+            isFollowing={isFollowingSeller}
+            currentUserId={currentUserId}
             t={sellerTranslations}
           />
         )}
@@ -397,6 +400,8 @@ export function ProductPageContent({
                     productImages={images}
                     variant="compact"
                     locale={locale}
+                    isFollowing={isFollowingSeller}
+                    currentUserId={currentUserId}
                     t={sellerTranslations}
                   />
                 </div>
@@ -504,6 +509,8 @@ export function ProductPageContent({
                 productImages={images}
                 variant="full"
                 locale={locale}
+                isFollowing={isFollowingSeller}
+                currentUserId={currentUserId}
                 t={sellerTranslations}
               />
 

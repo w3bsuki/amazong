@@ -226,6 +226,7 @@ const shortLabelsBg: Record<string, string> = {
   "Дом и кухня": "За дома",
   "Услуги и събития": "Услуги",
   "Електроника и техника": "Техника",
+  "Електроника": "Техника",
   "Компютри и лаптопи": "Компютри",
   "Авто и мото": "Авто",
   "Спорт и фитнес": "Спорт",
@@ -238,6 +239,12 @@ const shortLabelsBg: Record<string, string> = {
   "Инструменти и ремонт": "Ремонт",
   "Офис и канцелария": "Офис",
   "Колекции и хоби": "Хоби",
+  "Електромобилност": "Е-мобилност",
+  "Колекционерски": "Колекции",
+  "Музикални инструменти": "Инструменти",
+  "Индустриално": "Индустрия",
+  "Ръчна изработка": "Ръчна",
+  "Търговия на едро": "На едро",
 }
 
 // Short mobile labels for English
@@ -246,6 +253,7 @@ const shortLabelsEn: Record<string, string> = {
   "Home & Kitchen": "Home",
   "Services & Events": "Services",
   "Electronics & Tech": "Electronics",
+  "Electronics": "Tech",
   "Computers & Laptops": "Computers",
   "Auto & Moto": "Auto",
   "Sports & Fitness": "Sports",
@@ -258,6 +266,10 @@ const shortLabelsEn: Record<string, string> = {
   "Tools & Home Improvement": "Tools",
   "Office & Stationery": "Office",
   "Collectibles & Hobbies": "Hobbies",
+  "Collectibles & Art": "Collectibles",
+  "Musical Instruments": "Instruments",
+  "Industrial & Scientific": "Industrial",
+  "Handmade & Crafts": "Handmade",
 }
 
 export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
@@ -309,7 +321,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
         {/* Scrollable Container - Mobile circles */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-2 px-3 py-1 scroll-pl-3"
+          className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-2 px-3 py-1.5 scroll-pl-3"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           role="list"
         >
@@ -329,9 +341,9 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
                 <div
                   className={cn(
                     "rounded-full flex items-center justify-center",
-                    "size-[66px]",
+                    "size-[58px]",
                     "bg-card ring-1 ring-border shadow-xs",
-                    "transition-[transform,box-shadow,ring-color] duration-200 ease-out",
+                    "transition-all duration-150 ease-out",
                     "group-hover:ring-ring/30",
                     "group-active:scale-[0.98]"
                   )}
@@ -339,9 +351,9 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
                   <div
                     className={cn(
                       "rounded-full flex items-center justify-center",
-                      "size-[58px]",
+                      "size-[50px]",
                       "bg-background ring-1 ring-border/60",
-                      "transition-colors duration-200",
+                      "transition-colors duration-150",
                       "group-hover:bg-accent/40 group-hover:ring-ring/30"
                     )}
                   >
@@ -349,7 +361,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
                       const Icon = getCategoryIcon(category.slug)
                       return (
                         <Icon
-                          className="size-7 text-link transition-colors duration-200"
+                          className="size-7 text-link transition-colors duration-150"
                           weight="regular"
                         />
                       )
@@ -357,7 +369,7 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
                   </div>
                 </div>
                 {/* Category name - Mobile (short labels) */}
-                <span className="mt-1.5 text-foreground font-medium text-xs text-center max-w-[74px] leading-tight line-clamp-2 group-hover:text-link transition-colors duration-200">
+                <span className="mt-1.5 text-foreground font-medium text-[11px] text-center max-w-[78px] leading-[1.1] line-clamp-2 group-hover:text-link transition-colors duration-150 break-words">
                   {getShortName(category)}
                 </span>
               </Link>
@@ -372,295 +384,6 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
             !canScrollRight && "opacity-0"
           )} 
         />
-
-        {/* ================================================================
-            MOBILE TEST: Desktop-style cards for comparison
-            - Remove this section after deciding which design is better
-            ================================================================ */}
-        <div className="mt-3 border-t border-dashed border-border/50">
-          {/* Section Label for Cards */}
-          <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5">
-            <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">
-              {locale === "bg" ? "Карти x4 (по-малки)" : "Cards x4 (Smaller)"}
-            </span>
-            <Link 
-              href="/categories" 
-              className="text-[10px] font-medium text-link hover:text-link-hover hover:underline underline-offset-2 transition-colors"
-            >
-              {locale === "bg" ? "Виж всички" : "See all"}
-            </Link>
-          </div>
-          
-          {/* Mobile Cards - Smaller, showing ~4 */}
-          <div
-            className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-2 px-3 pb-2 scroll-pl-3"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            role="list"
-            aria-label={locale === "bg" ? "Категории (карти x4)" : "Categories (cards x4)"}
-          >
-            {categories.map((category, index) => {
-              const Icon = getCategoryIcon(category.slug)
-              return (
-                <Link
-                  key={`card-${category.slug}`}
-                  href={`/categories/${category.slug}`}
-                  role="listitem"
-                  className={cn(
-                    "flex flex-col items-center justify-center shrink-0 snap-start",
-                    "w-[88px] h-[84px] px-1.5 py-2",
-                    "bg-card border border-border rounded-xl",
-                    "active:bg-accent/50 active:border-ring/30",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    "transition-all duration-150 ease-out",
-                    "group cursor-pointer",
-                    index === categories.length - 1 && "mr-3"
-                  )}
-                >
-                  {/* Icon container - slightly smaller for mobile */}
-                  <div
-                    className={cn(
-                      "size-10 rounded-lg flex items-center justify-center",
-                      "bg-muted/50 group-active:bg-brand/10",
-                      "transition-colors duration-150"
-                    )}
-                  >
-                    <Icon
-                      className="size-6 text-link group-active:text-brand transition-colors duration-150"
-                      weight="regular"
-                    />
-                  </div>
-                  {/* Category name - short labels for mobile */}
-                  <span className="mt-1.5 text-foreground text-[11px] font-medium text-center leading-[14px] line-clamp-2 w-full px-0.5 group-active:text-brand transition-colors duration-150">
-                    {getShortName(category)}
-                  </span>
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* ================================================================
-            MOBILE TEST: Desktop cards showing ~3 (wider for more text)
-            - Same desktop style but larger cards = more text space
-            ================================================================ */}
-        <div className="mt-3 border-t border-dashed border-border/50">
-          {/* Section Label for Cards x3 */}
-          <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5">
-            <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">
-              {locale === "bg" ? "Карти x3 (по-големи)" : "Cards x3 (Larger)"}
-            </span>
-            <Link 
-              href="/categories" 
-              className="text-[10px] font-medium text-link hover:text-link-hover hover:underline underline-offset-2 transition-colors"
-            >
-              {locale === "bg" ? "Виж всички" : "See all"}
-            </Link>
-          </div>
-          
-          {/* Mobile Cards - Larger, showing ~3 */}
-          <div
-            className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-2.5 px-3 pb-2 scroll-pl-3"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            role="list"
-            aria-label={locale === "bg" ? "Категории (карти x3)" : "Categories (cards x3)"}
-          >
-            {categories.map((category, index) => {
-              const Icon = getCategoryIcon(category.slug)
-              return (
-                <Link
-                  key={`card3-${category.slug}`}
-                  href={`/categories/${category.slug}`}
-                  role="listitem"
-                  className={cn(
-                    "flex flex-col items-center justify-center shrink-0 snap-start",
-                    "w-[112px] h-[100px] px-2 py-2.5",
-                    "bg-card border border-border rounded-xl",
-                    "active:bg-accent/50 active:border-ring/30",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    "transition-all duration-150 ease-out",
-                    "group cursor-pointer",
-                    index === categories.length - 1 && "mr-3"
-                  )}
-                >
-                  {/* Icon container - larger for better proportion */}
-                  <div
-                    className={cn(
-                      "size-11 rounded-lg flex items-center justify-center",
-                      "bg-muted/50 group-active:bg-brand/10",
-                      "transition-colors duration-150"
-                    )}
-                  >
-                    <Icon
-                      className="size-6 text-link group-active:text-brand transition-colors duration-150"
-                      weight="regular"
-                    />
-                  </div>
-                  {/* Category name - short labels for mobile */}
-                  <span className="mt-2 text-foreground text-xs font-medium text-center leading-4 line-clamp-2 w-full px-1 group-active:text-brand transition-colors duration-150">
-                    {getShortName(category)}
-                  </span>
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* ================================================================
-            MOBILE TEST: Icon-only circles (no text)
-            - Most compact option, but users may not know what category it is
-            - Consider: tooltips on long-press? or rely on recognizable icons?
-            ================================================================ */}
-        <div className="mt-3 border-t border-dashed border-border/50">
-          {/* Section Label for Icon-only */}
-          <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5">
-            <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">
-              {locale === "bg" ? "Само икони (без текст)" : "Icons Only (No Text)"}
-            </span>
-            <Link 
-              href="/categories" 
-              className="text-[10px] font-medium text-link hover:text-link-hover hover:underline underline-offset-2 transition-colors"
-            >
-              {locale === "bg" ? "Виж всички" : "See all"}
-            </Link>
-          </div>
-          
-          {/* Icon-only circles - super compact */}
-          <div
-            className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-2.5 px-3 pb-2.5 scroll-pl-3"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            role="list"
-            aria-label={locale === "bg" ? "Категории (икони)" : "Categories (icons)"}
-          >
-            {categories.map((category, index) => {
-              const Icon = getCategoryIcon(category.slug)
-              return (
-                <Link
-                  key={`icon-${category.slug}`}
-                  href={`/categories/${category.slug}`}
-                  role="listitem"
-                  aria-label={getCategoryName(category)}
-                  title={getCategoryName(category)}
-                  className={cn(
-                    "shrink-0 snap-start",
-                    "size-12 rounded-full flex items-center justify-center",
-                    "bg-card border border-border",
-                    "active:bg-accent/60 active:border-ring/40 active:scale-95",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    "transition-all duration-150 ease-out",
-                    "cursor-pointer",
-                    index === categories.length - 1 && "mr-3"
-                  )}
-                >
-                  <Icon
-                    className="size-6 text-link transition-colors duration-150"
-                    weight="regular"
-                  />
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* ================================================================
-            MOBILE TEST: Square icon cards with text OUTSIDE (below)
-            - Card contains only the icon, text is below like circles
-            - Best of both: modern card look + external text flexibility
-            ================================================================ */}
-        <div className="mt-3 border-t border-dashed border-border/50">
-          {/* Section Label */}
-          <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5">
-            <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">
-              {locale === "bg" ? "Карти + текст отвън" : "Cards + Text Outside"}
-            </span>
-          </div>
-          
-          {/* Square cards with external text */}
-          <div
-            className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-2.5 px-3 pb-2 scroll-pl-3"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            role="list"
-          >
-            {categories.map((category, index) => {
-              const Icon = getCategoryIcon(category.slug)
-              return (
-                <Link
-                  key={`cardext-${category.slug}`}
-                  href={`/categories/${category.slug}`}
-                  role="listitem"
-                  className={cn(
-                    "flex flex-col items-center shrink-0 snap-start group",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg",
-                    index === categories.length - 1 && "mr-3"
-                  )}
-                >
-                  {/* Square card - icon only */}
-                  <div
-                    className={cn(
-                      "size-14 rounded-xl flex items-center justify-center",
-                      "bg-card border border-border",
-                      "group-active:bg-accent/50 group-active:border-ring/30 group-active:scale-95",
-                      "transition-all duration-150 ease-out"
-                    )}
-                  >
-                    <Icon
-                      className="size-7 text-link group-active:text-brand transition-colors duration-150"
-                      weight="regular"
-                    />
-                  </div>
-                  {/* Text below card - short labels for mobile */}
-                  <span className="mt-1.5 text-foreground font-medium text-[11px] text-center max-w-[60px] leading-tight line-clamp-2 group-active:text-brand transition-colors duration-150">
-                    {getShortName(category)}
-                  </span>
-                </Link>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* ================================================================
-            MOBILE TEST: Colored cards (no icon) - Desktop card style
-            - Blue background + white text inside
-            - Same card dimensions as desktop, just colored
-            ================================================================ */}
-        <div className="mt-3 border-t border-dashed border-border/50">
-          {/* Section Label */}
-          <div className="flex items-center justify-between px-3 pt-2.5 pb-1.5">
-            <span className="text-[10px] font-medium text-muted-foreground/70 uppercase tracking-wider">
-              {locale === "bg" ? "Цветни карти (без икони)" : "Colored Cards (No Icons)"}
-            </span>
-          </div>
-          
-          {/* Colored cards - desktop card style */}
-          <div
-            className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-2 px-3 pb-2.5 scroll-pl-3"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            role="list"
-          >
-            {categories.map((category, index) => {
-              return (
-                <Link
-                  key={`label-${category.slug}`}
-                  href={`/categories/${category.slug}`}
-                  role="listitem"
-                  className={cn(
-                    "flex items-center justify-center shrink-0 snap-start",
-                    "w-[88px] h-[72px] px-2 py-2",
-                    "bg-brand rounded-xl",
-                    "active:bg-brand/80 active:scale-[0.97]",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    "transition-all duration-150 ease-out",
-                    "cursor-pointer",
-                    index === categories.length - 1 && "mr-3"
-                  )}
-                >
-                  <span className="text-white text-xs font-semibold text-center leading-4 line-clamp-2">
-                    {getShortName(category)}
-                  </span>
-                </Link>
-              )
-            })}
-          </div>
-        </div>
       </div>
 
       {/* ================================================================

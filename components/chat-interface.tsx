@@ -22,7 +22,8 @@ import {
   Image as ImageIcon,
   Heart,
   Package,
-  ProhibitInset
+  ProhibitInset,
+  Flag
 } from "@phosphor-icons/react"
 import {
   DropdownMenu,
@@ -32,6 +33,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { blockUser } from "@/app/actions/blocked-users"
+import { reportConversation } from "@/app/actions/report-conversation"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import Image from "next/image"
@@ -59,7 +61,9 @@ export function ChatInterface({
     currentConversation,
     messages,
     isLoadingMessages,
+    isOtherUserTyping,
     sendMessage,
+    sendTypingIndicator,
     closeConversation,
     error
   } = useMessages()
@@ -69,6 +73,7 @@ export function ChatInterface({
   const [isSending, setIsSending] = useState(false)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [isBlocking, setIsBlocking] = useState(false)
+  const [isReporting, setIsReporting] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   // Get current user
@@ -90,12 +95,16 @@ export function ChatInterface({
     }
   }, [messages])
 
-  // Auto-resize textarea
+  // Auto-resize textarea and send typing indicator
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value)
     // Auto-resize
     e.target.style.height = "auto"
     e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"
+    // Send typing indicator (throttled in context)
+    if (e.target.value.trim()) {
+      sendTypingIndicator()
+    }
   }
 
   const handleSend = async () => {
@@ -204,6 +213,37 @@ export function ChatInterface({
       })
     } finally {
       setIsBlocking(false)
+    }
+  }
+
+  // Handle reporting conversation
+  const handleReportConversation = async () => {
+    if (!currentConversation) return
+    
+    setIsReporting(true)
+    try {
+      const result = await reportConversation(currentConversation.id, "inappropriate")
+      if (result.success) {
+        toast({
+          title: locale === "bg" ? "Докладът е изпратен" : "Report submitted",
+          description: locale === "bg" 
+            ? "Благодарим ви за сигнала. Ще го прегледаме." 
+            : "Thank you for your report. We will review it."
+        })
+      } else {
+        throw new Error(result.error || "Failed to report")
+      }
+    } catch (err) {
+      console.error('Error reporting conversation:', err)
+      toast({
+        title: locale === "bg" ? "Грешка" : "Error",
+        description: locale === "bg" 
+          ? "Неуспешно изпращане на доклада" 
+          : "Failed to submit report",
+        variant: "destructive"
+      })
+    } finally {
+      setIsReporting(false)
     }
   }
 
@@ -338,6 +378,16 @@ export function ChatInterface({
                     {t("archiveConversation")}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={handleReportConversation}
+                    disabled={isReporting}
+                  >
+                    <Flag size={16} weight="regular" className="mr-2" />
+                    {isReporting 
+                      ? (locale === "bg" ? "Изпращане..." : "Reporting...")
+                      : (locale === "bg" ? "Докладвай разговор" : "Report conversation")
+                    }
+                  </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={handleBlockUser}
                     disabled={isBlocking}
@@ -650,6 +700,20 @@ export function ChatInterface({
           </div>
         )}
       </div>
+
+      {/* Typing indicator */}
+      {isOtherUserTyping && !isClosed && (
+        <div className="px-4 pb-1">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex gap-1">
+              <span className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="size-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
+            <span>{displayName} {locale === "bg" ? "пише..." : "is typing..."}</span>
+          </div>
+        </div>
+      )}
 
       {/* Input area - Instagram style */}
       <div className="shrink-0 border-t border-border px-3 py-3 bg-background">

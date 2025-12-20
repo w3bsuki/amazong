@@ -16,6 +16,9 @@ import {
   Plus,
 } from "@phosphor-icons/react/dist/ssr"
 
+import type { SaleItem } from "./types"
+export type { SaleItem } from "./types"
+
 interface SalesPageProps {
   params: Promise<{
     locale: string
@@ -23,35 +26,6 @@ interface SalesPageProps {
   searchParams: Promise<{
     period?: string
   }>
-}
-
-export interface SaleItem {
-  id: string
-  order_id: string
-  product_id: string
-  quantity: number
-  price_at_purchase: number
-  created_at: string
-  status: string
-  product: {
-    id: string
-    title: string
-    images: string[]
-    price: number
-  } | null
-  order: {
-    id: string
-    status: string
-    created_at: string
-    shipping_address: {
-      city?: string
-      country?: string
-    } | null
-    buyer: {
-      email: string
-      full_name: string | null
-    } | null
-  } | null
 }
 
 export default async function SalesPage({ params, searchParams }: SalesPageProps) {

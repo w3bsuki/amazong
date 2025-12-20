@@ -89,10 +89,12 @@ interface MessageContextValue {
   isLoading: boolean
   isLoadingMessages: boolean
   error: string | null
+  isOtherUserTyping: boolean
 
   // Actions
   loadConversations: () => Promise<void>
   selectConversation: (conversationId: string) => Promise<void>
+  sendTypingIndicator: () => void
   sendMessage: (content: string, attachmentUrl?: string) => Promise<void>
   markAsRead: (conversationId: string) => Promise<void>
   startConversation: (sellerId: string, productId?: string, subject?: string) => Promise<string>
@@ -117,8 +119,10 @@ export function useMessages() {
       isLoading: false,
       isLoadingMessages: false,
       error: null,
+      isOtherUserTyping: false,
       loadConversations: async () => {},
       selectConversation: async () => {},
+      sendTypingIndicator: () => {},
       sendMessage: async () => {},
       markAsRead: async () => {},
       startConversation: async () => "",
@@ -145,6 +149,10 @@ export function MessageProvider({ children }: MessageProviderProps) {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [channel, setChannel] = useState<RealtimeChannel | null>(null)
+  const [isOtherUserTyping, setIsOtherUserTyping] = useState(false)
+  const [typingChannel, setTypingChannel] = useState<RealtimeChannel | null>(null)
+  const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
+  const lastTypingSentRef = React.useRef<number>(0)
 
   // Load total unread count
   const refreshUnreadCount = useCallback(async () => {
@@ -533,6 +541,67 @@ export function MessageProvider({ children }: MessageProviderProps) {
     }
   }, [supabase, currentConversation])
 
+  // Send typing indicator (throttled to once per 2 seconds)
+  const sendTypingIndicator = useCallback(() => {
+    if (!currentConversation || !typingChannel) return
+    
+    const now = Date.now()
+    if (now - lastTypingSentRef.current < 2000) return // Throttle
+    lastTypingSentRef.current = now
+
+    typingChannel.send({
+      type: "broadcast",
+      event: "typing",
+      payload: { conversation_id: currentConversation.id }
+    })
+  }, [currentConversation, typingChannel])
+
+  // Set up typing indicator broadcast channel
+  useEffect(() => {
+    if (!currentConversation) {
+      if (typingChannel) {
+        supabase.removeChannel(typingChannel)
+        setTypingChannel(null)
+      }
+      setIsOtherUserTyping(false)
+      return
+    }
+
+    const channel = supabase.channel(`typing:${currentConversation.id}`)
+    
+    channel
+      .on("broadcast", { event: "typing" }, async (payload) => {
+        const { data: userData } = await supabase.auth.getUser()
+        if (!userData.user) return
+        
+        // Ignore own typing events
+        if (payload.payload?.user_id === userData.user.id) return
+        
+        // Show typing indicator
+        setIsOtherUserTyping(true)
+        
+        // Clear previous timeout
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current)
+        }
+        
+        // Hide after 3 seconds of no typing
+        typingTimeoutRef.current = setTimeout(() => {
+          setIsOtherUserTyping(false)
+        }, 3000)
+      })
+      .subscribe()
+
+    setTypingChannel(channel)
+
+    return () => {
+      supabase.removeChannel(channel)
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current)
+      }
+    }
+  }, [supabase, currentConversation])
+
   // Set up realtime subscription for new messages
   useEffect(() => {
     let realtimeChannel: RealtimeChannel | null = null
@@ -618,8 +687,10 @@ export function MessageProvider({ children }: MessageProviderProps) {
     isLoading,
     isLoadingMessages,
     error,
+    isOtherUserTyping,
     loadConversations,
     selectConversation,
+    sendTypingIndicator,
     sendMessage,
     markAsRead,
     startConversation,

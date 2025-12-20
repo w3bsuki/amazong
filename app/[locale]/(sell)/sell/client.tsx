@@ -14,8 +14,11 @@ import {
   type Category,
   type Seller
 } from "@/components/sell";
+import { AiSellAssistant } from "@/components/ai-sell-assistant";
 import { useParams } from "next/navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { Sparkles, FileText, ArrowLeft } from "lucide-react";
 
 interface SellPageClientProps {
   initialUser: { id: string; email?: string } | null;
@@ -38,10 +41,14 @@ export function SellPageClient({
   const [needsOnboarding, setNeedsOnboarding] = useState(initialNeedsOnboarding);
   const [username, setUsername] = useState<string | null>(initialUsername);
   
+  // AI-first mode toggle (default: AI assistant)
+  const [useAiAssistant, setUseAiAssistant] = useState(true);
+  
   // Get locale and mobile state at top level (not conditionally)
   const params = useParams();
   const locale = typeof params?.locale === "string" ? params.locale : "en";
   const isMobile = useIsMobile();
+  const isBg = locale === "bg";
 
   // Listen for auth state changes (for client-side navigation)
   useEffect(() => {
@@ -157,15 +164,19 @@ export function SellPageClient({
         <SellHeaderV3 user={{ email: user.email }} />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <div className="max-w-md mx-auto text-center space-y-4 px-4">
-            <h2 className="text-2xl font-bold">Set Up Your Username</h2>
+            <h2 className="text-2xl font-bold">
+              {isBg ? "Настройте потребителско име" : "Set Up Your Username"}
+            </h2>
             <p className="text-muted-foreground">
-              You need a username before you can start selling. Visit your account settings to set one up.
+              {isBg 
+                ? "Нужно ви е потребителско име, преди да започнете да продавате."
+                : "You need a username before you can start selling. Visit your account settings to set one up."}
             </p>
             <Link 
               href="/account/profile" 
               className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             >
-              Go to Settings
+              {isBg ? "Настройки" : "Go to Settings"}
             </Link>
           </div>
         </div>
@@ -173,27 +184,86 @@ export function SellPageClient({
     );
   }
 
-  // Mobile: Use stepper wizard flow
-  // Desktop: Use full form with sidebar
-  if (isMobile) {
+  // =========================================================================
+  // MAIN CONTENT: AI-First or Traditional Form
+  // =========================================================================
+  
+  // AI Assistant Mode (default)
+  if (useAiAssistant) {
     return (
-      <SellErrorBoundary sellerId={seller.id}>
+      <div className="flex h-dvh flex-col bg-background">
+        {/* Minimal header with toggle */}
+        <header className="safe-top flex items-center justify-between border-b border-border bg-background px-4 py-3">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="size-5" />
+            </Link>
+            <div className="flex items-center gap-2">
+              <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Sparkles className="size-4" />
+              </div>
+              <div>
+                <h1 className="text-sm font-semibold">
+                  {isBg ? "Създай обява" : "Create Listing"}
+                </h1>
+                <p className="text-xs text-muted-foreground">
+                  {isBg ? "с AI асистент" : "with AI assistant"}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setUseAiAssistant(false)}
+            className="gap-1.5"
+          >
+            <FileText className="size-4" />
+            <span className="hidden sm:inline">
+              {isBg ? "Ръчен формуляр" : "Manual Form"}
+            </span>
+          </Button>
+        </header>
+        
+        {/* AI Chatbot takes full remaining space */}
+        <div className="flex-1 min-h-0">
+          <AiSellAssistant embedded />
+        </div>
+      </div>
+    );
+  }
+
+  // Traditional Form Mode
+  return (
+    <SellErrorBoundary sellerId={seller.id}>
+      {/* Floating button to switch back to AI */}
+      {!isMobile && (
+        <div className="fixed bottom-4 right-4 z-50 md:bottom-6 md:right-6">
+          <Button
+            onClick={() => setUseAiAssistant(true)}
+            className="gap-2 shadow-lg"
+            size="lg"
+          >
+            <Sparkles className="size-4" />
+            {isBg ? "Използвай AI" : "Try AI Assistant"}
+          </Button>
+        </div>
+      )}
+      
+      {isMobile ? (
         <SellFormStepper 
           sellerId={seller.id}
           locale={locale}
           categories={categories}
         />
-      </SellErrorBoundary>
-    );
-  }
-
-  return (
-    <SellErrorBoundary sellerId={seller.id}>
-      <SellForm 
-        sellerId={seller.id}
-        locale={locale}
-        categories={categories}
-      />
+      ) : (
+        <SellForm 
+          sellerId={seller.id}
+          locale={locale}
+          categories={categories}
+        />
+      )}
     </SellErrorBoundary>
   );
 }

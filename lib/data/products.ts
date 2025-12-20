@@ -154,6 +154,53 @@ function pickPrimaryImage(p: Product): string {
 type QueryType = 'deals' | 'newest' | 'bestsellers' | 'featured' | 'promo'
 
 /**
+ * Cached category query.
+ * Mirrors `getProducts` but filters by `categories.slug`.
+ */
+export async function getProductsByCategorySlug(
+  categorySlug: string,
+  limit = 18,
+  zone?: ShippingRegion
+): Promise<Product[]> {
+  'use cache'
+  cacheTag('products', `category:${categorySlug}`)
+  cacheLife('products')
+
+  const supabase = createStaticClient()
+  if (!supabase) return []
+
+  // Inner join categories so the slug filter is applied reliably.
+  let query = supabase
+    .from('products')
+    .select(
+      'id, title, price, seller_id, list_price, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories!inner(slug)'
+    )
+    .eq('categories.slug', categorySlug)
+    .order('created_at', { ascending: false })
+
+  // Apply shipping zone filter (WW = show all, so no filter)
+  if (zone && zone !== 'WW') {
+    const shippingFilter = getShippingFilter(zone)
+    if (shippingFilter) {
+      query = query.or(shippingFilter)
+    }
+  }
+
+  const { data, error } = await query.limit(limit)
+  if (error) {
+    console.error(`[getProductsByCategorySlug:${categorySlug}]`, error.message)
+    return []
+  }
+
+  return (data || []).map((p) => ({
+    ...p,
+    category_slug: p.categories?.slug ?? null,
+    store_slug: p.seller?.username ?? null,
+    seller_profile: p.seller ?? null,
+  }))
+}
+
+/**
  * Single cached function for all product queries.
  * Optional zone filtering is applied at the DB query level.
  */

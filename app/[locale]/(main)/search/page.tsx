@@ -146,10 +146,18 @@ async function searchProducts(
   if (filters.attributes) {
     for (const [attrName, attrValue] of Object.entries(filters.attributes)) {
       if (attrValue) {
-        const value = Array.isArray(attrValue) ? attrValue[0] : attrValue
-        if (value) {
-          countQuery = countQuery.contains('attributes', { [attrName]: value })
-          dbQuery = dbQuery.contains('attributes', { [attrName]: value })
+        if (Array.isArray(attrValue)) {
+          const values = attrValue.filter((v): v is string => typeof v === 'string' && v.length > 0)
+          if (values.length === 1) {
+            countQuery = countQuery.contains('attributes', { [attrName]: values[0] })
+            dbQuery = dbQuery.contains('attributes', { [attrName]: values[0] })
+          } else if (values.length > 1) {
+            countQuery = countQuery.in(`attributes->>${attrName}`, values)
+            dbQuery = dbQuery.in(`attributes->>${attrName}`, values)
+          }
+        } else if (typeof attrValue === 'string' && attrValue.length > 0) {
+          countQuery = countQuery.contains('attributes', { [attrName]: attrValue })
+          dbQuery = dbQuery.contains('attributes', { [attrName]: attrValue })
         }
       }
     }

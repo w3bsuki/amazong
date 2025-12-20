@@ -19,7 +19,7 @@ import {
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 
-// Clean trust-blue token theming - no rainbow gradients
+// Tone for desktop cards (kept for DesktopCategoryRail)
 const tone = {
   surface: "bg-brand-muted",
   icon: "text-link",
@@ -28,7 +28,7 @@ const tone = {
 }
 
 const categories = [
-  { id: "1", name: "Electronics", name_bg: "Електроника", slug: "electronics", icon: Laptop },
+  { id: "1", name: "Electronics", name_bg: "Техника", slug: "electronics", icon: Laptop },
   { id: "2", name: "Fashion", name_bg: "Мода", slug: "fashion", icon: Dress },
   { id: "3", name: "Home", name_bg: "Дом", slug: "home", icon: Armchair },
   { id: "4", name: "Beauty", name_bg: "Красота", slug: "beauty", icon: Sparkle },
@@ -44,57 +44,72 @@ interface MobileCategoryRailProps {
   locale: string
 }
 
-// Mobile version - horizontal scroll rail
+// Mobile version - Double-ring circles (premium look)
 export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
-  const featuredLabel = locale === "bg" ? "Избрано" : "Featured"
-  const shopNowLabel = locale === "bg" ? "Разгледай" : "Shop now"
+  const sectionLabel = locale === "bg" ? "Категории" : "Categories"
 
   return (
-    <div className="px-4">
-      <div className="flex overflow-x-auto no-scrollbar gap-3 pb-4 -mx-4 px-4 snap-x snap-mandatory scroll-pl-4">
+    <nav 
+      aria-label={sectionLabel}
+      className="py-0.5"
+    >
+      <div 
+        className="flex overflow-x-auto no-scrollbar gap-2 px-3 py-1 snap-x snap-mandatory scroll-pl-3"
+        role="list"
+      >
         {categories.map((cat) => {
           const Icon = cat.icon
+          const categoryName = locale === "bg" ? cat.name_bg : cat.name
           return (
             <Link
               key={cat.slug}
               href={`/categories/${cat.slug}`}
+              aria-label={categoryName}
               className={cn(
                 "group snap-start shrink-0",
-                "w-[156px]",
-                "rounded-2xl border border-border bg-card overflow-hidden",
+                "flex flex-col items-center",
                 "touch-action-manipulation",
-                "active:bg-accent/40",
-                "transition-all duration-200"
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg",
               )}
+              role="listitem"
             >
-              <div className={cn("h-12 px-3 flex items-center justify-between", tone.surface)}>
+              {/* Outer ring */}
+              <div
+                className={cn(
+                  "rounded-full flex items-center justify-center",
+                  "size-[66px]",
+                  "bg-card ring-1 ring-border shadow-xs",
+                  "transition-all duration-150 ease-out",
+                  "group-hover:ring-ring/30",
+                  "group-active:scale-[0.98]"
+                )}
+              >
+                {/* Inner circle */}
                 <div
                   className={cn(
-                    "size-8 rounded-xl",
-                    "bg-background/80 border border-border/50",
-                    "flex items-center justify-center"
+                    "rounded-full flex items-center justify-center",
+                    "size-[58px]",
+                    "bg-background ring-1 ring-border/60",
+                    "transition-colors duration-150",
+                    "group-hover:bg-accent/40 group-hover:ring-ring/30"
                   )}
-                  aria-hidden="true"
                 >
-                  <Icon className={cn("size-4.5", tone.icon, tone.iconHover)} weight="fill" />
-                </div>
-                <span className={cn("text-2xs font-semibold", tone.accent)}>{featuredLabel}</span>
-              </div>
-
-              <div className="px-3 py-3">
-                <div className="text-sm font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-brand transition-colors">
-                  {locale === "bg" ? cat.name_bg : cat.name}
-                </div>
-                <div className="mt-1 flex items-center justify-between">
-                  <span className="text-2xs text-muted-foreground">{shopNowLabel}</span>
-                  <ArrowRight className={cn("size-3.5", tone.icon, tone.iconHover)} weight="bold" />
+                  <Icon 
+                    className="size-7 text-link transition-colors duration-150" 
+                    weight="regular" 
+                    aria-hidden="true" 
+                  />
                 </div>
               </div>
+              {/* Label */}
+              <span className="mt-1.5 text-foreground font-medium text-[11px] text-center max-w-[78px] leading-[1.1] line-clamp-2 group-hover:text-link transition-colors duration-150 break-words">
+                {categoryName}
+              </span>
             </Link>
           )
         })}
       </div>
-    </div>
+    </nav>
   )
 }
 
@@ -220,13 +235,13 @@ export function DesktopCategoryRail({ locale }: MobileCategoryRailProps) {
       {/* Fade edges to indicate scrollability */}
       <div 
         className={cn(
-          "absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-muted to-transparent pointer-events-none transition-opacity",
+          "absolute left-0 top-0 bottom-0 w-8 bg-linear-to-r from-muted to-transparent pointer-events-none transition-opacity",
           canScrollLeft ? "opacity-100" : "opacity-0"
         )} 
       />
       <div 
         className={cn(
-          "absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-muted to-transparent pointer-events-none transition-opacity",
+          "absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-muted to-transparent pointer-events-none transition-opacity",
           canScrollRight ? "opacity-100" : "opacity-0"
         )} 
       />

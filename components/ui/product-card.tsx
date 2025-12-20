@@ -267,6 +267,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
       brand,
       condition,
       categorySlug,
+      location,
       sellerId,
 
       // Seller
@@ -479,7 +480,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
               src={imageSrc}
               alt={title}
               fill
-              className="size-full object-cover transition-transform duration-200 ease-out group-hover:scale-[1.03]"
+              className="size-full object-cover transition-opacity duration-200 group-hover:opacity-90"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               placeholder="blur"
               blurDataURL={productBlurDataURL()}
@@ -494,8 +495,8 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
               variant="ghost"
               size="icon"
               className={cn(
-                "absolute right-1.5 top-1.5 z-10 size-7 rounded-full bg-background/80 backdrop-blur-sm transition-all duration-150",
-                "hover:bg-background hover:shadow-sm hover:scale-105",
+                "absolute right-1.5 top-1.5 z-10 size-7 rounded-full bg-background/80 backdrop-blur-sm transition-colors duration-150",
+                "hover:bg-background hover:shadow-sm",
                 wishlisted && "bg-primary/10 text-primary"
               )}
               onClick={handleWishlist}
@@ -515,8 +516,8 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
               variant={inCart ? "default" : "outline"}
               size="icon"
               className={cn(
-                "absolute bottom-1.5 right-1.5 z-10 size-7 rounded-full transition-all duration-150",
-                !inCart && "bg-background/80 backdrop-blur-sm hover:bg-background hover:shadow-sm hover:scale-105"
+                "absolute bottom-1.5 right-1.5 z-10 size-7 rounded-full transition-colors duration-150",
+                !inCart && "bg-background/80 backdrop-blur-sm hover:bg-background hover:shadow-sm"
               )}
               onClick={handleAddToCart}
               disabled={isOwnProduct || !inStock}
@@ -554,9 +555,13 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
           "flex flex-col gap-0.5 md:gap-1",
           variant === "featured" ? "p-3 md:p-4" : "pt-2 md:pt-3"
         )}>
-          {/* Brand - Meta info (text-xs, muted) */}
-          {brand && (
-            <p className="truncate text-xs text-muted-foreground">{brand}</p>
+          {/* Meta info: Brand & Condition */}
+          {(brand || condition) && (
+            <div className="flex items-center gap-1.5 truncate text-xs text-muted-foreground">
+              {brand && <span className="truncate">{brand}</span>}
+              {brand && condition && <span className="size-0.5 shrink-0 rounded-full bg-muted-foreground/30" />}
+              {condition && <span className="shrink-0">{condition}</span>}
+            </div>
           )}
 
           {/* Title - Scannable (text-sm, medium, truncate to 1-2 lines) */}
@@ -626,6 +631,13 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
             <p className="inline-flex items-center gap-1 pt-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
               <Truck size={12} weight="bold" />
               {locale === "bg" ? "Безплатна доставка" : "Free shipping"}
+            </p>
+          )}
+
+          {/* Location - Marketplace essential */}
+          {location && (
+            <p className="truncate text-[10px] text-muted-foreground pt-0.5">
+              {location}
             </p>
           )}
         </div>

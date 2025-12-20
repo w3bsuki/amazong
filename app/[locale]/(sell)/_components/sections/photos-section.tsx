@@ -21,6 +21,8 @@ import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import type { SellFormDataV4, ProductImage } from "@/lib/sell-form-schema-v4";
+import type { Category } from "../types";
+import { AiListingAssistant } from "../ai/ai-listing-assistant";
 
 // ========================================
 // Client-side Image Compression Utility
@@ -95,6 +97,8 @@ async function compressImage(
 
 interface PhotosSectionProps {
   form: UseFormReturn<SellFormDataV4>;
+  categories?: Category[];
+  locale?: string;
   maxPhotos?: number;
   onUploadStart?: () => void;
   onUploadEnd?: () => void;
@@ -176,10 +180,10 @@ function PhotoThumbnail({
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
       className={cn(
-        "relative aspect-square overflow-hidden rounded-lg border-2 group bg-muted transition-colors",
+        "relative aspect-square overflow-hidden rounded-xl border-2 group bg-muted transition-colors",
         isDragging 
           ? "border-primary border-dashed opacity-50 scale-95" 
-          : "border-border hover:border-primary/40",
+          : "border-border/60 hover:border-primary/40",
         "cursor-grab active:cursor-grabbing touch-action-manipulation"
       )}
     >
@@ -274,11 +278,11 @@ function UploadZone({
     <div
       {...getRootProps()}
       className={cn(
-        "relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors cursor-pointer",
+        "relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors cursor-pointer",
         "min-h-[200px] sm:min-h-[220px] touch-action-manipulation",
         isDragActive
           ? "border-primary bg-primary/5"
-          : "border-border bg-muted/20 hover:bg-muted/40 hover:border-primary/40",
+          : "border-border/60 bg-muted/20 hover:bg-muted/40 hover:border-primary/40",
         isUploading && "pointer-events-none opacity-70"
       )}
     >
@@ -292,13 +296,13 @@ function UploadZone({
       ) : (
         <>
           <div className={cn(
-            "flex size-16 items-center justify-center rounded-lg bg-primary/10 mb-4 transition-colors",
+            "flex size-16 items-center justify-center rounded-xl bg-background border border-border shadow-xs mb-4 transition-transform",
             isDragActive && "scale-110"
           )}>
             {isDragActive ? (
               <Plus className="size-8 text-primary" weight="bold" />
             ) : (
-              <Camera className="size-8 text-primary" weight="duotone" />
+              <Camera className="size-8 text-muted-foreground" weight="bold" />
             )}
           </div>
           <span className="text-base font-semibold text-foreground">
@@ -354,6 +358,8 @@ function UploadProgressItem({ upload }: { upload: UploadProgress }) {
 // ============================================================================
 export function PhotosSection({
   form,
+  categories = [],
+  locale = "en",
   maxPhotos = 12,
   onUploadStart,
   onUploadEnd,
@@ -532,37 +538,44 @@ export function PhotosSection({
 
   return (
     <>
-      <section className="rounded-lg border border-border bg-card overflow-hidden">
-        <div className="p-5 pb-3">
+      <div className="space-y-4">
+        <AiListingAssistant form={form} categories={categories} locale={locale} />
+
+        <section className="rounded-xl border border-border bg-background overflow-hidden shadow-xs">
+          <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
           <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
-                <Camera className="size-5 text-primary" weight="duotone" />
+            <div className="flex items-center gap-3.5">
+              <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
+                <Camera className="size-5 text-muted-foreground" weight="bold" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-foreground">Photos</h3>
-                <p className="text-sm text-muted-foreground">
-                  Add up to {maxPhotos} photos. First image is the cover.
+                <h3 className="text-sm font-bold tracking-tight text-foreground">
+                  {isBg ? "Снимки" : "Photos"}
+                </h3>
+                <p className="text-xs font-medium text-muted-foreground">
+                  {isBg 
+                    ? `Добавете до ${maxPhotos} снимки. Първата е корица.`
+                    : `Add up to ${maxPhotos} photos. First image is the cover.`}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Badge 
                 variant={images.length === 0 ? "destructive" : "secondary"}
-                className="text-xs font-semibold tabular-nums"
+                className="h-6 rounded-sm px-2 text-[11px] font-bold tabular-nums"
               >
                 {images.length}/{maxPhotos}
               </Badge>
               {images.length === 0 && (
-                <Badge variant="outline" className="text-xs font-medium text-destructive border-destructive/30">
-                  Required
+                <Badge variant="outline" className="h-6 rounded-sm px-2 text-[10px] font-bold uppercase tracking-wider text-destructive border-destructive/30 bg-destructive/5">
+                  {isBg ? "Задължително" : "Required"}
                 </Badge>
               )}
             </div>
           </div>
-        </div>
+          </div>
 
-        <div className="px-5 pb-5">
+          <div className="px-5 pb-5">
           {/* Tips - Simple info box */}
           {!hasImages && (
             <div className="mb-5 p-4 rounded-lg bg-muted border border-border">
@@ -639,8 +652,9 @@ export function PhotosSection({
               Drag photos to reorder. First photo is your listing cover.
             </p>
           )}
-        </div>
-      </section>
+          </div>
+        </section>
+      </div>
 
       {/* Preview Modal */}
       {previewImage && (

@@ -27,6 +27,7 @@ import { StepPricing } from "./steps/step-pricing";
 import { StepReview } from "./steps/step-review";
 import { Link } from "@/i18n/routing";
 import type { Category } from "./types";
+import { AiSearchDialog } from "@/components/ai-search-dialog";
 
 interface SellFormStepperProps {
   locale?: string;
@@ -63,6 +64,7 @@ export function SellFormStepper({
   const [isPending, startTransition] = useTransition();
   const [showSuccess, setShowSuccess] = useState(false);
   const [createdProductId, setCreatedProductId] = useState<string | null>(null);
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const isBg = locale === "bg";
   
   // Track if draft was already restored to prevent spam
@@ -322,16 +324,16 @@ export function SellFormStepper({
           <div className="w-full max-w-sm text-center space-y-6">
             {/* Success animation */}
             <div className="relative mx-auto w-20 h-20">
-              <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping" />
-              <div className="relative w-20 h-20 bg-green-500 rounded-full flex items-center justify-center">
-                <CheckCircle className="size-10 text-white" weight="fill" />
+              <div className="absolute inset-0 bg-status-complete/15 rounded-full animate-ping" />
+              <div className="relative w-20 h-20 rounded-full border border-border bg-card flex items-center justify-center">
+                <CheckCircle className="size-10 text-status-complete" weight="fill" />
               </div>
             </div>
 
             {/* Success message */}
             <div className="space-y-2">
               <h1 className="text-2xl font-bold text-foreground">
-                {isBg ? "Поздравления! 🎉" : "Congratulations! 🎉"}
+                {isBg ? "Готово" : "All set"}
               </h1>
               <p className="text-muted-foreground">
                 {isBg 
@@ -436,10 +438,16 @@ export function SellFormStepper({
         stepTitles={STEPS.map(s => s.title)}
         locale={locale}
         onClose={handleClose}
+        onOpenAiAssistant={() => setAiDialogOpen(true)}
       />
 
       {/* Main content */}
-      <main ref={(node) => { contentScrollRef.current = node; }} className="flex-1 overflow-y-auto">
+      <main
+        ref={(node) => {
+          contentScrollRef.current = node;
+        }}
+        className="flex-1 overflow-y-auto pb-24"
+      >
         <div className="max-w-lg mx-auto px-4 py-4">
           <div className="rounded-2xl border border-border bg-card p-4">
             {renderStep()}
@@ -457,6 +465,13 @@ export function SellFormStepper({
         onNext={handleNext}
         onSubmit={handleSubmit}
         locale={locale}
+      />
+
+      <AiSearchDialog
+        open={aiDialogOpen}
+        onOpenChange={setAiDialogOpen}
+        initialMode="sell"
+        autoSendGreeting={false}
       />
     </div>
   );

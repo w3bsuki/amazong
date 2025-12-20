@@ -19,11 +19,16 @@ function ProductGridSkeleton({ count = 6 }: { count?: number }) {
   return (
     <div className="grid grid-cols-2 gap-2 px-3">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-card rounded-lg border border-border p-2">
+        <div key={i} className="bg-card rounded-lg border border-border p-2 flex flex-col h-full">
           <Skeleton className="aspect-square w-full rounded-md mb-2" />
-          <Skeleton className="h-3 w-full mb-1" />
-          <Skeleton className="h-3 w-2/3 mb-2" />
-          <Skeleton className="h-4 w-1/3" />
+          <div className="space-y-1.5 flex-1">
+            <Skeleton className="h-3.5 w-full rounded-sm" />
+            <Skeleton className="h-3.5 w-2/3 rounded-sm" />
+          </div>
+          <div className="mt-3 flex items-center justify-between">
+            <Skeleton className="h-5 w-16 rounded-sm" />
+            <Skeleton className="size-7 rounded-full" />
+          </div>
         </div>
       ))}
     </div>
@@ -190,10 +195,10 @@ export function NewestListingsSection({
 
   return (
     <section>
-      {/* Mobile feed tabs - Premium segmented control */}
-      <div className="px-3 pb-1.5">
+      {/* Mobile feed tabs - Premium segmented control - Sticky on mobile */}
+      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-md px-3 py-1.5 pb-1">
         <div 
-          className="relative flex h-10 rounded-xl bg-card p-1 ring-1 ring-border/50"
+          className="relative flex h-9 rounded-xl bg-card p-1 ring-1 ring-border/50"
           role="tablist"
         >
           {/* Sliding indicator */}
@@ -201,7 +206,7 @@ export function NewestListingsSection({
             className={cn(
               "absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg",
               "bg-primary shadow-sm",
-              "transition-transform duration-300 ease-out",
+              "transition-transform duration-200 ease-out",
               activeTab === "newest" ? "translate-x-0" : "translate-x-[calc(100%+4px)]"
             )}
             aria-hidden="true"
@@ -245,7 +250,7 @@ export function NewestListingsSection({
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-2 px-3 py-2">
+        <div className="grid grid-cols-2 gap-2 px-3 py-1">
           {active.products.map((product, index) => (
             <ProductCard
               key={product.id}

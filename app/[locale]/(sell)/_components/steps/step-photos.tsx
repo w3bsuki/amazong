@@ -20,6 +20,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import type { SellFormDataV4, ProductImage } from "@/lib/sell-form-schema-v4";
+import type { Category } from "../types";
+import { AiListingAssistant } from "../ai/ai-listing-assistant";
 
 // ========================================
 // Client-side Image Compression Utility
@@ -109,6 +111,7 @@ async function compressImage(
 
 interface StepPhotosProps {
   form: UseFormReturn<SellFormDataV4>;
+  categories: Category[];
   locale?: string;
   onValidityChange?: (isValid: boolean) => void;
 }
@@ -230,7 +233,7 @@ function UploadPreview({
   );
 }
 
-export function StepPhotos({ form, locale = "en", onValidityChange }: StepPhotosProps) {
+export function StepPhotos({ form, categories, locale = "en", onValidityChange }: StepPhotosProps) {
   const isBg = locale === "bg";
   const [uploads, setUploads] = useState<UploadProgress[]>([]);
   const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
@@ -450,6 +453,8 @@ export function StepPhotos({ form, locale = "en", onValidityChange }: StepPhotos
           </p>
         )}
       </section>
+
+      <AiListingAssistant form={form} categories={categories} locale={locale} compact />
 
       {/* Title */}
       <section className="space-y-1.5">

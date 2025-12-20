@@ -292,8 +292,8 @@ export function MobileSearchOverlay({
               <div className="relative">
                 <MagnifyingGlass
                   size={20}
-                  weight="regular"
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                  weight="bold"
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand pointer-events-none"
                   aria-hidden="true"
                 />
                 <Input
@@ -305,7 +305,7 @@ export function MobileSearchOverlay({
                   placeholder={strings.searchProducts}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="h-12 w-full pl-11 pr-11 text-base bg-muted border-0 rounded-full"
+                  className="h-12 w-full pl-11 pr-11 text-base bg-search-bg border border-search-border rounded-full focus-visible:ring-brand/50"
                   autoComplete="off"
                   autoCapitalize="off"
                   autoCorrect="off"

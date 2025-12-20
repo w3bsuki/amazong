@@ -19,7 +19,7 @@ import {
   User,
   Clock,
 } from "@phosphor-icons/react"
-import { SaleItem } from "./page"
+import type { SaleItem } from "./types"
 
 interface SalesTableProps {
   sales: SaleItem[]

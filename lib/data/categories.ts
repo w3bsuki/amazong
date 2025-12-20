@@ -107,6 +107,42 @@ export interface CategoryContext {
   attributes: CategoryAttribute[]
 }
 
+function normalizeAttributeName(name: string): string {
+  return name.trim().toLowerCase()
+}
+
+function hasAnyOptions(attr: CategoryAttribute): boolean {
+  const hasEn = Array.isArray(attr.options) && attr.options.length > 0
+  const hasBg = Array.isArray(attr.options_bg) && attr.options_bg.length > 0
+  return hasEn || hasBg
+}
+
+function withFallbackOptions(
+  current: CategoryAttribute,
+  fallback: CategoryAttribute
+): CategoryAttribute {
+  const currentHasOptions = hasAnyOptions(current)
+  const fallbackHasOptions = hasAnyOptions(fallback)
+  if (currentHasOptions || !fallbackHasOptions) return current
+
+  return {
+    ...current,
+    // If the category-level attribute is effectively unconfigured, borrow the
+    // parent options so the UI can render a real list.
+    options: Array.isArray(current.options) && current.options.length > 0
+      ? current.options
+      : fallback.options,
+    options_bg: Array.isArray(current.options_bg) && current.options_bg.length > 0
+      ? current.options_bg
+      : fallback.options_bg,
+    // If the category-level attribute type is too generic, borrow parent's type.
+    attribute_type:
+      current.attribute_type === 'text' && fallback.attribute_type !== 'text'
+        ? fallback.attribute_type
+        : current.attribute_type,
+  }
+}
+
 // =============================================================================
 // Helper Functions
 // =============================================================================
@@ -425,18 +461,34 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
       .eq('is_filterable', true)
       .order('sort_order')
   ])
-  
-  // If current category has no attributes but has a parent, inherit parent's attributes
-  let attributes = attributesResult.data || []
-  if (attributes.length === 0 && current.parent_id) {
-    const { data: parentAttributes } = await supabase
+
+  const currentAttributes = (attributesResult.data || []).map(toCategoryAttribute)
+
+  // Default behavior: show ONLY the current category's filterable attributes.
+  // If the category has none, inherit parent's (legacy behavior).
+  let attributes = currentAttributes
+
+  let parentAttributes: CategoryAttribute[] = []
+  if (current.parent_id) {
+    const { data: parentAttributesRaw } = await supabase
       .from('category_attributes')
       .select('*')
       .eq('category_id', current.parent_id)
       .eq('is_filterable', true)
       .order('sort_order')
-    
-    attributes = parentAttributes || []
+    parentAttributes = (parentAttributesRaw || []).map(toCategoryAttribute)
+  }
+
+  if (attributes.length === 0 && parentAttributes.length > 0) {
+    attributes = parentAttributes
+  } else if (attributes.length > 0 && parentAttributes.length > 0) {
+    // Targeted fallback: if a current-category attribute is missing options,
+    // borrow options/type from the parent attribute with the same name.
+    const parentByName = new Map(parentAttributes.map(a => [normalizeAttributeName(a.name), a]))
+    attributes = attributes.map(attr => {
+      const fallback = parentByName.get(normalizeAttributeName(attr.name))
+      return fallback ? withFallbackOptions(attr, fallback) : attr
+    })
   }
   
   return {
@@ -454,7 +506,7 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     parent: (Array.isArray(current.parent) ? current.parent[0] : current.parent) as Category | null,
     siblings: (siblingsResult.data || []) as Category[],
     children: (childrenResult.data || []) as Category[],
-    attributes: attributes.map(toCategoryAttribute)
+    attributes
   }
 }
 

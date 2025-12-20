@@ -77,12 +77,8 @@ export function SignInPrompt() {
         
         {/* Right Side - Feature Card - Hidden on small mobile, visible from sm+ */}
         <div className="order-1 lg:order-2 hidden sm:block">
-          <div className="relative">
-            {/* Decorative gradient blob */}
-            <div className="absolute -inset-4 bg-linear-to-r from-primary/20 via-primary/10 to-transparent rounded-3xl blur-2xl" />
-            
-            {/* Card */}
-            <div className="relative bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-xl">
+          {/* Card - Clean design without decorative blobs */}
+          <div className="bg-card border border-border rounded-xl p-6 sm:p-8 shadow-sm">
               {/* Header */}
               <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                 <div className="flex items-center justify-center size-12 sm:size-14 rounded-xl bg-primary text-primary-foreground">
@@ -116,18 +112,17 @@ export function SignInPrompt() {
                 ))}
               </div>
               
-              {/* Testimonial */}
-              <div className="bg-muted/50 rounded-xl p-3 sm:p-4 border border-border/50">
-                <div className="flex gap-0.5 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} weight="fill" className="size-3.5 sm:size-4 text-yellow-500" />
-                  ))}
-                </div>
-                <p className="text-xs sm:text-sm text-foreground mb-2">
-                  &quot;I made my first sale within 24 hours of listing. The process was incredibly smooth!&quot;
-                </p>
-                <p className="text-xs text-muted-foreground">— Maria K., Top Seller</p>
+            {/* Testimonial */}
+            <div className="bg-muted/50 rounded-lg p-3 sm:p-4 border border-border/50">
+              <div className="flex gap-0.5 mb-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} weight="fill" className="size-3.5 sm:size-4 text-yellow-500" />
+                ))}
               </div>
+              <p className="text-xs sm:text-sm text-foreground mb-2">
+                &quot;I made my first sale within 24 hours of listing. The process was incredibly smooth!&quot;
+              </p>
+              <p className="text-xs text-muted-foreground">— Maria K., Top Seller</p>
             </div>
           </div>
         </div>

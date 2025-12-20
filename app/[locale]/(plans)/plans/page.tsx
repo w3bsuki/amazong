@@ -4,7 +4,6 @@ import Link from "next/link"
 import { useEffect, useMemo, useState, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { 
-  ArrowLeft, 
   Check, 
   CreditCard, 
   ChartBar, 
@@ -18,6 +17,7 @@ import {
   Crown,
   Star
 } from "@phosphor-icons/react"
+import { MinimalHeader } from "@/components/minimal-header"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import {
@@ -389,38 +389,27 @@ export default function PlansPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={`/${locale}`}>
-              <ArrowLeft className="mr-2 size-4" />
-              {t.back}
-            </Link>
-          </Button>
-
-          {/* Navigation */}
-          <nav className="hidden items-center gap-1 md:flex">
-            {navItems.map(({ id, icon: Icon }) => (
-              <Button
-                key={id}
-                variant="ghost"
-                size="sm"
-                onClick={() => scrollToSection(id)}
-                className={cn(
-                  "gap-2 text-muted-foreground",
-                  activeSection === id && "bg-muted text-foreground"
-                )}
-              >
-                <Icon className="size-4" weight={activeSection === id ? "fill" : "regular"} />
-                <span className="text-sm">{t.nav[id as keyof typeof t.nav]}</span>
-              </Button>
-            ))}
-          </nav>
-
-          <div className="w-20" /> {/* Spacer for balance */}
-        </div>
-      </header>
+      {/* Header with Logo and Navigation */}
+      <MinimalHeader showBack={false}>
+        {/* Section Navigation */}
+        <nav className="hidden items-center gap-1 md:flex">
+          {navItems.map(({ id, icon: Icon }) => (
+            <Button
+              key={id}
+              variant="ghost"
+              size="sm"
+              onClick={() => scrollToSection(id)}
+              className={cn(
+                "gap-2 text-muted-foreground",
+                activeSection === id && "bg-muted text-foreground"
+              )}
+            >
+              <Icon className="size-4" weight={activeSection === id ? "fill" : "regular"} />
+              <span className="text-sm">{t.nav[id as keyof typeof t.nav]}</span>
+            </Button>
+          ))}
+        </nav>
+      </MinimalHeader>
 
       <main className="mx-auto max-w-7xl px-4 py-12">
           {/* Hero */}

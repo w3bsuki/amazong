@@ -508,14 +508,13 @@ export function ProductCard({
                   onClick={handleAddToCart}
                   disabled={isOwnProduct || !inStock}
                   className={cn(
-                    "h-8 px-3 rounded-md border text-xs font-semibold transition-colors inline-flex items-center gap-1.5",
-                    "bg-foreground text-background border-foreground hover:bg-foreground/90",
+                    "size-8 rounded-full border text-xs font-semibold transition-colors inline-flex items-center justify-center",
+                    "bg-background text-primary border-primary/30 hover:bg-primary hover:text-primary-foreground hover:border-primary",
                     (isOwnProduct || !inStock) && "opacity-60 cursor-not-allowed"
                   )}
                   aria-label={!inStock ? (locale === "bg" ? "Изчерпано" : "Out of stock") : (locale === "bg" ? "Добави" : "Add")}
                 >
-                  <ShoppingCart size={14} weight="bold" />
-                  {locale === "bg" ? "Добави" : "Add"}
+                  <ShoppingCart size={16} weight="bold" />
                 </button>
               </div>
             )}

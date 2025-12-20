@@ -36,9 +36,18 @@ const A11Y_ROUTES = [
 /**
  * Known violations to track but not fail on (temporary)
  * Document why each is here and create tickets to fix them
+ * 
+ * Navigation menu ARIA structure issues - requires refactoring:
+ * - aria-required-children: Category dropdown panel has invalid children structure
+ * - list/listitem: NavigationMenuList structure has intermediate divs
+ * - button-name: Some navigation/filter buttons need accessible names
  */
 const KNOWN_VIOLATIONS: Record<string, string> = {
-  // Example: 'color-contrast': 'Ticket #123 - Low contrast on category badges'
+  // Navigation menu structure violations (requires refactoring)
+  'aria-required-children': 'Navigation mega-menu dropdown has nav/list children in role="menu"',
+  'list': 'NavigationMenuList has intermediate div elements breaking ul/li structure',
+  'listitem': 'NavigationMenuItem (li) is inside div instead of direct ul child',
+  'button-name': 'Some navigation buttons in header/mega-menu need aria-labels',
 }
 
 // ============================================================================

@@ -188,6 +188,7 @@ function QuantityStepper({
 export function PricingSection({
   form,
   categoryId,
+  locale = "en",
 }: PricingSectionProps) {
   const format = form.watch("format");
   const price = form.watch("price");
@@ -231,58 +232,60 @@ export function PricingSection({
 
   const priceError = form.formState.errors.price?.message;
   const symbol = CURRENCY_SYMBOLS[currency] || currency;
-  const isBg = false; // TODO: Add locale prop
+  const isBg = locale === "bg";
 
   return (
-    <section className="rounded-lg border border-border bg-card">
-      <div className="pb-3 pt-5 px-5">
-        <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-success/10">
-            <CurrencyDollar className="size-5 text-success" weight="duotone" />
+    <section className="rounded-xl border border-border bg-background overflow-hidden shadow-xs">
+      <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
+        <div className="flex items-center gap-3.5">
+          <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
+            <CurrencyDollar className="size-5 text-muted-foreground" weight="bold" />
           </div>
           <div>
-            <h3 className="text-base font-semibold">
+            <h3 className="text-sm font-bold tracking-tight text-foreground">
               {isBg ? "Ценообразуване" : "Pricing"}
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs font-medium text-muted-foreground">
               {isBg ? "Задайте цена и формат на продажба" : "Set your price and selling format"}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="space-y-6 px-5 pb-6 pt-0">
+      <div className="space-y-6 p-6">
         {/* Format Selection */}
         <div>
-          <Label className="text-sm font-medium mb-2 block">Selling format</Label>
+          <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 mb-3 block">
+            Selling format
+          </Label>
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => form.setValue("format", "fixed", { shouldValidate: true })}
               className={cn(
-                "flex items-center gap-3 p-4 rounded-lg border-2 transition-colors",
+                "flex items-center gap-3 p-3.5 rounded-xl border transition-all shadow-xs",
                 format === "fixed"
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/30"
+                  ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                  : "border-border bg-background hover:border-primary/30"
               )}
             >
               <div className={cn(
-                "h-10 w-10 rounded-lg flex items-center justify-center",
-                format === "fixed" ? "bg-primary/20" : "bg-muted"
+                "size-9 rounded-lg flex items-center justify-center border",
+                format === "fixed" ? "bg-primary/10 border-primary/20" : "bg-muted/30 border-border/50"
               )}>
                 <Tag className={cn(
-                  "h-5 w-5",
+                  "size-4.5",
                   format === "fixed" ? "text-primary" : "text-muted-foreground"
-                )} weight="duotone" />
+                )} weight="bold" />
               </div>
               <div className="text-left">
                 <div className={cn(
-                  "font-semibold text-sm",
+                  "font-bold text-sm tracking-tight",
                   format === "fixed" ? "text-primary" : "text-foreground"
                 )}>
                   Fixed Price
                 </div>
-                <div className="text-xs text-muted-foreground">Buy it now</div>
+                <div className="text-[11px] font-medium text-muted-foreground/70">Buy it now</div>
               </div>
             </button>
 
@@ -290,29 +293,29 @@ export function PricingSection({
               type="button"
               onClick={() => form.setValue("format", "auction", { shouldValidate: true })}
               className={cn(
-                "flex items-center gap-3 p-4 rounded-lg border-2 transition-colors",
+                "flex items-center gap-3 p-3.5 rounded-xl border transition-all shadow-xs",
                 format === "auction"
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/30"
+                  ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                  : "border-border bg-background hover:border-primary/30"
               )}
             >
               <div className={cn(
-                "h-10 w-10 rounded-lg flex items-center justify-center",
-                format === "auction" ? "bg-primary/20" : "bg-muted"
+                "size-9 rounded-lg flex items-center justify-center border",
+                format === "auction" ? "bg-primary/10 border-primary/20" : "bg-muted/30 border-border/50"
               )}>
                 <Gavel className={cn(
-                  "h-5 w-5",
+                  "size-4.5",
                   format === "auction" ? "text-primary" : "text-muted-foreground"
-                )} weight="duotone" />
+                )} weight="bold" />
               </div>
               <div className="text-left">
                 <div className={cn(
-                  "font-semibold text-sm",
+                  "font-bold text-sm tracking-tight",
                   format === "auction" ? "text-primary" : "text-foreground"
                 )}>
                   Auction
                 </div>
-                <div className="text-xs text-muted-foreground">Accept bids</div>
+                <div className="text-[11px] font-medium text-muted-foreground/70">Accept bids</div>
               </div>
             </button>
           </div>
@@ -328,13 +331,13 @@ export function PricingSection({
         )}
 
         {/* Price Input */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label className="text-sm font-medium mb-1.5 block">
+        <div className="grid grid-cols-2 gap-5">
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 block">
               {format === "auction" ? "Starting price" : "Price"} <span className="text-destructive">*</span>
             </Label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+            <div className="relative group">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground font-bold text-sm transition-colors group-focus-within:text-primary">
                 {symbol}
               </span>
               <Input
@@ -344,23 +347,23 @@ export function PricingSection({
                 type="text"
                 inputMode="decimal"
                 className={cn(
-                  "pl-10 pr-4 h-12 rounded-lg text-lg font-semibold",
-                  priceError && "border-destructive"
+                  "pl-9 pr-4 h-11 rounded-md text-base font-bold bg-muted/5 border-border/60 focus:bg-background transition-all",
+                  priceError && "border-destructive ring-destructive/20"
                 )}
               />
             </div>
             {priceError && (
-              <p className="mt-1 text-xs text-destructive">{priceError}</p>
+              <p className="mt-1 text-[11px] font-medium text-destructive">{priceError}</p>
             )}
           </div>
 
-          <div>
-            <Label className="text-sm font-medium mb-1.5 block">
+          <div className="space-y-2">
+            <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 block">
               Compare at price
-              <span className="text-muted-foreground font-normal ml-1">(optional)</span>
+              <span className="text-muted-foreground/60 font-medium ml-1">(optional)</span>
             </Label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+            <div className="relative group">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground font-bold text-sm transition-colors group-focus-within:text-primary">
                 {symbol}
               </span>
               <Input
@@ -369,18 +372,18 @@ export function PricingSection({
                 placeholder="0.00"
                 type="text"
                 inputMode="decimal"
-                className="pl-10 pr-4 h-12 rounded-lg"
+                className="pl-9 pr-4 h-11 rounded-md text-base font-bold bg-muted/5 border-border/60 focus:bg-background transition-all"
               />
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-[11px] font-medium text-muted-foreground/60">
               Shows as original price with strikethrough
             </p>
           </div>
         </div>
 
         {/* Quantity */}
-        <div>
-          <Label className="text-sm font-medium mb-1.5 block">Quantity</Label>
+        <div className="space-y-2">
+          <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 block">Quantity</Label>
           <QuantityStepper
             value={quantity}
             onChange={(val) => form.setValue("quantity", val, { shouldValidate: true })}
@@ -392,29 +395,29 @@ export function PricingSection({
           <div>
             <label
               className={cn(
-                "w-full flex items-center gap-3 p-4 rounded-lg border-2 transition-colors cursor-pointer",
+                "w-full flex items-center gap-3.5 p-4 rounded-xl border transition-all cursor-pointer shadow-xs",
                 acceptOffers
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/30"
+                  ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                  : "border-border bg-background hover:border-primary/30"
               )}
             >
               <div className={cn(
-                "h-10 w-10 rounded-lg flex items-center justify-center shrink-0",
-                acceptOffers ? "bg-primary/20" : "bg-muted"
+                "size-10 rounded-lg flex items-center justify-center shrink-0 border",
+                acceptOffers ? "bg-primary/10 border-primary/20" : "bg-muted/30 border-border/50"
               )}>
                 <Handshake className={cn(
-                  "h-5 w-5",
+                  "size-5",
                   acceptOffers ? "text-primary" : "text-muted-foreground"
-                )} weight="duotone" />
+                )} weight="bold" />
               </div>
               <div className="flex-1 text-left">
                 <div className={cn(
-                  "font-semibold text-sm",
+                  "font-bold text-sm tracking-tight",
                   acceptOffers ? "text-primary" : "text-foreground"
                 )}>
                   Accept offers from buyers
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-[11px] font-medium text-muted-foreground/70">
                   Let buyers negotiate the price with you
                 </div>
               </div>
@@ -428,11 +431,13 @@ export function PricingSection({
         )}
 
         {/* Fee Info */}
-        <div className="flex items-start gap-2 p-3 rounded-lg bg-warning/10 dark:bg-warning/5 border border-warning/20 dark:border-warning/10">
-          <Info className="h-4 w-4 text-warning shrink-0 mt-0.5" />
-          <div className="text-xs text-warning dark:text-warning/90">
-            <strong>Selling fees:</strong> 10% commission on sale price. No listing fees for Basic sellers.
-            <a href="/seller/pricing" className="ml-1 underline hover:no-underline">
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-muted/5 border border-border/50 shadow-xs">
+          <div className="size-8 rounded-md bg-background border border-border flex items-center justify-center shrink-0">
+            <Info className="size-4 text-muted-foreground" weight="bold" />
+          </div>
+          <div className="text-xs font-medium text-muted-foreground leading-relaxed">
+            <strong className="text-foreground font-bold">Selling fees:</strong> 10% commission on sale price. No listing fees for Basic sellers.
+            <a href="/seller/pricing" className="ml-1.5 text-primary font-bold hover:underline">
               View pricing plans
             </a>
           </div>

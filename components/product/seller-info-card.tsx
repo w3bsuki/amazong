@@ -11,6 +11,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { ContactSellerButton } from "@/components/contact-seller-button"
+import { FollowSellerButton } from "@/components/follow-seller-button"
 import { formatPrice } from "@/lib/format-price"
 
 interface SellerData {
@@ -38,6 +39,8 @@ interface SellerInfoCardProps {
   productImages: string[]
   variant: 'banner' | 'compact' | 'full'
   locale: string
+  isFollowing?: boolean
+  currentUserId?: string | null
   t: {
     viewStore: string
     sold: string
@@ -63,6 +66,8 @@ export function SellerInfoCard({
   productImages,
   variant,
   locale,
+  isFollowing = false,
+  currentUserId,
   t,
 }: SellerInfoCardProps) {
   if (variant === 'banner') {
@@ -245,16 +250,28 @@ export function SellerInfoCard({
         </HoverCardContent>
       </HoverCard>
 
-      <ContactSellerButton
-        sellerId={seller.id}
-        productId={productId}
-        productTitle={productTitle}
-        variant="outline"
-        size="sm"
-        className="w-full rounded-full"
-        showIcon={true}
-        showLabel={true}
-      />
+      <div className="flex gap-2">
+        <ContactSellerButton
+          sellerId={seller.id}
+          productId={productId}
+          productTitle={productTitle}
+          variant="outline"
+          size="sm"
+          className="flex-1 rounded-full"
+          showIcon={true}
+          showLabel={true}
+        />
+        {currentUserId && currentUserId !== seller.id && (
+          <FollowSellerButton
+            sellerId={seller.id}
+            initialIsFollowing={isFollowing}
+            locale={locale}
+            size="sm"
+            showLabel={false}
+            className="rounded-full"
+          />
+        )}
+      </div>
 
       {/* Detailed Ratings */}
       <div className="pt-3 border-t border-border">

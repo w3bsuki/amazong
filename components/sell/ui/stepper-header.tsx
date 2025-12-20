@@ -1,6 +1,6 @@
 "use client";
 
-import { X, House } from "@phosphor-icons/react";
+import { X, House, Sparkle } from "@phosphor-icons/react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ interface StepperHeaderProps {
   stepTitles: { en: string; bg: string }[];
   locale?: string;
   onClose?: () => void;
+  onOpenAiAssistant?: () => void;
 }
 
 export function StepperHeader({
@@ -20,6 +21,7 @@ export function StepperHeader({
   stepTitles,
   locale = "en",
   onClose,
+  onOpenAiAssistant,
 }: StepperHeaderProps) {
   const isBg = locale === "bg";
   const progressPercent = Math.round((currentStep / totalSteps) * 100);
@@ -47,15 +49,30 @@ export function StepperHeader({
           </span>
         </div>
 
-        {/* Right: Close */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 text-muted-foreground hover:text-foreground"
-          onClick={onClose}
-        >
-          <X className="size-5" weight="bold" />
-        </Button>
+        {/* Right: AI + Close */}
+        <div className="flex items-center gap-1">
+          {onOpenAiAssistant && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 text-muted-foreground hover:text-foreground"
+              onClick={onOpenAiAssistant}
+              aria-label={isBg ? "AI помощ" : "AI assistant"}
+            >
+              <Sparkle className="size-5" weight="fill" />
+            </Button>
+          )}
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 text-muted-foreground hover:text-foreground"
+            onClick={onClose}
+          >
+            <X className="size-5" weight="bold" />
+          </Button>
+        </div>
       </div>
 
       {/* Progress bar */}

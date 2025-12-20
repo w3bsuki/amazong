@@ -243,11 +243,13 @@ export function SearchFilters({
                             toggleCategory(cat.slug)
                           }}
                           className="min-h-8 min-w-8 flex items-center justify-center hover:bg-muted rounded-md"
+                          aria-label={isExpanded ? `Collapse ${getCategoryName(cat)} subcategories` : `Expand ${getCategoryName(cat)} subcategories`}
+                          aria-expanded={isExpanded}
                         >
                           {isExpanded ? (
-                            <CaretDown size={16} weight="regular" className="text-muted-foreground" />
+                            <CaretDown size={16} weight="regular" className="text-muted-foreground" aria-hidden="true" />
                           ) : (
-                            <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+                            <CaretRight size={16} weight="regular" className="text-muted-foreground" aria-hidden="true" />
                           )}
                         </button>
                       )}

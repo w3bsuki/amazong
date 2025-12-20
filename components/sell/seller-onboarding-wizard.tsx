@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 
@@ -189,15 +190,10 @@ export function SellerOnboardingWizard({
 
   return (
     <div className="w-full max-w-lg mx-auto py-6 px-4">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
-        {/* Progress indicator */}
-        <div className="h-1 bg-gray-100">
-          <motion.div
-            className="h-full bg-linear-to-r from-blue-500 to-blue-600"
-            initial={{ width: "0%" }}
-            animate={{ width: `${(step / totalSteps) * 100}%` }}
-            transition={{ duration: 0.3 }}
-          />
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+        {/* Progress indicator - using shadcn Progress */}
+        <div className="px-6 pt-4">
+          <Progress value={(step / totalSteps) * 100} className="h-1" />
         </div>
 
         <div className="p-6 sm:p-8">
@@ -213,13 +209,13 @@ export function SellerOnboardingWizard({
               >
                 {/* Header */}
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-linear-to-br from-amber-400 to-orange-500 mb-4">
-                    <Storefront weight="bold" className="w-7 h-7 text-white" />
+                  <div className="inline-flex items-center justify-center size-14 rounded-xl bg-primary/10 mb-4">
+                    <Storefront weight="bold" className="size-7 text-primary" />
                   </div>
-                  <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
+                  <h1 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">
                     {t.step1Title}
                   </h1>
-                  <p className="text-sm text-gray-500">{t.step1Subtitle}</p>
+                  <p className="text-sm text-muted-foreground">{t.step1Subtitle}</p>
                 </div>
 
                 {/* Account Type Options */}
@@ -229,38 +225,38 @@ export function SellerOnboardingWizard({
                     type="button"
                     onClick={() => setAccountType("personal")}
                     className={cn(
-                      "relative w-full p-4 rounded-xl border-2 text-left transition-all",
+                      "relative w-full p-4 rounded-lg border-2 text-left transition-all",
                       accountType === "personal"
-                        ? "border-blue-500 bg-blue-50/50 ring-2 ring-blue-500/20"
-                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                        ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                        : "border-border hover:border-primary/50 hover:bg-muted/50"
                     )}
                   >
                     <div className="flex items-start gap-4">
                       <div className={cn(
-                        "size-12 rounded-xl flex items-center justify-center shrink-0",
-                        accountType === "personal" ? "bg-blue-100" : "bg-gray-100"
+                        "size-12 rounded-lg flex items-center justify-center shrink-0",
+                        accountType === "personal" ? "bg-primary/10" : "bg-muted"
                       )}>
                         <User
                           weight={accountType === "personal" ? "fill" : "duotone"}
                           className={cn(
                             "size-6",
-                            accountType === "personal" ? "text-blue-600" : "text-gray-500"
+                            accountType === "personal" ? "text-primary" : "text-muted-foreground"
                           )}
                         />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-gray-900">{t.personal}</span>
+                          <span className="font-semibold text-foreground">{t.personal}</span>
                           {accountType === "personal" && (
-                            <div className="size-5 rounded-full bg-blue-500 flex items-center justify-center">
-                              <Check weight="bold" className="size-3 text-white" />
+                            <div className="size-5 rounded-full bg-primary flex items-center justify-center">
+                              <Check weight="bold" className="size-3 text-primary-foreground" />
                             </div>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 mb-2">{t.personalDesc}</p>
+                        <p className="text-sm text-muted-foreground mb-2">{t.personalDesc}</p>
                         <div className="flex flex-wrap gap-1.5">
                           {t.personalFeatures.map((feature, i) => (
-                            <Badge key={i} variant="secondary" className="text-xs bg-gray-100">
+                            <Badge key={i} variant="secondary" className="text-xs">
                               {feature}
                             </Badge>
                           ))}
@@ -274,38 +270,38 @@ export function SellerOnboardingWizard({
                     type="button"
                     onClick={() => setAccountType("business")}
                     className={cn(
-                      "relative w-full p-4 rounded-xl border-2 text-left transition-all",
+                      "relative w-full p-4 rounded-lg border-2 text-left transition-all",
                       accountType === "business"
-                        ? "border-blue-500 bg-blue-50/50 ring-2 ring-blue-500/20"
-                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                        ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                        : "border-border hover:border-primary/50 hover:bg-muted/50"
                     )}
                   >
                     <div className="flex items-start gap-4">
                       <div className={cn(
-                        "size-12 rounded-xl flex items-center justify-center shrink-0",
-                        accountType === "business" ? "bg-blue-100" : "bg-gray-100"
+                        "size-12 rounded-lg flex items-center justify-center shrink-0",
+                        accountType === "business" ? "bg-primary/10" : "bg-muted"
                       )}>
                         <Buildings
                           weight={accountType === "business" ? "fill" : "duotone"}
                           className={cn(
                             "size-6",
-                            accountType === "business" ? "text-blue-600" : "text-gray-500"
+                            accountType === "business" ? "text-primary" : "text-muted-foreground"
                           )}
                         />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-gray-900">{t.business}</span>
+                          <span className="font-semibold text-foreground">{t.business}</span>
                           {accountType === "business" && (
-                            <div className="size-5 rounded-full bg-blue-500 flex items-center justify-center">
-                              <Check weight="bold" className="size-3 text-white" />
+                            <div className="size-5 rounded-full bg-primary flex items-center justify-center">
+                              <Check weight="bold" className="size-3 text-primary-foreground" />
                             </div>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 mb-2">{t.businessDesc}</p>
+                        <p className="text-sm text-muted-foreground mb-2">{t.businessDesc}</p>
                         <div className="flex flex-wrap gap-1.5">
                           {t.businessFeatures.map((feature, i) => (
-                            <Badge key={i} variant="secondary" className="text-xs bg-gray-100">
+                            <Badge key={i} variant="secondary" className="text-xs">
                               {feature}
                             </Badge>
                           ))}
@@ -316,12 +312,12 @@ export function SellerOnboardingWizard({
                 </div>
 
                 {/* Info */}
-                <p className="text-xs text-center text-gray-500 mb-6">{t.upgradeAnytime}</p>
+                <p className="text-xs text-center text-muted-foreground mb-6">{t.upgradeAnytime}</p>
 
                 {/* Actions */}
                 <Button
                   onClick={nextStep}
-                  className="w-full h-11 bg-blue-600 hover:bg-blue-700"
+                  className="w-full h-11"
                 >
                   {t.continue}
                   <ArrowRight className="ml-2 size-4" />
@@ -340,20 +336,20 @@ export function SellerOnboardingWizard({
               >
                 {/* Header */}
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-linear-to-br from-purple-400 to-purple-600 mb-4">
-                    <Sparkle weight="bold" className="w-7 h-7 text-white" />
+                  <div className="inline-flex items-center justify-center size-14 rounded-xl bg-primary/10 mb-4">
+                    <Sparkle weight="bold" className="size-7 text-primary" />
                   </div>
-                  <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
+                  <h1 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">
                     {t.step2Title}
                   </h1>
-                  <p className="text-sm text-gray-500">{t.step2Subtitle}</p>
+                  <p className="text-sm text-muted-foreground">{t.step2Subtitle}</p>
                 </div>
 
                 {/* Form */}
                 <div className="space-y-4 mb-6">
                   {/* Display Name */}
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-foreground">
                       {t.displayNameLabel}
                     </label>
                     <Input
@@ -364,12 +360,12 @@ export function SellerOnboardingWizard({
                       maxLength={50}
                       className="h-11"
                     />
-                    <p className="text-xs text-gray-500">{t.displayNameHint}</p>
+                    <p className="text-xs text-muted-foreground">{t.displayNameHint}</p>
                   </div>
 
                   {/* Bio */}
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium text-foreground">
                       {t.bioLabel}
                     </label>
                     <Textarea
@@ -381,15 +377,15 @@ export function SellerOnboardingWizard({
                       className="resize-none"
                     />
                     <div className="flex justify-between">
-                      <p className="text-xs text-gray-500">{t.bioHint}</p>
-                      <p className="text-xs text-gray-400">{bio.length}/160</p>
+                      <p className="text-xs text-muted-foreground">{t.bioHint}</p>
+                      <p className="text-xs text-muted-foreground">{bio.length}/160</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Error */}
                 {error && (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+                  <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
                     {error}
                   </div>
                 )}
@@ -407,7 +403,7 @@ export function SellerOnboardingWizard({
                   <Button
                     onClick={handleComplete}
                     disabled={isPending}
-                    className="flex-1 h-11 bg-blue-600 hover:bg-blue-700"
+                    className="flex-1 h-11"
                   >
                     {isPending ? (
                       <>
@@ -440,31 +436,31 @@ export function SellerOnboardingWizard({
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", delay: 0.1 }}
-                    className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-linear-to-br from-green-400 to-emerald-500 mb-4"
+                    className="inline-flex items-center justify-center size-20 rounded-full bg-emerald-500/10 mb-4"
                   >
-                    <Check weight="bold" className="w-10 h-10 text-white" />
+                    <Check weight="bold" className="size-10 text-emerald-500" />
                   </motion.div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h1 className="text-2xl font-bold text-foreground mb-2">
                     {t.step3Title}
                   </h1>
-                  <p className="text-gray-500">{t.step3Subtitle}</p>
+                  <p className="text-muted-foreground">{t.step3Subtitle}</p>
                 </div>
 
                 {/* Profile URL */}
-                <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                  <p className="text-sm text-gray-500 mb-1">{t.profileUrl}</p>
-                  <p className="font-medium text-gray-900">amazong.com/u/{username}</p>
+                <div className="mb-6 p-4 bg-muted rounded-lg border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">{t.profileUrl}</p>
+                  <p className="font-medium text-foreground">amazong.com/u/{username}</p>
                 </div>
 
                 {/* What's next */}
                 <div className="mb-6">
-                  <p className="text-sm text-gray-600">{t.readyMessage}</p>
+                  <p className="text-sm text-muted-foreground">{t.readyMessage}</p>
                 </div>
 
                 {/* Action */}
                 <Button
                   onClick={onComplete}
-                  className="w-full h-12 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium"
+                  className="w-full h-12"
                 >
                   <Storefront className="mr-2 size-5" weight="fill" />
                   {t.startSelling}
@@ -476,8 +472,8 @@ export function SellerOnboardingWizard({
 
         {/* Footer */}
         {step < 3 && (
-          <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
-            <p className="text-xs text-center text-gray-500">{t.freeToStart}</p>
+          <div className="px-6 py-4 bg-muted/50 border-t border-border">
+            <p className="text-xs text-center text-muted-foreground">{t.freeToStart}</p>
           </div>
         )}
       </div>

@@ -1,5 +1,6 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { ProductCard } from "@/components/ui/product-card"
+import { Button } from "@/components/ui/button"
 import { SubcategoryTabs } from "@/components/subcategory-tabs"
 import { MobileFilters } from "@/components/mobile-filters"
 import { DesktopFilters } from "@/components/desktop-filters"
@@ -160,11 +161,20 @@ async function searchProducts(
   if (filters.attributes) {
     for (const [attrName, attrValue] of Object.entries(filters.attributes)) {
       if (attrValue) {
-        // For single value, use JSONB containment which uses GIN index
-        const value = Array.isArray(attrValue) ? attrValue[0] : attrValue
-        if (value) {
-          countQuery = countQuery.contains('attributes', { [attrName]: value })
-          dbQuery = dbQuery.contains('attributes', { [attrName]: value })
+        if (Array.isArray(attrValue)) {
+          const values = attrValue.filter((v): v is string => typeof v === 'string' && v.length > 0)
+          if (values.length === 1) {
+            countQuery = countQuery.contains('attributes', { [attrName]: values[0] })
+            dbQuery = dbQuery.contains('attributes', { [attrName]: values[0] })
+          } else if (values.length > 1) {
+            // Multi-select: match any selected values
+            // PostgREST supports json text extraction via "attributes->>key"
+            countQuery = countQuery.in(`attributes->>${attrName}`, values)
+            dbQuery = dbQuery.in(`attributes->>${attrName}`, values)
+          }
+        } else if (typeof attrValue === 'string' && attrValue.length > 0) {
+          countQuery = countQuery.contains('attributes', { [attrName]: attrValue })
+          dbQuery = dbQuery.contains('attributes', { [attrName]: attrValue })
         }
       }
     }
@@ -376,7 +386,7 @@ export default async function CategoryPage({
             </div>
 
           {/* Filter & Sort Row - Consolidated toolbar with all filters */}
-          <div className="mb-3 sm:mb-5 flex flex-wrap items-center gap-2 sm:gap-2.5">
+          <div className="mb-3 sm:mb-5 grid grid-cols-2 lg:flex lg:flex-wrap items-center gap-2 sm:gap-2.5">
             {/* Mobile Filters (Sheet) */}
             <div className="lg:hidden">
               <Suspense>
@@ -389,7 +399,9 @@ export default async function CategoryPage({
             </div>
             
             {/* Sort Dropdown */}
-            <SortSelect />
+            <div className="lg:contents">
+              <SortSelect />
+            </div>
             
             {/* Desktop Filters - Now includes attribute filters */}
             <div className="hidden lg:flex items-center gap-2 flex-wrap">
@@ -473,14 +485,14 @@ export default async function CategoryPage({
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href={`/categories/${slug}`}>
-                  <button className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-brand hover:bg-brand/90 text-foreground h-10 px-4 py-2 gap-2">
+                  <Button variant="default" className="h-touch-sm px-6">
                     {t('clearAllFiltersButton')}
-                  </button>
+                  </Button>
                 </Link>
                 <Link href="/categories">
-                  <button className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
+                  <Button variant="outline" className="h-touch-sm px-6">
                     {t('browseAllCategories')}
-                  </button>
+                  </Button>
                 </Link>
               </div>
             </div>

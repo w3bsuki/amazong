@@ -75,25 +75,16 @@ export interface BusinessSellerWithSubscription extends BusinessSeller {
 export async function requireBusinessSeller(redirectTo: string = "/account"): Promise<BusinessSeller> {
   const supabase = await createClient()
   
-  // First check if user is authenticated
-  const { data: { user } } = await supabase.auth.getUser()
+  // Check if user is authenticated via Supabase auth
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
   
-  // TEMPORARY: If auth fails in server component, try fetching by known email for dev
-  let userId = user?.id
-  let userEmail = user?.email
-  
-  if (!userId) {
-    // Auth cookie not read properly in server component - use admin to check
-    const adminClient = createAdminClient()
-    await adminClient.auth.admin.listUsers({ perPage: 1 })
-    // For now, just hardcode your ID to test dashboard
-    userId = '5108ae8a-20cc-4e3e-a8fb-b0f014f1ffcb'
-    userEmail = 'radevalentin@gmail.com'
-  }
-  
-  if (!userId) {
+  if (authError || !user) {
+    // User not authenticated - redirect to login
     redirect("/auth/login")
   }
+  
+  const userId = user.id
+  const userEmail = user.email
   
   // Use admin client to bypass any RLS caching issues
   const adminClient = createAdminClient()

@@ -1,6 +1,14 @@
 "use client"
 
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
+import { 
+    Drawer, 
+    DrawerContent, 
+    DrawerHeader, 
+    DrawerTitle, 
+    DrawerTrigger, 
+    DrawerDescription,
+    DrawerClose
+} from "@/components/ui/drawer"
 import { 
     List, 
     UserCircle, 
@@ -226,22 +234,20 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
     ]
 
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
+        <Drawer open={open} onOpenChange={setOpen} direction="left">
+            <DrawerTrigger asChild>
                 <button 
                     className="flex items-center justify-center size-11 rounded-lg text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
                     aria-label={t('all')}
                 >
                     <List size={24} weight="regular" />
                 </button>
-            </SheetTrigger>
-            <SheetContent 
-                side="left" 
-                hideCloseButton
-                className="w-full max-w-full sm:max-w-[380px] p-0 border-r-0 bg-background text-foreground gap-0"
+            </DrawerTrigger>
+            <DrawerContent 
+                className="w-[85vw] sm:max-w-md p-0 border-r-0 bg-background text-foreground gap-0"
             >
                 {/* Header - Account area with brand background */}
-                <SheetHeader className="bg-brand text-white px-4 py-3 space-y-0">
+                <DrawerHeader className="bg-brand text-white px-4 py-3 space-y-0">
                     <div className="flex items-center justify-between">
                         {/* Profile info */}
                         <div className="flex items-center gap-3 min-w-0">
@@ -249,15 +255,15 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                 <UserCircle size={28} weight="fill" className="text-white" />
                             </div>
                             <div className="min-w-0">
-                                <SheetTitle className="text-white text-base font-semibold truncate text-left">
+                                <DrawerTitle className="text-white text-base font-semibold truncate text-left">
                                     {isLoggedIn 
                                         ? displayName
                                         : (locale === 'bg' ? 'Здравей!' : 'Hello!')
                                     }
-                                </SheetTitle>
-                                <SheetDescription className="sr-only">
+                                </DrawerTitle>
+                                <DrawerDescription className="sr-only">
                                     {locale === 'bg' ? 'Навигационно меню с категории и настройки на акаунта' : 'Navigation menu with categories and account settings'}
-                                </SheetDescription>
+                                </DrawerDescription>
                                 {isLoggedIn ? (
                                     <Link 
                                         href="/account"
@@ -335,9 +341,9 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                             </Button>
                         </div>
                     </div>
-                </SheetHeader>
+                </DrawerHeader>
 
-                <ScrollArea className="h-[calc(100vh-76px)]">
+                <ScrollArea className="h-[calc(100svh-76px)]">
                     <div className="flex flex-col pb-6">
                         {/* Auth Actions - Only when not logged in */}
                         {!isLoggedIn && (
@@ -599,7 +605,7 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                         </div>
                     </div>
                 </ScrollArea>
-            </SheetContent>
-        </Sheet>
+            </DrawerContent>
+        </Drawer>
     )
 }

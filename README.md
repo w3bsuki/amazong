@@ -37,8 +37,10 @@ All project documentation is located in `/docs`:
 
 ## Environment Variables
 #### AI Search (optional)
-- Set `GOOGLE_GENERATIVE_AI_API_KEY` to use Gemini for the “Switch to AI” search experience.
-- If `GOOGLE_GENERATIVE_AI_API_KEY` is not set, the route falls back to `OPENAI_API_KEY` (OpenAI).
-- The API route is `POST /api/ai/search` and uses your existing Supabase product catalog as the search source.
+
+- Recommended: set `AI_GATEWAY_API_KEY` (Vercel AI Gateway) for the most reliable chat/tool calling and simple model routing.
+- Optional: set `AI_CHAT_MODEL` / `AI_VISION_MODEL` to override the default Gateway models.
+- Fallback: if you don’t use Gateway, set `OPENAI_API_KEY` or `GOOGLE_GENERATIVE_AI_API_KEY` or `GROQ_API_KEY`.
+- The AI search API route is `POST /api/ai/search` and uses your existing Supabase product catalog as the search source.
 
 Copy `.env.local.example` to `.env.local` and fill in your values (never commit real keys).

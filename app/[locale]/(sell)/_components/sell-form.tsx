@@ -31,6 +31,7 @@ import { PhotosSection } from "./sections/photos-section";
 import { DetailsSection } from "./sections/details-section";
 import { PricingSection } from "./sections/pricing-section";
 import { ShippingSection } from "./sections/shipping-section";
+import { AiListingAssistant } from "./ai/ai-listing-assistant";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import type { Category } from "./types";
@@ -53,6 +54,8 @@ function ProgressHeader({
   hasUnsavedChanges,
   onSaveDraft,
   locale,
+  currentStep,
+  totalSteps,
 }: {
   progressPercent: number;
   autoSaved: boolean;
@@ -60,41 +63,58 @@ function ProgressHeader({
   hasUnsavedChanges: boolean;
   onSaveDraft: () => void;
   locale: string;
+  currentStep: number;
+  totalSteps: number;
 }) {
   const isBg = locale === "bg";
   const isComplete = progressPercent === 100;
 
   return (
-    <header className="sticky top-0 z-40 bg-background border-b border-border">
+    <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/60">
       <PageContainer size="default">
         {/* Top bar with logo and actions */}
         <div className="flex items-center justify-between h-14 gap-4">
           {/* Left: Back/Logo */}
           <Link 
             href="/" 
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
           >
             <CaretLeft className="size-4" weight="bold" />
             <House className="size-5" />
-            <span className="hidden sm:inline text-sm font-medium">
+            <span className="hidden sm:inline text-xs font-bold uppercase tracking-wider">
               {isBg ? "Начало" : "Home"}
             </span>
           </Link>
 
-          {/* Center: Progress indicator */}
+          {/* Center: Progress indicator (Desktop) */}
           <div className="flex-1 max-w-md mx-4 hidden sm:block">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Progress 
                 value={progressPercent} 
-                className="h-2 flex-1" 
+                className="h-1.5 flex-1" 
                 aria-label={`${isBg ? "Прогрес на формуляра" : "Form progress"}: ${progressPercent}%`}
               />
               <span className={cn(
-                "text-xs font-semibold tabular-nums min-w-[3rem] text-right",
-                isComplete ? "text-status-complete" : "text-muted-foreground"
+                "text-[11px] font-bold tabular-nums min-w-[2.5rem] text-right uppercase tracking-tighter",
+                isComplete ? "text-green-600" : "text-muted-foreground"
               )}>
                 {progressPercent}%
               </span>
+            </div>
+          </div>
+
+          {/* Center: Step indicator (Mobile) */}
+          <div className="sm:hidden flex-1 flex justify-center">
+            <div className="flex items-center gap-1.5">
+              {Array.from({ length: totalSteps }).map((_, i) => (
+                <div 
+                  key={i}
+                  className={cn(
+                    "h-1 rounded-full transition-all duration-300",
+                    i + 1 === currentStep ? "w-6 bg-primary" : "w-2 bg-muted-foreground/20"
+                  )}
+                />
+              ))}
             </div>
           </div>
 
@@ -139,13 +159,13 @@ function ProgressHeader({
           </div>
         </div>
 
-        {/* Mobile progress bar */}
+        {/* Mobile progress bar (Bottom of header) */}
         <div className="sm:hidden pb-2">
           <div className="flex items-center gap-3">
-            <Progress value={progressPercent} className="h-1.5 flex-1" />
+            <Progress value={progressPercent} className="h-1 flex-1" />
             <span className={cn(
-              "text-xs font-medium tabular-nums",
-              isComplete ? "text-status-complete" : "text-muted-foreground"
+              "text-[10px] font-bold tabular-nums",
+              isComplete ? "text-status-complete" : "text-muted-foreground/60"
             )}>
               {progressPercent}%
             </span>
@@ -170,30 +190,30 @@ function ChecklistSidebar({
   const completedCount = items.filter(i => i.completed).length;
   
   return (
-    <div className="p-5 rounded-lg border border-border bg-card">
-      <div className="flex items-center justify-between mb-4">
-        <h4 className="text-sm font-semibold text-foreground">
+    <div className="p-5 rounded-xl border border-border bg-background shadow-xs">
+      <div className="flex items-center justify-between mb-5">
+        <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
           {isBg ? "Списък" : "Checklist"}
         </h4>
-        <span className="text-xs text-muted-foreground tabular-nums">
+        <span className="text-[10px] font-bold text-muted-foreground/60 tabular-nums bg-muted/30 px-1.5 py-0.5 rounded border border-border/50">
           {completedCount}/{items.length}
         </span>
       </div>
-      <ul className="space-y-3">
+      <ul className="space-y-3.5">
         {items.map((item, index) => (
-          <li key={item.key} className="flex items-center gap-3">
+          <li key={item.key} className="flex items-center gap-3.5">
             <div className={cn(
-              "size-6 rounded-full flex items-center justify-center shrink-0 transition-all",
+              "size-5.5 rounded-md flex items-center justify-center shrink-0 transition-all border shadow-xs",
               item.completed 
-                ? "bg-status-complete text-white" 
-                : "border-2 border-border text-transparent"
+                ? "bg-primary border-primary text-white" 
+                : "bg-background border-border text-muted-foreground/40"
             )}>
-              {item.completed && <Check className="size-3.5" weight="bold" />}
-              {!item.completed && <span className="text-xs text-muted-foreground">{index + 1}</span>}
+              {item.completed && <Check className="size-3" weight="bold" />}
+              {!item.completed && <span className="text-[10px] font-bold">{index + 1}</span>}
             </div>
             <span className={cn(
-              "text-sm transition-colors",
-              item.completed ? "text-foreground" : "text-muted-foreground"
+              "text-xs font-bold tracking-tight transition-colors",
+              item.completed ? "text-foreground" : "text-muted-foreground/70"
             )}>
               {isBg ? item.labelBg : item.label}
             </span>
@@ -209,59 +229,77 @@ function ChecklistSidebar({
 // ============================================================================
 function MobileFooter({
   progressPercent,
-  _isValid,
   isSubmitting,
   onSubmit,
   locale,
+  currentStep,
+  totalSteps,
+  onNext,
+  onBack,
+  canGoNext,
 }: {
   progressPercent: number;
-  _isValid: boolean;
   isSubmitting: boolean;
   onSubmit: () => void;
   locale: string;
+  currentStep: number;
+  totalSteps: number;
+  onNext: () => void;
+  onBack: () => void;
+  canGoNext: boolean;
 }) {
   const isBg = locale === "bg";
+  const isLastStep = currentStep === totalSteps;
   const isComplete = progressPercent === 100;
 
   return (
-    <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-background border-t border-border pb-safe">
-      <div className="px-4 py-3">
-        <Button
-          type="button"
-          onClick={onSubmit}
-          disabled={isSubmitting || progressPercent < 50}
-          className={cn(
-            "w-full h-12 text-base font-semibold rounded-lg gap-2 transition-colors",
-            isComplete
-              ? "bg-success hover:bg-success/90"
-              : "bg-primary hover:bg-primary/90"
-          )}
-        >
-          {isSubmitting ? (
-            <>
-              <Spinner className="size-5 animate-spin" />
-              {isBg ? "Публикуване..." : "Publishing..."}
-            </>
-          ) : isComplete ? (
-            <>
-              <Rocket className="size-5" weight="fill" />
-              {isBg ? "Публикувай обявата" : "Publish listing"}
-              <ArrowRight className="size-5" />
-            </>
-          ) : (
-            <>
-              <Sparkle className="size-5" />
-              {isBg ? `${progressPercent}% завършено` : `${progressPercent}% complete`}
-            </>
-          )}
-        </Button>
+    <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-background/95 backdrop-blur-md border-t border-border pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+      <div className="px-4 py-3.5 flex items-center gap-3">
+        {currentStep > 1 && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className="h-12 px-4 rounded-xl border-border/50"
+          >
+            <CaretLeft className="size-5" weight="bold" />
+          </Button>
+        )}
 
-        {progressPercent < 100 && (
-          <p className="text-center text-xs text-muted-foreground mt-2">
-            {isBg 
-              ? "Попълнете всички задължителни полета"
-              : "Fill all required fields to publish"}
-          </p>
+        {isLastStep ? (
+          <Button
+            type="button"
+            onClick={onSubmit}
+            disabled={isSubmitting || progressPercent < 50}
+            className={cn(
+              "flex-1 h-12 text-sm font-bold uppercase tracking-wider rounded-xl gap-2.5 transition-all shadow-xs",
+              isComplete
+                ? "bg-primary hover:bg-primary/90"
+                : "bg-muted/20 text-muted-foreground border border-border/50 hover:bg-muted/30"
+            )}
+          >
+            {isSubmitting ? (
+              <>
+                <Spinner className="size-5 animate-spin" />
+                {isBg ? "Публикуване..." : "Publishing..."}
+              </>
+            ) : (
+              <>
+                <Rocket className="size-5" weight="bold" />
+                {isBg ? "Публикувай" : "Publish"}
+              </>
+            )}
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            onClick={onNext}
+            disabled={!canGoNext}
+            className="flex-1 h-12 text-sm font-bold uppercase tracking-wider rounded-xl gap-2.5 bg-primary hover:bg-primary/90 shadow-xs"
+          >
+            {isBg ? "Напред" : "Next"}
+            <ArrowRight className="size-5" weight="bold" />
+          </Button>
         )}
       </div>
     </div>
@@ -284,6 +322,8 @@ export function SellForm({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 3;
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSavedRef = useRef<string>("");
   const draftRestoredRef = useRef(false);
@@ -296,10 +336,35 @@ export function SellForm({
     mode: "onChange",
   });
 
-  // Watch form values for progress calculation (this is fine - just for display)
+  // Watch form values for progress calculation
   const formValues = form.watch();
   const progressData = calculateFormProgress(formValues);
   const progressPercent = progressData.percentage;
+
+  // Step validation logic
+  const canGoNext = useMemo(() => {
+    if (currentStep === 1) {
+      return (formValues.images?.length ?? 0) > 0;
+    }
+    if (currentStep === 2) {
+      return !!formValues.title && !!formValues.categorySlug;
+    }
+    return true;
+  }, [currentStep, formValues.images, formValues.title, formValues.categorySlug]);
+
+  const handleNext = useCallback(() => {
+    if (canGoNext && currentStep < totalSteps) {
+      setCurrentStep(prev => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [canGoNext, currentStep, totalSteps]);
+
+  const handleBack = useCallback(() => {
+    if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [currentStep]);
 
   // Fetch categories from API only if not provided from server
   useEffect(() => {
@@ -478,6 +543,8 @@ export function SellForm({
         hasUnsavedChanges={hasUnsavedChanges}
         onSaveDraft={handleSaveDraft}
         locale={locale}
+        currentStep={currentStep}
+        totalSteps={totalSteps}
       />
 
       {/* Main Content */}
@@ -486,21 +553,48 @@ export function SellForm({
           {/* Main Form */}
           <div className="flex-1 min-w-0 lg:max-w-3xl">
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Section 1: Photos */}
-              <PhotosSection form={form} />
+              {/* Step 1: Photos & AI */}
+              <div className={cn(
+                "space-y-6 transition-all duration-300",
+                currentStep !== 1 && "hidden lg:block opacity-50 grayscale-[0.5] pointer-events-none lg:pointer-events-auto lg:opacity-100 lg:grayscale-0"
+              )}>
+                <PhotosSection form={form} locale={locale} categories={categories} />
+                
+                {/* AI Assistant Integration - Show after first photo or if already has data */}
+                {(formValues.images?.length ?? 0) > 0 && (
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <AiListingAssistant 
+                      form={form} 
+                      categories={categories} 
+                      locale={locale}
+                    />
+                  </div>
+                )}
+              </div>
 
-              {/* Section 2: Item Details */}
-              <DetailsSection 
-                form={form} 
-                locale={locale} 
-                categories={categories}
-              />
+              {/* Step 2: Item Details */}
+              <div className={cn(
+                "space-y-6 transition-all duration-300",
+                currentStep !== 2 && "hidden lg:block lg:opacity-100",
+                currentStep < 2 && "lg:opacity-50 lg:grayscale-[0.5] lg:pointer-events-none",
+                currentStep > 2 && "lg:opacity-50 lg:grayscale-[0.5] lg:pointer-events-none"
+              )}>
+                <DetailsSection 
+                  form={form} 
+                  locale={locale} 
+                  categories={categories}
+                />
+              </div>
 
-              {/* Section 3: Pricing */}
-              <PricingSection form={form} />
-
-              {/* Section 4: Shipping */}
-              <ShippingSection form={form} locale={locale} />
+              {/* Step 3: Pricing & Shipping */}
+              <div className={cn(
+                "space-y-6 transition-all duration-300",
+                currentStep !== 3 && "hidden lg:block lg:opacity-100",
+                currentStep < 3 && "lg:opacity-50 lg:grayscale-[0.5] lg:pointer-events-none"
+              )}>
+                <PricingSection form={form} categoryId={categoryId} locale={locale} />
+                <ShippingSection form={form} locale={locale} />
+              </div>
 
               {/* Error Display */}
               {submitError && (
@@ -525,10 +619,10 @@ export function SellForm({
                   type="submit"
                   disabled={isPending || progressPercent < 50}
                   className={cn(
-                    "w-full h-12 text-base font-semibold rounded-lg gap-2 transition-colors",
+                    "w-full h-12 text-sm font-bold uppercase tracking-wider rounded-xl gap-2.5 transition-all shadow-xs",
                     progressPercent === 100
-                      ? "bg-success hover:bg-success/90"
-                      : "bg-primary hover:bg-primary/90"
+                      ? "bg-primary hover:bg-primary/90"
+                      : "bg-muted/20 text-muted-foreground border border-border/50 hover:bg-muted/30"
                   )}
                 >
                   {isPending ? (
@@ -538,19 +632,19 @@ export function SellForm({
                     </>
                   ) : progressPercent === 100 ? (
                     <>
-                      <Rocket className="size-5" weight="fill" />
+                      <Rocket className="size-5" weight="bold" />
                       {isBg ? "Публикувай обявата" : "Publish listing"}
-                      <ArrowRight className="size-5" />
+                      <ArrowRight className="size-5" weight="bold" />
                     </>
                   ) : (
                     <>
-                      <Sparkle className="size-5" />
+                      <Sparkle className="size-5" weight="bold" />
                       {isBg ? `${progressPercent}% завършено` : `${progressPercent}% complete`}
                     </>
                   )}
                 </Button>
                 {progressPercent < 100 && (
-                  <p className="text-center text-xs text-muted-foreground mt-2">
+                  <p className="text-center text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mt-3">
                     {isBg 
                       ? "Попълнете всички задължителни полета, за да публикувате"
                       : "Complete all required fields to publish your listing"}
@@ -566,25 +660,39 @@ export function SellForm({
               <ChecklistSidebar items={progressData.items} locale={locale} />
               
               {/* Tips Card - Clean, no gradient */}
-              <div className="p-5 rounded-lg border border-border bg-card">
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkle className="size-5 text-primary" weight="fill" />
-                  <h4 className="text-sm font-semibold text-foreground">
+              <div className="p-5 rounded-xl border border-border bg-background shadow-xs">
+                <div className="flex items-center gap-2.5 mb-4">
+                  <div className="flex size-8 items-center justify-center rounded-md bg-primary/10 border border-primary/20">
+                    <Sparkle className="size-4 text-primary" weight="bold" />
+                  </div>
+                  <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
                     {isBg ? "Съвети за продажби" : "Selling Tips"}
                   </h4>
                 </div>
-                <ul className="space-y-2 text-xs text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <Check className="size-3.5 mt-0.5 text-status-complete shrink-0" />
-                    {isBg ? "Качествени снимки увеличават продажбите" : "Quality photos increase sales"}
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <div className="size-4 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="size-2.5 text-primary" weight="bold" />
+                    </div>
+                    <span className="text-[11px] font-medium text-muted-foreground/80 leading-relaxed">
+                      {isBg ? "Качествени снимки увеличават продажбите" : "Quality photos increase sales"}
+                    </span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="size-3.5 mt-0.5 text-status-complete shrink-0" />
-                    {isBg ? "Подробно описание изгражда доверие" : "Detailed descriptions build trust"}
+                  <li className="flex items-start gap-3">
+                    <div className="size-4 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="size-2.5 text-primary" weight="bold" />
+                    </div>
+                    <span className="text-[11px] font-medium text-muted-foreground/80 leading-relaxed">
+                      {isBg ? "Подробно описание изгражда доверие" : "Detailed descriptions build trust"}
+                    </span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="size-3.5 mt-0.5 text-status-complete shrink-0" />
-                    {isBg ? "Конкурентна цена привлича купувачи" : "Competitive pricing attracts buyers"}
+                  <li className="flex items-start gap-3">
+                    <div className="size-4 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="size-2.5 text-primary" weight="bold" />
+                    </div>
+                    <span className="text-[11px] font-medium text-muted-foreground/80 leading-relaxed">
+                      {isBg ? "Конкурентна цена привлича купувачи" : "Competitive pricing attracts buyers"}
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -596,10 +704,14 @@ export function SellForm({
       {/* Mobile Sticky Footer */}
       <MobileFooter
         progressPercent={progressPercent}
-        _isValid={form.formState.isValid}
         isSubmitting={isPending}
         onSubmit={handleMobileSubmit}
         locale={locale}
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        onNext={handleNext}
+        onBack={handleBack}
+        canGoNext={canGoNext}
       />
     </div>
   );

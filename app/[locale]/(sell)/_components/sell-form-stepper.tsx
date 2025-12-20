@@ -255,6 +255,7 @@ export function SellFormStepper({
         return (
           <StepPhotos
             form={form}
+            categories={categories}
             locale={locale}
             onValidityChange={handleStep1Validity}
           />
