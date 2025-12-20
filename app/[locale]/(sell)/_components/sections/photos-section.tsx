@@ -21,79 +21,9 @@ import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import type { SellFormDataV4, ProductImage } from "@/lib/sell-form-schema-v4";
+import { compressImage } from "@/lib/image-compression";
 import type { Category } from "../types";
 import { AiListingAssistant } from "../ai/ai-listing-assistant";
-
-// ========================================
-// Client-side Image Compression Utility
-// ========================================
-async function compressImage(
-  file: File,
-  options: {
-    maxWidth?: number;
-    maxHeight?: number;
-    quality?: number;
-    type?: string;
-  } = {}
-): Promise<File> {
-  const {
-    maxWidth = 1920,
-    maxHeight = 1920,
-    quality = 0.85,
-    type = "image/webp",
-  } = options;
-
-  return new Promise((resolve, reject) => {
-    const img = document.createElement("img");
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) {
-      reject(new Error("Canvas context not available"));
-      return;
-    }
-
-    img.onload = () => {
-      let { width, height } = img;
-      
-      if (width > maxWidth) {
-        height = (height * maxWidth) / width;
-        width = maxWidth;
-      }
-      if (height > maxHeight) {
-        width = (width * maxHeight) / height;
-        height = maxHeight;
-      }
-
-      canvas.width = width;
-      canvas.height = height;
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(img, 0, 0, width, height);
-
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) {
-            reject(new Error("Failed to compress image"));
-            return;
-          }
-          const extension = type === "image/webp" ? ".webp" : ".jpg";
-          const baseName = file.name.replace(/\.[^/.]+$/, "");
-          const compressedFile = new File([blob], `${baseName}${extension}`, {
-            type,
-            lastModified: Date.now(),
-          });
-          resolve(compressedFile);
-        },
-        type,
-        quality
-      );
-    };
-
-    img.onerror = () => reject(new Error("Failed to load image"));
-    img.src = URL.createObjectURL(file);
-  });
-}
 
 interface PhotosSectionProps {
   form: UseFormReturn<SellFormDataV4>;
@@ -369,6 +299,7 @@ export function PhotosSection({
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [previewImage, setPreviewImage] = useState<ProductImage | null>(null);
   const dragOverIndex = useRef<number | null>(null);
+  const isBg = locale === "bg";
 
   // Handle file upload with client-side compression
   const uploadFile = useCallback(async (file: File): Promise<ProductImage | null> => {

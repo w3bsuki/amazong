@@ -196,7 +196,7 @@ export default function SellFormDemo() {
   return (
     <div className="min-h-dvh bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
         <div className="flex h-14 items-center gap-3 px-4">
           <Button variant="ghost" size="icon" onClick={goBack} disabled={step === 1}>
             <ArrowLeft className="size-5" />

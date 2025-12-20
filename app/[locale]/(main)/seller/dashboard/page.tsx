@@ -78,7 +78,7 @@ export default function SellerDashboard() {
         // Map profile to seller format for compatibility
         setSeller({
           ...profileData,
-          store_name: profileData.display_name || profileData.business_name || profileData.username,
+          store_name: profileData.display_name || profileData.business_name || profileData.username || "Store",
         });
 
         // Fetch products

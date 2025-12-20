@@ -76,52 +76,48 @@ function RichTextarea({
   const charCount = value?.length || 0;
 
   return (
-    <div className="rounded-xl border border-border/60 shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5 transition-all overflow-hidden bg-background">
-      <div className="flex items-center gap-0.5 border-b border-border/40 bg-muted/30 px-2 py-1.5">
-        <button
-          type="button"
-          className="rounded-md p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
-          title="Bold"
-        >
-          <TextB className="h-4 w-4" weight="bold" />
-        </button>
-        <button
-          type="button"
-          className="rounded-md p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
-          title="Italic"
-        >
-          <TextItalic className="h-4 w-4" weight="bold" />
-        </button>
-        <button
-          type="button"
-          className="rounded-md p-1.5 text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
-          title="List"
-        >
-          <List className="h-4 w-4" weight="bold" />
-        </button>
-        <div className="flex-1" />
-        <div className="px-2 py-1 rounded bg-background/50 border border-border/40">
-          <Sparkle className="h-3.5 w-3.5 text-primary" weight="bold" />
-        </div>
-      </div>
+    <div className="rounded-xl border border-border shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 transition-all overflow-hidden">
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         maxLength={maxLength}
-        className="block w-full resize-none border-0 bg-transparent px-4 py-3 text-sm font-medium placeholder:text-muted-foreground/40 focus:ring-0 focus:outline-none min-h-40 leading-relaxed"
+        className="block w-full resize-none border-0 bg-transparent px-4 py-3 text-sm placeholder:text-muted-foreground/70 focus:ring-0 focus:outline-none min-h-32"
       />
-      <div className="flex items-center justify-end border-t border-border/30 bg-muted/10 px-3 py-1.5">
-        <span className={cn(
-          "text-[10px] font-bold tabular-nums",
-          charCount > maxLength * 0.9 ? "text-destructive" : "text-muted-foreground/50"
-        )}>
-          {charCount}/{maxLength}
+      <div className="flex items-center justify-between border-t border-border/50 bg-muted/50 px-3 py-2">
+        <div className="flex gap-0.5">
+          <button
+            type="button"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            title="Bold"
+          >
+            <TextB className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            title="Italic"
+          >
+            <TextItalic className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            title="List"
+          >
+            <List className="h-3.5 w-3.5" />
+          </button>
+        </div>
+        <span
+          className={cn(
+            "text-xs",
+            charCount >= maxLength ? "text-destructive" : "text-muted-foreground/70"
+          )}
+        >
+          {charCount.toLocaleString()} / {maxLength.toLocaleString()}
         </span>
       </div>
     </div>
-  );
-}
   );
 }
 
@@ -156,10 +152,12 @@ function ItemSpecificsSection({
     const fetchAttributes = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/categories/${categoryId}/attributes`);
+        const response = await fetch(
+          `/api/categories/attributes?categoryId=${encodeURIComponent(categoryId)}&includeParents=true`
+        );
         if (response.ok) {
           const data = await response.json();
-          setCategoryAttributes(data || []);
+          setCategoryAttributes((data?.attributes || []) as CategoryAttribute[]);
         }
       } catch (error) {
         console.error("Failed to fetch category attributes:", error);
@@ -375,20 +373,16 @@ export function DetailsSection({
   locale = "en",
   onCategoryChange,
 }: DetailsSectionProps) {
-  const isBg = locale === "bg";
   const title = form.watch("title");
   const description = form.watch("description") || "";
   const categoryId = form.watch("categoryId");
-  const categorySlug = form.watch("categorySlug");
   const condition = form.watch("condition");
   const attributes = form.watch("attributes") || [];
   const brandId = form.watch("brandId");
-  const brandName = form.watch("brandName");
 
   // Handle category change
   const handleCategoryChange = useCallback((newCategoryId: string, path: Category[]) => {
     form.setValue("categoryId", newCategoryId, { shouldValidate: true });
-    form.setValue("categorySlug", path[path.length - 1]?.slug || "", { shouldValidate: true });
     form.setValue("categoryPath", path, { shouldValidate: false });
     onCategoryChange?.(newCategoryId, path);
   }, [form, onCategoryChange]);
@@ -399,151 +393,14 @@ export function DetailsSection({
     form.setValue("brandName", brandName, { shouldValidate: false });
   }, [form]);
 
-  return (
-    <div className="space-y-6">
-      {/* Section Header */}
-      <div className="flex items-center gap-3 mb-2">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 shadow-xs">
-          <Package className="size-5 text-primary" weight="bold" />
-        </div>
-        <div>
-          <h3 className="text-sm font-bold uppercase tracking-wider text-foreground">
-            {isBg ? "Детайли за продукта" : "Product Details"}
-          </h3>
-          <p className="text-[11px] font-medium text-muted-foreground/70">
-            {isBg ? "Заглавие, категория и състояние" : "Title, category and condition"}
-          </p>
-        </div>
-      </div>
+  // Handle attributes change
+  const handleAttributesChange = useCallback((newAttrs: ProductAttribute[]) => {
+    form.setValue("attributes", newAttrs, { shouldValidate: true });
+  }, [form]);
 
-      <div className="grid gap-6 p-5 rounded-2xl border border-border bg-background shadow-xs">
-        {/* Title */}
-        <div className="space-y-2">
-          <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 ml-1">
-            {isBg ? "Заглавие" : "Title"}
-            <span className="text-destructive ml-1">*</span>
-          </Label>
-          <Input
-            {...form.register("title")}
-            placeholder={isBg ? "Напр. iPhone 15 Pro Max 256GB" : "e.g. iPhone 15 Pro Max 256GB"}
-            className="h-12 text-base font-medium rounded-xl border-border/60 focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all"
-          />
-          <div className="flex justify-between px-1">
-            <p className="text-[10px] text-muted-foreground/60 font-medium">
-              {isBg ? "Минимум 10 знака" : "Minimum 10 characters"}
-            </p>
-            <p className={cn(
-              "text-[10px] font-bold tabular-nums",
-              (title?.length || 0) > 80 ? "text-destructive" : "text-muted-foreground/60"
-            )}>
-              {title?.length || 0}/80
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Category */}
-          <div className="space-y-2">
-            <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 ml-1">
-              {isBg ? "Категория" : "Category"}
-              <span className="text-destructive ml-1">*</span>
-            </Label>
-            <CategorySelector
-              categories={categories}
-              selectedId={categoryId}
-              onSelect={handleCategoryChange}
-              locale={locale}
-              trigger={
-                <Button
-                  type="button"
-                  variant="outline"
-                  className={cn(
-                    "w-full h-12 justify-between px-4 rounded-xl border-border/60 font-medium transition-all hover:bg-muted/30",
-                    !categoryId && "text-muted-foreground/60"
-                  )}
-                >
-                  <span className="truncate">
-                    {categoryId 
-                      ? (form.watch("categoryPath")?.map(p => isBg && p.name_bg ? p.name_bg : p.name).join(" > ") || "Category selected")
-                      : (isBg ? "Изберете категория" : "Select category")}
-                  </span>
-                  <List className="size-4 shrink-0 opacity-50" />
-                </Button>
-              }
-            />
-          </div>
-
-          {/* Condition */}
-          <div className="space-y-2">
-            <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 ml-1">
-              {isBg ? "Състояние" : "Condition"}
-              <span className="text-destructive ml-1">*</span>
-            </Label>
-            <Select
-              value={condition}
-              onValueChange={(val) => form.setValue("condition", val as any, { shouldValidate: true })}
-            >
-              <SelectTrigger className="h-12 rounded-xl border-border/60 font-medium focus:ring-4 focus:ring-primary/5">
-                <SelectValue placeholder={isBg ? "Изберете състояние" : "Select condition"} />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                {conditionOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value} className="rounded-lg py-2.5">
-                    <div className="flex flex-col gap-0.5">
-                      <span className="font-bold text-sm">{isBg ? opt.labelBg : opt.label}</span>
-                      <span className="text-[10px] text-muted-foreground leading-tight">
-                        {isBg ? opt.descriptionBg : opt.description}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Brand */}
-        <div className="space-y-2">
-          <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 ml-1">
-            {isBg ? "Марка" : "Brand"}
-            <span className="text-muted-foreground/40 ml-1">(optional)</span>
-          </Label>
-          <BrandPicker
-            selectedId={brandId}
-            selectedName={brandName}
-            onSelect={handleBrandChange}
-            locale={locale}
-          />
-        </div>
-
-        {/* Description */}
-        <div className="space-y-2">
-          <Label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80 ml-1">
-            {isBg ? "Описание" : "Description"}
-            <span className="text-destructive ml-1">*</span>
-          </Label>
-          <RichTextarea
-            value={description}
-            onChange={(val) => form.setValue("description", val, { shouldValidate: true })}
-            placeholder={isBg ? "Опишете вашия продукт подробно..." : "Describe your product in detail..."}
-          />
-        </div>
-
-        {/* Dynamic Attributes */}
-        {categoryId && (
-          <div className="pt-4 border-t border-border/50">
-            <ItemSpecificsSection
-              categoryId={categoryId}
-              attributes={attributes}
-              onChange={(newAttrs) => form.setValue("attributes", newAttrs, { shouldValidate: true })}
-              locale={locale}
-            />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}    const opt = conditionOptions.find(o => o.value === value);
+  // Get condition label (available for future use)
+  const _getConditionLabel = (value: string) => {
+    const opt = conditionOptions.find(o => o.value === value);
     return locale === "bg" ? opt?.labelBg : opt?.label;
   };
 
@@ -552,17 +409,17 @@ export function DetailsSection({
   const isBg = locale === "bg";
 
   return (
-    <section className="rounded-xl border border-border bg-background overflow-hidden shadow-xs">
-      <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
-        <div className="flex items-center gap-3.5">
-          <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
-            <Package className="size-5 text-muted-foreground" weight="bold" />
+    <section className="rounded-lg border border-border bg-card">
+      <div className="p-5 pb-3">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+            <Package className="size-5 text-primary" weight="duotone" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">
+            <h3 className="text-base font-semibold text-foreground">
               {isBg ? "Детайли за артикула" : "Item details"}
             </h3>
-            <p className="text-xs font-medium text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {isBg ? "Помогнете на купувачите да намерят артикула" : "Help buyers find and understand your item"}
             </p>
           </div>
@@ -708,3 +565,4 @@ export function DetailsSection({
     </section>
   );
 }
+

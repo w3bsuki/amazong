@@ -20,94 +20,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import type { SellFormDataV4, ProductImage } from "@/lib/sell-form-schema-v4";
+import { compressImage } from "@/lib/image-compression";
 import type { Category } from "../types";
 import { AiListingAssistant } from "../ai/ai-listing-assistant";
-
-// ========================================
-// Client-side Image Compression Utility
-// ========================================
-// Compresses images BEFORE upload to:
-// 1. Reduce bandwidth usage
-// 2. Speed up uploads
-// 3. Avoid body size limits
-// ========================================
-
-async function compressImage(
-  file: File,
-  options: {
-    maxWidth?: number;
-    maxHeight?: number;
-    quality?: number;
-    type?: string;
-  } = {}
-): Promise<File> {
-  const {
-    maxWidth = 1920,
-    maxHeight = 1920,
-    quality = 0.85,
-    type = "image/webp",
-  } = options;
-
-  return new Promise((resolve, reject) => {
-    const img = document.createElement("img");
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) {
-      reject(new Error("Canvas context not available"));
-      return;
-    }
-
-    img.onload = () => {
-      // Calculate new dimensions while maintaining aspect ratio
-      let { width, height } = img;
-      
-      if (width > maxWidth) {
-        height = (height * maxWidth) / width;
-        width = maxWidth;
-      }
-      if (height > maxHeight) {
-        width = (width * maxHeight) / height;
-        height = maxHeight;
-      }
-
-      canvas.width = width;
-      canvas.height = height;
-
-      // Draw image with smoothing
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(img, 0, 0, width, height);
-
-      // Convert to blob
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) {
-            reject(new Error("Failed to compress image"));
-            return;
-          }
-
-          // Create new file with webp extension
-          const extension = type === "image/webp" ? ".webp" : ".jpg";
-          const baseName = file.name.replace(/\.[^/.]+$/, "");
-          const compressedFile = new File([blob], `${baseName}${extension}`, {
-            type,
-            lastModified: Date.now(),
-          });
-
-          resolve(compressedFile);
-        },
-        type,
-        quality
-      );
-    };
-
-    img.onerror = () => reject(new Error("Failed to load image"));
-
-    // Load image from file
-    img.src = URL.createObjectURL(file);
-  });
-}
 
 interface StepPhotosProps {
   form: UseFormReturn<SellFormDataV4>;

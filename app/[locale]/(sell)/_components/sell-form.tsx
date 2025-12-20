@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition, useRef, useCallback } from "react";
+import { useState, useEffect, useTransition, useRef, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -347,10 +347,10 @@ export function SellForm({
       return (formValues.images?.length ?? 0) > 0;
     }
     if (currentStep === 2) {
-      return !!formValues.title && !!formValues.categorySlug;
+      return !!formValues.title && !!formValues.categoryId;
     }
     return true;
-  }, [currentStep, formValues.images, formValues.title, formValues.categorySlug]);
+  }, [currentStep, formValues.images, formValues.title, formValues.categoryId]);
 
   const handleNext = useCallback(() => {
     if (canGoNext && currentStep < totalSteps) {
@@ -592,7 +592,7 @@ export function SellForm({
                 currentStep !== 3 && "hidden lg:block lg:opacity-100",
                 currentStep < 3 && "lg:opacity-50 lg:grayscale-[0.5] lg:pointer-events-none"
               )}>
-                <PricingSection form={form} categoryId={categoryId} locale={locale} />
+                <PricingSection form={form} categoryId={formValues.categoryId} locale={locale} />
                 <ShippingSection form={form} locale={locale} />
               </div>
 

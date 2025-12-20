@@ -1,24 +1,204 @@
-# SELL FORM CODEBASE AUDIT
+# SELL FORM CODEBASE AUDIT & REFACTOR PLAN
 
-**Generated:** December 20, 2025  
+**Last Updated:** December 20, 2025  
+**Status:** 🔴 CRITICAL REFACTOR NEEDED  
 **URL:** `/sell`  
-**Purpose:** Complete audit of all files powering the /sell listing form
+**Purpose:** Complete audit + actionable refactor plan for the /sell listing form
+
+---
+
+## ⚠️ EXECUTIVE SUMMARY
+
+The sell form has **~8,500+ lines of code** spread across **50+ files** with:
+- **4 DIFFERENT IMPLEMENTATIONS** (production /sell, /sell-v2, demo/sellform1, demo/sellform2)
+- **3 DUPLICATE SCHEMAS** (lib/sell-form-schema-v4.ts, sell-v2/_lib/schema.ts, components/sell/schemas.ts)
+- **MASSIVE DUPLICATION** in step components vs section components
+- **DEAD CODE** throughout
+- **1,080-LINE MONSTER** in step-category.tsx
+
+---
+
+## 🎯 REFACTOR GOALS
+
+1. **DELETE** all duplicate/demo implementations (sellform1, sellform2, sell-v2)
+2. **CONSOLIDATE** to single schema in `lib/sell-form-schema.ts`
+3. **EXTRACT** shared utilities (image compression, validation helpers)
+4. **SPLIT** oversized components (step-category.tsx)
+5. **UNIFY** desktop sections + mobile steps into shared components
+6. **FIX** all TypeScript errors and lint warnings
 
 ---
 
 ## TABLE OF CONTENTS
 
-1. [Architecture Overview](#architecture-overview)
-2. [File Inventory](#file-inventory)
-3. [Route Files](#route-files)
-4. [Main Components](#main-components)
-5. [Step Components (Mobile Stepper)](#step-components-mobile-stepper)
-6. [Section Components (Desktop Form)](#section-components-desktop-form)
-7. [UI Components](#ui-components)
-8. [Schemas & Types](#schemas--types)
-9. [Support Files](#support-files)
-10. [Data Flow](#data-flow)
-11. [Known Issues & Technical Debt](#known-issues--technical-debt)
+1. [Current State Analysis](#current-state-analysis)
+2. [Files to DELETE](#files-to-delete)
+3. [Files to KEEP](#files-to-keep)
+4. [Refactor Tasks](#refactor-tasks)
+5. [Architecture Overview](#architecture-overview)
+6. [File Inventory](#file-inventory)
+7. [Route Files](#route-files)
+8. [Main Components](#main-components)
+9. [Step Components (Mobile Stepper)](#step-components-mobile-stepper)
+10. [Section Components (Desktop Form)](#section-components-desktop-form)
+11. [UI Components](#ui-components)
+12. [Schemas & Types](#schemas--types)
+13. [Support Files](#support-files)
+14. [Data Flow](#data-flow)
+15. [Known Issues & Technical Debt](#known-issues--technical-debt)
+
+---
+
+## 🔥 CURRENT STATE ANALYSIS
+
+### Duplicate Implementations Found:
+
+| Location | Lines | Status | Action |
+|----------|-------|--------|--------|
+| `app/[locale]/(sell)/sell/` | ~750 | ✅ PRODUCTION | KEEP |
+| `app/[locale]/(sell)/sell-v2/` | ~800 | ❌ UNUSED | DELETE |
+| `app/[locale]/demo/sellform1/` | ~800 | ❌ DEMO | DELETE |
+| `app/[locale]/demo/sellform2/` | ~820 | ❌ DEMO | DELETE |
+| `app/[locale]/(main)/demo/sellform/` | ~1400 | ❌ DEMO | DELETE |
+
+### Schema Duplication:
+
+| File | Lines | Status |
+|------|-------|--------|
+| `lib/sell-form-schema-v4.ts` | 293 | ✅ PRIMARY - KEEP |
+| `app/[locale]/(sell)/sell-v2/_lib/schema.ts` | 136 | ❌ DELETE |
+| `components/sell/schemas.ts` | 83 | ❌ DELETE (legacy store schema) |
+| `components/sell/schemas/*.ts` | ~100 | ❌ DELETE |
+
+### Component Duplication:
+
+| Mobile Step | Desktop Section | Lines Each | Shared Logic |
+|-------------|-----------------|------------|--------------|
+| `step-photos.tsx` | `photos-section.tsx` | 508 / 655 | ~70% same |
+| `step-category.tsx` | `details-section.tsx` | 1080 / 568 | ~50% same |
+| `step-pricing.tsx` | `pricing-section.tsx` | 257 / 444 | ~60% same |
+| `step-review.tsx` | N/A (desktop has inline) | 354 | N/A |
+
+---
+
+## 🗑️ FILES TO DELETE
+
+### Phase 1: Delete Demo/Unused Routes (Safe)
+
+```powershell
+# Demo forms - UNUSED
+Remove-Item -Recurse -Force "app/[locale]/demo/sellform1"
+Remove-Item -Recurse -Force "app/[locale]/demo/sellform2"
+Remove-Item -Recurse -Force "app/[locale]/(main)/demo/sellform"
+
+# sell-v2 - UNUSED alternate implementation
+Remove-Item -Recurse -Force "app/[locale]/(sell)/sell-v2"
+```
+
+### Phase 2: Delete Duplicate Schemas
+
+```powershell
+# After consolidating to lib/sell-form-schema.ts
+Remove-Item -Force "components/sell/schemas.ts"
+Remove-Item -Recurse -Force "components/sell/schemas"
+```
+
+### Phase 3: Delete Dead Components
+
+```powershell
+# After verifying not imported
+Remove-Item -Force "components/sell/category-stepper.tsx"  # Legacy
+Remove-Item -Force "components/sell/create-store-form.tsx"  # Replaced by wizard
+Remove-Item -Recurse -Force "components/sell/ai"  # Empty folder
+```
+
+---
+
+## ✅ FILES TO KEEP (Core Production)
+
+### Route Files:
+- `app/[locale]/(sell)/layout.tsx`
+- `app/[locale]/(sell)/sell/page.tsx`
+- `app/[locale]/(sell)/sell/client.tsx`
+- `app/[locale]/(sell)/sell/loading.tsx`
+- `app/[locale]/(sell)/_components/*` (shared components)
+
+### Main Components:
+- `components/sell/sell-form.tsx` - Desktop form
+- `components/sell/sell-form-stepper.tsx` - Mobile stepper
+- `components/sell/sell-header-v3.tsx` - Header
+- `components/sell/seller-onboarding-wizard.tsx`
+- `components/sell/sign-in-prompt.tsx`
+
+### UI Components:
+- `components/sell/ui/category-modal/`
+- `components/sell/ui/category-picker/`
+- `components/sell/ui/brand-picker.tsx`
+- `components/sell/ui/stepper-header.tsx`
+- `components/sell/ui/stepper-navigation.tsx`
+- `components/sell/ui/sell-section-skeleton.tsx`
+- `components/sell/ui/sell-error-boundary.tsx`
+
+### Types & Schema:
+- `lib/sell-form-schema-v4.ts` → rename to `lib/sell-form-schema.ts`
+- `components/sell/types.ts`
+
+---
+
+## 📋 REFACTOR TASKS
+
+### Task 1: Delete Demo/Unused Code [SAFE - DO FIRST]
+```
+Effort: 5 min | Risk: LOW
+```
+
+Delete all demo and unused implementations.
+
+### Task 2: Consolidate Schema [MEDIUM RISK]
+```
+Effort: 30 min | Risk: MEDIUM
+```
+
+1. Rename `lib/sell-form-schema-v4.ts` → `lib/sell-form-schema.ts`
+2. Update all imports
+3. Delete duplicate schemas
+4. Remove "V4" from type names
+
+### Task 3: Extract Image Utilities [LOW RISK]
+```
+Effort: 15 min | Risk: LOW
+```
+
+Create `lib/image-utils.ts` with shared `compressImage()` function.
+
+### Task 4: Split step-category.tsx [HIGH EFFORT]
+```
+Effort: 2-3 hours | Risk: HIGH
+```
+
+Split 1,080-line file into:
+- `category-selector-section.tsx` (~200 lines)
+- `condition-selector.tsx` (~100 lines)
+- `brand-input.tsx` (~100 lines)
+- `item-specifics-section.tsx` (~400 lines)
+- `automotive-utils.ts` (~200 lines)
+
+### Task 5: Unify Mobile/Desktop Components [HIGH EFFORT]
+```
+Effort: 4-6 hours | Risk: HIGH
+```
+
+Create shared base components with mobile/desktop variants.
+
+### Task 6: Fix TypeScript & Lint Errors [LOW RISK]
+```
+Effort: 30 min | Risk: LOW
+```
+
+Fix warnings in:
+- `stepper-header.tsx` - Tailwind class suggestions
+- `ai-listing-assistant.tsx` - break-words class
+- `shipping-section.tsx` - unused import
 
 ---
 

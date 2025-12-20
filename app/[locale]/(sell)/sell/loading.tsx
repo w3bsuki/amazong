@@ -1,4 +1,4 @@
-import { SellFormSkeleton } from "@/components/sell";
+import { SellFormSkeleton } from "../_components";
 
 /**
  * Instant loading state for /sell page

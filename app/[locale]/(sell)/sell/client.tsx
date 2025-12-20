@@ -13,7 +13,7 @@ import {
   SellerOnboardingWizard,
   type Category,
   type Seller
-} from "@/components/sell";
+} from "../_components";
 import { AiSellAssistant } from "@/components/ai-sell-assistant";
 import { useParams } from "next/navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -81,7 +81,7 @@ export function SellPageClient({
           } else {
             setSeller({
               id: profileData.id,
-              store_name: profileData.display_name || profileData.business_name || profileData.username,
+              store_name: profileData.display_name || profileData.business_name || profileData.username || "Store",
             });
           }
         }
@@ -136,7 +136,7 @@ export function SellPageClient({
       if (profileData) {
         setSeller({
           id: profileData.id,
-          store_name: profileData.display_name || profileData.business_name || profileData.username,
+          store_name: profileData.display_name || profileData.business_name || profileData.username || "Store",
         });
         setNeedsOnboarding(false);
       }
@@ -148,7 +148,7 @@ export function SellPageClient({
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <SellerOnboardingWizard
             userId={user.id}
-            username={username}
+            username={username as string}
             onComplete={handleOnboardingComplete}
           />
         </div>
