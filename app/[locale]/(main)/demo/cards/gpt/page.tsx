@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ProductCard } from "@/components/ui/product-card"
+import { ProductCard } from "@/components/common/product-card"
 import { cn } from "@/lib/utils"
 import {
   Heart,

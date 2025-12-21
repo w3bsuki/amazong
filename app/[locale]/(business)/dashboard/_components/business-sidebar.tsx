@@ -18,7 +18,7 @@ import {
   IconSpeakerphone,
 } from "@tabler/icons-react"
 
-import { NavUser } from "@/components/nav-user"
+import { NavUser } from "@/components/layout/nav-user"
 import {
   Sidebar,
   SidebarContent,
@@ -30,7 +30,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
-} from "@/components/ui/sidebar"
+} from "@/components/layout/sidebar/sidebar"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 

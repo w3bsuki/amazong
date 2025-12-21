@@ -142,11 +142,14 @@ export function SmartCategoryPicker({
 
   // Restore selection from value
   useEffect(() => {
-    if (value && !selectedCategory) {
-      const found = flatCategories.find((c) => c.id === value);
-      if (found) {
-        setSelectedCategory(found);
-      }
+    if (!value) {
+      if (selectedCategory !== null) setSelectedCategory(null);
+      return;
+    }
+
+    const found = flatCategories.find((c) => c.id === value) || null;
+    if (found?.id !== selectedCategory?.id) {
+      setSelectedCategory(found);
     }
   }, [value, flatCategories, selectedCategory]);
 

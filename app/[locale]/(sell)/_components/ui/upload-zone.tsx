@@ -10,6 +10,7 @@ interface UploadZoneProps {
   getInputProps: () => Record<string, unknown>;
   currentCount: number;
   maxCount: number;
+  locale?: "en" | "bg";
 }
 
 /**
@@ -27,50 +28,66 @@ export function UploadZone({
   getInputProps,
   currentCount,
   maxCount,
+  locale = "en",
 }: UploadZoneProps) {
   const remaining = maxCount - currentCount;
+  const isBg = locale === "bg";
   
   return (
     <div
       {...getRootProps()}
       className={cn(
-        "relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors cursor-pointer",
-        "min-h-[200px] sm:min-h-[220px] touch-action-manipulation",
+        "relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed transition-colors cursor-pointer",
+        "min-h-[140px] sm:min-h-[160px] touch-action-manipulation",
         isDragActive
           ? "border-primary bg-primary/5"
-          : "border-border/60 bg-muted/20 hover:bg-muted/40 hover:border-primary/40",
+          : "border-border/40 bg-muted/10 hover:bg-muted/20 hover:border-primary/30",
         isUploading && "pointer-events-none opacity-70"
       )}
     >
       <input {...getInputProps()} />
 
       {isUploading ? (
-        <div className="flex flex-col items-center gap-4">
-          <SpinnerGap className="size-10 animate-spin text-primary" />
-          <span className="text-sm font-semibold text-foreground">Uploading photos...</span>
+        <div className="flex flex-col items-center gap-3">
+          <SpinnerGap className="size-7 animate-spin text-primary" />
+          <span className="text-sm font-medium text-foreground">
+            {isBg ? "Качване..." : "Uploading..."}
+          </span>
         </div>
       ) : (
         <>
           <div className={cn(
-            "flex size-16 items-center justify-center rounded-xl bg-background border border-border shadow-xs mb-4 transition-transform",
-            isDragActive && "scale-110"
+            "flex size-12 items-center justify-center rounded-full bg-background border border-border shadow-sm mb-2",
+            isDragActive && "scale-105"
           )}>
             {isDragActive ? (
-              <Plus className="size-8 text-primary" weight="bold" />
+              <Plus className="size-5 text-primary" weight="bold" />
             ) : (
-              <Camera className="size-8 text-muted-foreground" weight="bold" />
+              <Camera className="size-5 text-muted-foreground" weight="bold" />
             )}
           </div>
-          <span className="text-base font-semibold text-foreground">
-            {isDragActive ? "Drop photos here" : "Add photos"}
+          <span className="text-sm font-bold text-foreground">
+            {isDragActive
+              ? (isBg ? "Пуснете тук" : "Drop here")
+              : (isBg ? "Добавете снимки" : "Add photos")}
           </span>
-          <span className="mt-1 text-sm text-muted-foreground">
-            Drag & drop or <span className="text-primary font-medium">browse</span>
+          <span className="mt-0.5 text-xs text-muted-foreground">
+            {isBg ? (
+              <>
+                Докоснете за <span className="text-primary font-semibold">избор</span>
+              </>
+            ) : (
+              <>
+                Tap to <span className="text-primary font-semibold">browse</span>
+              </>
+            )}
           </span>
-          <span className="mt-4 text-xs text-muted-foreground/70">
+          <span className="mt-2 text-[10px] font-medium text-muted-foreground/60">
             {remaining > 0 
-              ? `Up to ${remaining} more photo${remaining > 1 ? "s" : ""} • JPG, PNG, WEBP`
-              : "Maximum photos reached"}
+              ? (isBg
+                  ? `Още до ${remaining} снимки`
+                  : `Up to ${remaining} more`)
+              : (isBg ? "Максимум" : "Maximum reached")}
           </span>
         </>
       )}

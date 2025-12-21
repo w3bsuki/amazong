@@ -1,7 +1,7 @@
 "use client"
 
-import { useWishlist } from "@/lib/wishlist-context"
-import { useCart } from "@/lib/cart-context"
+import { useWishlist } from "@/components/providers/wishlist-context"
+import { useCart } from "@/components/providers/cart-context"
 import { Button } from "@/components/ui/button"
 import { 
   Heart, 

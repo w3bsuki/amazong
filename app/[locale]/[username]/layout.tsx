@@ -1,5 +1,5 @@
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/layout/header/site-header";
+import { SiteFooter } from "@/components/layout/footer/site-footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { MobileTabBar } from "@/components/mobile-tab-bar";
 import { Suspense } from "react";

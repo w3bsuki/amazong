@@ -1,11 +1,11 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
-import { AccountHeroCard } from "@/components/account-hero-card"
-import { AccountStatsCards } from "@/components/account-stats-cards"
-import { AccountChart } from "@/components/account-chart"
-import { AccountRecentActivity } from "@/components/account-recent-activity"
-import { AccountBadges } from "@/components/account-badges"
+import { AccountHeroCard } from "./_components/account-hero-card"
+import { AccountStatsCards } from "./_components/account-stats-cards"
+import { AccountChart } from "./_components/account-chart"
+import { AccountRecentActivity } from "./_components/account-recent-activity"
+import { AccountBadges } from "./_components/account-badges"
 
 interface AccountPageProps {
   params: Promise<{

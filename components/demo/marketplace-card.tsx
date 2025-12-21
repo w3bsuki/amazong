@@ -2,8 +2,8 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { WishlistButton } from "@/components/wishlist-button"
-import { useCart } from "@/lib/cart-context"
+import { WishlistButton } from "@/components/common/wishlist/wishlist-button"
+import { useCart } from "@/components/providers/cart-context"
 import { toast } from "sonner"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"

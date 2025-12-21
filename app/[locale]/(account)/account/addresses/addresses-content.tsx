@@ -39,8 +39,8 @@ import {
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
-import { AccountAddressesStats } from "@/components/account-addresses-stats"
-import { AccountAddressesGrid } from "@/components/account-addresses-grid"
+import { AccountAddressesStats } from "../_components/account-addresses-stats"
+import { AccountAddressesGrid } from "../_components/account-addresses-grid"
 
 interface Address {
     id: string

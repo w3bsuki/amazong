@@ -155,12 +155,12 @@ export function BrandCombobox({
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            "w-full justify-between h-11 text-base font-normal",
+            "w-full justify-between h-12 text-sm font-medium rounded-xl border-border",
             !selectedBrand && !customValue && "text-muted-foreground",
             className
           )}
         >
-          <span className="flex items-center gap-2 truncate">
+          <span className="flex items-center gap-2.5 truncate">
             {/* Brand logo if available */}
             {selectedBrand?.logo_url && (
               <img
@@ -172,16 +172,16 @@ export function BrandCombobox({
             <span className="truncate">{displayText}</span>
             {/* Verified badge */}
             {selectedBrand?.is_verified && (
-              <ShieldCheck className="size-4 text-primary shrink-0" />
+              <ShieldCheck className="size-3.5 text-primary shrink-0" weight="fill" />
             )}
             {/* Custom brand indicator */}
             {customValue && !selectedBrand && (
-              <span className="text-xs text-muted-foreground shrink-0">
+              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider shrink-0">
                 ({isBg ? "Потребителска" : "Custom"})
               </span>
             )}
           </span>
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             {/* Clear button */}
             {(selectedBrand || customValue) && (
               <span
@@ -189,10 +189,10 @@ export function BrandCombobox({
                 tabIndex={0}
                 onClick={handleClear}
                 onKeyDown={(e) => e.key === "Enter" && handleClear(e as unknown as React.MouseEvent)}
-                className="p-1 rounded hover:bg-muted"
+                className="size-6 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
                 aria-label={isBg ? "Изчисти" : "Clear"}
               >
-                <X className="size-3.5 text-muted-foreground" />
+                <X className="size-3.5 text-muted-foreground" weight="bold" />
               </span>
             )}
             <ChevronsUpDownIcon className="size-4 shrink-0 opacity-50" />

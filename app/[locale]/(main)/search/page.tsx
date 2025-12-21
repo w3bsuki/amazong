@@ -1,12 +1,12 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { Link } from "@/i18n/routing"
-import { ProductCard } from "@/components/ui/product-card"
+import { ProductCard } from "@/components/common/product-card"
 import { SearchFilters } from "@/components/search-filters"
 import { SubcategoryTabs } from "@/components/subcategory-tabs"
-import { SearchHeader } from "@/components/search-header"
-import { MobileFilters } from "@/components/mobile-filters"
-import { DesktopFilters } from "@/components/desktop-filters"
-import { FilterChips } from "@/components/filter-chips"
+import { SearchHeader } from "./_components/search-header"
+import { MobileFilters } from "@/components/common/filters/mobile-filters"
+import { DesktopFilters } from "@/components/common/filters/desktop-filters"
+import { FilterChips } from "@/components/common/filters/filter-chips"
 import { SortSelect } from "@/components/sort-select"
 import { SearchPagination } from "@/components/search-pagination"
 import { Suspense } from "react"
@@ -15,6 +15,7 @@ import { connection } from "next/server"
 import { cookies } from "next/headers"
 import type { Metadata } from 'next'
 import { getShippingFilter, parseShippingRegion } from '@/lib/shipping'
+
 
 const ITEMS_PER_PAGE = 20
 

@@ -4,7 +4,7 @@ import { useLocale } from "next-intl"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarTrigger } from "@/components/layout/sidebar/sidebar"
 
 export function AccountHeader() {
   const locale = useLocale()

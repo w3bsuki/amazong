@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities";
@@ -122,21 +122,21 @@ function ShippingRegionCard({
   return (
     <label
       className={cn(
-        "relative flex items-start gap-3.5 p-4 rounded-xl border text-left transition-all w-full cursor-pointer shadow-xs",
+        "relative flex items-start gap-3 p-3 rounded-xl border text-left transition-all w-full cursor-pointer",
         isSelected
-          ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+          ? "border-primary bg-primary/5 shadow-xs"
           : "border-border bg-background hover:border-primary/30"
       )}
     >
       {/* Icon */}
       <div className={cn(
-        "size-10 rounded-lg flex items-center justify-center shrink-0 border",
+        "size-9 rounded-full flex items-center justify-center shrink-0 border",
         isSelected ? "bg-primary/10 border-primary/20" : "bg-muted/30 border-border/50"
       )}>
         <Icon className={cn(
-          "size-5",
+          "size-4.5",
           isSelected ? "text-primary" : "text-muted-foreground"
-        )} weight="bold" />
+        )} weight={isSelected ? "fill" : "bold"} />
       </div>
 
       {/* Content */}
@@ -148,19 +148,19 @@ function ShippingRegionCard({
           )}>
             {isBg ? region.labelBg : region.label}
           </span>
-          <span className="text-xs font-medium text-muted-foreground">
+          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
             {isBg ? region.deliveryTimeBg : region.deliveryTime}
           </span>
         </div>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
           {isBg ? region.descriptionBg : region.description}
         </p>
         {region.carriers.length > 0 && isSelected && (
-          <div className="flex flex-wrap gap-1.5 mt-2.5">
+          <div className="flex flex-wrap gap-1 mt-1.5">
             {region.carriers.map((carrier) => (
               <span
                 key={carrier}
-                className="text-xs font-medium px-2 py-0.5 rounded-md bg-muted/50 border border-border/50 text-muted-foreground"
+                className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/10"
               >
                 {carrier}
               </span>
@@ -173,7 +173,7 @@ function ShippingRegionCard({
       <Checkbox
         checked={isSelected}
         onCheckedChange={() => onToggle()}
-        className="size-5 rounded-md"
+        className="size-4.5 rounded-md border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
         aria-label={isBg ? region.labelBg : region.label}
       />
     </label>
@@ -195,45 +195,57 @@ function DimensionsInput({
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div className="space-y-1.5">
-        <Label className="text-xs">{isBg ? "Дължина (cm)" : "Length (cm)"}</Label>
-        <Input
-          type="number"
-          placeholder="0"
-          value={dimensions?.lengthCm || ""}
-          onChange={(e) => onChange({ ...dimensions, lengthCm: e.target.value ? Number(e.target.value) : undefined })}
-          className="h-10"
-        />
+        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Дължина" : "Length"}</Label>
+        <div className="relative">
+          <Input
+            type="number"
+            placeholder="0"
+            value={dimensions?.lengthCm || ""}
+            onChange={(e) => onChange({ ...dimensions, lengthCm: e.target.value ? Number(e.target.value) : undefined })}
+            className="h-10 pr-8 rounded-lg border-border font-medium"
+          />
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">cm</span>
+        </div>
       </div>
       <div className="space-y-1.5">
-        <Label className="text-xs">{isBg ? "Ширина (cm)" : "Width (cm)"}</Label>
-        <Input
-          type="number"
-          placeholder="0"
-          value={dimensions?.widthCm || ""}
-          onChange={(e) => onChange({ ...dimensions, widthCm: e.target.value ? Number(e.target.value) : undefined })}
-          className="h-10"
-        />
+        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Ширина" : "Width"}</Label>
+        <div className="relative">
+          <Input
+            type="number"
+            placeholder="0"
+            value={dimensions?.widthCm || ""}
+            onChange={(e) => onChange({ ...dimensions, widthCm: e.target.value ? Number(e.target.value) : undefined })}
+            className="h-10 pr-8 rounded-lg border-border font-medium"
+          />
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">cm</span>
+        </div>
       </div>
       <div className="space-y-1.5">
-        <Label className="text-xs">{isBg ? "Височина (cm)" : "Height (cm)"}</Label>
-        <Input
-          type="number"
-          placeholder="0"
-          value={dimensions?.heightCm || ""}
-          onChange={(e) => onChange({ ...dimensions, heightCm: e.target.value ? Number(e.target.value) : undefined })}
-          className="h-10"
-        />
+        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Височина" : "Height"}</Label>
+        <div className="relative">
+          <Input
+            type="number"
+            placeholder="0"
+            value={dimensions?.heightCm || ""}
+            onChange={(e) => onChange({ ...dimensions, heightCm: e.target.value ? Number(e.target.value) : undefined })}
+            className="h-10 pr-8 rounded-lg border-border font-medium"
+          />
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">cm</span>
+        </div>
       </div>
       <div className="space-y-1.5">
-        <Label className="text-xs">{isBg ? "Тегло (kg)" : "Weight (kg)"}</Label>
-        <Input
-          type="number"
-          step="0.1"
-          placeholder="0"
-          value={dimensions?.weightKg || ""}
-          onChange={(e) => onChange({ ...dimensions, weightKg: e.target.value ? Number(e.target.value) : undefined })}
-          className="h-10"
-        />
+        <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Тегло" : "Weight"}</Label>
+        <div className="relative">
+          <Input
+            type="number"
+            step="0.1"
+            placeholder="0"
+            value={dimensions?.weightKg || ""}
+            onChange={(e) => onChange({ ...dimensions, weightKg: e.target.value ? Number(e.target.value) : undefined })}
+            className="h-10 pr-8 rounded-lg border-border font-medium"
+          />
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">kg</span>
+        </div>
       </div>
     </div>
   );
@@ -284,13 +296,13 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
   const hasError = !anyRegionSelected;
 
   const content = (
-    <FieldContent className={cn("space-y-5", !compact && "p-5")}>
+    <FieldContent className={cn("space-y-6", !compact && "p-6")}>
           {/* Shipping Regions */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold">
               {isBg ? "Региони за доставка" : "Shipping Regions"}
             </Label>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               {SHIPPING_REGIONS.map((region) => (
                 <ShippingRegionCard
                   key={region.id}
@@ -309,25 +321,25 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
           {/* Seller City (for Bulgaria or Pickup) */}
           {(shipsToBulgaria || pickupOnly) && (
             <div className="space-y-2">
-              <Label className="text-sm font-medium">
+              <Label className="text-sm font-semibold">
                 {isBg ? "Вашият град" : "Your City"} *
               </Label>
               <Select
                 value={sellerCity || ""}
                 onValueChange={(val) => setValue("sellerCity", val)}
               >
-                <SelectTrigger className="h-11">
+                <SelectTrigger className="h-12 rounded-xl border-border font-medium">
                   <SelectValue placeholder={isBg ? "Изберете град..." : "Select city..."} />
                 </SelectTrigger>
                 <SelectContent>
                   {BULGARIAN_CITIES.map((city) => (
-                    <SelectItem key={city.value} value={city.value}>
+                    <SelectItem key={city.value} value={city.value} className="font-medium">
                       {isBg ? city.labelBg : city.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground font-medium">
                 {isBg 
                   ? "Градът, от който ще изпращате"
                   : "The city you'll ship from"}
@@ -338,12 +350,12 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
           {/* Shipping Price */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-sm font-medium">
+              <Label className="text-sm font-semibold">
                 {isBg ? "Цена за доставка" : "Shipping Price"}
               </Label>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">
-                  {isBg ? "Безплатна доставка" : "Free shipping"}
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  {isBg ? "Безплатна" : "Free"}
                 </span>
                 <Switch
                   checked={freeShipping}
@@ -358,7 +370,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
             </div>
             {!freeShipping && (
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
                   лв
                 </span>
                 <Input
@@ -367,7 +379,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                   placeholder="0.00"
                   value={shippingPrice || ""}
                   onChange={(e) => setValue("shippingPrice", e.target.value)}
-                  className="pl-10 h-11"
+                  className="pl-10 h-12 rounded-xl border-border font-bold text-lg"
                 />
               </div>
             )}
@@ -376,8 +388,8 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
           {/* Package Dimensions */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Package className="size-4 text-muted-foreground" />
-              <Label className="text-sm font-medium">
+              <Package className="size-4 text-muted-foreground" weight="bold" />
+              <Label className="text-sm font-semibold">
                 {isBg ? "Размери на пратката (по избор)" : "Package Dimensions (optional)"}
               </Label>
             </div>
@@ -390,25 +402,25 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
 
           {/* Processing Time */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">
+            <Label className="text-sm font-semibold">
               {isBg ? "Време за обработка" : "Processing Time"}
             </Label>
             <Select
               value={String(processingDays)}
               onValueChange={(val) => setValue("processingDays", Number(val))}
             >
-              <SelectTrigger className="h-11 w-40">
+              <SelectTrigger className="h-12 w-44 rounded-xl border-border font-medium">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {[1, 2, 3, 5, 7, 10, 14].map((days) => (
-                  <SelectItem key={days} value={String(days)}>
+                  <SelectItem key={days} value={String(days)} className="font-medium">
                     {days} {isBg ? (days === 1 ? "ден" : "дни") : (days === 1 ? "day" : "days")}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground font-medium">
               {isBg 
                 ? "Време за подготовка на поръчката преди изпращане"
                 : "Time to prepare the order before shipping"}

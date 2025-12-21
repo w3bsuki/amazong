@@ -25,10 +25,14 @@ import type { SellFormDataV4 } from "@/lib/sell-form-schema-v4";
 // - No card-in-card visual noise
 // ============================================================================
 
-// Step configuration for mobile wizard
+// Step configuration for mobile wizard (low-friction flow)
+// 1) Basics: title + category + condition
+// 2) Photos: at least 1 photo
+// 3) Pricing: price (+ shipping)
+// 4) Review: final validation + publish
 const MOBILE_STEPS = [
-  { id: 1, title: { en: "Item", bg: "Артикул" }, fields: ["title", "images"] },
-  { id: 2, title: { en: "Details", bg: "Детайли" }, fields: ["categoryId", "condition", "brandId", "description", "attributes"] },
+  { id: 1, title: { en: "Basics", bg: "Основно" }, fields: ["title", "categoryId", "condition"] },
+  { id: 2, title: { en: "Photos", bg: "Снимки" }, fields: ["images"] },
   { id: 3, title: { en: "Price", bg: "Цена" }, fields: ["price", "quantity", "shippingPrice", "sellerCity"] },
   { id: 4, title: { en: "Review", bg: "Преглед" }, fields: [] },
 ];
@@ -39,7 +43,7 @@ interface MobileLayoutProps {
 
 export function MobileLayout({ onSubmit }: MobileLayoutProps) {
   const form = useSellForm();
-  const { currentStep, isBg } = useSellFormContext();
+  const { currentStep, setCurrentStep, isBg } = useSellFormContext();
 
   // Handle submission
   const handleSubmit = () => {
@@ -49,67 +53,67 @@ export function MobileLayout({ onSubmit }: MobileLayoutProps) {
     )();
   };
 
+  const handleNext = async () => {
+    const stepFields = MOBILE_STEPS[currentStep - 1]?.fields ?? [];
+    const ok = stepFields.length > 0 ? await form.trigger(stepFields as never) : true;
+    if (!ok) return;
+    if (currentStep < MOBILE_STEPS.length) setCurrentStep(currentStep + 1);
+  };
+
   // Render current step content - clean, consistent spacing
   const renderStepContent = () => {
+    const categoryId = form.watch("categoryId");
+
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-section">
-            {/* Section header - larger, clearer */}
+          <div className="space-y-6">
+            {/* Section header - more compact */}
             <div className="space-y-1">
               <h2 className="text-xl font-bold tracking-tight text-foreground">
                 {isBg ? "Какво продавате?" : "What are you selling?"}
               </h2>
               <p className="text-sm text-muted-foreground">
-                {isBg ? "Добавете заглавие и снимки на вашия артикул" : "Add a title and photos of your item"}
+                {isBg ? "Изберете категория и добавете основните детайли" : "Pick a category and add the basics"}
               </p>
             </div>
             
-            {/* Title field */}
-            <div className="space-y-form-sm">
+            <div className="space-y-5">
               <TitleField compact />
-            </div>
-            
-            {/* Photos section - clear label */}
-            <div className="space-y-form-sm">
-              <div>
-                <p className="text-sm font-semibold text-foreground">
-                  {isBg ? "Снимки" : "Photos"}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {isBg ? "До 12 снимки. Първата е основна." : "Up to 12 photos. First one is the main image."}
-                </p>
-              </div>
-              <PhotosField maxPhotos={12} compact />
+              <CategoryField compact />
+
+              {/* Item specifics should appear immediately after category on mobile */}
+              <AttributesField compact />
+
+              <ConditionField compact />
+              
+              {/* Only show BrandField if no category is selected or if it's a generic category */}
+              {!categoryId && <BrandField compact />}
             </div>
           </div>
         );
 
       case 2:
         return (
-          <div className="space-y-section">
+          <div className="space-y-6">
             <div className="space-y-1">
               <h2 className="text-xl font-bold tracking-tight text-foreground">
-                {isBg ? "Детайли за артикула" : "Item details"}
+                {isBg ? "Снимки" : "Photos"}
               </h2>
               <p className="text-sm text-muted-foreground">
-                {isBg ? "Помогнете на купувачите да намерят вашия артикул" : "Help buyers find your item"}
+                {isBg ? "Добавете поне 1 снимка" : "Add at least 1 photo"}
               </p>
             </div>
             
-            <div className="space-y-section">
-              <CategoryField compact />
-              <ConditionField compact />
-              <BrandField compact />
-              <AttributesField compact />
-              <DescriptionField compact />
+            <div className="space-y-5">
+              <PhotosField maxPhotos={12} compact />
             </div>
           </div>
         );
 
       case 3:
         return (
-          <div className="space-y-section">
+          <div className="space-y-6">
             <div className="space-y-1">
               <h2 className="text-xl font-bold tracking-tight text-foreground">
                 {isBg ? "Цена и доставка" : "Pricing & shipping"}
@@ -119,7 +123,7 @@ export function MobileLayout({ onSubmit }: MobileLayoutProps) {
               </p>
             </div>
             
-            <div className="space-y-section">
+            <div className="space-y-5">
               <PricingField compact />
               <ShippingField compact />
             </div>
@@ -128,7 +132,7 @@ export function MobileLayout({ onSubmit }: MobileLayoutProps) {
 
       case 4:
         return (
-          <div className="space-y-section">
+          <div className="space-y-6">
             <div className="space-y-1">
               <h2 className="text-xl font-bold tracking-tight text-foreground">
                 {isBg ? "Преглед и публикуване" : "Review & publish"}
@@ -138,7 +142,10 @@ export function MobileLayout({ onSubmit }: MobileLayoutProps) {
               </p>
             </div>
             
-            <ReviewField />
+            <div className="space-y-5">
+              <ReviewField onEditStep={(step) => setCurrentStep(step)} />
+              <DescriptionField compact />
+            </div>
           </div>
         );
 
@@ -148,7 +155,7 @@ export function MobileLayout({ onSubmit }: MobileLayoutProps) {
   };
 
   return (
-    <StepperWrapper steps={MOBILE_STEPS} onSubmit={handleSubmit}>
+    <StepperWrapper steps={MOBILE_STEPS} onSubmit={handleSubmit} onNext={handleNext}>
       {renderStepContent()}
     </StepperWrapper>
   );

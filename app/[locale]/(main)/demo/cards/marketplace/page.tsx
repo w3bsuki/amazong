@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { MarketplaceCard, MarketplaceCardSkeleton } from "@/components/demo/marketplace-card"
-import { ProductCard } from "@/components/ui/product-card"
+import { ProductCard } from "@/components/common/product-card"
 import { cn } from "@/lib/utils"
 
 // Demo products with realistic marketplace data

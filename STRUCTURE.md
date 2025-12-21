@@ -1,30 +1,48 @@
 #+#+#+#+############################################
-# STRUCTURE.md — Phased Refactor Plan (Tool-Agnostic)
+# STRUCTURE.md — Canonical Refactor Plan (Enforcement-First)
 #+#+#+#+############################################
 
-This is the execution plan to reach a clean, predictable folder structure without breaking production. It is designed to be run in phases with verification gates after each phase.
+This is the single plan we will follow to make the repo structure predictable, reduce duplication, and prevent regression.
 
-## Outcome Goals (Non-Negotiables)
+Agent Skills note:
+- Repo-local Agent Skills live under `.github/skills/`. See `AGENT_SKILLS.md` for how to add/maintain skills and templates.
 
-- `components/ui` contains only shadcn-style primitive components.
-- Hooks exist in one canonical place: `hooks/`.
-- Route-specific UI is colocated under the owning route in `app/[locale]/...`.
-- Shared UI is organized (no flat `components/` explosion).
-- No “duplicate core components” (e.g., product card) remain.
+Important:
+- This repo is large and moving things will break imports unless we do it with **guardrails + strict refactors** (update imports and delete old paths).
+- Audit tools (knip/jscpd/madge) are inputs, not truth. “Unused” code can still be the best implementation — we may keep it and delete the uglier “used” version.
 
-## Execution Rules
+About commands vs tools:
+- The markdown docs include command snippets so humans can reproduce work.
+- When I (the agent) execute steps, I will use VS Code tools (search + edits + tasks) and only run terminal commands when needed.
 
-- **Structure-only changes per phase**: avoid mixing refactors with feature work.
-- **Prefer compatibility shims over breaking moves**: move the file, then keep a small re-export in the old path until imports are migrated.
-- **One phase = one main theme**: if a phase grows, split it.
+## Non-Negotiables (Definition of “Perfect” Here)
 
-## Verification Gates (Run after every phase)
+- Clear ownership boundaries: every component belongs to exactly one of: **shadcn primitive**, **shared composite**, **route-owned UI**, **provider**, **pure lib**.
+- `components/ui/` contains only shadcn-style primitives (and only exports that are actually intended to be public).
+- Route-owned UI is colocated under the owning route group in `app/[locale]/.../_components`.
+- Domain logic lives in `lib/<domain>/...` as pure TS (no React contexts/providers there).
+- Providers/contexts live in `components/providers/`.
+- No circular dependencies.
+- The import graph is enforceable by lint rules (not tribal knowledge).
 
-Run your usual project gates after each phase. Example (pnpm):
+## How We Avoid Breaking the App
 
-- Typecheck: `pnpm -s exec tsc -p tsconfig.json --noEmit`
-- Lint: `pnpm -s lint`
+- One batch at a time: small, reviewable diffs.
+- No compatibility shims/re-exports: update imports to the canonical location in the same batch.
+- No mass “find/replace” across the repo without a gate in between.
+- Deletion is part of the same batch once imports are updated (old paths must not remain).
+
+## Gates (Run After Every Batch)
+
+Minimum gates:
+
+- Typecheck: `pnpm -s exec tsc -p tsconfig.json --noEmit --pretty false`
 - Build: `pnpm -s build`
+
+When touching routing, providers, or large shared components:
+
+- Lint: `pnpm -s lint`
+- E2E: `pnpm test:e2e`
 
 If you use different package managers/commands, adapt accordingly.
 
@@ -41,52 +59,91 @@ If you use different package managers/commands, adapt accordingly.
 - `hooks/` contains all reusable hooks.
 - `lib/` contains utilities/clients/domain helpers (avoid React component/context `.tsx` here).
 - `types/` contains shared TS types.
-- Markdown docs live in `docs/` (optional move; not required for correctness).
+- Planning/audit docs live where they currently are (no `docs/` tree required).
 
 ---
 
-## Phase 0 — Baseline + Inventory (0.5 day)
+## Phase 0 — Baseline + Maps (Required)
 
-**Goal**: know what exists, and avoid accidental breakage.
+**Goal**: stop guessing. Produce a map of what exists and who owns what.
+
+**Deliverables**
+- Route map for `app/[locale]`: list every route group and what it owns.
+- Component ownership map: classify every file under `components/` into one bucket:
+  - `components/ui` (primitive)
+  - `components/common` (shared composite)
+  - `components/layout`
+  - `components/providers`
+  - “should move to route-owned `_components`”
 
 **Do**
-- List all current files under `components/ui` and categorize: primitive vs composite vs hook vs layout.
-- Identify obvious duplicates (e.g., multiple `use-toast`, multiple product cards, multiple contexts).
-- Confirm `components.json` paths/aliases match the repo (especially `aliases.ui` and `aliases.hooks`).
+- Ensure git working tree is clean (commit or stash).
+- Run the gates once to capture a known-good baseline.
+- Confirm `components.json` aliases match actual usage.
 
 **Exit Criteria**
-- Inventory notes captured (where duplicates are, what moves are planned first).
-- Gates pass (no code changes required).
+- Baseline gates pass.
+- The repo has a written ownership map (so later phases are mechanical).
 
 ---
 
-## Phase 1 — Fix `components/ui` + Hook Canonicalization (1–2 days)
+## Phase 1 — Guardrails Before Moves (Required)
 
-**Goal**: make `components/ui` match shadcn convention and eliminate hook duplication.
+**Goal**: make it hard to re-introduce the mess while we refactor.
 
 **Do**
-- Move all **non-primitives** out of `components/ui`:
-  - composites → `components/common/`
-  - layout shells → `components/layout/`
-- Move hooks out of `components/ui` into `hooks/`.
-- Add compatibility re-exports at old paths when needed to prevent broad breakage.
-- Update imports incrementally.
+- Add ESLint rules / restricted imports to enforce:
+  - nothing imports hooks from `components/ui`
+  - route code does not import other route-owned components across groups
+  - `components/ui` does not export feature composites
+- Add a short “Where does this file go?” contributor note.
 
 **Exit Criteria**
-- `components/ui` contains only primitives.
-- Hooks are single-source-of-truth under `hooks/`.
+- Guardrails are in place and gates pass.
+
+---
+
+## Phase 2 — Fix `components/ui` Boundary (Primitives Only)
+
+**Goal**: restore trust in the primitives layer so duplication stops.
+
+**Do**
+- Move non-primitives out of `components/ui` into `components/common` or `components/layout`.
+- Update all imports to the new canonical location (no forwarding/re-export shims).
+- Delete the old `components/ui/*` composite modules once nothing imports them.
+- Tighten exports: primitives should not expose dozens of unused exports “just because shadcn generated them”.
+
+**Exit Criteria**
+- `components/ui` is primitives-only.
 - Gates pass.
 
 ---
 
-## Phase 2 — Providers/Contexts Cleanup (0.5–1.5 days)
+## Phase 3 — Route Structure + Colocation (App Router Hygiene)
 
-**Goal**: stop React contexts living in `lib/` and prevent “context sprawl”.
+**Goal**: make `/app` navigable and remove “UI dumping” into root components.
+
+**Do**
+- For each route group (account/admin/auth/business/chat/checkout/main/plans/sell):
+  - move UI that only that group uses into `app/[locale]/(<group>)/.../_components`
+  - move server actions into `app/[locale]/(<group>)/.../_actions` (or keep in `app/actions` only if truly cross-cutting)
+- Remove deep, ambiguous “shared” imports from route code.
+
+**Exit Criteria**
+- Each route group owns its UI.
+- `components/` root is measurably smaller.
+- Gates pass.
+
+---
+
+## Phase 4 — Providers + Hooks Canonicalization
+
+**Goal**: predictable runtime wiring.
 
 **Do**
 - Move React providers/contexts to `components/providers/`.
-- Ensure there is one canonical provider per domain (cart, wishlist, messaging, etc.).
-- Keep `lib/` for utilities and clients (Supabase, formatting, pure helpers).
+- Ensure hooks have a single home (`hooks/`).
+- Keep `lib/` for pure helpers/clients only.
 
 **Exit Criteria**
 - No React context/provider implementations live in `lib/`.
@@ -94,34 +151,31 @@ If you use different package managers/commands, adapt accordingly.
 
 ---
 
-## Phase 3 — Deduplicate “Product Card” Lineage (1–2 days)
+## Phase 5 — Domain Refactor: Sell (First Real “Deep Clean”)
 
-**Goal**: one canonical product card implementation; all imports converge.
+**Goal**: the sell flow is the biggest duplication hotspot; fix it end-to-end as a reference architecture.
 
-**Do (safe order)**
-1. Choose a canonical implementation location (recommended): `components/common/product-card/`.
-2. Keep temporary re-export shims at old import paths.
-3. Update barrel exports to point to canonical.
-4. Delete old variants only when there are zero references.
+**Do**
+- Define the sell domain surface area:
+  - `lib/sell/` for schemas, types, data mapping, validators
+  - `app/[locale]/(sell)/...` for route UI and route actions
+- Collapse duplicate sell schemas and pick the canonical implementation (do not delete the “clean” version just because it’s unused today).
+- Reduce “500-line field components” by splitting data-fetching + mapping from UI components.
 
 **Exit Criteria**
-- Exactly one product-card source-of-truth remains.
-- Gates pass.
+- Sell has one schema set, one type set, one UI pattern.
+- Gates + E2E pass.
 
 ---
 
-## Phase 4 — Co-locate Feature UI Under Routes (2–4 days)
+## Phase 6 — Cleanup (Delete + Dependency Prune, Now Safe)
 
-**Goal**: eliminate the flat `components/` “dumping ground” by moving route-specific UI to where it belongs.
+**Goal**: remove the leftovers once the canonical architecture exists.
 
-**Do (mapping guide)**
-- Account-only UI → `app/[locale]/(account)/**/_components/`
-- Admin-only UI → `app/[locale]/(admin)/**/_components/`
-- Business dashboard UI → `app/[locale]/(business)/**/_components/`
-- Sell flow UI → `app/[locale]/(sell)/**/_components/`
-- Checkout/chat route UI → their respective route group `_components/`
-
-**Rule**: only move components that are clearly owned by exactly one route group.
+**Do**
+- Delete only after verifying zero references.
+- Remove dependencies only after code deletion makes them unreferenced.
+- Use [production/02-CLEANUP.md](production/02-CLEANUP.md) as the execution checklist.
 
 **Exit Criteria**
 - `components/` root shrinks to shared-only.
@@ -129,30 +183,21 @@ If you use different package managers/commands, adapt accordingly.
 
 ---
 
-## Phase 5 — `lib/`, `types/`, `config/` Normalization (1–2 days, as needed)
+## Phase 7 — Normalization + Final Guardrails
 
-**Goal**: reduce “misc dumping” and make shared imports predictable.
+**Goal**: lock in the structure so it stays clean.
 
 **Do**
-- Group utilities by domain under `lib/` (auth, supabase, formatting, urls, etc.).
-- Remove duplicate helpers/configs that exist in multiple places.
-- Keep shared type definitions in `types/`.
+- Normalize `lib/` by domain folders.
+- Remove duplicate helpers/configs.
+- Tighten public exports.
+- Expand restricted-imports rules to prevent cross-domain coupling.
 
 **Exit Criteria**
 - No duplicate shared helpers/types remain.
 - Gates pass.
 
 ---
-
-## Phase 6 — Guardrails (0.5–1 day)
-
-**Goal**: prevent regressions after the refactor.
-
-**Do**
-- Add lint guardrails (e.g., restricted imports) to prevent:
-  - hooks imported from `components/ui`
-  - non-primitives being added to `components/ui`
-- Add a short contributor doc (“Where does this file go?”).
 
 **Exit Criteria**
 - Structure regressions become hard to introduce.
@@ -171,6 +216,6 @@ If you use different package managers/commands, adapt accordingly.
 
 - `components/ui` contains only primitives.
 - Hooks exist only in `hooks/`.
-- No duplicate core components (product-card, headers, etc.).
-- Route-specific UI is colocated under the owning route.
-- Typecheck/lint/build gates pass.
+- Route-owned UI is colocated; cross-route imports are blocked.
+- Providers live in `components/providers/`.
+- Typecheck/lint/build gates pass; E2E passes for major batches.

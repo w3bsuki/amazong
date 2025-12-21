@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import { CaretRight, TrendUp, Tag, Sparkle, GridFour } from "@phosphor-icons/react"
-import { ProductCard } from "@/components/ui/product-card"
+import { ProductCard } from "@/components/common/product-card"
 import { Link } from "@/i18n/routing"
 import { Skeleton } from "@/components/ui/skeleton"
 

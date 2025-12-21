@@ -1,9 +1,9 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { AccountWishlistStats } from "@/components/account-wishlist-stats"
-import { AccountWishlistGrid, type WishlistItem } from "@/components/account-wishlist-grid"
-import { AccountWishlistToolbar, type WishlistCategory } from "@/components/account-wishlist-toolbar"
+import { AccountWishlistStats } from "./_components/account-wishlist-stats"
+import { AccountWishlistGrid, type WishlistItem } from "./_components/account-wishlist-grid"
+import { AccountWishlistToolbar, type WishlistCategory } from "./_components/account-wishlist-toolbar"
 
 interface WishlistContentProps {
   initialItems: WishlistItem[]

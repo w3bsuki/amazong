@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { BusinessEmptyState } from "@/components/business/business-empty-state"
+import { BusinessEmptyState } from "../_components/business-empty-state"
 import { 
   IconUsers, 
   IconMail, 

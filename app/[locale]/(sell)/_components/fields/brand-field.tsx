@@ -3,7 +3,8 @@
 import { useCallback, memo } from "react";
 import { Controller } from "react-hook-form";
 import { Tag } from "lucide-react";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
+import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { BrandCombobox } from "../ui/brand-combobox";
 
@@ -49,32 +50,34 @@ export function BrandField({
         <Field data-invalid={fieldState.invalid} className={className}>
           {/* Section Header (non-compact mode) */}
           {!compact && (
-            <div className="flex items-center gap-3.5 mb-4">
-              <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
-                <Tag className="size-5 text-muted-foreground" />
-              </div>
-              <div>
-                <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                  {isBg ? "Марка" : "Brand"}
-                </FieldLabel>
-                <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                  {isBg 
-                    ? "Изберете марката на вашия продукт"
-                    : "Select your product's brand"}
-                </FieldDescription>
+            <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
+              <div className="flex items-center gap-3.5">
+                <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
+                  <Tag className="size-5 text-muted-foreground" weight="bold" />
+                </div>
+                <div>
+                  <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
+                    {isBg ? "Марка" : "Brand"}
+                  </FieldLabel>
+                  <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
+                    {isBg 
+                      ? "Изберете марката на вашия продукт"
+                      : "Select your product's brand"}
+                  </FieldDescription>
+                </div>
               </div>
             </div>
           )}
 
           {/* Compact Label */}
           {compact && (
-            <FieldLabel className="text-sm font-medium mb-2">
+            <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
               {isBg ? "Марка" : "Brand"}
             </FieldLabel>
           )}
 
           {/* Brand Combobox - Using extracted shadcn-compliant component */}
-          <FieldContent>
+          <FieldContent className={cn(!compact && "p-5")}>
             <BrandCombobox
               brands={brands}
               value={brandId}

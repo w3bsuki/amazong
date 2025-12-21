@@ -5,7 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { Camera, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
 
 import type { ProductImage } from "@/lib/sell-form-schema-v4";
 import { compressImage } from "@/lib/image-compression";
@@ -289,7 +289,7 @@ export function PhotosField({
             <FieldContent className="p-5">
               {/* Photo Grid */}
               {hasImages && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 mb-4">
+                <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-4">
                   {images.map((image, index) => (
                     <PhotoThumbnail
                       key={`${image.url}-${index}`}
@@ -310,13 +310,14 @@ export function PhotosField({
 
               {/* Upload Zone */}
               {images.length < maxPhotos && (
-                <UploadZone
+                  <UploadZone
                   isUploading={isUploading}
                   isDragActive={isDragActive}
                   getRootProps={getRootProps}
                   getInputProps={getInputProps}
                   currentCount={images.length}
                   maxCount={maxPhotos}
+                    locale={isBg ? "bg" : "en"}
                 />
               )}
 
@@ -355,7 +356,7 @@ export function PhotosField({
 
             {/* Photo Grid */}
             {hasImages && (
-              <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 mb-4">
+              <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-4">
                 {images.map((image, index) => (
                   <PhotoThumbnail
                     key={`${image.url}-${index}`}
@@ -383,6 +384,7 @@ export function PhotosField({
                 getInputProps={getInputProps}
                 currentCount={images.length}
                 maxCount={maxPhotos}
+                locale={isBg ? "bg" : "en"}
               />
             )}
 

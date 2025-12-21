@@ -17,7 +17,7 @@ import {
   Crown,
   Star
 } from "@phosphor-icons/react"
-import { MinimalHeader } from "@/components/minimal-header"
+import { MinimalHeader } from "@/components/layout/header/minimal-header"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import {
@@ -34,7 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import * as PricingCard from "@/components/ui/pricing-card"
+import * as PricingCard from "@/components/common/pricing-card"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { ProductCard } from "@/components/ui/product-card"
+import { ProductCard } from "@/components/common/product-card"
 import { cn } from "@/lib/utils"
 import { 
   Heart, 

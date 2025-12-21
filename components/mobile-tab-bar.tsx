@@ -7,7 +7,7 @@ import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile-menu-sheet"
-import { useMessages } from "@/lib/message-context"
+import { useMessages } from "@/components/providers/message-context"
 
 export function MobileTabBar() {
   const [mounted, setMounted] = useState(false)

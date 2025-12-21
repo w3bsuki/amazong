@@ -3,7 +3,6 @@
 // Modular dropdown components
 import {
   AccountDropdown,
-  CartDropdown,
   OrdersDropdown,
   SellingDropdown,
   LocationDropdown,
@@ -17,8 +16,9 @@ import { CategorySubheader } from "@/components/navigation/category-subheader"
 // Other components
 import { SidebarMenu } from "@/components/sidebar-menu"
 import { MobileSearchOverlay } from "@/components/mobile-search-overlay"
-import { MobileCartDropdown } from "@/components/mobile-cart-dropdown"
-import { MobileWishlistButton } from "@/components/mobile-wishlist-button"
+import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
+import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
+import { MobileWishlistButton } from "@/components/common/wishlist/mobile-wishlist-button"
 import { DesktopSearch } from "@/components/desktop-search"
 import { MagnifyingGlass, Camera, CaretLeft } from "@phosphor-icons/react"
 
@@ -106,16 +106,16 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
         <div className="px-3 pb-2">
           <button
             onClick={() => setIsMobileSearchOpen(true)}
-            className="w-full flex items-center gap-2 h-10 px-3 rounded-full bg-muted border border-border text-muted-foreground text-sm text-left active:bg-muted/80 transition-colors duration-150"
+            className="w-full flex items-center gap-2 h-10 px-3 rounded-full bg-muted border border-border text-muted-foreground text-sm text-left active:bg-accent transition-colors duration-150"
             aria-label={searchPlaceholder}
             aria-haspopup="dialog"
             aria-expanded={isMobileSearchOpen}
           >
-            <MagnifyingGlass size={18} weight="regular" className="text-muted-foreground shrink-0" />
+            <MagnifyingGlass size={18} weight="bold" className="text-muted-foreground shrink-0" />
             <span className="flex-1 truncate">{searchPlaceholder}</span>
             <div className="flex items-center gap-1 shrink-0">
               <div className="w-px h-5 bg-border" />
-              <Camera size={18} weight="regular" className="text-muted-foreground ml-1" />
+              <Camera size={18} weight="regular" className="text-muted-foreground/70 ml-1" />
             </div>
           </button>
         </div>

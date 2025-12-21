@@ -1,11 +1,11 @@
-import { AdminSidebar } from "@/components/admin-sidebar"
-import { DashboardHeader } from "@/components/dashboard-header"
+import { AdminSidebar } from "./_components/admin-sidebar"
+import { DashboardHeader } from "@/components/layout/header/dashboard-header"
 import { requireAdmin } from "@/lib/auth/admin"
 import { connection } from "next/server"
 import {
   SidebarInset,
   SidebarProvider,
-} from "@/components/ui/sidebar"
+} from "@/components/layout/sidebar/sidebar"
 
 export default async function AdminLayout({
   children,

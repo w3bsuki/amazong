@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect, notFound } from "next/navigation"
 import { connection } from "next/server"
-import { OrderDetailContent } from "./order-detail-content"
+import { OrderDetailContent } from "./_components/order-detail-content"
 import type { OrderItemStatus } from "@/lib/order-status"
 
 interface OrderDetailPageProps {

@@ -6,20 +6,20 @@
 
 ---
 
-## ⚠️ IMPORTANT DISCLAIMER
+## ⚠️ IMPORTANT DISCLAIMER (Updated)
 
-**This phase is about NECESSARY refactoring only.** 
+Refactor is required in this repo because structure and ownership boundaries are actively causing duplication and over-engineering.
 
 Do NOT:
-- Rewrite working code for "cleanliness"
-- Add new abstractions
-- Change folder structures that work
-- Optimize prematurely
+- Do random rewrites without a goal
+- Introduce new abstractions “because it feels cleaner”
+- Mix refactor + feature work in the same batch
 
 DO:
-- Fix circular dependencies (breaks builds)
-- Consolidate duplicate configs (confusion risk)
-- Standardize what's inconsistent (maintenance cost)
+- Follow [STRUCTURE.md](../STRUCTURE.md) as the canonical plan
+- Add guardrails before big moves
+- Keep compatibility re-exports while imports converge
+- Gate every batch with typecheck/build (and E2E for risky areas)
 
 ---
 
@@ -214,16 +214,13 @@ components/
 ```
 
 ### Assessment
-Root `components/` folder is crowded with ~70 files. However:
+Root `components/` folder is crowded and actively driving duplication and “local ui folders”. Imports working is not the same as maintainable.
 
-1. **Not blocking production** - All imports work
-2. **Risky to reorganize now** - Many import paths would break
-3. **Post-launch task** - Organize into feature folders later
+**Decision (updated):** Reorganize now, but only via the gated phases in [STRUCTURE.md](STRUCTURE.md) and with compatibility re-exports to avoid mass breakage.
 
-**Decision:** KEEP current structure. Reorganize post-launch if needed.
-
-- [x] Components organization is acceptable ✅
-- [ ] POST-LAUNCH: Consider grouping by feature
+- [ ] Execute Phase 1 deletions (verified dead code) first
+- [ ] Execute Phase 3 `components/ui` boundary cleanup next
+- [ ] Move route-owned UI under route `_components/` in small batches
 
 ---
 

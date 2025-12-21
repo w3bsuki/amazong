@@ -1,6 +1,6 @@
 import { requireDashboardAccess, getBusinessOrders } from "@/lib/auth/business"
 import { connection } from "next/server"
-import { OrdersTable } from "@/components/business/orders-table"
+import { OrdersTable } from "../_components/orders-table"
 
 export default async function BusinessOrdersPage() {
   await connection()

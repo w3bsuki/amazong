@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
 import { cn } from "@/lib/utils";
 import { formatOptions } from "@/lib/sell-form-schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
@@ -159,12 +159,12 @@ function QuantityStepper({
   max?: number;
 }) {
   return (
-    <div className="flex items-center gap-form-sm">
+    <div className="flex items-center gap-3">
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
-        className="size-touch-lg rounded-2xl border-2 border-border flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors active:scale-95 touch-manipulation"
+        className="size-12 rounded-xl border border-border flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors active:scale-95 touch-manipulation"
         aria-label="Decrease quantity"
       >
         <Minus className="size-5" />
@@ -178,7 +178,7 @@ function QuantityStepper({
             onChange(Math.max(min, Math.min(max, num)));
           }
         }}
-        className="w-20 h-touch-lg text-center text-lg font-semibold rounded-2xl"
+        className="w-20 h-12 text-center text-lg font-bold rounded-xl border-border"
         min={min}
         max={max}
       />
@@ -186,7 +186,7 @@ function QuantityStepper({
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
-        className="size-touch-lg rounded-2xl border-2 border-border flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors active:scale-95 touch-manipulation"
+        className="size-12 rounded-xl border border-border flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors active:scale-95 touch-manipulation"
         aria-label="Increase quantity"
       >
         <Plus className="size-5" />
@@ -235,9 +235,9 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
   const hasError = !!errors.price;
 
   const content = (
-    <FieldContent className={cn("space-y-section", !compact && "p-section")}>
+    <FieldContent className={cn("space-y-6", !compact && "p-6")}>
           {/* Format Selection */}
-          <div className="grid grid-cols-2 gap-form-sm">
+          <div className="grid grid-cols-2 gap-3">
             {formatOptions.map((option) => {
               const isSelected = format === option.value;
               const Icon = option.value === "fixed" ? Tag : Gavel;
@@ -249,21 +249,15 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
                   type="button"
                   onClick={() => setValue("format", option.value, { shouldValidate: true })}
                   className={cn(
-                    "flex items-center gap-form-sm p-form rounded-2xl border-2 transition-all",
-                    "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "flex items-center justify-center gap-2 h-12 rounded-xl border transition-all",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     isSelected
-                      ? "border-primary bg-primary/5"
-                      : "border-border bg-background hover:bg-muted/30"
+                      ? "border-primary bg-primary/5 text-primary font-bold shadow-xs"
+                      : "border-border bg-background hover:border-primary/30 text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <Icon className={cn(
-                    "size-5",
-                    isSelected ? "text-primary" : "text-muted-foreground"
-                  )} weight="bold" />
-                  <span className={cn(
-                    "text-sm font-semibold",
-                    isSelected ? "text-primary" : "text-foreground"
-                  )}>
+                  <Icon className="size-5" weight={isSelected ? "fill" : "bold"} />
+                  <span className="text-sm">
                     {label}
                   </span>
                 </button>
@@ -276,13 +270,13 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
             name="price"
             control={control}
             render={({ field, fieldState }) => (
-              <div className="space-y-form-sm">
-                <Label htmlFor="sell-form-price" className="text-sm font-medium">
+              <div className="space-y-2">
+                <Label htmlFor="sell-form-price" className="text-sm font-semibold">
                   {isBg ? "Цена" : "Price"} *
                 </Label>
-                <div className="flex gap-form-sm">
+                <div className="flex gap-3">
                   <div className="relative flex-1">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
                       {CURRENCY_SYMBOLS[currency] || currency}
                     </span>
                     <Input
@@ -292,7 +286,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
                       inputMode="decimal"
                       placeholder="0.00"
                       className={cn(
-                        "pl-10 h-touch-lg text-lg font-semibold",
+                        "pl-12 h-12 text-lg font-bold rounded-xl border-border",
                         fieldState.invalid && "border-destructive"
                       )}
                     />
@@ -301,12 +295,12 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
                     value={currency} 
                     onValueChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
                   >
-                    <SelectTrigger className="w-28 h-touch-lg">
+                    <SelectTrigger className="w-28 h-12 rounded-xl font-bold border-border">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {CURRENCIES.map((c) => (
-                        <SelectItem key={c.value} value={c.value}>
+                        <SelectItem key={c.value} value={c.value} className="font-medium">
                           {c.label}
                         </SelectItem>
                       ))}
@@ -329,12 +323,12 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
           />
 
           {/* Compare at Price (Optional) */}
-          <div className="space-y-form-sm">
-            <Label htmlFor="sell-form-compare-price" className="text-sm font-medium">
+          <div className="space-y-2">
+            <Label htmlFor="sell-form-compare-price" className="text-sm font-semibold">
               {isBg ? "Стара цена (по избор)" : "Compare at Price (optional)"}
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
                 {CURRENCY_SYMBOLS[currency] || currency}
               </span>
               <Input
@@ -344,10 +338,10 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
                 placeholder="0.00"
                 value={compareAtPrice || ""}
                 onChange={(e) => setValue("compareAtPrice", e.target.value)}
-                className="pl-10 h-touch"
+                className="pl-12 h-12 rounded-xl border-border"
               />
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground font-medium">
               {isBg 
                 ? "Ако продуктът е на промоция, въведете оригиналната цена"
                 : "If the item is on sale, enter the original price"}
@@ -355,8 +349,8 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
           </div>
 
           {/* Quantity */}
-          <div className="space-y-form-sm">
-            <Label className="text-sm font-medium">
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold">
               {isBg ? "Количество" : "Quantity"}
             </Label>
             <QuantityStepper
@@ -366,14 +360,16 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
           </div>
 
           {/* Accept Offers Toggle */}
-          <div className="flex items-center justify-between p-form rounded-2xl border border-border bg-muted/20">
-            <div className="flex items-center gap-form-sm">
-              <Handshake className="size-5 text-muted-foreground" weight="bold" />
+          <div className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/10">
+            <div className="flex items-center gap-3">
+              <div className="size-9 rounded-full bg-background border border-border flex items-center justify-center shrink-0">
+                <Handshake className="size-4.5 text-muted-foreground" weight="bold" />
+              </div>
               <div>
-                <span className="text-sm font-medium">
+                <span className="text-sm font-bold">
                   {isBg ? "Приемане на оферти" : "Accept Offers"}
                 </span>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-[11px] text-muted-foreground font-medium">
                   {isBg 
                     ? "Позволете на купувачите да предлагат цена"
                     : "Allow buyers to make price offers"}

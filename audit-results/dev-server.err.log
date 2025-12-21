@@ -1,7 +1,0 @@
-Route /[locale]/demo/cards is rendering with server caches disabled. For this navigation, Component Metadata in React DevTools will not accurately reflect what is statically prerenderable and runtime prefetchable. See more info here: https://nextjs.org/docs/messages/cache-bypass-in-dev
- ⨯ upstream image response failed for https://images.unsplash.com/photo-1695048132800-7a03d53f1b3e?w=1200&q=80 404
- ⨯ upstream image response failed for https://images.unsplash.com/photo-1695048132800-7a03d53f1b3e?w=1200&q=80 404
- ⨯ upstream image response failed for https://images.unsplash.com/photo-1695048132800-7a03d53f1b3e?w=1200&q=80 404
-Route /[locale]/demo is rendering with server caches disabled. For this navigation, Component Metadata in React DevTools will not accurately reflect what is statically prerenderable and runtime prefetchable. See more info here: https://nextjs.org/docs/messages/cache-bypass-in-dev
- ⨯ upstream image response failed for https://images.unsplash.com/photo-1695048132800-7a03d53f1b3e?w=1200&q=80 404
- ⨯ upstream image response failed for https://images.unsplash.com/photo-1695048132800-7a03d53f1b3e?w=1200&q=80 404

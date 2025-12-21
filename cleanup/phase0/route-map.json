@@ -1,0 +1,1114 @@
+{
+  "generatedAt": "2025-12-21T14:44:27.396Z",
+  "appLocaleDir": "app/[locale]",
+  "groups": {
+    "account": {
+      "dir": "app/[locale]/(account)",
+      "directories": {
+        "app/[locale]/(account)": {
+          "pages": [],
+          "routes": [],
+          "layouts": [
+            "app/[locale]/(account)/layout.tsx"
+          ],
+          "other": [
+            "app/[locale]/(account)/account-layout-content.tsx"
+          ]
+        },
+        "app/[locale]/(account)/@modal": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/@modal/default.tsx"
+          ]
+        },
+        "app/[locale]/(account)/@modal/(.)account/plans/upgrade": {
+          "pages": [
+            "app/[locale]/(account)/@modal/(.)account/plans/upgrade/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(account)/account": {
+          "pages": [
+            "app/[locale]/(account)/account/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/error.tsx",
+            "app/[locale]/(account)/account/loading.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/_components/account-addresses-grid.tsx",
+            "app/[locale]/(account)/account/_components/account-addresses-stats.tsx",
+            "app/[locale]/(account)/account/_components/account-badges.tsx",
+            "app/[locale]/(account)/account/_components/account-chart.tsx",
+            "app/[locale]/(account)/account/_components/account-header.tsx",
+            "app/[locale]/(account)/account/_components/account-hero-card.tsx",
+            "app/[locale]/(account)/account/_components/account-orders-grid.tsx",
+            "app/[locale]/(account)/account/_components/account-orders-stats.tsx",
+            "app/[locale]/(account)/account/_components/account-orders-toolbar.tsx",
+            "app/[locale]/(account)/account/_components/account-recent-activity.tsx",
+            "app/[locale]/(account)/account/_components/account-sidebar.tsx",
+            "app/[locale]/(account)/account/_components/account-stats-cards.tsx",
+            "app/[locale]/(account)/account/_components/account-tab-bar.tsx",
+            "app/[locale]/(account)/account/_components/account-wishlist-grid.tsx",
+            "app/[locale]/(account)/account/_components/account-wishlist-stats.tsx",
+            "app/[locale]/(account)/account/_components/account-wishlist-toolbar.tsx",
+            "app/[locale]/(account)/account/_components/index.ts"
+          ]
+        },
+        "app/[locale]/(account)/account/addresses": {
+          "pages": [
+            "app/[locale]/(account)/account/addresses/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/addresses/addresses-content.tsx",
+            "app/[locale]/(account)/account/addresses/loading.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/billing": {
+          "pages": [
+            "app/[locale]/(account)/account/billing/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/billing/billing-content.tsx",
+            "app/[locale]/(account)/account/billing/error.tsx",
+            "app/[locale]/(account)/account/billing/loading.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/following": {
+          "pages": [
+            "app/[locale]/(account)/account/following/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/following/following-content.tsx",
+            "app/[locale]/(account)/account/following/loading.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/orders": {
+          "pages": [
+            "app/[locale]/(account)/account/orders/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/orders/loading.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/orders/[id]": {
+          "pages": [
+            "app/[locale]/(account)/account/orders/[id]/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/orders/[id]/order-detail-content.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/payments": {
+          "pages": [
+            "app/[locale]/(account)/account/payments/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/payments/loading.tsx",
+            "app/[locale]/(account)/account/payments/payments-content.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/plans": {
+          "pages": [
+            "app/[locale]/(account)/account/plans/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/plans/loading.tsx",
+            "app/[locale]/(account)/account/plans/plans-content.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/plans/upgrade": {
+          "pages": [
+            "app/[locale]/(account)/account/plans/upgrade/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/plans/upgrade/upgrade-content.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/profile": {
+          "pages": [
+            "app/[locale]/(account)/account/profile/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/profile/loading.tsx",
+            "app/[locale]/(account)/account/profile/profile-content.tsx",
+            "app/[locale]/(account)/account/profile/public-profile-editor.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/sales": {
+          "pages": [
+            "app/[locale]/(account)/account/sales/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/sales/loading.tsx",
+            "app/[locale]/(account)/account/sales/sales-chart.tsx",
+            "app/[locale]/(account)/account/sales/sales-stats.tsx",
+            "app/[locale]/(account)/account/sales/sales-table.tsx",
+            "app/[locale]/(account)/account/sales/types.ts"
+          ]
+        },
+        "app/[locale]/(account)/account/security": {
+          "pages": [
+            "app/[locale]/(account)/account/security/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/security/loading.tsx",
+            "app/[locale]/(account)/account/security/security-content.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/selling": {
+          "pages": [
+            "app/[locale]/(account)/account/selling/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/selling/loading.tsx",
+            "app/[locale]/(account)/account/selling/selling-products-list.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/selling/[id]/edit": {
+          "pages": [
+            "app/[locale]/(account)/account/selling/[id]/edit/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(account)/account/selling/edit": {
+          "pages": [
+            "app/[locale]/(account)/account/selling/edit/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/selling/edit/edit-product-client.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/wishlist": {
+          "pages": [
+            "app/[locale]/(account)/account/wishlist/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/wishlist/loading.tsx",
+            "app/[locale]/(account)/account/wishlist/wishlist-content.tsx"
+          ]
+        }
+      }
+    },
+    "admin": {
+      "dir": "app/[locale]/(admin)",
+      "directories": {
+        "app/[locale]/(admin)/admin": {
+          "pages": [
+            "app/[locale]/(admin)/admin/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [
+            "app/[locale]/(admin)/admin/layout.tsx"
+          ],
+          "other": [
+            "app/[locale]/(admin)/admin/loading.tsx"
+          ]
+        },
+        "app/[locale]/(admin)/admin/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(admin)/admin/_components/admin-recent-activity.tsx",
+            "app/[locale]/(admin)/admin/_components/admin-sidebar.tsx",
+            "app/[locale]/(admin)/admin/_components/admin-stats-cards.tsx",
+            "app/[locale]/(admin)/admin/_components/index.ts"
+          ]
+        },
+        "app/[locale]/(admin)/admin/orders": {
+          "pages": [
+            "app/[locale]/(admin)/admin/orders/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(admin)/admin/orders/loading.tsx"
+          ]
+        },
+        "app/[locale]/(admin)/admin/products": {
+          "pages": [
+            "app/[locale]/(admin)/admin/products/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(admin)/admin/products/loading.tsx"
+          ]
+        },
+        "app/[locale]/(admin)/admin/sellers": {
+          "pages": [
+            "app/[locale]/(admin)/admin/sellers/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(admin)/admin/sellers/loading.tsx"
+          ]
+        },
+        "app/[locale]/(admin)/admin/users": {
+          "pages": [
+            "app/[locale]/(admin)/admin/users/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(admin)/admin/users/loading.tsx"
+          ]
+        }
+      }
+    },
+    "auth": {
+      "dir": "app/[locale]/(auth)",
+      "directories": {
+        "app/[locale]/(auth)": {
+          "pages": [],
+          "routes": [],
+          "layouts": [
+            "app/[locale]/(auth)/layout.tsx"
+          ],
+          "other": []
+        },
+        "app/[locale]/(auth)/auth": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(auth)/auth/loading.tsx"
+          ]
+        },
+        "app/[locale]/(auth)/auth/error": {
+          "pages": [
+            "app/[locale]/(auth)/auth/error/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(auth)/auth/forgot-password": {
+          "pages": [
+            "app/[locale]/(auth)/auth/forgot-password/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(auth)/auth/login": {
+          "pages": [
+            "app/[locale]/(auth)/auth/login/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(auth)/auth/reset-password": {
+          "pages": [
+            "app/[locale]/(auth)/auth/reset-password/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(auth)/auth/sign-up": {
+          "pages": [
+            "app/[locale]/(auth)/auth/sign-up/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(auth)/auth/sign-up-success": {
+          "pages": [
+            "app/[locale]/(auth)/auth/sign-up-success/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(auth)/auth/welcome": {
+          "pages": [
+            "app/[locale]/(auth)/auth/welcome/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        }
+      }
+    },
+    "business": {
+      "dir": "app/[locale]/(business)",
+      "directories": {
+        "app/[locale]/(business)/dashboard": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [
+            "app/[locale]/(business)/dashboard/layout.tsx"
+          ],
+          "other": [
+            "app/[locale]/(business)/dashboard/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/_components/business-activity-feed.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-command-palette.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-date-range-picker.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-empty-state.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-header.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-live-activity.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-notifications.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-page-header.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-performance-score.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-quick-actions.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-recent-activity.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-setup-guide.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-sidebar.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-stats-cards.tsx",
+            "app/[locale]/(business)/dashboard/_components/business-task-cards.tsx",
+            "app/[locale]/(business)/dashboard/_components/index.ts",
+            "app/[locale]/(business)/dashboard/_components/order-detail-view.tsx",
+            "app/[locale]/(business)/dashboard/_components/orders-table.tsx",
+            "app/[locale]/(business)/dashboard/_components/product-form-modal.tsx",
+            "app/[locale]/(business)/dashboard/_components/products-table.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/accounting": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/accounting/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/accounting/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/analytics": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/analytics/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/analytics/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/customers": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/customers/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/customers/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/discounts": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/discounts/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/discounts/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/inventory": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/inventory/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/inventory/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/marketing": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/marketing/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/marketing/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/orders": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/orders/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/orders/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/orders/[orderId]": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/orders/[orderId]/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(business)/dashboard/products": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/products/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/products/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/settings": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/settings/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/settings/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/upgrade": {
+          "pages": [
+            "app/[locale]/(business)/dashboard/upgrade/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/upgrade/loading.tsx"
+          ]
+        }
+      }
+    },
+    "chat": {
+      "dir": "app/[locale]/(chat)",
+      "directories": {
+        "app/[locale]/(chat)": {
+          "pages": [],
+          "routes": [],
+          "layouts": [
+            "app/[locale]/(chat)/layout.tsx"
+          ],
+          "other": []
+        },
+        "app/[locale]/(chat)/chat": {
+          "pages": [
+            "app/[locale]/(chat)/chat/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(chat)/chat/loading.tsx",
+            "app/[locale]/(chat)/chat/messages-client.tsx"
+          ]
+        }
+      }
+    },
+    "checkout": {
+      "dir": "app/[locale]/(checkout)",
+      "directories": {
+        "app/[locale]/(checkout)": {
+          "pages": [],
+          "routes": [],
+          "layouts": [
+            "app/[locale]/(checkout)/layout.tsx"
+          ],
+          "other": []
+        },
+        "app/[locale]/(checkout)/checkout": {
+          "pages": [
+            "app/[locale]/(checkout)/checkout/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(checkout)/checkout/loading.tsx"
+          ]
+        },
+        "app/[locale]/(checkout)/checkout/success": {
+          "pages": [
+            "app/[locale]/(checkout)/checkout/success/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        }
+      }
+    },
+    "main": {
+      "dir": "app/[locale]/(main)",
+      "directories": {
+        "app/[locale]/(main)": {
+          "pages": [
+            "app/[locale]/(main)/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [
+            "app/[locale]/(main)/layout.tsx"
+          ],
+          "other": []
+        },
+        "app/[locale]/(main)/about": {
+          "pages": [
+            "app/[locale]/(main)/about/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/about/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/cart": {
+          "pages": [
+            "app/[locale]/(main)/cart/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/cart/error.tsx",
+            "app/[locale]/(main)/cart/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/categories": {
+          "pages": [
+            "app/[locale]/(main)/categories/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/categories/error.tsx",
+            "app/[locale]/(main)/categories/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/categories/[slug]": {
+          "pages": [
+            "app/[locale]/(main)/categories/[slug]/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/categories/[slug]/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/component-audit": {
+          "pages": [
+            "app/[locale]/(main)/component-audit/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/contact": {
+          "pages": [
+            "app/[locale]/(main)/contact/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/contact/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/customer-service": {
+          "pages": [
+            "app/[locale]/(main)/customer-service/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/customer-service/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/demo": {
+          "pages": [
+            "app/[locale]/(main)/demo/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/cards": {
+          "pages": [
+            "app/[locale]/(main)/demo/cards/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/cards/gpt": {
+          "pages": [
+            "app/[locale]/(main)/demo/cards/gpt/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/cards/marketplace": {
+          "pages": [
+            "app/[locale]/(main)/demo/cards/marketplace/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/cards/merged": {
+          "pages": [
+            "app/[locale]/(main)/demo/cards/merged/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/cards/v2": {
+          "pages": [
+            "app/[locale]/(main)/demo/cards/v2/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/gemini": {
+          "pages": [
+            "app/[locale]/(main)/demo/gemini/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/gpt": {
+          "pages": [
+            "app/[locale]/(main)/demo/gpt/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/landing": {
+          "pages": [
+            "app/[locale]/(main)/demo/landing/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/landing-gemini": {
+          "pages": [
+            "app/[locale]/(main)/demo/landing-gemini/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/landing-gemini-mobile": {
+          "pages": [
+            "app/[locale]/(main)/demo/landing-gemini-mobile/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/landing-gpt": {
+          "pages": [
+            "app/[locale]/(main)/demo/landing-gpt/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/landing-mobile": {
+          "pages": [
+            "app/[locale]/(main)/demo/landing-mobile/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/landing1": {
+          "pages": [
+            "app/[locale]/(main)/demo/landing1/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/demo/plans": {
+          "pages": [
+            "app/[locale]/(main)/demo/plans/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/gift-cards": {
+          "pages": [
+            "app/[locale]/(main)/gift-cards/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/gift-cards/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/help": {
+          "pages": [
+            "app/[locale]/(main)/help/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/help/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/members": {
+          "pages": [
+            "app/[locale]/(main)/members/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/members/loading.tsx",
+            "app/[locale]/(main)/members/members-client.tsx"
+          ]
+        },
+        "app/[locale]/(main)/privacy": {
+          "pages": [
+            "app/[locale]/(main)/privacy/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/privacy/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/product/[...slug]": {
+          "pages": [
+            "app/[locale]/(main)/product/[...slug]/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/product/[...slug]/error.tsx",
+            "app/[locale]/(main)/product/[...slug]/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/product/[id]": {
+          "pages": [
+            "app/[locale]/(main)/product/[id]/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(main)/registry": {
+          "pages": [
+            "app/[locale]/(main)/registry/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/registry/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/returns": {
+          "pages": [
+            "app/[locale]/(main)/returns/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/returns/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/search": {
+          "pages": [
+            "app/[locale]/(main)/search/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/search/error.tsx",
+            "app/[locale]/(main)/search/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/seller/dashboard": {
+          "pages": [
+            "app/[locale]/(main)/seller/dashboard/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/seller/dashboard/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/sellers": {
+          "pages": [
+            "app/[locale]/(main)/sellers/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/sellers/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/terms": {
+          "pages": [
+            "app/[locale]/(main)/terms/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/terms/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/todays-deals": {
+          "pages": [
+            "app/[locale]/(main)/todays-deals/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/todays-deals/error.tsx",
+            "app/[locale]/(main)/todays-deals/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/wishlist": {
+          "pages": [
+            "app/[locale]/(main)/wishlist/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/wishlist/error.tsx",
+            "app/[locale]/(main)/wishlist/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/wishlist/shared/[token]": {
+          "pages": [
+            "app/[locale]/(main)/wishlist/shared/[token]/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": []
+        }
+      }
+    },
+    "plans": {
+      "dir": "app/[locale]/(plans)",
+      "directories": {
+        "app/[locale]/(plans)": {
+          "pages": [],
+          "routes": [],
+          "layouts": [
+            "app/[locale]/(plans)/layout.tsx"
+          ],
+          "other": []
+        },
+        "app/[locale]/(plans)/plans": {
+          "pages": [
+            "app/[locale]/(plans)/plans/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(plans)/plans/loading.tsx"
+          ]
+        }
+      }
+    },
+    "sell": {
+      "dir": "app/[locale]/(sell)",
+      "directories": {
+        "app/[locale]/(sell)": {
+          "pages": [],
+          "routes": [],
+          "layouts": [
+            "app/[locale]/(sell)/layout.tsx"
+          ],
+          "other": []
+        },
+        "app/[locale]/(sell)/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/_components/index.ts",
+            "app/[locale]/(sell)/_components/sell-form-provider.tsx",
+            "app/[locale]/(sell)/_components/sell-form-unified.tsx",
+            "app/[locale]/(sell)/_components/sell-header-v3.tsx",
+            "app/[locale]/(sell)/_components/sell-header.tsx",
+            "app/[locale]/(sell)/_components/seller-onboarding-wizard.tsx",
+            "app/[locale]/(sell)/_components/sign-in-prompt.tsx",
+            "app/[locale]/(sell)/_components/types.ts"
+          ]
+        },
+        "app/[locale]/(sell)/_components/ai": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/_components/ai/ai-listing-assistant.tsx"
+          ]
+        },
+        "app/[locale]/(sell)/_components/fields": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/_components/fields/attributes-field.tsx",
+            "app/[locale]/(sell)/_components/fields/brand-field.tsx",
+            "app/[locale]/(sell)/_components/fields/category-field.tsx",
+            "app/[locale]/(sell)/_components/fields/condition-field.tsx",
+            "app/[locale]/(sell)/_components/fields/description-field.tsx",
+            "app/[locale]/(sell)/_components/fields/index.ts",
+            "app/[locale]/(sell)/_components/fields/photos-field.tsx",
+            "app/[locale]/(sell)/_components/fields/pricing-field.tsx",
+            "app/[locale]/(sell)/_components/fields/review-field.tsx",
+            "app/[locale]/(sell)/_components/fields/shipping-field.tsx",
+            "app/[locale]/(sell)/_components/fields/title-field.tsx"
+          ]
+        },
+        "app/[locale]/(sell)/_components/layouts": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/_components/layouts/desktop-layout.tsx",
+            "app/[locale]/(sell)/_components/layouts/index.ts",
+            "app/[locale]/(sell)/_components/layouts/mobile-layout.tsx",
+            "app/[locale]/(sell)/_components/layouts/stepper-wrapper.tsx"
+          ]
+        },
+        "app/[locale]/(sell)/_components/ui": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/_components/ui/boolean-drawer.tsx",
+            "app/[locale]/(sell)/_components/ui/brand-combobox.tsx",
+            "app/[locale]/(sell)/_components/ui/brand-picker.tsx",
+            "app/[locale]/(sell)/_components/ui/checklist-sidebar.tsx",
+            "app/[locale]/(sell)/_components/ui/condition-selector.tsx",
+            "app/[locale]/(sell)/_components/ui/drawer-select.tsx",
+            "app/[locale]/(sell)/_components/ui/field-row.tsx",
+            "app/[locale]/(sell)/_components/ui/image-preview-modal.tsx",
+            "app/[locale]/(sell)/_components/ui/index.ts",
+            "app/[locale]/(sell)/_components/ui/mobile-footer.tsx",
+            "app/[locale]/(sell)/_components/ui/multi-select-drawer.tsx",
+            "app/[locale]/(sell)/_components/ui/photo-thumbnail.tsx",
+            "app/[locale]/(sell)/_components/ui/price-suggestion.tsx",
+            "app/[locale]/(sell)/_components/ui/progress-header.tsx",
+            "app/[locale]/(sell)/_components/ui/quantity-stepper.tsx",
+            "app/[locale]/(sell)/_components/ui/select-drawer.tsx",
+            "app/[locale]/(sell)/_components/ui/sell-error-boundary.tsx",
+            "app/[locale]/(sell)/_components/ui/sell-section-skeleton.tsx",
+            "app/[locale]/(sell)/_components/ui/shipping-region-card.tsx",
+            "app/[locale]/(sell)/_components/ui/smart-category-picker.tsx",
+            "app/[locale]/(sell)/_components/ui/stepper-header.tsx",
+            "app/[locale]/(sell)/_components/ui/stepper-navigation.tsx",
+            "app/[locale]/(sell)/_components/ui/text-input-drawer.tsx",
+            "app/[locale]/(sell)/_components/ui/upload-zone.tsx"
+          ]
+        },
+        "app/[locale]/(sell)/_components/ui/category-modal": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/_components/ui/category-modal/index.tsx"
+          ]
+        },
+        "app/[locale]/(sell)/_components/ui/category-picker": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/_components/ui/category-picker/category-breadcrumb.tsx",
+            "app/[locale]/(sell)/_components/ui/category-picker/category-option.tsx",
+            "app/[locale]/(sell)/_components/ui/category-picker/category-search.tsx",
+            "app/[locale]/(sell)/_components/ui/category-picker/index.tsx"
+          ]
+        },
+        "app/[locale]/(sell)/sell": {
+          "pages": [
+            "app/[locale]/(sell)/sell/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/sell/client.tsx",
+            "app/[locale]/(sell)/sell/loading.tsx"
+          ]
+        },
+        "app/[locale]/(sell)/sell/orders": {
+          "pages": [
+            "app/[locale]/(sell)/sell/orders/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/sell/orders/client.tsx",
+            "app/[locale]/(sell)/sell/orders/loading.tsx"
+          ]
+        }
+      }
+    }
+  },
+  "root": {
+    "specialFiles": [
+      "error.tsx",
+      "layout.tsx",
+      "loading.tsx",
+      "not-found.tsx"
+    ],
+    "dynamicSegments": [
+      "[username]"
+    ]
+  }
+}

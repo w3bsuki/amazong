@@ -1,5 +1,5 @@
-import { ProductCard, type ProductCardProps } from "@/components/ui/product-card"
-import { PageContainer } from "@/components/ui/page-container"
+import { ProductCard, type ProductCardProps } from "@/components/common/product-card"
+import { PageContainer } from "@/components/common/page-container"
 import { cn } from "@/lib/utils"
 
 type CardRecipe = {

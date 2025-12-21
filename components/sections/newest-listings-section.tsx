@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState, useRef, useCallback } from "react"
-import { ProductCard } from "@/components/ui/product-card"
+import { ProductCard } from "@/components/common/product-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLocale } from "next-intl"
 import type { UIProduct } from "@/lib/data/products"

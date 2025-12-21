@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "validate:skills": "node scripts/validate-agent-skills.mjs",
     "build": "next build",
     "dev": "next dev --turbopack",
     "lint": "eslint .",

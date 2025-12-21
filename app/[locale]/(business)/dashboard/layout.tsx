@@ -1,5 +1,5 @@
-import { BusinessSidebar } from "@/components/business/business-sidebar"
-import { BusinessHeader } from "@/components/business/business-header"
+import { BusinessSidebar } from "./_components/business-sidebar"
+import { BusinessHeader } from "./_components/business-header"
 import { 
   requireBusinessSeller, 
   getPendingTasksCount, 
@@ -10,7 +10,7 @@ import { connection } from "next/server"
 import {
   SidebarInset,
   SidebarProvider,
-} from "@/components/ui/sidebar"
+} from "@/components/layout/sidebar/sidebar"
 
 export default async function BusinessDashboardLayout({
   children,

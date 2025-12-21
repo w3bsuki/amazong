@@ -3,8 +3,8 @@
 import { useState, useEffect, lazy, Suspense } from "react"
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
-import { MessageProvider, useMessages } from "@/lib/message-context"
-import { ConversationList } from "@/components/conversation-list"
+import { MessageProvider, useMessages } from "@/components/providers/message-context"
+import { ConversationList } from "./_components/conversation-list"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { IconPencilPlus, IconSearch, IconArrowLeft, IconInbox, IconMail, IconShoppingCart, IconBuildingStore } from "@tabler/icons-react"
@@ -15,7 +15,9 @@ import { Link } from "@/i18n/routing"
 type MessageFilter = "all" | "unread" | "buying" | "selling"
 
 // Dynamic import for ChatInterface - heavy component loaded on interaction
-const ChatInterface = lazy(() => import("@/components/chat-interface").then(mod => ({ default: mod.ChatInterface })))
+const ChatInterface = lazy(() =>
+  import("./_components/chat-interface").then((mod) => ({ default: mod.ChatInterface }))
+)
 
 // Loading skeleton for ChatInterface - Instagram style
 function ChatInterfaceSkeleton() {

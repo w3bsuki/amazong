@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react"
 import { useSearchParams, useParams } from "next/navigation"
-import { useCart } from "@/lib/cart-context"
+import { useCart } from "@/components/providers/cart-context"
 import { verifyAndCreateOrder } from "@/app/actions/checkout"
 import { getOrderConversation } from "@/app/actions/orders"
 import { Button } from "@/components/ui/button"

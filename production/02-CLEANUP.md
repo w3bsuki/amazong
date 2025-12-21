@@ -26,14 +26,14 @@ Based on Knip audit (`audit-results/knip-report.txt`):
 ### 1. Delete Demo/Test Routes
 ```powershell
 # Demo sell page with mock form
-Remove-Item -Recurse -Force "j:\amazong\app\[locale]\(main)\sell\demo1"
+git rm -r -- "app/[locale]/(main)/sell/demo1"
 
 # Component audit page (development only)
-Remove-Item -Recurse -Force "j:\amazong\app\[locale]\(main)\component-audit"
+git rm -r -- "app/[locale]/(main)/component-audit"
 
 # Verify deletion
-Test-Path "j:\amazong\app\[locale]\(main)\sell\demo1"         # False
-Test-Path "j:\amazong\app\[locale]\(main)\component-audit"    # False
+Test-Path "./app/[locale]/(main)/sell/demo1"         # False
+Test-Path "./app/[locale]/(main)/component-audit"    # False
 ```
 
 - [ ] Delete `app/[locale]/(main)/sell/demo1`
@@ -43,7 +43,7 @@ Test-Path "j:\amazong\app\[locale]\(main)\component-audit"    # False
 ### 2. Delete Duplicate Schema Files
 ```powershell
 # Old schema version (v4 is current)
-Remove-Item -Force "j:\amazong\lib\sell-form-schema-v3.ts"
+git rm -- "lib/sell-form-schema-v3.ts"
 
 # Verify v4 is used everywhere
 Select-String -Path "components/**/*.tsx","app/**/*.tsx" -Pattern "sell-form-schema-v3" -Recurse
@@ -60,14 +60,14 @@ Select-String -Path "components/**/*.tsx","app/**/*.tsx" -Pattern "sell-form-sch
 ### Tier 1: Obviously Unused (Delete Now)
 ```powershell
 # Scripts folder - development utilities only
-Remove-Item -Force "j:\amazong\scripts\verify-product.js"
-Remove-Item -Force "j:\amazong\scripts\seed.js"
-Remove-Item -Force "j:\amazong\scripts\create-user.js"
-Remove-Item -Force "j:\amazong\scripts\apply-migration.js"
-Remove-Item -Force "j:\amazong\scripts\seed-data.ts"
-Remove-Item -Force "j:\amazong\scripts\seed.ts"
-Remove-Item -Force "j:\amazong\scripts\setup-db.ts"
-Remove-Item -Force "j:\amazong\scripts\test-supabase-connection.ts"
+git rm -- "scripts/verify-product.js"
+git rm -- "scripts/seed.js"
+git rm -- "scripts/create-user.js"
+git rm -- "scripts/apply-migration.js"
+git rm -- "scripts/seed-data.ts"
+git rm -- "scripts/seed.ts"
+git rm -- "scripts/setup-db.ts"
+git rm -- "scripts/test-supabase-connection.ts"
 ```
 
 - [ ] Delete 8 unused script files
@@ -131,11 +131,11 @@ $unusedComponents = @(
 )
 
 foreach ($file in $unusedComponents) {
-    $path = "j:\amazong\components\$file"
-    if (Test-Path $path) {
-        Remove-Item -Force $path
-        Write-Host "Deleted: $file"
-    }
+  $path = "./components/$file"
+  if (Test-Path $path) {
+    git rm -- "components/$file"
+    Write-Host "Deleted (git): $file"
+  }
 }
 ```
 
@@ -153,7 +153,7 @@ components/ui/code-block.tsx
 components/ui/collapsible.tsx
 components/ui/context-menu.tsx
 components/ui/empty.tsx
-components/ui/field.tsx
+components/ui/field.tsx  # NOTE: currently imported by the sell flow; do NOT delete in Phase 1
 components/ui/input-group.tsx
 components/ui/input-otp.tsx
 components/ui/item.tsx
@@ -170,20 +170,22 @@ components/ui/toaster.tsx
 components/ui/use-mobile.tsx
 ```
 
-**Decision:** Keep shadcn/ui components for now. They're small and may be needed later.
+**Decision:** Keep shadcn/ui components for now. Also: do not trust any “unused” label until you confirm with a code search.
+
+Evidence: [components/ui/field.tsx](components/ui/field.tsx) is imported by sell UI such as [field-row.tsx](app/[locale]/(sell)/_components/ui/field-row.tsx) and [photos-field.tsx](app/[locale]/(sell)/_components/fields/photos-field.tsx).
 
 - [ ] KEEP unused shadcn components (low priority cleanup)
 
 ### Tier 4: Unused Hooks & Lib Files
 ```powershell
 # Hooks to delete
-Remove-Item -Force "j:\amazong\hooks\use-business-account.ts"
-Remove-Item -Force "j:\amazong\hooks\use-header-height.ts"
+git rm -- "hooks/use-business-account.ts"
+git rm -- "hooks/use-header-height.ts"
 
 # Lib files to delete
-Remove-Item -Force "j:\amazong\lib\category-icons.tsx"  # Replaced by config/
-Remove-Item -Force "j:\amazong\lib\currency.ts"
-Remove-Item -Force "j:\amazong\lib\toast-utils.ts"
+git rm -- "lib/category-icons.tsx"  # Replaced by config/
+git rm -- "lib/currency.ts"
+git rm -- "lib/toast-utils.ts"
 ```
 
 - [ ] Delete 2 unused hooks
@@ -223,6 +225,7 @@ Remove-Item -Force "j:\amazong\lib\toast-utils.ts"
 
 ```powershell
 # Remove unused dependencies
+git grep -n "@dnd-kit/" -- app components lib
 pnpm remove @dnd-kit/core @dnd-kit/modifiers @dnd-kit/sortable @dnd-kit/utilities
 pnpm remove @radix-ui/react-collapsible @radix-ui/react-context-menu @radix-ui/react-menubar
 pnpm remove @tanstack/react-table @vercel/analytics

@@ -2,7 +2,7 @@
 
 import { stripe } from "@/lib/stripe"
 import { createClient, createAdminClient } from "@/lib/supabase/server"
-import type { CartItem } from "@/lib/cart-context"
+import type { CartItem } from "@/components/providers/cart-context"
 
 export async function createCheckoutSession(items: CartItem[]) {
   if (!process.env.STRIPE_SECRET_KEY) {

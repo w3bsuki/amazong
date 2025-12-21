@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ProductCard } from "@/components/ui/product-card"
+import { ProductCard } from "@/components/common/product-card"
 import {
   Conversation,
   ConversationContent,
@@ -59,8 +59,9 @@ import {
   PromptInputTextarea,
   PromptInputFooter,
   PromptInputTools,
-  usePromptInputAttachments,
 } from "@/components/ai-elements/prompt-input"
+
+import { usePromptInputAttachments } from "@/hooks/use-prompt-input-attachments"
  
 import { Loader } from "@/components/ai-elements/loader"
 import { ListingPreviewCard } from "@/components/ai-elements/listing-preview-card"

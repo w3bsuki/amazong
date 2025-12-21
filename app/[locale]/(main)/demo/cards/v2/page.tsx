@@ -1,6 +1,6 @@
 "use client"
 
-import { ProductCard as MarketplaceCard } from "@/components/ui/product-card"
+import { ProductCard as MarketplaceCard } from "@/components/common/product-card"
 
 // Minimal test data matching MarketplaceCard props
 const testProducts = [

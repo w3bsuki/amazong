@@ -35,7 +35,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-} from "@/components/ui/sidebar"
+} from "@/components/layout/sidebar/sidebar"
 import {
   Avatar,
   AvatarFallback,
@@ -50,7 +50,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { IconDotsVertical } from "@tabler/icons-react"
-import { useSidebar } from "@/components/ui/sidebar"
+import { useSidebar } from "@/components/layout/sidebar/sidebar"
 import { createClient } from "@/lib/supabase/client"
 
 const getAccountNavItems = (locale: string) => [

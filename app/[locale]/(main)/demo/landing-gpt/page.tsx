@@ -3,7 +3,7 @@
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { getCategoryIcon } from "@/config/category-icons"
-import { ProductCard } from "@/components/ui/product-card"
+import { ProductCard } from "@/components/common/product-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ArrowRight, MagnifyingGlass, Package, ShieldCheck, Storefront } from "@phosphor-icons/react"

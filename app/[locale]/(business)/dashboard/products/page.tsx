@@ -1,7 +1,7 @@
 import { requireDashboardAccess, getBusinessProducts } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
 import { connection } from "next/server"
-import { ProductsTable } from "@/components/business/products-table"
+import { ProductsTable } from "../_components/products-table"
 
 // Category types
 interface CategoryNode {

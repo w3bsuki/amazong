@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { AccountSidebar } from "@/components/account-sidebar"
-import { AccountHeader } from "@/components/account-header"
-import { AccountTabBar } from "@/components/account-tab-bar"
+import { AccountSidebar } from "./account/_components/account-sidebar"
+import { AccountHeader } from "./account/_components/account-header"
+import { AccountTabBar } from "./account/_components/account-tab-bar"
 import {
   SidebarInset,
   SidebarProvider,
-} from "@/components/ui/sidebar"
+} from "@/components/layout/sidebar/sidebar"
 
 interface AccountLayoutContentProps {
   children: React.ReactNode

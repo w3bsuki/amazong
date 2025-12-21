@@ -20,7 +20,7 @@ import {
   Pause,
   Play,
 } from "@phosphor-icons/react"
-import { BoostDialog } from "@/components/boost-dialog"
+import { BoostDialog } from "./_components/boost-dialog"
 import { toast } from "sonner"
 import { deleteProduct, bulkUpdateProductStatus, setProductDiscountPrice, clearProductDiscount } from "@/app/actions/products"
 import {
@@ -42,6 +42,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+
 
 interface Product {
   id: string

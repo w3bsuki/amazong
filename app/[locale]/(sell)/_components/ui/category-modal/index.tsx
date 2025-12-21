@@ -97,22 +97,24 @@ export function CategorySelector({
       type="button"
       onClick={() => setIsOpen(true)}
       className={cn(
-        "w-full flex items-center justify-between gap-3 min-h-touch px-4 py-3.5 text-left touch-action-manipulation",
-        "bg-background border rounded-xl",
-        "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        "transition-colors active:bg-accent/50",
+        "w-full flex items-center justify-between gap-3 min-h-12 px-4 py-2.5 text-left touch-action-manipulation",
+        "bg-background border border-border rounded-xl shadow-xs",
+        "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
+        "transition-all active:scale-[0.98]",
         className
       )}
     >
       {selectedCategory ? (
         <>
           <div className="flex-1 min-w-0">
-            <span className="text-sm font-medium line-clamp-2 wrap-break-word">
+            <span className="text-sm font-bold text-foreground line-clamp-2 wrap-break-word">
               {selectedCategory.fullPath}
             </span>
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <Check className="size-4 text-primary" weight="bold" />
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
+              <Check className="size-3 text-primary" weight="bold" />
+            </div>
             <span
               role="button"
               tabIndex={0}
@@ -120,19 +122,19 @@ export function CategorySelector({
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") handleClear(e as unknown as React.MouseEvent);
               }}
-              className="p-1 rounded hover:bg-muted"
+              className="size-7 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
               aria-label={locale === "bg" ? "Изчисти" : "Clear"}
             >
-              <X className="size-3.5 text-muted-foreground" />
+              <X className="size-3.5 text-muted-foreground" weight="bold" />
             </span>
           </div>
         </>
       ) : (
         <>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm font-medium text-muted-foreground/60">
             {locale === "bg" ? "Избери категория..." : "Select category..."}
           </span>
-          <CaretRight className="size-4 text-muted-foreground" />
+          <CaretRight className="size-4 text-muted-foreground/40" weight="bold" />
         </>
       )}
     </button>
@@ -360,28 +362,28 @@ function CategoryModalContent({
   if (isMobile) {
     const currentStep = Math.min(navigationPath.length, MAX_DEPTH) + 1;
     return (
-      <div className="flex flex-col min-h-0 flex-1">
+      <div className="flex flex-col min-h-0 flex-1 bg-background">
         {/* Search */}
-        <div className="px-3 py-2 border-b shrink-0">
+        <div className="px-4 py-3 border-b border-border/50 shrink-0">
           <div className="relative">
-            <MagnifyingGlass className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground/50" weight="bold" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={locale === "bg" ? "Търси..." : "Search..."}
-              className="pl-10 h-12 text-base rounded-xl"
+              placeholder={locale === "bg" ? "Търси категория..." : "Search category..."}
+              className="pl-11 h-12 text-base font-medium rounded-xl border-border bg-muted/20 focus:bg-background transition-all"
             />
           </div>
         </div>
 
         {/* Step indicator */}
         {!searchQuery.trim() && (
-          <div className="px-3 py-2 border-b bg-muted/30 shrink-0">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">
+          <div className="px-4 py-2.5 border-b border-border/50 bg-muted/10 shrink-0">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 {locale === "bg" ? "Стъпка" : "Step"} {currentStep}/4
               </span>
-              <span className="font-medium text-foreground">
+              <span className="text-xs font-bold text-foreground uppercase tracking-wider">
                 {stepLabels[Math.min(currentStep - 1, stepLabels.length - 1)]}
               </span>
             </div>
@@ -390,26 +392,26 @@ function CategoryModalContent({
 
         {/* Breadcrumb - compact */}
         {navigationPath.length > 0 && !searchQuery && (
-          <div className="flex items-center gap-1.5 px-3 py-2 border-b bg-muted/50 overflow-x-auto shrink-0">
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-border/50 bg-muted/5 overflow-x-auto shrink-0 no-scrollbar">
             <button
               type="button"
               onClick={handleBack}
-              className="p-1.5 rounded hover:bg-background shrink-0"
+              className="size-8 flex items-center justify-center rounded-lg bg-background border border-border shadow-xs shrink-0 active:scale-95 transition-transform"
             >
-              <CaretLeft className="size-4" />
+              <CaretLeft className="size-4" weight="bold" />
             </button>
-            <div className="flex items-center gap-1 text-xs overflow-hidden">
+            <div className="flex items-center gap-1.5 text-xs overflow-hidden">
               {navigationPath.map((cat, idx) => (
-                <div key={cat.id} className="flex items-center gap-1 shrink-0">
-                  {idx > 0 && <span className="text-muted-foreground">›</span>}
+                <div key={cat.id} className="flex items-center gap-1.5 shrink-0">
+                  {idx > 0 && <span className="text-muted-foreground/30">/</span>}
                   <button
                     type="button"
                     onClick={() => setNavigationPath(navigationPath.slice(0, idx + 1))}
                     className={cn(
-                      "truncate max-w-20",
+                      "truncate max-w-[100px] font-bold uppercase tracking-wider",
                       idx === navigationPath.length - 1
-                        ? "font-medium text-foreground"
-                        : "text-muted-foreground"
+                        ? "text-primary"
+                        : "text-muted-foreground/60"
                     )}
                   >
                     {getName(cat)}
@@ -422,31 +424,35 @@ function CategoryModalContent({
 
         {/* Content */}
         <ScrollArea className="flex-1 min-h-0">
-          <div className="p-3">
+          <div className="p-4">
             {searchQuery.trim() ? (
               searchResults.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
-                  <p className="text-sm">
-                    {locale === "bg" ? "Няма резултати" : "No results"}
+                <div className="py-12 text-center">
+                  <div className="size-16 rounded-full bg-muted/30 flex items-center justify-center mx-auto mb-4">
+                    <MagnifyingGlass className="size-8 text-muted-foreground/30" />
+                  </div>
+                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
+                    {locale === "bg" ? "Няма намерени резултати" : "No results found"}
                   </p>
                 </div>
               ) : (
-                <div className="space-y-1">
+                <div className="grid gap-2">
                   {searchResults.map((cat) => (
                     <button
                       key={cat.id}
                       type="button"
                       onClick={() => handleSearchSelect(cat)}
                       className={cn(
-                        "w-full flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl text-left transition-colors min-h-touch-sm touch-action-manipulation",
-                        "hover:bg-muted",
-                        value === cat.id && "bg-primary/10"
+                        "w-full flex flex-col items-start gap-0.5 px-4 py-2.5 rounded-xl border text-left transition-all active:scale-[0.98]",
+                        value === cat.id 
+                          ? "border-primary bg-primary/5 shadow-xs" 
+                          : "border-border bg-background hover:border-primary/30"
                       )}
                     >
-                      <span className="text-sm font-medium">
+                      <span className="text-sm font-bold text-foreground">
                         {getName(cat)}
                       </span>
-                      <span className="text-xs text-muted-foreground truncate w-full">
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider truncate w-full">
                         {cat.fullPath}
                       </span>
                     </button>
@@ -454,7 +460,7 @@ function CategoryModalContent({
                 </div>
               )
             ) : (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 {currentCategories.map((cat) => (
                   <CategoryCard
                     key={cat.id}
@@ -598,20 +604,30 @@ function CategoryCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "relative flex items-center justify-between gap-2 w-full px-3 py-3 rounded-xl border text-left transition-colors min-h-touch touch-action-manipulation",
-        "hover:bg-muted/50 hover:border-primary/30",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        isSelected ? "border-primary bg-primary/5" : "border-border"
+        "relative flex flex-col items-start justify-between gap-2 w-full px-3.5 py-3 rounded-xl border text-left transition-all min-h-[80px] touch-action-manipulation",
+        "hover:border-primary/30 active:scale-[0.96]",
+        "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
+        isSelected 
+          ? "border-primary bg-primary/5 shadow-xs" 
+          : "border-border bg-background shadow-xs"
       )}
     >
-      <span className="text-sm font-medium line-clamp-2 flex-1">
+      <span className="text-sm font-bold text-foreground line-clamp-2 flex-1 leading-tight">
         {name}
       </span>
-      {hasChildren ? (
-        <CaretRight className="size-3.5 text-muted-foreground shrink-0" />
-      ) : isSelected ? (
-        <Check className="size-3.5 text-primary shrink-0" weight="bold" />
-      ) : null}
+      <div className="w-full flex items-center justify-between mt-auto">
+        {hasChildren ? (
+          <div className="size-5 rounded-full bg-muted/30 flex items-center justify-center">
+            <CaretRight className="size-2.5 text-muted-foreground" weight="bold" />
+          </div>
+        ) : isSelected ? (
+          <div className="size-5 rounded-full bg-primary flex items-center justify-center">
+            <Check className="size-2.5 text-white" weight="bold" />
+          </div>
+        ) : (
+          <div className="size-5 rounded-full border border-border/50" />
+        )}
+      </div>
     </button>
   );
 }

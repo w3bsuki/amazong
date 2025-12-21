@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { TextAlignLeft, TextB, TextItalic, List } from "@phosphor-icons/react";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 
@@ -42,36 +42,38 @@ export function DescriptionField({
         <Field data-invalid={fieldState.invalid} className={className}>
           {/* Section Header (non-compact mode) */}
           {!compact && (
-            <div className="flex items-center gap-3.5 mb-4">
-              <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
-                <TextAlignLeft className="size-5 text-muted-foreground" weight="bold" />
-              </div>
-              <div>
-                <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                  {isBg ? "Описание" : "Description"}
-                </FieldLabel>
-                <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                  {isBg 
-                    ? "Опишете детайлите - размер, цвят, дефекти"
-                    : "Describe the details - size, color, flaws"}
-                </FieldDescription>
+            <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
+              <div className="flex items-center gap-3.5">
+                <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
+                  <TextAlignLeft className="size-5 text-muted-foreground" weight="bold" />
+                </div>
+                <div>
+                  <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
+                    {isBg ? "Описание" : "Description"}
+                  </FieldLabel>
+                  <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
+                    {isBg 
+                      ? "Опишете детайлите - размер, цвят, дефекти"
+                      : "Describe the details - size, color, flaws"}
+                  </FieldDescription>
+                </div>
               </div>
             </div>
           )}
 
           {/* Compact Label */}
           {compact && (
-            <FieldLabel className="text-sm font-medium mb-2">
+            <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
               {isBg ? "Описание" : "Description"}
             </FieldLabel>
           )}
 
           {/* Rich Textarea */}
-          <FieldContent>
+          <FieldContent className={cn(!compact && "p-5")}>
             <div className={cn(
-              "rounded-xl border shadow-xs overflow-hidden transition-all",
-              "focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10",
-              fieldState.invalid && "border-destructive focus-within:ring-destructive/10"
+              "rounded-xl border shadow-xs overflow-hidden transition-all bg-background",
+              "focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5",
+              fieldState.invalid && "border-destructive focus-within:ring-destructive/5"
             )}>
               <textarea
                 {...field}
@@ -83,46 +85,46 @@ export function DescriptionField({
                 maxLength={maxLength}
                 rows={minRows}
                 className={cn(
-                  "block w-full resize-none border-0 bg-transparent px-4 py-3 text-sm",
-                  "placeholder:text-muted-foreground/70 focus:ring-0 focus:outline-none",
+                  "block w-full resize-none border-0 bg-transparent px-4 py-3 text-base font-medium",
+                  "placeholder:text-muted-foreground/50 focus:ring-0 focus:outline-none",
                   "min-h-32"
                 )}
               />
               
               {/* Toolbar */}
-              <div className="flex items-center justify-between border-t border-border/50 bg-muted/50 px-3 py-2">
-                <div className="flex gap-0.5">
+              <div className="flex items-center justify-between border-t border-border/50 bg-muted/20 px-4 py-2">
+                <div className="flex gap-1">
                   <button
                     type="button"
-                    className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-all"
                     title={isBg ? "Удебелен" : "Bold"}
                     aria-label={isBg ? "Удебелен текст" : "Bold text"}
                   >
-                    <TextB className="h-3.5 w-3.5" />
+                    <TextB className="size-3.5" weight="bold" />
                   </button>
                   <button
                     type="button"
-                    className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-all"
                     title={isBg ? "Курсив" : "Italic"}
                     aria-label={isBg ? "Курсив текст" : "Italic text"}
                   >
-                    <TextItalic className="h-3.5 w-3.5" />
+                    <TextItalic className="size-3.5" weight="bold" />
                   </button>
                   <button
                     type="button"
-                    className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                    className="size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:bg-background hover:text-primary hover:shadow-sm transition-all"
                     title={isBg ? "Списък" : "List"}
                     aria-label={isBg ? "Добави списък" : "Add list"}
                   >
-                    <List className="h-3.5 w-3.5" />
+                    <List className="size-3.5" weight="bold" />
                   </button>
                 </div>
                 <span
                   className={cn(
-                    "text-xs tabular-nums",
+                    "text-[10px] font-bold tabular-nums uppercase tracking-widest",
                     charCount >= maxLength 
                       ? "text-destructive" 
-                      : "text-muted-foreground/70"
+                      : "text-muted-foreground/60"
                   )}
                 >
                   {charCount.toLocaleString()} / {maxLength.toLocaleString()}

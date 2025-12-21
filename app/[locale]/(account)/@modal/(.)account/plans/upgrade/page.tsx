@@ -1,4 +1,4 @@
-import { Modal } from "@/components/ui/modal"
+import { Modal } from "@/components/common/modal"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"

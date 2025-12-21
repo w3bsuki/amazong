@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
-import { AccountOrdersToolbar } from "@/components/account-orders-toolbar"
-import { AccountOrdersStats } from "@/components/account-orders-stats"
-import { AccountOrdersGrid } from "@/components/account-orders-grid"
+import { AccountOrdersToolbar } from "./_components/account-orders-toolbar"
+import { AccountOrdersStats } from "./_components/account-orders-stats"
+import { AccountOrdersGrid } from "./_components/account-orders-grid"
 
 type OrderStatus =
   | "pending"

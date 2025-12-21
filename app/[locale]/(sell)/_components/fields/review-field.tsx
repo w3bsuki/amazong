@@ -46,14 +46,14 @@ function ReviewSection({
 }) {
   return (
     <div className="rounded-xl border border-border overflow-hidden">
-      <div className="flex items-center justify-between p-3 bg-muted/50 border-b border-border">
+      <div className="flex items-center justify-between px-3 py-2 bg-muted/50 border-b border-border">
         <div className="flex items-center gap-2">
           <Icon className={cn(
-            "size-5",
+            "size-4",
             isComplete ? "text-green-600" : "text-muted-foreground"
           )} weight="fill" />
-          <span className="text-sm font-semibold">{title}</span>
-          {isComplete && <CheckCircle className="size-4 text-green-600" weight="fill" />}
+          <span className="text-xs font-bold uppercase tracking-wider">{title}</span>
+          {isComplete && <CheckCircle className="size-3.5 text-green-600" weight="fill" />}
         </div>
         {onEdit && (
           <Button
@@ -61,14 +61,14 @@ function ReviewSection({
             variant="ghost"
             size="sm"
             onClick={onEdit}
-            className="gap-1.5 text-primary"
+            className="h-7 px-2 gap-1 text-primary text-[11px] font-bold uppercase tracking-wider"
           >
-            <PencilSimple className="size-3.5" />
+            <PencilSimple className="size-3" />
             Edit
           </Button>
         )}
       </div>
-      <div className="p-4">
+      <div className="p-3">
         {children}
       </div>
     </div>
@@ -169,29 +169,29 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
       >
         {/* Photo preview */}
         {hasPhotos && (
-          <div className="flex gap-2 mb-4 overflow-x-auto pb-2 -mx-1 px-1">
+          <div className="flex gap-2 mb-3 overflow-x-auto pb-1 -mx-1 px-1">
             {images.slice(0, 5).map((img, idx) => (
               <div
                 key={idx}
-                className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-muted"
+                className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-muted"
               >
                 <Image
                   src={img.thumbnailUrl || img.url}
                   alt={`Photo ${idx + 1}`}
                   fill
                   className="object-cover"
-                  sizes="64px"
+                  sizes="56px"
                 />
                 {idx === 0 && (
                   <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent py-0.5 text-center">
-                    <span className="text-xs text-white font-semibold">Cover</span>
+                    <span className="text-[9px] text-white font-bold uppercase tracking-wider">Cover</span>
                   </div>
                 )}
               </div>
             ))}
             {images.length > 5 && (
-              <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center shrink-0">
-                <span className="text-sm font-semibold text-muted-foreground">
+              <div className="w-14 h-14 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                <span className="text-xs font-bold text-muted-foreground">
                   +{images.length - 5}
                 </span>
               </div>
@@ -200,11 +200,11 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
         )}
 
         {/* Title */}
-        <p className="font-semibold text-lg line-clamp-2">{title || "-"}</p>
+        <p className="font-bold text-base line-clamp-2 leading-tight">{title || "-"}</p>
         
         {/* Description */}
         {description && (
-          <p className="text-sm text-muted-foreground mt-2 line-clamp-3">
+          <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2">
             {description}
           </p>
         )}

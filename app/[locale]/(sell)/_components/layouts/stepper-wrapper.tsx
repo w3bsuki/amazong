@@ -20,6 +20,7 @@ interface StepperWrapperProps {
   children: ReactNode;
   steps: StepConfig[];
   onSubmit: () => void;
+  onNext?: () => void | Promise<void>;
   isSubmitting?: boolean;
 }
 
@@ -27,6 +28,7 @@ export function StepperWrapper({
   children,
   steps,
   onSubmit,
+  onNext,
   isSubmitting = false,
 }: StepperWrapperProps) {
   const { currentStep, setCurrentStep, isBg } = useSellFormContext();
@@ -45,7 +47,11 @@ export function StepperWrapper({
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (onNext) {
+      await onNext();
+      return;
+    }
     if (currentStep < totalSteps) setCurrentStep(currentStep + 1);
   };
 
@@ -53,24 +59,24 @@ export function StepperWrapper({
     <div className="flex min-h-dvh flex-col bg-background">
       {/* Header - larger text, better visual hierarchy */}
       <header className="sticky top-0 z-40 border-b border-border bg-background pt-[env(safe-area-inset-top)]">
-        <div className="flex items-center justify-between px-section py-form">
-          <div className="flex items-center gap-form-sm">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-3">
             {/* Step indicator badge */}
-            <span className="flex size-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+            <span className="flex size-6 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
               {currentStep}
             </span>
-            <p className="text-base font-semibold text-foreground">
+            <p className="text-sm font-bold text-foreground uppercase tracking-tight">
               {isBg ? steps[currentStep - 1]?.title.bg : steps[currentStep - 1]?.title.en}
             </p>
           </div>
-          <span className="text-sm font-medium text-muted-foreground">
-            {currentStep} of {totalSteps}
+          <span className="text-xs font-bold text-muted-foreground tabular-nums">
+            {isBg ? `${currentStep} / ${totalSteps}` : `${currentStep} / ${totalSteps}`}
           </span>
         </div>
         {/* Progress bar - thicker for better visibility */}
-        <div className="h-1.5 w-full bg-muted">
+        <div className="h-0.5 w-full bg-muted">
           <div 
-            className="h-full bg-primary transition-[width] duration-300 ease-out" 
+            className="h-full bg-primary" 
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -78,23 +84,23 @@ export function StepperWrapper({
 
       {/* Content - more generous padding for readability */}
       <main ref={contentRef} className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-lg px-section py-section">
+        <div className="mx-auto max-w-lg px-4 py-5">
           {children}
         </div>
       </main>
 
       {/* Footer - larger buttons, proper safe areas */}
-      <footer className="sticky bottom-0 border-t border-border bg-background/95 backdrop-blur-sm px-section py-form pb-[max(1rem,env(safe-area-inset-bottom))]">
-        <div className="mx-auto flex max-w-lg items-center gap-form-sm">
+      <footer className="sticky bottom-0 border-t border-border bg-background/95 backdrop-blur-sm px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="mx-auto flex max-w-lg items-center gap-3">
           {!isFirstStep && (
             <Button
               type="button"
               variant="outline"
               onClick={handleBack}
-              className="h-touch-lg w-touch-lg shrink-0 rounded-2xl p-0"
+              className="h-11 w-11 shrink-0 rounded-xl p-0 border-border/50"
               aria-label={isBg ? "Назад" : "Back"}
             >
-              <CaretLeft className="size-5" weight="bold" />
+              <CaretLeft className="size-4.5" weight="bold" />
             </Button>
           )}
 
@@ -103,16 +109,16 @@ export function StepperWrapper({
               type="button"
               onClick={onSubmit}
               disabled={isSubmitting}
-              className="h-touch-lg flex-1 gap-form-sm rounded-2xl text-base font-semibold"
+              className="h-11 flex-1 gap-2 rounded-xl text-sm font-bold uppercase tracking-wider"
             >
               {isSubmitting ? (
                 <>
-                  <Spinner className="size-5 animate-spin" />
+                  <Spinner className="size-4 animate-spin" />
                   {isBg ? "Публикуване..." : "Publishing..."}
                 </>
               ) : (
                 <>
-                  <Rocket className="size-5" weight="fill" />
+                  <Rocket className="size-4" weight="fill" />
                   {isBg ? "Публикувай" : "Publish Listing"}
                 </>
               )}
@@ -121,10 +127,10 @@ export function StepperWrapper({
             <Button
               type="button"
               onClick={handleNext}
-              className="h-touch-lg flex-1 gap-form-sm rounded-2xl text-base font-semibold"
+              className="h-11 flex-1 gap-2 rounded-xl text-sm font-bold uppercase tracking-wider"
             >
               {isBg ? "Продължи" : "Continue"}
-              <ArrowRight className="size-5" weight="bold" />
+              <ArrowRight className="size-4" weight="bold" />
             </Button>
           )}
         </div>

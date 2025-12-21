@@ -2,7 +2,7 @@
 
 import { CaretRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { Field, FieldLabel, FieldContent } from "@/components/ui/field";
+import { Field, FieldLabel, FieldContent } from "@/components/common/field";
 
 interface FieldRowProps {
   label: string;

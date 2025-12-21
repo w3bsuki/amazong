@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { Sparkle, Check } from "@phosphor-icons/react";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
 import { cn } from "@/lib/utils";
 import { conditionOptions } from "@/lib/sell-form-schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
@@ -59,9 +59,9 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
           {/* Condition Options Grid - proper touch targets (min 44px) */}
           <FieldContent>
             <div className={cn(
-              "grid gap-form-sm",
+              "grid gap-3",
               compact 
-                ? "grid-cols-2" // 2 columns, 3 rows on mobile
+                ? "grid-cols-2" // 2 columns on mobile
                 : "grid-cols-2 sm:grid-cols-3"
             )}>
               {conditionOptions.map((option) => {
@@ -74,28 +74,20 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                     type="button"
                     onClick={() => field.onChange(option.value)}
                     className={cn(
-                      // Base: touch-lg min height for touch, centered content
-                      "relative flex items-center justify-center gap-form-sm min-h-touch-lg px-form-sm py-form-sm rounded-2xl border-2 transition-all text-center",
-                      "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                      "touch-manipulation active:scale-[0.97]",
+                      "relative flex items-center justify-center min-h-11 px-3 py-2 rounded-xl border transition-all text-center",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      "touch-manipulation active:scale-[0.98]",
                       isSelected
-                        ? "border-primary bg-primary/10 shadow-sm"
-                        : "border-border bg-background hover:bg-muted/50"
+                        ? "border-primary bg-primary/5 text-primary font-bold shadow-xs"
+                        : "border-border bg-background hover:border-primary/30 text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    {/* Selection checkmark - top right corner when selected */}
-                    {isSelected && (
-                      <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary shadow-sm">
-                        <Check className="size-3 text-primary-foreground" weight="bold" />
-                      </div>
-                    )}
-                    
-                    <span className={cn(
-                      "text-sm font-medium",
-                      isSelected ? "text-primary font-semibold" : "text-foreground"
-                    )}>
+                    <span className="text-sm">
                       {label}
                     </span>
+                    {isSelected && (
+                      <Check className="absolute right-2 top-2 size-3.5" weight="bold" />
+                    )}
                   </button>
                 );
               })}

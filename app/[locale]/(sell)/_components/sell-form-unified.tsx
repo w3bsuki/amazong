@@ -174,60 +174,57 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
         </header>
 
         {/* Success content */}
-        <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-          <div className="w-full max-w-sm text-center space-y-6">
-            {/* Success animation */}
-            <div className="relative mx-auto w-20 h-20">
-              <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping" />
-              <div className="relative w-20 h-20 bg-green-500 rounded-full flex items-center justify-center">
-                <CheckCircle className="size-10 text-white" weight="fill" />
-              </div>
+        <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+          <div className="w-full max-w-sm text-center space-y-8">
+            {/* Success icon - clean, no animation */}
+            <div className="mx-auto w-20 h-20 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/20">
+              <CheckCircle className="size-10 text-white" weight="fill" />
             </div>
 
             {/* Success message */}
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-foreground">
-                {isBg ? "Поздравления! 🎉" : "Congratulations! 🎉"}
+            <div className="space-y-3">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                {isBg ? "Публикувано!" : "Published!"}
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-lg text-muted-foreground leading-relaxed">
                 {isBg 
-                  ? "Вашата обява е публикувана успешно и е на живо!"
-                  : "Your listing has been published successfully and is now live!"}
+                  ? "Вашата обява е на живо и готова за купувачи."
+                  : "Your listing is live and ready for buyers."}
               </p>
             </div>
 
-            {/* Product preview card */}
+            {/* Product preview card - cleaner */}
             {firstImageUrl && (
-              <div className="bg-muted/50 rounded-xl p-4 border border-border">
-                <div className="flex items-center gap-3">
+              <div className="bg-muted/30 rounded-2xl p-4 border border-border/50">
+                <div className="flex items-center gap-4">
                   <img 
                     src={firstImageUrl} 
                     alt={productTitle}
-                    className="w-16 h-16 rounded-lg object-cover"
+                    className="w-20 h-20 rounded-xl object-cover shadow-sm"
                   />
                   <div className="flex-1 text-left min-w-0">
-                    <p className="font-medium text-sm truncate">{productTitle}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {isBg ? "Вашата обява е на живо" : "Your listing is live"}
+                    <p className="font-bold text-base truncate">{productTitle}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {isBg ? "Обявата е активна" : "Listing is active"}
                     </p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Action buttons */}
-            <div className="space-y-3 pt-2">
-              <Button asChild className="w-full h-12 gap-2 bg-primary hover:bg-primary/90">
+            {/* Action buttons - cleaner, more professional */}
+            <div className="space-y-4 pt-4">
+              <Button asChild className="w-full h-14 gap-2 bg-primary hover:bg-primary/90 text-lg font-semibold rounded-2xl shadow-md">
                 <Link href={createdProductHref || (createdProductId ? `/product/${createdProductId}` : "/")}>
-                  <Eye className="size-5" />
+                  <Eye className="size-6" />
                   {isBg ? "Виж обявата" : "View Listing"}
                 </Link>
               </Button>
 
-              <div className="flex gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <Button
                   variant="outline"
-                  className="flex-1 h-11 gap-2"
+                  className="h-12 gap-2 rounded-xl font-medium"
                   onClick={() => {
                     const locale = isBg ? "bg" : "en";
                     if (navigator.share) {
@@ -247,27 +244,27 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
                     }
                   }}
                 >
-                  <Share className="size-4" />
+                  <Share className="size-5" />
                   {isBg ? "Сподели" : "Share"}
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="flex-1 h-11 gap-2"
+                  className="h-12 gap-2 rounded-xl font-medium"
                   onClick={handleNewListing}
                 >
-                  <Plus className="size-4" />
-                  {isBg ? "Нова обява" : "New Listing"}
+                  <Plus className="size-5" />
+                  {isBg ? "Нова" : "New"}
                 </Button>
               </div>
 
               <Button
                 variant="ghost"
                 asChild
-                className="w-full h-11 gap-2 text-muted-foreground"
+                className="w-full h-12 gap-2 text-muted-foreground hover:text-foreground rounded-xl"
               >
                 <Link href="/">
-                  <House className="size-4" />
+                  <House className="size-5" />
                   {isBg ? "Към началото" : "Go Home"}
                 </Link>
               </Button>

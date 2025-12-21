@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { FolderSimple } from "@phosphor-icons/react";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { CategorySelector } from "../ui/category-modal";
@@ -25,6 +25,21 @@ interface CategoryFieldProps {
 export function CategoryField({ onCategoryChange, className, compact = false }: CategoryFieldProps) {
   const { control, setValue } = useSellForm();
   const { categories, isBg } = useSellFormContext();
+
+  const prefetchCategoryAttributes = async (categoryId: string) => {
+    if (!categoryId) return;
+    try {
+      // Warm the cache for the attributes field.
+      // This endpoint accepts UUID or slug; categoryId is UUID here.
+      await fetch(`/api/categories/${encodeURIComponent(categoryId)}/attributes`, {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+    } catch {
+      // Non-blocking: it's only a prefetch.
+    }
+  };
 
   return (
     <Controller
@@ -59,9 +74,12 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
                   categories={categories}
                   value={field.value || ""}
                   onChange={(categoryId, path) => {
+                    // Reset item specifics when switching categories to prevent stale fields/values.
+                    setValue("attributes", [], { shouldValidate: true, shouldDirty: true });
                     field.onChange(categoryId);
                     setValue("categoryPath", path, { shouldValidate: false });
                     onCategoryChange?.(categoryId, path);
+                    void prefetchCategoryAttributes(categoryId);
                   }}
                   locale={isBg ? "bg" : "en"}
                 />
@@ -83,9 +101,12 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
                   categories={categories}
                   value={field.value || ""}
                   onChange={(categoryId, path) => {
+                    // Reset item specifics when switching categories to prevent stale fields/values.
+                    setValue("attributes", [], { shouldValidate: true, shouldDirty: true });
                     field.onChange(categoryId);
                     setValue("categoryPath", path, { shouldValidate: false });
                     onCategoryChange?.(categoryId, path);
+                    void prefetchCategoryAttributes(categoryId);
                   }}
                   locale={isBg ? "bg" : "en"}
                 />

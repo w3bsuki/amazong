@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Field, FieldLabel, FieldDescription, FieldContent } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription, FieldContent } from "@/components/common/field";
 import { cn } from "@/lib/utils";
 import type { ProductAttribute } from "@/lib/sell-form-schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
@@ -65,11 +65,16 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
     return getCategoryConfigFromPath(categoryPath);
   }, [categoryPath]);
 
+  // Some categories use a dedicated Brand/Make field instead of an attribute.
+  // Keep them in sync without forcing duplicate inputs.
+  const brandName = watch("brandName");
+
   // Local state for DB-based attributes
   const [dbAttributes, setDbAttributes] = useState<CategoryAttribute[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [newAttrName, setNewAttrName] = useState("");
   const [newAttrValue, setNewAttrValue] = useState("");
+  const [showAllDbAttributes, setShowAllDbAttributes] = useState(false);
 
   // Fetch category attributes from database when category changes
   useEffect(() => {
@@ -81,10 +86,36 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
     const fetchAttributes = async () => {
       setIsLoading(true);
       try {
+        // Note: our API is implemented as `/api/categories/[slug]/attributes` (accepts slug OR UUID).
         const response = await fetch(`/api/categories/${categoryId}/attributes`);
         if (response.ok) {
           const data = await response.json();
-          setDbAttributes(data || []);
+          const maybeAttributes = (data && typeof data === "object" && "attributes" in data)
+            ? (data as { attributes?: unknown }).attributes
+            : data;
+
+          if (!Array.isArray(maybeAttributes)) {
+            setDbAttributes([]);
+            return;
+          }
+
+          // The `[slug]/attributes` endpoint returns a formatted shape (e.g. `nameBg`, `sortOrder`).
+          // Normalize to the internal `CategoryAttribute` shape used by this field.
+          const normalized = (maybeAttributes as any[]).map((attr) => ({
+            id: String(attr.id),
+            name: String(attr.name ?? ""),
+            name_bg: attr.name_bg ?? attr.nameBg ?? null,
+            attribute_type: (attr.attribute_type ?? attr.type ?? "text") as CategoryAttribute["attribute_type"],
+            is_required: Boolean(attr.is_required ?? attr.required),
+            is_filterable: Boolean(attr.is_filterable ?? attr.filterable),
+            options: (attr.options ?? undefined) as string[] | undefined,
+            options_bg: (attr.options_bg ?? attr.optionsBg ?? undefined) as string[] | undefined,
+            placeholder: (attr.placeholder ?? undefined) as string | undefined,
+            placeholder_bg: (attr.placeholder_bg ?? attr.placeholderBg ?? undefined) as string | undefined,
+            sort_order: Number(attr.sort_order ?? attr.sortOrder ?? 0),
+          })) as CategoryAttribute[];
+
+          setDbAttributes(normalized);
         }
       } catch (error) {
         console.error("Failed to fetch category attributes:", error);
@@ -188,6 +219,24 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
 
   const customAttrs = useMemo(() => attributes.filter(a => a.isCustom), [attributes]);
 
+  // DB attributes split: required + optional
+  const dbRequiredAttrs = useMemo(
+    () => dbAttributes.filter((a) => a.is_required).sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
+    [dbAttributes]
+  );
+  const dbOptionalAttrs = useMemo(
+    () => dbAttributes.filter((a) => !a.is_required).sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
+    [dbAttributes]
+  );
+
+  // "Smart + main" subset: cap required fields to keep the form light.
+  // Most categories already mark core fields as required in DB; we just avoid showing dozens at once.
+  const SMART_REQUIRED_LIMIT = 6;
+  const dbRequiredSmart = useMemo(
+    () => dbRequiredAttrs.slice(0, SMART_REQUIRED_LIMIT),
+    [dbRequiredAttrs]
+  );
+
   // Check completion status for required attributes
   const requiredAttrsCount = categoryConfig?.requiredAttributes?.length || 0;
   const filledRequiredCount = useMemo(() => {
@@ -195,6 +244,28 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
       attr => isAttributeFilled(getConfigAttrValue(attr.key))
     ).length || 0;
   }, [categoryConfig, getConfigAttrValue]);
+
+  // Patch compatibility: older configs use snake_case keys, but DB indexes and UI expect consistent keys.
+  // Normalize the handful of known fields so the UI shows/reads the correct values.
+  const normalizeConfigKey = useCallback((key: string) => {
+    switch (key) {
+      case "fuel_type":
+        return "fuelType";
+      case "engine_size":
+        return "engineSize";
+      default:
+        return key;
+    }
+  }, []);
+
+  // Completion for DB-required smart fields
+  const dbRequiredSmartCount = dbRequiredSmart.length;
+  const filledDbRequiredSmartCount = useMemo(() => {
+    return dbRequiredSmart.reduce((acc, attr) => {
+      const v = attributes.find((a) => a.attributeId === attr.id)?.value || "";
+      return acc + (isAttributeFilled(v) ? 1 : 0);
+    }, 0);
+  }, [attributes, dbRequiredSmart]);
 
   // If no category selected
   if (!categoryId) {
@@ -216,157 +287,46 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
             </div>
           )}
 
-          {/* Category-Specific Required Attributes (from config) */}
-          {!isLoading && categoryConfig && categoryConfig.requiredAttributes.length > 0 && (
+          {/* Primary: Database-driven (smart + main) required attributes */}
+          {!isLoading && dbRequiredSmart.length > 0 && (
             <div className="space-y-4">
-              {/* Header with completion indicator */}
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 text-sm font-medium">
-                  {filledRequiredCount === requiredAttrsCount ? (
+                <div className="flex items-center gap-2 text-sm font-bold">
+                  {filledDbRequiredSmartCount === dbRequiredSmartCount ? (
                     <CheckCircle className="size-4 text-primary" weight="fill" />
                   ) : (
                     <WarningCircle className="size-4 text-muted-foreground" weight="fill" />
                   )}
-                  <span className="text-foreground">
-                    {isBg ? "Задължителни характеристики" : "Required specifications"}
+                  <span className="text-foreground uppercase tracking-wider text-[11px]">
+                    {isBg ? "Основни характеристики" : "Main specifics"}
                   </span>
                 </div>
-                <span className="text-sm text-muted-foreground tabular-nums">
-                  {filledRequiredCount}/{requiredAttrsCount}
+                <span className="text-xs font-bold text-muted-foreground tabular-nums bg-muted/50 px-2 py-0.5 rounded-full">
+                  {filledDbRequiredSmartCount}/{dbRequiredSmartCount}
                 </span>
               </div>
-              
-              {/* Required attributes grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {categoryConfig.requiredAttributes.map((attr) => {
-                  const currentValue = getConfigAttrValue(attr.key);
-                  const label = isBg ? attr.name.bg : attr.name.en;
-                  const placeholder = attr.placeholder 
-                    ? (isBg ? attr.placeholder.bg : attr.placeholder.en)
-                    : undefined;
-                  
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {dbRequiredSmart.map((attr) => {
+                  const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
                   return (
-                    <div key={attr.key}>
-                      <Label className="block text-sm font-medium text-foreground mb-1.5">
-                        {label}
+                    <div key={attr.id} className="space-y-1.5">
+                      <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        {getName(attr)}
                         <span className="text-destructive ml-1">*</span>
                       </Label>
-                      
-                      {attr.type === "select" && attr.options?.length ? (
-                        <Select
-                          value={currentValue || undefined}
-                          onValueChange={(value) => handleConfigAttributeChange(attr.key, value)}
-                        >
-                          <SelectTrigger className="w-full h-11">
-                            <SelectValue placeholder={`${isBg ? "Избери" : "Select"}...`} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {attr.options.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {isBg ? opt.label.bg : opt.label.en}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input
-                          value={currentValue}
-                          onChange={(e) => handleConfigAttributeChange(attr.key, e.target.value)}
-                          placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
-                          type={attr.type === "number" ? "number" : "text"}
-                          className="h-11"
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
 
-          {/* Optional attributes from config */}
-          {!isLoading && categoryConfig?.optionalAttributes && categoryConfig.optionalAttributes.length > 0 && (
-            <div className="space-y-4 pt-2">
-              <Label className="text-sm font-medium text-muted-foreground">
-                {isBg ? "Препоръчителни (по желание)" : "Recommended (optional)"}
-              </Label>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {categoryConfig.optionalAttributes.map((attr) => {
-                  const currentValue = getConfigAttrValue(attr.key);
-                  const label = isBg ? attr.name.bg : attr.name.en;
-                  const placeholder = attr.placeholder 
-                    ? (isBg ? attr.placeholder.bg : attr.placeholder.en)
-                    : undefined;
-                  
-                  return (
-                    <div key={attr.key}>
-                      <Label className="block text-sm font-medium text-foreground mb-1.5">
-                        {label}
-                      </Label>
-                      
-                      {attr.type === "select" && attr.options?.length ? (
-                        <Select
-                          value={currentValue || undefined}
-                          onValueChange={(value) => handleConfigAttributeChange(attr.key, value)}
-                        >
-                          <SelectTrigger className="w-full h-11">
-                            <SelectValue placeholder={`${isBg ? "Избери" : "Select"}...`} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {attr.options.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {isBg ? opt.label.bg : opt.label.en}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input
-                          value={currentValue}
-                          onChange={(e) => handleConfigAttributeChange(attr.key, e.target.value)}
-                          placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
-                          type={attr.type === "number" ? "number" : "text"}
-                          className="h-11"
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Database-based Predefined Attributes (fallback when no config) */}
-          {!isLoading && !categoryConfig && dbAttributes.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Info className="size-4" />
-                {isBg ? "Спецификациите помагат на купувачите да намерят обявата ви" : "Item specifics help buyers find your listing"}
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {dbAttributes.map((attr) => {
-                  const currentValue = attributes.find(a => a.attributeId === attr.id)?.value || "";
-                  
-                  return (
-                    <div key={attr.id}>
-                      <Label className="block text-sm font-medium text-foreground mb-1.5">
-                        {getName(attr)}
-                        {attr.is_required && <span className="text-destructive ml-1">*</span>}
-                      </Label>
-                      
                       {attr.attribute_type === "select" && attr.options?.length ? (
                         <Select
                           value={currentValue || undefined}
                           onValueChange={(value) => handleAttributeChange(attr, value)}
                         >
-                          <SelectTrigger className="w-full h-11">
+                          <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
                             <SelectValue placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`} />
                           </SelectTrigger>
                           <SelectContent>
                             {attr.options.map((opt, i) => (
-                              <SelectItem key={opt} value={opt}>
+                              <SelectItem key={opt} value={opt} className="font-medium">
                                 {isBg && attr.options_bg?.[i] ? attr.options_bg[i] : opt}
                               </SelectItem>
                             ))}
@@ -378,7 +338,307 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                           onChange={(e) => handleAttributeChange(attr, e.target.value)}
                           placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
                           type={attr.attribute_type === "number" ? "number" : "text"}
-                          className="h-11"
+                          className="h-12 rounded-xl border-border font-medium"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Optional DB attributes: hidden by default */}
+          {!isLoading && (dbOptionalAttrs.length > 0 || dbRequiredAttrs.length > dbRequiredSmart.length) && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                  {isBg ? "Още детайли (по желание)" : "More details (optional)"}
+                </Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAllDbAttributes((v) => !v)}
+                  className="h-8 text-xs font-bold text-primary hover:bg-primary/5"
+                >
+                  {showAllDbAttributes
+                    ? (isBg ? "Скрий" : "Hide")
+                    : (isBg ? "Покажи всички" : "Show all")}
+                </Button>
+              </div>
+
+              {showAllDbAttributes && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  {/* Remaining required beyond the smart cap */}
+                  {dbRequiredAttrs.slice(SMART_REQUIRED_LIMIT).map((attr) => {
+                    const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
+                    return (
+                      <div key={attr.id} className="space-y-1.5">
+                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                          {getName(attr)}
+                          <span className="text-destructive ml-1">*</span>
+                        </Label>
+                        {attr.attribute_type === "select" && attr.options?.length ? (
+                          <Select
+                            value={currentValue || undefined}
+                            onValueChange={(value) => handleAttributeChange(attr, value)}
+                          >
+                            <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
+                              <SelectValue placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {attr.options.map((opt, i) => (
+                                <SelectItem key={opt} value={opt} className="font-medium">
+                                  {isBg && attr.options_bg?.[i] ? attr.options_bg[i] : opt}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Input
+                            value={currentValue}
+                            onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                            placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                            type={attr.attribute_type === "number" ? "number" : "text"}
+                            className="h-12 rounded-xl border-border font-medium"
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Optional attributes */}
+                  {dbOptionalAttrs.map((attr) => {
+                    const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
+                    return (
+                      <div key={attr.id} className="space-y-1.5">
+                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                          {getName(attr)}
+                        </Label>
+                        {attr.attribute_type === "select" && attr.options?.length ? (
+                          <Select
+                            value={currentValue || undefined}
+                            onValueChange={(value) => handleAttributeChange(attr, value)}
+                          >
+                            <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
+                              <SelectValue placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {attr.options.map((opt, i) => (
+                                <SelectItem key={opt} value={opt} className="font-medium">
+                                  {isBg && attr.options_bg?.[i] ? attr.options_bg[i] : opt}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Input
+                            value={currentValue}
+                            onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                            placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                            type={attr.attribute_type === "number" ? "number" : "text"}
+                            className="h-12 rounded-xl border-border font-medium"
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Category-Specific Required Attributes (from config) */}
+          {!isLoading && dbRequiredSmart.length === 0 && categoryConfig && categoryConfig.requiredAttributes.length > 0 && (
+            <div className="space-y-4">
+              {/* Header with completion indicator */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-sm font-bold">
+                  {filledRequiredCount === requiredAttrsCount ? (
+                    <CheckCircle className="size-4 text-primary" weight="fill" />
+                  ) : (
+                    <WarningCircle className="size-4 text-muted-foreground" weight="fill" />
+                  )}
+                  <span className="text-foreground uppercase tracking-wider text-[11px]">
+                    {isBg ? "Задължителни характеристики" : "Required specifications"}
+                  </span>
+                </div>
+                <span className="text-xs font-bold text-muted-foreground tabular-nums bg-muted/50 px-2 py-0.5 rounded-full">
+                  {filledRequiredCount}/{requiredAttrsCount}
+                </span>
+              </div>
+              
+              {/* Required attributes grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {categoryConfig.requiredAttributes.map((attr) => {
+                  const key = normalizeConfigKey(attr.key);
+                  // Special-case: if the category renames Brand to Make, prefer `brandName` for Make.
+                  const currentValue = key === "make" && brandName ? brandName : getConfigAttrValue(key);
+                  const label = isBg ? attr.name.bg : attr.name.en;
+                  const placeholder = attr.placeholder 
+                    ? (isBg ? attr.placeholder.bg : attr.placeholder.en)
+                    : undefined;
+                  
+                  return (
+                    <div key={attr.key} className="space-y-1.5">
+                      <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        {label}
+                        <span className="text-destructive ml-1">*</span>
+                      </Label>
+                      
+                      {attr.type === "select" && attr.options?.length ? (
+                        <Select
+                          value={currentValue || undefined}
+                          onValueChange={(value) => {
+                            if (key === "make") {
+                              setValue("brandName", value, { shouldValidate: false, shouldDirty: true });
+                              return;
+                            }
+                            handleConfigAttributeChange(key, value);
+                          }}
+                        >
+                          <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
+                            <SelectValue placeholder={`${isBg ? "Избери" : "Select"}...`} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {attr.options.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value} className="font-medium">
+                                {isBg ? opt.label.bg : opt.label.en}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          value={currentValue}
+                          onChange={(e) => {
+                            if (key === "make") {
+                              setValue("brandName", e.target.value, { shouldValidate: false, shouldDirty: true });
+                              return;
+                            }
+                            handleConfigAttributeChange(key, e.target.value);
+                          }}
+                          placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
+                          type={attr.type === "number" ? "number" : "text"}
+                          className="h-12 rounded-xl border-border font-medium"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Optional attributes from config */}
+          {!isLoading && dbRequiredSmart.length === 0 && categoryConfig?.optionalAttributes && categoryConfig.optionalAttributes.length > 0 && (
+            <div className="space-y-4 pt-2">
+              <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                {isBg ? "Препоръчителни (по желание)" : "Recommended (optional)"}
+              </Label>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {categoryConfig.optionalAttributes.map((attr) => {
+                  const key = normalizeConfigKey(attr.key);
+                  const currentValue = key === "make" && brandName ? brandName : getConfigAttrValue(key);
+                  const label = isBg ? attr.name.bg : attr.name.en;
+                  const placeholder = attr.placeholder 
+                    ? (isBg ? attr.placeholder.bg : attr.placeholder.en)
+                    : undefined;
+                  
+                  return (
+                    <div key={attr.key} className="space-y-1.5">
+                      <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        {label}
+                      </Label>
+                      
+                      {attr.type === "select" && attr.options?.length ? (
+                        <Select
+                          value={currentValue || undefined}
+                          onValueChange={(value) => {
+                            if (key === "make") {
+                              setValue("brandName", value, { shouldValidate: false, shouldDirty: true });
+                              return;
+                            }
+                            handleConfigAttributeChange(key, value);
+                          }}
+                        >
+                          <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
+                            <SelectValue placeholder={`${isBg ? "Избери" : "Select"}...`} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {attr.options.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value} className="font-medium">
+                                {isBg ? opt.label.bg : opt.label.en}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          value={currentValue}
+                          onChange={(e) => {
+                            if (key === "make") {
+                              setValue("brandName", e.target.value, { shouldValidate: false, shouldDirty: true });
+                              return;
+                            }
+                            handleConfigAttributeChange(key, e.target.value);
+                          }}
+                          placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
+                          type={attr.type === "number" ? "number" : "text"}
+                          className="h-12 rounded-xl border-border font-medium"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Database-based Predefined Attributes (fallback when no config) */}
+          {!isLoading && dbRequiredSmart.length === 0 && !categoryConfig && dbAttributes.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                <Info className="size-4" weight="bold" />
+                {isBg ? "Спецификациите помагат на купувачите" : "Item specifics help buyers"}
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {dbAttributes.map((attr) => {
+                  const currentValue = attributes.find(a => a.attributeId === attr.id)?.value || "";
+                  
+                  return (
+                    <div key={attr.id} className="space-y-1.5">
+                      <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        {getName(attr)}
+                        {attr.is_required && <span className="text-destructive ml-1">*</span>}
+                      </Label>
+                      
+                      {attr.attribute_type === "select" && attr.options?.length ? (
+                        <Select
+                          value={currentValue || undefined}
+                          onValueChange={(value) => handleAttributeChange(attr, value)}
+                        >
+                          <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
+                            <SelectValue placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {attr.options.map((opt, i) => (
+                              <SelectItem key={opt} value={opt} className="font-medium">
+                                {isBg && attr.options_bg?.[i] ? attr.options_bg[i] : opt}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          value={currentValue}
+                          onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                          placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                          type={attr.attribute_type === "number" ? "number" : "text"}
+                          className="h-12 rounded-xl border-border font-medium"
                         />
                       )}
                     </div>
@@ -390,27 +650,27 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
 
           {/* Custom Attributes */}
           {!isLoading && (
-            <div className="space-y-3">
-              <Label className="text-sm font-medium">
+            <div className="space-y-4 pt-4 border-t border-border/50">
+              <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                 {isBg ? "Допълнителни характеристики" : "Custom Attributes"}
               </Label>
               
               {/* Existing Custom Attributes */}
               {customAttrs.length > 0 && (
-                <div className="space-y-2">
+                <div className="grid gap-2">
                   {customAttrs.map((attr, index) => (
-                    <div key={index} className="flex items-center gap-2 rounded-md border border-border bg-muted/50 p-3">
-                      <div className="min-w-0 flex-1 grid grid-cols-1 gap-0.5 sm:grid-cols-2 sm:gap-2">
-                        <span className="truncate text-sm font-medium">{attr.name}</span>
-                        <span className="truncate text-sm text-muted-foreground">{attr.value}</span>
+                    <div key={index} className="flex items-center gap-3 rounded-xl border border-border bg-muted/30 p-3">
+                      <div className="min-w-0 flex-1 flex items-center gap-2">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider shrink-0">{attr.name}:</span>
+                        <span className="truncate text-sm font-bold text-foreground">{attr.value}</span>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleRemoveCustom(index)}
-                        className="p-1.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                        className="size-8 flex items-center justify-center rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
                         aria-label={isBg ? "Премахни" : "Remove"}
                       >
-                        <X className="size-4" />
+                        <X className="size-4" weight="bold" />
                       </button>
                     </div>
                   ))}
@@ -418,35 +678,36 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
               )}
 
               {/* Add New Custom Attribute */}
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
-                <div className="col-span-2 sm:col-span-1 space-y-1.5">
-                  <Label className="text-sm font-medium">{isBg ? "Име" : "Name"}</Label>
-                  <Input
-                    value={newAttrName}
-                    onChange={(e) => setNewAttrName(e.target.value)}
-                    placeholder={isBg ? "напр. Материал" : "e.g., Material"}
-                    className="h-11"
-                  />
-                </div>
-                <div className="col-span-2 sm:col-span-1 space-y-1.5">
-                  <Label className="text-sm font-medium">{isBg ? "Стойност" : "Value"}</Label>
-                  <Input
-                    value={newAttrValue}
-                    onChange={(e) => setNewAttrValue(e.target.value)}
-                    placeholder={isBg ? "напр. Памук" : "e.g., Cotton"}
-                    className="h-11"
-                  />
+              <div className="flex flex-col gap-3 p-4 rounded-2xl bg-muted/20 border border-dashed border-border">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Име" : "Name"}</Label>
+                    <Input
+                      value={newAttrName}
+                      onChange={(e) => setNewAttrName(e.target.value)}
+                      placeholder={isBg ? "напр. Материал" : "e.g., Material"}
+                      className="h-10 rounded-lg border-border font-medium text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Стойност" : "Value"}</Label>
+                    <Input
+                      value={newAttrValue}
+                      onChange={(e) => setNewAttrValue(e.target.value)}
+                      placeholder={isBg ? "напр. Памук" : "e.g., Cotton"}
+                      className="h-10 rounded-lg border-border font-medium text-sm"
+                    />
+                  </div>
                 </div>
                 <Button
                   type="button"
                   variant="outline"
-                  size="icon"
                   onClick={handleAddCustom}
                   disabled={!newAttrName.trim() || !newAttrValue.trim()}
-                  className="col-span-2 justify-self-end h-11 w-11 shrink-0 sm:col-span-1"
-                  aria-label={isBg ? "Добави характеристика" : "Add attribute"}
+                  className="h-10 rounded-xl border-primary/20 text-primary font-bold text-xs uppercase tracking-widest hover:bg-primary/5"
                 >
-                  <Plus className="size-4" />
+                  <Plus className="size-3.5 mr-2" weight="bold" />
+                  {isBg ? "Добави характеристика" : "Add attribute"}
                 </Button>
               </div>
             </div>

@@ -1,183 +1,100 @@
-# 🚀 CLEANUP EXECUTION PLAN
+# 🚀 CLEANUP EXECUTION PLAN (Protocol, Not a Laundry List)
 
-**Priority Order:** CRITICAL → HIGH → MEDIUM → LOW  
-**Estimated Total Time:** 4-6 hours  
-**Risk Level:** Low (all changes are removals or extractions)
+This file describes *how* we delete and prune safely. It intentionally does not try to be the “full refactor plan”.
 
----
+Canonical plan: [STRUCTURE.md](../STRUCTURE.md)
 
-## ⚡ PHASE 1: QUICK WINS (30 mins)
+Evidence inputs (candidate lists, not truth):
+- [FULL_CODEBASE_AUDIT.md](./FULL_CODEBASE_AUDIT.md)
+- [FILE_INVENTORY.md](./FILE_INVENTORY.md)
 
-### 1.1 Remove Unused Dependencies
-
-```bash
-# Run this command to remove unused production dependencies
-pnpm remove @dnd-kit/core @dnd-kit/modifiers @dnd-kit/sortable @dnd-kit/utilities \
-  @radix-ui/react-collapsible @radix-ui/react-context-menu @radix-ui/react-menubar \
-  @tanstack/react-table @vercel/analytics embla-carousel embla-carousel-autoplay \
-  embla-carousel-react input-otp marked react-day-picker react-markdown \
-  react-resizable-panels remark-breaks remark-gfm shiki use-stick-to-bottom
-
-# Remove unused dev dependencies
-pnpm remove -D cross-env dotenv shadcn supabase
-```
-
-**Expected Impact:**
-- Bundle size reduction: ~200-400KB
-- Fewer security vulnerabilities to track
-- Faster install times
-
-### 1.2 Add Missing Dependencies
-
-```bash
-pnpm add -D postcss-load-config
-# Note: 'pg' is only needed if scripts/apply-migration.js is kept
-```
+**Risk Reality:** cleanup is not “low risk” if we trust the inventory blindly. The protocol below is designed to keep risk low.
 
 ---
 
-## 🗑️ PHASE 2: DELETE UNUSED FILES (45 mins)
+## Protocol 0: Gates
 
-### 2.1 Safe Deletions (No dependencies)
+Run after every batch:
 
-Create a backup first, then delete in batches:
-
-#### Batch 1: Unused Scripts
-```bash
-rm scripts/apply-migration.js
-rm scripts/create-user.js
-rm scripts/seed-data.ts
-rm scripts/seed.js
-rm scripts/seed.ts
-rm scripts/setup-db.ts
-rm scripts/test-supabase-connection.ts
-rm scripts/verify-product.js
+```powershell
+pnpm -s exec tsc -p tsconfig.json --noEmit --pretty false
+pnpm -s build
 ```
 
-#### Batch 2: Unused Hooks
-```bash
-rm hooks/use-business-account.ts
-rm hooks/use-header-height.ts
-```
+For bigger batches:
 
-#### Batch 3: Unused Lib Files
-```bash
-rm lib/category-icons.tsx
-rm lib/currency.ts
-rm lib/sell-form-schema-v3.ts
-rm lib/toast-utils.ts
-```
-
-#### Batch 4: Unused Actions
-```bash
-rm app/actions/notifications.ts
-rm app/actions/revalidate.ts
-```
-
-#### Batch 5: Unused Component Directories
-```bash
-rm -rf components/badges/
-rm -rf components/category-subheader/
-rm -rf components/navigation/
-rm -rf components/icons/
-```
-
-#### Batch 6: Unused UI Components
-```bash
-rm components/ui/button-group.tsx
-rm components/ui/calendar.tsx
-rm components/ui/carousel.tsx
-rm components/ui/chat-container.tsx
-rm components/ui/code-block.tsx
-rm components/ui/collapsible.tsx
-rm components/ui/context-menu.tsx
-rm components/ui/empty.tsx
-rm components/ui/field.tsx
-rm components/ui/input-group.tsx
-rm components/ui/input-otp.tsx
-rm components/ui/item.tsx
-rm components/ui/kbd.tsx
-rm components/ui/markdown.tsx
-rm components/ui/menubar.tsx
-rm components/ui/message.tsx
-rm components/ui/prompt-input.tsx
-rm components/ui/resizable.tsx
-rm components/ui/scroll-button.tsx
-rm components/ui/searchable-filter-list.tsx
-rm components/ui/spinner.tsx
-rm components/ui/toaster.tsx
-rm components/ui/use-mobile.tsx
-```
-
-#### Batch 7: Unused Components
-```bash
-rm components/analytics.tsx
-rm components/app-sidebar.tsx
-rm components/attribute-filters.tsx
-rm components/breadcrumb.tsx
-rm components/category-sidebar.tsx
-rm components/category-subheader.tsx
-rm components/data-table.tsx
-rm components/error-boundary.tsx
-rm components/header-dropdowns.tsx
-rm components/image-upload.tsx
-rm components/language-switcher.tsx
-rm components/main-nav.tsx
-rm components/mega-menu.tsx
-rm components/mobile-search-bar.tsx
-rm components/nav-documents.tsx
-rm components/product-actions.tsx
-rm components/product-form-enhanced.tsx
-rm components/product-form.tsx
-rm components/product-price.tsx
-rm components/product-row.tsx
-rm components/product-variant-selector.tsx
-rm components/promo-banner-strip.tsx
-rm components/rating-scroll-link.tsx
-rm components/section-cards.tsx
-rm components/seller-card.tsx
-rm components/sign-out-button.tsx
-rm components/sticky-add-to-cart.tsx
-rm components/sticky-checkout-button.tsx
-rm components/tabbed-product-section.tsx
-rm components/theme-provider.tsx
-rm components/upgrade-banner.tsx
-```
-
-#### Batch 8: Unused Lib Data Files
-```bash
-rm lib/data/badges.ts
-rm lib/data/profile-data.ts
-```
-
-#### Batch 9: Unused Sell Schemas
-```bash
-rm -rf components/sell/schemas/
-```
-
-#### Batch 10: Demo Files (Optional - if demos not needed)
-```bash
-rm -rf app/[locale]/(main)/sell/demo1/
-```
-
-### 2.2 Verification After Deletion
-
-```bash
-# 1. Run TypeScript check
-pnpm tsc --noEmit
-
-# 2. Run build
-pnpm build
-
-# 3. Run tests
+```powershell
+pnpm -s lint
 pnpm test:e2e
 ```
 
 ---
 
-## 🔧 PHASE 3: FIX DUPLICATES (2 hours)
+## Protocol 1: “Verify Then Delete”
 
-### 3.1 Extract Shared Seller Stats
+For each candidate file or folder:
+
+1) Prove no references (imports/usages):
+
+```powershell
+git grep -n "<path-or-import>" -- app components lib hooks
+```
+
+2) Delete with history:
+
+```powershell
+git rm -- path/to/file
+# or
+git rm -r -- path/to/folder
+```
+
+3) Run gates.
+
+---
+
+## Protocol 2: “Prefer the Better Implementation”
+
+If the audit labels something “unused” but it’s cleaner than the current “used” code:
+
+- Do not delete it.
+- Promote it to the canonical implementation during the refactor phase.
+- Delete the worse implementation only after imports converge.
+
+## Protocol 3: Dependencies (Only After Code)
+
+Do dependency pruning after code convergence (otherwise you risk removing a dependency you actually want to keep).
+
+Workflow:
+
+```powershell
+git grep -n "<package-name>" -- app components lib hooks
+pnpm remove <package-name>
+pnpm install
+pnpm -s exec tsc -p tsconfig.json --noEmit --pretty false
+pnpm -s build
+```
+
+---
+
+## Where the candidate deletions live
+
+- Candidate file list: [FILE_INVENTORY.md](./FILE_INVENTORY.md)
+- Candidate dependency list: [FULL_CODEBASE_AUDIT.md](./FULL_CODEBASE_AUDIT.md)
+- Execution checklist: [production/02-CLEANUP.md](../production/02-CLEANUP.md)
+
+---
+
+## Duplicates: treat as “convergence”, not “cleanup”
+
+When you see duplicates, the correct move is:
+
+1) Pick the best implementation.
+2) Make it canonical.
+3) Add re-export shims.
+4) Update imports until everything converges.
+5) Delete the losers.
+
+If you want a concrete list of known duplicates and extraction candidates, use [FULL_CODEBASE_AUDIT.md](./FULL_CODEBASE_AUDIT.md).
 
 **Create:** `lib/data/seller-stats.ts`
 

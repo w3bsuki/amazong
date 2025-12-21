@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { TextAa } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 
@@ -44,32 +44,34 @@ export function TitleField({
         <Field data-invalid={fieldState.invalid} className={className}>
           {/* Section Header (non-compact mode) */}
           {!compact && (
-            <div className="flex items-center gap-3.5 mb-4">
-              <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
-                <TextAa className="size-5 text-muted-foreground" weight="bold" />
-              </div>
-              <div>
-                <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
-                  {isBg ? "Заглавие" : "Title"}
-                </FieldLabel>
-                <FieldDescription className="text-sm text-muted-foreground mt-0.5">
-                  {isBg 
-                    ? `${minLength}-${maxLength} символа. Бъдете конкретни.`
-                    : `${minLength}-${maxLength} characters. Be specific.`}
-                </FieldDescription>
+            <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
+              <div className="flex items-center gap-3.5">
+                <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
+                  <TextAa className="size-5 text-muted-foreground" weight="bold" />
+                </div>
+                <div>
+                  <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
+                    {isBg ? "Заглавие" : "Title"}
+                  </FieldLabel>
+                  <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
+                    {isBg 
+                      ? `${minLength}-${maxLength} символа. Бъдете конкретни.`
+                      : `${minLength}-${maxLength} characters. Be specific.`}
+                  </FieldDescription>
+                </div>
               </div>
             </div>
           )}
 
           {/* Compact Label - clear and bold */}
           {compact && (
-            <FieldLabel className="text-sm font-semibold mb-form-sm">
+            <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
               {isBg ? "Заглавие" : "Title"}
             </FieldLabel>
           )}
 
           {/* Input with character count */}
-          <FieldContent>
+          <FieldContent className={cn(!compact && "p-5")}>
             <div className="relative">
               <Input
                 {...field}
@@ -80,27 +82,27 @@ export function TitleField({
                   : "e.g., iPhone 15 Pro Max 256GB"}
                 maxLength={maxLength}
                 className={cn(
-                  "pr-16 h-touch-lg text-base rounded-2xl",
+                  "pr-20 h-12 text-base font-bold rounded-xl border-border shadow-xs",
                   fieldState.invalid && "border-destructive focus-visible:ring-destructive"
                 )}
               />
               <span 
                 className={cn(
-                  "absolute right-3 top-1/2 -translate-y-1/2 text-sm tabular-nums font-medium",
+                  "absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold tabular-nums uppercase tracking-widest",
                   charCount >= maxLength 
                     ? "text-destructive" 
                     : charCount >= minLength 
                       ? "text-muted-foreground"
-                      : "text-muted-foreground/60"
+                      : "text-muted-foreground/40"
                 )}
               >
-                {charCount}/{maxLength}
+                {charCount} / {maxLength}
               </span>
             </div>
 
             {/* Helper text - shows progress toward minimum */}
             {charCount > 0 && charCount < minLength && (
-              <p className="mt-form-sm text-sm text-muted-foreground">
+              <p className="mt-2 text-xs font-bold text-primary uppercase tracking-wider">
                 {isBg 
                   ? `Добавете още ${minLength - charCount} символа`
                   : `Add ${minLength - charCount} more characters`}

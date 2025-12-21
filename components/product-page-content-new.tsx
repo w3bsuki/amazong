@@ -26,7 +26,7 @@ import {
 import { cn } from "@/lib/utils"
 import { formatPrice } from "@/lib/format-price"
 import { AddToCart } from "@/components/add-to-cart"
-import { useWishlist } from "@/lib/wishlist-context"
+import { useWishlist } from "@/components/providers/wishlist-context"
 
 // Import extracted components
 import {

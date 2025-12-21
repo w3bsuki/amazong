@@ -1,8 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useCart } from "@/lib/cart-context"
-import { WishlistButton } from "@/components/wishlist-button"
+import { useCart } from "@/components/providers/cart-context"
+import { WishlistButton } from "@/components/common/wishlist/wishlist-button"
 import { useTranslations, useLocale } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useState } from "react"

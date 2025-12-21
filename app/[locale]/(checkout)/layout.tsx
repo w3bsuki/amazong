@@ -1,5 +1,5 @@
-import { CheckoutHeader } from "@/components/checkout-header"
-import { CheckoutFooter } from "@/components/checkout-footer"
+import { CheckoutHeader } from "./_components/checkout-header"
+import { CheckoutFooter } from "./_components/checkout-footer"
 import { setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 
