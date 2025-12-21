@@ -11,6 +11,9 @@ import {
 import {
   Drawer,
   DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -75,9 +78,6 @@ export function CategorySelector({
     return flatCategories.find((c) => c.id === value) || null;
   }, [flatCategories, value]);
 
-  const getName = (cat: Category) =>
-    locale === "bg" && cat.name_bg ? cat.name_bg : cat.name;
-
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
     onChange("", []);
@@ -97,18 +97,18 @@ export function CategorySelector({
       type="button"
       onClick={() => setIsOpen(true)}
       className={cn(
-        "w-full flex items-center justify-between gap-2 h-10 px-3 text-left",
-        "bg-background border border-input rounded-lg",
+        "w-full flex items-center justify-between gap-3 min-h-touch px-4 py-3.5 text-left touch-action-manipulation",
+        "bg-background border rounded-xl",
         "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        "transition-colors",
+        "transition-colors active:bg-accent/50",
         className
       )}
     >
       {selectedCategory ? (
         <>
           <div className="flex-1 min-w-0">
-            <span className="text-sm font-medium truncate block">
-              {getName(selectedCategory)}
+            <span className="text-sm font-medium line-clamp-2 wrap-break-word">
+              {selectedCategory.fullPath}
             </span>
           </div>
           <div className="flex items-center gap-1 shrink-0">
@@ -152,6 +152,14 @@ export function CategorySelector({
         {TriggerButton}
         <Drawer open={isOpen} onOpenChange={setIsOpen} snapPoints={[1]}>
           <DrawerContent>
+            <DrawerHeader className="sr-only">
+              <DrawerTitle>
+                {locale === "bg" ? "Избери категория" : "Select Category"}
+              </DrawerTitle>
+              <DrawerDescription>
+                {locale === "bg" ? "Изберете категория за вашия продукт" : "Choose a category for your product"}
+              </DrawerDescription>
+            </DrawerHeader>
             <CategoryModalContent {...contentProps} isMobile />
           </DrawerContent>
         </Drawer>
@@ -264,6 +272,22 @@ function CategoryModalContent({
     }
   }, [categories, navigationPath, activeL1, isMobile, getChildren]);
 
+  // Helper to construct FlatCategory for lazy-loaded categories
+  const constructFlatCategory = useCallback(
+    (cat: Category, path: Category[]): FlatCategory => {
+      const fullPath = [...path, cat]
+        .map((c) => (locale === "bg" && c.name_bg ? c.name_bg : c.name))
+        .join(" › ");
+      return {
+        ...cat,
+        path: [...path, cat],
+        fullPath,
+        searchText: `${cat.name} ${cat.name_bg || ""} ${cat.slug}`.toLowerCase(),
+      };
+    },
+    [locale]
+  );
+
   // Navigation handlers
   const handleNavigate = useCallback(async (cat: Category) => {
     const depth = navigationPath.length;
@@ -271,8 +295,13 @@ function CategoryModalContent({
 
     // If we're already at max depth, treat selection as final.
     if (depth >= MAX_DEPTH) {
-      const flatCat = flatCategories.find((c) => c.id === cat.id);
-      if (flatCat) onSelect(flatCat);
+      // First try to find in flatCategories (for pre-loaded items)
+      let flatCat = flatCategories.find((c) => c.id === cat.id);
+      // If not found (lazy-loaded), construct it from the navigation path
+      if (!flatCat) {
+        flatCat = constructFlatCategory(cat, navigationPath);
+      }
+      onSelect(flatCat);
       return;
     }
 
@@ -288,10 +317,13 @@ function CategoryModalContent({
       return;
     }
 
-    // Leaf category
-    const flatCat = flatCategories.find((c) => c.id === cat.id);
-    if (flatCat) onSelect(flatCat);
-  }, [MAX_DEPTH, ensureChildrenLoaded, flatCategories, getChildren, navigationPath.length, onSelect]);
+    // Leaf category - first try flatCategories, then construct
+    let flatCat = flatCategories.find((c) => c.id === cat.id);
+    if (!flatCat) {
+      flatCat = constructFlatCategory(cat, navigationPath);
+    }
+    onSelect(flatCat);
+  }, [MAX_DEPTH, constructFlatCategory, ensureChildrenLoaded, flatCategories, getChildren, navigationPath, onSelect]);
 
   const handleDesktopNavigate = useCallback(async (cat: Category) => {
     const knownChildren = getChildren(cat);
@@ -306,9 +338,15 @@ function CategoryModalContent({
       return;
     }
 
-    const flatCat = flatCategories.find((c) => c.id === cat.id);
-    if (flatCat) onSelect(flatCat);
-  }, [ensureChildrenLoaded, flatCategories, getChildren, onSelect]);
+    // Leaf category - first try flatCategories, then construct
+    let flatCat = flatCategories.find((c) => c.id === cat.id);
+    if (!flatCat) {
+      // For desktop, the path is just [activeL1, cat] if activeL1 is set
+      const path = activeL1 ? [activeL1] : [];
+      flatCat = constructFlatCategory(cat, path);
+    }
+    onSelect(flatCat);
+  }, [activeL1, constructFlatCategory, ensureChildrenLoaded, flatCategories, getChildren, onSelect]);
 
   const handleBack = useCallback(() => {
     setNavigationPath((prev) => prev.slice(0, -1));
@@ -331,7 +369,7 @@ function CategoryModalContent({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={locale === "bg" ? "Търси..." : "Search..."}
-              className="pl-9 h-9 text-sm"
+              className="pl-10 h-12 text-base rounded-xl"
             />
           </div>
         </div>
@@ -400,7 +438,7 @@ function CategoryModalContent({
                       type="button"
                       onClick={() => handleSearchSelect(cat)}
                       className={cn(
-                        "w-full flex flex-col items-start gap-0.5 px-3 py-2 rounded-lg text-left transition-colors",
+                        "w-full flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl text-left transition-colors min-h-touch-sm touch-action-manipulation",
                         "hover:bg-muted",
                         value === cat.id && "bg-primary/10"
                       )}
@@ -560,7 +598,7 @@ function CategoryCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "relative flex items-center justify-between gap-1 w-full p-2.5 rounded-lg border text-left transition-colors",
+        "relative flex items-center justify-between gap-2 w-full px-3 py-3 rounded-xl border text-left transition-colors min-h-touch touch-action-manipulation",
         "hover:bg-muted/50 hover:border-primary/30",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         isSelected ? "border-primary bg-primary/5" : "border-border"

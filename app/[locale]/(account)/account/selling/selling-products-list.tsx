@@ -319,7 +319,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <Link 
-                      href={`/${locale}/product/${product.id}`}
+                      href={`/product/${product.id}`}
                       className="font-medium text-foreground hover:text-primary line-clamp-1 text-sm"
                     >
                       {product.title}
@@ -498,7 +498,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <Link 
-                  href={`/${locale}/product/${product.id}`}
+                  href={`/product/${product.id}`}
                   className="font-medium text-foreground hover:text-primary line-clamp-1"
                 >
                   {product.title}
@@ -603,7 +603,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                 )}
               </Button>
               <Button asChild variant="ghost" size="icon" className="size-9">
-                <Link href={`/${locale}/product/${product.id}`}>
+                <Link href={`/product/${product.id}`}>
                   <Eye className="size-4" />
                   <span className="sr-only">View</span>
                 </Link>

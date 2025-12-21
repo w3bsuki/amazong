@@ -1,7 +1,7 @@
 
 import { createClient } from "@supabase/supabase-js"
-import { NextResponse } from "next/server"
-import { createClient as createServerClient } from "@/lib/supabase/server"
+import { NextResponse, type NextRequest } from "next/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { z } from "zod"
 
 // Attribute schema
@@ -27,19 +27,25 @@ const productSchema = z.object({
         thumbnailUrl: z.string().url()
     })).min(1, "At least one image is required"),
     attributes: z.array(attributeSchema).optional(),
+    // Shipping options
+    sellerCity: z.string().optional(),
+    shipsToBulgaria: z.boolean().default(true),
+    shipsToUK: z.boolean().default(false),
+    shipsToEurope: z.boolean().default(false),
+    shipsToUSA: z.boolean().default(false),
+    shipsToWorldwide: z.boolean().default(false),
+    pickupOnly: z.boolean().default(false),
+    freeShipping: z.boolean().default(false),
 })
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         // 1. Verify the user is authenticated
-        const supabaseUser = await createServerClient()
-        if (!supabaseUser) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-        }
+        const { supabase: supabaseUser, applyCookies } = createRouteHandlerClient(request)
 
         const { data: { user } } = await supabaseUser.auth.getUser()
         if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+            return applyCookies(NextResponse.json({ error: "Unauthorized" }, { status: 401 }))
         }
 
         const body = await request.json()
@@ -56,14 +62,23 @@ export async function POST(request: Request) {
             listingType: body.listingType || "normal",
             images: body.images,
             attributes: Array.isArray(body.attributes) ? body.attributes : [],
+            // Shipping options
+            sellerCity: body.sellerCity || null,
+            shipsToBulgaria: body.shipsToBulgaria ?? true,
+            shipsToUK: body.shipsToUK ?? false,
+            shipsToEurope: body.shipsToEurope ?? false,
+            shipsToUSA: body.shipsToUSA ?? false,
+            shipsToWorldwide: body.shipsToWorldwide ?? false,
+            pickupOnly: body.pickupOnly ?? false,
+            freeShipping: body.freeShipping ?? false,
         })
 
         if (!parseResult.success) {
             const errors = parseResult.error.flatten().fieldErrors
-            return NextResponse.json({ 
+            return applyCookies(NextResponse.json({ 
                 error: "Validation failed", 
                 details: errors 
-            }, { status: 400 })
+            }, { status: 400 }))
         }
 
         const data = parseResult.data
@@ -93,15 +108,24 @@ export async function POST(request: Request) {
                 listing_type: "normal", // Always normal - boost applied after payment
                 is_boosted: false,
                 boost_expires_at: null,
+                // Shipping fields
+                seller_city: data.sellerCity || null,
+                ships_to_bulgaria: data.shipsToBulgaria ?? true,
+                ships_to_uk: data.shipsToUK ?? false,
+                ships_to_europe: data.shipsToEurope ?? false,
+                ships_to_usa: data.shipsToUSA ?? false,
+                ships_to_worldwide: data.shipsToWorldwide ?? false,
+                pickup_only: data.pickupOnly ?? false,
+                free_shipping: data.freeShipping ?? false,
             })
             .select()
             .single()
 
         if (error) {
             console.error("Product Creation Error:", error)
-            return NextResponse.json({ 
+            return applyCookies(NextResponse.json({ 
                 error: error.message || "Failed to create product" 
-            }, { status: 500 })
+            }, { status: 500 }))
         }
 
         // 5. Insert all product images to product_images table
@@ -145,7 +169,7 @@ export async function POST(request: Request) {
         // Note: Boost is NO LONGER auto-created here
         // User must complete Stripe checkout via /api/boost/checkout to activate boost
 
-        return NextResponse.json({ success: true, product })
+        return applyCookies(NextResponse.json({ success: true, product }))
     } catch (error: unknown) {
         console.error("Product Creation Error:", error)
         const message = error instanceof Error ? error.message : "Internal Server Error"

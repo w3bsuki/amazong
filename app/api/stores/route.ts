@@ -1,23 +1,20 @@
 import { createClient } from "@supabase/supabase-js"
-import { NextResponse } from "next/server"
-import { createClient as createServerClient } from "@/lib/supabase/server"
+import { NextResponse, type NextRequest } from "next/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 
 /**
  * @deprecated This route is deprecated. Users now get a username at signup.
  * This route now updates the user's profile with seller-related fields.
  * The sellers table has been merged into the profiles table.
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         // 1. Verify the user is authenticated
-        const supabaseUser = await createServerClient()
-        if (!supabaseUser) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-        }
+        const { supabase: supabaseUser, applyCookies } = createRouteHandlerClient(request)
 
         const { data: { user } } = await supabaseUser.auth.getUser()
         if (!user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+            return applyCookies(NextResponse.json({ error: "Unauthorized" }, { status: 401 }))
         }
 
         const body = await request.json()
@@ -34,14 +31,14 @@ export async function POST(request: Request) {
         } = body
 
         if (!storeName || typeof storeName !== 'string' || storeName.trim().length < 2) {
-            return NextResponse.json({ error: "Display name must be at least 2 characters" }, { status: 400 })
+            return applyCookies(NextResponse.json({ error: "Display name must be at least 2 characters" }, { status: 400 }))
         }
 
         const trimmedName = storeName.trim()
 
         // Validate account type
         if (!["personal", "business"].includes(accountType)) {
-            return NextResponse.json({ error: "Invalid account type" }, { status: 400 })
+            return applyCookies(NextResponse.json({ error: "Invalid account type" }, { status: 400 }))
         }
 
         // 2. Use Service Role to bypass RLS
@@ -58,7 +55,7 @@ export async function POST(request: Request) {
             .single()
 
         if (!existingProfile) {
-            return NextResponse.json({ error: "Profile not found" }, { status: 404 })
+            return applyCookies(NextResponse.json({ error: "Profile not found" }, { status: 404 }))
         }
 
         // 4. Build profile update data
@@ -104,7 +101,7 @@ export async function POST(request: Request) {
             throw profileError
         }
 
-        return NextResponse.json(profile)
+        return applyCookies(NextResponse.json(profile))
     } catch (error: unknown) {
         console.error("Store Creation Error:", error)
         const message = error instanceof Error ? error.message : "Internal Server Error"

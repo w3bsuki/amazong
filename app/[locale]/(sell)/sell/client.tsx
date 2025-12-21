@@ -5,18 +5,16 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { 
   SignInPrompt, 
-  SellHeaderV3,
+  SellHeader,
   SellFormSkeleton,
   SellErrorBoundary,
-  SellForm,
-  SellFormStepper,
+  UnifiedSellForm,
   SellerOnboardingWizard,
   type Category,
   type Seller
 } from "../_components";
 import { AiSellAssistant } from "@/components/ai-sell-assistant";
 import { useParams } from "next/navigation";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Sparkles, FileText, ArrowLeft } from "lucide-react";
 
@@ -44,10 +42,8 @@ export function SellPageClient({
   // AI-first mode toggle (default: AI assistant)
   const [useAiAssistant, setUseAiAssistant] = useState(true);
   
-  // Get locale and mobile state at top level (not conditionally)
   const params = useParams();
   const locale = typeof params?.locale === "string" ? params.locale : "en";
-  const isMobile = useIsMobile();
   const isBg = locale === "bg";
 
   // Listen for auth state changes (for client-side navigation)
@@ -113,7 +109,7 @@ export function SellPageClient({
   if (!user) {
     return (
       <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
-        <SellHeaderV3 />
+        <SellHeader />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto">
           <SignInPrompt />
         </div>
@@ -144,7 +140,7 @@ export function SellPageClient({
 
     return (
       <div className="min-h-screen bg-muted/30 flex flex-col">
-        <SellHeaderV3 user={{ email: user.email }} />
+        <SellHeader user={{ email: user.email }} />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <SellerOnboardingWizard
             userId={user.id}
@@ -161,7 +157,7 @@ export function SellPageClient({
   if (!seller) {
     return (
       <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
-        <SellHeaderV3 user={{ email: user.email }} />
+        <SellHeader user={{ email: user.email }} />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <div className="max-w-md mx-auto text-center space-y-4 px-4">
             <h2 className="text-2xl font-bold">
@@ -234,36 +230,27 @@ export function SellPageClient({
     );
   }
 
-  // Traditional Form Mode
+  // Traditional Form Mode - Uses UnifiedSellForm which handles responsive layouts internally
   return (
     <SellErrorBoundary sellerId={seller.id}>
-      {/* Floating button to switch back to AI */}
-      {!isMobile && (
-        <div className="fixed bottom-4 right-4 z-50 md:bottom-6 md:right-6">
-          <Button
-            onClick={() => setUseAiAssistant(true)}
-            className="gap-2 shadow-lg"
-            size="lg"
-          >
-            <Sparkles className="size-4" />
-            {isBg ? "Използвай AI" : "Try AI Assistant"}
-          </Button>
-        </div>
-      )}
+      {/* Floating button to switch back to AI (desktop only) */}
+      <div className="fixed bottom-4 right-4 z-50 hidden lg:block lg:bottom-6 lg:right-6">
+        <Button
+          onClick={() => setUseAiAssistant(true)}
+          className="gap-2 shadow-lg"
+          size="lg"
+        >
+          <Sparkles className="size-4" />
+          {isBg ? "Използвай AI" : "Try AI Assistant"}
+        </Button>
+      </div>
       
-      {isMobile ? (
-        <SellFormStepper 
-          sellerId={seller.id}
-          locale={locale}
-          categories={categories}
-        />
-      ) : (
-        <SellForm 
-          sellerId={seller.id}
-          locale={locale}
-          categories={categories}
-        />
-      )}
+      {/* UnifiedSellForm handles both desktop and mobile layouts */}
+      <UnifiedSellForm 
+        sellerId={seller.id}
+        locale={locale}
+        categories={categories}
+      />
     </SellErrorBoundary>
   );
 }

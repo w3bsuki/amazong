@@ -269,7 +269,7 @@ export function OrderDetailContent({ locale, order }: OrderDetailContentProps) {
                 return (
                   <div key={item.id} className="flex gap-4 p-3 rounded-lg border bg-card">
                     {/* Product Image */}
-                    <div className="relative size-20 rounded-md overflow-hidden bg-muted flex-shrink-0">
+                    <div className="relative size-20 rounded-md overflow-hidden bg-muted shrink-0">
                       {item.product?.images?.[0] ? (
                         <Image
                           src={item.product.images[0]}
@@ -289,7 +289,7 @@ export function OrderDetailContent({ locale, order }: OrderDetailContentProps) {
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <Link 
-                            href={`/${locale}/product/${item.product?.slug || item.product_id}`}
+                            href={`/product/${item.product?.slug || item.product_id}`}
                             className="font-medium hover:underline line-clamp-2"
                           >
                             {item.product?.title || "Unknown Product"}
@@ -300,7 +300,7 @@ export function OrderDetailContent({ locale, order }: OrderDetailContentProps) {
                             </p>
                           )}
                         </div>
-                        <Badge variant="outline" className="flex-shrink-0">
+                        <Badge variant="outline" className="shrink-0">
                           {locale === "bg" ? itemConfig.labelBg : itemConfig.label}
                         </Badge>
                       </div>

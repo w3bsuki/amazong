@@ -101,7 +101,7 @@ export function SalesTable({ sales, locale, formatCurrency }: SalesTableProps) {
                   </div>
                   <div className="min-w-0">
                     <Link 
-                      href={`/${locale}/product/${sale.product_id}`}
+                      href={`/product/${sale.product_id}`}
                       className="font-medium text-sm hover:underline line-clamp-1"
                     >
                       {sale.product?.title || 'Unknown Product'}

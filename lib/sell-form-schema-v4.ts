@@ -72,6 +72,7 @@ export const sellFormSchemaV4 = z.object({
     .array(z.object({
       id: z.string(),
       name: z.string(),
+      name_bg: z.string().nullable().optional(),
       slug: z.string(),
     }))
     .optional(),
@@ -136,6 +137,9 @@ export const sellFormSchemaV4 = z.object({
   minOfferPercent: z.coerce.number().min(1).max(99).optional(), // Auto-decline offers below X%
 
   // ========== SHIPPING ==========
+  // Seller city - where the item ships from (required for Bulgaria shipping or local pickup)
+  sellerCity: z.string().optional(),
+  
   shipsToBulgaria: z.boolean().default(true),
   shipsToUK: z.boolean().default(false),
   shipsToEurope: z.boolean().default(false),
@@ -181,6 +185,7 @@ export const defaultSellFormValuesV4: SellFormDataV4 = {
   quantity: 1,
   acceptOffers: false,
   minOfferPercent: undefined,
+  sellerCity: "",
   shipsToBulgaria: true,
   shipsToUK: false,
   shipsToEurope: false,

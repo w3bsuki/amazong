@@ -945,6 +945,7 @@ export type Database = {
           rating: number | null
           review_count: number | null
           search_vector: unknown
+          seller_city: string | null
           seller_id: string
           ships_to_bulgaria: boolean | null
           ships_to_europe: boolean | null
@@ -994,6 +995,7 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           search_vector?: unknown
+          seller_city?: string | null
           seller_id: string
           ships_to_bulgaria?: boolean | null
           ships_to_europe?: boolean | null
@@ -1043,6 +1045,7 @@ export type Database = {
           rating?: number | null
           review_count?: number | null
           search_vector?: unknown
+          seller_city?: string | null
           seller_id?: string
           ships_to_bulgaria?: boolean | null
           ships_to_europe?: boolean | null
@@ -1098,6 +1101,7 @@ export type Database = {
           commission_rate: number | null
           country_code: string | null
           created_at: string
+          default_city: string | null
           display_name: string | null
           email: string | null
           final_value_fee: number | null
@@ -1132,6 +1136,7 @@ export type Database = {
           commission_rate?: number | null
           country_code?: string | null
           created_at?: string
+          default_city?: string | null
           display_name?: string | null
           email?: string | null
           final_value_fee?: number | null
@@ -1166,6 +1171,7 @@ export type Database = {
           commission_rate?: number | null
           country_code?: string | null
           created_at?: string
+          default_city?: string | null
           display_name?: string | null
           email?: string | null
           final_value_fee?: number | null

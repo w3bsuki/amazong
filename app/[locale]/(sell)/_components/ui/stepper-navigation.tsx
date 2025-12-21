@@ -30,43 +30,50 @@ export function StepperNavigation({
   const isLastStep = currentStep === totalSteps;
 
   return (
-    <footer className="fixed bottom-0 inset-x-0 z-40 bg-background border-t border-border pb-safe">
-      <div className="flex items-center gap-3 px-4 py-3">
-        {/* Back button */}
+    <footer className="fixed bottom-0 inset-x-0 z-40 bg-background border-t border-border">
+      {/* Safe area padding for home indicator */}
+      <div className="flex items-center gap-3 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        {/* Back button - larger touch target */}
         <Button
           type="button"
           variant="outline"
           onClick={onBack}
           disabled={isFirstStep || isSubmitting}
           className={cn(
-            "h-12 px-4 gap-2 font-medium",
+            "h-12 min-w-22 gap-2 text-sm font-medium rounded-xl transition-all",
+            "active:scale-[0.98]",
             isFirstStep && "opacity-0 pointer-events-none"
           )}
         >
-          <CaretLeft className="size-5" weight="bold" />
+          <CaretLeft className="size-4" weight="bold" />
           {isBg ? "Назад" : "Back"}
         </Button>
 
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* Next / Submit button */}
+        {/* Next / Submit button - prominent CTA */}
         {isLastStep ? (
           <Button
             type="button"
             onClick={onSubmit}
             disabled={!isStepValid || isSubmitting}
-            className="h-12 px-6 gap-2 font-semibold bg-green-600 hover:bg-green-700 text-white"
+            className={cn(
+              "h-12 min-w-32 gap-2 text-sm font-semibold rounded-xl transition-all",
+              "bg-primary text-primary-foreground hover:bg-primary/90",
+              "active:scale-[0.98]",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
           >
             {isSubmitting ? (
               <>
-                <Spinner className="size-5 animate-spin" />
+                <Spinner className="size-4 animate-spin" />
                 {isBg ? "Публикуване..." : "Publishing..."}
               </>
             ) : (
               <>
-                <Rocket className="size-5" weight="fill" />
-                {isBg ? "Публикувай" : "Publish Listing"}
+                <Rocket className="size-4" weight="fill" />
+                {isBg ? "Публикувай" : "Publish"}
               </>
             )}
           </Button>
@@ -75,10 +82,14 @@ export function StepperNavigation({
             type="button"
             onClick={onNext}
             disabled={!isStepValid || isSubmitting}
-            className="h-12 px-6 gap-2 font-semibold"
+            className={cn(
+              "h-12 min-w-26 gap-2 text-sm font-semibold rounded-xl transition-all",
+              "active:scale-[0.98]",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
           >
-            {isBg ? "Напред" : "Next"}
-            <CaretRight className="size-5" weight="bold" />
+            {isBg ? "Напред" : "Continue"}
+            <CaretRight className="size-4" weight="bold" />
           </Button>
         )}
       </div>

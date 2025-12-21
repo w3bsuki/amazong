@@ -116,7 +116,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     }
   }
 
-  // SEO: Use canonical URL with slug
+  // SEO: Use stable URL under /product/{slugOrId}
+  // Canonical seller URL is handled via redirect in the page when seller username is known.
   const canonicalSlug = product.slug || product.id
   const canonicalUrl = `/${locale}/product/${canonicalSlug}`
 
@@ -222,11 +223,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
     _sellerStats = statsData
   }
 
-  // SEO: Redirect to SEO-friendly URL with username (301 redirect)
-  // All old URLs (UUID, product-slug only) redirect to /product/{username}/{productSlug}
-  // This helps Google consolidate page authority to the canonical URL
+  // SEO: Redirect to canonical URL with username
+  // Canonical pattern: /{locale}/{username}/{productSlug}
   if (product.slug && seller?.username) {
-    redirect(`/${locale}/product/${seller.username}/${product.slug}`)
+    redirect(`/${locale}/${seller.username}/${product.slug}`)
   }
 
   // Fetch parent category if exists

@@ -486,7 +486,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
             </Button>
 
             <Button variant="outline" className="w-full" asChild>
-              <Link href={`/${locale}/product/${productId}`}>
+              <Link href={`/product/${productId}`}>
                 {locale === 'bg' ? 'Виж продукта' : 'View Product'}
               </Link>
             </Button>

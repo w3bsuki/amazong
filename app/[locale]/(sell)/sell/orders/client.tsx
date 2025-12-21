@@ -305,7 +305,7 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                             
                             {item.product?.slug && (
                               <Button variant="ghost" size="sm" asChild>
-                                <Link href={`/${locale}/product/${item.product.slug}`} target="_blank">
+                                <Link href={`/product/${item.product.slug}`} target="_blank">
                                   <ExternalLink className="h-4 w-4" />
                                 </Link>
                               </Button>
