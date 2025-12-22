@@ -22,7 +22,8 @@ import {
   Truck,
   Briefcase,
   Crown,
-  User
+  User,
+  Plus
 } from "@phosphor-icons/react"
 import { useMemo } from "react"
 
@@ -35,12 +36,12 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "hover:border-primary/50",
-        grid: "hover:border-primary/50",
-        ultimate: "hover:border-primary/50",
-        compact: "hover:border-primary/50",
-        marketplace: "hover:border-primary/50",
-        featured: "hover:border-primary/50",
+        default: "",
+        grid: "",
+        ultimate: "",
+        compact: "",
+        marketplace: "",
+        featured: "",
       },
       state: {
         default: "border-border/60",
