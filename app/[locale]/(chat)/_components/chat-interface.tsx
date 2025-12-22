@@ -33,7 +33,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { blockUser } from "@/app/actions/blocked-users"
-import { reportConversation } from "@/app/actions/report-conversation"
+import { reportConversation } from "@/app/[locale]/(chat)/_actions/report-conversation"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import Image from "next/image"

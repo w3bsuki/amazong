@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
 import { createClient } from "@/lib/supabase/server"
-import { MessagesPageClient } from "./messages-client"
+import { MessagesPageClient } from "../_components/messages-page-client"
 
 export async function generateMetadata({
   params
