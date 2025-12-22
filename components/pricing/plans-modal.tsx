@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 // Reuse shared components from plan-card
-import { PlansGrid, PlansGridSkeleton, type Plan } from "@/components/plan-card"
+import { PlansGrid, PlansGridSkeleton, type Plan } from "@/components/pricing/plan-card"
 
 interface PlansModalProps {
   /** Trigger element - if not provided, use open/onOpenChange for controlled mode */

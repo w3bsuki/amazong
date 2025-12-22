@@ -1,15 +1,15 @@
 import { Suspense } from "react"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
-import { CategoryCircles } from "@/components/category-circles"
-import { StartSellingBanner } from "@/components/start-selling-banner"
+import { CategoryCircles } from "@/components/category/category-circles"
+import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 import type { Metadata } from 'next'
-import { PromoCard } from "@/components/promo-card"
-import { MobileCategoryRail, DesktopCategoryRail } from "@/components/mobile-category-rail"
+import { PromoCard } from "@/components/promo/promo-card"
+import { MobileCategoryRail, DesktopCategoryRail } from "@/components/mobile/mobile-category-rail"
 
 // Desktop-only components
-import { DesktopHeroCTA } from "@/components/desktop-hero-cta"
-import { TabbedProductFeed, TabbedProductFeedSkeleton } from "@/components/tabbed-product-feed"
+import { DesktopHeroCTA } from "@/components/desktop/desktop-hero-cta"
+import { TabbedProductFeed, TabbedProductFeedSkeleton } from "@/components/sections/tabbed-product-feed"
 
 // Async sections using cached data
 import { 

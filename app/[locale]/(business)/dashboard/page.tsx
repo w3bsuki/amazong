@@ -1,4 +1,4 @@
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
+import { ChartAreaInteractive } from "@/components/charts/chart-area-interactive"
 import { BusinessStatsCards } from "./_components/business-stats-cards"
 import { BusinessRecentActivity } from "./_components/business-recent-activity"
 import { BusinessQuickActions } from "./_components/business-quick-actions"

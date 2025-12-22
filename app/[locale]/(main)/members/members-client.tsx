@@ -32,7 +32,7 @@ import {
   ArrowRight,
   SpinnerGap,
 } from "@phosphor-icons/react"
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
 import { formatDistanceToNow } from "date-fns"
 
 interface Member {

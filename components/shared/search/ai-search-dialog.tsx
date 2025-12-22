@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { AIChatbot } from "@/components/ai-chatbot"
+import { AIChatbot } from "@/components/ai/ai-chatbot"
 
 type AiSearchDialogProps = {
   open: boolean

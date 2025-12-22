@@ -53,9 +53,10 @@ import {
   Desktop,
   Lightning,
   Plant,
-  Cpu,
-  type Icon as PhosphorIcon
-} from "@phosphor-icons/react"
+  Cpu
+} from "@phosphor-icons/react/dist/ssr"
+
+type PhosphorIcon = typeof Monitor
 
 // Component-level icon mapping used by card/circle UIs.
 // Returns the icon component so callers can control size/weight/className.

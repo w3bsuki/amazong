@@ -6,7 +6,7 @@ import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { ProductPageContent } from "@/components/shared/product/product-page-content-new"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker"
-import { ReviewsSection } from "@/components/reviews-section"
+import { ReviewsSection } from "@/components/product/reviews/reviews-section"
 import { ProductBreadcrumb } from "@/components/shared/product/product-breadcrumb"
 
 // =============================================================================

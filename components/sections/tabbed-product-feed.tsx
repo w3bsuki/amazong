@@ -223,20 +223,22 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 
   return (
     <section 
-      className="rounded-xl border border-border bg-card overflow-hidden"
+      className="rounded-xl border border-border/60 bg-card overflow-hidden"
       aria-label={locale === "bg" ? "Обяви" : "Listings"}
     >
-      {/* Header with Tabs */}
-      <div className="px-5 pt-4 pb-2">
-        <div className="flex items-center justify-between gap-4">
-          {/* Title - muted, lighter weight for subheader pattern */}
-          <h2 className="text-lg font-semibold text-foreground shrink-0">
-            {locale === "bg" ? "Обяви" : "Listings"}
-          </h2>
+      {/* Header with Tabs - Refined Typography */}
+      <div className="px-5 pt-5 pb-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-bold tracking-tight text-foreground/90 shrink-0">
+              {locale === "bg" ? "Обяви" : "Listings"}
+            </h2>
+            <div className="h-1 w-1 rounded-full bg-muted-foreground/30 hidden sm:block" />
+          </div>
 
-          {/* Tab Navigation - Pill style with proper ARIA */}
+          {/* Tab Navigation - Refined Pill style */}
           <div 
-            className="flex items-center gap-1 p-1 rounded-full bg-muted/70 border border-border"
+            className="flex items-center gap-1 p-1 rounded-full bg-muted/40 border border-border/50"
             role="tablist"
             aria-label={locale === "bg" ? "Филтриране на обяви" : "Filter listings"}
           >
@@ -253,15 +255,15 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
                   role="tab"
                   tabIndex={isActive ? 0 : -1}
                   className={cn(
-                    "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                    "flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold transition-none",
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     isActive
-                      ? "bg-brand text-white shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                   )}
                 >
-                  <Icon size={16} weight={isActive ? "fill" : "regular"} aria-hidden="true" />
-                  <span className="hidden sm:inline">{tab.label}</span>
+                  <Icon size={16} weight={isActive ? "fill" : "bold"} aria-hidden="true" />
+                  <span>{tab.label}</span>
                 </button>
               )
             })}
@@ -270,10 +272,10 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
           {/* See All Link */}
           <Link
             href={`/search?sort=${activeTab === "deals" ? "deals" : activeTab === "promoted" ? "promoted" : "newest"}`}
-            className="text-sm font-medium text-link hover:text-link-hover hover:underline underline-offset-2 inline-flex items-center gap-1 shrink-0 transition-colors"
+            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 shrink-0"
           >
             {locale === "bg" ? "Виж всички" : "See all"}
-            <CaretRight size={14} weight="bold" aria-hidden="true" />
+            <CaretRight size={12} weight="bold" aria-hidden="true" />
           </Link>
         </div>
       </div>

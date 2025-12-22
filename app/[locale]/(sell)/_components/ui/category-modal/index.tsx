@@ -19,21 +19,30 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { Category } from "../../types";
+import type { Category, CategoryPathItem } from "../../types";
 
 interface CategoryModalProps {
   categories: Category[];
   value: string;
-  selectedPath?: Category[];
-  onChange: (categoryId: string, path: Category[]) => void;
+  selectedPath?: CategoryPathItem[];
+  onChange: (categoryId: string, path: CategoryPathItem[]) => void;
   locale?: string;
   className?: string;
 }
 
 interface FlatCategory extends Category {
-  path: Category[];
+  path: CategoryPathItem[];
   fullPath: string;
   searchText: string;
+}
+
+function toPathItem(cat: Category): CategoryPathItem {
+  return {
+    id: cat.id,
+    name: cat.name,
+    name_bg: cat.name_bg,
+    slug: cat.slug,
+  };
 }
 
 // ============================================================================
@@ -53,9 +62,9 @@ export function CategorySelector({
   // Flatten categories for search and lookup
   const flatCategories = useMemo(() => {
     const result: FlatCategory[] = [];
-    function flatten(cats: Category[], path: Category[] = []) {
+    function flatten(cats: Category[], path: CategoryPathItem[] = []) {
       for (const cat of cats) {
-        const currentPath = [...path, cat];
+        const currentPath = [...path, toPathItem(cat)];
         const fullPath = currentPath
           .map((c) => (locale === "bg" && c.name_bg ? c.name_bg : c.name))
           .join(" › ");
@@ -89,6 +98,7 @@ export function CategorySelector({
           .join(" › ");
         return {
           ...last,
+          parent_id: null,
           path: selectedPath,
           fullPath,
           searchText: "",
@@ -300,12 +310,13 @@ function CategoryModalContent({
   // Helper to construct FlatCategory for lazy-loaded categories
   const constructFlatCategory = useCallback(
     (cat: Category, path: Category[]): FlatCategory => {
-      const fullPath = [...path, cat]
+      const pathItems = [...path, cat].map(toPathItem);
+      const fullPath = pathItems
         .map((c) => (locale === "bg" && c.name_bg ? c.name_bg : c.name))
         .join(" › ");
       return {
         ...cat,
-        path: [...path, cat],
+        path: pathItems,
         fullPath,
         searchText: `${cat.name} ${cat.name_bg || ""} ${cat.slug}`.toLowerCase(),
       };

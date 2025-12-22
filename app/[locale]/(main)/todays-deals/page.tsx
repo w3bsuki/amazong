@@ -17,7 +17,7 @@ import {
     Lightning as Zap,
     type Icon
 } from "@phosphor-icons/react"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import { useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"

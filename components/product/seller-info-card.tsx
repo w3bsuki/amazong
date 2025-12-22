@@ -10,8 +10,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { ContactSellerButton } from "@/components/contact-seller-button"
-import { FollowSellerButton } from "@/components/follow-seller-button"
+import { ContactSellerButton } from "@/components/seller/contact-seller-button"
+import { FollowSellerButton } from "@/components/seller/follow-seller-button"
 import { formatPrice } from "@/lib/format-price"
 
 interface SellerData {

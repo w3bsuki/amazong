@@ -10,7 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { DesktopFilterModal } from "@/components/desktop-filter-modal"
+import { DesktopFilterModal } from "@/components/desktop/desktop-filter-modal"
 import type { CategoryAttribute } from "@/lib/data/categories"
 
 interface DesktopFiltersProps {

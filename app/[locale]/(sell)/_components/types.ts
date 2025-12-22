@@ -16,6 +16,8 @@ export interface Category {
   children?: Category[]; // Optional to support both flat and nested structures
 }
 
+export type CategoryPathItem = Pick<Category, "id" | "name" | "name_bg" | "slug">;
+
 /**
  * Seller/Store information
  */

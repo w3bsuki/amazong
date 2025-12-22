@@ -13,7 +13,7 @@ import {
   type Category,
   type Seller
 } from "../_components";
-import { AiSellAssistant } from "@/components/ai-sell-assistant";
+import { AiSellAssistant } from "@/components/ai/ai-sell-assistant";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sparkles, FileText, ArrowLeft } from "lucide-react";

@@ -20,7 +20,7 @@ import {
   Plus,
   ArrowRight
 } from "@phosphor-icons/react"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import { useTranslations, useLocale } from "next-intl"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"

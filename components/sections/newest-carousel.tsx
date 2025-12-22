@@ -2,6 +2,7 @@ import { getNewestProducts, toUI, type Product, type ShippingZone } from '@/lib/
 import { ProductCarouselSection, type CarouselProduct } from '@/components/shared/product/product-carousel-section'
 import { getLocale } from 'next-intl/server'
 import { cookies } from 'next/headers'
+import { TrendUp } from '@phosphor-icons/react/dist/ssr'
 
 /**
  * Server component: Newest Products Carousel
@@ -38,6 +39,7 @@ export async function NewestCarousel() {
       ctaText={locale === 'bg' ? 'Виж всички' : 'See all'}
       ctaHref="/search?sort=newest"
       emptyMessage={locale === 'bg' ? 'Няма нови обяви' : 'No new listings'}
+      icon={<TrendUp size={20} weight="bold" />}
     />
   )
 }

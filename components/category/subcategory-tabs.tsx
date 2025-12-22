@@ -1,6 +1,6 @@
 "use client"
 
-import { SubcategoryCircles } from "@/components/subcategory-circles"
+import { SubcategoryCircles } from "@/components/category/subcategory-circles"
 
 interface Category {
   id: string

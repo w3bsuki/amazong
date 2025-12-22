@@ -44,6 +44,7 @@ const AVATAR_COLORS = ["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]
  */
 const productCardVariants = cva(
   // Base: cursor, block, relative, full height, overflow hidden for clean edges
+  // Removed all transitions for "super fast" UI
   "group relative block h-full min-w-0 cursor-pointer overflow-hidden",
   {
     variants: {
@@ -54,7 +55,7 @@ const productCardVariants = cva(
        */
       variant: {
         default: "rounded-lg",
-        featured: "rounded-xl border border-border bg-card",
+        featured: "rounded-xl border border-border/60 bg-card",
       },
       /**
        * State modifiers:
@@ -69,37 +70,37 @@ const productCardVariants = cva(
       },
     },
     compoundVariants: [
-      // Default variant states - flat, hover gets subtle shadow
+      // Default variant states - flat, NO SHADOW on hover as requested
       {
         variant: "default",
         state: "default",
-        className: "hover:shadow-sm",
+        className: "",
       },
       {
         variant: "default",
         state: "promoted",
-        className: "ring-1 ring-primary/20 hover:shadow-sm",
+        className: "ring-1 ring-primary/10",
       },
       {
         variant: "default",
         state: "sale",
-        className: "hover:shadow-sm",
+        className: "",
       },
-      // Featured variant states - card surface with hover shadow
+      // Featured variant states - card surface, NO SHADOW on hover as requested
       {
         variant: "featured",
         state: "default",
-        className: "hover:shadow-sm",
+        className: "",
       },
       {
         variant: "featured",
         state: "promoted",
-        className: "border-primary/30 ring-1 ring-primary/20 hover:shadow-md",
+        className: "border-primary/20 ring-1 ring-primary/10",
       },
       {
         variant: "featured",
         state: "sale",
-        className: "border-destructive/20 hover:shadow-sm",
+        className: "border-destructive/10",
       },
     ],
     defaultVariants: {
@@ -528,23 +529,26 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
             </Button>
           )}
 
-          {/* Quick Add Button - Bottom Right (Shadcn Outline Button) */}
+          {/* Quick Add Button - Blue on card hover as requested */}
           {showQuickAdd && (
             <Button
               variant={inCart ? "default" : "outline"}
               size="icon"
               className={cn(
-                "absolute bottom-1.5 right-1.5 z-10 size-7 rounded-full transition-colors duration-150",
-                !inCart &&
-                  "bg-background/80 backdrop-blur-sm hover:bg-background hover:shadow-sm"
+                "absolute bottom-1.5 right-1.5 z-10 size-7 rounded-full",
+                !inCart && [
+                  "bg-background/90 backdrop-blur-sm border-border/50",
+                  "group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary"
+                ],
+                inCart && "bg-primary text-primary-foreground"
               )}
               onClick={handleAddToCart}
               disabled={isOwnProduct || !inStock}
             >
               {inCart ? (
-                <ShoppingCart size={16} weight="fill" />
+                <ShoppingCart size={14} weight="fill" />
               ) : (
-                <Plus size={16} weight="bold" />
+                <Plus size={14} weight="bold" />
               )}
               <span className="sr-only">{inCart ? "In cart" : "Add to cart"}</span>
             </Button>
@@ -567,62 +571,48 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            CONTENT SECTION - Typography optimized for "scan speed"
-            Swiss Design: Clear hierarchy, generous whitespace (p-4)
+            CONTENT SECTION - Ultra-tight spacing & Refined Typography
+            Swiss Design: Clear hierarchy, optimized for desktop scanning
         ═══════════════════════════════════════════════════════════════════ */}
         <div
           className={cn(
-            "flex flex-col gap-0.5 md:gap-1",
-            variant === "featured" ? "p-3 md:p-4" : "pt-2 md:pt-3"
+            "flex flex-col gap-0",
+            variant === "featured" ? "p-2.5" : "pt-1.5"
           )}
         >
           {/* Meta info: Brand & Condition */}
           {(brand || condition) && (
-            <div className="flex items-center gap-1.5 truncate text-xs text-muted-foreground">
+            <div className="flex items-center gap-1 truncate text-[9px] uppercase tracking-widest font-bold text-muted-foreground/60">
               {brand && <span className="truncate">{brand}</span>}
               {brand && condition && (
-                <span className="size-0.5 shrink-0 rounded-full bg-muted-foreground/30" />
+                <span className="size-0.5 shrink-0 rounded-full bg-muted-foreground/20" />
               )}
               {condition && <span className="shrink-0">{condition}</span>}
             </div>
           )}
 
-          {/* Title - Scannable (text-sm, medium, truncate to 1-2 lines) */}
+          {/* Title - Refined for desktop */}
           <h3
             className={cn(
-              "text-sm font-medium leading-snug text-foreground",
+              "text-[13px] font-medium leading-tight text-foreground/90",
               variant === "featured" ? "line-clamp-2" : "line-clamp-1"
             )}
           >
             {title}
           </h3>
 
-          {/* Smart Pills - Featured variant only */}
-          {variant === "featured" && smartPills.length > 0 && (
-            <div className="flex flex-wrap gap-1 pt-0.5">
-              {smartPills.map((pill) => (
-                <span
-                  key={pill.key}
-                  className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground"
-                >
-                  {pill.label}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Price Row - Bold, prominent (text-lg for price) */}
-          <div className="flex items-baseline gap-1.5 pt-1">
+          {/* Price Row - Bold, prominent */}
+          <div className="flex items-baseline gap-1 pt-0.5">
             <span
               className={cn(
-                "text-base font-bold leading-none md:text-lg",
+                "text-sm font-bold tracking-tight",
                 hasDiscount ? "text-destructive" : "text-foreground"
               )}
             >
               {formatPrice(price)}
             </span>
             {hasDiscount && resolvedOriginalPrice && (
-              <span className="text-xs text-muted-foreground line-through">
+              <span className="text-[10px] text-muted-foreground/50 line-through decoration-muted-foreground/30">
                 {formatPrice(resolvedOriginalPrice)}
               </span>
             )}

@@ -30,7 +30,7 @@ import {
   ArrowRight,
 } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/shared/product/product-card"
-import { FollowSellerButton } from "@/components/follow-seller-button"
+import { FollowSellerButton } from "@/components/seller/follow-seller-button"
 
 interface PublicProfileClientProps {
   profile: {

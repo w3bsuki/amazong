@@ -56,8 +56,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 import { Toaster } from "@/components/providers/sonner";
 import { CartProvider } from "@/components/providers/cart-context";
 import { WishlistProvider } from "@/components/providers/wishlist-context";
-import { AuthStateListener } from "@/components/auth-state-listener";
-import { GeoWelcomeModal } from "@/components/geo-welcome-modal";
+import { AuthStateListener } from "@/components/providers/auth-state-listener";
+import { GeoWelcomeModal } from "@/components/common/geo-welcome-modal";
 
 /**
  * Root Locale Layout

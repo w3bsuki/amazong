@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import { 
   Users, Globe, Heart, Shield, Truck, 
   Trophy, Target, Leaf, Headphones,

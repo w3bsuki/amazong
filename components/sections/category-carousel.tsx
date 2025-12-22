@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
 import { ProductCarouselSection, type CarouselProduct } from "@/components/shared/product/product-carousel-section"
 import { getProductsByCategorySlug, toUI, type Product, type ShippingZone } from "@/lib/data/products"
+import { getCategoryIconForSlug } from "@/lib/category-icons"
 
 interface CategoryCarouselProps {
   locale: string
@@ -36,6 +37,8 @@ export async function CategoryCarousel({ locale, categorySlug, title }: Category
       }
     })
 
+  const Icon = getCategoryIconForSlug(categorySlug)
+
   return (
     <ProductCarouselSection
       title={title}
@@ -43,6 +46,7 @@ export async function CategoryCarousel({ locale, categorySlug, title }: Category
       ctaText={locale === "bg" ? "Виж всички" : "See all"}
       ctaHref={`/categories/${categorySlug}`}
       emptyMessage={locale === "bg" ? "Няма обяви в тази категория" : "No listings in this category"}
+      icon={<Icon size={20} weight="duotone" />}
     />
   )
 }

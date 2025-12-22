@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"

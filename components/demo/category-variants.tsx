@@ -9,7 +9,7 @@ import {
   ArrowRight,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
-import { CategoryBrowseCard } from "@/components/category-browse-card"
+import { CategoryBrowseCard } from "@/components/category/category-browse-card"
 
 export type DemoCategory = {
   id: string

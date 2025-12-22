@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server"
 import { ProductPageContent } from "@/components/shared/product/product-page-content-new"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker"
-import { ReviewsSectionServer } from "@/components/reviews-section-server"
+import { ReviewsSectionServer } from "@/components/product/reviews/reviews-section-server"
 import { ProductBreadcrumb } from "@/components/shared/product/product-breadcrumb"
 import { Skeleton } from "@/components/ui/skeleton"
 

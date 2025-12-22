@@ -7,7 +7,7 @@ import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { CategorySelector } from "../ui/category-modal";
-import type { Category } from "../types";
+import type { CategoryPathItem } from "../types";
 
 // ============================================================================
 // CATEGORY FIELD - Category picker using context pattern
@@ -15,7 +15,7 @@ import type { Category } from "../types";
 
 interface CategoryFieldProps {
   /** Callback when category changes (for side effects like loading attributes) */
-  onCategoryChange?: (categoryId: string, path: Category[]) => void;
+  onCategoryChange?: (categoryId: string, path: CategoryPathItem[]) => void;
   /** Custom class name for the field wrapper */
   className?: string;
   /** Use compact layout (no card wrapper) */

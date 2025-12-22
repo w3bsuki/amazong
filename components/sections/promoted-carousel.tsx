@@ -2,6 +2,7 @@ import { getFeaturedProducts, toUI, type Product, type ShippingZone } from '@/li
 import { ProductCarouselSection, type CarouselProduct } from '@/components/shared/product/product-carousel-section'
 import { getLocale } from 'next-intl/server'
 import { cookies } from 'next/headers'
+import { Sparkle } from '@phosphor-icons/react/dist/ssr'
 
 /**
  * Server component: Promoted Products Carousel
@@ -40,6 +41,7 @@ export async function PromotedCarousel() {
       ctaHref="/search?promoted=true"
       emptyMessage={locale === 'bg' ? 'Няма промотирани обяви' : 'No promoted listings'}
       variant="highlighted"
+      icon={<Sparkle size={20} weight="fill" />}
     />
   )
 }

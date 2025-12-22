@@ -21,7 +21,7 @@ import {
   IconLogout,
   IconSparkles,
 } from "@tabler/icons-react"
-import { PlansModal } from "@/components/plans-modal"
+import { PlansModal } from "@/components/pricing/plans-modal"
 import { Button } from "@/components/ui/button"
 
 import {

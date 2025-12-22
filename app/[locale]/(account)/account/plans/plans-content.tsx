@@ -20,7 +20,7 @@ import {
 import { Lightning, User, Buildings, X, ArrowsClockwise, CalendarBlank, Warning } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { PlansGrid, type Plan } from "@/components/plan-card"
+import { PlansGrid, type Plan } from "@/components/pricing/plan-card"
 import { cancelSubscription, reactivateSubscription } from "@/app/actions/subscriptions"
 
 interface SubscriptionPlan {

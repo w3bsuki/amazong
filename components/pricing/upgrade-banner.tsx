@@ -6,7 +6,7 @@ import { Crown, Star, ArrowRight, Rocket } from "@phosphor-icons/react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { PlansModal } from "@/components/plans-modal"
+import { PlansModal } from "@/components/pricing/plans-modal"
 import { cn } from "@/lib/utils"
 
 // =============================================================================

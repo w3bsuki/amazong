@@ -23,15 +23,15 @@ import { Spinner } from "@/components/ui/spinner"
 // ============================================
 // UNUSED CUSTOM COMPONENTS - Testing which work
 // ============================================
-import { ImageUpload } from "@/components/image-upload"
-import { LanguageSwitcher } from "@/components/language-switcher"
+import { ImageUpload } from "@/components/common/image-upload"
+import { LanguageSwitcher } from "@/components/navigation/language-switcher"
 import { ProductPrice, InlinePrice } from "@/components/shared/product/product-price"
-import { PromoBannerStrip } from "@/components/promo-banner-strip"
-import { RatingScrollLink } from "@/components/rating-scroll-link"
-import { SectionCards } from "@/components/section-cards"
-import { SignOutButton } from "@/components/sign-out-button"
-import { StickyCheckoutButton } from "@/components/sticky-checkout-button"
-import { UpgradeBanner } from "@/components/upgrade-banner"
+import { PromoBannerStrip } from "@/components/promo/promo-banner-strip"
+import { RatingScrollLink } from "@/components/product/rating-scroll-link"
+import { SectionCards } from "@/components/sections/section-cards"
+import { SignOutButton } from "@/components/auth/sign-out-button"
+import { StickyCheckoutButton } from "@/components/sticky/sticky-checkout-button"
+import { UpgradeBanner } from "@/components/pricing/upgrade-banner"
 
 // ============================================
 // DEMO PAGE - Component Gallery

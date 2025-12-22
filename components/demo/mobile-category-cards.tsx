@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { CategoryBrowseCard } from "@/components/category-browse-card"
+import { CategoryBrowseCard } from "@/components/category/category-browse-card"
 import type { Icon as PhosphorIcon } from "@phosphor-icons/react"
 
 export type DemoMobileCategory = {

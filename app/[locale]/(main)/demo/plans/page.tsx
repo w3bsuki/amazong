@@ -26,7 +26,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
-import { PlanCard, type Plan } from "@/components/plan-card"
+import { PlanCard, type Plan } from "@/components/pricing/plan-card"
 
 function formatEUR(price: number, locale: string) {
   if (price === 0) return locale === "bg" ? "Безплатно" : "Free"

@@ -1,7 +1,8 @@
 import { getProducts, toUI, type ShippingZone } from '@/lib/data/products'
-import { FeaturedProductsSection } from '@/components/featured-products-section'
+import { FeaturedProductsSection } from '@/components/sections/featured-products-section'
 import { getLocale } from 'next-intl/server'
 import { cookies } from 'next/headers'
+import { Star } from '@phosphor-icons/react/dist/ssr'
 
 /**
  * Async server component that fetches featured/recommended products.
@@ -40,6 +41,7 @@ export async function FeaturedSection() {
       products={transformedProducts}
       ctaText={locale === "bg" ? "Виж всички" : "View all"}
       ctaHref="/search?featured=true"
+      icon={<Star size={20} weight="fill" />}
     />
   )
 }

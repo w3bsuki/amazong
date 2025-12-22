@@ -1,7 +1,7 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { Button } from "@/components/ui/button"
-import { SubcategoryTabs } from "@/components/subcategory-tabs"
+import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
 import { MobileFilters } from "@/components/common/filters/mobile-filters"
 import { DesktopFilters } from "@/components/common/filters/desktop-filters"
 import { FilterChips } from "@/components/common/filters/filter-chips"

@@ -6,7 +6,7 @@ import { House, SquaresFour, ChatCircle, User, PlusCircle } from "@phosphor-icon
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
-import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile-menu-sheet"
+import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile/mobile-menu-sheet"
 import { useMessages } from "@/components/providers/message-context"
 
 export function MobileTabBar() {

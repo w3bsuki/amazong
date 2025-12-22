@@ -967,7 +967,23 @@ export function AIChatbot({
                       {allProducts.map((product) => (
                         <ProductCard
                           key={product.id}
-                          product={product}
+                          id={String(product.id)}
+                          title={String(product.title ?? "")}
+                          price={Number(product.price ?? 0)}
+                          image={
+                            String(
+                              product.image_url ||
+                                product.image ||
+                                product.images?.[0] ||
+                                "/placeholder.svg"
+                            )
+                          }
+                          rating={Number(product.rating ?? 0)}
+                          reviews={Number(product.review_count ?? 0)}
+                          originalPrice={(product.list_price ?? null) as number | null}
+                          tags={Array.isArray(product.tags) ? product.tags : []}
+                          slug={(product.slug ?? null) as string | null}
+                          storeSlug={(product.store_slug ?? null) as string | null}
                           showWishlist={true}
                           showRating={false}
                           showPills={true}

@@ -33,6 +33,8 @@ interface ProductCarouselSectionProps {
   emptyMessage?: string
   /** Visual style variant */
   variant?: "default" | "highlighted"
+  /** Optional icon to display next to the title */
+  icon?: React.ReactNode
 }
 
 /**
@@ -49,11 +51,11 @@ export function ProductCarouselSection({
   ctaHref,
   emptyMessage = "No products available",
   variant = "default",
+  icon,
 }: ProductCarouselSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
-  const [isHovering, setIsHovering] = useState(false)
 
   const checkScrollability = useCallback(() => {
     const container = scrollRef.current
@@ -109,62 +111,70 @@ export function ProductCarouselSection({
   return (
     <section 
       className={cn(
-        "rounded-xl border border-border overflow-hidden",
+        "rounded-xl border border-border/60 overflow-hidden shadow-xs",
         variant === "highlighted" ? "bg-card" : "bg-card"
       )}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Header */}
-      <div className="px-5 pt-4 pb-2 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">{title}</h2>
-        {ctaText && ctaHref && (
-          <Link
-            href={ctaHref}
-            className="text-sm font-medium text-link hover:text-link-hover hover:underline inline-flex items-center gap-1 transition-colors"
-          >
-            {ctaText}
-            <CaretRight size={14} weight="bold" />
-          </Link>
-        )}
+      {/* Header - Refined Typography with optional icon and trust-blue accent */}
+      <div className={cn(
+        "px-5 pt-5 pb-3 flex items-center justify-between border-b border-border/40",
+        variant === "highlighted" ? "bg-cta-trust-blue/5" : "bg-muted/5"
+      )}>
+        <div className="flex items-center gap-3">
+          {icon && (
+            <div className="size-10 rounded-xl bg-background border border-border/60 flex items-center justify-center text-cta-trust-blue shadow-xs">
+              {icon}
+            </div>
+          )}
+          <div className="flex flex-col">
+            <h2 className="text-xl font-bold tracking-tight text-foreground/90 leading-tight">{title}</h2>
+            <div className="h-1 w-10 bg-cta-trust-blue rounded-full mt-1 hidden md:block" />
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          {ctaText && ctaHref && (
+            <Link
+              href={ctaHref}
+              className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+            >
+              {ctaText}
+              <CaretRight size={12} weight="bold" />
+            </Link>
+          )}
+
+          {/* Navigation Buttons - Moved to Header */}
+          <div className="hidden md:flex items-center gap-1.5">
+            <button
+              onClick={() => scroll("left")}
+              disabled={!canScrollLeft}
+              className={cn(
+                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
+                "hover:bg-muted active:scale-95",
+                "disabled:opacity-30 disabled:cursor-not-allowed"
+              )}
+              aria-label="Scroll left"
+            >
+              <CaretLeft size={16} weight="bold" />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              disabled={!canScrollRight}
+              className={cn(
+                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
+                "hover:bg-muted active:scale-95",
+                "disabled:opacity-30 disabled:cursor-not-allowed"
+              )}
+              aria-label="Scroll right"
+            >
+              <CaretRight size={16} weight="bold" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Carousel Container */}
       <div className="relative">
-        {/* Left Arrow */}
-        <button
-          onClick={() => scroll("left")}
-          className={cn(
-            "absolute left-2 top-1/2 -translate-y-1/2 z-10",
-            "size-10 rounded-full bg-card shadow-lg border border-border",
-            "flex items-center justify-center",
-            "text-foreground hover:bg-muted transition-all duration-200",
-            "disabled:opacity-0 disabled:pointer-events-none",
-            canScrollLeft && isHovering ? "opacity-100" : "opacity-0"
-          )}
-          disabled={!canScrollLeft}
-          aria-label="Scroll left"
-        >
-          <CaretLeft size={20} weight="bold" />
-        </button>
-
-        {/* Right Arrow */}
-        <button
-          onClick={() => scroll("right")}
-          className={cn(
-            "absolute right-2 top-1/2 -translate-y-1/2 z-10",
-            "size-10 rounded-full bg-card shadow-lg border border-border",
-            "flex items-center justify-center",
-            "text-foreground hover:bg-muted transition-all duration-200",
-            "disabled:opacity-0 disabled:pointer-events-none",
-            canScrollRight && isHovering ? "opacity-100" : "opacity-0"
-          )}
-          disabled={!canScrollRight}
-          aria-label="Scroll right"
-        >
-          <CaretRight size={20} weight="bold" />
-        </button>
-
         {/* Products Scroll Container */}
         <div
           ref={scrollRef}

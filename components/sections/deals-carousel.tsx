@@ -2,6 +2,7 @@ import { getGlobalDeals, toUI, type Product, type ShippingZone } from '@/lib/dat
 import { ProductCarouselSection, type CarouselProduct } from '@/components/shared/product/product-carousel-section'
 import { getLocale } from 'next-intl/server'
 import { cookies } from 'next/headers'
+import { Tag } from '@phosphor-icons/react/dist/ssr'
 
 /**
  * Server component: Deals/Discounts Carousel
@@ -38,6 +39,7 @@ export async function DealsCarousel() {
       ctaText={locale === 'bg' ? 'Виж всички' : 'See all'}
       ctaHref="/todays-deals"
       emptyMessage={locale === 'bg' ? 'Няма налични оферти' : 'No deals available'}
+      icon={<Tag size={20} weight="fill" />}
     />
   )
 }

@@ -8,9 +8,9 @@ import { bg, enUS } from "date-fns/locale"
 import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"
-import { BuyerOrderActions } from "@/components/buyer-order-actions"
+import { BuyerOrderActions } from "@/components/buyer/buyer-order-actions"
 import { Button } from "@/components/ui/button"
-import { OrderStatusBadge } from "@/components/order-status-badge"
+import { OrderStatusBadge } from "@/components/orders/order-status-badge"
 import type { OrderItemStatus } from "@/lib/order-status"
 import { getOrderConversation } from "@/app/actions/orders"
 import {

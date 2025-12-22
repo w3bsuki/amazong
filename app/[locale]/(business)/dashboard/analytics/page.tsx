@@ -1,5 +1,5 @@
 import { requireDashboardAccess, getBusinessDashboardStats } from "@/lib/auth/business"
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
+import { ChartAreaInteractive } from "@/components/charts/chart-area-interactive"
 import { connection } from "next/server"
 import {
   Card,

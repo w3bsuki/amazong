@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Gift, Printer, CreditCard } from "@phosphor-icons/react/dist/ssr"
 import { EnvelopeSimple as Mail } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import { routing } from "@/i18n/routing"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components

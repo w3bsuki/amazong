@@ -1,5 +1,5 @@
 import { getPromoProducts, getBestSellers, getNewestProducts, toUI, type Product, type ShippingZone } from '@/lib/data/products'
-import { TrendingProductsSection } from '@/components/trending-products-section'
+import { TrendingProductsSection } from '@/components/sections/trending-products-section'
 import { getLocale } from 'next-intl/server'
 import { cookies } from 'next/headers'
 

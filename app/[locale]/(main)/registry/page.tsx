@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Gift, UserPlus } from "@phosphor-icons/react/dist/ssr"
-import { AppBreadcrumb, breadcrumbPresets } from "@/components/app-breadcrumb"
+import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 
 export default function RegistryPage() {
     return (

@@ -1,6 +1,6 @@
 "use client"
 
-import { AppBreadcrumb, type BreadcrumbItemData } from "@/components/app-breadcrumb"
+import { AppBreadcrumb, type BreadcrumbItemData } from "@/components/navigation/app-breadcrumb"
 
 interface ProductBreadcrumbProps {
   locale: string

@@ -1,5 +1,5 @@
 import { getGlobalDeals, toUI, type Product, type ShippingZone } from '@/lib/data/products'
-import { DealsSection } from '@/components/deals-section'
+import { DealsSection } from '@/components/sections/deals-section'
 import { getLocale } from 'next-intl/server'
 import { cookies } from 'next/headers'
 
