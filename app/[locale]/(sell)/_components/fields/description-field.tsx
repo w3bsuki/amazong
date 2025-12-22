@@ -63,18 +63,28 @@ export function DescriptionField({
 
           {/* Compact Label */}
           {compact && (
-            <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
-              {isBg ? "Описание" : "Description"}
-            </FieldLabel>
+            <div className="hidden">
+              <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
+                {isBg ? "Описание" : "Description"}
+              </FieldLabel>
+            </div>
           )}
 
-          {/* Rich Textarea */}
+          {/* Rich Textarea with label inside */}
           <FieldContent className={cn(!compact && "p-5")}>
             <div className={cn(
               "rounded-xl border shadow-xs overflow-hidden transition-all bg-background",
               "focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5",
               fieldState.invalid && "border-destructive focus-within:ring-destructive/5"
             )}>
+              <div className="px-4 pt-3">
+                <label 
+                  htmlFor="sell-form-description"
+                  className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground leading-none"
+                >
+                  {isBg ? "Описание" : "Description"}
+                </label>
+              </div>
               <textarea
                 {...field}
                 id="sell-form-description"
@@ -85,7 +95,7 @@ export function DescriptionField({
                 maxLength={maxLength}
                 rows={minRows}
                 className={cn(
-                  "block w-full resize-none border-0 bg-transparent px-4 py-3 text-base font-medium",
+                  "block w-full resize-none border-0 bg-transparent px-4 py-2 text-sm font-semibold",
                   "placeholder:text-muted-foreground/50 focus:ring-0 focus:outline-none",
                   "min-h-32"
                 )}

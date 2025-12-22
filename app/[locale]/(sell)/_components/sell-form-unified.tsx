@@ -9,6 +9,8 @@ import {
   Plus,
   Share,
   Eye,
+  SpinnerGap,
+  CloudArrowUp,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -156,6 +158,40 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [form]);
 
+  // Processing screen
+  if (isPending) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+        <div className="w-full max-w-sm text-center space-y-8">
+          <div className="relative mx-auto w-24 h-24">
+            {/* Outer spinning ring */}
+            <div className="absolute inset-0 rounded-full border-4 border-primary/10 border-t-primary animate-spin" />
+            {/* Inner icon */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <CloudArrowUp className="size-10 text-primary animate-bounce" weight="bold" />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
+              {isBg ? "Публикуване..." : "Publishing..."}
+            </h2>
+            <p className="text-muted-foreground font-medium">
+              {isBg 
+                ? "Подготвяме вашата обява за купувачите."
+                : "Preparing your listing for buyers."}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
+            <SpinnerGap className="size-4 animate-spin" weight="bold" />
+            <span>{isBg ? "Моля, изчакайте" : "Please wait"}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Success screen
   if (showSuccess) {
     const productTitle = form.getValues().title || (isBg ? "Вашият продукт" : "Your product");
@@ -214,9 +250,9 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
 
             {/* Action buttons - cleaner, more professional */}
             <div className="space-y-4 pt-4">
-              <Button asChild className="w-full h-14 gap-2 bg-primary hover:bg-primary/90 text-lg font-semibold rounded-2xl shadow-md">
+              <Button asChild className="w-full h-12 gap-2 bg-primary hover:bg-primary/90 text-base font-semibold rounded-xl shadow-md">
                 <Link href={createdProductHref || (createdProductId ? `/product/${createdProductId}` : "/")}>
-                  <Eye className="size-6" />
+                  <Eye className="size-5" />
                   {isBg ? "Виж обявата" : "View Listing"}
                 </Link>
               </Button>
@@ -284,12 +320,16 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
           onSubmit={handleSubmit}
           submitError={submitError}
           setSubmitError={setSubmitError}
+          isSubmitting={isPending}
         />
       </div>
 
       {/* Mobile Layout */}
       <div className="lg:hidden">
-        <MobileLayout onSubmit={handleSubmit} />
+        <MobileLayout 
+          onSubmit={handleSubmit} 
+          isSubmitting={isPending}
+        />
       </div>
     </>
   );

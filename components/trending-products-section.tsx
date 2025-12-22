@@ -6,7 +6,7 @@ import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CaretLeft, CaretRight, TrendUp, Tag, CurrencyCircleDollar } from "@phosphor-icons/react"
 import { useLocale } from "next-intl"
-import { ProductCard } from "@/components/common/product-card"
+import { ProductCard } from "@/components/shared/product/product-card"
 
 interface Product {
   id: string

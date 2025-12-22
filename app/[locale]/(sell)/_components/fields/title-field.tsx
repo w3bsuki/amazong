@@ -44,9 +44,9 @@ export function TitleField({
         <Field data-invalid={fieldState.invalid} className={className}>
           {/* Section Header (non-compact mode) */}
           {!compact && (
-            <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
+            <div className="p-5 pb-4 border-b border-form-section-border bg-muted/10">
               <div className="flex items-center gap-3.5">
-                <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
+                <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
                   <TextAa className="size-5 text-muted-foreground" weight="bold" />
                 </div>
                 <div>
@@ -63,16 +63,28 @@ export function TitleField({
             </div>
           )}
 
-          {/* Compact Label - clear and bold */}
+          {/* Compact Label - hidden if we use label inside */}
           {compact && (
-            <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
-              {isBg ? "Заглавие" : "Title"}
-            </FieldLabel>
+            <div className="hidden">
+              <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
+                {isBg ? "Заглавие" : "Title"}
+              </FieldLabel>
+            </div>
           )}
 
-          {/* Input with character count */}
+          {/* Input with label inside */}
           <FieldContent className={cn(!compact && "p-5")}>
-            <div className="relative">
+            <div className={cn(
+              "relative flex items-center h-12 px-4 rounded-xl border transition-all",
+              "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5",
+              fieldState.invalid && "border-destructive bg-destructive/5"
+            )}>
+              <label 
+                htmlFor="sell-form-title"
+                className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2"
+              >
+                {isBg ? "Заглавие:" : "Title:"}
+              </label>
               <Input
                 {...field}
                 id="sell-form-title"
@@ -82,13 +94,13 @@ export function TitleField({
                   : "e.g., iPhone 15 Pro Max 256GB"}
                 maxLength={maxLength}
                 className={cn(
-                  "pr-20 h-12 text-base font-bold rounded-xl border-border shadow-xs",
-                  fieldState.invalid && "border-destructive focus-visible:ring-destructive"
+                  "h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0",
+                  fieldState.invalid && "text-destructive"
                 )}
               />
               <span 
                 className={cn(
-                  "absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold tabular-nums uppercase tracking-widest",
+                  "ml-2 text-2xs font-bold tabular-nums uppercase tracking-widest shrink-0",
                   charCount >= maxLength 
                     ? "text-destructive" 
                     : charCount >= minLength 
@@ -96,7 +108,7 @@ export function TitleField({
                       : "text-muted-foreground/40"
                 )}
               >
-                {charCount} / {maxLength}
+                {charCount}/{maxLength}
               </span>
             </div>
 

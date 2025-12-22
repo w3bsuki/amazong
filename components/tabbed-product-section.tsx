@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CaretLeft, CaretRight } from "@phosphor-icons/react"
-import { ProductCard } from "@/components/common/product-card"
+import { ProductCard } from "@/components/shared/product/product-card"
 
 interface Product {
   id: string

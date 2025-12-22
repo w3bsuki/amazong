@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, memo, useMemo } from "react";
-import { Sliders, Plus, X, Info, SpinnerGap, WarningCircle, CheckCircle } from "@phosphor-icons/react";
+import { Sliders, Plus, X, Info, SpinnerGap, WarningCircle, CheckCircle, CaretRight } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,7 @@ import {
   getCategoryConfigFromPath,
   isAttributeFilled
 } from "@/lib/category-attribute-config";
+import { SelectDrawer } from "../ui/select-drawer";
 
 // ============================================================================
 // Types
@@ -48,6 +49,97 @@ interface AttributesFieldProps {
   className?: string;
   /** Use compact layout */
   compact?: boolean;
+}
+
+/**
+ * Helper component for attribute selection with Drawer support on mobile
+ */
+function AttributeSelect({
+  label,
+  value,
+  options,
+  optionsBg,
+  onChange,
+  placeholder,
+  compact,
+  isBg,
+}: {
+  label: string;
+  value: string;
+  options: string[] | { value: string; label: string }[];
+  optionsBg?: string[];
+  onChange: (val: string) => void;
+  placeholder?: string;
+  compact: boolean;
+  isBg: boolean;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const normalizedOptions = useMemo(() => {
+    if (options.length > 0 && typeof options[0] === 'object') {
+      return options as { value: string; label: string }[];
+    }
+    const opts = options as string[];
+    return opts.map((opt, idx) => ({
+      value: opt,
+      label: (isBg && optionsBg?.[idx]) ? optionsBg[idx] : opt
+    }));
+  }, [options, optionsBg, isBg]);
+
+  const displayValue = useMemo(() => {
+    if (!value) return null;
+    return normalizedOptions.find(opt => opt.value === value)?.label || value;
+  }, [value, normalizedOptions]);
+
+  if (compact) {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="relative w-full flex items-center h-12 px-4 rounded-xl border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
+        >
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
+              {label}:
+            </span>
+            <span className={cn(
+              "text-sm font-semibold truncate",
+              displayValue ? "text-foreground" : "text-muted-foreground/50"
+            )}>
+              {displayValue || placeholder || (isBg ? "Изберете..." : "Select...")}
+            </span>
+          </div>
+          <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
+        </button>
+        <SelectDrawer
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          title={label}
+          options={normalizedOptions.map(o => o.value)}
+          optionsBg={normalizedOptions.map(o => o.label)}
+          value={value}
+          onChange={onChange}
+          locale={isBg ? "bg" : "en"}
+        />
+      </>
+    );
+  }
+
+  return (
+    <Select value={value || undefined} onValueChange={onChange}>
+      <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
+        <SelectValue placeholder={placeholder || (isBg ? "Избери..." : "Select...")} />
+      </SelectTrigger>
+      <SelectContent>
+        {normalizedOptions.map((opt) => (
+          <SelectItem key={opt.value} value={opt.value} className="font-medium">
+            {opt.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
 }
 
 export function AttributesField({ className, compact = false }: AttributesFieldProps) {
@@ -311,35 +403,41 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                   const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
                   return (
                     <div key={attr.id} className="space-y-1.5">
-                      <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                        {getName(attr)}
-                        <span className="text-destructive ml-1">*</span>
-                      </Label>
+                      {!compact && (
+                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                          {getName(attr)}
+                          <span className="text-destructive ml-1">*</span>
+                        </Label>
+                      )}
 
                       {attr.attribute_type === "select" && attr.options?.length ? (
-                        <Select
-                          value={currentValue || undefined}
-                          onValueChange={(value) => handleAttributeChange(attr, value)}
-                        >
-                          <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
-                            <SelectValue placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {attr.options.map((opt, i) => (
-                              <SelectItem key={opt} value={opt} className="font-medium">
-                                {isBg && attr.options_bg?.[i] ? attr.options_bg[i] : opt}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input
+                        <AttributeSelect
+                          label={getName(attr)}
                           value={currentValue}
-                          onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                          placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
-                          type={attr.attribute_type === "number" ? "number" : "text"}
-                          className="h-12 rounded-xl border-border font-medium"
+                          options={attr.options}
+                          optionsBg={attr.options_bg}
+                          onChange={(value) => handleAttributeChange(attr, value)}
+                          placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                          compact={compact}
+                          isBg={isBg}
                         />
+                      ) : (
+                        <div className={cn(
+                          "relative flex items-center h-12 px-4 rounded-xl border transition-all",
+                          "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                        )}>
+                          <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                            {getName(attr)}:
+                            <span className="text-destructive ml-1">*</span>
+                          </label>
+                          <Input
+                            value={currentValue}
+                            onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                            placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                            type={attr.attribute_type === "number" ? "number" : "text"}
+                            className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                          />
+                        </div>
                       )}
                     </div>
                   );
@@ -375,34 +473,40 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                     const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
                     return (
                       <div key={attr.id} className="space-y-1.5">
-                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                          {getName(attr)}
-                          <span className="text-destructive ml-1">*</span>
-                        </Label>
+                        {!compact && (
+                          <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                            {getName(attr)}
+                            <span className="text-destructive ml-1">*</span>
+                          </Label>
+                        )}
                         {attr.attribute_type === "select" && attr.options?.length ? (
-                          <Select
-                            value={currentValue || undefined}
-                            onValueChange={(value) => handleAttributeChange(attr, value)}
-                          >
-                            <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
-                              <SelectValue placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {attr.options.map((opt, i) => (
-                                <SelectItem key={opt} value={opt} className="font-medium">
-                                  {isBg && attr.options_bg?.[i] ? attr.options_bg[i] : opt}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <Input
+                          <AttributeSelect
+                            label={getName(attr)}
                             value={currentValue}
-                            onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                            placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
-                            type={attr.attribute_type === "number" ? "number" : "text"}
-                            className="h-12 rounded-xl border-border font-medium"
+                            options={attr.options}
+                            optionsBg={attr.options_bg}
+                            onChange={(value) => handleAttributeChange(attr, value)}
+                            placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                            compact={compact}
+                            isBg={isBg}
                           />
+                        ) : (
+                          <div className={cn(
+                            "relative flex items-center h-12 px-4 rounded-xl border transition-all",
+                            "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                          )}>
+                            <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                              {getName(attr)}:
+                              <span className="text-destructive ml-1">*</span>
+                            </label>
+                            <Input
+                              value={currentValue}
+                              onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                              placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                              type={attr.attribute_type === "number" ? "number" : "text"}
+                              className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                            />
+                          </div>
                         )}
                       </div>
                     );
@@ -413,33 +517,38 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                     const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
                     return (
                       <div key={attr.id} className="space-y-1.5">
-                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                          {getName(attr)}
-                        </Label>
+                        {!compact && (
+                          <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                            {getName(attr)}
+                          </Label>
+                        )}
                         {attr.attribute_type === "select" && attr.options?.length ? (
-                          <Select
-                            value={currentValue || undefined}
-                            onValueChange={(value) => handleAttributeChange(attr, value)}
-                          >
-                            <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
-                              <SelectValue placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {attr.options.map((opt, i) => (
-                                <SelectItem key={opt} value={opt} className="font-medium">
-                                  {isBg && attr.options_bg?.[i] ? attr.options_bg[i] : opt}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <Input
+                          <AttributeSelect
+                            label={getName(attr)}
                             value={currentValue}
-                            onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                            placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
-                            type={attr.attribute_type === "number" ? "number" : "text"}
-                            className="h-12 rounded-xl border-border font-medium"
+                            options={attr.options}
+                            optionsBg={attr.options_bg}
+                            onChange={(value) => handleAttributeChange(attr, value)}
+                            placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                            compact={compact}
+                            isBg={isBg}
                           />
+                        ) : (
+                          <div className={cn(
+                            "relative flex items-center h-12 px-4 rounded-xl border transition-all",
+                            "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                          )}>
+                            <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                              {getName(attr)}:
+                            </label>
+                            <Input
+                              value={currentValue}
+                              onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                              placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                              type={attr.attribute_type === "number" ? "number" : "text"}
+                              className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                            />
+                          </div>
                         )}
                       </div>
                     );
@@ -482,47 +591,54 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                   
                   return (
                     <div key={attr.key} className="space-y-1.5">
-                      <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                        {label}
-                        <span className="text-destructive ml-1">*</span>
-                      </Label>
-                      
+                      {!compact && (
+                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                          {label}
+                          <span className="text-destructive ml-1">*</span>
+                        </Label>
+                      )}
                       {attr.type === "select" && attr.options?.length ? (
-                        <Select
-                          value={currentValue || undefined}
-                          onValueChange={(value) => {
+                        <AttributeSelect
+                          label={label}
+                          value={currentValue || ""}
+                          options={attr.options.map((opt) => ({
+                            value: opt.value,
+                            label: isBg ? opt.label.bg : opt.label.en
+                          }))}
+                          onChange={(value) => {
                             if (key === "make") {
                               setValue("brandName", value, { shouldValidate: false, shouldDirty: true });
                               return;
                             }
                             handleConfigAttributeChange(key, value);
                           }}
-                        >
-                          <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
-                            <SelectValue placeholder={`${isBg ? "Избери" : "Select"}...`} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {attr.options.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value} className="font-medium">
-                                {isBg ? opt.label.bg : opt.label.en}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input
-                          value={currentValue}
-                          onChange={(e) => {
-                            if (key === "make") {
-                              setValue("brandName", e.target.value, { shouldValidate: false, shouldDirty: true });
-                              return;
-                            }
-                            handleConfigAttributeChange(key, e.target.value);
-                          }}
-                          placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
-                          type={attr.type === "number" ? "number" : "text"}
-                          className="h-12 rounded-xl border-border font-medium"
+                          placeholder={`${isBg ? "Избери" : "Select"}...`}
+                          compact={compact}
+                          isBg={isBg}
                         />
+                      ) : (
+                        <div className={cn(
+                          "relative flex items-center h-12 px-4 rounded-xl border transition-all",
+                          "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                        )}>
+                          <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                            {label}:
+                            <span className="text-destructive ml-1">*</span>
+                          </label>
+                          <Input
+                            value={currentValue}
+                            onChange={(e) => {
+                              if (key === "make") {
+                                setValue("brandName", e.target.value, { shouldValidate: false, shouldDirty: true });
+                                return;
+                              }
+                              handleConfigAttributeChange(key, e.target.value);
+                            }}
+                            placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
+                            type={attr.type === "number" ? "number" : "text"}
+                            className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                          />
+                        </div>
                       )}
                     </div>
                   );
@@ -549,46 +665,52 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                   
                   return (
                     <div key={attr.key} className="space-y-1.5">
-                      <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                        {label}
-                      </Label>
-                      
+                      {!compact && (
+                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                          {label}
+                        </Label>
+                      )}
                       {attr.type === "select" && attr.options?.length ? (
-                        <Select
-                          value={currentValue || undefined}
-                          onValueChange={(value) => {
+                        <AttributeSelect
+                          label={label}
+                          value={currentValue || ""}
+                          options={attr.options.map((opt) => ({
+                            value: opt.value,
+                            label: isBg ? opt.label.bg : opt.label.en
+                          }))}
+                          onChange={(value) => {
                             if (key === "make") {
                               setValue("brandName", value, { shouldValidate: false, shouldDirty: true });
                               return;
                             }
                             handleConfigAttributeChange(key, value);
                           }}
-                        >
-                          <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
-                            <SelectValue placeholder={`${isBg ? "Избери" : "Select"}...`} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {attr.options.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value} className="font-medium">
-                                {isBg ? opt.label.bg : opt.label.en}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input
-                          value={currentValue}
-                          onChange={(e) => {
-                            if (key === "make") {
-                              setValue("brandName", e.target.value, { shouldValidate: false, shouldDirty: true });
-                              return;
-                            }
-                            handleConfigAttributeChange(key, e.target.value);
-                          }}
-                          placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
-                          type={attr.type === "number" ? "number" : "text"}
-                          className="h-12 rounded-xl border-border font-medium"
+                          placeholder={`${isBg ? "Избери" : "Select"}...`}
+                          compact={compact}
+                          isBg={isBg}
                         />
+                      ) : (
+                        <div className={cn(
+                          "relative flex items-center h-12 px-4 rounded-xl border transition-all",
+                          "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                        )}>
+                          <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                            {label}:
+                          </label>
+                          <Input
+                            value={currentValue}
+                            onChange={(e) => {
+                              if (key === "make") {
+                                setValue("brandName", e.target.value, { shouldValidate: false, shouldDirty: true });
+                                return;
+                              }
+                              handleConfigAttributeChange(key, e.target.value);
+                            }}
+                            placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
+                            type={attr.type === "number" ? "number" : "text"}
+                            className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                          />
+                        </div>
                       )}
                     </div>
                   );
@@ -611,35 +733,40 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                   
                   return (
                     <div key={attr.id} className="space-y-1.5">
-                      <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                        {getName(attr)}
-                        {attr.is_required && <span className="text-destructive ml-1">*</span>}
-                      </Label>
-                      
+                      {!compact && (
+                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                          {getName(attr)}
+                          {attr.is_required && <span className="text-destructive ml-1">*</span>}
+                        </Label>
+                      )}
                       {attr.attribute_type === "select" && attr.options?.length ? (
-                        <Select
-                          value={currentValue || undefined}
-                          onValueChange={(value) => handleAttributeChange(attr, value)}
-                        >
-                          <SelectTrigger className="w-full h-12 rounded-xl border-border font-medium">
-                            <SelectValue placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {attr.options.map((opt, i) => (
-                              <SelectItem key={opt} value={opt} className="font-medium">
-                                {isBg && attr.options_bg?.[i] ? attr.options_bg[i] : opt}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input
+                        <AttributeSelect
+                          label={getName(attr)}
                           value={currentValue}
-                          onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                          placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
-                          type={attr.attribute_type === "number" ? "number" : "text"}
-                          className="h-12 rounded-xl border-border font-medium"
+                          options={attr.options}
+                          optionsBg={attr.options_bg}
+                          onChange={(value) => handleAttributeChange(attr, value)}
+                          placeholder={getPlaceholder(attr) || `${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                          compact={compact}
+                          isBg={isBg}
                         />
+                      ) : (
+                        <div className={cn(
+                          "relative flex items-center h-12 px-4 rounded-xl border transition-all",
+                          "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                        )}>
+                          <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                            {getName(attr)}:
+                            {attr.is_required && <span className="text-destructive ml-1">*</span>}
+                          </label>
+                          <Input
+                            value={currentValue}
+                            onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                            placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                            type={attr.attribute_type === "number" ? "number" : "text"}
+                            className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                          />
+                        </div>
                       )}
                     </div>
                   );
@@ -742,11 +869,14 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
         </div>
       ) : (
         <>
-          <div className="flex items-center gap-2 mb-2">
-            <Sliders className="size-4 text-muted-foreground" weight="bold" />
-            <FieldLabel className="text-sm font-medium">
-              {isBg ? "Характеристики" : "Item specifics"}
-            </FieldLabel>
+          {/* Compact Label - hidden if we use label inside */}
+          <div className="hidden">
+            <div className="flex items-center gap-2 mb-2">
+              <Sliders className="size-4 text-muted-foreground" weight="bold" />
+              <FieldLabel className="text-sm font-medium">
+                {isBg ? "Характеристики" : "Item specifics"}
+              </FieldLabel>
+            </div>
           </div>
           {content}
         </>

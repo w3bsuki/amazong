@@ -4,7 +4,7 @@ import * as React from "react"
 import { MagnifyingGlass, Camera } from "@phosphor-icons/react"
 import { useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
-import { MobileSearchOverlay } from "@/components/mobile-search-overlay"
+import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 
 interface MobileSearchBarProps {
   className?: string

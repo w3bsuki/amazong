@@ -1,5 +1,5 @@
 
-import { ProductCard } from "@/components/common/product-card"
+import { ProductCard } from "@/components/shared/product/product-card"
 
 export default function MergedCardsPage() {
   const carProduct = {

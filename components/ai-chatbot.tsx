@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ProductCard } from "@/components/common/product-card"
+import { ProductCard } from "@/components/shared/product/product-card"
 import {
   Conversation,
   ConversationContent,
@@ -565,34 +565,34 @@ export function AIChatbot({
       <div className="flex min-h-0 flex-1 flex-col">
         {/* Mobile Tab Bar - Only visible on mobile when we have results */}
         {mode !== "initial" && hasResults && (
-          <div className="flex border-b border-border bg-muted/30 md:hidden">
+          <div className="flex border-b border-border/50 bg-muted/20 p-1 md:hidden">
             <button
               type="button"
               onClick={() => setMobileTab("chat")}
               className={cn(
-                "flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors",
+                "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-bold transition-all duration-200",
                 mobileTab === "chat"
-                  ? "border-b-2 border-primary bg-background text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-background text-foreground shadow-sm ring-1 ring-border/50"
+                  : "text-muted-foreground hover:bg-background/50 hover:text-foreground"
               )}
             >
-              <MessageCircle className="size-4" />
+              <MessageCircle className={cn("size-4 transition-transform", mobileTab === "chat" && "scale-110")} />
               {locale === "bg" ? "Чат" : "Chat"}
             </button>
             <button
               type="button"
               onClick={() => setMobileTab("results")}
               className={cn(
-                "flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors",
+                "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-bold transition-all duration-200",
                 mobileTab === "results"
-                  ? "border-b-2 border-primary bg-background text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-background text-foreground shadow-sm ring-1 ring-border/50"
+                  : "text-muted-foreground hover:bg-background/50 hover:text-foreground"
               )}
             >
-              <Grid3X3 className="size-4" />
+              <Grid3X3 className={cn("size-4 transition-transform", mobileTab === "results" && "scale-110")} />
               {locale === "bg" ? "Резултати" : "Results"}
               {allProducts.length > 0 && (
-                <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                <Badge variant="default" className="ml-1 h-5 min-w-5 justify-center px-1 text-[10px] font-bold">
                   {allProducts.length}
                 </Badge>
               )}
@@ -614,73 +614,75 @@ export function AIChatbot({
           >
             <Conversation className="min-h-0 flex-1">
               <ConversationContent className="mx-auto w-full max-w-2xl px-4">
-                {/* Initial State - Mode Selection */}
-                {!hasConversation && mode === "initial" && (
+            {/* Initial State - Mode Selection */}
+            {!hasConversation && mode === "initial" && (
               <ConversationEmptyState className="py-12">
                 <div className="text-center">
-                  <div className="mx-auto mb-5 flex size-20 items-center justify-center rounded-full bg-primary/10">
-                    <Sparkles className="size-8 text-primary" />
+                  <div className="mx-auto mb-6 flex size-24 items-center justify-center rounded-3xl bg-primary/10 shadow-inner ring-1 ring-primary/20">
+                    <Sparkles className="size-10 text-primary animate-pulse" />
                   </div>
-                  <div className="text-3xl font-semibold text-foreground">
+                  <div className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
                     {greetingTitle}
                   </div>
-                  <div className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                  <div className="mx-auto mt-3 max-w-md text-base text-muted-foreground/80">
                     {greetingSubtitle}
                   </div>
 
-                  {/* Buy/Sell Selection Buttons - Mobile optimized */}
-                  <div className="mx-auto mt-6 grid w-full max-w-md grid-cols-1 gap-3 px-4 sm:mt-10 sm:max-w-2xl sm:grid-cols-2 sm:gap-6 sm:px-0">
+                  {/* Buy/Sell Selection Buttons - Modernized with glassmorphism and refined interactions */}
+                  <div className="mx-auto mt-10 grid w-full max-w-md grid-cols-1 gap-4 px-4 sm:mt-12 sm:max-w-2xl sm:grid-cols-2 sm:gap-6 sm:px-0">
                     <button
                       type="button"
                       onClick={() => handleSelectMode("buy")}
                       className={cn(
-                        "group relative flex items-center gap-4 rounded-xl border-2 border-border bg-card p-4 transition-all sm:flex-col sm:gap-3 sm:p-6",
-                        "hover:border-primary/40 hover:bg-muted/40 hover:shadow-md",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                        "active:scale-[0.98]"
+                        "group relative flex items-center gap-4 rounded-2xl border border-border/50 bg-card p-5 transition-all duration-300 sm:flex-col sm:gap-4 sm:p-8",
+                        "hover:border-primary/30 hover:bg-muted/30 hover:shadow-xl hover:-translate-y-1",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                        "active:scale-[0.97]"
                       )}
                     >
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-muted transition-colors group-hover:bg-muted/80 sm:size-16">
-                        <ShoppingCart size={24} weight="duotone" className="text-foreground sm:hidden" />
-                        <ShoppingCart size={34} weight="duotone" className="hidden text-foreground sm:block" />
+                      <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-muted/50 transition-all duration-300 group-hover:bg-background group-hover:shadow-inner sm:size-20">
+                        <ShoppingCart size={28} weight="duotone" className="text-foreground sm:hidden" />
+                        <ShoppingCart size={40} weight="duotone" className="hidden text-foreground sm:block" />
                       </div>
                       <div className="flex-1 text-left sm:text-center">
-                        <div className="text-sm font-semibold text-foreground sm:text-base">{buyLabel}</div>
-                        <div className="mt-0.5 text-xs text-muted-foreground sm:mt-1">
+                        <div className="text-base font-bold text-foreground sm:text-lg">{buyLabel}</div>
+                        <div className="mt-1 text-xs font-medium text-muted-foreground/70 sm:mt-1.5 sm:text-sm">
                           {locale === "bg" ? "Търсете и намерете продукти" : "Search and find products"}
                         </div>
                       </div>
-                      <ChevronDown className="size-5 -rotate-90 text-muted-foreground sm:hidden" />
+                      <div className="flex size-8 items-center justify-center rounded-full bg-muted/50 transition-colors group-hover:bg-primary/10 group-hover:text-primary sm:hidden">
+                        <ChevronDown className="size-5 -rotate-90" />
+                      </div>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleSelectMode("sell")}
                       className={cn(
-                        "group relative flex items-center gap-4 rounded-xl border-2 border-border bg-card p-4 transition-all sm:flex-col sm:gap-3 sm:p-6",
-                        "hover:border-primary/40 hover:bg-muted/40 hover:shadow-md",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                        "active:scale-[0.98]"
+                        "group relative flex items-center gap-4 rounded-2xl border border-border/50 bg-card p-5 transition-all duration-300 sm:flex-col sm:gap-4 sm:p-8",
+                        "hover:border-primary/30 hover:bg-muted/30 hover:shadow-xl hover:-translate-y-1",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                        "active:scale-[0.97]"
                       )}
                     >
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary/15 sm:size-16">
-                        <Storefront size={24} weight="duotone" className="sm:hidden" />
-                        <Storefront size={34} weight="duotone" className="hidden sm:block" />
+                      <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary/20 group-hover:shadow-inner sm:size-20">
+                        <Storefront size={28} weight="duotone" className="sm:hidden" />
+                        <Storefront size={40} weight="duotone" className="hidden sm:block" />
                       </div>
                       <div className="flex-1 text-left sm:text-center">
-                        <div className="text-sm font-semibold text-foreground sm:text-base">{sellLabel}</div>
-                        <div className="mt-0.5 text-xs text-muted-foreground sm:mt-1">
+                        <div className="text-base font-bold text-foreground sm:text-lg">{sellLabel}</div>
+                        <div className="mt-1 text-xs font-medium text-muted-foreground/70 sm:mt-1.5 sm:text-sm">
                           {locale === "bg" ? "Създайте нова обява" : "Create a new listing"}
                         </div>
                       </div>
-                      <ChevronDown className="size-5 -rotate-90 text-muted-foreground sm:hidden" />
+                      <div className="flex size-8 items-center justify-center rounded-full bg-primary/5 text-primary transition-colors group-hover:bg-primary/15 sm:hidden">
+                        <ChevronDown className="size-5 -rotate-90" />
+                      </div>
                     </button>
                   </div>
                 </div>
               </ConversationEmptyState>
-            )}
-
-            {/* Empty State - Buy/Sell selected but no conversation yet */}
+            )}            {/* Empty State - Buy/Sell selected but no conversation yet */}
             {!hasConversation && mode !== "initial" && (
               <ConversationEmptyState className="py-12">
                 <div className="text-center">
@@ -775,9 +777,12 @@ export function AIChatbot({
                             return (
                               <div
                                 key={`${message.id}-${i}`}
-                                className="flex items-center gap-2 rounded-lg border border-border bg-muted/20 px-3 py-2 text-xs text-muted-foreground"
+                                className="flex items-center gap-2.5 rounded-xl border border-border/40 bg-muted/30 px-4 py-2.5 text-xs font-medium text-muted-foreground shadow-xs backdrop-blur-sm"
                               >
-                                <Loader2 className="size-3 animate-spin" />
+                                <div className="relative flex size-4 items-center justify-center">
+                                  <Loader2 className="absolute size-4 animate-spin text-primary/40" />
+                                  <div className="size-1.5 rounded-full bg-primary animate-pulse" />
+                                </div>
                                 {getToolStatusLabel(toolName, locale)}
                               </div>
                             )
@@ -805,25 +810,27 @@ export function AIChatbot({
                         <button
                           type="button"
                           onClick={() => setMobileTab("results")}
-                          className="flex w-full items-center justify-between gap-3 rounded-lg border border-green-500/30 bg-green-500/5 p-3 text-left transition-colors hover:bg-green-500/10 md:cursor-default"
+                          className="group flex w-full items-center justify-between gap-3 rounded-2xl border border-green-500/20 bg-green-500/5 p-4 text-left transition-all hover:bg-green-500/10 hover:shadow-md active:scale-[0.99] md:cursor-default"
                         >
-                          <div className="flex items-center gap-2">
-                            <div className="flex size-8 items-center justify-center rounded-full bg-green-500/20">
-                              <Search className="size-4 text-green-600" />
+                          <div className="flex items-center gap-3">
+                            <div className="flex size-10 items-center justify-center rounded-xl bg-green-500/20 text-green-600 shadow-inner ring-1 ring-green-500/30 transition-transform group-hover:scale-110">
+                              <Search className="size-5" />
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-green-700 dark:text-green-400">
+                              <div className="text-sm font-bold text-green-700 dark:text-green-400">
                                 {locale === "bg" 
                                   ? `Намерени ${products.length} продукта`
                                   : `Found ${products.length} product${products.length === 1 ? "" : "s"}`
                                 }
                               </div>
-                              <div className="text-xs text-green-600/80 dark:text-green-400/80 md:hidden">
-                                {locale === "bg" ? "Натиснете за преглед" : "Tap to view"}
+                              <div className="mt-0.5 text-xs font-medium text-green-600/70 dark:text-green-400/70 md:hidden">
+                                {locale === "bg" ? "Натиснете за преглед" : "Tap to view results"}
                               </div>
                             </div>
                           </div>
-                          <ChevronDown className="size-5 -rotate-90 text-green-600 md:hidden" />
+                          <div className="flex size-8 items-center justify-center rounded-full bg-green-500/10 text-green-600 transition-transform group-hover:translate-x-1 md:hidden">
+                            <ChevronDown className="size-5 -rotate-90" />
+                          </div>
                         </button>
                       )}
 
@@ -938,58 +945,29 @@ export function AIChatbot({
           {hasResults && (
             <div
               className={cn(
-                "flex min-h-0 flex-col bg-muted/20",
-                // Mobile: full width when results tab active, hidden otherwise
-                mobileTab === "results" ? "flex-1" : "hidden",
-                // Desktop: 55% width, always visible
-                "md:flex md:w-[55%]"
+                "flex flex-col border-l border-border/50 bg-muted/5 transition-all duration-300",
+                mobileTab === "results" ? "flex" : "hidden md:flex",
+                "w-full md:w-[350px] lg:w-[400px]"
               )}
             >
+              <div className="flex items-center justify-between border-b border-border/50 bg-background/50 px-4 py-3 backdrop-blur-md">
+                <h3 className="flex items-center gap-2 text-sm font-bold tracking-tight">
+                  <Grid3X3 className="size-4 text-primary" />
+                  {locale === "bg" ? "Намерени продукти" : "Products Found"}
+                </h3>
+                <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-bold ring-1 ring-border/50">
+                  {allProducts.length}
+                </Badge>
+              </div>
+
               <ScrollArea className="flex-1">
                 <div className="p-4">
-                  {/* Results Header */}
-                  <div className="mb-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
-                        {mode === "buy" ? (
-                          <ShoppingBag className="size-4 text-primary" />
-                        ) : (
-                          <Package className="size-4 text-primary" />
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-foreground">
-                          {mode === "buy"
-                            ? locale === "bg" ? "Намерени продукти" : "Found Products"
-                            : locale === "bg" ? "Вашата обява" : "Your Listing"
-                          }
-                        </h3>
-                        {allProducts.length > 0 && (
-                          <p className="text-xs text-muted-foreground">
-                            {allProducts.length} {locale === "bg" ? "резултата" : "results"}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* View toggle could go here */}
-                  </div>
-
-                  {/* Product Grid */}
                   {allProducts.length > 0 && (
-                    <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
-                      {allProducts.map((p: any, idx: number) => (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-1">
+                      {allProducts.map((product) => (
                         <ProductCard
-                          key={p.id}
-                          id={String(p.id)}
-                          title={String(p.title ?? "")}
-                          price={Number(p.price ?? 0)}
-                          image={String(p?.images?.[0] ?? "")}
-                          slug={p.slug ?? null}
-                          storeSlug={p.storeSlug ?? null}
-                          username={p.storeSlug ?? null}
-                          index={idx}
-                          showQuickAdd={false}
+                          key={product.id}
+                          product={product}
                           showWishlist={true}
                           showRating={false}
                           showPills={true}
@@ -1001,22 +979,22 @@ export function AIChatbot({
 
                   {/* Listing Success State */}
                   {latestListingResult?.success && latestListingResult.url && (
-                    <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-6 text-center">
-                      <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-green-500/20">
+                    <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-6 text-center shadow-sm ring-1 ring-green-500/10">
+                      <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-green-500/20 shadow-inner">
                         <Tag className="size-8 text-green-600" />
                       </div>
-                      <h3 className="text-lg font-semibold text-green-700 dark:text-green-400">
+                      <h3 className="text-lg font-bold tracking-tight text-green-700 dark:text-green-400">
                         {locale === "bg" ? "Обявата е създадена!" : "Listing Created!"}
                       </h3>
-                      <p className="mt-2 text-sm text-green-600 dark:text-green-400">
+                      <p className="mt-2 text-sm font-medium text-green-600/80 dark:text-green-400/80">
                         {locale === "bg" 
                           ? "Вашата обява е публикувана успешно." 
                           : "Your listing has been published successfully."}
                       </p>
-                      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
+                      <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
                         <Button
                           asChild
-                          className="gap-2"
+                          className="h-11 gap-2 rounded-xl font-bold shadow-md transition-all hover:shadow-lg active:scale-95"
                           variant="default"
                         >
                           <a href={latestListingResult.url} target="_blank" rel="noopener noreferrer">
@@ -1024,7 +1002,11 @@ export function AIChatbot({
                             {locale === "bg" ? "Виж обявата" : "View Listing"}
                           </a>
                         </Button>
-                        <Button variant="outline" onClick={handleClear}>
+                        <Button 
+                          variant="outline" 
+                          onClick={handleClear}
+                          className="h-11 rounded-xl font-bold transition-all active:scale-95"
+                        >
                           {locale === "bg" ? "Създай нова" : "Create Another"}
                         </Button>
                       </div>
@@ -1033,14 +1015,14 @@ export function AIChatbot({
 
                   {/* Empty state for results panel */}
                   {!allProducts.length && !latestListingResult?.success && (
-                    <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-muted">
-                        <Search className="size-8 text-muted-foreground" />
+                    <div className="flex flex-col items-center justify-center py-12 text-center opacity-60">
+                      <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-muted/50 ring-1 ring-border/50">
+                        <Search className="size-8 text-muted-foreground/50" />
                       </div>
-                      <h3 className="text-sm font-medium text-foreground">
+                      <h3 className="text-sm font-bold text-foreground">
                         {locale === "bg" ? "Все още няма резултати" : "No results yet"}
                       </h3>
-                      <p className="mt-1 max-w-xs text-xs text-muted-foreground">
+                      <p className="mt-2 max-w-[200px] text-xs font-medium leading-relaxed text-muted-foreground">
                         {mode === "buy"
                           ? locale === "bg" 
                             ? "Попитайте асистента какво търсите и резултатите ще се покажат тук"

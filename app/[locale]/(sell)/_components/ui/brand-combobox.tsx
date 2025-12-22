@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { CheckIcon, ChevronsUpDownIcon, ShieldCheck, Plus, X } from "lucide-react";
+import { CheckIcon, ShieldCheck, Plus, X } from "lucide-react";
+import { CaretRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // ============================================================================
 // BRAND COMBOBOX - shadcn/ui Combobox pattern for brand selection
@@ -67,6 +75,7 @@ export function BrandCombobox({
 }: BrandComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const isMobile = useIsMobile();
   
   const isBg = locale === "bg";
   const selectedBrand = brands.find((b) => b.id === value);
@@ -146,153 +155,195 @@ export function BrandCombobox({
     setSearchQuery("");
   }, [onValueChange]);
 
+  const commandContent = (
+    <Command shouldFilter={false} className="bg-transparent">
+      <CommandInput
+        placeholder={isBg ? "Търси марка..." : "Search brand..."}
+        value={searchQuery}
+        onValueChange={setSearchQuery}
+        className="h-12 border-none focus:ring-0"
+      />
+      <CommandList className={cn("overflow-y-auto", isMobile ? "max-h-[50vh]" : "max-h-[300px]")}>
+        <CommandEmpty>
+          {showCustomOption ? (
+            <button
+              type="button"
+              onClick={handleCustomBrand}
+              className="w-full p-3 text-left hover:bg-accent rounded-sm flex items-center gap-2"
+            >
+              <Plus className="size-4 text-primary" />
+              <span className="text-sm">
+                {isBg ? `Добави "${searchQuery}"` : `Add "${searchQuery}"`}
+              </span>
+            </button>
+          ) : (
+            <span className="text-sm text-muted-foreground p-3 block">
+              {isBg ? "Няма намерени марки" : "No brand found"}
+            </span>
+          )}
+        </CommandEmpty>
+        
+        {/* Custom brand option when searching */}
+        {showCustomOption && filteredBrands.length > 0 && (
+          <>
+            <CommandGroup>
+              <CommandItem
+                onSelect={handleCustomBrand}
+                className="flex items-center gap-2"
+              >
+                <Plus className="size-4 text-primary" />
+                <span>
+                  {isBg ? `Добави "${searchQuery}"` : `Add "${searchQuery}"`}
+                </span>
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+          </>
+        )}
+
+        <CommandGroup>
+          {filteredBrands.map((brand) => (
+            <CommandItem
+              key={brand.id}
+              value={brand.name}
+              onSelect={() => handleSelect(brand)}
+              className="flex items-center gap-2"
+            >
+              <CheckIcon
+                className={cn(
+                  "size-4 shrink-0",
+                  value === brand.id ? "opacity-100" : "opacity-0"
+                )}
+              />
+              {/* Brand logo */}
+              {brand.logo_url ? (
+                <img
+                  src={brand.logo_url}
+                  alt=""
+                  className="size-5 object-contain"
+                />
+              ) : (
+                <div className="size-5 rounded bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
+                  {brand.name[0]}
+                </div>
+              )}
+              <span className="flex-1">{brand.name}</span>
+              {brand.is_verified && (
+                <ShieldCheck className="size-4 text-primary shrink-0" />
+              )}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+
+        {/* Skip / Unbranded option */}
+        <CommandSeparator />
+        <CommandGroup>
+          <CommandItem
+            onSelect={handleSkip}
+            className="text-muted-foreground justify-center text-xs"
+          >
+            {isBg ? "Пропусни - Без марка" : "Skip - No brand / Unbranded"}
+          </CommandItem>
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  );
+
+  const trigger = (
+    <button
+      type="button"
+      role="combobox"
+      aria-expanded={open}
+      disabled={disabled}
+      className={cn(
+        "relative w-full flex flex-col justify-center h-14 px-4 rounded-xl border transition-all text-left",
+        "bg-background border border-border shadow-xs",
+        "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
+        "transition-all active:scale-[0.98]",
+        disabled && "opacity-50 cursor-not-allowed",
+        className
+      )}
+    >
+      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground leading-none mb-1.5">
+        {isBg ? "Марка" : "Brand"}
+      </span>
+      <div className="flex items-center justify-between w-full">
+        <span className="flex items-center gap-2.5 truncate pr-12">
+          {/* Brand logo if available */}
+          {selectedBrand?.logo_url && (
+            <img
+              src={selectedBrand.logo_url}
+              alt=""
+              className="size-5 object-contain"
+            />
+          )}
+          <span className={cn(
+            "text-sm font-semibold truncate",
+            (selectedBrand || customValue) ? "text-foreground" : "text-muted-foreground"
+          )}>
+            {displayText}
+          </span>
+          {/* Verified badge */}
+          {selectedBrand?.is_verified && (
+            <ShieldCheck className="size-3.5 text-primary shrink-0" />
+          )}
+          {/* Custom brand indicator */}
+          {customValue && !selectedBrand && (
+            <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider shrink-0">
+              ({isBg ? "Потребителска" : "Custom"})
+            </span>
+          )}
+        </span>
+      </div>
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 shrink-0">
+        {/* Clear button */}
+        {(selectedBrand || customValue) && (
+          <span
+            role="button"
+            tabIndex={0}
+            onClick={handleClear}
+            onKeyDown={(e) => e.key === "Enter" && handleClear(e as unknown as React.MouseEvent)}
+            className="size-6 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+            aria-label={isBg ? "Изчисти" : "Clear"}
+          >
+            <X className="size-3.5 text-muted-foreground" />
+          </span>
+        )}
+        <CaretRight className="size-4 text-muted-foreground" weight="bold" />
+      </div>
+    </button>
+  );
+
+  if (isMobile) {
+    return (
+      <>
+        <div onClick={() => setOpen(true)}>{trigger}</div>
+        <Drawer open={open} onOpenChange={setOpen}>
+          <DrawerContent>
+            <DrawerHeader className="text-left border-b border-border/50 pb-4">
+              <DrawerTitle className="text-base font-bold">
+                {isBg ? "Избери марка" : "Select Brand"}
+              </DrawerTitle>
+            </DrawerHeader>
+            <div className="p-2 pb-8">
+              {commandContent}
+            </div>
+          </DrawerContent>
+        </Drawer>
+      </>
+    );
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          disabled={disabled}
-          className={cn(
-            "w-full justify-between h-12 text-sm font-medium rounded-xl border-border",
-            !selectedBrand && !customValue && "text-muted-foreground",
-            className
-          )}
-        >
-          <span className="flex items-center gap-2.5 truncate">
-            {/* Brand logo if available */}
-            {selectedBrand?.logo_url && (
-              <img
-                src={selectedBrand.logo_url}
-                alt=""
-                className="size-5 object-contain"
-              />
-            )}
-            <span className="truncate">{displayText}</span>
-            {/* Verified badge */}
-            {selectedBrand?.is_verified && (
-              <ShieldCheck className="size-3.5 text-primary shrink-0" weight="fill" />
-            )}
-            {/* Custom brand indicator */}
-            {customValue && !selectedBrand && (
-              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider shrink-0">
-                ({isBg ? "Потребителска" : "Custom"})
-              </span>
-            )}
-          </span>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* Clear button */}
-            {(selectedBrand || customValue) && (
-              <span
-                role="button"
-                tabIndex={0}
-                onClick={handleClear}
-                onKeyDown={(e) => e.key === "Enter" && handleClear(e as unknown as React.MouseEvent)}
-                className="size-6 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
-                aria-label={isBg ? "Изчисти" : "Clear"}
-              >
-                <X className="size-3.5 text-muted-foreground" weight="bold" />
-              </span>
-            )}
-            <ChevronsUpDownIcon className="size-4 shrink-0 opacity-50" />
-          </div>
-        </Button>
+        {trigger}
       </PopoverTrigger>
       <PopoverContent 
         className="w-[--radix-popover-trigger-width] p-0" 
         align="start"
       >
-        <Command shouldFilter={false}>
-          <CommandInput
-            placeholder={isBg ? "Търси марка..." : "Search brand..."}
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-          />
-          <CommandList>
-            <CommandEmpty>
-              {showCustomOption ? (
-                <button
-                  type="button"
-                  onClick={handleCustomBrand}
-                  className="w-full p-3 text-left hover:bg-accent rounded-sm flex items-center gap-2"
-                >
-                  <Plus className="size-4 text-primary" />
-                  <span className="text-sm">
-                    {isBg ? `Добави "${searchQuery}"` : `Add "${searchQuery}"`}
-                  </span>
-                </button>
-              ) : (
-                <span className="text-sm text-muted-foreground p-3 block">
-                  {isBg ? "Няма намерени марки" : "No brand found"}
-                </span>
-              )}
-            </CommandEmpty>
-            
-            {/* Custom brand option when searching */}
-            {showCustomOption && filteredBrands.length > 0 && (
-              <>
-                <CommandGroup>
-                  <CommandItem
-                    onSelect={handleCustomBrand}
-                    className="flex items-center gap-2"
-                  >
-                    <Plus className="size-4 text-primary" />
-                    <span>
-                      {isBg ? `Добави "${searchQuery}"` : `Add "${searchQuery}"`}
-                    </span>
-                  </CommandItem>
-                </CommandGroup>
-                <CommandSeparator />
-              </>
-            )}
-
-            <CommandGroup>
-              {filteredBrands.map((brand) => (
-                <CommandItem
-                  key={brand.id}
-                  value={brand.name}
-                  onSelect={() => handleSelect(brand)}
-                  className="flex items-center gap-2"
-                >
-                  <CheckIcon
-                    className={cn(
-                      "size-4 shrink-0",
-                      value === brand.id ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {/* Brand logo */}
-                  {brand.logo_url ? (
-                    <img
-                      src={brand.logo_url}
-                      alt=""
-                      className="size-5 object-contain"
-                    />
-                  ) : (
-                    <div className="size-5 rounded bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
-                      {brand.name[0]}
-                    </div>
-                  )}
-                  <span className="flex-1">{brand.name}</span>
-                  {brand.is_verified && (
-                    <ShieldCheck className="size-4 text-primary shrink-0" />
-                  )}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-
-            {/* Skip / Unbranded option */}
-            <CommandSeparator />
-            <CommandGroup>
-              <CommandItem
-                onSelect={handleSkip}
-                className="text-muted-foreground justify-center text-xs"
-              >
-                {isBg ? "Пропусни - Без марка" : "Skip - No brand / Unbranded"}
-              </CommandItem>
-            </CommandGroup>
-          </CommandList>
-        </Command>
+        {commandContent}
       </PopoverContent>
     </Popover>
   );

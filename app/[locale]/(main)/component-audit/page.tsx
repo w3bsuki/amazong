@@ -25,7 +25,7 @@ import { Spinner } from "@/components/ui/spinner"
 // ============================================
 import { ImageUpload } from "@/components/image-upload"
 import { LanguageSwitcher } from "@/components/language-switcher"
-import { ProductPrice, InlinePrice } from "@/components/product-price"
+import { ProductPrice, InlinePrice } from "@/components/shared/product/product-price"
 import { PromoBannerStrip } from "@/components/promo-banner-strip"
 import { RatingScrollLink } from "@/components/rating-scroll-link"
 import { SectionCards } from "@/components/section-cards"

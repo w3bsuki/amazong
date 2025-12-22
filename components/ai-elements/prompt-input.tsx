@@ -102,31 +102,31 @@ export function PromptInputAttachment({
       <HoverCardTrigger asChild>
         <div
           className={cn(
-            "group relative flex h-8 cursor-pointer select-none items-center gap-1.5 rounded-md border border-border px-1.5 font-medium text-sm transition-all hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+            "group relative flex h-9 cursor-pointer select-none items-center gap-2 rounded-xl border border-border/50 bg-background/50 px-2 font-bold text-xs transition-all hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 shadow-xs ring-1 ring-border/5 backdrop-blur-sm",
             className
           )}
           key={data.id}
           {...props}
         >
-          <div className="relative size-5 shrink-0">
-            <div className="absolute inset-0 flex size-5 items-center justify-center overflow-hidden rounded bg-background transition-opacity group-hover:opacity-0">
+          <div className="relative size-6 shrink-0">
+            <div className="absolute inset-0 flex size-6 items-center justify-center overflow-hidden rounded-lg bg-muted/50 transition-opacity group-hover:opacity-0 ring-1 ring-border/20">
               {isImage ? (
                 <img
                   alt={filename || "attachment"}
-                  className="size-5 object-cover"
-                  height={20}
+                  className="size-6 object-cover"
+                  height={24}
                   src={data.url}
-                  width={20}
+                  width={24}
                 />
               ) : (
-                <div className="flex size-5 items-center justify-center text-muted-foreground">
-                  <PaperclipIcon className="size-3" />
+                <div className="flex size-6 items-center justify-center text-muted-foreground">
+                  <PaperclipIcon className="size-3.5" />
                 </div>
               )}
             </div>
             <Button
               aria-label="Remove attachment"
-              className="absolute inset-0 size-5 cursor-pointer rounded p-0 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 [&>svg]:size-2.5"
+              className="absolute inset-0 size-6 cursor-pointer rounded-lg p-0 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 [&>svg]:size-3 bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground"
               onClick={(e) => {
                 e.stopPropagation();
                 attachments.remove(data.id);
@@ -139,7 +139,7 @@ export function PromptInputAttachment({
             </Button>
           </div>
 
-          <span className="flex-1 truncate">{attachmentLabel}</span>
+          <span className="flex-1 truncate max-w-[120px]">{attachmentLabel}</span>
         </div>
       </HoverCardTrigger>
       <PromptInputHoverCardContent className="w-auto p-2">
@@ -701,7 +701,10 @@ export const PromptInputTextarea = ({
 
   return (
     <InputGroupTextarea
-      className={cn("field-sizing-content max-h-48 min-h-16", className)}
+      className={cn(
+        "field-sizing-content max-h-48 min-h-[44px] py-3 text-base font-medium leading-relaxed sm:text-sm",
+        className
+      )}
       name="message"
       onCompositionEnd={() => setIsComposing(false)}
       onCompositionStart={() => setIsComposing(true)}
@@ -725,7 +728,7 @@ export const PromptInputHeader = ({
 }: PromptInputHeaderProps) => (
   <InputGroupAddon
     align="block-end"
-    className={cn("order-first flex-wrap gap-1", className)}
+    className={cn("order-first flex-wrap gap-2 px-3 pt-3", className)}
     {...props}
   />
 );
@@ -741,7 +744,7 @@ export const PromptInputFooter = ({
 }: PromptInputFooterProps) => (
   <InputGroupAddon
     align="block-end"
-    className={cn("justify-between gap-1", className)}
+    className={cn("justify-between gap-2 px-3 pb-3", className)}
     {...props}
   />
 );
@@ -764,11 +767,15 @@ export const PromptInputButton = ({
   ...props
 }: PromptInputButtonProps) => {
   const newSize =
-    size ?? (Children.count(props.children) > 1 ? "sm" : "icon-sm");
+    size ?? (Children.count(props.children) > 1 ? "sm" : "icon");
 
   return (
     <InputGroupButton
-      className={cn(className)}
+      className={cn(
+        "size-10 rounded-xl font-bold transition-all duration-200 active:scale-90",
+        variant === "ghost" && "hover:bg-accent/50 hover:text-accent-foreground",
+        className
+      )}
       size={newSize}
       type="button"
       variant={variant}
@@ -791,7 +798,7 @@ export const PromptInputActionMenuTrigger = ({
 }: PromptInputActionMenuTriggerProps) => (
   <DropdownMenuTrigger asChild>
     <PromptInputButton className={className} {...props}>
-      {children ?? <PlusIcon className="size-4" />}
+      {children ?? <PlusIcon className="size-5" />}
     </PromptInputButton>
   </DropdownMenuTrigger>
 );
@@ -826,25 +833,29 @@ export type PromptInputSubmitProps = ComponentProps<typeof InputGroupButton> & {
 export const PromptInputSubmit = ({
   className,
   variant = "default",
-  size = "icon-sm",
+  size = "icon",
   status,
   children,
   ...props
 }: PromptInputSubmitProps) => {
-  let Icon = <CornerDownLeftIcon className="size-4" />;
+  let Icon = <CornerDownLeftIcon className="size-5" />;
 
   if (status === "submitted") {
-    Icon = <Loader2Icon className="size-4 animate-spin" />;
+    Icon = <Loader2Icon className="size-5 animate-spin" />;
   } else if (status === "streaming") {
-    Icon = <SquareIcon className="size-4" />;
+    Icon = <SquareIcon className="size-5 fill-current" />;
   } else if (status === "error") {
-    Icon = <XIcon className="size-4" />;
+    Icon = <XIcon className="size-5" />;
   }
 
   return (
     <InputGroupButton
       aria-label="Submit"
-      className={cn(className)}
+      className={cn(
+        "size-10 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg active:scale-90",
+        status === "streaming" && "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        className
+      )}
       size={size}
       type="submit"
       variant={variant}

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { ProductPrice } from '@/components/product-price'
+import { ProductPrice } from '@/components/shared/product/product-price'
 import { useCart } from '@/components/providers/cart-context'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'

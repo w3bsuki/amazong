@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { CaretRight, Check, X, MagnifyingGlass, CaretLeft } from "@phosphor-icons/react";
+import { CaretRight, Check, X, MagnifyingGlass, CaretLeft, FolderSimple } from "@phosphor-icons/react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,7 @@ import type { Category } from "../../types";
 interface CategoryModalProps {
   categories: Category[];
   value: string;
+  selectedPath?: Category[];
   onChange: (categoryId: string, path: Category[]) => void;
   locale?: string;
   className?: string;
@@ -41,6 +42,7 @@ interface FlatCategory extends Category {
 export function CategorySelector({
   categories,
   value,
+  selectedPath,
   onChange,
   locale = "en",
   className,
@@ -75,8 +77,43 @@ export function CategorySelector({
   // Find selected category
   const selectedCategory = useMemo(() => {
     if (!value) return null;
-    return flatCategories.find((c) => c.id === value) || null;
-  }, [flatCategories, value]);
+    const found = flatCategories.find((c) => c.id === value);
+    if (found) return found;
+
+    // If not found in flat list (lazy loaded), use selectedPath if available
+    if (selectedPath && selectedPath.length > 0) {
+      const last = selectedPath[selectedPath.length - 1];
+      if (last.id === value) {
+        const fullPath = selectedPath
+          .map((c) => (locale === "bg" && c.name_bg ? c.name_bg : c.name))
+          .join(" › ");
+        return {
+          ...last,
+          path: selectedPath,
+          fullPath,
+          searchText: "",
+        } as FlatCategory;
+      }
+    }
+
+    return null;
+  }, [flatCategories, value, selectedPath, locale]);
+
+  // Smart path display for mobile to save space
+  const displayPath = useMemo(() => {
+    if (!selectedCategory) return locale === "bg" ? "Изберете..." : "Select...";
+    
+    const path = selectedCategory.path;
+    if (!path || path.length === 0) return selectedCategory.name;
+
+    // On mobile, truncate long paths to show only the most relevant context (last 2 segments)
+    if (isMobile && path.length > 2) {
+      const lastTwo = path.slice(-2).map(c => (locale === "bg" && c.name_bg ? c.name_bg : c.name));
+      return `... › ${lastTwo.join(" › ")}`;
+    }
+    
+    return selectedCategory.fullPath;
+  }, [selectedCategory, locale, isMobile]);
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -97,46 +134,32 @@ export function CategorySelector({
       type="button"
       onClick={() => setIsOpen(true)}
       className={cn(
-        "w-full flex items-center justify-between gap-3 min-h-12 px-4 py-2.5 text-left touch-action-manipulation",
-        "bg-background border border-border rounded-xl shadow-xs",
+        "relative w-full flex items-center h-12 px-4 rounded-xl border transition-all text-left",
+        "bg-background border border-border shadow-xs",
         "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
         "transition-all active:scale-[0.98]",
         className
       )}
     >
-      {selectedCategory ? (
-        <>
-          <div className="flex-1 min-w-0">
-            <span className="text-sm font-bold text-foreground line-clamp-2 wrap-break-word">
-              {selectedCategory.fullPath}
-            </span>
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
+          {locale === "bg" ? "Категория:" : "Category:"}
+        </span>
+        <span className={cn(
+          "text-sm font-semibold truncate pr-4",
+          selectedCategory ? "text-foreground" : "text-muted-foreground"
+        )}>
+          {displayPath}
+        </span>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        {selectedCategory && (
+          <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
+            <Check className="size-3 text-primary" weight="bold" />
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center">
-              <Check className="size-3 text-primary" weight="bold" />
-            </div>
-            <span
-              role="button"
-              tabIndex={0}
-              onClick={handleClear}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") handleClear(e as unknown as React.MouseEvent);
-              }}
-              className="size-7 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
-              aria-label={locale === "bg" ? "Изчисти" : "Clear"}
-            >
-              <X className="size-3.5 text-muted-foreground" weight="bold" />
-            </span>
-          </div>
-        </>
-      ) : (
-        <>
-          <span className="text-sm font-medium text-muted-foreground/60">
-            {locale === "bg" ? "Избери категория..." : "Select category..."}
-          </span>
-          <CaretRight className="size-4 text-muted-foreground/40" weight="bold" />
-        </>
-      )}
+        )}
+        <CaretRight className="size-4 text-muted-foreground" weight="bold" />
+      </div>
     </button>
   );
 
@@ -153,7 +176,7 @@ export function CategorySelector({
       <>
         {TriggerButton}
         <Drawer open={isOpen} onOpenChange={setIsOpen} snapPoints={[1]}>
-          <DrawerContent>
+          <DrawerContent className="h-full max-h-full rounded-none">
             <DrawerHeader className="sr-only">
               <DrawerTitle>
                 {locale === "bg" ? "Избери категория" : "Select Category"}
@@ -363,64 +386,60 @@ function CategoryModalContent({
     const currentStep = Math.min(navigationPath.length, MAX_DEPTH) + 1;
     return (
       <div className="flex flex-col min-h-0 flex-1 bg-background">
-        {/* Search */}
-        <div className="px-4 py-3 border-b border-border/50 shrink-0">
-          <div className="relative">
-            <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground/50" weight="bold" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={locale === "bg" ? "Търси категория..." : "Search category..."}
-              className="pl-11 h-12 text-base font-medium rounded-xl border-border bg-muted/20 focus:bg-background transition-all"
-            />
-          </div>
-        </div>
-
-        {/* Step indicator */}
-        {!searchQuery.trim() && (
-          <div className="px-4 py-2.5 border-b border-border/50 bg-muted/10 shrink-0">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                {locale === "bg" ? "Стъпка" : "Step"} {currentStep}/4
-              </span>
-              <span className="text-xs font-bold text-foreground uppercase tracking-wider">
-                {stepLabels[Math.min(currentStep - 1, stepLabels.length - 1)]}
-              </span>
+        {/* Header: Search + Step/Breadcrumb combined */}
+        <div className="flex flex-col border-b border-border/50 bg-background shrink-0">
+          {/* Search Row */}
+          <div className="px-4 py-3">
+            <div className="relative">
+              <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground/50" weight="bold" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={locale === "bg" ? "Търси категория..." : "Search category..."}
+                className="pl-11 h-12 text-base font-medium rounded-xl border-border bg-muted/20 focus:bg-background transition-all"
+              />
             </div>
           </div>
-        )}
 
-        {/* Breadcrumb - compact */}
-        {navigationPath.length > 0 && !searchQuery && (
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-border/50 bg-muted/5 overflow-x-auto shrink-0 no-scrollbar">
-            <button
-              type="button"
-              onClick={handleBack}
-              className="size-8 flex items-center justify-center rounded-lg bg-background border border-border shadow-xs shrink-0 active:scale-95 transition-transform"
-            >
-              <CaretLeft className="size-4" weight="bold" />
-            </button>
-            <div className="flex items-center gap-1.5 text-xs overflow-hidden">
-              {navigationPath.map((cat, idx) => (
-                <div key={cat.id} className="flex items-center gap-1.5 shrink-0">
-                  {idx > 0 && <span className="text-muted-foreground/30">/</span>}
+          {/* Step & Breadcrumb Row */}
+          {!searchQuery.trim() && (
+            <div className="px-4 py-2.5 bg-muted/10 flex items-center justify-between gap-4 border-t border-border/50">
+              <div className="flex items-center gap-3 min-w-0">
+                {navigationPath.length > 0 ? (
                   <button
                     type="button"
-                    onClick={() => setNavigationPath(navigationPath.slice(0, idx + 1))}
-                    className={cn(
-                      "truncate max-w-[100px] font-bold uppercase tracking-wider",
-                      idx === navigationPath.length - 1
-                        ? "text-primary"
-                        : "text-muted-foreground/60"
-                    )}
+                    onClick={handleBack}
+                    className="size-8 flex items-center justify-center rounded-lg bg-background border border-border shadow-xs shrink-0 active:scale-95 transition-transform"
                   >
-                    {getName(cat)}
+                    <CaretLeft className="size-4" weight="bold" />
                   </button>
+                ) : (
+                  <div className="size-8 flex items-center justify-center rounded-lg bg-primary/10 border border-primary/20 shrink-0">
+                    <FolderSimple className="size-4 text-primary" weight="bold" />
+                  </div>
+                )}
+                
+                <div className="flex flex-col min-w-0">
+                  <span className="text-2xs font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">
+                    {locale === "bg" ? "Стъпка" : "Step"} {currentStep}/4
+                  </span>
+                  <h3 className="text-xs font-bold text-foreground uppercase tracking-wider truncate">
+                    {navigationPath.length > 0 
+                      ? getName(navigationPath[navigationPath.length - 1])
+                      : stepLabels[0]
+                    }
+                  </h3>
                 </div>
-              ))}
+              </div>
+
+              <div className="shrink-0 px-2 py-1 rounded-md bg-background border border-border shadow-xs">
+                <span className="text-2xs font-bold text-primary uppercase tracking-tighter">
+                  {stepLabels[Math.min(currentStep - 1, stepLabels.length - 1)]}
+                </span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Content */}
         <ScrollArea className="flex-1 min-h-0">
@@ -452,7 +471,7 @@ function CategoryModalContent({
                       <span className="text-sm font-bold text-foreground">
                         {getName(cat)}
                       </span>
-                      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider truncate w-full">
+                      <span className="text-2xs font-bold text-muted-foreground uppercase tracking-wider truncate w-full">
                         {cat.fullPath}
                       </span>
                     </button>
@@ -604,8 +623,8 @@ function CategoryCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "relative flex flex-col items-start justify-between gap-2 w-full px-3.5 py-3 rounded-xl border text-left transition-all min-h-[80px] touch-action-manipulation",
-        "hover:border-primary/30 active:scale-[0.96]",
+        "relative flex items-center justify-between gap-3 w-full px-4 py-2.5 rounded-xl border text-left transition-all min-h-[48px] touch-action-manipulation",
+        "hover:border-primary/30 active:scale-[0.98]",
         "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
         isSelected 
           ? "border-primary bg-primary/5 shadow-xs" 
@@ -615,10 +634,10 @@ function CategoryCard({
       <span className="text-sm font-bold text-foreground line-clamp-2 flex-1 leading-tight">
         {name}
       </span>
-      <div className="w-full flex items-center justify-between mt-auto">
+      <div className="shrink-0">
         {hasChildren ? (
           <div className="size-5 rounded-full bg-muted/30 flex items-center justify-center">
-            <CaretRight className="size-2.5 text-muted-foreground" weight="bold" />
+            <CaretRight className="size-3 text-muted-foreground" weight="bold" />
           </div>
         ) : isSelected ? (
           <div className="size-5 rounded-full bg-primary flex items-center justify-center">

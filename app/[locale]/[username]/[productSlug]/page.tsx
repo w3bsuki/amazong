@@ -3,11 +3,11 @@ import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
-import { ProductPageContent } from "@/components/product-page-content-new"
-import { ProductCard } from "@/components/common/product-card"
-import { RecentlyViewedTracker } from "@/components/recently-viewed-tracker"
+import { ProductPageContent } from "@/components/shared/product/product-page-content-new"
+import { ProductCard } from "@/components/shared/product/product-card"
+import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker"
 import { ReviewsSection } from "@/components/reviews-section"
-import { ProductBreadcrumb } from "@/components/product-breadcrumb"
+import { ProductBreadcrumb } from "@/components/shared/product/product-breadcrumb"
 
 // =============================================================================
 // SEO-OPTIMIZED PRODUCT PAGE

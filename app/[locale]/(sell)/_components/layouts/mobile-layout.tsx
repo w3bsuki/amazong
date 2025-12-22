@@ -39,9 +39,10 @@ const MOBILE_STEPS = [
 
 interface MobileLayoutProps {
   onSubmit: (data: SellFormDataV4) => void;
+  isSubmitting?: boolean;
 }
 
-export function MobileLayout({ onSubmit }: MobileLayoutProps) {
+export function MobileLayout({ onSubmit, isSubmitting = false }: MobileLayoutProps) {
   const form = useSellForm();
   const { currentStep, setCurrentStep, isBg } = useSellFormContext();
 
@@ -155,7 +156,12 @@ export function MobileLayout({ onSubmit }: MobileLayoutProps) {
   };
 
   return (
-    <StepperWrapper steps={MOBILE_STEPS} onSubmit={handleSubmit} onNext={handleNext}>
+    <StepperWrapper 
+      steps={MOBILE_STEPS} 
+      onSubmit={handleSubmit} 
+      onNext={handleNext}
+      isSubmitting={isSubmitting}
+    >
       {renderStepContent()}
     </StepperWrapper>
   );

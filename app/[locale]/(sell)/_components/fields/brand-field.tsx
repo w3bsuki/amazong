@@ -53,7 +53,7 @@ export function BrandField({
             <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
               <div className="flex items-center gap-3.5">
                 <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
-                  <Tag className="size-5 text-muted-foreground" weight="bold" />
+                  <Tag className="size-5 text-muted-foreground" />
                 </div>
                 <div>
                   <FieldLabel className="text-sm font-bold tracking-tight text-foreground">
@@ -69,11 +69,13 @@ export function BrandField({
             </div>
           )}
 
-          {/* Compact Label */}
+          {/* Compact Label - hidden if we use label inside */}
           {compact && (
-            <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
-              {isBg ? "Марка" : "Brand"}
-            </FieldLabel>
+            <div className="hidden">
+              <FieldLabel className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 block">
+                {isBg ? "Марка" : "Brand"}
+              </FieldLabel>
+            </div>
           )}
 
           {/* Brand Combobox - Using extracted shadcn-compliant component */}

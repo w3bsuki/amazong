@@ -1,4 +1,4 @@
-import { ProductCard, type ProductCardProps } from "@/components/common/product-card"
+import { ProductCard, type ProductCardProps } from "@/components/shared/product/product-card"
 import { PageContainer } from "@/components/common/page-container"
 import { cn } from "@/lib/utils"
 

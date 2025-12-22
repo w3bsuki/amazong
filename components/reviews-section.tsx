@@ -11,7 +11,7 @@ import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 
 // Dynamic import for ReviewForm - loaded only when needed
-const ReviewForm = lazy(() => import("@/components/review-form").then(mod => ({ default: mod.ReviewForm })))
+const ReviewForm = lazy(() => import("@/components/shared/product/reviews/review-form").then(mod => ({ default: mod.ReviewForm })))
 
 // Loading skeleton for ReviewForm
 function ReviewFormSkeleton() {

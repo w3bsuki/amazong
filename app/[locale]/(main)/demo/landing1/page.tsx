@@ -1,7 +1,7 @@
 "use client"
 
 import { Link } from "@/i18n/routing"
-import { ProductCard } from "@/components/common/product-card"
+import { ProductCard } from "@/components/shared/product/product-card"
 import { PromoCard } from "@/components/promo-card"
 import { cn } from "@/lib/utils"
 import {

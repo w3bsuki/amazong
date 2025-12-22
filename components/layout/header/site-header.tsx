@@ -15,7 +15,7 @@ import { CategorySubheader } from "@/components/navigation/category-subheader"
 
 // Other components
 import { SidebarMenu } from "@/components/sidebar-menu"
-import { MobileSearchOverlay } from "@/components/mobile-search-overlay"
+import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/common/wishlist/mobile-wishlist-button"

@@ -15,7 +15,7 @@ import { Link, useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { useProductSearch } from "@/hooks/use-product-search"
-import { AiSearchDialog } from "@/components/ai-search-dialog"
+import { AiSearchDialog } from "@/components/shared/search/ai-search-dialog"
 
 export function DesktopSearch() {
   const router = useRouter()

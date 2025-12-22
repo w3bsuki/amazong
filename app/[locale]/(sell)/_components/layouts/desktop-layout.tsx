@@ -40,12 +40,14 @@ interface DesktopLayoutProps {
   onSubmit: (data: SellFormDataV4) => void;
   submitError: string | null;
   setSubmitError: (error: string | null) => void;
+  isSubmitting?: boolean;
 }
 
 export function DesktopLayout({
   onSubmit,
   submitError,
   setSubmitError,
+  isSubmitting = false,
 }: DesktopLayoutProps) {
   const form = useSellForm();
   const {
@@ -62,7 +64,6 @@ export function DesktopLayout({
     categories,
   } = useSellFormContext();
 
-  const [isPending, startTransition] = useTransition();
   const [showReview, setShowReview] = useState(false);
 
   const formValues = form.watch();
@@ -83,15 +84,13 @@ export function DesktopLayout({
   const handleSubmit = useCallback(() => {
     form.handleSubmit(
       (data) => {
-        startTransition(() => {
-          onSubmit(data);
-        });
+        onSubmit(data);
       },
       () => {
         // Validation errors handled by react-hook-form
       }
     )();
-  }, [form, onSubmit]);
+  }, [onSubmit, form]);
 
   // Manual save
   const handleSaveDraft = useCallback(() => {
@@ -190,14 +189,14 @@ export function DesktopLayout({
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isSubmitting}
                 size="lg"
                 className={cn(
                   "w-full h-12 rounded-xl gap-2 text-sm font-semibold",
                   progress !== 100 && "bg-muted text-muted-foreground hover:bg-muted/80"
                 )}
               >
-                {isPending ? (
+                {isSubmitting ? (
                   <>
                     <Spinner className="size-5 animate-spin" />
                     {isBg ? "Публикуване..." : "Publishing..."}

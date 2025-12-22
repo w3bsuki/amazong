@@ -23,8 +23,10 @@ interface CategoryFieldProps {
 }
 
 export function CategoryField({ onCategoryChange, className, compact = false }: CategoryFieldProps) {
-  const { control, setValue } = useSellForm();
+  const { control, setValue, watch } = useSellForm();
   const { categories, isBg } = useSellFormContext();
+
+  const categoryPath = watch("categoryPath");
 
   const prefetchCategoryAttributes = async (categoryId: string) => {
     if (!categoryId) return;
@@ -48,7 +50,7 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid} className={className}>
           {!compact ? (
-            <div className="rounded-2xl border border-border bg-background overflow-hidden shadow-xs">
+            <div className="rounded-2xl border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
               {/* Header */}
               <div className="p-section pb-form border-b border-border/50 bg-muted/10">
                 <div className="flex items-center gap-form-sm">
@@ -73,6 +75,7 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
                 <CategorySelector
                   categories={categories}
                   value={field.value || ""}
+                  selectedPath={categoryPath}
                   onChange={(categoryId, path) => {
                     // Reset item specifics when switching categories to prevent stale fields/values.
                     setValue("attributes", [], { shouldValidate: true, shouldDirty: true });
@@ -92,14 +95,18 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
             </div>
           ) : (
             <>
-              <FieldLabel className="text-sm font-semibold mb-form-sm">
-                {isBg ? "Категория" : "Category"}
-              </FieldLabel>
+              {/* Compact Label - hidden if we use label inside */}
+              <div className="hidden">
+                <FieldLabel className="text-sm font-semibold mb-form-sm">
+                  {isBg ? "Категория" : "Category"}
+                </FieldLabel>
+              </div>
 
               <FieldContent>
                 <CategorySelector
                   categories={categories}
                   value={field.value || ""}
+                  selectedPath={categoryPath}
                   onChange={(categoryId, path) => {
                     // Reset item specifics when switching categories to prevent stale fields/values.
                     setValue("attributes", [], { shouldValidate: true, shouldDirty: true });

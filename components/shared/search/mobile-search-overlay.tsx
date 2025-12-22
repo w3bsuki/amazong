@@ -18,7 +18,7 @@ import { useLocale } from "next-intl"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useProductSearch } from "@/hooks/use-product-search"
-import { AiSearchDialog } from "@/components/ai-search-dialog"
+import { AiSearchDialog } from "@/components/shared/search/ai-search-dialog"
 
 interface MobileSearchOverlayProps {
   className?: string

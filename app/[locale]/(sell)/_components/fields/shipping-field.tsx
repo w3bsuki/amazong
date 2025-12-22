@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import {
   Truck,
   MapPin,
@@ -8,6 +8,7 @@ import {
   GlobeHemisphereEast,
   House,
   Package,
+  CaretRight,
 } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,7 @@ import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities";
+import { SelectDrawer } from "../ui/select-drawer";
 
 // ============================================================================
 // Shipping Regions Configuration
@@ -124,7 +126,7 @@ function ShippingRegionCard({
       className={cn(
         "relative flex items-start gap-3 p-3 rounded-xl border text-left transition-all w-full cursor-pointer",
         isSelected
-          ? "border-primary bg-primary/5 shadow-xs"
+          ? "border-primary bg-primary/10 shadow-xs"
           : "border-border bg-background hover:border-primary/30"
       )}
     >
@@ -148,11 +150,11 @@ function ShippingRegionCard({
           )}>
             {isBg ? region.labelBg : region.label}
           </span>
-          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
+          <span className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">
             {isBg ? region.deliveryTimeBg : region.deliveryTime}
           </span>
         </div>
-        <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
+        <p className="text-xs text-muted-foreground font-medium mt-0.5">
           {isBg ? region.descriptionBg : region.description}
         </p>
         {region.carriers.length > 0 && isSelected && (
@@ -160,7 +162,7 @@ function ShippingRegionCard({
             {region.carriers.map((carrier) => (
               <span
                 key={carrier}
-                className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/10"
+                className="text-2xs font-bold px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/10"
               >
                 {carrier}
               </span>
@@ -204,7 +206,7 @@ function DimensionsInput({
             onChange={(e) => onChange({ ...dimensions, lengthCm: e.target.value ? Number(e.target.value) : undefined })}
             className="h-10 pr-8 rounded-lg border-border font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">cm</span>
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-2xs font-bold text-muted-foreground">cm</span>
         </div>
       </div>
       <div className="space-y-1.5">
@@ -217,7 +219,7 @@ function DimensionsInput({
             onChange={(e) => onChange({ ...dimensions, widthCm: e.target.value ? Number(e.target.value) : undefined })}
             className="h-10 pr-8 rounded-lg border-border font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">cm</span>
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-2xs font-bold text-muted-foreground">cm</span>
         </div>
       </div>
       <div className="space-y-1.5">
@@ -230,7 +232,7 @@ function DimensionsInput({
             onChange={(e) => onChange({ ...dimensions, heightCm: e.target.value ? Number(e.target.value) : undefined })}
             className="h-10 pr-8 rounded-lg border-border font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">cm</span>
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-2xs font-bold text-muted-foreground">cm</span>
         </div>
       </div>
       <div className="space-y-1.5">
@@ -244,7 +246,7 @@ function DimensionsInput({
             onChange={(e) => onChange({ ...dimensions, weightKg: e.target.value ? Number(e.target.value) : undefined })}
             className="h-10 pr-8 rounded-lg border-border font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">kg</span>
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-2xs font-bold text-muted-foreground">kg</span>
         </div>
       </div>
     </div>
@@ -265,6 +267,9 @@ interface ShippingFieldProps {
 export function ShippingField({ className, compact = false }: ShippingFieldProps) {
   const { setValue, watch } = useSellForm();
   const { isBg } = useSellFormContext();
+  
+  const [isCityDrawerOpen, setIsCityDrawerOpen] = useState(false);
+  const [isProcessingDrawerOpen, setIsProcessingDrawerOpen] = useState(false);
 
   // Watch shipping values
   const shipsToBulgaria = watch("shipsToBulgaria");
@@ -295,6 +300,14 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
   const anyRegionSelected = Object.values(regionValues).some(Boolean);
   const hasError = !anyRegionSelected;
 
+  const cityOptions = BULGARIAN_CITIES.map(c => c.label);
+  const cityOptionsBg = BULGARIAN_CITIES.map(c => c.labelBg);
+  const selectedCityLabel = BULGARIAN_CITIES.find(c => c.value === sellerCity)?.[isBg ? "labelBg" : "label"];
+
+  const processingOptions = [1, 2, 3, 5, 7, 10, 14].map(d => String(d));
+  const processingOptionsBg = [1, 2, 3, 5, 7, 10, 14].map(d => `${d} ${d === 1 ? "ден" : "дни"}`);
+  const processingOptionsEn = [1, 2, 3, 5, 7, 10, 14].map(d => `${d} ${d === 1 ? "day" : "days"}`);
+
   const content = (
     <FieldContent className={cn("space-y-6", !compact && "p-6")}>
           {/* Shipping Regions */}
@@ -321,25 +334,60 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
           {/* Seller City (for Bulgaria or Pickup) */}
           {(shipsToBulgaria || pickupOnly) && (
             <div className="space-y-2">
-              <Label className="text-sm font-semibold">
-                {isBg ? "Вашият град" : "Your City"} *
-              </Label>
-              <Select
-                value={sellerCity || ""}
-                onValueChange={(val) => setValue("sellerCity", val)}
-              >
-                <SelectTrigger className="h-12 rounded-xl border-border font-medium">
-                  <SelectValue placeholder={isBg ? "Изберете град..." : "Select city..."} />
-                </SelectTrigger>
-                <SelectContent>
-                  {BULGARIAN_CITIES.map((city) => (
-                    <SelectItem key={city.value} value={city.value} className="font-medium">
-                      {isBg ? city.labelBg : city.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground font-medium">
+              {compact ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsCityDrawerOpen(true)}
+                    className="relative w-full flex items-center h-12 px-4 rounded-xl border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
+                        {isBg ? "Вашият град:" : "Your City:"} *
+                      </span>
+                      <span className={cn(
+                        "text-sm font-semibold truncate",
+                        sellerCity ? "text-foreground" : "text-muted-foreground/50"
+                      )}>
+                        {selectedCityLabel || (isBg ? "Изберете град..." : "Select city...")}
+                      </span>
+                    </div>
+                    <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
+                  </button>
+                  <SelectDrawer
+                    isOpen={isCityDrawerOpen}
+                    onClose={() => setIsCityDrawerOpen(false)}
+                    title={isBg ? "Изберете град" : "Select City"}
+                    options={BULGARIAN_CITIES.map(c => c.value)}
+                    optionsBg={isBg ? cityOptionsBg : cityOptions}
+                    value={sellerCity || ""}
+                    onChange={(val) => setValue("sellerCity", val)}
+                    locale={isBg ? "bg" : "en"}
+                  />
+                </>
+              ) : (
+                <>
+                  <Label className="text-sm font-semibold">
+                    {isBg ? "Вашият град" : "Your City"} *
+                  </Label>
+                  <Select
+                    value={sellerCity || ""}
+                    onValueChange={(val) => setValue("sellerCity", val)}
+                  >
+                    <SelectTrigger className="h-12 rounded-xl border-border font-medium">
+                      <SelectValue placeholder={isBg ? "Изберете град..." : "Select city..."} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BULGARIAN_CITIES.map((city) => (
+                        <SelectItem key={city.value} value={city.value} className="font-medium">
+                          {isBg ? city.labelBg : city.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
+              <p className="text-xs text-muted-foreground font-medium px-1">
                 {isBg 
                   ? "Градът, от който ще изпращате"
                   : "The city you'll ship from"}
@@ -379,7 +427,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                   placeholder="0.00"
                   value={shippingPrice || ""}
                   onChange={(e) => setValue("shippingPrice", e.target.value)}
-                  className="pl-10 h-12 rounded-xl border-border font-bold text-lg"
+                  className="pl-10 h-12 rounded-xl border-border font-bold text-base"
                 />
               </div>
             )}
@@ -402,25 +450,57 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
 
           {/* Processing Time */}
           <div className="space-y-2">
-            <Label className="text-sm font-semibold">
-              {isBg ? "Време за обработка" : "Processing Time"}
-            </Label>
-            <Select
-              value={String(processingDays)}
-              onValueChange={(val) => setValue("processingDays", Number(val))}
-            >
-              <SelectTrigger className="h-12 w-44 rounded-xl border-border font-medium">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[1, 2, 3, 5, 7, 10, 14].map((days) => (
-                  <SelectItem key={days} value={String(days)} className="font-medium">
-                    {days} {isBg ? (days === 1 ? "ден" : "дни") : (days === 1 ? "day" : "days")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground font-medium">
+            {compact ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsProcessingDrawerOpen(true)}
+                  className="relative w-full flex items-center h-12 px-4 rounded-xl border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
+                >
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
+                      {isBg ? "Обработка:" : "Processing:"}
+                    </span>
+                    <span className="text-sm font-semibold text-foreground truncate">
+                      {processingDays} {isBg ? (processingDays === 1 ? "ден" : "дни") : (processingDays === 1 ? "day" : "days")}
+                    </span>
+                  </div>
+                  <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
+                </button>
+                <SelectDrawer
+                  isOpen={isProcessingDrawerOpen}
+                  onClose={() => setIsProcessingDrawerOpen(false)}
+                  title={isBg ? "Време за обработка" : "Processing Time"}
+                  options={processingOptions}
+                  optionsBg={isBg ? processingOptionsBg : processingOptionsEn}
+                  value={String(processingDays)}
+                  onChange={(val) => setValue("processingDays", Number(val))}
+                  locale={isBg ? "bg" : "en"}
+                />
+              </>
+            ) : (
+              <>
+                <Label className="text-sm font-semibold">
+                  {isBg ? "Време за обработка" : "Processing Time"}
+                </Label>
+                <Select
+                  value={String(processingDays)}
+                  onValueChange={(val) => setValue("processingDays", Number(val))}
+                >
+                  <SelectTrigger className="h-12 w-44 rounded-xl border-border font-medium">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 5, 7, 10, 14].map((days) => (
+                      <SelectItem key={days} value={String(days)} className="font-medium">
+                        {days} {isBg ? (days === 1 ? "ден" : "дни") : (days === 1 ? "day" : "days")}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </>
+            )}
+            <p className="text-xs text-muted-foreground font-medium px-1">
               {isBg 
                 ? "Време за подготовка на поръчката преди изпращане"
                 : "Time to prepare the order before shipping"}
@@ -432,11 +512,11 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
   return (
     <Field data-invalid={hasError} className={className}>
       {!compact ? (
-        <div className="rounded-xl border border-border bg-background overflow-hidden shadow-xs">
+        <div className="rounded-xl border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
           {/* Header */}
           <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
             <div className="flex items-center gap-3.5">
-              <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
+              <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
                 <Truck className="size-5 text-muted-foreground" weight="bold" />
               </div>
               <div>
@@ -456,11 +536,14 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
         </div>
       ) : (
         <>
-          <div className="flex items-center gap-2 mb-2">
-            <Truck className="size-4 text-muted-foreground" weight="bold" />
-            <FieldLabel className="text-sm font-medium">
-              {isBg ? "Доставка" : "Shipping"}
-            </FieldLabel>
+          {/* Compact Label - hidden if we use label inside */}
+          <div className="hidden">
+            <div className="flex items-center gap-2 mb-2">
+              <Truck className="size-4 text-muted-foreground" weight="bold" />
+              <FieldLabel className="text-sm font-medium">
+                {isBg ? "Доставка" : "Shipping"}
+              </FieldLabel>
+            </div>
           </div>
           {content}
         </>

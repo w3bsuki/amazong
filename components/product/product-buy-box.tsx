@@ -2,7 +2,7 @@
 
 import { Heart } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { AddToCart } from "@/components/add-to-cart"
+import { AddToCart } from "@/components/shared/cart/add-to-cart"
 import { formatPrice } from "@/lib/format-price"
 import { cn } from "@/lib/utils"
 

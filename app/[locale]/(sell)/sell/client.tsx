@@ -188,21 +188,24 @@ export function SellPageClient({
   if (useAiAssistant) {
     return (
       <div className="flex h-dvh flex-col bg-background">
-        {/* Minimal header with toggle */}
-        <header className="safe-top flex items-center justify-between border-b border-border bg-background px-4 py-3">
+        {/* Minimal header with toggle - Modernized with backdrop-blur and refined spacing */}
+        <header className="safe-top sticky top-0 z-50 flex items-center justify-between border-b border-border/50 bg-background/80 px-4 py-3 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link 
+              href="/" 
+              className="flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-all active:scale-95"
+            >
               <ArrowLeft className="size-5" />
             </Link>
-            <div className="flex items-center gap-2">
-              <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Sparkles className="size-4" />
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+                <Sparkles className="size-4.5" />
               </div>
-              <div>
-                <h1 className="text-sm font-semibold">
+              <div className="flex flex-col">
+                <h1 className="text-sm font-bold tracking-tight leading-none">
                   {isBg ? "Създай обява" : "Create Listing"}
                 </h1>
-                <p className="text-xs text-muted-foreground">
+                <p className="mt-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">
                   {isBg ? "с AI асистент" : "with AI assistant"}
                 </p>
               </div>
@@ -213,10 +216,10 @@ export function SellPageClient({
             variant="outline"
             size="sm"
             onClick={() => setUseAiAssistant(false)}
-            className="gap-1.5"
+            className="h-9 gap-1.5 rounded-full border-border/60 bg-background/50 px-4 font-medium shadow-xs transition-all hover:bg-muted active:scale-95"
           >
-            <FileText className="size-4" />
-            <span className="hidden sm:inline">
+            <FileText className="size-4 text-muted-foreground" />
+            <span className="hidden xs:inline">
               {isBg ? "Ръчен формуляр" : "Manual Form"}
             </span>
           </Button>

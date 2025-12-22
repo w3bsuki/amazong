@@ -257,12 +257,12 @@ export function PhotosField({
       {/* Main Photos Field */}
       <Field data-invalid={hasError}>
         {!compact ? (
-          <div className="rounded-xl border border-border bg-background overflow-hidden shadow-xs">
+          <div className="rounded-xl border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
             {/* Header */}
             <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3.5">
-                  <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
+                  <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
                     <Camera className="size-5 text-muted-foreground" weight="bold" />
                   </div>
                   <div>

@@ -1,5 +1,5 @@
 import { cookies } from "next/headers"
-import { ProductCarouselSection, type CarouselProduct } from "@/components/product-carousel-section"
+import { ProductCarouselSection, type CarouselProduct } from "@/components/shared/product/product-carousel-section"
 import { getProductsByCategorySlug, toUI, type Product, type ShippingZone } from "@/lib/data/products"
 
 interface CategoryCarouselProps {

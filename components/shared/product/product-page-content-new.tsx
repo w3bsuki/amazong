@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import { formatPrice } from "@/lib/format-price"
-import { AddToCart } from "@/components/add-to-cart"
+import { AddToCart } from "@/components/shared/cart/add-to-cart"
 import { useWishlist } from "@/components/providers/wishlist-context"
 
 // Import extracted components

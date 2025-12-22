@@ -11,6 +11,7 @@ import {
   Minus,
   Plus,
   Handshake,
+  CaretRight,
 } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +27,7 @@ import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@
 import { cn } from "@/lib/utils";
 import { formatOptions } from "@/lib/sell-form-schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
+import { SelectDrawer } from "../ui/select-drawer";
 
 // ============================================================================
 // Constants
@@ -159,15 +161,15 @@ function QuantityStepper({
   max?: number;
 }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center h-12 w-fit rounded-xl border border-border bg-background shadow-xs overflow-hidden">
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
-        className="size-12 rounded-xl border border-border flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors active:scale-95 touch-manipulation"
+        className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors active:scale-95 touch-manipulation border-r border-border/50"
         aria-label="Decrease quantity"
       >
-        <Minus className="size-5" />
+        <Minus className="size-4" weight="bold" />
       </button>
       <Input
         type="number"
@@ -178,7 +180,7 @@ function QuantityStepper({
             onChange(Math.max(min, Math.min(max, num)));
           }
         }}
-        className="w-20 h-12 text-center text-lg font-bold rounded-xl border-border"
+        className="w-14 h-full text-center text-base font-bold border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
         min={min}
         max={max}
       />
@@ -186,10 +188,10 @@ function QuantityStepper({
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
-        className="size-12 rounded-xl border border-border flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors active:scale-95 touch-manipulation"
+        className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors active:scale-95 touch-manipulation border-l border-border/50"
         aria-label="Increase quantity"
       >
-        <Plus className="size-5" />
+        <Plus className="size-4" weight="bold" />
       </button>
     </div>
   );
@@ -211,6 +213,8 @@ interface PricingFieldProps {
 export function PricingField({ className, categoryId, compact = false }: PricingFieldProps) {
   const { control, setValue, watch, formState: { errors } } = useSellForm();
   const { isBg } = useSellFormContext();
+  
+  const [isCurrencyDrawerOpen, setIsCurrencyDrawerOpen] = useState(false);
 
   // Watch form values
   const format = watch("format");
@@ -250,9 +254,9 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
                   onClick={() => setValue("format", option.value, { shouldValidate: true })}
                   className={cn(
                     "flex items-center justify-center gap-2 h-12 rounded-xl border transition-all",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
                     isSelected
-                      ? "border-primary bg-primary/5 text-primary font-bold shadow-xs"
+                      ? "border-primary bg-primary/10 text-primary font-bold shadow-xs"
                       : "border-border bg-background hover:border-primary/30 text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -271,41 +275,70 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
             control={control}
             render={({ field, fieldState }) => (
               <div className="space-y-2">
-                <Label htmlFor="sell-form-price" className="text-sm font-semibold">
-                  {isBg ? "Цена" : "Price"} *
-                </Label>
-                <div className="flex gap-3">
-                  <div className="relative flex-1">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
-                      {CURRENCY_SYMBOLS[currency] || currency}
-                    </span>
-                    <Input
-                      {...field}
-                      id="sell-form-price"
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0.00"
-                      className={cn(
-                        "pl-12 h-12 text-lg font-bold rounded-xl border-border",
-                        fieldState.invalid && "border-destructive"
-                      )}
-                    />
+                <div className={cn(
+                  "flex items-center h-12 rounded-xl border border-border bg-background shadow-xs transition-all focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary/50 overflow-hidden",
+                  fieldState.invalid && "border-destructive bg-destructive/5 focus-within:ring-destructive/5 focus-within:border-destructive/50"
+                )}>
+                  <div className="relative flex-1 flex items-center px-4 min-w-0">
+                    <label 
+                      htmlFor="sell-form-price"
+                      className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2"
+                    >
+                      {isBg ? "Цена:" : "Price:"} *
+                    </label>
+                    <div className="flex items-center flex-1 min-w-0">
+                      <span className="text-muted-foreground font-bold text-sm shrink-0 mr-1">
+                        {CURRENCY_SYMBOLS[currency] || currency}
+                      </span>
+                      <Input
+                        {...field}
+                        id="sell-form-price"
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="0.00"
+                        className="border-none bg-transparent h-auto p-0 text-sm font-bold focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none flex-1 min-w-0"
+                      />
+                    </div>
                   </div>
-                  <Select 
-                    value={currency} 
-                    onValueChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
-                  >
-                    <SelectTrigger className="w-28 h-12 rounded-xl font-bold border-border">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CURRENCIES.map((c) => (
-                        <SelectItem key={c.value} value={c.value} className="font-medium">
-                          {c.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="h-6 w-px bg-border/50 shrink-0" />
+                  {compact ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setIsCurrencyDrawerOpen(true)}
+                        className="w-auto min-w-[90px] flex items-center justify-between px-3 h-full font-bold text-sm hover:bg-muted transition-colors"
+                      >
+                        <span>{currency}</span>
+                        <CaretRight className="size-3 opacity-50" weight="bold" />
+                      </button>
+                      <SelectDrawer
+                        isOpen={isCurrencyDrawerOpen}
+                        onClose={() => setIsCurrencyDrawerOpen(false)}
+                        title={isBg ? "Изберете валута" : "Select Currency"}
+                        options={CURRENCIES.map(c => c.value)}
+                        optionsBg={CURRENCIES.map(c => c.label)}
+                        value={currency}
+                        onChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
+                        locale={isBg ? "bg" : "en"}
+                      />
+                    </>
+                  ) : (
+                    <Select 
+                      value={currency} 
+                      onValueChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
+                    >
+                      <SelectTrigger className="w-auto min-w-[90px] border-none bg-transparent h-full rounded-none font-bold focus:ring-0 focus:ring-offset-0 shadow-none px-3 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CURRENCIES.map((c) => (
+                          <SelectItem key={c.value} value={c.value} className="font-medium">
+                            {c.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
@@ -324,24 +357,31 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
 
           {/* Compare at Price (Optional) */}
           <div className="space-y-2">
-            <Label htmlFor="sell-form-compare-price" className="text-sm font-semibold">
-              {isBg ? "Стара цена (по избор)" : "Compare at Price (optional)"}
-            </Label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
-                {CURRENCY_SYMBOLS[currency] || currency}
-              </span>
-              <Input
-                id="sell-form-compare-price"
-                type="text"
-                inputMode="decimal"
-                placeholder="0.00"
-                value={compareAtPrice || ""}
-                onChange={(e) => setValue("compareAtPrice", e.target.value)}
-                className="pl-12 h-12 rounded-xl border-border"
-              />
+            <div className="flex items-center h-12 rounded-xl border border-border bg-background shadow-xs transition-all focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary/50 overflow-hidden">
+              <div className="relative flex-1 flex items-center px-4 min-w-0">
+                <label 
+                  htmlFor="sell-form-compare-price"
+                  className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2"
+                >
+                  {isBg ? "Стара цена:" : "Old Price:"}
+                </label>
+                <div className="flex items-center flex-1 min-w-0">
+                  <span className="text-muted-foreground font-bold text-sm shrink-0 mr-1">
+                    {CURRENCY_SYMBOLS[currency] || currency}
+                  </span>
+                  <Input
+                    id="sell-form-compare-price"
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    value={compareAtPrice || ""}
+                    onChange={(e) => setValue("compareAtPrice", e.target.value)}
+                    className="border-none bg-transparent h-auto p-0 text-sm font-bold focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none flex-1 min-w-0"
+                  />
+                </div>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground font-medium">
+            <p className="text-[11px] text-muted-foreground font-medium px-1">
               {isBg 
                 ? "Ако продуктът е на промоция, въведете оригиналната цена"
                 : "If the item is on sale, enter the original price"}
@@ -360,16 +400,16 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
           </div>
 
           {/* Accept Offers Toggle */}
-          <div className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/10">
+          <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-muted/5 shadow-xs ring-1 ring-border/5">
             <div className="flex items-center gap-3">
-              <div className="size-9 rounded-full bg-background border border-border flex items-center justify-center shrink-0">
-                <Handshake className="size-4.5 text-muted-foreground" weight="bold" />
+              <div className="size-10 rounded-lg bg-background border border-border flex items-center justify-center shrink-0 shadow-sm">
+                <Handshake className="size-5 text-primary" weight="bold" />
               </div>
               <div>
-                <span className="text-sm font-bold">
+                <span className="text-sm font-bold text-foreground">
                   {isBg ? "Приемане на оферти" : "Accept Offers"}
                 </span>
-                <p className="text-[11px] text-muted-foreground font-medium">
+                <p className="text-[11px] text-muted-foreground font-medium leading-tight mt-0.5">
                   {isBg 
                     ? "Позволете на купувачите да предлагат цена"
                     : "Allow buyers to make price offers"}
@@ -379,6 +419,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
             <Switch
               checked={acceptOffers}
               onCheckedChange={(checked) => setValue("acceptOffers", checked)}
+              className="data-[state=checked]:bg-primary"
             />
           </div>
     </FieldContent>
@@ -387,11 +428,11 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
   return (
     <Field data-invalid={hasError} className={className}>
       {!compact ? (
-        <div className="rounded-2xl border border-border bg-background overflow-hidden shadow-xs">
+        <div className="rounded-2xl border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
           {/* Header */}
           <div className="p-section pb-form border-b border-border/50 bg-muted/10">
             <div className="flex items-center gap-form-sm">
-              <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
+              <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
                 <CurrencyDollar className="size-5 text-muted-foreground" weight="bold" />
               </div>
               <div>
@@ -411,9 +452,12 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
         </div>
       ) : (
         <>
-          <FieldLabel className="text-sm font-semibold mb-form-sm">
-            {isBg ? "Цена и количество" : "Pricing"}
-          </FieldLabel>
+          {/* Compact Label - hidden if we use label inside */}
+          <div className="hidden">
+            <FieldLabel className="text-sm font-semibold mb-form-sm">
+              {isBg ? "Цена и количество" : "Pricing"}
+            </FieldLabel>
+          </div>
           {content}
         </>
       )}
