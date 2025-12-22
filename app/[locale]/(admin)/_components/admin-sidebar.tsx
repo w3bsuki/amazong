@@ -110,10 +110,7 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:p-1.5!"
-            >
+            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:p-1.5!">
               <Link href="/admin">
                 <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
                   A

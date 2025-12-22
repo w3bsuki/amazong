@@ -1,5 +1,3 @@
-"use client"
-
 import { IconTrendingUp, IconBox, IconShoppingCart, IconCurrencyDollar, IconEye, IconStar } from "@tabler/icons-react"
 
 import { Badge } from "@/components/ui/badge"

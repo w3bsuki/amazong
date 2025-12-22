@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils"
 
 // Tone for desktop cards (kept for DesktopCategoryRail)
 const tone = {
-  surface: "bg-brand-muted",
+  surface: "bg-brand-muted/50",
   icon: "text-link",
   iconHover: "group-hover:text-brand",
   accent: "text-cta-trust-blue",
@@ -117,6 +117,8 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
 export function DesktopCategoryRail({ locale }: MobileCategoryRailProps) {
   const featuredLabel = locale === "bg" ? "Избрано" : "Featured"
   const shopNowLabel = locale === "bg" ? "Разгледай" : "Shop now"
+  const sectionTitle = locale === "bg" ? "Топ Категории" : "Top Categories"
+  const seeAllLabel = locale === "bg" ? "Виж всички" : "See all"
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
@@ -125,8 +127,8 @@ export function DesktopCategoryRail({ locale }: MobileCategoryRailProps) {
   const checkScroll = useCallback(() => {
     const el = scrollRef.current
     if (!el) return
-    setCanScrollLeft(el.scrollLeft > 0)
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 1)
+    setCanScrollLeft(el.scrollLeft > 5)
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 5)
   }, [])
 
   useEffect(() => {
@@ -144,7 +146,7 @@ export function DesktopCategoryRail({ locale }: MobileCategoryRailProps) {
   const scroll = (direction: "left" | "right") => {
     const el = scrollRef.current
     if (!el) return
-    const cardWidth = 172 // 156px card + 16px gap
+    const cardWidth = 180 // 164px card + 16px gap
     const scrollAmount = cardWidth * 3 // Scroll 3 cards at a time
     el.scrollBy({
       left: direction === "left" ? -scrollAmount : scrollAmount,
@@ -153,98 +155,103 @@ export function DesktopCategoryRail({ locale }: MobileCategoryRailProps) {
   }
 
   return (
-    <div className="relative group/rail">
-      {/* Left Chevron - always visible when scrollable */}
-      <button
-        onClick={() => scroll("left")}
-        disabled={!canScrollLeft}
-        className={cn(
-          "absolute -left-5 top-1/2 -translate-y-1/2 z-10",
-          "size-8 rounded-full bg-background border border-border",
-          "flex items-center justify-center",
-          "transition-colors hover:bg-accent",
-          canScrollLeft ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
-        aria-label="Scroll left"
-      >
-        <CaretLeft className="size-3.5 text-foreground" weight="bold" />
-      </button>
+    <section className="rounded-xl border border-border/60 bg-card shadow-xs overflow-hidden">
+      {/* Header - Matching landing page section pattern */}
+      <div className="px-5 pt-5 pb-3 flex items-center justify-between border-b border-border/40 bg-muted/5">
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col">
+            <h2 className="text-xl font-bold tracking-tight text-foreground/90 leading-tight">{sectionTitle}</h2>
+          </div>
+        </div>
 
-      {/* Right Chevron - always visible when scrollable */}
-      <button
-        onClick={() => scroll("right")}
-        disabled={!canScrollRight}
-        className={cn(
-          "absolute -right-5 top-1/2 -translate-y-1/2 z-10",
-          "size-8 rounded-full bg-background border border-border",
-          "flex items-center justify-center",
-          "transition-colors hover:bg-accent",
-          canScrollRight ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
-        aria-label="Scroll right"
-      >
-        <CaretRight className="size-3.5 text-foreground" weight="bold" />
-      </button>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/categories"
+            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+          >
+            {seeAllLabel}
+            <CaretRight size={12} weight="bold" />
+          </Link>
 
-      {/* Scrollable Container - NO extra padding, aligns with container edges */}
-      <div
-        ref={scrollRef}
-        className="flex overflow-x-auto no-scrollbar gap-4 scroll-smooth"
-      >
-        {categories.map((cat) => {
-          const Icon = cat.icon
-          return (
-            <Link
-              key={cat.slug}
-              href={`/categories/${cat.slug}`}
+          {/* Navigation Buttons - Moved to Header */}
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => scroll("left")}
+              disabled={!canScrollLeft}
               className={cn(
-                "group shrink-0",
-                "w-[156px]",
-                "rounded-2xl border border-border bg-card overflow-hidden",
-                "hover:shadow-md hover:border-ring/30 transition-all duration-200"
+                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
+                "hover:bg-muted active:scale-95",
+                "disabled:opacity-30 disabled:cursor-not-allowed"
               )}
+              aria-label="Scroll left"
             >
-              <div className={cn("h-12 px-3 flex items-center justify-between", tone.surface)}>
-                <div
-                  className={cn(
-                    "size-8 rounded-xl",
-                    "bg-background/80 border border-border/50",
-                    "flex items-center justify-center"
-                  )}
-                  aria-hidden="true"
-                >
-                  <Icon className={cn("size-4.5", tone.icon, tone.iconHover)} weight="fill" />
-                </div>
-                <span className={cn("text-2xs font-semibold", tone.accent)}>{featuredLabel}</span>
-              </div>
-
-              <div className="px-3 py-3">
-                <div className="text-sm font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-brand transition-colors">
-                  {locale === "bg" ? cat.name_bg : cat.name}
-                </div>
-                <div className="mt-1 flex items-center justify-between">
-                  <span className="text-2xs text-muted-foreground">{shopNowLabel}</span>
-                  <ArrowRight className={cn("size-3.5", tone.icon, tone.iconHover)} weight="bold" />
-                </div>
-              </div>
-            </Link>
-          )
-        })}
+              <CaretLeft size={16} weight="bold" />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              disabled={!canScrollRight}
+              className={cn(
+                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
+                "hover:bg-muted active:scale-95",
+                "disabled:opacity-30 disabled:cursor-not-allowed"
+              )}
+              aria-label="Scroll right"
+            >
+              <CaretRight size={16} weight="bold" />
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Fade edges to indicate scrollability */}
-      <div 
-        className={cn(
-          "absolute left-0 top-0 bottom-0 w-8 bg-linear-to-r from-muted to-transparent pointer-events-none transition-opacity",
-          canScrollLeft ? "opacity-100" : "opacity-0"
-        )} 
-      />
-      <div 
-        className={cn(
-          "absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-muted to-transparent pointer-events-none transition-opacity",
-          canScrollRight ? "opacity-100" : "opacity-0"
-        )} 
-      />
-    </div>
+      {/* Rail Content */}
+      <div className="relative">
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto no-scrollbar gap-4 scroll-smooth px-5 py-5"
+        >
+          {categories.map((cat) => {
+            const Icon = cat.icon
+            return (
+              <Link
+                key={cat.slug}
+                href={`/categories/${cat.slug}`}
+                className={cn(
+                  "group shrink-0",
+                  "w-[164px]",
+                  "rounded-xl border border-border bg-card overflow-hidden",
+                  "hover:border-border/80 hover:bg-accent/5"
+                )}
+              >
+                <div className={cn("h-14 px-3 flex items-center justify-between", tone.surface)}>
+                  <div
+                    className={cn(
+                      "size-9 rounded-lg",
+                      "bg-background border border-border/40",
+                      "flex items-center justify-center shadow-xs"
+                    )}
+                    aria-hidden="true"
+                  >
+                    <Icon className={cn("size-5", tone.icon, tone.iconHover)} weight="fill" />
+                  </div>
+                  <span className={cn("text-[10px] font-bold uppercase tracking-wider", tone.accent)}>
+                    {featuredLabel}
+                  </span>
+                </div>
+
+                <div className="px-3 py-3.5">
+                  <div className="text-[15px] font-semibold text-foreground leading-tight line-clamp-1 group-hover:text-brand">
+                    {locale === "bg" ? cat.name_bg : cat.name}
+                  </div>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="text-xs font-medium text-muted-foreground">{shopNowLabel}</span>
+                    <ArrowRight className={cn("size-3.5", tone.icon, tone.iconHover)} weight="bold" />
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+    </section>
   )
 }

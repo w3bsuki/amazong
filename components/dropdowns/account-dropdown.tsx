@@ -74,7 +74,7 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
             >
               {isSigningOut ? (
                 <>
-                  <SpinnerGap className="size-4 animate-spin mr-2" />
+                  <SpinnerGap className="size-4 mr-2" />
                   {t("signingOut") || "Signing out..."}
                 </>
               ) : (

@@ -1,12 +1,12 @@
 import { ChartAreaInteractive } from "@/components/charts/chart-area-interactive"
-import { BusinessStatsCards } from "./_components/business-stats-cards"
-import { BusinessRecentActivity } from "./_components/business-recent-activity"
-import { BusinessQuickActions } from "./_components/business-quick-actions"
-import { BusinessTaskCards } from "./_components/business-task-cards"
-import { BusinessSetupGuide } from "./_components/business-setup-guide"
-import { BusinessLiveActivity } from "./_components/business-live-activity"
-import { BusinessActivityFeed } from "./_components/business-activity-feed"
-import { BusinessPerformanceScore } from "./_components/business-performance-score"
+import { BusinessStatsCards } from "../_components/business-stats-cards"
+import { BusinessRecentActivity } from "../_components/business-recent-activity"
+import { BusinessQuickActions } from "../_components/business-quick-actions"
+import { BusinessTaskCards } from "../_components/business-task-cards"
+import { BusinessSetupGuide } from "../_components/business-setup-guide"
+import { BusinessLiveActivity } from "../_components/business-live-activity"
+import { BusinessActivityFeed } from "../_components/business-activity-feed"
+import { BusinessPerformanceScore } from "../_components/business-performance-score"
 import { 
   requireDashboardAccess, 
   getBusinessDashboardStats, 

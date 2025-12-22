@@ -388,106 +388,106 @@ export function CategoryCircles({ locale = "en" }: CategoryCirclesProps) {
 
       {/* ================================================================
           DESKTOP: Rounded cards layout - Optimized for Bulgarian text
-          - Wider cards (108px) to fit "Дом и кухня" properly
-          - Taller cards (104px) for better proportion
-          - Larger icons (size-12 container, size-7 icon)
-          - Proper Tailwind v4 spacing tokens
+          - Wrapped in a section container to match landing page patterns
+          - Header with chevrons and "See all" link
           ================================================================ */}
       <div className="hidden md:block">
-        {/* Header - Muted typography with proper vertical padding */}
-        <div className="flex items-center justify-between py-3 px-4">
-          <div className="flex items-center gap-3">
-            <h2 className="text-sm font-medium text-muted-foreground tracking-wide">
-              {locale === "bg" ? "Пазарувай по категория" : "Shop by Category"}
-            </h2>
-            <Link 
-              href="/categories" 
-              className="text-sm font-medium text-link hover:text-link-hover hover:underline underline-offset-2 transition-colors"
-            >
-              {locale === "bg" ? "Виж всички" : "See all"}
-            </Link>
-          </div>
-          {/* Navigation buttons - properly spaced */}
-          <div className="flex items-center gap-2" role="group" aria-label={locale === "bg" ? "Навигация" : "Navigation"}>
-            <button
-              onClick={() => scrollTo("left")}
-              disabled={!canScrollLeft}
-              className={cn(
-                "size-9 flex items-center justify-center rounded-full",
-                "border border-border bg-card text-foreground",
-                "hover:bg-accent hover:border-ring/40",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                "disabled:opacity-40 disabled:pointer-events-none",
-                "transition-colors duration-150"
-              )}
-              aria-label={locale === "bg" ? "Превъртете наляво" : "Scroll left"}
-            >
-              <CaretLeft size={18} weight="regular" />
-            </button>
-            <button
-              onClick={() => scrollTo("right")}
-              disabled={!canScrollRight}
-              className={cn(
-                "size-9 flex items-center justify-center rounded-full",
-                "border border-border bg-card text-foreground",
-                "hover:bg-accent hover:border-ring/40",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                "disabled:opacity-40 disabled:pointer-events-none",
-                "transition-colors duration-150"
-              )}
-              aria-label={locale === "bg" ? "Превъртете надясно" : "Scroll right"}
-            >
-              <CaretRight size={18} weight="regular" />
-            </button>
-          </div>
-        </div>
-        
-        {/* Desktop: Rounded cards - wider for Bulgarian text */}
-        <div
-          ref={scrollRef}
-          className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-2.5 px-4 pb-3 scroll-pl-4"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          role="list"
-          aria-label={locale === "bg" ? "Списък с категории" : "Category list"}
-        >
-          {categories.map((category, index) => {
-            const Icon = getCategoryIcon(category.slug)
-            return (
+        <div className="rounded-xl border border-border/60 bg-card shadow-xs overflow-hidden">
+          {/* Header - Matching landing page section pattern */}
+          <div className="px-5 pt-5 pb-3 flex items-center justify-between border-b border-border/40 bg-muted/5">
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col">
+                <h2 className="text-xl font-bold tracking-tight text-foreground/90 leading-tight">
+                  {locale === "bg" ? "Пазарувай по категория" : "Shop by Category"}
+                </h2>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
               <Link
-                key={category.slug}
-                href={`/categories/${category.slug}`}
-                role="listitem"
-                className={cn(
-                  "flex flex-col items-center justify-center shrink-0 snap-start",
-                  "w-[108px] h-[104px] px-2 py-3",
-                  "bg-card border border-border rounded-xl",
-                  "hover:bg-accent/50 hover:border-ring/30 hover:shadow-sm",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                  "transition-all duration-200 ease-out",
-                  "group cursor-pointer",
-                  index === categories.length - 1 && "mr-4"
-                )}
+                href="/categories"
+                className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
               >
-                {/* Icon container - larger for better visual weight */}
-                <div
+                {locale === "bg" ? "Виж всички" : "See all"}
+                <CaretRight size={12} weight="bold" />
+              </Link>
+
+              {/* Navigation Buttons - Moved to Header */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => scrollTo("left")}
+                  disabled={!canScrollLeft}
                   className={cn(
-                    "size-12 rounded-lg flex items-center justify-center",
-                    "bg-muted/50 group-hover:bg-brand/10",
-                    "transition-colors duration-200"
+                    "size-8 rounded-full border border-border flex items-center justify-center transition-all",
+                    "hover:bg-muted active:scale-95",
+                    "disabled:opacity-30 disabled:cursor-not-allowed"
+                  )}
+                  aria-label={locale === "bg" ? "Превъртете наляво" : "Scroll left"}
+                >
+                  <CaretLeft size={16} weight="bold" />
+                </button>
+                <button
+                  onClick={() => scrollTo("right")}
+                  disabled={!canScrollRight}
+                  className={cn(
+                    "size-8 rounded-full border border-border flex items-center justify-center transition-all",
+                    "hover:bg-muted active:scale-95",
+                    "disabled:opacity-30 disabled:cursor-not-allowed"
+                  )}
+                  aria-label={locale === "bg" ? "Превъртете надясно" : "Scroll right"}
+                >
+                  <CaretRight size={16} weight="bold" />
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Desktop: Rounded cards - wider for Bulgarian text */}
+          <div
+            ref={scrollRef}
+            className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth gap-2.5 px-5 py-5"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            role="list"
+            aria-label={locale === "bg" ? "Списък с категории" : "Category list"}
+          >
+            {categories.map((category, index) => {
+              const Icon = getCategoryIcon(category.slug)
+              return (
+                <Link
+                  key={category.slug}
+                  href={`/categories/${category.slug}`}
+                  role="listitem"
+                  className={cn(
+                    "flex flex-col items-center justify-center shrink-0 snap-start",
+                    "w-[112px] h-[108px] px-2 py-3",
+                    "bg-card border border-border rounded-xl",
+                    "hover:bg-accent/5 hover:border-border/80",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    "group cursor-pointer",
+                    index === categories.length - 1 && "mr-4"
                   )}
                 >
-                  <Icon
-                    className="size-7 text-link group-hover:text-brand transition-colors duration-200"
-                    weight="regular"
-                  />
-                </div>
-                {/* Category name - proper line height for 2-line text */}
-                <span className="mt-2 text-foreground text-xs font-medium text-center leading-4 line-clamp-2 w-full px-1 group-hover:text-brand transition-colors duration-200">
-                  {getCategoryName(category)}
-                </span>
-              </Link>
-            )
-          })}
+                  {/* Icon container - larger for better visual weight */}
+                  <div
+                    className={cn(
+                      "size-12 rounded-lg flex items-center justify-center",
+                      "bg-muted/30 border border-border/40 shadow-xs group-hover:bg-brand/5",
+                      "transition-colors duration-200"
+                    )}
+                  >
+                    <Icon
+                      className="size-7 text-link group-hover:text-brand transition-colors duration-200"
+                      weight="regular"
+                    />
+                  </div>
+                  {/* Category name - proper line height for 2-line text */}
+                  <span className="mt-2 text-foreground text-xs font-medium text-center leading-4 line-clamp-2 w-full px-1 group-hover:text-brand transition-colors duration-200">
+                    {getCategoryName(category)}
+                  </span>
+                </Link>
+              )
+            })}
+          </div>
         </div>
       </div>
     </section>

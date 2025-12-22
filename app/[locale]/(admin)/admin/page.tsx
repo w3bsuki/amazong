@@ -1,6 +1,6 @@
 import { ChartAreaInteractive } from "@/components/charts/chart-area-interactive"
-import { AdminStatsCards } from "./_components/admin-stats-cards"
-import { AdminRecentActivity } from "./_components/admin-recent-activity"
+import { AdminStatsCards } from "../_components/admin-stats-cards"
+import { AdminRecentActivity } from "../_components/admin-recent-activity"
 import { getAdminStats } from "@/lib/auth/admin"
 import { connection } from "next/server"
 

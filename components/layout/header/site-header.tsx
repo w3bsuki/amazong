@@ -79,7 +79,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
           {isProductPage ? (
             <button 
               onClick={() => router.back()}
-              className="flex items-center justify-center size-10 -ml-1 rounded-full text-foreground hover:bg-muted active:bg-muted/80 active:scale-95 transition-all"
+              className="flex items-center justify-center size-10 -ml-1 rounded-full text-foreground hover:bg-muted active:bg-muted/80"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
               <CaretLeft size={22} weight="bold" />
@@ -106,7 +106,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
         <div className="px-3 pb-2">
           <button
             onClick={() => setIsMobileSearchOpen(true)}
-            className="w-full flex items-center gap-2 h-10 px-3 rounded-full bg-muted border border-border text-muted-foreground text-sm text-left active:bg-accent transition-colors duration-150"
+            className="w-full flex items-center gap-2 h-10 px-3 rounded-full bg-muted border border-border text-muted-foreground text-sm text-left active:bg-accent"
             aria-label={searchPlaceholder}
             aria-haspopup="dialog"
             aria-expanded={isMobileSearchOpen}
@@ -134,7 +134,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
         <div className="container grid grid-cols-[auto_1fr_auto] items-center h-14 md:h-16 gap-3">
           {/* Left Section - Logo + Location */}
           <div className="flex items-center gap-1">
-            <Link href="/" prefetch={true} className="flex items-center shrink-0 hover:opacity-80 outline-none">
+            <Link href="/" prefetch={true} className="flex items-center shrink-0 outline-none">
               <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
             </Link>
             {/* Location dropdown */}
@@ -197,13 +197,13 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
                 <div className="hidden md:flex items-center gap-2">
                   <Link
                     href="/auth/login"
-                    className="text-sm font-medium text-header-text hover:text-brand transition-colors px-3 py-2 rounded-md hover:bg-header-hover"
+                    className="text-sm font-medium text-header-text hover:text-brand px-3 py-2 rounded-md hover:bg-header-hover"
                   >
                     {t('signIn')}
                   </Link>
                   <Link
                     href="/auth/sign-up"
-                    className="text-sm font-medium bg-brand text-white hover:bg-brand-dark transition-colors px-4 py-2 rounded-md"
+                    className="text-sm font-medium bg-brand text-white hover:bg-brand-dark px-4 py-2 rounded-md"
                   >
                     {t('register')}
                   </Link>
@@ -227,10 +227,10 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
             <div className="lg:hidden">
               <div className="mx-auto w-full max-w-5xl flex items-center gap-0.5 overflow-x-auto no-scrollbar">
                 <SidebarMenu user={user} />
-                <Link href="/todays-deals" prefetch={true} className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('todaysDeals')}</Link>
-                <Link href="/customer-service" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('customerService')}</Link>
-                <Link href="/registry" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('registry')}</Link>
-                <Link href="/gift-cards" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm transition-colors shrink-0">{t('giftCards')}</Link>
+                <Link href="/todays-deals" prefetch={true} className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
+                <Link href="/customer-service" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
+                <Link href="/registry" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('registry')}</Link>
+                <Link href="/gift-cards" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('giftCards')}</Link>
                 <Link href="/sell" className="font-normal text-brand hover:text-brand-dark hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
               </div>
             </div>

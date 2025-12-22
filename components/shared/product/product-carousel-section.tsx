@@ -128,7 +128,6 @@ export function ProductCarouselSection({
           )}
           <div className="flex flex-col">
             <h2 className="text-xl font-bold tracking-tight text-foreground/90 leading-tight">{title}</h2>
-            <div className="h-1 w-10 bg-cta-trust-blue rounded-full mt-1 hidden md:block" />
           </div>
         </div>
         

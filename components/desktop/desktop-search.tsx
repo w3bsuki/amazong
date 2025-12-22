@@ -119,7 +119,7 @@ export function DesktopSearch() {
           <form 
             ref={formRef}
             onSubmit={handleSearch}
-            className="flex h-full w-full rounded-full overflow-hidden bg-muted border border-border focus-within:border-brand focus-within:bg-background transition-colors"
+            className="flex h-full w-full rounded-full overflow-hidden bg-muted border border-border focus-within:border-brand focus-within:bg-background"
           >
             {/* Search Input */}
             <div className="relative flex-1 flex items-center">
@@ -144,7 +144,7 @@ export function DesktopSearch() {
                 <button
                   type="button"
                   onClick={handleClearInput}
-                  className="absolute right-3 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3 text-muted-foreground hover:text-foreground"
                 >
                   <X size={16} weight="regular" />
                 </button>
@@ -192,7 +192,7 @@ export function DesktopSearch() {
                   </span>
                   <Link 
                     href={`/search?q=${encodeURIComponent(query)}`}
-                    className="text-xs text-brand hover:text-brand/80 flex items-center gap-1"
+                    className="text-xs text-brand flex items-center gap-1"
                     onClick={() => setIsOpen(false)}
                   >
                     {locale === "bg" ? "Виж всички" : "View all"}
@@ -229,7 +229,7 @@ export function DesktopSearch() {
                           {formatPrice(product.price)}
                         </p>
                       </div>
-                      <ArrowRight size={16} weight="regular" className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ArrowRight size={16} weight="regular" className="text-muted-foreground opacity-0 group-hover:opacity-100" />
                     </button>
                   ))}
                 </div>
@@ -246,7 +246,7 @@ export function DesktopSearch() {
                   </span>
                   <button
                     onClick={clearRecentlyViewed}
-                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-xs text-muted-foreground hover:text-foreground"
                   >
                     {locale === "bg" ? "Изчисти" : "Clear"}
                   </button>
@@ -260,7 +260,7 @@ export function DesktopSearch() {
                         onClick={() => setIsOpen(false)}
                         className="shrink-0 w-24 group"
                       >
-                        <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border group-hover:opacity-90 transition-opacity">
+                        <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border">
                           {product.image ? (
                             <Image
                               src={product.image}
@@ -275,7 +275,7 @@ export function DesktopSearch() {
                             </div>
                           )}
                         </div>
-                        <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-brand group-hover:underline transition-colors">
+                        <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-brand group-hover:underline">
                           {product.title}
                         </p>
                         <p className="text-xs font-semibold text-price-sale">
@@ -298,7 +298,7 @@ export function DesktopSearch() {
                   </span>
                   <button
                     onClick={clearRecentProducts}
-                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-xs text-muted-foreground hover:text-foreground"
                   >
                     {locale === "bg" ? "Изчисти" : "Clear"}
                   </button>
@@ -312,7 +312,7 @@ export function DesktopSearch() {
                         onClick={() => setIsOpen(false)}
                         className="shrink-0 w-24 group"
                       >
-                        <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border group-hover:opacity-90 transition-opacity">
+                        <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden ring-1 ring-border">
                           {product.image ? (
                             <Image
                               src={product.image}
@@ -327,7 +327,7 @@ export function DesktopSearch() {
                             </div>
                           )}
                         </div>
-                        <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-brand group-hover:underline transition-colors">
+                        <p className="mt-1.5 text-xs text-foreground line-clamp-2 group-hover:text-brand group-hover:underline">
                           {product.title}
                         </p>
                         <p className="text-xs font-semibold text-price-sale">
@@ -357,13 +357,13 @@ export function DesktopSearch() {
                       onClick={() => handleSelectSearch(search)}
                       className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-md text-left group"
                     >
-                      <div className="w-5 h-5 rounded-full bg-linear-to-br from-deal to-primary flex items-center justify-center text-xs font-bold text-white">
+                      <div className="w-5 h-5 rounded-full bg-brand flex items-center justify-center text-xs font-bold text-white">
                         {i + 1}
                       </div>
                       <span className="text-sm text-foreground group-hover:text-brand flex-1">
                         {search}
                       </span>
-                      <ArrowRight size={14} weight="regular" className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ArrowRight size={14} weight="regular" className="text-muted-foreground opacity-0 group-hover:opacity-100" />
                     </button>
                   ))}
                 </div>
@@ -374,7 +374,7 @@ export function DesktopSearch() {
             {isSearching && query && (
               <div className="px-4 py-8 text-center">
                 <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                  <div className="size-4 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
+                  <div className="size-4 border-2 border-brand/30 border-t-brand rounded-full" />
                   {locale === "bg" ? "Търсене..." : "Searching..."}
                 </div>
               </div>

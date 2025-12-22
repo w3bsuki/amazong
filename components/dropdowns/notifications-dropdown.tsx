@@ -220,7 +220,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                     setIsOpen(false)
                   }}
                   className={cn(
-                    "flex items-start gap-3 p-3 hover:bg-muted transition-colors",
+                    "flex items-start gap-3 p-3 hover:bg-muted",
                     !notification.is_read && "bg-accent/30"
                   )}
                 >

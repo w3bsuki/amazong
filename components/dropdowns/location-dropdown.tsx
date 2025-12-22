@@ -86,7 +86,7 @@ export function LocationDropdown({ country, onCountryChange }: LocationDropdownP
               <button
                 key={lang.code}
                 onClick={() => handleLanguageSwitch(lang.code)}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded text-sm font-medium transition-all ${
+                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded text-sm font-medium ${
                   lang.code === locale
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -109,7 +109,7 @@ export function LocationDropdown({ country, onCountryChange }: LocationDropdownP
               <button
                 key={loc.code}
                 onClick={() => handleLocationSelect(loc)}
-                className={`w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted text-left transition-colors ${isSelected ? "bg-brand/10" : ""}`}
+                className={`w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted text-left ${isSelected ? "bg-brand/10" : ""}`}
               >
                 {loc.flag ? (
                   <img src={loc.flag} alt={loc.name} width={32} height={22} className="rounded-sm border border-border" />

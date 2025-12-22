@@ -24,9 +24,9 @@ interface AdminStatsProps {
 
 export function AdminStatsCards({ totals }: AdminStatsProps) {
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BGN',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "BGN",
       maximumFractionDigits: 0,
     }).format(value)
   }
@@ -50,9 +50,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">
-            Registered accounts
-          </div>
+          <div className="text-muted-foreground">Registered accounts</div>
         </CardFooter>
       </Card>
 
@@ -73,9 +71,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">
-            Active seller accounts
-          </div>
+          <div className="text-muted-foreground">Active seller accounts</div>
         </CardFooter>
       </Card>
 
@@ -89,15 +85,11 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {totals.products.toLocaleString()}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50">
-              Listed
-            </Badge>
+            <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50">Listed</Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">
-            Active listings
-          </div>
+          <div className="text-muted-foreground">Active listings</div>
         </CardFooter>
       </Card>
 
@@ -111,15 +103,11 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {totals.orders.toLocaleString()}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
-              Total
-            </Badge>
+            <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">Total</Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">
-            Lifetime orders
-          </div>
+          <div className="text-muted-foreground">Lifetime orders</div>
         </CardFooter>
       </Card>
 
@@ -140,9 +128,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">
-            From paid orders
-          </div>
+          <div className="text-muted-foreground">From paid orders</div>
         </CardFooter>
       </Card>
     </div>

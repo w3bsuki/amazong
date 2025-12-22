@@ -155,7 +155,7 @@ export function CategorySubheader() {
               <CaretDown
                 size={10}
                 weight="fill"
-                className={cn("transition-transform duration-200 opacity-60", isFullMenuOpen && "rotate-180")}
+                className={cn("opacity-60", isFullMenuOpen && "rotate-180")}
                 aria-hidden="true"
               />
             </Button>
@@ -240,10 +240,10 @@ export function CategorySubheader() {
 function CategorySubheaderSkeleton() {
   return (
     <div className="flex items-center gap-2 h-10" role="status" aria-label="Loading categories">
-      <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+      <div className="h-4 w-24 bg-muted rounded" />
       <div className="h-5 w-px bg-border" />
       {[1, 2, 3, 4, 5, 6].map((i) => (
-        <div key={i} className="h-4 w-16 bg-muted animate-pulse rounded" />
+        <div key={i} className="h-4 w-16 bg-muted rounded" />
       ))}
     </div>
   )
@@ -290,7 +290,7 @@ function FullMegaMenu({
       {/* Backdrop */}
       <div
         className={cn(
-          "fixed inset-0 z-30 transition-opacity duration-150",
+          "fixed inset-0 z-30",
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
         style={{ top: `${headerHeight}px` }}
@@ -302,7 +302,6 @@ function FullMegaMenu({
       <div
         className={cn(
           "fixed left-0 right-0 z-40 bg-popover border-b border-border shadow-lg",
-          "transition-opacity duration-150 ease-out",
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
         style={{ top: `${headerHeight}px` }}
@@ -336,7 +335,7 @@ function FullMegaMenu({
               {!showAllCategories && hasMoreCategories && (
                 <button
                   onClick={onShowAllCategories}
-                  className="flex items-center gap-2 px-3 py-2.5 w-full text-sm text-brand hover:text-brand/80 hover:bg-accent/50 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2.5 w-full text-sm text-brand hover:bg-accent/50"
                   aria-expanded={showAllCategories}
                 >
                   <CaretDown size={16} weight="regular" aria-hidden="true" />
@@ -353,7 +352,7 @@ function FullMegaMenu({
                 <Link
                   href="/categories"
                   onClick={onClose}
-                  className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-brand hover:text-brand/80 hover:bg-accent/50 transition-colors"
+                  className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-brand hover:bg-accent/50"
                 >
                   <ShoppingBag size={20} weight="regular" aria-hidden="true" />
                   <span>{locale === "bg" ? "Всички категории" : "See All Categories"}</span>
@@ -362,7 +361,7 @@ function FullMegaMenu({
                 <Link
                   href="/deals"
                   onClick={onClose}
-                  className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-destructive hover:text-destructive/80 hover:bg-accent/50 transition-colors"
+                  className="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-destructive hover:bg-accent/50"
                 >
                   <Tag size={20} weight="fill" aria-hidden="true" />
                   <span>{locale === "bg" ? "Промоции" : "Deals"}</span>
@@ -409,7 +408,7 @@ function FullMenuCategoryItem({ category, isActive, getName, onHover, onClose }:
         role="menuitem"
         title={name}
         className={cn(
-          "flex items-center gap-2.5 px-3 py-2.5 text-sm group transition-colors",
+          "flex items-center gap-2.5 px-3 py-2.5 text-sm group",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
           isActive
             ? "bg-accent text-accent-foreground font-medium"
@@ -421,7 +420,7 @@ function FullMenuCategoryItem({ category, isActive, getName, onHover, onClose }:
       >
         <span
           className={cn(
-            "shrink-0 transition-colors",
+            "shrink-0",
             isActive ? "text-brand" : "text-muted-foreground group-hover:text-foreground"
           )}
           aria-hidden="true"
@@ -433,7 +432,7 @@ function FullMenuCategoryItem({ category, isActive, getName, onHover, onClose }:
           <CaretRight
             size={16}
             weight="regular"
-            className={cn("shrink-0 transition-transform", isActive && "translate-x-0.5 text-brand")}
+            className={cn("shrink-0", isActive && "translate-x-0.5 text-brand")}
             aria-hidden="true"
           />
         )}
@@ -465,7 +464,7 @@ function FullMenuSubcategoriesGrid({ category, getName, onClose, locale }: FullM
         <Link
           href={`/categories/${category.slug}`}
           onClick={onClose}
-          className="mt-2 text-sm text-brand hover:text-brand/80"
+          className="mt-2 text-sm text-brand"
         >
           {locale === "bg" ? "Отиди към категорията" : "Go to category"}
         </Link>
@@ -489,7 +488,7 @@ function FullMenuSubcategoriesGrid({ category, getName, onClose, locale }: FullM
             role="listitem"
           >
             {/* Circle Image */}
-            <div className="w-full aspect-square rounded-full overflow-hidden bg-muted group-hover:bg-muted/80 transition-colors">
+            <div className="w-full aspect-square rounded-full overflow-hidden bg-muted group-hover:bg-muted/80">
               <Image
                 src={getSubcategoryImage(subcat.slug, subcat.image_url)}
                 alt={getName(subcat)}
@@ -514,7 +513,7 @@ function FullMenuSubcategoriesGrid({ category, getName, onClose, locale }: FullM
           <Link
             href={`/categories/${category.slug}`}
             onClick={onClose}
-            className="inline-flex items-center gap-1 text-sm font-normal text-brand hover:text-brand/80"
+            className="inline-flex items-center gap-1 text-sm font-normal text-brand"
           >
             {locale === "bg"
               ? `Виж всички ${category.children?.length}`
@@ -548,7 +547,7 @@ function CategoryNavItem({ category, isActive, getName, onMouseEnter, onMouseLea
       <Link
         href={`/categories/${category.slug}`}
         className={cn(
-          "flex items-center gap-1 px-2 py-2.5 text-sm font-medium transition-colors whitespace-nowrap",
+          "flex items-center gap-1 px-2 py-2.5 text-sm font-medium whitespace-nowrap",
           "text-foreground hover:text-brand hover:underline",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
           isActive && "text-brand"
@@ -561,7 +560,7 @@ function CategoryNavItem({ category, isActive, getName, onMouseEnter, onMouseLea
           <CaretDown
             size={10}
             weight="fill"
-            className={cn("transition-transform duration-200 opacity-60", isActive && "rotate-180")}
+            className={cn("opacity-60", isActive && "rotate-180")}
             aria-hidden="true"
           />
         )}
@@ -622,7 +621,7 @@ function MegaMenuPanel({
 
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/20 z-40 transition-opacity duration-150"
+        className="fixed inset-0 bg-black/20 z-40"
         style={{ top: `${headerHeight}px` }}
         onClick={onClose}
         aria-hidden="true"
@@ -726,7 +725,7 @@ function DirectL1Columns({ content, getName, onClose, locale, activeCategory }: 
                   <Link
                     href={`/categories/${l1.slug}`}
                     onClick={onClose}
-                    className="text-sm text-muted-foreground hover:underline transition-colors block"
+                    className="text-sm text-muted-foreground hover:underline block"
                     role="menuitem"
                   >
                     {getName(l1)}
@@ -737,7 +736,7 @@ function DirectL1Columns({ content, getName, onClose, locale, activeCategory }: 
                 <Link
                   href={`/categories/${activeCategory.slug}?sort=deals`}
                   onClick={onClose}
-                  className="text-sm text-destructive hover:underline transition-colors block font-medium"
+                  className="text-sm text-destructive hover:underline block font-medium"
                   role="menuitem"
                 >
                   {locale === "bg" ? "Топ оферти" : "Top Deals"}
@@ -748,7 +747,7 @@ function DirectL1Columns({ content, getName, onClose, locale, activeCategory }: 
               <Link
                 href={`/categories/${activeCategory.slug}`}
                 onClick={onClose}
-                className="text-sm text-brand hover:underline font-medium transition-colors inline-flex items-center gap-1 mt-3"
+                className="text-sm text-brand hover:underline font-medium inline-flex items-center gap-1 mt-3"
               >
                 {locale === "bg" ? "Виж всички" : "See all"}
                 <CaretRight size={12} weight="bold" aria-hidden="true" />
@@ -770,10 +769,10 @@ function FeaturedL1Columns({ content, getName, onClose, locale, activeCategory: 
           <Link
             href={`/categories/${l1Category.slug}`}
             onClick={onClose}
-            className="flex items-center gap-1.5 text-sm font-bold text-foreground hover:underline transition-colors mb-3 group"
+            className="flex items-center gap-1.5 text-sm font-bold text-foreground hover:underline mb-3 group"
           >
             {getName(l1Category)}
-            <CaretRight size={12} weight="bold" className="opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+            <CaretRight size={12} weight="bold" className="opacity-0 group-hover:opacity-100" aria-hidden="true" />
           </Link>
 
           <ul className="space-y-1.5 flex-1" role="menu">
@@ -784,7 +783,7 @@ function FeaturedL1Columns({ content, getName, onClose, locale, activeCategory: 
                     <Link
                       href={`/categories/${l2.slug}`}
                       onClick={onClose}
-                      className="text-sm text-muted-foreground hover:underline transition-colors block"
+                      className="text-sm text-muted-foreground hover:underline block"
                       role="menuitem"
                     >
                       {getName(l2)}
@@ -799,7 +798,7 @@ function FeaturedL1Columns({ content, getName, onClose, locale, activeCategory: 
                     <Link
                       href={`/categories/${otherL1.slug}`}
                       onClick={onClose}
-                      className="text-sm text-muted-foreground hover:underline transition-colors block"
+                      className="text-sm text-muted-foreground hover:underline block"
                       role="menuitem"
                     >
                       {getName(otherL1)}
@@ -812,7 +811,7 @@ function FeaturedL1Columns({ content, getName, onClose, locale, activeCategory: 
               <Link
                 href={`/categories/${l1Category.slug}?sort=deals`}
                 onClick={onClose}
-                className="text-sm text-destructive hover:underline transition-colors block font-medium"
+                className="text-sm text-destructive hover:underline block font-medium"
                 role="menuitem"
               >
                 {locale === "bg" ? "Топ оферти" : "Top Deals"}
@@ -823,7 +822,7 @@ function FeaturedL1Columns({ content, getName, onClose, locale, activeCategory: 
           <Link
             href={`/categories/${l1Category.slug}`}
             onClick={onClose}
-            className="text-sm text-brand hover:underline font-medium transition-colors inline-flex items-center gap-1 mt-3"
+            className="text-sm text-brand hover:underline font-medium inline-flex items-center gap-1 mt-3"
           >
             {locale === "bg" ? "Виж всички" : "See all"}
             <CaretRight size={12} weight="bold" aria-hidden="true" />
@@ -850,11 +849,11 @@ function BannerCTA({ banner, columns, onClose, locale }: BannerCTAProps) {
       className={cn("relative rounded-xl overflow-hidden group", columns === 3 ? "w-2/5" : "w-1/2")}
     >
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${banner.image})` }} />
-      <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-black/40" />
       <div className="relative z-10 h-full flex flex-col justify-center p-8 text-white">
         <h3 className="text-2xl font-bold mb-2">{locale === "bg" ? banner.titleBg : banner.title}</h3>
         <p className="text-white/80 text-sm mb-4 max-w-xs">{locale === "bg" ? banner.subtitleBg : banner.subtitle}</p>
-        <div className="inline-flex items-center gap-2 bg-brand text-white px-4 py-2 rounded-lg text-sm font-medium w-fit group-hover:bg-brand/90 transition-colors">
+        <div className="inline-flex items-center gap-2 bg-brand text-white px-4 py-2 rounded-lg text-sm font-medium w-fit">
           {locale === "bg" ? banner.ctaBg : banner.cta}
           <ArrowRight size={16} weight="bold" aria-hidden="true" />
         </div>
@@ -890,10 +889,10 @@ function SimpleGridMenu({ content, getName, onClose }: SimpleGridMenuProps) {
               <Link
                 href={`/categories/${l1Category.slug}`}
                 onClick={onClose}
-                className="flex items-center gap-2 text-sm text-foreground hover:text-brand transition-colors py-1 group"
+                className="flex items-center gap-2 text-sm text-foreground hover:text-brand py-1 group"
                 role="menuitem"
               >
-                <span className="text-muted-foreground group-hover:text-brand transition-colors" aria-hidden="true">
+                <span className="text-muted-foreground group-hover:text-brand" aria-hidden="true">
                   {getCategoryIcon(l1Category.slug)}
                 </span>
                 {getName(l1Category)}
@@ -925,14 +924,14 @@ function MoreCategoriesGrid({ categories, getName, onClose, locale }: MoreCatego
           key={cat.id}
           href={`/categories/${cat.slug}`}
           onClick={onClose}
-          className="flex items-center gap-2 p-3 rounded-lg hover:bg-accent/50 transition-colors group border border-transparent hover:border-border"
+          className="flex items-center gap-2 p-3 rounded-lg hover:bg-accent/50 group border border-transparent hover:border-border"
           role="menuitem"
         >
-          <span className="text-muted-foreground group-hover:text-brand transition-colors" aria-hidden="true">
+          <span className="text-muted-foreground group-hover:text-brand" aria-hidden="true">
             {getCategoryIcon(cat.slug)}
           </span>
           <div className="flex-1 min-w-0">
-            <span className="text-sm font-medium text-foreground group-hover:text-brand transition-colors block truncate">
+            <span className="text-sm font-medium text-foreground group-hover:text-brand block truncate">
               {getName(cat)}
             </span>
             {cat.children && cat.children.length > 0 && (

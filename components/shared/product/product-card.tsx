@@ -594,7 +594,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
           {/* Title - Refined for desktop */}
           <h3
             className={cn(
-              "text-[13px] font-medium leading-tight text-foreground/90",
+              "text-sm font-medium leading-tight text-foreground/90",
               variant === "featured" ? "line-clamp-2" : "line-clamp-1"
             )}
           >
@@ -605,7 +605,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
           <div className="flex items-baseline gap-1 pt-0.5">
             <span
               className={cn(
-                "text-sm font-bold tracking-tight",
+                "text-base font-bold tracking-tight",
                 hasDiscount ? "text-destructive" : "text-foreground"
               )}
             >

@@ -457,7 +457,7 @@ export function ProductCard({
 
         {/* Content */}
         <div className="min-w-0 p-2.5 space-y-1.5">
-          <h3 className="text-foreground group-hover:underline decoration-muted-foreground/40 underline-offset-2 leading-snug text-sm line-clamp-2">
+          <h3 className="text-foreground group-hover:underline decoration-muted-foreground/40 underline-offset-2 leading-snug text-sm font-medium line-clamp-2">
             {title}
           </h3>
 
@@ -487,7 +487,7 @@ export function ProductCard({
 
           {/* Price row */}
           <div className="flex items-center justify-between gap-2 pt-0.5">
-            <span className={cn("text-sm font-semibold", hasDiscount ? "text-deal" : "text-foreground")}>
+            <span className={cn("text-base font-bold", hasDiscount ? "text-deal" : "text-foreground")}>
               {formatPrice(price)}
               {hasDiscount && resolvedOriginalPrice && (
                 <span className="ml-1 text-xs font-normal text-muted-foreground line-through">

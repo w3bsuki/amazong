@@ -2,7 +2,7 @@ import { requireDashboardAccess } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
 import { connection } from "next/server"
 import { notFound } from "next/navigation"
-import { OrderDetailView } from "../../_components/order-detail-view"
+import { OrderDetailView } from "../../../_components/order-detail-view"
 
 interface OrderDetailPageProps {
   params: Promise<{ orderId: string }>

@@ -82,7 +82,6 @@ export function FeaturedProductsSection({
             {subtitle && (
               <p className="text-xs text-muted-foreground md:text-sm">{subtitle}</p>
             )}
-            <div className="h-1 w-10 bg-cta-trust-blue rounded-full mt-1 hidden md:block" />
           </div>
         </div>
         

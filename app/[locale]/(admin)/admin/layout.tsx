@@ -1,4 +1,4 @@
-import { AdminSidebar } from "./_components/admin-sidebar"
+import { AdminSidebar } from "../_components/admin-sidebar"
 import { DashboardHeader } from "@/components/layout/header/dashboard-header"
 import { requireAdmin } from "@/lib/auth/admin"
 import { connection } from "next/server"

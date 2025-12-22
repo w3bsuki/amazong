@@ -1,5 +1,5 @@
-import { BusinessSidebar } from "./_components/business-sidebar"
-import { BusinessHeader } from "./_components/business-header"
+import { BusinessSidebar } from "../_components/business-sidebar"
+import { BusinessHeader } from "../_components/business-header"
 import { 
   requireBusinessSeller, 
   getPendingTasksCount, 
