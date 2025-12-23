@@ -1,14 +1,17 @@
 "use client"
 
 import { useEffect, useCallback } from "react"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/client"
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
+import { useLocale } from "next-intl"
 
 export function AuthStateListener() {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
+    const locale = useLocale()
 
     // Memoized refresh handler that's more aggressive on mobile
     const handleAuthChange = useCallback((event: AuthChangeEvent, session: Session | null) => {
@@ -41,7 +44,7 @@ export function AuthStateListener() {
         } else if (event === "SIGNED_OUT") {
             // For sign-out, always do a hard redirect to ensure clean state
             if (!isAuthPage) {
-                window.location.href = '/'
+                window.location.href = `/${locale}`
             }
         } else if (event === "TOKEN_REFRESHED") {
             // Silently handle token refresh
@@ -56,7 +59,7 @@ export function AuthStateListener() {
                 // Email confirmed - session updated
             }
         }
-    }, [router, pathname, searchParams])
+    }, [router, pathname, searchParams, locale])
 
     useEffect(() => {
         const supabase = createClient()

@@ -1,10 +1,10 @@
 "use client"
 
-import Link from "next/link"
-import { useParams } from "next/navigation"
+import { Link } from "@/i18n/routing"
 import { ArrowLeft, ShoppingCart } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useLocale } from "next-intl"
 
 interface MinimalHeaderProps {
   /** Show back button */
@@ -40,10 +40,9 @@ export function MinimalHeader({
   children,
   className 
 }: MinimalHeaderProps) {
-  const params = useParams()
-  const locale = (params?.locale as string) || "en"
-  
-  const homeHref = `/${locale}`
+  const locale = useLocale()
+
+  const homeHref = "/"
   const resolvedBackHref = backHref || homeHref
   const resolvedBackLabel = backLabel || (locale === "bg" ? "Назад" : "Back")
 

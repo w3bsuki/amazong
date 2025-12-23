@@ -29,9 +29,8 @@ import {
   type OrderItemStatus, 
   type ShippingCarrier 
 } from "@/lib/order-status"
-import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import Link from "next/link"
+import { Link, useRouter } from "@/i18n/routing"
 
 interface OrderStatusActionsProps {
   orderItemId: string
@@ -124,7 +123,7 @@ export function OrderStatusActions({
       {/* Chat Link */}
       {conversationId && (
         <Button variant="outline" size="sm" asChild>
-          <Link href={`/${locale}/chat?conversation=${conversationId}`}>
+          <Link href={`/chat?conversation=${conversationId}`}>
             <MessageSquare className="h-4 w-4 mr-1.5" />
             Chat
           </Link>

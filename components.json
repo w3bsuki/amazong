@@ -3,6 +3,14 @@
   "style": "new-york",
   "rsc": true,
   "tsx": true,
+  "registries": {
+    "@shadcnblocks": {
+      "url": "https://shadcnblocks.com/r/{name}",
+      "headers": {
+        "Authorization": "Bearer ${SHADCNBLOCKS_API_KEY}"
+      }
+    }
+  },
   "tailwind": {
     "config": "",
     "css": "app/globals.css",

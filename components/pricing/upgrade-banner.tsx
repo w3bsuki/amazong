@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { Crown, Star, ArrowRight, Rocket } from "@phosphor-icons/react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"

@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { CheckCircle, Star, CaretRight as ChevronRight } from "@phosphor-icons/react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -72,7 +72,7 @@ export function SellerInfoCard({
     return (
       <div className="flex items-center gap-3 px-4 py-2.5 bg-background border-b lg:border lg:rounded-md lg:mb-4 border-border">
         <Link 
-          href={`/${locale}/${seller.store_slug || seller.id}`}
+          href={`/${seller.store_slug || seller.id}`}
           className="flex items-center gap-2.5 flex-1 min-w-0"
         >
           <Avatar className="size-9 border border-border rounded-md shrink-0">
@@ -101,7 +101,7 @@ export function SellerInfoCard({
           </div>
         </Link>
         <Link 
-          href={`/${locale}/${seller.store_slug || seller.id}`}
+          href={`/${seller.store_slug || seller.id}`}
           className="shrink-0 px-3 py-1.5 text-[11px] font-bold text-primary border border-primary/20 rounded-md hover:bg-primary/5 transition-colors uppercase tracking-wider"
         >
           {t.viewStore}
@@ -114,7 +114,7 @@ export function SellerInfoCard({
     return (
       <div className="p-3 bg-background rounded-md border border-border">
         <Link 
-          href={`/${locale}/${seller.store_slug || seller.id}`}
+          href={`/${seller.store_slug || seller.id}`}
           className="flex items-center gap-3 group"
         >
           <Avatar className="size-10 border border-border bg-muted shrink-0 rounded-md">
@@ -156,7 +156,7 @@ export function SellerInfoCard({
   return (
     <div className="bg-seller-card border border-seller-card-border rounded-md p-5 space-y-5">
       <div className="flex items-start gap-4">
-        <Link href={`/${locale}/${seller.store_slug || seller.id}`} className="shrink-0">
+        <Link href={`/${seller.store_slug || seller.id}`} className="shrink-0">
           <Avatar className="size-14 border border-border rounded-md">
             <AvatarImage src={seller.avatar_url || undefined} alt={seller.store_name} />
             <AvatarFallback className="bg-muted text-muted-foreground text-xl font-bold rounded-md">
@@ -167,7 +167,7 @@ export function SellerInfoCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <Link 
-              href={`/${locale}/${seller.store_slug || seller.id}`}
+              href={`/${seller.store_slug || seller.id}`}
               className="font-bold text-lg text-foreground truncate hover:text-primary"
             >
               {seller.store_name}
@@ -234,7 +234,7 @@ export function SellerInfoCard({
           />
         )}
         <Button size="sm" asChild className="w-full rounded-md h-9 font-bold text-[11px] uppercase tracking-wider bg-cta-trust-blue text-cta-trust-blue-text hover:bg-cta-trust-blue-hover border-none">
-          <Link href={`/${locale}/${seller.store_slug || seller.id}`}>
+          <Link href={`/${seller.store_slug || seller.id}`}>
             {t.viewStore}
           </Link>
         </Button>
@@ -243,7 +243,7 @@ export function SellerInfoCard({
       {seller.member_since && (
         <div className="pt-4 border-t border-border flex items-center justify-between text-2xs text-muted-foreground font-medium uppercase tracking-widest">
           <span>{locale === 'bg' ? 'Член от' : 'Member since'} {seller.member_since}</span>
-          <Link href={`/${locale}/${seller.store_slug || seller.id}`} className="text-primary hover:underline">
+          <Link href={`/${seller.store_slug || seller.id}`} className="text-primary hover:underline">
             {t.viewAllItems} →
           </Link>
         </div>

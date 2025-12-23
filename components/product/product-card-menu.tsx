@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { DotsThreeVertical, ShareNetwork, Link as LinkIcon, Eye, X } from "@phosphor-icons/react"
 import {
   DropdownMenu,

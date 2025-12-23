@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
+import { fetchProductByUsernameAndSlug } from "@/lib/data/product-page"
 import { ProductPageContent } from "@/components/shared/product/product-page-content-new"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker"
@@ -32,47 +33,6 @@ interface ProductPageProps {
     productSlug: string   // Product slug
     locale: string
   }>
-}
-
-// Helper to fetch product by username + product slug (SEO canonical format)
-async function fetchProductByUsernameAndSlug(
-  supabase: ReturnType<typeof createStaticClient>,
-  username: string,
-  productSlug: string
-) {
-  if (!supabase) return null
-
-  // First, find the profile by username (case-insensitive)
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, username, display_name, avatar_url, verified, is_seller, created_at")
-    .ilike("username", username)
-    .single()
-
-  if (profileError || !profile) return null
-
-  // Fetch product by slug + seller_id
-  const { data: product, error: productError } = await supabase
-    .from("products")
-    .select("*")
-    .eq("slug", productSlug)
-    .eq("seller_id", profile.id)
-    .single()
-
-  if (productError || !product) return null
-
-  // Fetch category
-  let category = null
-  if (product.category_id) {
-    const { data } = await supabase
-      .from("categories")
-      .select("*")
-      .eq("id", product.category_id)
-      .single()
-    category = data
-  }
-
-  return { ...product, seller: profile, category }
 }
 
 // Generate metadata for SEO

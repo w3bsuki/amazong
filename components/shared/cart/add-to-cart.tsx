@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/components/providers/cart-context"
 import { WishlistButton } from "@/components/common/wishlist/wishlist-button"
-import { useTranslations, useLocale } from "next-intl"
-import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
+import { useRouter } from "@/i18n/routing"
 import { useState } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -38,7 +38,6 @@ export function AddToCart({
 }: AddToCartProps) {
     const { addToCart } = useCart()
     const t = useTranslations('Product')
-    const locale = useLocale()
     const router = useRouter()
     const [isPending, setIsPending] = useState(false)
 
@@ -105,8 +104,8 @@ export function AddToCart({
         // Also update React state
         addToCart(newItem)
         
-        // Navigate to cart with locale prefix
-        router.push(`/${locale}/cart`)
+        // Navigate to cart (locale-aware router will prefix)
+        router.push("/cart")
     }
 
     // eBay-style variant with larger buttons

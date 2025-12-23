@@ -23,9 +23,8 @@ import { Loader2, Package, Star, CheckCircle, MessageSquare, XCircle, AlertTrian
 import { buyerConfirmDelivery, canBuyerRateSeller, requestOrderCancellation, reportOrderIssue, type IssueType } from "@/app/actions/orders"
 import { submitSellerFeedback } from "@/app/actions/seller-feedback"
 import { type OrderItemStatus } from "@/lib/order-status"
-import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import Link from "next/link"
+import { Link, useRouter } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 
 interface BuyerOrderActionsProps {
@@ -173,7 +172,7 @@ export function BuyerOrderActions({
         setIssueDescription("")
         // Navigate to conversation if available
         if (result.conversationId) {
-          router.push(`/${locale}/chat?conversation=${result.conversationId}`)
+          router.push(`/chat?conversation=${result.conversationId}`)
         } else {
           router.refresh()
         }
@@ -239,7 +238,7 @@ export function BuyerOrderActions({
       {/* Chat Link */}
       {conversationId && (
         <Button variant="outline" size="sm" asChild>
-          <Link href={`/${locale}/chat?conversation=${conversationId}`}>
+          <Link href={`/chat?conversation=${conversationId}`}>
             <MessageSquare className="h-4 w-4 mr-1.5" />
             {t.chat}
           </Link>

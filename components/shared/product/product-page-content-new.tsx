@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import {
   Heart,
   Lightning,
@@ -346,7 +346,7 @@ export function ProductPageContent({
                     <div className="lg:hidden flex items-center gap-1.5 text-sm">
                       <span className="text-muted-foreground">{t.soldBy}</span>
                       <Link 
-                        href={`/${locale}/${sellerData.store_slug || sellerData.id}`}
+                        href={`/${sellerData.store_slug || sellerData.id}`}
                         className="font-bold text-primary hover:underline"
                       >
                         {sellerData.store_name}

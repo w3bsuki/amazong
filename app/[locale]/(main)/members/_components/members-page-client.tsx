@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { Link } from "@/i18n/routing"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
 import {
   ArrowLeft,
@@ -150,7 +150,7 @@ export default function MembersPageClient({
     if (updates.page) params.set("page", updates.page)
 
     startTransition(() => {
-      router.push(`/${locale}/members?${params.toString()}`)
+      router.push(`/members?${params.toString()}`)
     })
   }
 

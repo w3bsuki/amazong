@@ -1,6 +1,7 @@
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Star, CaretDown, CaretRight, Check, Package } from "@phosphor-icons/react"
 import { useLocale, useTranslations } from "next-intl"

@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "@/i18n/routing"
 import { Sliders, Star, Check, CaretRight, CaretLeft } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import {

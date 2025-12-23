@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "@/i18n/routing"
 import { CaretDown, Star, Truck, Check, X } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"

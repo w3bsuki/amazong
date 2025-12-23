@@ -16,7 +16,7 @@ import { Loader2, Star, CheckCircle, UserCheck } from "lucide-react"
 import { canSellerRateBuyer } from "@/app/actions/orders"
 import { submitBuyerFeedback } from "@/app/actions/buyer-feedback"
 import { type OrderItemStatus } from "@/lib/order-status"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 

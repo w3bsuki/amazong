@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect, useCallback, useMemo } from "react"
-import Link from "next/link"
-import { useParams, useRouter } from "next/navigation"
+import { Link } from "@/i18n/routing"
+import { useRouter } from "@/i18n/routing"
 import { 
   Crown, 
   Buildings, 
@@ -10,6 +10,7 @@ import {
   ArrowRight,
   SealCheck,
 } from "@phosphor-icons/react"
+import { useLocale } from "next-intl"
 import {
   Dialog,
   DialogContent,
@@ -89,9 +90,8 @@ export function PlansModal({
   description,
   source: _source,
 }: PlansModalProps) {
-  const params = useParams()
   const router = useRouter()
-  const locale = (params?.locale as string) || "en"
+  const locale = useLocale()
   const t = translations[locale as keyof typeof translations] || translations.en
 
   // Internal open state for uncontrolled mode
@@ -167,7 +167,7 @@ export function PlansModal({
       console.error('Checkout error:', error)
       // On error, redirect to full plans page
       setIsOpen(false)
-      router.push(`/${locale}/plans`)
+      router.push("/plans")
     } finally {
       setSubscribingPlan(null)
     }
@@ -276,7 +276,7 @@ export function PlansModal({
           {/* Full Comparison Link */}
           <div className="mt-4 text-center">
             <Link
-              href={`/${locale}/plans`}
+              href="/plans"
               onClick={() => setIsOpen(false)}
               className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors group"
             >
@@ -303,8 +303,7 @@ export function PlansModalTrigger({
 }: React.ComponentProps<typeof Button> & {
   children?: React.ReactNode
 }) {
-  const params = useParams()
-  const locale = (params?.locale as string) || "en"
+  const locale = useLocale()
   const t = translations[locale as keyof typeof translations] || translations.en
 
   return (

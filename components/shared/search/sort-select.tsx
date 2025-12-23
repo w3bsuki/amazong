@@ -2,7 +2,8 @@
 
 import { CaretDown, ArrowsDownUp } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
-import { useRouter, useSearchParams, usePathname } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "@/i18n/routing"
 import { useCallback } from "react"
 import { cn } from "@/lib/utils"
 import {

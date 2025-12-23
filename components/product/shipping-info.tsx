@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { ShieldCheck } from "@phosphor-icons/react"
 
 interface ShippingInfoProps {
@@ -79,7 +79,7 @@ export function ShippingInfo({
         <p className="text-xs leading-relaxed">
           <span className="font-semibold text-foreground">{t.moneyBackGuarantee}</span>
           <span className="text-muted-foreground"> {t.getItemOrMoneyBack}</span>
-          <Link href={`/${locale}/help/buyer-protection`} className="text-primary font-medium text-xs hover:underline ml-1">{t.learnMore}</Link>
+          <Link href="/help/buyer-protection" className="text-primary font-medium text-xs hover:underline ml-1">{t.learnMore}</Link>
         </p>
       </div>
     </div>
