@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const page = parseInt(searchParams.get("page") || "1", 10)
   const limit = parseInt(searchParams.get("limit") || "12", 10)
+  const category = searchParams.get("category")
   
   // Cap limit to prevent abuse
   const safeLimit = Math.min(limit, 24)
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Query newest products with pagination
-    const { data, error, count } = await supabase
+    let query = supabase
       .from('products')
       .select(`
         id, 
@@ -39,8 +40,14 @@ export async function GET(request: NextRequest) {
         slug,
         attributes,
         seller:profiles(username),
-        categories(slug)
+        categories!inner(slug)
       `, { count: 'exact' })
+
+    if (category) {
+      query = query.eq('categories.slug', category)
+    }
+
+    const { data, error, count } = await query
       .order('created_at', { ascending: false })
       .range(offset, offset + safeLimit - 1)
 

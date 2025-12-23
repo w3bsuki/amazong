@@ -1,4 +1,3 @@
-import { Link } from "@/i18n/routing"
 import { PromoCard } from "@/components/promo/promo-card"
 
 export function PromoCards({ locale }: { locale: string }) {

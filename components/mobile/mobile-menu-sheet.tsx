@@ -136,20 +136,20 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent className="max-h-[90dvh] rounded-t-2xl">
           {/* Header */}
-          <DrawerHeader className="pb-3 pt-0 border-b border-border">
+          <DrawerHeader className="pb-2 pt-0 border-b border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <SquaresFour size={20} weight="regular" className="text-muted-foreground" />
-                <DrawerTitle className="text-lg font-semibold">
+                <SquaresFour size={18} weight="regular" className="text-muted-foreground" />
+                <DrawerTitle className="text-base font-semibold">
                   {locale === 'bg' ? 'Категории' : 'Categories'}
                 </DrawerTitle>
               </div>
               <DrawerClose asChild>
                 <button 
-                  className="flex items-center justify-center size-11 -mr-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors touch-action-manipulation"
+                  className="flex items-center justify-center size-10 -mr-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors touch-action-manipulation"
                   aria-label="Close menu"
                 >
-                  <X size={20} weight="regular" />
+                  <X size={18} weight="regular" />
                 </button>
               </DrawerClose>
             </div>
@@ -159,26 +159,26 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
           </DrawerHeader>
 
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-8 max-h-[calc(90dvh-80px)]">
+          <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-6 max-h-[calc(90dvh-70px)]">
             
             {/* Categories Section - Hero-style circles grid */}
-            <section className="pt-5">
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="text-sm font-semibold text-foreground">
+            <section className="pt-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[13px] font-semibold text-foreground">
                   {locale === 'bg' ? 'Пазарувай по категория' : 'Shop by Category'}
                 </h3>
                 <Link 
                   href="/categories" 
                   onClick={() => setOpen(false)}
-                  className="text-xs text-link font-medium hover:underline underline-offset-2 flex items-center gap-1"
+                  className="text-[11px] text-cta-trust-blue font-medium hover:underline underline-offset-2 flex items-center gap-1"
                 >
                   {locale === 'bg' ? 'Виж всички' : 'See all'}
-                  <CaretRight size={12} weight="bold" />
+                  <CaretRight size={10} weight="bold" />
                 </Link>
               </div>
               
               {/* Category Circles Grid - 4 columns */}
-              <div className="grid grid-cols-4 gap-y-6 gap-x-2">
+              <div className="grid grid-cols-4 gap-y-5 gap-x-1.5">
                 {categories.slice(0, 16).map((cat) => {
                   const Icon = getCategoryIcon(cat.slug)
                   return (
@@ -186,25 +186,25 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                       key={cat.slug}
                       href={`/categories/${cat.slug}`}
                       onClick={() => setOpen(false)}
-                      className="flex flex-col items-center gap-2 group"
+                      className="flex flex-col items-center gap-1.5 group"
                     >
                       {/* Circle with icon - Hero style: White + Blue with ring */}
                       <div
                         className={cn(
                           "rounded-full flex items-center justify-center",
-                          "size-[58px]",
+                          "size-[54px]",
                           "bg-background ring-1 ring-border/60",
                           "transition-all duration-150",
                           "group-hover:bg-accent/40 group-hover:ring-ring/30 group-hover:scale-105 group-active:scale-95"
                         )}
                       >
                         <Icon
-                          className="size-7 text-link transition-colors duration-150"
+                          className="size-6 text-cta-trust-blue transition-colors duration-150"
                           weight="regular"
                         />
                       </div>
                       {/* Category name */}
-                      <span className="text-[11px] font-medium text-center text-foreground leading-[1.1] line-clamp-2 max-w-[78px] group-hover:text-link transition-colors duration-150">
+                      <span className="text-[10px] font-medium text-center text-foreground leading-[1.1] line-clamp-2 max-w-[72px] group-hover:text-cta-trust-blue transition-colors duration-150">
                         {getShortName(cat)}
                       </span>
                     </Link>

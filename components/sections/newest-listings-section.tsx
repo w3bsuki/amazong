@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useRef, useCallback } from "react"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLocale } from "next-intl"
+import { Link } from "@/i18n/routing"
 import type { UIProduct } from "@/lib/data/products"
 import { cn } from "@/lib/utils"
 
@@ -12,22 +13,23 @@ interface NewestListingsSectionProps {
   title?: string
   /** Total count of products available */
   totalCount?: number
+  categories?: Array<{ id: string; name: string; name_bg: string; slug: string }>
 }
 
 // Loading skeleton for the product grid
 function ProductGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 gap-2 px-3">
+    <div className="grid grid-cols-2 gap-x-2 gap-y-2.5 px-3">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-card rounded-lg border border-border p-2 flex flex-col h-full">
-          <Skeleton className="aspect-square w-full rounded-md mb-2" />
-          <div className="space-y-1.5 flex-1">
-            <Skeleton className="h-3.5 w-full rounded-sm" />
-            <Skeleton className="h-3.5 w-2/3 rounded-sm" />
+        <div key={i} className="flex flex-col h-full">
+          <Skeleton className="aspect-square w-full rounded-md mb-1" />
+          <div className="space-y-1 flex-1 px-0.5">
+            <Skeleton className="h-2.5 w-full rounded-sm" />
+            <Skeleton className="h-2.5 w-2/3 rounded-sm" />
           </div>
-          <div className="mt-3 flex items-center justify-between">
-            <Skeleton className="h-5 w-16 rounded-sm" />
-            <Skeleton className="size-7 rounded-full" />
+          <div className="mt-1.5 flex items-center justify-between px-0.5 pb-0.5">
+            <Skeleton className="h-3.5 w-12 rounded-sm" />
+            <Skeleton className="size-5 rounded-full" />
           </div>
         </div>
       ))}
@@ -38,25 +40,35 @@ function ProductGridSkeleton({ count = 6 }: { count?: number }) {
 export function NewestListingsSection({ 
   initialProducts,
   title: _title,
-  totalCount = 100
+  totalCount = 100,
+  categories = []
 }: NewestListingsSectionProps) {
   const locale = useLocale()
 
-  type FeedTab = "newest" | "promoted"
+  type FeedTab = "newest" | "promoted" | "near_me" | string
 
   const tabs = useMemo(
-    () =>
-      [
-        { id: "newest" as const, label: locale === "bg" ? "Нови" : "Newest" },
-        { id: "promoted" as const, label: locale === "bg" ? "Промотирани" : "Promoted" },
-      ],
-    [locale]
+    () => {
+      const baseTabs = [
+        { id: "newest", label: locale === "bg" ? "За теб" : "For you" },
+        { id: "promoted", label: locale === "bg" ? "Оферти" : "Offers" },
+        { id: "near_me", label: locale === "bg" ? "Наблизо" : "Near me" },
+      ]
+      
+      const categoryTabs = categories.map(cat => ({
+        id: `cat:${cat.slug}`,
+        label: locale === "bg" ? cat.name_bg : cat.name
+      }))
+      
+      return [...baseTabs, ...categoryTabs]
+    },
+    [locale, categories]
   )
 
   const [activeTab, setActiveTab] = useState<FeedTab>("newest")
   const [isLoading, setIsLoading] = useState(false)
   const [tabData, setTabData] = useState<
-    Record<FeedTab, { products: UIProduct[]; page: number; hasMore: boolean }>
+    Record<string, { products: UIProduct[]; page: number; hasMore: boolean }>
   >({
     newest: {
       products: initialProducts,
@@ -68,24 +80,38 @@ export function NewestListingsSection({
       page: 0,
       hasMore: true,
     },
+    near_me: {
+      products: [],
+      page: 0,
+      hasMore: true,
+    },
+    ...Object.fromEntries(categories.map(cat => [
+      `cat:${cat.slug}`, 
+      { products: [], page: 0, hasMore: true }
+    ]))
   })
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
-  const active = tabData[activeTab]
+  const active = tabData[activeTab] || { products: [], page: 0, hasMore: true }
 
-  const getEndpointForTab = useCallback((tab: FeedTab) => {
-    switch (tab) {
-      case "newest":
-        return "/api/products/newest"
-      case "promoted":
-        return "/api/products/promoted"
-    }
+  const getEndpointForTab = useCallback((tab: string) => {
+    if (tab === "promoted") return "/api/products/promoted"
+    if (tab === "near_me") return "/api/products/newest" // For now, just newest
+    if (tab.startsWith("cat:")) return "/api/products/newest"
+    return "/api/products/newest"
   }, [])
 
   const loadPage = useCallback(
-    async (tab: FeedTab, nextPage: number) => {
+    async (tab: string, nextPage: number) => {
       const endpoint = getEndpointForTab(tab)
-      const response = await fetch(`${endpoint}?page=${nextPage}&limit=12`)
+      let url = `${endpoint}?page=${nextPage}&limit=12`
+      
+      if (tab.startsWith("cat:")) {
+        const slug = tab.split(":")[1]
+        url += `&category=${slug}`
+      }
+      
+      const response = await fetch(url)
       const data = await response.json()
       return data as {
         products?: UIProduct[]
@@ -115,14 +141,15 @@ export function NewestListingsSection({
       }
 
       setTabData(prev => {
+        const current = prev[activeTab] || { products: [], page: 0, hasMore: true }
         // Deduplicate: filter out any products we already have
-        const existingIds = new Set(prev[activeTab].products.map(p => p.id))
+        const existingIds = new Set(current.products.map(p => p.id))
         const uniqueNewProducts = nextProducts.filter(p => !existingIds.has(p.id))
         
         return {
           ...prev,
           [activeTab]: {
-            products: [...prev[activeTab].products, ...uniqueNewProducts],
+            products: [...current.products, ...uniqueNewProducts],
             page: nextPage,
             hasMore: data.hasMore ?? nextProducts.length === 12,
           },
@@ -135,21 +162,22 @@ export function NewestListingsSection({
     }
   }, [active.hasMore, active.page, activeTab, isLoading, loadPage])
 
-  // Lazy-load promoted tab on first open
+  // Lazy-load tabs on first open
   useEffect(() => {
-    if (activeTab !== "promoted") return
-    if (tabData.promoted.page !== 0) return
+    if (activeTab === "newest") return
+    const current = tabData[activeTab]
+    if (current && current.page !== 0) return
 
     let cancelled = false
     setIsLoading(true)
 
-    loadPage("promoted", 1)
+    loadPage(activeTab, 1)
       .then((data) => {
         if (cancelled) return
         const first = data.products || []
         setTabData(prev => ({
           ...prev,
-          promoted: {
+          [activeTab]: {
             products: first,
             page: first.length > 0 ? 1 : 0,
             hasMore: data.hasMore ?? first.length === 12,
@@ -157,7 +185,7 @@ export function NewestListingsSection({
         }))
       })
       .catch((error) => {
-        if (!cancelled) console.error("Failed to load promoted products:", error)
+        if (!cancelled) console.error(`Failed to load ${activeTab} products:`, error)
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false)
@@ -166,7 +194,7 @@ export function NewestListingsSection({
     return () => {
       cancelled = true
     }
-  }, [activeTab, loadPage, tabData.promoted.page])
+  }, [activeTab, loadPage, tabData])
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
@@ -195,52 +223,51 @@ export function NewestListingsSection({
 
   return (
     <section>
-      {/* Mobile feed tabs - Premium segmented control - Sticky on mobile */}
-      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur-md px-3 py-1.5 pb-1">
-        <div 
-          className="relative flex h-9 rounded-xl bg-card p-1 ring-1 ring-border/50"
-          role="tablist"
-        >
-          {/* Sliding indicator */}
-          <div
-            className={cn(
-              "absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg",
-              "bg-primary shadow-sm",
-              "transition-transform duration-200 ease-out",
-              activeTab === "newest" ? "translate-x-0" : "translate-x-[calc(100%+4px)]"
-            )}
-            aria-hidden="true"
-          />
-          
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "relative z-10 flex-1 flex items-center justify-center gap-1.5",
-                "rounded-lg text-sm font-semibold tracking-tight",
-                "transition-colors duration-200",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:ring-offset-1",
-                "active:scale-[0.98]",
-                activeTab === tab.id
-                  ? "text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              aria-selected={activeTab === tab.id}
-              aria-controls={`panel-${tab.id}`}
-            >
-              {tab.label}
-            </button>
-          ))}
+      {/* Mobile feed tabs - Quick Pills style like reference image */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md px-3 py-2 border-b border-border/40">
+        <div className="flex items-center justify-between gap-2">
+          <div 
+            className="flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar"
+            role="tablist"
+          >
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "shrink-0 px-4 h-touch-xs rounded-full text-2xs font-bold transition-all duration-200",
+                  "flex items-center justify-center",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  activeTab === tab.id
+                    ? "bg-cta-trust-blue text-cta-trust-blue-text shadow-sm"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                )}
+                aria-selected={activeTab === tab.id}
+                aria-controls={`panel-${tab.id}`}
+              >
+                {tab.id === "promoted" && (
+                  <span className="mr-1 inline-flex items-center justify-center size-3.5 rounded-full bg-emerald-500 text-[9px] text-white">
+                    %
+                  </span>
+                )}
+                {tab.id === "near_me" && (
+                  <span className="mr-1 inline-flex items-center justify-center text-[12px]">
+                    📍
+                  </span>
+                )}
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Product Grid - 2 columns on mobile, consistent gap */}
       {active.products.length === 0 && activeTab === "promoted" && !isLoading ? (
-        <div className="px-3 py-6">
-          <div className="rounded-lg border border-border bg-card px-3 py-4 text-center">
+        <div className="px-3 py-4">
+          <div className="rounded-xl border border-border bg-card px-4 py-6 text-center">
             <p className="text-sm font-semibold text-foreground">
               {locale === "bg" ? "Няма промотирани обяви" : "No promoted listings"}
             </p>
@@ -250,7 +277,7 @@ export function NewestListingsSection({
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-2 px-3 py-1">
+        <div className="grid grid-cols-2 gap-x-2 gap-y-2.5 px-3 py-1.5">
           {active.products.map((product, index) => (
             <ProductCard
               key={product.id}

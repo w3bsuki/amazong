@@ -5,7 +5,7 @@ import { NewestListingsSection as NewestListingsClient } from './newest-listings
  * Server component that fetches initial newest products.
  * Passes data to client component for infinite scroll.
  */
-export async function NewestListings() {
+export async function NewestListings({ categories }: { categories?: any[] }) {
   // Fetch initial batch of newest products (12 items)
   const products = await getNewestProducts(12)
   
@@ -18,6 +18,7 @@ export async function NewestListings() {
     <NewestListingsClient 
       initialProducts={uiProducts}
       totalCount={100} // Assume there are more for now
+      categories={categories}
     />
   )
 }

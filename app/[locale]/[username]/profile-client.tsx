@@ -327,7 +327,7 @@ export function PublicProfileClient({
             {profile.is_seller && (
               <TabsTrigger 
                 value="listings" 
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 sm:px-5 sm:py-3.5 sm:text-sm font-semibold"
               >
                 <Package className="size-4 mr-2" />
                 {locale === "bg" ? "Обяви" : "Listings"} ({productCount})
@@ -336,7 +336,7 @@ export function PublicProfileClient({
             {profile.is_seller && (
               <TabsTrigger 
                 value="seller-reviews" 
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 sm:px-5 sm:py-3.5 sm:text-sm font-semibold"
               >
                 <Star className="size-4 mr-2" />
                 {locale === "bg" ? "Отзиви за продавач" : "Seller Reviews"} ({sellerReviewCount})
@@ -345,7 +345,7 @@ export function PublicProfileClient({
             {profile.total_purchases > 0 && (
               <TabsTrigger 
                 value="buyer-reviews" 
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 sm:px-5 sm:py-3.5 sm:text-sm font-semibold"
               >
                 <Star className="size-4 mr-2" />
                 {locale === "bg" ? "Отзиви за купувач" : "Buyer Reviews"} ({buyerReviewCount})

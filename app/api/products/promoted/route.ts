@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const page = parseInt(searchParams.get("page") || "1", 10)
   const limit = parseInt(searchParams.get("limit") || "12", 10)
+  const category = searchParams.get("category")
 
   const safeLimit = Math.min(limit, 24)
   const offset = (page - 1) * safeLimit
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Query only products with ACTIVE boosts (not expired)
-    const { data, error, count } = await supabase
+    let query = supabase
       .from("products")
       .select(
         `
@@ -40,12 +41,18 @@ export async function GET(request: NextRequest) {
         slug,
         attributes,
         seller:profiles(username),
-        categories(slug)
+        categories!inner(slug)
       `,
         { count: "exact" }
       )
       .eq("is_boosted", true)
       .gt("boost_expires_at", new Date().toISOString()) // Only non-expired boosts
+
+    if (category) {
+      query = query.eq('categories.slug', category)
+    }
+
+    const { data, error, count } = await query
       .order("boost_expires_at", { ascending: true }) // Show soonest-expiring first (fair rotation)
       .range(offset, offset + safeLimit - 1)
 

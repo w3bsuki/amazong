@@ -13,36 +13,36 @@ export function StartSellingBanner({ locale = "en", className }: StartSellingBan
   const isBg = locale === "bg"
   
   return (
-    <div className={cn("px-3 md:px-4 py-1 md:py-3", className)}>
+    <div className={cn("px-3 py-0.5", className)}>
       <Link
         href="/sell"
         className={cn(
-          "group flex items-center gap-3 p-2.5 md:p-4 rounded-xl",
-          "bg-link", // Uses the brand blue color
-          "ring-1 ring-link/20",
-          "transition-all duration-200",
-          "hover:brightness-110 hover:shadow-md hover:shadow-link/30",
-          "active:scale-[0.98]"
+          "relative overflow-hidden flex items-center gap-2 p-2 rounded-xl",
+          "bg-cta-trust-blue text-cta-trust-blue-text shadow-sm",
+          "transition-all duration-200 active:scale-[0.98]",
+          "group"
         )}
       >
-        {/* Icon */}
-        <div className="shrink-0 size-10 md:size-12 rounded-full bg-white/20 flex items-center justify-center">
-          <Storefront className="size-5 md:size-6 text-white" weight="fill" />
+        {/* Left Icon Circle */}
+        <div className="size-8 shrink-0 rounded-full bg-white/20 flex items-center justify-center shadow-inner">
+          <Storefront size={16} weight="fill" className="text-white" />
         </div>
         
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm md:text-base font-semibold text-white leading-tight">
-            {isBg ? "Започни да продаваш" : "Start Selling Today"}
+          <h3 className="text-xs font-bold tracking-tight leading-tight">
+            {isBg ? "Започни да продаваш" : "Start selling"}
           </h3>
-          <p className="text-xs md:text-sm text-white/80 mt-0.5 line-clamp-1">
-            {isBg ? "Безплатно • Милиони клиенти • Бърза настройка" : "Free to list • Millions of buyers • Easy setup"}
+          <p className="text-2xs text-white/90 mt-0.5 font-medium truncate">
+            {isBg 
+              ? "Безплатно • Милиони клиенти • Бърза продажба" 
+              : "Free • Millions of customers • Fast sales"}
           </p>
         </div>
         
-        {/* Arrow */}
-        <div className="shrink-0 size-8 rounded-full bg-white/20 flex items-center justify-center transition-transform duration-200 group-hover:translate-x-0.5">
-          <ArrowRight className="size-4 text-white" weight="bold" />
+        {/* Right Arrow Circle */}
+        <div className="size-6 shrink-0 rounded-full bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-1">
+          <ArrowRight size={12} weight="bold" className="text-white" />
         </div>
       </Link>
     </div>

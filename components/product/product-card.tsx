@@ -32,7 +32,7 @@ import { useMemo } from "react"
 // =============================================================================
 
 const cardVariants = cva(
-  "block group relative bg-card border rounded-md overflow-hidden h-full min-w-0",
+  "block group relative overflow-hidden h-full min-w-0",
   {
     variants: {
       variant: {
@@ -44,9 +44,9 @@ const cardVariants = cva(
         featured: "",
       },
       state: {
-        default: "border-border/60",
-        promoted: "border-primary/40 ring-1 ring-primary/10",
-        sale: "border-border/60",
+        default: "",
+        promoted: "",
+        sale: "",
       },
     },
     defaultVariants: {
@@ -333,50 +333,45 @@ export function ProductCard({
   return (
     <Link href={productUrl} className={cn("block group", cardVariants({ variant, state: resolvedState }))}>
       <div className={cn(
-        "overflow-hidden flex flex-col group relative bg-card border border-border min-w-0 rounded-md",
-        resolvedState === "promoted" && "ring-1 ring-primary/20"
+        "overflow-hidden flex flex-col group relative min-w-0",
+        resolvedState === "promoted" && "ring-1 ring-primary/20 rounded-md"
       )}>
         {/* Seller-first header + wishlist in header */}
-        <div className={cn("flex items-center justify-between gap-2 border-b", "bg-muted/20 px-2.5 py-2")}>
-          <div className="flex items-center gap-2 min-w-0">
+        <div className={cn("flex items-center justify-between gap-1.5", "px-1 py-1.5")}>
+          <div className="flex items-center gap-1.5 min-w-0">
             {showSellerHeader ? (
               <>
-                <Avatar className="h-8 w-8 border">
+                <Avatar className="h-7 w-7 border-0">
                   <AvatarImage src={props.sellerAvatarUrl || undefined} alt={sellerName || "Seller"} />
-                  <AvatarFallback className="text-[10px] bg-muted">
+                  <AvatarFallback className="text-[9px] bg-muted">
                     {formatSellerInitials(sellerName || (locale === "bg" ? "Продавач" : "Seller"))}
                   </AvatarFallback>
                 </Avatar>
 
                 <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="text-xs font-semibold text-foreground truncate">{sellerName}</span>
-                    {sellerVerified && <ShieldCheck size={14} weight="fill" className="text-primary shrink-0" />}
+                  <div className="flex items-center gap-1 min-w-0">
+                    <span className="text-2xs font-semibold text-foreground truncate">{sellerName}</span>
+                    {sellerVerified && <ShieldCheck size={12} weight="fill" className="text-primary shrink-0" />}
                     {sellerBadge.label && (
                       <span className={cn(
-                        "text-[9px] font-bold px-1 py-0.5 rounded uppercase tracking-wider",
+                        "text-[8px] font-bold px-1 py-0.5 rounded uppercase tracking-wider",
                         sellerBadge.color
                       )}>
                         {sellerBadge.label}
                       </span>
                     )}
                   </div>
-                  {(location || false) && (
-                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground min-w-0">
-                      {location && <span className="truncate">{location}</span>}
-                    </div>
-                  )}
                 </div>
               </>
             ) : (
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0">
                 <div className={cn(
-                  "size-8 rounded-full border flex items-center justify-center overflow-hidden shrink-0",
+                  "size-7 rounded-full flex items-center justify-center overflow-hidden shrink-0",
                   sellerBadge.color
                 )}>
-                  <SellerIcon size={14} weight="fill" />
+                  <SellerIcon size={12} weight="fill" />
                 </div>
-                <span className="text-xs font-semibold text-foreground truncate">
+                <span className="text-2xs font-semibold text-foreground truncate">
                   {locale === "bg" ? "Обява" : "Listing"}
                 </span>
               </div>
@@ -395,7 +390,7 @@ export function ProductCard({
         </div>
 
         {/* Image */}
-        <div className="relative w-full bg-muted overflow-hidden">
+        <div className="relative w-full bg-muted overflow-hidden rounded-md">
           <AspectRatio ratio={1}>
             <Image
               src={image || "/placeholder.svg"}
@@ -413,13 +408,13 @@ export function ProductCard({
             <div className="absolute top-1.5 left-1.5 z-10 flex flex-col gap-1">
               {resolvedState === "promoted" && (
                 <Badge variant="secondary" className="gap-1 bg-background/90 backdrop-blur-sm">
-                  <Sparkle size={12} weight="fill" className="text-primary" />
-                  <span className="text-[10px] font-semibold">{locale === "bg" ? "Промо" : "Promoted"}</span>
+                  <Sparkle size={10} weight="fill" className="text-primary" />
+                  <span className="text-2xs font-semibold">{locale === "bg" ? "Промо" : "Promoted"}</span>
                 </Badge>
               )}
               {hasDiscount && discountPercent >= 10 && (
                 <Badge className="bg-deal text-white border-0">
-                  <span className="text-[10px] font-semibold">-{discountPercent}%</span>
+                  <span className="text-2xs font-semibold">-{discountPercent}%</span>
                 </Badge>
               )}
             </div>
@@ -441,13 +436,13 @@ export function ProductCard({
                   onClick={handleAddToCart}
                   disabled={isOwnProduct || !inStock}
                   className={cn(
-                    "h-9 w-full rounded-md border text-xs font-semibold transition-colors inline-flex items-center justify-center gap-2",
+                    "h-8 w-full rounded-md border text-2xs font-semibold transition-colors inline-flex items-center justify-center gap-1.5",
                     "bg-foreground text-background border-foreground hover:bg-foreground/90",
                     (isOwnProduct || !inStock) && "opacity-60 cursor-not-allowed"
                   )}
                   aria-label={!inStock ? (locale === "bg" ? "Изчерпано" : "Out of stock") : (locale === "bg" ? "Добави" : "Add to cart")}
                 >
-                  <ShoppingCart size={14} weight="bold" />
+                  <ShoppingCart size={12} weight="bold" />
                   {!inStock ? (locale === "bg" ? "Изчерпано" : "Out of stock") : (locale === "bg" ? "Добави" : "Add to cart")}
                 </button>
               </div>
@@ -456,41 +451,41 @@ export function ProductCard({
         </div>
 
         {/* Content */}
-        <div className="min-w-0 p-2.5 space-y-1.5">
-          <h3 className="text-foreground group-hover:underline decoration-muted-foreground/40 underline-offset-2 leading-snug text-sm font-medium line-clamp-2">
+        <div className="min-w-0 p-1.5 space-y-1">
+          <h3 className="text-foreground group-hover:underline decoration-muted-foreground/40 underline-offset-2 leading-snug text-[13px] font-medium line-clamp-2">
             {title}
           </h3>
 
           {metaString && (
-            <p className="text-[11px] text-muted-foreground truncate">
+            <p className="text-2xs text-muted-foreground truncate">
               {metaString}
             </p>
           )}
 
           {(rating > 0 || freeShipping) && (
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-1 text-2xs text-muted-foreground">
               {rating > 0 ? (
-                <span className="inline-flex items-center gap-1">
-                  <Star size={12} weight="fill" className="text-muted-foreground" />
+                <span className="inline-flex items-center gap-0.5">
+                  <Star size={10} weight="fill" className="text-muted-foreground" />
                   <span className="font-medium text-foreground">{rating.toFixed(1)}</span>
                   {reviews > 0 && <span>({reviews})</span>}
                 </span>
               ) : null}
               {freeShipping ? (
-                <span className="inline-flex items-center gap-1">
-                  <Truck size={12} weight="fill" className="text-muted-foreground" />
-                  <span>{locale === "bg" ? "Безплатна доставка" : "Free shipping"}</span>
+                <span className="inline-flex items-center gap-0.5">
+                  <Truck size={10} weight="fill" className="text-muted-foreground" />
+                  <span>{locale === "bg" ? "Безплатна" : "Free"}</span>
                 </span>
               ) : null}
             </div>
           )}
 
           {/* Price row */}
-          <div className="flex items-center justify-between gap-2 pt-0.5">
-            <span className={cn("text-base font-bold", hasDiscount ? "text-deal" : "text-foreground")}>
+          <div className="flex items-center justify-between gap-1.5 pt-0.5">
+            <span className={cn("text-[15px] font-bold", hasDiscount ? "text-deal" : "text-foreground")}>
               {formatPrice(price)}
               {hasDiscount && resolvedOriginalPrice && (
-                <span className="ml-1 text-xs font-normal text-muted-foreground line-through">
+                <span className="ml-1 text-2xs font-normal text-muted-foreground line-through">
                   {formatPrice(resolvedOriginalPrice)}
                 </span>
               )}
@@ -509,13 +504,13 @@ export function ProductCard({
                   onClick={handleAddToCart}
                   disabled={isOwnProduct || !inStock}
                   className={cn(
-                    "size-8 rounded-full border text-xs font-semibold transition-colors inline-flex items-center justify-center",
-                    "bg-background text-primary border-primary/30 hover:bg-primary hover:text-primary-foreground hover:border-primary",
+                    "size-7 rounded-full border text-xs font-semibold transition-colors inline-flex items-center justify-center",
+                    "bg-background text-primary border-primary/20 hover:bg-primary hover:text-primary-foreground hover:border-primary",
                     (isOwnProduct || !inStock) && "opacity-60 cursor-not-allowed"
                   )}
                   aria-label={!inStock ? (locale === "bg" ? "Изчерпано" : "Out of stock") : (locale === "bg" ? "Добави" : "Add")}
                 >
-                  <ShoppingCart size={16} weight="bold" />
+                  <ShoppingCart size={14} weight="bold" />
                 </button>
               </div>
             )}

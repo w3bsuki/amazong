@@ -71,11 +71,11 @@ export function TabbedProductSection({
   }
 
   return (
-    <div className={cn("rounded-md overflow-hidden", bgStyles[variant])}>
+    <div className={cn("overflow-hidden", variant === "deals" ? "rounded-md bg-deal" : "")}>
       {/* Header Section - eBay style clean */}
-      <div className="text-center pt-5 sm:pt-6 pb-3 sm:pb-4 px-4">
+      <div className="text-center pt-4 sm:pt-6 pb-2 sm:pb-4 px-4">
         <h2 className={cn(
-          "text-xl font-bold mb-1.5 tracking-tight",
+          "text-lg sm:text-xl font-bold mb-1 tracking-tight",
           variant === "deals" ? "text-white" : "text-foreground"
         )}>
           {title}
@@ -97,9 +97,9 @@ export function TabbedProductSection({
       {/* Tabs */}
       <Tabs defaultValue={tabs[0]?.id} className="w-full">
         {/* Tab List - Clean eBay-style pills */}
-        <div className="flex justify-center px-3 sm:px-4 pb-2">
+        <div className="flex justify-center px-3 sm:px-4 pb-1">
           <TabsList className={cn(
-            "h-auto p-1 gap-0.5 sm:gap-1 rounded-full flex flex-wrap justify-center sm:flex-nowrap sm:overflow-x-auto no-scrollbar max-w-full",
+            "h-auto p-0.5 gap-0.5 sm:gap-1 rounded-full flex flex-wrap justify-center sm:flex-nowrap sm:overflow-x-auto no-scrollbar max-w-full",
             variant === "deals" 
               ? "bg-white/20 border border-white/25" 
               : "bg-muted border border-border"
@@ -109,11 +109,11 @@ export function TabbedProductSection({
                 key={tab.id}
                 value={tab.id}
                 className={cn(
-                  "px-3 sm:px-4 py-1.5 sm:py-2 text-sm font-normal rounded-full",
+                  "px-3 sm:px-5 h-touch-xs text-2xs sm:text-sm font-semibold rounded-full",
                   variant === "deals" 
                     ? "text-white/80 hover:text-white hover:bg-white/20 data-[state=active]:text-deal data-[state=active]:bg-white"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
-                  "whitespace-nowrap min-h-8 sm:min-h-10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary data-[state=active]:text-cta-trust-blue-text data-[state=active]:bg-cta-trust-blue",
+                  "whitespace-nowrap"
                 )}
               >
                 {tab.label}

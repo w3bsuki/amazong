@@ -49,8 +49,8 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
   const isProductPage = pathname.startsWith("/product/") || hideSubheader
   
   const searchPlaceholder = locale === "bg" 
-    ? "Какво търсиш днес?" 
-    : "What are you looking for?"
+    ? "Търсене..." 
+    : "Search essentials..."
 
   useEffect(() => {
     // Simple cookie parser
@@ -72,30 +72,29 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
       <div className="md:hidden bg-background text-header-text">
         {/* Top row - Logo & Actions */}
         <div className={cn(
-          "px-2 py-1.5 flex items-center",
+          "px-2 py-1 flex items-center",
           isProductPage && "border-b border-border/50"
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
           {isProductPage ? (
             <button 
               onClick={() => router.back()}
-              className="flex items-center justify-center size-10 -ml-1 rounded-full text-foreground hover:bg-muted active:bg-muted/80"
+              className="flex items-center justify-center size-9 -ml-1 rounded-full text-foreground hover:bg-muted active:bg-muted/80"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
-              <CaretLeft size={22} weight="bold" />
+              <CaretLeft size={20} weight="bold" />
             </button>
           ) : (
             <SidebarMenu user={user} />
           )}
           <Link href="/" className={cn(
             "flex items-center shrink-0",
-            isProductPage ? "ml-1" : "-ml-2"
+            isProductPage ? "ml-1" : "ml-0"
           )}>
-            <span className="text-lg font-bold tracking-tight text-foreground">AMZN</span>
+            <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
           </Link>
           <div className="flex-1" />
           <div className="flex items-center gap-0.5">
-            <MobileSearchOverlay />
             <MobileWishlistButton />
             <MobileCartDropdown />
           </div>
@@ -106,16 +105,22 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
         <div className="px-3 pb-2">
           <button
             onClick={() => setIsMobileSearchOpen(true)}
-            className="w-full flex items-center gap-2 h-10 px-3 rounded-full bg-muted border border-border text-muted-foreground text-sm text-left active:bg-accent"
+            className={cn(
+              "w-full flex items-center gap-2 h-10 px-3.5 rounded-lg",
+              "bg-muted/50",
+              "text-muted-foreground/70 text-2xs text-left",
+              "active:bg-muted/80",
+              "transition-colors duration-200",
+              "touch-action-manipulation tap-transparent"
+            )}
             aria-label={searchPlaceholder}
             aria-haspopup="dialog"
             aria-expanded={isMobileSearchOpen}
           >
-            <MagnifyingGlass size={18} weight="bold" className="text-muted-foreground shrink-0" />
-            <span className="flex-1 truncate">{searchPlaceholder}</span>
-            <div className="flex items-center gap-1 shrink-0">
-              <div className="w-px h-5 bg-border" />
-              <Camera size={18} weight="regular" className="text-muted-foreground/70 ml-1" />
+            <MagnifyingGlass size={18} weight="regular" className="text-muted-foreground/60 shrink-0" />
+            <span className="flex-1 truncate font-normal">{searchPlaceholder}</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <Camera size={18} weight="regular" className="text-muted-foreground/40" />
             </div>
           </button>
         </div>

@@ -227,10 +227,10 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
       aria-label={locale === "bg" ? "Обяви" : "Listings"}
     >
       {/* Header with Tabs - Refined Typography */}
-      <div className="px-5 pt-5 pb-3">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold tracking-tight text-foreground/90 shrink-0">
+      <div className="px-4 pt-4 pb-2">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-lg font-bold tracking-tight text-foreground/90 shrink-0">
               {locale === "bg" ? "Обяви" : "Listings"}
             </h2>
             <div className="h-1 w-1 rounded-full bg-muted-foreground/30 hidden sm:block" />
@@ -238,7 +238,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 
           {/* Tab Navigation - Refined Pill style */}
           <div 
-            className="flex items-center gap-1 p-1 rounded-full bg-muted/40 border border-border/50"
+            className="flex items-center gap-1 p-0.5 rounded-full bg-muted/40 border border-border/50"
             role="tablist"
             aria-label={locale === "bg" ? "Филтриране на обяви" : "Filter listings"}
           >
@@ -255,14 +255,14 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
                   role="tab"
                   tabIndex={isActive ? 0 : -1}
                   className={cn(
-                    "flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold transition-none",
+                    "flex items-center gap-2 px-4 h-touch-xs rounded-full text-2xs font-bold transition-none",
                     "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-sm"
+                      ? "bg-cta-trust-blue text-cta-trust-blue-text"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                   )}
                 >
-                  <Icon size={16} weight={isActive ? "fill" : "bold"} aria-hidden="true" />
+                  <Icon size={14} weight={isActive ? "fill" : "bold"} aria-hidden="true" />
                   <span>{tab.label}</span>
                 </button>
               )
@@ -272,7 +272,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
           {/* See All Link */}
           <Link
             href={`/search?sort=${activeTab === "deals" ? "deals" : activeTab === "promoted" ? "promoted" : "newest"}`}
-            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 shrink-0"
+            className="text-2xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 shrink-0"
           >
             {locale === "bg" ? "Виж всички" : "See all"}
             <CaretRight size={12} weight="bold" aria-hidden="true" />
@@ -282,25 +282,25 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 
       {/* Product Grid - with proper tabpanel ARIA */}
       <div 
-        className="px-5 pt-2 pb-4"
+        className="px-4 pt-1.5 pb-3"
         role="tabpanel"
         id={`tabpanel-${activeTab}`}
         aria-labelledby={`tab-${activeTab}`}
         tabIndex={0}
       >
         {products.length === 0 && isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-3 xl:gap-4" aria-busy="true" aria-live="polite">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-2.5 xl:gap-3" aria-busy="true" aria-live="polite">
             {Array.from({ length: 14 }).map((_, i) => (
-              <div key={i} className="space-y-2">
+              <div key={i} className="space-y-1.5">
                 <Skeleton className="aspect-square rounded-md" />
-                <Skeleton className="h-3.5 w-full" />
-                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3.5 w-1/3" />
               </div>
             ))}
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground" role="status">
-            <div className="text-4xl mb-3" aria-hidden="true">📦</div>
+          <div className="text-center py-10 text-muted-foreground" role="status">
+            <div className="text-3xl mb-2" aria-hidden="true">📦</div>
             {locale === "bg" ? "Няма намерени обяви" : "No listings found"}
           </div>
         ) : (
@@ -309,9 +309,9 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
               Grid Layout - Optimized for all screen sizes:
               - 2 cols mobile, 3 cols md, 4 cols lg, 5 cols xl, 6 cols 2xl
               - 7 columns at 2xl better matches the carousel density on wide screens
-              - gap-3 base, gap-4 at xl+ for breathing room
+              - gap-2.5 base, gap-3 at xl+ for breathing room
             */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-3 xl:gap-4" role="list" aria-live="polite">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-2.5 xl:gap-3" role="list" aria-live="polite">
               {products.map((product, index) => (
                 <div key={product.id} role="listitem">
                   <ProductCard

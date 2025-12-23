@@ -48,37 +48,37 @@ export function MobileTabBar() {
         aria-label="Mobile navigation"
         data-testid="mobile-tab-bar"
       >
-        <div className="flex items-center justify-around h-14 px-2 relative">
+        <div className="flex items-center justify-around h-[52px] px-1.5 relative">
           {/* Home */}
           <Link
             href="/"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
+              "flex flex-col items-center justify-center min-h-[40px] min-w-[40px] gap-0",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
-              isActive("/") && pathname === "/" ? "text-brand" : "text-muted-foreground"
+              isActive("/") && pathname === "/" ? "text-cta-trust-blue" : "text-muted-foreground"
             )}
             aria-label={t("home")}
             aria-current={pathname === "/" ? "page" : undefined}
           >
-            <House size={22} weight={pathname === "/" ? "fill" : "regular"} />
-            <span className="text-xs font-medium">{t("home")}</span>
+            <House size={20} weight={pathname === "/" ? "fill" : "regular"} />
+            <span className="text-2xs font-semibold tracking-tight">{t("home")}</span>
           </Link>
 
           {/* Categories - Opens drawer with category circles */}
           <button
             onClick={() => menuSheetRef.current?.open()}
             className={cn(
-              "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
+              "flex flex-col items-center justify-center min-h-[40px] min-w-[40px] gap-0",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
-              isActive("/categories") ? "text-brand" : "text-muted-foreground"
+              isActive("/categories") ? "text-cta-trust-blue" : "text-muted-foreground"
             )}
             aria-label={t("categories")}
           >
-            <SquaresFour size={22} weight={isActive("/categories") ? "fill" : "regular"} />
-            <span className="text-xs font-medium">{t("categories")}</span>
+            <SquaresFour size={20} weight={isActive("/categories") ? "fill" : "regular"} />
+            <span className="text-2xs font-semibold tracking-tight">{t("categories")}</span>
           </button>
 
           {/* Sell */}
@@ -86,16 +86,16 @@ export function MobileTabBar() {
             href="/sell"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
+              "flex flex-col items-center justify-center min-h-[40px] min-w-[40px] gap-0",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
-              isActive("/sell") ? "text-brand" : "text-muted-foreground"
+              isActive("/sell") ? "text-cta-trust-blue" : "text-muted-foreground"
             )}
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
-            <PlusCircle size={22} weight={isActive("/sell") ? "fill" : "regular"} />
-            <span className="text-xs font-medium">{t("sell")}</span>
+            <PlusCircle size={20} weight={isActive("/sell") ? "fill" : "regular"} />
+            <span className="text-2xs font-semibold tracking-tight">{t("sell")}</span>
           </Link>
 
         {/* Chat */}
@@ -103,23 +103,23 @@ export function MobileTabBar() {
           href="/chat"
           prefetch={true}
           className={cn(
-            "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5 relative",
+            "flex flex-col items-center justify-center min-h-[40px] min-w-[40px] gap-0 relative",
             "touch-action-manipulation tap-transparent",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
-            isActive("/chat") ? "text-brand" : "text-muted-foreground"
+            isActive("/chat") ? "text-cta-trust-blue" : "text-muted-foreground"
           )}
           aria-label={`${t("chat")}${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
           aria-current={isActive("/chat") ? "page" : undefined}
         >
           <div className="relative">
-            <ChatCircle size={22} weight={isActive("/chat") ? "fill" : "regular"} />
+            <ChatCircle size={20} weight={isActive("/chat") ? "fill" : "regular"} />
             {unreadCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-destructive text-destructive-foreground text-2xs font-bold rounded-full flex items-center justify-center px-1">
+              <span className="absolute -top-1.5 -right-1.5 min-w-[14px] h-3.5 bg-destructive text-destructive-foreground text-[9px] font-bold rounded-full flex items-center justify-center px-1">
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
           </div>
-          <span className="text-xs font-medium">{t("chat")}</span>
+          <span className="text-2xs font-semibold tracking-tight">{t("chat")}</span>
         </Link>
 
         {/* Account */}
@@ -127,16 +127,16 @@ export function MobileTabBar() {
           href="/account"
           prefetch={true}
           className={cn(
-            "flex flex-col items-center justify-center min-h-[44px] min-w-[44px] gap-0.5",
+            "flex flex-col items-center justify-center min-h-[40px] min-w-[40px] gap-0",
             "touch-action-manipulation tap-transparent",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg",
-            isActive("/account") ? "text-brand" : "text-muted-foreground"
+            isActive("/account") ? "text-cta-trust-blue" : "text-muted-foreground"
           )}
           aria-label={t("account")}
           aria-current={isActive("/account") ? "page" : undefined}
         >
-          <User size={22} weight={isActive("/account") ? "fill" : "regular"} />
-          <span className="text-xs font-medium">{t("account")}</span>
+          <User size={20} weight={isActive("/account") ? "fill" : "regular"} />
+          <span className="text-2xs font-semibold tracking-tight">{t("account")}</span>
         </Link>
       </div>
     </nav>

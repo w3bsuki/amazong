@@ -23,8 +23,8 @@ export function MobileSearchBar({ className }: MobileSearchBarProps) {
   const locale = useLocale()
   
   const placeholder = locale === "bg" 
-    ? "Какво търсиш днес?" 
-    : "What are you looking for?"
+    ? "Търсене..." 
+    : "Search essentials..."
 
   const handleClick = () => {
     setIsSearchOpen(true)
@@ -34,29 +34,28 @@ export function MobileSearchBar({ className }: MobileSearchBarProps) {
     <>
       <div 
         className={cn(
-          "sticky top-[44px] z-40 bg-background px-3 py-2 md:hidden",
+          "sticky top-[44px] z-40 bg-background px-3 py-1.5 md:hidden",
           className
         )}
       >
         <button
           onClick={handleClick}
           className={cn(
-            "w-full flex items-center gap-2 h-10 px-3 rounded-full",
-            "bg-muted border border-border",
-            "text-muted-foreground text-sm text-left",
-            "active:bg-accent",
-            "transition-colors duration-150",
+            "w-full flex items-center gap-2 h-10 px-3.5 rounded-lg",
+            "bg-muted/50",
+            "text-muted-foreground/70 text-2xs text-left",
+            "active:bg-muted/80",
+            "transition-colors duration-200",
             "touch-action-manipulation tap-transparent"
           )}
           aria-label={placeholder}
           aria-haspopup="dialog"
           aria-expanded={isSearchOpen}
         >
-          <MagnifyingGlass size={18} weight="bold" className="text-muted-foreground shrink-0" />
+          <MagnifyingGlass size={16} weight="regular" className="text-muted-foreground/60 shrink-0" />
           <span className="flex-1 truncate">{placeholder}</span>
           <div className="flex items-center gap-1 shrink-0">
-            <div className="w-px h-5 bg-border" />
-            <Camera size={18} weight="regular" className="text-muted-foreground/70 ml-1" />
+            <Camera size={16} weight="regular" className="text-muted-foreground/40 ml-1" />
           </div>
         </button>
       </div>

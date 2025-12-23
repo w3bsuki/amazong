@@ -127,24 +127,24 @@ export function ProductCarouselSection({
     >
       {/* Header - Refined Typography with optional icon and trust-blue accent */}
       <div className={cn(
-        "px-5 pt-5 pb-3 flex items-center border-b border-border/40",
+        "px-4 pt-4 pb-2 flex items-center border-b border-border/40",
         variant === "highlighted" ? "bg-cta-trust-blue/5" : "bg-muted/5"
       )}>
-        <div className="flex items-center gap-3 min-w-fit">
+        <div className="flex items-center gap-2.5 min-w-fit">
           {icon && (
-            <div className="size-10 rounded-xl bg-background border border-border/60 flex items-center justify-center text-cta-trust-blue shadow-xs">
+            <div className="size-9 rounded-xl bg-background border border-border/60 flex items-center justify-center text-cta-trust-blue shadow-xs">
               {icon}
             </div>
           )}
           <div className="flex flex-col">
-            <h2 className="text-xl font-bold tracking-tight text-foreground/90 leading-tight">{title}</h2>
+            <h2 className="text-lg font-bold tracking-tight text-foreground/90 leading-tight">{title}</h2>
           </div>
         </div>
 
         {/* Tabs in the middle - Centered */}
         {tabs && tabs.length > 0 && (
           <div className="hidden lg:flex flex-1 justify-center px-4">
-            <div className="flex items-center gap-1 p-1 rounded-full bg-muted/40 border border-border/50">
+            <div className="flex items-center gap-1 p-0.5 rounded-full bg-muted/40 border border-border/50">
               {tabs.map((tab) => {
                 const isActive = activeTabId === tab.id
                 return (
@@ -152,9 +152,9 @@ export function ProductCarouselSection({
                     key={tab.id}
                     onClick={() => onTabChange?.(tab.id)}
                     className={cn(
-                      "px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap",
+                      "px-4 h-touch-xs rounded-full text-2xs font-bold transition-all whitespace-nowrap",
                       isActive
-                        ? "bg-primary text-primary-foreground shadow-sm"
+                        ? "bg-cta-trust-blue text-cta-trust-blue-text"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                     )}
                   >
@@ -167,13 +167,13 @@ export function ProductCarouselSection({
         )}
         
         <div className={cn(
-          "flex items-center gap-4 ml-auto",
+          "flex items-center gap-3 ml-auto",
           !tabs && "ml-auto"
         )}>
           {ctaText && ctaHref && (
             <Link
               href={ctaHref}
-              className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+              className="text-2xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
             >
               {ctaText}
               <CaretRight size={12} weight="bold" />
@@ -181,30 +181,30 @@ export function ProductCarouselSection({
           )}
 
           {/* Navigation Buttons - Moved to Header */}
-          <div className="hidden md:flex items-center gap-1.5">
+          <div className="hidden md:flex items-center gap-1">
             <button
               onClick={() => scroll("left")}
               disabled={!canScrollLeft}
               className={cn(
-                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
+                "size-7 rounded-full border border-border flex items-center justify-center transition-all",
                 "hover:bg-muted active:scale-95",
                 "disabled:opacity-30 disabled:cursor-not-allowed"
               )}
               aria-label="Scroll left"
             >
-              <CaretLeft size={16} weight="bold" />
+              <CaretLeft size={14} weight="bold" />
             </button>
             <button
               onClick={() => scroll("right")}
               disabled={!canScrollRight}
               className={cn(
-                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
+                "size-7 rounded-full border border-border flex items-center justify-center transition-all",
                 "hover:bg-muted active:scale-95",
                 "disabled:opacity-30 disabled:cursor-not-allowed"
               )}
               aria-label="Scroll right"
             >
-              <CaretRight size={16} weight="bold" />
+              <CaretRight size={14} weight="bold" />
             </button>
           </div>
         </div>
@@ -215,22 +215,22 @@ export function ProductCarouselSection({
         {/* Products Scroll Container */}
         <div
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scroll-smooth px-5 pt-2 pb-4 no-scrollbar"
+          className="flex gap-3 overflow-x-auto scroll-smooth px-4 pt-1.5 pb-3 no-scrollbar"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {isLoading ? (
             Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="shrink-0 w-[200px] space-y-3">
+              <div key={i} className="shrink-0 w-[180px] space-y-2">
                 <Skeleton className="aspect-square w-full rounded-xl" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
+                <div className="space-y-1.5">
+                  <Skeleton className="h-3.5 w-full" />
+                  <Skeleton className="h-3.5 w-2/3" />
                 </div>
               </div>
             ))
           ) : (
             products.map((product) => (
-              <div key={product.id} className="shrink-0 w-[200px]">
+              <div key={product.id} className="shrink-0 w-[180px]">
                 <ProductCard
                   id={product.id}
                   title={product.title}

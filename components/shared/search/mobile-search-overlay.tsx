@@ -92,7 +92,7 @@ export function MobileSearchOverlay({
   // Localized strings
   const strings = {
     search: locale === "bg" ? "Търсене" : "Search",
-    searchProducts: locale === "bg" ? "Търсене в продукти..." : "Search products...",
+    searchProducts: locale === "bg" ? "Търсене..." : "Search essentials...",
     close: locale === "bg" ? "Затвори" : "Close",
     clear: locale === "bg" ? "Изчисти" : "Clear",
     searching: locale === "bg" ? "Търсене..." : "Searching...",
@@ -259,15 +259,15 @@ export function MobileSearchOverlay({
           {/* Search Header */}
           <header className="shrink-0 bg-background border-b border-border">
             {/* Close Button Row */}
-            <div className="flex items-center justify-end gap-2 px-2 pt-2">
+            <div className="flex items-center justify-end gap-2 px-3 pt-3">
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => setIsAiOpen(true)}
-                className="h-10 rounded-full px-3"
+                className="h-10 rounded-full px-4 border-brand/20 text-brand hover:bg-brand/5"
               >
-                <Sparkle size={16} weight="fill" />
+                <Sparkle size={16} weight="fill" className="mr-1.5" />
                 AI
               </Button>
               <Button
@@ -285,15 +285,15 @@ export function MobileSearchOverlay({
             {/* Search Input */}
             <form
               onSubmit={handleSubmit}
-              className="px-3 pb-3"
+              className="px-4 pb-4"
               role="search"
               aria-label={strings.search}
             >
               <div className="relative">
                 <MagnifyingGlass
                   size={20}
-                  weight="bold"
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand pointer-events-none"
+                  weight="regular"
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none"
                   aria-hidden="true"
                 />
                 <Input
@@ -305,7 +305,7 @@ export function MobileSearchOverlay({
                   placeholder={strings.searchProducts}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="h-12 w-full pl-11 pr-11 text-base bg-search-bg border border-search-border rounded-full focus-visible:ring-brand/50"
+                  className="h-11 w-full pl-11 pr-11 text-base bg-muted/50 border-0 rounded-xl focus-visible:ring-0 focus-visible:bg-muted/80 transition-colors"
                   autoComplete="off"
                   autoCapitalize="off"
                   autoCorrect="off"
@@ -456,7 +456,7 @@ export function MobileSearchOverlay({
                           onClick={() => handleSearch(search)}
                           className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
                         >
-                          <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white bg-linear-to-br from-deal to-brand" aria-hidden="true">
+                          <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white bg-cta-trust-blue" aria-hidden="true">
                             {index + 1}
                           </span>
                           <span className="flex-1 text-base text-foreground">{search}</span>

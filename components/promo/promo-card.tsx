@@ -54,12 +54,12 @@ export function PromoCard({
       )}
       
       {/* Deal Content */}
-      <div className="absolute bottom-4 left-4 right-4 text-white">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-white/70 mb-1">{dealText}</p>
-        <p className="text-3xl lg:text-4xl font-black tracking-tighter leading-none">
+      <div className="absolute bottom-3 left-3 right-3 text-white">
+        <p className="text-2xs font-semibold uppercase tracking-widest text-white/70 mb-0.5">{dealText}</p>
+        <p className="text-2xl lg:text-3xl font-black tracking-tighter leading-none">
           {highlight}
         </p>
-        <p className="text-sm mt-1 font-medium text-white/90 line-clamp-1">{subtitle}</p>
+        <p className="text-xs mt-0.5 font-medium text-white/90 line-clamp-1">{subtitle}</p>
       </div>
       
       {/* Hover indicator - subtle border */}

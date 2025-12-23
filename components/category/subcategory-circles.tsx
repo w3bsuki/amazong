@@ -182,7 +182,7 @@ export function SubcategoryCircles({
             <Link
               href={buildUrl(currentCategory.slug)}
               className={cn(
-                "flex flex-col items-center gap-1.5 min-w-[64px] sm:min-w-[100px] group snap-start shrink-0",
+                "flex flex-col items-center gap-1 min-w-[56px] sm:min-w-[100px] group snap-start shrink-0",
                 "touch-action-manipulation"
               )}
             >
@@ -190,20 +190,20 @@ export function SubcategoryCircles({
               <div
                 className={cn(
                   "rounded-full flex items-center justify-center overflow-hidden",
-                  "size-[58px] sm:size-[90px] md:size-[100px]",
+                  "size-[52px] sm:size-[90px] md:size-[100px]",
                   "bg-linear-to-br from-primary to-primary/80",
                   "border-2 border-primary"
                 )}
               >
-                <span className="text-white text-[10px] sm:text-sm font-medium text-center px-1">
+                <span className="text-white text-2xs sm:text-sm font-medium text-center px-1">
                   {locale === "bg" ? "Всички" : "All"}
                 </span>
               </div>
               
               {/* Label */}
               <span className={cn(
-                "text-[11px] sm:text-sm font-medium text-center text-primary",
-                "max-w-[64px] sm:max-w-[100px] line-clamp-2"
+                "text-2xs sm:text-sm font-medium text-center text-primary",
+                "max-w-[56px] sm:max-w-[100px] line-clamp-2"
               )}>
                 {locale === "bg" ? "Всички продукти" : "All Products"}
               </span>
@@ -216,7 +216,7 @@ export function SubcategoryCircles({
               key={subcat.id}
               href={buildUrl(subcat.slug)}
               className={cn(
-                "flex flex-col items-center gap-1.5 min-w-[64px] sm:min-w-[100px] group snap-start shrink-0",
+                "flex flex-col items-center gap-1 min-w-[56px] sm:min-w-[100px] group snap-start shrink-0",
                 "touch-action-manipulation",
                 index === validSubcategories.length - 1 && "mr-4"
               )}
@@ -225,7 +225,7 @@ export function SubcategoryCircles({
               <div
                 className={cn(
                   "rounded-full flex items-center justify-center overflow-hidden",
-                  "size-[58px] sm:size-[90px] md:size-[100px]",
+                  "size-[52px] sm:size-[90px] md:size-[100px]",
                   "bg-muted"
                 )}
               >
@@ -239,10 +239,10 @@ export function SubcategoryCircles({
               
               {/* Category Name - Target style */}
               <span className={cn(
-                "text-[11px] sm:text-sm font-medium text-center text-foreground",
+                "text-2xs sm:text-sm font-medium text-center text-foreground",
                 "group-hover:text-primary group-hover:underline",
                 "line-clamp-2",
-                "max-w-[64px] sm:max-w-[100px]"
+                "max-w-[56px] sm:max-w-[100px]"
               )}>
                 {getCategoryName(subcat)}
               </span>

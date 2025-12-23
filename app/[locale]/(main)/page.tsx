@@ -1,10 +1,6 @@
 import { Suspense } from "react"
-import { Link } from "@/i18n/routing"
-import Image from "next/image"
-import { CategoryCircles } from "@/components/category/category-circles"
+import type { Metadata } from "next"
 import { StartSellingBanner } from "@/components/sections/start-selling-banner"
-import type { Metadata } from 'next'
-import { PromoCard } from "@/components/promo/promo-card"
 import { MobileCategoryRail, DesktopCategoryRail } from "@/components/mobile/mobile-category-rail"
 
 // Desktop-only components
@@ -19,8 +15,12 @@ import {
   CategoryCarousel,
 } from "@/components/sections"
 
-// Skeleton fallbacks
-import { Skeleton } from "@/components/ui/skeleton"
+// Local components
+import { SignInCtaSkeleton } from "./_components/sign-in-cta-skeleton"
+import { PromoCards } from "./_components/promo-cards"
+import { MoreWaysToShop } from "./_components/more-ways-to-shop"
+
+import { createStaticClient } from "@/lib/supabase/server"
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -33,133 +33,20 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 // =============================================================================
-// Static Components - No data fetching, rendered immediately
-// =============================================================================
-
-function PromoCards({ locale }: { locale: string }) {
-  return (
-    <div className="flex gap-2 overflow-x-auto snap-x snap-mandatory pb-2 px-3 mt-4 sm:mt-6 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-3 sm:overflow-visible sm:pb-0 no-scrollbar scroll-pl-3">
-      <div className="w-[65%] min-w-[65%] shrink-0 snap-start sm:w-auto sm:min-w-0">
-        <PromoCard
-          bgImage="https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=800&q=80"
-          dealText={locale === "bg" ? "Спести до" : "Save up to"}
-          highlight="$200"
-          subtitle={locale === "bg" ? "Apple устройства*" : "Apple devices*"}
-          href="/search?category=electronics&brand=apple"
-        />
-      </div>
-      <div className="w-[65%] min-w-[65%] shrink-0 snap-start sm:w-auto sm:min-w-0">
-        <PromoCard
-          bgImage="https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=800&q=80"
-          dealText={locale === "bg" ? "До" : "Up to"}
-          highlight="50%"
-          subtitle={locale === "bg" ? "избрани играчки*" : "select toys*"}
-          href="/todays-deals?category=toys"
-          badge={locale === "bg" ? "🔥 Гореща" : "🔥 Hot"}
-        />
-      </div>
-      <div className="w-[65%] min-w-[65%] shrink-0 snap-start sm:w-auto sm:min-w-0">
-        <PromoCard
-          bgImage="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
-          dealText={locale === "bg" ? "До" : "Up to"}
-          highlight="40%"
-          subtitle={locale === "bg" ? "електроника*" : "electronics*"}
-          href="/search?category=electronics"
-        />
-      </div>
-      <div className="w-[65%] min-w-[65%] shrink-0 snap-start sm:w-auto sm:min-w-0 mr-1 sm:mr-0">
-        <PromoCard
-          bgImage="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80"
-          dealText={locale === "bg" ? "До" : "Up to"}
-          highlight="30%"
-          subtitle={locale === "bg" ? "мода*" : "fashion*"}
-          href="/search?category=fashion"
-        />
-      </div>
-    </div>
-  )
-}
-
-function MoreWaysToShop({ locale }: { locale: string }) {
-  const cards = [
-    {
-      href: "/search?sort=newest",
-      image: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=400&q=80",
-      title: locale === "bg" ? "Нови продукти" : "New Arrivals",
-      badge: locale === "bg" ? "Ново" : "New",
-    },
-    {
-      href: "/search?category=fashion",
-      image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
-      title: locale === "bg" ? "Мода" : "Fashion",
-    },
-    {
-      href: "/gift-cards",
-      image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&q=80",
-      title: locale === "bg" ? "Подаръци" : "Gifts",
-    },
-    {
-      href: "/search?category=home",
-      image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=400&q=80",
-      title: locale === "bg" ? "За дома" : "Home",
-    },
-  ]
-
-  return (
-    <div className="mt-1.5 px-3 sm:mt-0 sm:px-0">
-      <h2 className="text-base font-semibold text-foreground mb-1.5 sm:text-lg sm:mb-3">
-        {locale === "bg" ? "Още начини за пазаруване" : "More ways to shop"}
-      </h2>
-      
-      {/* Mobile: 2x2 grid | Desktop: 4-col grid */}
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-4">
-        {cards.map((card) => (
-          <Link 
-            key={card.href}
-            href={card.href} 
-            className="group relative aspect-4/3 rounded-lg overflow-hidden"
-          >
-            <Image 
-              src={card.image} 
-              alt={card.title}
-              fill
-              className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-105"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-black/70 to-black/10" />
-            {card.badge && (
-              <span className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full">
-                {card.badge}
-              </span>
-            )}
-            <div className="absolute bottom-2 left-2 right-2">
-              <h3 className="text-sm font-semibold text-white line-clamp-1 group-hover:underline">
-                {card.title}
-              </h3>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// Minimal skeleton for SignIn CTA
-function SignInCtaSkeleton() {
-  return (
-    <div className="bg-primary/50 rounded-lg p-4 sm:p-6">
-      <Skeleton className="h-6 w-64 bg-primary-foreground/20 mb-2" />
-      <Skeleton className="h-4 w-48 bg-primary-foreground/20" />
-    </div>
-  )
-}
-
-// =============================================================================
 // Main Page Component
 // =============================================================================
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
+
+  // Fetch top categories for the quick pills
+  const supabase = createStaticClient()
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('id, name, name_bg, slug')
+    .is('parent_id', null)
+    .order('display_order', { ascending: true })
+    .limit(8)
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-background md:bg-muted pb-20">
@@ -193,7 +80,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         
         {/* Newest Listings with Infinite Scroll */}
         <Suspense fallback={<NewestListingsSectionSkeleton />}>
-          <NewestListings />
+          <NewestListings categories={categories || []} />
         </Suspense>
         
         {/* Sign In CTA - At the end on mobile */}

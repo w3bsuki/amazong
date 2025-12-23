@@ -54,8 +54,8 @@ const productCardVariants = cva(
        * - featured: Card surface with seller header (promoted/business)
        */
       variant: {
-        default: "rounded-lg",
-        featured: "rounded-xl border border-border/60 bg-card",
+        default: "",
+        featured: "",
       },
       /**
        * State modifiers:
@@ -460,7 +460,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
                     {displayName}
                   </span>
                   {sellerVerified && (
-                    <ShieldCheck size={12} weight="fill" className="shrink-0 text-primary" />
+                    <ShieldCheck size={12} weight="fill" className="shrink-0 text-cta-trust-blue" />
                   )}
                 </div>
                 <span className="text-[10px] text-muted-foreground">{tierLabel}</span>
@@ -488,7 +488,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
         <div
           className={cn(
             "relative overflow-hidden bg-muted",
-            variant === "default" && "rounded-lg"
+            variant === "default" && "rounded-2xl"
           )}
         >
           {/* Square aspect ratio - industry standard for product grids */}
@@ -513,15 +513,15 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
               size="icon"
               className={cn(
                 "absolute right-1.5 top-1.5 z-10 size-7 rounded-full bg-background/80 backdrop-blur-sm transition-colors duration-150",
-                "hover:bg-background hover:shadow-sm",
-                wishlisted && "bg-primary/10 text-primary"
+                "hover:bg-background",
+                wishlisted && "bg-cta-trust-blue/10 text-cta-trust-blue"
               )}
               onClick={handleWishlist}
             >
               <Heart
                 size={16}
                 weight={wishlisted ? "fill" : "regular"}
-                className={wishlisted ? "text-primary" : "text-muted-foreground"}
+                className={wishlisted ? "text-cta-trust-blue" : "text-muted-foreground"}
               />
               <span className="sr-only">
                 {wishlisted ? "Remove from wishlist" : "Add to wishlist"}
@@ -538,9 +538,9 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
                 "absolute bottom-1.5 right-1.5 z-10 size-7 rounded-full",
                 !inCart && [
                   "bg-background/90 backdrop-blur-sm border-border/50",
-                  "group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary"
+                  "group-hover:bg-cta-trust-blue group-hover:text-cta-trust-blue-text group-hover:border-cta-trust-blue"
                 ],
-                inCart && "bg-primary text-primary-foreground"
+                inCart && "bg-cta-trust-blue text-cta-trust-blue-text"
               )}
               onClick={handleAddToCart}
               disabled={isOwnProduct || !inStock}
@@ -557,7 +557,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
           {/* Badges - Top Left (Flat, no shadows per Swiss design) */}
           <div className="absolute left-2 top-2 z-10 flex flex-col gap-1">
             {resolvedState === "promoted" && (
-              <span className="inline-flex items-center gap-0.5 rounded-md bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+              <span className="inline-flex items-center gap-0.5 rounded-md bg-cta-trust-blue px-1.5 py-0.5 text-[10px] font-semibold text-cta-trust-blue-text">
                 <Sparkle size={10} weight="fill" />
                 {locale === "bg" ? "Промо" : "Ad"}
               </span>
@@ -576,13 +576,13 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
         ═══════════════════════════════════════════════════════════════════ */}
         <div
           className={cn(
-            "flex flex-col gap-0",
-            variant === "featured" ? "p-2.5" : "pt-1.5"
+            "flex flex-col gap-0.5",
+            variant === "featured" ? "p-2" : "p-1.5"
           )}
         >
           {/* Meta info: Brand & Condition */}
           {(brand || condition) && (
-            <div className="flex items-center gap-1 truncate text-[9px] uppercase tracking-widest font-bold text-muted-foreground/60">
+            <div className="flex items-center gap-1 truncate text-2xs uppercase tracking-widest font-bold text-muted-foreground/60">
               {brand && <span className="truncate">{brand}</span>}
               {brand && condition && (
                 <span className="size-0.5 shrink-0 rounded-full bg-muted-foreground/20" />
@@ -612,7 +612,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
               {formatPrice(price)}
             </span>
             {hasDiscount && resolvedOriginalPrice && (
-              <span className="text-[10px] text-muted-foreground/50 line-through decoration-muted-foreground/30">
+              <span className="text-2xs text-muted-foreground/50 line-through decoration-muted-foreground/30">
                 {formatPrice(resolvedOriginalPrice)}
               </span>
             )}
@@ -636,14 +636,14 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
                 ))}
               </div>
               {reviews > 0 && (
-                <span className="text-xs text-muted-foreground">({reviews.toLocaleString()})</span>
+                <span className="text-2xs text-muted-foreground">({reviews.toLocaleString()})</span>
               )}
             </div>
           )}
 
           {/* Free Shipping - Trust signal */}
           {freeShipping && (
-            <p className="inline-flex items-center gap-1 pt-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            <p className="inline-flex items-center gap-1 pt-0.5 text-2xs font-medium text-emerald-600 dark:text-emerald-400">
               <Truck size={12} weight="bold" />
               {locale === "bg" ? "Безплатна доставка" : "Free shipping"}
             </p>
@@ -651,7 +651,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
 
           {/* Location - Marketplace essential */}
           {location && (
-            <p className="truncate text-[10px] text-muted-foreground pt-0.5">{location}</p>
+            <p className="truncate text-2xs text-muted-foreground pt-0.5">{location}</p>
           )}
         </div>
       </Link>
@@ -741,7 +741,7 @@ function ProductCardSkeleton({ variant = "default", className }: ProductCardSkel
     <div
       className={cn(
         "h-full overflow-hidden",
-        variant === "featured" && "rounded-xl border border-border bg-card",
+        variant === "featured" && "rounded-xl",
         variant === "default" && "rounded-lg",
         className
       )}
@@ -765,7 +765,7 @@ function ProductCardSkeleton({ variant = "default", className }: ProductCardSkel
       </div>
 
       {/* Content Skeleton - Matches card padding */}
-      <div className={cn("flex flex-col gap-1.5", variant === "featured" ? "p-3 md:p-4" : "pt-2 md:pt-3")}>
+      <div className={cn("flex flex-col gap-1.5", variant === "featured" ? "p-2" : "p-1.5")}>
         {/* Brand */}
         <Skeleton className="h-3 w-16" />
         {/* Title */}

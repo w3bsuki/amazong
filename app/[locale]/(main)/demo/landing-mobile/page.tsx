@@ -188,13 +188,13 @@ function SearchBar() {
         href="/search"
         className={cn(
           "flex items-center gap-3 w-full",
-          "h-12 px-4 rounded-full",
-          "bg-muted border border-border",
-          "text-muted-foreground"
+          "h-11 px-4 rounded-xl",
+          "bg-muted/50",
+          "text-muted-foreground/70"
         )}
       >
-        <MagnifyingGlass size={20} weight="bold" className="text-muted-foreground shrink-0" />
-        <span className="text-sm font-medium">Search for anything...</span>
+        <MagnifyingGlass size={20} weight="regular" className="text-muted-foreground/60 shrink-0" />
+        <span className="text-sm font-normal">Search essentials...</span>
       </Link>
     </div>
   )

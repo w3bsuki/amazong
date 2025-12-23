@@ -9,93 +9,18 @@ import { ProductCard } from "@/components/shared/product/product-card"
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker"
 import { ReviewsSectionServer } from "@/components/product/reviews/reviews-section-server"
 import { ProductBreadcrumb } from "@/components/shared/product/product-breadcrumb"
-import { Skeleton } from "@/components/ui/skeleton"
-
-// Reviews loading skeleton
-function ReviewsLoadingSkeleton() {
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-11 w-32" />
-      </div>
-      <Skeleton className="h-24 w-full rounded-lg" />
-      <div className="space-y-4">
-        <Skeleton className="h-32 w-full rounded-lg" />
-        <Skeleton className="h-32 w-full rounded-lg" />
-      </div>
-    </div>
-  )
-}
-
-// UUID regex pattern to detect if the id is a full UUID
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-// Helper function to extract product ID from slug
-// Slug format: "product-name-12345678" where last 8 chars are the short UUID
-function extractProductId(slugOrId: string): { isFullUUID: boolean; idOrSlug: string } {
-  if (UUID_REGEX.test(slugOrId)) {
-    return { isFullUUID: true, idOrSlug: slugOrId }
-  }
-  return { isFullUUID: false, idOrSlug: slugOrId }
-}
-
-// Helper function to get delivery date
-function getDeliveryDate(locale: string): string {
-  const deliveryDate = new Date()
-  deliveryDate.setDate(deliveryDate.getDate() + 3)
-  return deliveryDate.toLocaleDateString(locale === "bg" ? "bg-BG" : "en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  })
-}
+import { ReviewsLoadingSkeleton } from "./_components/reviews-loading-skeleton"
+import {
+  extractProductId,
+  fetchProductByIdOrSlug,
+  getDeliveryDate,
+} from "./_components/product-page-utils"
 
 interface ProductPageProps {
   params: Promise<{
     id: string
     locale: string
   }>
-}
-
-// Helper to fetch product by UUID or slug
-async function fetchProductByIdOrSlug(supabase: Awaited<ReturnType<typeof createClient>>, idOrSlug: string) {
-  if (!supabase) return null
-  
-  const { isFullUUID } = extractProductId(idOrSlug)
-  
-  if (isFullUUID) {
-    // Direct UUID lookup
-    const { data } = await supabase
-      .from("products")
-      .select("*")
-      .eq("id", idOrSlug)
-      .single()
-    return data
-  } else {
-    // Slug lookup - try exact match first
-    const { data: bySlug } = await supabase
-      .from("products")
-      .select("*")
-      .eq("slug", idOrSlug)
-      .single()
-    
-    if (bySlug) return bySlug
-    
-    // Try to extract the short ID from the end of the slug (last 8 chars after the last hyphen)
-    const parts = idOrSlug.split('-')
-    const shortId = parts[parts.length - 1]
-    if (shortId && shortId.length === 8) {
-      const { data: byShortId } = await supabase
-        .from("products")
-        .select("*")
-        .ilike("id", `${shortId}%`)
-        .single()
-      return byShortId
-    }
-    
-    return null
-  }
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {

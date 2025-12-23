@@ -25,12 +25,6 @@ export {
   type OrderItem,
 } from './orders'
 
-// Checkout Actions
-export {
-  createCheckoutSession,
-  verifyAndCreateOrder,
-} from './checkout'
-
 // Review Actions
 export {
   submitReview,
