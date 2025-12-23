@@ -52,7 +52,7 @@ export function ProductActions({ product }: ProductActionsProps) {
       <div className="flex items-center gap-2">
         <span className="text-sm">{t('quantity')}:</span>
         <Select value={quantity} onValueChange={setQuantity}>
-          <SelectTrigger className="w-20 h-9 rounded-sm bg-background border-border focus:ring-brand focus:ring-offset-0">
+          <SelectTrigger className="w-20 h-9 rounded-md bg-background border-border focus:ring-brand focus:ring-offset-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -66,14 +66,14 @@ export function ProductActions({ product }: ProductActionsProps) {
       </div>
 
       <Button
-        className="w-full bg-cta-add-cart hover:bg-cta-add-cart-hover text-foreground rounded-sm h-9"
+        className="w-full bg-cta-add-cart hover:bg-cta-add-cart-hover text-foreground rounded-md h-9"
         onClick={handleAddToCart}
       >
         {t('addToCart')}
       </Button>
 
       <Button
-        className="w-full bg-cta-buy-now hover:bg-cta-buy-now/90 text-white rounded-sm h-9"
+        className="w-full bg-cta-buy-now hover:bg-cta-buy-now/90 text-white rounded-md h-9"
         onClick={handleBuyNow}
       >
         <Play size={12} weight="fill" className="mr-2" />

@@ -72,7 +72,7 @@ export function ProductQuickViewDialog({
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <div className="rounded-sm border overflow-hidden bg-muted">
+            <div className="rounded-md border overflow-hidden bg-muted">
               <AspectRatio ratio={1}>
                 <Image
                   src={image || "/placeholder.svg"}
@@ -101,7 +101,7 @@ export function ProductQuickViewDialog({
           </div>
 
           <div className="space-y-3">
-            <div className="rounded-sm border bg-card p-4 space-y-2">
+            <div className="rounded-md border bg-card p-4 space-y-2">
               <div className="flex items-baseline justify-between gap-3">
                 <div className="min-w-0">
                   <div className="text-lg font-semibold text-foreground">{priceLabel}</div>

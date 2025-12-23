@@ -12,7 +12,7 @@ import {
   Warning, Users, Prohibit, ArrowCounterClockwise, Shield, 
   Gavel, Envelope, CheckCircle
 } from "@phosphor-icons/react/dist/ssr"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { routing } from "@/i18n/routing"
 
@@ -23,6 +23,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale)
   return {
     title: locale === 'bg' ? 'Условия за ползване' : 'Terms of Service',
     description: locale === 'bg' 

@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation"
 import { createStaticClient } from "@/lib/supabase/server"
+import { setRequestLocale } from "next-intl/server"
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -57,6 +58,7 @@ async function findCanonicalUrl(
 
 export default async function ProductRedirectPage({ params }: ProductPageProps) {
   const { slug: segments, locale } = await params
+  setRequestLocale(locale)
 
   const canonicalUrl = await findCanonicalUrl(segments, locale)
 

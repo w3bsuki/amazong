@@ -142,48 +142,48 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full min-h-11 rounded-md border-border hover:bg-muted">
+        <Button variant="outline" className="h-9 px-3 text-[10px] font-bold uppercase tracking-tight rounded-sm border-border hover:bg-muted shrink-0">
           {t("writeReview")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] rounded-sm">
         <DialogHeader>
-          <DialogTitle>{t("writeReview")}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-lg font-bold uppercase tracking-tight">{t("writeReview")}</DialogTitle>
+          <DialogDescription className="text-xs">
             {t("shareThoughts")}
           </DialogDescription>
         </DialogHeader>
 
         {isCheckingPurchase ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <Spinner className="size-8 text-verified" />
           </div>
         ) : hasPurchased === false ? (
           <div className="flex flex-col items-center justify-center py-8 text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+            <div className="w-16 h-16 rounded-sm bg-muted flex items-center justify-center">
               <ShoppingBag className="w-8 h-8 text-muted-foreground" />
             </div>
             <div className="space-y-2">
-              <h3 className="font-semibold text-lg">{t("purchaseRequiredTitle") || "Purchase Required"}</h3>
-              <p className="text-muted-foreground text-sm max-w-xs">
+              <h3 className="font-bold text-base uppercase tracking-tight">{t("purchaseRequiredTitle") || "Purchase Required"}</h3>
+              <p className="text-muted-foreground text-xs max-w-xs">
                 {t("purchaseRequiredDescription") || "You need to purchase this product before you can leave a review. This helps ensure authentic feedback from real customers."}
               </p>
             </div>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" className="rounded-sm text-xs uppercase font-bold" onClick={() => setOpen(false)}>
               {t("close") || "Close"}
             </Button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             {/* Verified Purchase Badge */}
-            <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 dark:bg-green-950/30 dark:text-green-400 px-3 py-2 rounded-md">
-              <ShoppingBag weight="fill" className="w-4 h-4" />
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-tight text-verified bg-verified/10 px-3 py-2 rounded-sm border border-verified/10">
+              <ShoppingBag weight="fill" className="w-3.5 h-3.5" />
               <span>{t("verifiedPurchase") || "Verified Purchase"}</span>
             </div>
 
             {/* Star Rating */}
             <div className="space-y-2">
-              <Label>{t("overallRating")}</Label>
+              <Label className="text-xs font-bold uppercase tracking-tight">{t("overallRating")}</Label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -192,13 +192,13 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
                     onClick={() => setRating(star)}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
-                    className="focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2 rounded"
+                    className="focus:outline-none rounded-sm"
                   >
                     <Star
                       className={cn(
-                        "h-8 w-8 transition-colors",
+                        "h-8 w-8",
                         (hoverRating || rating) >= star
-                          ? "text-rating"
+                          ? "text-verified"
                           : "text-muted-foreground"
                       )}
                       size={32}
@@ -211,9 +211,10 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
 
             {/* Review Title */}
             <div className="space-y-2">
-              <Label htmlFor="title">{t("reviewTitle")}</Label>
+              <Label htmlFor="title" className="text-xs font-bold uppercase tracking-tight">{t("reviewTitle")}</Label>
               <Input
                 id="title"
+                className="rounded-sm text-sm"
                 placeholder={t("reviewTitlePlaceholder")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -223,36 +224,38 @@ export function ReviewForm({ productId, onReviewSubmitted }: ReviewFormProps) {
 
             {/* Review Comment */}
             <div className="space-y-2">
-              <Label htmlFor="comment">{t("reviewComment")}</Label>
+              <Label htmlFor="comment" className="text-xs font-bold uppercase tracking-tight">{t("reviewComment")}</Label>
               <Textarea
                 id="comment"
+                className="rounded-sm text-sm min-h-[120px]"
                 placeholder={t("reviewCommentPlaceholder")}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 rows={5}
                 maxLength={2000}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[10px] text-muted-foreground text-right">
                 {comment.length}/2000
               </p>
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 pt-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
                 disabled={isSubmitting}
+                className="rounded-sm text-xs uppercase font-bold"
               >
                 {t("cancel")}
               </Button>
               <Button
                 type="submit"
-                className="bg-brand-blue hover:bg-brand-blue-dark text-white"
+                className="bg-verified hover:bg-verified/90 text-white rounded-sm text-xs uppercase font-bold px-6"
                 disabled={isSubmitting || rating === 0}
               >
-                {isSubmitting ? <><Spinner className="size-4 mr-2" />{t("submitting")}</> : t("submitReview")}
+                {isSubmitting ? <><Spinner className="size-3 mr-2" />{t("submitting")}</> : t("submitReview")}
               </Button>
             </div>
           </form>

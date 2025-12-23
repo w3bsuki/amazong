@@ -87,10 +87,10 @@ export function ProductGallery({
               onMouseEnter={() => setSelectedImage(index)}
               onClick={() => setSelectedImage(index)}
               className={cn(
-                "w-16 h-16 overflow-hidden rounded-lg shrink-0 transition-opacity",
+                "w-16 h-16 overflow-hidden rounded-md shrink-0 border",
                 selectedImage === index 
-                  ? "opacity-100" 
-                  : "opacity-40 hover:opacity-70"
+                  ? "opacity-100 border-verified" 
+                  : "opacity-40 hover:opacity-70 border-transparent"
               )}
             >
               <Image 
@@ -114,7 +114,7 @@ export function ProductGallery({
                 <button 
                   onClick={() => setIsZoomOpen(true)}
                   aria-label={t.enlarge}
-                  className="w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white rounded-full touch-manipulation"
+                  className="w-10 h-10 flex items-center justify-center bg-white border border-border rounded-md touch-manipulation"
                 >
                   <MagnifyingGlassPlus className="w-5 h-5 text-foreground/70" />
                 </button>
@@ -123,8 +123,8 @@ export function ProductGallery({
                 <p>{t.enlarge}</p>
               </TooltipContent>
             </Tooltip>
-            <div className="flex items-center gap-1 bg-white/80 hover:bg-white rounded-full px-2 py-1">
-              <span className="text-xs font-medium text-muted-foreground">{watchCount}</span>
+            <div className="flex items-center gap-1 bg-white border border-border rounded-md px-2 py-1">
+              <span className="text-xs font-bold text-muted-foreground">{watchCount}</span>
               <button 
                 onClick={onWatchlistToggle}
                 disabled={isWatchlistPending}
@@ -133,7 +133,7 @@ export function ProductGallery({
                 className={cn("w-7 h-7 flex items-center justify-center touch-manipulation", isWatchlistPending && "opacity-50")}
               >
                 <Heart 
-                  className={cn("w-5 h-5", isWatching ? "fill-deal text-deal" : "text-foreground/70")} 
+                  className={cn("w-5 h-5", isWatching ? "fill-destructive text-destructive" : "text-foreground/70")} 
                   weight={isWatching ? "fill" : "regular"}
                 />
               </button>
@@ -145,14 +145,14 @@ export function ProductGallery({
             <>
               <button
                 aria-label={t.previousImage}
-                className="absolute left-4 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center bg-white/80 lg:bg-white/90 hover:bg-white lg:border lg:border-border rounded-full lg:shadow-sm touch-manipulation"
+                className="absolute left-4 lg:left-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center bg-white border border-border rounded-md touch-manipulation"
                 onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : displayImages.length - 1)}
               >
                 <CaretLeft className="w-6 h-6" />
               </button>
               <button
                 aria-label={t.nextImage}
-                className="absolute right-4 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center bg-white/80 lg:bg-white/90 hover:bg-white lg:border lg:border-border rounded-full lg:shadow-sm touch-manipulation"
+                className="absolute right-4 lg:right-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center bg-white border border-border rounded-md touch-manipulation"
                 onClick={() => setSelectedImage(prev => prev < displayImages.length - 1 ? prev + 1 : 0)}
               >
                 <CaretRight className="w-6 h-6" />
@@ -180,7 +180,7 @@ export function ProductGallery({
               />
               {/* Image Counter */}
               {displayImages.length > 1 && (
-                <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 rounded">
+                <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-bold uppercase tracking-tight px-2.5 py-1 rounded-md">
                   {t.picture} {selectedImage + 1} {t.of} {displayImages.length}
                 </div>
               )}
@@ -193,10 +193,10 @@ export function ProductGallery({
                   key={index}
                   onClick={(e) => { e.stopPropagation(); setSelectedImage(index); }}
                   className={cn(
-                    "shrink-0 w-16 h-16 overflow-hidden bg-white rounded-lg snap-start touch-manipulation border",
+                    "shrink-0 w-16 h-16 overflow-hidden bg-white rounded-md snap-start touch-manipulation border",
                     selectedImage === index 
-                      ? "opacity-100 border-primary" 
-                      : "opacity-60 border-transparent hover:opacity-90"
+                      ? "opacity-100 border-verified" 
+                      : "opacity-60 border-border hover:opacity-90"
                   )}
                 >
                   <Image src={img} alt={`View ${index + 1}`} width={64} height={64} className="object-contain w-full h-full p-0.5" />
@@ -209,14 +209,14 @@ export function ProductGallery({
 
       {/* Zoom Modal */}
       <Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-white dark:bg-background">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-white dark:bg-background rounded-lg">
           <DialogTitle className="sr-only">
             {t.imagePreview}
           </DialogTitle>
           <DialogDescription className="sr-only">
             {title} - {t.picture} {selectedImage + 1} {t.of} {displayImages.length}
           </DialogDescription>
-          <DialogClose className="absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-black/70 hover:bg-black rounded-full">
+          <DialogClose className="absolute top-4 right-4 z-50 w-10 h-10 flex items-center justify-center bg-black hover:bg-black/90 rounded-md">
             <X className="w-5 h-5 text-white" weight="bold" />
           </DialogClose>
           <div className="relative w-full h-[85vh] flex items-center justify-center">
@@ -224,14 +224,14 @@ export function ProductGallery({
               <>
                 <button
                   aria-label={t.previousImage}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/70 hover:bg-black rounded-full"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/50 hover:bg-black/70 rounded-md"
                   onClick={() => setSelectedImage(prev => prev > 0 ? prev - 1 : displayImages.length - 1)}
                 >
                   <CaretLeft className="w-6 h-6 text-white" />
                 </button>
                 <button
                   aria-label={t.nextImage}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/70 hover:bg-black rounded-full"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center bg-black/50 hover:bg-black/70 rounded-md"
                   onClick={() => setSelectedImage(prev => prev < displayImages.length - 1 ? prev + 1 : 0)}
                 >
                   <CaretRight className="w-6 h-6 text-white" />
@@ -247,7 +247,7 @@ export function ProductGallery({
               priority
             />
             {displayImages.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-sm font-medium px-4 py-2 rounded-full">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black text-white text-xs font-bold uppercase tracking-tight px-4 py-2 rounded-md">
                 {selectedImage + 1} / {displayImages.length}
               </div>
             )}
@@ -259,9 +259,9 @@ export function ProductGallery({
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={cn(
-                    "w-16 h-16 border-2 overflow-hidden bg-white transition-colors rounded",
+                    "w-16 h-16 border-2 overflow-hidden bg-white rounded-md",
                     selectedImage === index 
-                      ? "border-primary" 
+                      ? "border-verified" 
                       : "border-transparent hover:border-muted-foreground/50"
                   )}
                 >

@@ -25,6 +25,7 @@ interface ProductPageProps {
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { id, locale } = await params
+  setRequestLocale(locale)
   const supabase = await createClient()
 
   if (!supabase) {

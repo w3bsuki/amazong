@@ -126,47 +126,52 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
         : reviews
 
     return (
-        <div className="mt-6 sm:mt-8 space-y-6">
-            {/* Header Row: Title + Overall Rating */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-foreground">{t('customerReviews')}</h2>
-                    <div className="flex items-center gap-2 mt-1">
-                        <div className="flex text-rating">
-                            {[...Array(5)].map((_, i) => (
-                                <Star
-                                    key={i}
-                                    size={18}
-                                    weight={i < Math.floor(rating) ? "fill" : "regular"}
-                                    aria-hidden="true"
-                                />
-                            ))}
-                        </div>
-                        <span className="text-base font-medium text-foreground">{rating.toFixed(1)} {t('outOf5')}</span>
-                        <span className="text-sm text-muted-foreground">({reviewCount} {t('globalRatings', { count: reviewCount }).replace(/\d+/, '').trim()})</span>
-                    </div>
-                </div>
+        <div className="mt-8 sm:mt-10 space-y-6">
+            {/* Header Row: Title + Overall Rating - Refined */}
+            <div className="flex flex-col gap-4">
+                <h2 className="text-xl font-bold text-foreground tracking-tight">{t('customerReviews')}</h2>
                 
-                {/* Write Review CTA */}
-                <div className="shrink-0">
-                    <Suspense fallback={<ReviewFormSkeleton />}>
-                        <ReviewForm productId={productId} onReviewSubmitted={fetchReviews} />
-                    </Suspense>
+                <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 bg-verified/10 px-2 py-1.5 rounded-md border border-verified/10">
+                            <span className="text-xl font-bold text-verified">{rating.toFixed(1)}</span>
+                            <Star size={16} weight="fill" className="text-verified" />
+                        </div>
+                        <div className="flex flex-col">
+                            <div className="flex text-verified">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star
+                                        key={i}
+                                        size={12}
+                                        weight={i < Math.floor(rating) ? "fill" : "regular"}
+                                        aria-hidden="true"
+                                    />
+                                ))}
+                            </div>
+                            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+                                {reviewCount} {t('globalRatings', { count: reviewCount }).replace(/\d+/, '').trim()}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="shrink-0">
+                        <Suspense fallback={<ReviewFormSkeleton />}>
+                            <ReviewForm productId={productId} onReviewSubmitted={fetchReviews} />
+                        </Suspense>
+                    </div>
                 </div>
             </div>
 
             {/* Horizontal Star Filter Bar */}
-            <div className="bg-muted/30 dark:bg-muted/10 border border-border rounded-lg p-3 lg:p-4">
-                {/* Mobile: Horizontal scroll, Desktop: Flex wrap */}
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 lg:pb-0 lg:flex-wrap">
-                    <span className="text-sm font-medium text-muted-foreground shrink-0">{t('filterByStars') || 'Filter:'}</span>
+            <div className="py-3 border-y border-border/40">
+                <div className="flex items-center justify-between gap-1">
                     <button
                         onClick={() => setSelectedStar(null)}
                         className={cn(
-                            "shrink-0 px-3 py-1.5 text-sm rounded-full border transition-colors",
+                            "px-2 py-1.5 text-[10px] font-bold rounded-md border uppercase tracking-tighter shrink-0",
                             selectedStar === null
-                                ? "bg-primary text-primary-foreground border-primary"
-                                : "bg-background border-border hover:border-primary/50 text-foreground"
+                                ? "bg-foreground text-background border-foreground"
+                                : "bg-background border-border text-foreground"
                         )}
                     >
                         {t('all') || 'All'}
@@ -178,38 +183,37 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
                                 key={star}
                                 onClick={() => setSelectedStar(selectedStar === star ? null : star)}
                                 className={cn(
-                                    "shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full border transition-colors",
+                                    "flex-1 flex items-center justify-center gap-0.5 px-1 py-1.5 text-[10px] font-bold rounded-md border",
                                     selectedStar === star
-                                        ? "bg-primary text-primary-foreground border-primary"
-                                        : "bg-background border-border hover:border-primary/50 text-foreground"
+                                        ? "bg-foreground text-background border-foreground"
+                                        : "bg-background border-border text-foreground"
                                 )}
                             >
                                 <span>{star}</span>
-                                <Star size={14} weight="fill" className={cn(
-                                    selectedStar === star ? "text-primary-foreground" : "text-rating"
+                                <Star size={10} weight="fill" className={cn(
+                                    selectedStar === star ? "text-background" : "text-verified"
                                 )} />
-                                <span className="text-xs opacity-70">({count})</span>
+                                <span className="text-[9px] opacity-50 ml-0.5">({count})</span>
                             </button>
                         )
                     })}
                 </div>
                 
-                {/* Rating Distribution Bars - Compact Horizontal */}
-                <div className="mt-3 lg:mt-4 flex gap-2 overflow-x-auto no-scrollbar lg:grid lg:grid-cols-5">
+                {/* Rating Distribution Bars */}
+                <div className="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-x-4 gap-y-2">
                     {[5, 4, 3, 2, 1].map((star) => {
                         const percentage = getPercentage(ratingDistribution[star])
                         return (
-                            <div key={star} className="shrink-0 w-16 lg:w-auto space-y-1">
-                                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                    <span className="flex items-center gap-0.5">
-                                        {star}<Star size={10} weight="fill" className="text-rating" />
-                                    </span>
-                                    <span>{percentage}%</span>
+                            <div key={star} className="flex items-center gap-2">
+                                <div className="flex items-center gap-0.5 min-w-[20px]">
+                                    <span className="text-[10px] font-bold text-muted-foreground">{star}</span>
+                                    <Star size={8} weight="fill" className="text-verified" />
                                 </div>
                                 <Progress 
                                     value={percentage} 
-                                    className="h-2 rounded-full bg-muted [&>div]:bg-rating" 
+                                    className="h-1 flex-1 rounded-full bg-muted/50 [&>div]:bg-verified [&>div]:transition-none" 
                                 />
+                                <span className="text-[10px] font-medium text-muted-foreground min-w-[24px] text-right">{percentage}%</span>
                             </div>
                         )
                     })}
@@ -217,105 +221,97 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
             </div>
 
             {/* Reviews List */}
-            <div>
+            <div className="space-y-6">
                 {isLoading ? (
                     <div className="space-y-6">
                         {[1, 2].map((i) => (
-                            <div key={i} className="animate-pulse space-y-2 p-4 bg-muted/20 rounded-lg">
-                                <div className="h-4 bg-muted rounded w-32"></div>
-                                <div className="h-4 bg-muted rounded w-48"></div>
-                                <div className="h-20 bg-muted rounded"></div>
+                            <div key={i} className="space-y-3 py-4 border-b border-border/20">
+                                <div className="flex gap-3">
+                                    <div className="size-10 bg-muted rounded-md"></div>
+                                    <div className="space-y-2 flex-1">
+                                        <div className="h-4 bg-muted rounded-md w-1/3"></div>
+                                        <div className="h-3 bg-muted rounded-md w-1/4"></div>
+                                    </div>
+                                </div>
+                                <div className="h-16 bg-muted rounded-md"></div>
                             </div>
                         ))}
                     </div>
                 ) : filteredReviews.length === 0 ? (
-                    <div className="text-center py-12 bg-muted/20 rounded-lg">
-                        <p className="text-muted-foreground text-lg">{t('noReviews')}</p>
+                    <div className="text-center py-12 border border-dashed border-border/60 rounded-md">
+                        <p className="text-foreground font-medium">{t('noReviews')}</p>
                         <p className="text-sm text-muted-foreground mt-1">{t('beFirst')}</p>
                     </div>
                 ) : (
-                    <div className="space-y-3 lg:space-y-4">
+                    <div className="divide-y divide-border/40">
                         {filteredReviews.map((review) => (
-                            <div key={review.id} className="bg-muted/20 dark:bg-muted/10 rounded-lg p-3 lg:p-4 space-y-2 lg:space-y-3">
-                                {/* Review Header - Mobile optimized */}
-                                <div className="flex items-start gap-2.5 lg:gap-3">
-                                    <Avatar className="h-9 w-9 lg:h-10 lg:w-10 border shrink-0">
+                            <div key={review.id} className="py-6 first:pt-0 space-y-3">
+                                {/* Review Header */}
+                                <div className="flex items-start gap-3">
+                                    <Avatar className="size-9 border bg-background shrink-0">
                                         <AvatarImage src={review.profiles?.avatar_url || undefined} />
-                                        <AvatarFallback className="bg-primary/10 text-primary text-xs lg:text-sm font-medium">
+                                        <AvatarFallback className="bg-primary/5 text-primary text-xs font-bold">
                                             {review.profiles?.full_name?.slice(0, 2).toUpperCase() || "U"}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between gap-2">
-                                            <p className="font-medium text-sm lg:text-base text-foreground truncate">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <p className="font-semibold text-sm text-foreground truncate">
                                                 {review.profiles?.full_name || "Anonymous"}
                                             </p>
-                                            {/* Stars - visible on desktop, hidden on mobile */}
-                                            <div className="hidden lg:flex items-center gap-0.5 shrink-0">
-                                                {[...Array(5)].map((_, i) => (
-                                                    <Star 
-                                                        key={i} 
-                                                        size={16}
-                                                        weight={i < review.rating ? "fill" : "regular"}
-                                                        className="text-rating"
-                                                        aria-hidden="true"
-                                                    />
-                                                ))}
-                                            </div>
-                                        </div>
-                                        {/* Mobile: Stars + meta in one row */}
-                                        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                            <div className="flex items-center gap-0.5 lg:hidden">
-                                                {[...Array(5)].map((_, i) => (
-                                                    <Star 
-                                                        key={i} 
-                                                        size={12}
-                                                        weight={i < review.rating ? "fill" : "regular"}
-                                                        className="text-rating"
-                                                        aria-hidden="true"
-                                                    />
-                                                ))}
-                                            </div>
-                                            <span className="text-xs text-green-600 dark:text-green-500 font-medium">{t('verifiedPurchase')}</span>
-                                            <span className="text-xs text-muted-foreground">•</span>
-                                            <span className="text-xs text-muted-foreground">
+                                            <span className="text-[10px] text-muted-foreground">
                                                 {new Date(review.created_at).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
                                                     month: 'short',
-                                                    day: 'numeric'
+                                                    day: 'numeric',
+                                                    year: 'numeric'
                                                 })}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2 mt-0.5">
+                                            <div className="flex items-center gap-0.5">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star 
+                                                        key={i} 
+                                                        size={10}
+                                                        weight={i < review.rating ? "fill" : "regular"}
+                                                        className="text-verified"
+                                                        aria-hidden="true"
+                                                    />
+                                                ))}
+                                            </div>
+                                            <span className="text-[10px] text-verified font-bold uppercase tracking-tight">
+                                                {t('verifiedPurchase')}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                                 
                                 {/* Review Content */}
-                                {review.title && (
-                                    <p className="font-semibold text-sm lg:text-base text-foreground">{review.title}</p>
-                                )}
-                                {review.comment && (
-                                    <p className="text-sm text-foreground leading-relaxed">
-                                        {review.comment}
-                                    </p>
-                                )}
+                                <div className="space-y-1">
+                                    {review.title && (
+                                        <p className="font-bold text-sm text-foreground leading-tight">{review.title}</p>
+                                    )}
+                                    {review.comment && (
+                                        <p className="text-sm text-muted-foreground leading-relaxed">
+                                            {review.comment}
+                                        </p>
+                                    )}
+                                </div>
                                 
-                                {/* Review Footer - Compact on mobile */}
-                                <div className="flex items-center gap-2 lg:gap-4 pt-1 lg:pt-2">
-                                    <Button 
-                                        variant="ghost" 
-                                        size="sm"
-                                        className="h-7 lg:h-8 px-2 lg:px-3 text-xs text-muted-foreground hover:text-foreground"
+                                {/* Review Footer */}
+                                <div className="flex items-center gap-4 pt-1">
+                                    <button 
+                                        className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground"
                                         onClick={() => handleHelpful(review.id)}
                                     >
-                                        👍 {t('helpful')} ({review.helpful_count || 0})
-                                    </Button>
-                                    <Button 
-                                        variant="ghost" 
-                                        size="sm"
-                                        className="h-7 lg:h-8 px-2 lg:px-3 text-xs text-muted-foreground hover:text-foreground"
+                                        <span>Helpful</span>
+                                        <span>({review.helpful_count || 0})</span>
+                                    </button>
+                                    <button 
+                                        className="text-[11px] font-medium text-muted-foreground hover:text-destructive"
                                     >
                                         {t('report')}
-                                    </Button>
+                                    </button>
                                 </div>
                             </div>
                         ))}
@@ -324,7 +320,7 @@ export function ReviewsSection({ rating, reviewCount, productId }: { rating: num
 
                 {reviews.length > 0 && (
                     <div className="mt-6 text-center">
-                        <Button variant="outline" className="rounded-full px-6">
+                        <Button variant="outline" className="rounded-md px-6 h-10 font-bold text-xs uppercase tracking-wide">
                             {t('seeAllReviews')} →
                         </Button>
                     </div>

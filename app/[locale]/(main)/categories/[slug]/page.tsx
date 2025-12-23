@@ -46,6 +46,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string; locale: string }>
 }): Promise<Metadata> {
   const { slug, locale } = await params
+  setRequestLocale(locale)
   
   // Use cached function instead of direct query
   const category = await getCategoryBySlug(slug)

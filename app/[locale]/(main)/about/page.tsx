@@ -12,6 +12,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale)
   return {
     title: locale === 'bg' ? 'За нас' : 'About Us',
     description: locale === 'bg' 

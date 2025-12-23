@@ -71,7 +71,7 @@ export function ProductBuyBox({
         currentUserId={currentUserId}
         variant="buyNowOnly"
         showBuyNow={true}
-        className="h-12 text-base font-semibold rounded-full touch-manipulation"
+        className="h-12 text-base font-bold uppercase tracking-tight rounded-md touch-manipulation"
       />
       <AddToCart
         product={{
@@ -86,19 +86,19 @@ export function ProductBuyBox({
         currentUserId={currentUserId}
         variant="outline"
         showBuyNow={false}
-        className="h-12 text-base font-semibold rounded-full border-primary text-primary hover:bg-primary/5 touch-manipulation"
+        className="h-12 text-base font-bold uppercase tracking-tight rounded-md border-primary text-primary hover:bg-primary/5 touch-manipulation"
       />
       <Button 
         variant="outline" 
         disabled={isWishlistPending}
         className={cn(
-          "w-full h-12 text-base font-semibold rounded-full gap-2 border-primary text-primary hover:bg-primary/5 touch-manipulation",
-          isWatching && "bg-blue-50 border-primary text-primary dark:bg-primary/10"
+          "w-full h-12 text-base font-bold uppercase tracking-tight rounded-md gap-2 border-primary text-primary hover:bg-primary/5 touch-manipulation",
+          isWatching && "bg-verified/10 border-verified text-verified"
         )}
         onClick={onWatchlistToggle}
       >
         <Heart 
-          className={cn("w-5 h-5", isWatching && "fill-current", isWishlistPending && "animate-pulse")} 
+          className={cn("w-5 h-5", isWatching && "fill-current")} 
           weight={isWatching ? "fill" : "regular"} 
         />
         {isWatching ? t.watching : t.addToWatchlist}

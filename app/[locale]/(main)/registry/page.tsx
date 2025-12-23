@@ -2,8 +2,21 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Gift, UserPlus } from "@phosphor-icons/react/dist/ssr"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
+import { routing } from "@/i18n/routing"
+import { setRequestLocale } from "next-intl/server"
 
-export default function RegistryPage() {
+export function generateStaticParams() {
+    return routing.locales.map((locale) => ({ locale }))
+}
+
+export default async function RegistryPage({
+    params,
+}: {
+    params: Promise<{ locale: string }>
+}) {
+        const { locale } = await params
+        setRequestLocale(locale)
+
     return (
         <div className="min-h-screen bg-background">
             <div className="container pt-4">

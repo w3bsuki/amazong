@@ -52,16 +52,16 @@ export function ProductSpecs({
 
   if (variant === 'mobile') {
     return (
-      <div className="lg:hidden py-3 space-y-4">
+      <div className="lg:hidden py-4 space-y-8">
         {/* Technical Specifications */}
         <div>
-          <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+          <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3">
             {t.technicalSpecs}
           </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6">
+          <div className="grid grid-cols-1 gap-y-0.5">
             {specs.map((spec, idx) => (
-              <div key={idx} className="flex justify-between py-2 border-b border-border/50 last:border-0">
-                <span className="text-sm text-muted-foreground">{spec.label}</span>
+              <div key={idx} className="flex justify-between items-center py-2 border-b border-border/40 last:border-0">
+                <span className="text-xs font-medium text-muted-foreground">{spec.label}</span>
                 <span className="text-sm font-medium text-foreground">{spec.value}</span>
               </div>
             ))}
@@ -70,17 +70,19 @@ export function ProductSpecs({
 
         {/* Package Contents */}
         <div>
-          <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+          <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3">
             {t.whatsInTheBox}
           </h4>
-          <ul className="space-y-1.5">
+          <div className="grid grid-cols-1 gap-2">
             {boxContents.map((content, idx) => (
-              <li key={idx} className="flex items-center gap-2 text-sm text-foreground">
-                <span className="w-1.5 h-1.5 bg-foreground/40 rounded-full shrink-0" />
-                {content.qty} {content.item}
-              </li>
+              <div key={idx} className="flex items-center gap-3 py-1">
+                <div className="size-6 rounded-md bg-muted flex items-center justify-center text-muted-foreground text-[10px] font-bold shrink-0">
+                  {content.qty}
+                </div>
+                <span className="text-sm font-medium text-foreground">{content.item}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     )
@@ -91,9 +93,9 @@ export function ProductSpecs({
     <div className="hidden lg:block pt-6">
       <div className="grid lg:grid-cols-3 gap-4">
         {/* Description Card */}
-        <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-            <span className="w-1 h-4 bg-primary rounded-full" />
+        <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-lg p-5">
+          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <span className="w-1 h-4 bg-verified rounded-full" />
             {t.description}
           </h3>
           {description ? (
@@ -108,15 +110,15 @@ export function ProductSpecs({
         </div>
 
         {/* Specifications Card */}
-        <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-            <span className="w-1 h-4 bg-info rounded-full" />
+        <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-lg p-5">
+          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <span className="w-1 h-4 bg-verified rounded-full" />
             {t.specifications}
           </h3>
           <div className="space-y-2.5">
             {specs.slice(0, 5).map((spec, idx) => (
               <div key={idx} className="flex justify-between items-center py-1.5 border-b border-border/30 last:border-0">
-                <span className="text-sm text-muted-foreground">{spec.label}</span>
+                <span className="text-xs font-medium text-muted-foreground">{spec.label}</span>
                 <span className="text-sm font-medium text-foreground">{spec.value}</span>
               </div>
             ))}
@@ -124,18 +126,18 @@ export function ProductSpecs({
         </div>
 
         {/* Contents Card */}
-        <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-            <span className="w-1 h-4 bg-success rounded-full" />
+        <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-lg p-5">
+          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <span className="w-1 h-4 bg-verified rounded-full" />
             {t.inTheBox}
           </h3>
           <ul className="space-y-2.5">
             {boxContents.map((content, idx) => (
               <li key={idx} className="flex items-center gap-3 text-sm">
-                <span className="w-6 h-6 flex items-center justify-center bg-success/10 text-success text-xs font-semibold rounded-md shrink-0">
+                <span className="w-6 h-6 flex items-center justify-center bg-verified/10 text-verified text-[10px] font-bold rounded-md shrink-0">
                   {content.qty}
                 </span>
-                <span className="text-foreground">{content.item}</span>
+                <span className="text-foreground font-medium text-sm">{content.item}</span>
               </li>
             ))}
           </ul>

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Package, ArrowsClockwise, CreditCard, User, Shield, Question, MagnifyingGlass as Search } from "@phosphor-icons/react/dist/ssr"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import type { Metadata } from 'next'
@@ -15,6 +15,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
+    setRequestLocale(locale)
   return {
     title: locale === 'bg' ? 'Обслужване на клиенти' : 'Customer Service',
     description: locale === 'bg' 

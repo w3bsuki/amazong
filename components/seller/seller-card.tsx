@@ -115,9 +115,9 @@ export function SellerCard({
     return (
       <div className={`flex items-center gap-3 py-2 ${className}`}>
         <Link href={`/${locale}/${seller.store_slug || seller.id}`} className="shrink-0">
-          <Avatar className="h-8 w-8 border">
+          <Avatar className="h-8 w-8 border rounded-md">
             <AvatarImage src={seller.avatar_url || undefined} alt={seller.store_name} />
-            <AvatarFallback className="text-xs bg-muted">
+            <AvatarFallback className="text-xs bg-muted rounded-md">
               {getInitials(seller.store_name)}
             </AvatarFallback>
           </Avatar>
@@ -130,7 +130,7 @@ export function SellerCard({
             {seller.store_name}
           </Link>
           {seller.positive_feedback_percentage !== undefined && (
-            <span className="text-green-600 font-medium">
+            <span className="text-success font-medium">
               {seller.positive_feedback_percentage.toFixed(0)}% {t("positive")}
             </span>
           )}
@@ -158,8 +158,8 @@ export function SellerCard({
           )}
         </div>
         {seller.verified && (
-          <Badge variant="secondary" className="shrink-0 gap-1 text-xs">
-            <ShieldCheck weight="fill" className="h-3 w-3 text-blue-500" />
+          <Badge variant="secondary" className="shrink-0 gap-1 text-xs rounded-md">
+            <ShieldCheck weight="fill" className="h-3 w-3 text-verified" />
             {t("verified")}
           </Badge>
         )}
@@ -170,13 +170,13 @@ export function SellerCard({
   // Compact variant
   if (variant === "compact") {
     return (
-      <Card className={`overflow-hidden ${className}`}>
+      <Card className={`overflow-hidden rounded-md ${className}`}>
         <CardContent className="p-4">
           <div className="flex items-start gap-4">
             <Link href={`/${locale}/${seller.store_slug || seller.id}`}>
-              <Avatar className="h-12 w-12 border">
+              <Avatar className="h-12 w-12 border rounded-md">
                 <AvatarImage src={seller.avatar_url || undefined} alt={seller.store_name} />
-                <AvatarFallback className="bg-muted">
+                <AvatarFallback className="bg-muted rounded-md">
                   {getInitials(seller.store_name)}
                 </AvatarFallback>
               </Avatar>
@@ -190,12 +190,12 @@ export function SellerCard({
                   {seller.store_name}
                 </Link>
                 {seller.verified && (
-                  <ShieldCheck weight="fill" className="h-4 w-4 text-blue-500 shrink-0" />
+                  <ShieldCheck weight="fill" className="h-4 w-4 text-verified shrink-0" />
                 )}
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                 {seller.positive_feedback_percentage !== undefined && (
-                  <span className="text-green-600 font-medium">
+                  <span className="text-success font-medium">
                     {seller.positive_feedback_percentage.toFixed(0)}% {t("positive")}
                   </span>
                 )}
@@ -210,7 +210,7 @@ export function SellerCard({
           </div>
           {showContact && productId && productTitle && (
             <div className="flex gap-2 mt-4">
-              <Button variant="outline" size="sm" className="flex-1" asChild>
+              <Button variant="outline" size="sm" className="flex-1 rounded-md" asChild>
                 <Link href={`/${locale}/${seller.store_slug || seller.id}`}>
                   <Storefront className="h-4 w-4 mr-2" />
                   {t("visitStore")}
@@ -222,7 +222,7 @@ export function SellerCard({
                 productTitle={productTitle}
                 variant="outline"
                 size="sm"
-                className="flex-1"
+                className="flex-1 rounded-md"
                 showIcon={true}
                 showLabel={true}
               />
@@ -235,7 +235,7 @@ export function SellerCard({
 
   // Full variant (default)
   return (
-    <Card className={`overflow-hidden ${className}`}>
+    <Card className={`overflow-hidden rounded-md ${className}`}>
       <CardContent className="p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -245,9 +245,9 @@ export function SellerCard({
         {/* Seller Info */}
         <div className="flex items-start gap-4">
           <Link href={`/${locale}/${seller.store_slug || seller.id}`}>
-            <Avatar className="h-16 w-16 border-2">
+            <Avatar className="h-16 w-16 border-2 rounded-md">
               <AvatarImage src={seller.avatar_url || undefined} alt={seller.store_name} />
-              <AvatarFallback className="text-lg bg-muted">
+              <AvatarFallback className="text-lg bg-muted rounded-md">
                 {getInitials(seller.store_name)}
               </AvatarFallback>
             </Avatar>
@@ -261,15 +261,15 @@ export function SellerCard({
                 {seller.store_name}
               </Link>
               {seller.verified && (
-                <Badge variant="secondary" className="gap-1">
-                  <ShieldCheck weight="fill" className="h-3 w-3 text-blue-500" />
+                <Badge variant="secondary" className="gap-1 rounded-md">
+                  <ShieldCheck weight="fill" className="h-3 w-3 text-verified" />
                   {t("verified")}
                 </Badge>
               )}
             </div>
             <div className="flex items-center gap-2 text-sm mt-1 flex-wrap">
               {seller.positive_feedback_percentage !== undefined && (
-                <span className="text-green-600 font-semibold">
+                <span className="text-success font-semibold">
                   {seller.positive_feedback_percentage.toFixed(0)}% {t("positiveFeedback")}
                 </span>
               )}
@@ -308,7 +308,7 @@ export function SellerCard({
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2 mt-6">
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="outline" size="sm" className="rounded-md" asChild>
             <Link href={`/${locale}/${seller.store_slug || seller.id}`}>
               <Storefront className="h-4 w-4 mr-2" />
               {t("visitStore")}
@@ -321,11 +321,12 @@ export function SellerCard({
               productTitle={productTitle}
               variant="outline"
               size="sm"
+              className="rounded-md"
               showIcon={true}
               showLabel={true}
             />
           )}
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="rounded-md">
             <Heart className="h-4 w-4 mr-2" />
             {t("saveSeller")}
           </Button>

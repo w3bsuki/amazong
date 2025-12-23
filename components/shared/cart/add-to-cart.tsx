@@ -117,7 +117,7 @@ export function AddToCart({
                     <Button
                         onClick={handleBuyNow}
                         disabled={isOwnProduct}
-                        className="w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 disabled:opacity-50"
+                        className="w-full h-12 text-base font-bold uppercase tracking-tight bg-primary hover:bg-primary/90 disabled:opacity-50 rounded-sm"
                         title={isOwnProduct ? "You cannot purchase your own products" : undefined}
                     >
                         {t('buyNow')}
@@ -127,7 +127,7 @@ export function AddToCart({
                     onClick={handleAddToCart}
                     disabled={isPending || isOwnProduct}
                     variant="outline"
-                    className="w-full h-12 text-base font-semibold disabled:opacity-50"
+                    className="w-full h-12 text-base font-bold uppercase tracking-tight disabled:opacity-50 rounded-sm"
                     title={isOwnProduct ? "You cannot purchase your own products" : undefined}
                 >
                     {isPending ? "Adding..." : isOwnProduct ? "Your Product" : t('addToCart')}
@@ -143,7 +143,7 @@ export function AddToCart({
                 onClick={handleAddToCart}
                 disabled={isPending || isOwnProduct}
                 variant="outline"
-                className={cn("w-full h-12 text-base font-semibold disabled:opacity-50", className)}
+                className={cn("w-full h-12 text-base font-bold uppercase tracking-tight disabled:opacity-50 rounded-sm", className)}
                 title={isOwnProduct ? "You cannot purchase your own products" : undefined}
             >
                 {isPending ? "Adding..." : isOwnProduct ? "Your Product" : t('addToCart')}
@@ -157,7 +157,7 @@ export function AddToCart({
             <Button
                 onClick={handleBuyNow}
                 disabled={isOwnProduct}
-                className={cn("w-full h-12 text-base font-semibold bg-primary hover:bg-primary/90 disabled:opacity-50", className)}
+                className={cn("w-full h-12 text-base font-bold uppercase tracking-tight bg-primary hover:bg-primary/90 disabled:opacity-50 rounded-sm", className)}
                 title={isOwnProduct ? "You cannot purchase your own products" : undefined}
             >
                 {t('buyNow')}
@@ -171,7 +171,7 @@ export function AddToCart({
             <Button
                 onClick={handleAddToCart}
                 disabled={isPending || isOwnProduct}
-                className="w-full bg-cta-add-cart hover:bg-cta-add-cart-hover text-foreground border-none rounded-sm h-9 text-sm font-normal disabled:opacity-50"
+                className="w-full bg-cta-add-cart hover:bg-cta-add-cart-hover text-foreground border-none rounded-sm h-9 text-sm font-bold uppercase tracking-tight disabled:opacity-50"
                 title={isOwnProduct ? "You cannot purchase your own products" : undefined}
             >
                 {isPending ? "Adding..." : isOwnProduct ? "Your Product" : t('addToCart')}
@@ -180,7 +180,7 @@ export function AddToCart({
                 <Button
                     onClick={handleBuyNow}
                     disabled={isOwnProduct}
-                    className="w-full bg-cta-buy-now hover:bg-cta-buy-now/90 text-white border-none rounded-sm h-9 text-sm font-normal disabled:opacity-50"
+                    className="w-full bg-cta-buy-now hover:bg-cta-buy-now/90 text-white border-none rounded-sm h-9 text-sm font-bold uppercase tracking-tight disabled:opacity-50"
                     title={isOwnProduct ? "You cannot purchase your own products" : undefined}
                 >
                     {t('buyNow')}

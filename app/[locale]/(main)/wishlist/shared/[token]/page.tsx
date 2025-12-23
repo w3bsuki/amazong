@@ -1,23 +1,25 @@
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Gift, ShoppingCart } from "@phosphor-icons/react/dist/ssr"
-import { getTranslations } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Database } from "@/lib/supabase/database.types"
 
 type SharedWishlistItem = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
 
 interface SharedWishlistPageProps {
   params: Promise<{
+    locale: string
     token: string
   }>
 }
 
 export default async function SharedWishlistPage({ params }: SharedWishlistPageProps) {
-  const { token } = await params
+  const { token, locale } = await params
+  setRequestLocale(locale)
   const supabase = await createClient()
   const t = await getTranslations('SharedWishlist')
 

@@ -50,8 +50,8 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
         onClick={handleClick}
         disabled={isPending}
         className={cn(
-          "gap-2 min-h-11",
-          inWishlist && "text-deal border-deal hover:text-deal/80 hover:border-deal/80",
+          "gap-2 min-h-11 font-bold uppercase tracking-tight rounded-sm",
+          inWishlist && "text-verified border-verified hover:text-verified/80 hover:border-verified/80",
           className
         )}
       >
@@ -73,8 +73,8 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
       onClick={handleClick}
       disabled={isPending}
       className={cn(
-        "p-2 rounded-full bg-white/90 hover:bg-white border border-border",
-        "focus:outline-none focus:ring-2 focus:ring-brand-blue focus:ring-offset-2",
+        "p-2 rounded-sm bg-background hover:bg-muted border border-border",
+        "focus:outline-none focus:ring-1 focus:ring-verified focus:ring-offset-0",
         "disabled:opacity-50",
         className
       )}
@@ -86,7 +86,7 @@ export function WishlistButton({ product, variant = "icon", className }: Wishlis
         <Heart
           size={20}
           weight={inWishlist ? "fill" : "regular"}
-          className={inWishlist ? "text-deal" : "text-muted-foreground"}
+          className={inWishlist ? "text-verified" : "text-muted-foreground"}
         />
       )}
     </button>

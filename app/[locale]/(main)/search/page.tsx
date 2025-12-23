@@ -23,12 +23,15 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
 
-export async function generateMetadata({ searchParams }: {
+export async function generateMetadata({ params, searchParams }: {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ q?: string; category?: string }>
 }): Promise<Metadata> {
-  const params = await searchParams;
-  const query = params.q || '';
-  const category = params.category || '';
+  const { locale } = await params
+  setRequestLocale(locale)
+  const resolvedSearchParams = await searchParams;
+  const query = resolvedSearchParams.q || '';
+  const category = resolvedSearchParams.category || '';
   
   let title = 'Search Results';
   if (query) {

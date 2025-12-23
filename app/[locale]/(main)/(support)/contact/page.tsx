@@ -11,7 +11,7 @@ import {
   Headphones, Package, CreditCard, Question,
   CaretRight, PaperPlaneTilt, ShieldCheck
 } from "@phosphor-icons/react/dist/ssr"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { routing } from "@/i18n/routing"
 
@@ -22,6 +22,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale)
   return {
     title: locale === 'bg' ? 'Свържете се с нас' : 'Contact Us',
     description: locale === 'bg' 
@@ -41,9 +42,9 @@ export default async function ContactPage({
   const t = await getTranslations('Contact')
   
   const quickHelp = [
-    { icon: Package, title: t('trackOrder'), desc: t('trackOrderDesc'), href: '/account/orders' },
-    { icon: CreditCard, title: t('paymentIssues'), desc: t('paymentIssuesDesc'), href: '/customer-service' },
-    { icon: Question, title: t('productQuestions'), desc: t('productQuestionsDesc'), href: '/customer-service' },
+    { icon: Package, title: t('trackOrder'), desc: t('trackOrderDesc'), href: "/account/orders" },
+    { icon: CreditCard, title: t('paymentIssues'), desc: t('paymentIssuesDesc'), href: "/customer-service" },
+    { icon: Question, title: t('productQuestions'), desc: t('productQuestionsDesc'), href: "/customer-service" },
   ]
   
   return (

@@ -17,7 +17,7 @@ import {
   Lightning,
   Package,
 } from "@phosphor-icons/react/dist/ssr"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 
 export async function AboutPageContent() {
   const t = await getTranslations("About")

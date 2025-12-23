@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import {
   Heart,
   Lightning,
@@ -58,6 +59,7 @@ interface ProductPageContentProps {
     display_name: string
     verified: boolean
     created_at: string
+    avatar_url?: string | null
     feedback_percentage?: number | null
     total_sales?: number | null
     feedback_score?: number | null
@@ -213,6 +215,7 @@ export function ProductPageContent({
     id: seller.id,
     store_name: seller.display_name || seller.username || 'Seller',
     store_slug: seller.username,
+    avatar_url: seller.avatar_url,
     verified: seller.verified,
     positive_feedback_percentage: seller.feedback_percentage ?? null,
     total_items_sold: seller.total_sales ?? null,
@@ -294,24 +297,8 @@ export function ProductPageContent({
     <TooltipProvider delayDuration={0}>
       <div className="w-full">
         
-        {/* ===== SELLER BANNER ===== */}
-        {sellerData && (
-          <SellerInfoCard
-            seller={sellerData}
-            productId={product.id}
-            productTitle={product.title}
-            productPrice={product.price}
-            productImages={images}
-            variant="banner"
-            locale={locale}
-            isFollowing={isFollowingSeller}
-            currentUserId={currentUserId}
-            t={sellerTranslations}
-          />
-        )}
-
         {/* ===== MAIN PRODUCT GRID ===== */}
-        <div className="lg:bg-product-container-bg lg:border lg:border-product-container-border lg:rounded-xl lg:overflow-hidden">
+        <div className="lg:bg-product-container-bg lg:border lg:border-product-container-border lg:rounded-md lg:overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px] 2xl:grid-cols-[1fr_440px]">
           
             {/* === LEFT: Product Gallery === */}
@@ -329,27 +316,48 @@ export function ProductPageContent({
             <div className="px-2 sm:px-0 lg:p-5 xl:p-6 lg:bg-background mt-3 lg:mt-0">
               
               {/* Title + Rating inline */}
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0">
-                <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground leading-none">
+              <div className="flex flex-col gap-1">
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground leading-tight tracking-tight">
                   {product.title}
                 </h1>
-                <div className="flex items-center gap-1 shrink-0">
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={cn(
-                          "w-3.5 h-3.5 sm:w-4 sm:h-4",
-                          star <= Math.round(product.rating)
-                            ? "fill-amber-400 text-amber-400"
-                            : "fill-muted text-muted"
-                        )}
-                        weight="fill"
-                      />
-                    ))}
+                
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={cn(
+                            "w-3.5 h-3.5 sm:w-4 sm:h-4",
+                            star <= Math.round(product.rating)
+                              ? "fill-verified text-verified"
+                              : "fill-muted text-muted"
+                          )}
+                          weight="fill"
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-foreground font-bold">{product.rating.toFixed(1)}</span>
+                    <span className="text-muted-foreground text-sm">({product.reviews_count || 0})</span>
                   </div>
-                  <span className="text-sm text-foreground font-medium">{product.rating.toFixed(1)}</span>
-                  <span className="text-muted-foreground text-sm">({product.reviews_count || 0})</span>
+
+                  {/* Mobile Seller Info Line */}
+                  {sellerData && (
+                    <div className="lg:hidden flex items-center gap-1.5 text-sm">
+                      <span className="text-muted-foreground">{t.soldBy}</span>
+                      <Link 
+                        href={`/${locale}/${sellerData.store_slug || sellerData.id}`}
+                        className="font-bold text-primary hover:underline"
+                      >
+                        {sellerData.store_name}
+                      </Link>
+                      {sellerData.positive_feedback_percentage !== null && (
+                        <span className="text-success font-bold">
+                          ({sellerData.positive_feedback_percentage}%)
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -362,13 +370,13 @@ export function ProductPageContent({
 
               {/* Condition Row - Desktop only */}
               <div className="hidden lg:flex items-center gap-2 text-sm mt-2">
-                <span className="text-muted-foreground">{t.condition}</span>
-                <span className="font-medium text-foreground">{t.conditionNew}</span>
+                <span className="text-muted-foreground uppercase text-[10px] font-semibold tracking-wider">{t.condition}</span>
+                <span className="font-semibold text-foreground uppercase text-[10px] tracking-wider">{t.conditionNew}</span>
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="w-4 h-4 text-muted-foreground" />
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">
+                  <TooltipContent className="max-w-xs rounded-md">
                     <p>{t.conditionNew}</p>
                   </TooltipContent>
                 </Tooltip>
@@ -422,7 +430,7 @@ export function ProductPageContent({
                   currentUserId={currentUserId}
                   variant="buyNowOnly"
                   showBuyNow={true}
-                  className="h-12 text-base font-semibold rounded-full touch-manipulation"
+                  className="h-12 text-base font-semibold uppercase tracking-tight rounded-md touch-manipulation"
                 />
                 <AddToCart
                   product={{
@@ -437,18 +445,18 @@ export function ProductPageContent({
                   currentUserId={currentUserId}
                   variant="outline"
                   showBuyNow={false}
-                  className="h-12 text-base font-semibold rounded-full border-primary text-primary hover:bg-primary/5 touch-manipulation"
+                  className="h-12 text-base font-semibold uppercase tracking-tight rounded-md border-primary text-primary hover:bg-primary/5 touch-manipulation"
                 />
                 <Button 
                   variant="outline" 
                   disabled={isWishlistPending}
                   className={cn(
-                    "w-full h-12 text-base font-semibold rounded-full gap-2 border-primary text-primary hover:bg-primary/5 touch-manipulation",
-                    isWatching && "bg-blue-50 border-primary text-primary dark:bg-primary/10"
+                    "w-full h-12 text-base font-semibold uppercase tracking-tight rounded-md gap-2 border-primary text-primary hover:bg-primary/5 touch-manipulation",
+                    isWatching && "bg-verified/10 border-verified text-verified"
                   )}
                   onClick={handleWishlistToggle}
                 >
-                  <Heart className={cn("w-5 h-5", isWatching && "fill-current", isWishlistPending && "animate-pulse")} weight={isWatching ? "fill" : "regular"} />
+                  <Heart className={cn("w-5 h-5", isWatching && "fill-current")} weight={isWatching ? "fill" : "regular"} />
                   {isWatching ? t.watching : t.addToWatchlist}
                 </Button>
               </div>
@@ -457,9 +465,9 @@ export function ProductPageContent({
               {watchCount > 0 && (
                 <div className="flex items-center gap-1.5 text-sm text-foreground mt-0.5">
                   <Lightning className="w-4 h-4 text-muted-foreground shrink-0" />
-                  <span>
+                  <span className="text-[11px] font-semibold uppercase tracking-tight">
                     {t.popularItem}
-                    <span className="font-semibold"> {watchCount} </span>
+                    <span className="text-verified"> {watchCount} </span>
                     {t.watchlistCount.replace('{count}', '')}
                   </span>
                 </div>
@@ -497,10 +505,11 @@ export function ProductPageContent({
 
         {/* ===== SELLER INFORMATION SECTION ===== */}
         {sellerData && (
-          <div className="mt-3 lg:mt-8 pt-3 lg:pt-6 border-t border-border">
-            <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-3 lg:gap-6">
-              
-              {/* LEFT COLUMN: Full Seller Card with ratings */}
+          <div className="mt-10 pt-10 border-t border-border">
+            <h2 className="text-lg font-bold uppercase tracking-tight mb-6">
+              {locale === 'bg' ? 'Информация за продавача' : 'Seller Information'}
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 items-start">
               <SellerInfoCard
                 seller={sellerData}
                 productId={product.id}
@@ -513,93 +522,63 @@ export function ProductPageContent({
                 currentUserId={currentUserId}
                 t={sellerTranslations}
               />
-
-              {/* RIGHT COLUMN: Seller Feedback List */}
-              <div className="flex flex-col">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-base font-semibold">
-                    {t.sellerFeedback} 
-                    {sellerData.feedback_count !== null && (
-                      <span className="text-muted-foreground font-normal ml-1">({sellerData.feedback_count})</span>
-                    )}
-                  </h3>
-                  <Select defaultValue="all">
-                    <SelectTrigger className="w-[130px] h-9 text-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t.allRatings}</SelectItem>
-                      <SelectItem value="positive">{t.positive}</SelectItem>
-                      <SelectItem value="neutral">{t.neutral}</SelectItem>
-                      <SelectItem value="negative">{t.negative}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                {sellerFeedback.length > 0 ? (
-                  <div className="divide-y divide-border">
-                    {sellerFeedback.map((feedback) => (
-                      <div key={feedback.id} className="py-3 first:pt-0">
-                        <div className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-success shrink-0 mt-0.5" weight="fill" />
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                              <span className="text-sm text-muted-foreground">{feedback.user} ({feedback.score})</span>
-                              <span className="text-muted-foreground">·</span>
-                              <span className="text-sm text-muted-foreground">{feedback.date}</span>
-                            </div>
-                            <p className="text-sm text-foreground leading-relaxed">
-                              {feedback.text}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground italic py-4">{t.noFeedbackYet}</p>
-                )}
-                
-                {sellerFeedback.length > 0 && (
-                  <Button variant="link" className="mt-1 mb-0 h-auto p-0 text-sm text-primary self-start">
-                    {t.seeAllFeedback} →
-                  </Button>
-                )}
+              
+              <div className="bg-seller-card border border-seller-card-border rounded-md p-5">
+                <h3 className="font-bold text-sm uppercase tracking-wider mb-3">
+                  {locale === 'bg' ? 'Защо да купите от този продавач?' : 'Why buy from this seller?'}
+                </h3>
+                <ul className="space-y-3">
+                  {[
+                    { icon: CheckCircle, text: locale === 'bg' ? 'Проверен и надежден търговец' : 'Verified and trusted seller' },
+                    { icon: Star, text: locale === 'bg' ? 'Висок процент положителни отзиви' : 'High positive feedback rate' },
+                    { icon: Info, text: locale === 'bg' ? 'Бърза комуникация и обслужване' : 'Fast communication and service' }
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-3 text-sm text-muted-foreground">
+                      <item.icon className="size-4 text-verified shrink-0 mt-0.5" weight="fill" />
+                      <span>{item.text}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* ===== MOBILE STICKY BAR ===== */}
-      <div className="fixed bottom-0 inset-x-0 z-50 bg-background/95 backdrop-blur-sm border-t shadow-[0_-2px_10px_rgba(0,0,0,0.08)] lg:hidden pb-safe">
-        <div className="px-3 py-2.5 flex items-center gap-2.5">
+      {/* ===== MOBILE STICKY BAR - Refined ===== */}
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-background border-t border-border lg:hidden pb-safe">
+        <div className="px-4 py-3 flex items-center gap-3">
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-muted-foreground truncate leading-tight">{product.title}</p>
-            <div className="flex items-center gap-1.5">
-              <span className="text-base font-bold text-foreground tracking-tight">{formatPrice(product.price, { locale })}</span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-xl font-bold text-foreground tracking-tight">
+                {formatPrice(product.price, { locale })}
+              </span>
               {product.original_price && discountPercentage > 0 && (
-                <>
-                  <span className="text-xs text-muted-foreground line-through">{formatPrice(product.original_price, { locale })}</span>
-                  <span className="text-xs text-destructive font-semibold">-{discountPercentage}%</span>
-                </>
+                <span className="text-xs text-muted-foreground line-through decoration-muted-foreground/50">
+                  {formatPrice(product.original_price, { locale })}
+                </span>
               )}
             </div>
+            <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
+              {t.inStock}
+            </p>
           </div>
+          
           <button 
             onClick={handleWishlistToggle}
             disabled={isWishlistPending}
             className={cn(
-              "shrink-0 size-11 flex items-center justify-center rounded-full border touch-manipulation",
+              "shrink-0 size-10 flex items-center justify-center rounded-md border touch-manipulation",
               isWatching 
-                ? "bg-primary/10 border-primary text-primary" 
-                : "border-input bg-background text-muted-foreground hover:text-foreground hover:border-foreground/20",
+                ? "bg-verified/10 border-verified text-verified" 
+                : "border-border bg-background text-muted-foreground hover:text-foreground",
               isWishlistPending && "opacity-50"
             )}
             aria-label={isWatching ? t.watching : t.addToWatchlist}
           >
-            <Heart className={cn("size-5", isWatching && "fill-current", isWishlistPending && "animate-pulse")} weight={isWatching ? "fill" : "regular"} />
+            <Heart className={cn("size-5", isWatching && "fill-current")} weight={isWatching ? "fill" : "regular"} />
           </button>
+          
           <AddToCart
             product={{
               id: product.id,
@@ -613,7 +592,7 @@ export function ProductPageContent({
             currentUserId={currentUserId}
             variant="buyNowOnly"
             showBuyNow={true}
-            className="flex-1 min-w-0 h-11 px-6 rounded-full font-semibold text-sm shadow-sm touch-manipulation"
+            className="flex-1 h-10 px-6 rounded-md font-semibold text-xs uppercase tracking-tight touch-manipulation"
           />
         </div>
       </div>
@@ -621,12 +600,12 @@ export function ProductPageContent({
       {/* Desktop Sticky Buy Box */}
       <div 
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 bg-background border-b shadow-md transition-transform duration-300 hidden lg:block",
+          "fixed top-0 left-0 right-0 z-50 bg-background border-b border-border hidden lg:block",
           showStickyBuyBox ? "translate-y-0" : "-translate-y-full"
         )}
       >
         <div className="container max-w-7xl mx-auto px-4 py-2.5 flex items-center gap-4">
-          <div className="shrink-0 w-14 h-14 bg-white border rounded overflow-hidden">
+          <div className="shrink-0 w-14 h-14 bg-white border border-border rounded-md overflow-hidden">
             <Image
               src={images[0]}
               alt={product.title}
@@ -636,7 +615,7 @@ export function ProductPageContent({
             />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate max-w-md">{product.title}</p>
+            <p className="text-sm font-semibold truncate max-w-md uppercase tracking-tight">{product.title}</p>
             <div className="flex items-center gap-2">
               <span className="text-xl font-bold text-primary">
                 {formatPrice(product.price, { locale })}
@@ -662,7 +641,7 @@ export function ProductPageContent({
               currentUserId={currentUserId}
               variant="buyNowOnly"
               showBuyNow={true}
-              className="h-10 px-6 rounded-full font-semibold"
+              className="h-10 px-6 rounded-md font-semibold text-xs uppercase tracking-tight"
             />
             <AddToCart
               product={{
@@ -677,7 +656,7 @@ export function ProductPageContent({
               currentUserId={currentUserId}
               variant="outline"
               showBuyNow={false}
-              className="h-10 px-4 rounded-full border-primary text-primary hover:bg-primary/5 font-medium"
+              className="h-10 px-4 rounded-md border-primary text-primary hover:bg-primary/5 font-semibold text-xs uppercase tracking-tight"
             />
           </div>
         </div>

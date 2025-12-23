@@ -1,5 +1,7 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
+import { setRequestLocale } from "next-intl/server"
+import { routing } from "@/i18n/routing"
 import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 import { MobileCategoryRail, DesktopCategoryRail } from "@/components/mobile/mobile-category-rail"
 
@@ -22,8 +24,13 @@ import { MoreWaysToShop } from "./_components/more-ways-to-shop"
 
 import { createStaticClient } from "@/lib/supabase/server"
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale)
   return {
     title: locale === 'bg' ? 'Начало' : 'Home',
     description: locale === 'bg' 
@@ -38,6 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
+  setRequestLocale(locale)
 
   // Fetch top categories for the quick pills
   const supabase = createStaticClient()

@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { WarningCircle, ArrowCounterClockwise, ShoppingCart } from '@phosphor-icons/react'
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 
 export default function CartError({
   error,

@@ -13,7 +13,7 @@ import {
   Truck, CreditCard, WarningCircle, FileText, 
   CaretRight, Printer, MapPin, ShieldCheck, Prohibit
 } from "@phosphor-icons/react/dist/ssr"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
 import { routing } from "@/i18n/routing"
 
@@ -24,6 +24,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale)
   return {
     title: locale === 'bg' ? 'Връщания и възстановявания' : 'Returns & Refunds',
     description: locale === 'bg' 
