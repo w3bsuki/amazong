@@ -1,38 +1,35 @@
-"use client"
-
 import { Suspense } from "react"
-import { useSearchParams } from "next/navigation"
-import { useLocale } from "next-intl"
-import { EditProductClient } from "./edit-product-client"
 import { Skeleton } from "@/components/ui/skeleton"
+import { EditProductClient } from "./edit-product-client"
 
-function EditProductContent() {
-  const searchParams = useSearchParams()
-  const locale = useLocale()
-  const productId = searchParams.get("id")
-  
+export default async function EditProductPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>
+  searchParams: Promise<{ id?: string }>
+}) {
+  const { locale } = await params
+  const { id: productId } = await searchParams
+
   if (!productId) {
     return (
       <div className="py-8">
-        <p className="text-muted-foreground">
-          {locale === 'bg' ? 'Липсва ID на продукт' : 'Missing product ID'}
-        </p>
+        <p className="text-muted-foreground">{locale === "bg" ? "\u041b\u0438\u043f\u0441\u0432\u0430 ID \u043d\u0430 \u043f\u0440\u043e\u0434\u0443\u043a\u0442" : "Missing product ID"}</p>
       </div>
     )
   }
-  
-  return <EditProductClient productId={productId} locale={locale} />
-}
 
-export default function EditProductPage() {
   return (
-    <Suspense fallback={
-      <div className="py-4 sm:py-6">
-        <Skeleton className="h-8 w-64 mb-4" />
-        <Skeleton className="h-[500px] w-full" />
-      </div>
-    }>
-      <EditProductContent />
+    <Suspense
+      fallback={
+        <div className="py-4 sm:py-6">
+          <Skeleton className="h-8 w-64 mb-4" />
+          <Skeleton className="h-[500px] w-full" />
+        </div>
+      }
+    >
+      <EditProductClient productId={productId} locale={locale} />
     </Suspense>
   )
 }

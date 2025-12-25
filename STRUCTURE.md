@@ -101,6 +101,18 @@ If you use different package managers/commands, adapt accordingly.
 **Exit Criteria**
 - Guardrails are in place and gates pass.
 
+### Where Does This File Go?
+
+- Route-specific UI/actions: `app/[locale]/.../_components` and `app/[locale]/.../_actions` (private to that route/group).
+- Shared components:
+  - `components/ui`: shadcn primitives only (no app hooks, no feature composites)
+  - `components/common`: shared composites (cards, sections, data displays)
+  - `components/layout`: shared layout shells
+  - `components/providers`: global providers/contexts
+- Hooks: `hooks/` (never in `components/ui`).
+- Utilities/clients/domain helpers: `lib/`.
+- Shared types: `types/`.
+
 ---
 
 ## Phase 2 — Fix `components/ui` Boundary (Primitives Only)

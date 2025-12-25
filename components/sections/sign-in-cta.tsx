@@ -32,7 +32,7 @@ export async function SignInCTA() {
         <h3 className="text-base sm:text-xl font-bold text-cta-trust-blue-text mb-1 tracking-tight">
           {locale === "bg" ? "Влез в акаунта си" : "Sign in for the best experience"}
         </h3>
-        <p className="text-cta-trust-blue-text/80 text-xs sm:text-sm leading-relaxed">
+        <p className="text-cta-trust-blue-text text-xs sm:text-sm leading-relaxed">
           {locale === "bg" ? "Персонализирани препоръки и по-бързо пазаруване" : "Personalized recommendations and faster checkout"}
         </p>
       </div>

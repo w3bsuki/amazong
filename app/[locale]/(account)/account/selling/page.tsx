@@ -29,6 +29,9 @@ interface Product {
   description: string | null
   price: number
   list_price: number | null
+  is_on_sale: boolean | null
+  sale_percent: number | null
+  sale_end_date: string | null
   stock: number
   images: string[]
   rating: number | null
@@ -85,6 +88,9 @@ export default async function SellingPage({ params }: SellingPageProps) {
       description,
       price,
       list_price,
+      is_on_sale,
+      sale_percent,
+      sale_end_date,
       stock,
       images,
       rating,

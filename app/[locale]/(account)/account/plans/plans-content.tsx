@@ -22,6 +22,10 @@ import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { PlansGrid, type Plan } from "@/components/pricing/plan-card"
 import { cancelSubscription, reactivateSubscription } from "@/app/actions/subscriptions"
+import {
+  createBillingPortalSession,
+  createSubscriptionCheckoutSession,
+} from "@/app/[locale]/(account)/_actions/subscriptions"
 
 interface SubscriptionPlan {
   id: string
@@ -202,23 +206,17 @@ export function PlansContent({
     setLoadingPlanId(plan.id)
     
     try {
-      const response = await fetch("/api/subscriptions/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          planId: plan.id,
-          billingPeriod,
-        }),
+      const { url, error } = await createSubscriptionCheckoutSession({
+        planId: plan.id,
+        billingPeriod,
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create checkout session")
+      if (error) {
+        throw new Error(error)
       }
 
-      if (data.url) {
-        window.location.href = data.url
+      if (url) {
+        window.location.href = url
       }
     } catch (error) {
       console.error("Checkout error:", error)
@@ -234,16 +232,14 @@ export function PlansContent({
 
   const handleManageSubscription = async () => {
     try {
-      const response = await fetch("/api/subscriptions/portal", { method: "POST" })
+      const { url, error } = await createBillingPortalSession()
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to open customer portal")
+      if (error) {
+        throw new Error(error)
       }
 
-      if (data.url) {
-        window.location.href = data.url
+      if (url) {
+        window.location.href = url
       }
     } catch (error) {
       console.error("Portal error:", error)

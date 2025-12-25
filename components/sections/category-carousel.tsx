@@ -1,7 +1,7 @@
 import { cookies } from "next/headers"
 import { type CarouselProduct } from "@/components/shared/product/product-carousel-section"
 import { getProductsByCategorySlug, toUI, type Product, type ShippingZone } from "@/lib/data/products"
-import { getCategoryIconForSlug } from "@/lib/category-icons"
+import { getCategoryIcon } from "@/lib/category-icons"
 import { MEGA_MENU_CONFIG } from "@/config/mega-menu-config"
 import { getChildCategories, getCategoryBySlug } from "@/lib/data/categories"
 import { CategoryCarouselClient } from "./category-carousel-client"
@@ -10,13 +10,14 @@ interface CategoryCarouselProps {
   locale: string
   categorySlug: string
   title: string
+  variant?: "default" | "highlighted" | "clean"
 }
 
 /**
  * Server component: Category Carousel
  * Shows a single category as a horizontal carousel section with subcategory tabs.
  */
-export async function CategoryCarousel({ locale, categorySlug, title }: CategoryCarouselProps) {
+export async function CategoryCarousel({ locale, categorySlug, title, variant = "default" }: CategoryCarouselProps) {
   const cookieStore = await cookies()
   const userZone = (cookieStore.get("user-zone")?.value || "WW") as ShippingZone
 
@@ -65,8 +66,6 @@ export async function CategoryCarousel({ locale, categorySlug, title }: Category
       }
     })
 
-  const Icon = getCategoryIconForSlug(categorySlug)
-
   return (
     <CategoryCarouselClient
       locale={locale}
@@ -74,7 +73,8 @@ export async function CategoryCarousel({ locale, categorySlug, title }: Category
       title={title}
       initialProducts={transformForUI(products)}
       tabs={tabs}
-      icon={<Icon size={20} weight="duotone" />}
+      icon={getCategoryIcon(categorySlug, { size: 20, weight: "duotone" })}
+      variant={variant}
     />
   )
 }

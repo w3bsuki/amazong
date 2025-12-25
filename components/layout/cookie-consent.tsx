@@ -11,6 +11,11 @@ const COOKIE_CONSENT_KEY = "cookie-consent"
 type ConsentValue = "accepted" | "declined" | null
 
 export function CookieConsent() {
+    // Never block E2E runs with consent UI.
+    if (process.env.NEXT_PUBLIC_E2E === "true") {
+        return null
+    }
+
     const t = useTranslations('Cookies')
     const [consent, setConsent] = useState<ConsentValue>(null)
     const [isVisible, setIsVisible] = useState(false)

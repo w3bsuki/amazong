@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { IconPackage, IconAlertTriangle, IconX, IconCheck, IconPencil } from "@tabler/icons-react"
+import { InventoryHeader } from "./_components/inventory-header"
+import { formatCurrencyBGN } from "./_lib/format-currency"
 
 export default async function BusinessInventoryPage() {
   await connection()
@@ -27,57 +29,10 @@ export default async function BusinessInventoryPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const { products, summary } = await getBusinessInventory(businessSeller.id)
-  
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BGN',
-      maximumFractionDigits: 2,
-    }).format(value)
-  }
-
-  const inStockCount = summary.totalProducts - summary.lowStockCount - summary.outOfStockCount
 
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
-      {/* Shopify-style Header with Inline Badges */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-bold tracking-tight">Inventory</h1>
-            {/* Compact inline status badges */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-muted">
-                <IconPackage className="size-3" />
-                <span className="tabular-nums">{summary.totalStock.toLocaleString()}</span>
-                <span className="opacity-70">total units</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
-                <IconCheck className="size-3" />
-                <span className="tabular-nums">{inStockCount}</span>
-                <span className="opacity-70">in stock</span>
-              </span>
-              {summary.lowStockCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-400">
-                  <IconAlertTriangle className="size-3" />
-                  <span className="tabular-nums">{summary.lowStockCount}</span>
-                  <span className="opacity-70">low</span>
-                </span>
-              )}
-              {summary.outOfStockCount > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-400">
-                  <IconX className="size-3" />
-                  <span className="tabular-nums">{summary.outOfStockCount}</span>
-                  <span className="opacity-70">out</span>
-                </span>
-              )}
-            </div>
-          </div>
-          <p className="text-muted-foreground text-sm">
-            Manage stock levels across {summary.totalProducts} products
-          </p>
-        </div>
-      </div>
+      <InventoryHeader summary={summary} />
 
       <Card>
         <CardHeader>
@@ -99,13 +54,13 @@ export default async function BusinessInventoryPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[80px]">Image</TableHead>
+                  <TableHead className="w-20">Image</TableHead>
                   <TableHead>Product</TableHead>
                   <TableHead>SKU</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Stock</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="w-[80px]">Actions</TableHead>
+                  <TableHead className="w-20">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -136,7 +91,7 @@ export default async function BusinessInventoryPage() {
                       {product.sku || '-'}
                     </TableCell>
                     <TableCell className="font-medium text-emerald-600">
-                      {formatCurrency(product.price)}
+                      {formatCurrencyBGN(product.price)}
                     </TableCell>
                     <TableCell>
                       <Badge 

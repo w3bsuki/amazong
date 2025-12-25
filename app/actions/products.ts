@@ -339,11 +339,18 @@ export async function setProductDiscountPrice(
 
     const nextListPrice = currentListPrice && currentListPrice > currentPrice ? currentListPrice : currentPrice
 
+    const computedSalePercent = nextListPrice > 0
+      ? Math.round(((nextListPrice - parsed.data.newPrice) / nextListPrice) * 100)
+      : 0
+
     const { error: updateError } = await supabase
       .from("products")
       .update({
         price: parsed.data.newPrice,
         list_price: nextListPrice,
+        is_on_sale: true,
+        sale_percent: computedSalePercent,
+        sale_end_date: null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", parsed.data.productId)
@@ -409,6 +416,9 @@ export async function clearProductDiscount(
       .update({
         price: restorePrice,
         list_price: null,
+        is_on_sale: false,
+        sale_percent: 0,
+        sale_end_date: null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", parsed.data.productId)

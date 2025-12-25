@@ -10,8 +10,8 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from "@/components/ui/drawer";
-import type { SellFormDataV4 } from "@/lib/sell-form-schema-v4";
-import { conditionOptions } from "@/lib/sell-form-schema-v4";
+import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
+import { conditionOptions } from "@/lib/sell/schema-v4";
 
 interface ConditionSelectorProps {
   value: SellFormDataV4["condition"] | "";

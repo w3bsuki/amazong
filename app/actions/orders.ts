@@ -78,8 +78,34 @@ export async function updateOrderItemStatus(
       return { success: false, error: "Not authenticated" }
     }
 
+    // Fetch existing timestamps so we don't clobber them.
+    const { data: existingItem, error: existingError } = await supabase
+      .from("order_items")
+      .select("id, seller_id, seller_received_at, shipped_at, delivered_at")
+      .eq("id", orderItemId)
+      .eq("seller_id", user.id)
+      .single()
+
+    if (existingError || !existingItem) {
+      return { success: false, error: "Order item not found" }
+    }
+
     // Build update payload
     const updateData: Record<string, unknown> = { status: newStatus }
+
+    const now = new Date().toISOString()
+
+    if (newStatus === "received" && !existingItem.seller_received_at) {
+      updateData.seller_received_at = now
+    }
+
+    if (newStatus === "shipped" && !existingItem.shipped_at) {
+      updateData.shipped_at = now
+    }
+
+    if (newStatus === "delivered" && !existingItem.delivered_at) {
+      updateData.delivered_at = now
+    }
     
     // Add tracking info if shipping
     if (newStatus === 'shipped') {

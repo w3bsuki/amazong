@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Field, FieldLabel, FieldDescription, FieldContent } from "@/components/common/field";
 import { cn } from "@/lib/utils";
-import type { ProductAttribute } from "@/lib/sell-form-schema-v4";
+import type { ProductAttribute } from "@/lib/sell/schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { 
   getCategoryConfigFromPath,

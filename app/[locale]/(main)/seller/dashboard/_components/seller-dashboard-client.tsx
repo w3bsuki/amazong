@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
-import type { Product, Seller } from "./types"
+import type { Product, Seller } from "../_lib/types"
 
 export default function SellerDashboardClient() {
   const [loading, setLoading] = useState(true)

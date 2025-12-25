@@ -1,11 +1,13 @@
 "use client"
 
+import type { ReactNode } from "react"
 import { Link } from "@/i18n/routing"
 import { Storefront, ShoppingBag, ArrowRight, Users } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface DesktopHeroCTAProps {
   locale?: string
+  bottomSlot?: ReactNode
 }
 
 /**
@@ -13,7 +15,7 @@ interface DesktopHeroCTAProps {
  * Clean, focused banner with main message + CTAs
  * Follows best practices: proper a11y, keyboard navigation, semantic HTML
  */
-export function DesktopHeroCTA({ locale = "en" }: DesktopHeroCTAProps) {
+export function DesktopHeroCTA({ locale = "en", bottomSlot }: DesktopHeroCTAProps) {
   const isBg = locale === "bg"
 
   return (
@@ -24,7 +26,7 @@ export function DesktopHeroCTA({ locale = "en" }: DesktopHeroCTAProps) {
       {/* Compact CTA Banner - Clean trust-blue solid color */}
       <div className="relative overflow-hidden rounded-xl bg-cta-trust-blue">
 
-        <div className="relative px-6 py-4 lg:px-8 lg:py-5">
+        <div className="relative px-6 py-3 lg:px-8 lg:py-4">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8">
             {/* Left Content */}
             <div className="text-center lg:text-left">
@@ -81,6 +83,13 @@ export function DesktopHeroCTA({ locale = "en" }: DesktopHeroCTAProps) {
               </Link>
             </nav>
           </div>
+
+          {/* Optional bottom slot (e.g., categories) */}
+          {typeof bottomSlot !== "undefined" && bottomSlot !== null ? (
+            <div className="mt-3 border-t border-white/15 pt-3">
+              {bottomSlot}
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

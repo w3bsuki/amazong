@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 import { setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 
-import { getTopSellers } from "./_components/get-top-sellers"
+import { getTopSellers } from "./_lib/get-top-sellers"
 import SellersEmptyState from "./_components/sellers-empty-state"
 import SellersGrid from "./_components/sellers-grid"
 import TopSellersHero from "./_components/top-sellers-hero"

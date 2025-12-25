@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Gift, ShoppingCart } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Database } from "@/lib/supabase/database.types"
+import { AddAllToCartButton } from "./add-all-to-cart"
 
 type SharedWishlistItem = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
 
@@ -60,6 +61,17 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
           <p className="text-sm text-muted-foreground mt-4">
             {t('itemCount', { count: wishlistItems.length })}
           </p>
+
+          <div className="mt-5 flex justify-center">
+            <AddAllToCartButton
+              items={(wishlistItems as SharedWishlistItem[]).map((i) => ({
+                product_id: i.product_id,
+                product_title: i.product_title,
+                product_price: i.product_price,
+                product_image: i.product_image,
+              }))}
+            />
+          </div>
         </div>
 
         {/* Wishlist Items Grid */}

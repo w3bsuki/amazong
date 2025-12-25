@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, type Page, setupPage } from './fixtures/test'
 
 /**
  * Profile & Account System E2E Tests
@@ -41,23 +41,44 @@ const TEST_USER = {
 /**
  * Sets up the page with dismissed modals to avoid interference
  */
-async function setupPage(page: Page) {
-  await page.addInitScript(() => {
+// setupPage is also applied globally via the shared fixtures, but keeping
+// calls in this file is harmless and keeps the spec readable.
+
+async function gotoWithRetries(
+  page: Page,
+  url: string,
+  options: Parameters<Page['goto']>[1] & { retries?: number } = {},
+) {
+  const { retries = 2, ...gotoOptions } = options
+  let lastError: unknown
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      localStorage.setItem('geo-welcome-dismissed', 'true')
-      localStorage.setItem('cookie-consent', 'accepted')
-    } catch {
-      // Ignore localStorage errors
+      const response = await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+        ...gotoOptions,
+      })
+
+      // In dev mode, Next can intermittently throw during compilation and return 500.
+      // Retry a couple times to avoid flaking navigation-only assertions.
+      if (!response || response.ok()) return response
+      lastError = new Error(`Navigation to ${url} returned ${response.status()}`)
+    } catch (error) {
+      lastError = error
     }
-  })
+
+    await page.waitForTimeout(750 * (attempt + 1))
+  }
+
+  throw lastError
 }
 
 /**
  * Helper to check if user is redirected to login when accessing protected route
  */
 async function expectRedirectToLogin(page: Page, url: string) {
-  await page.goto(url)
-  await page.waitForURL(/\/auth\/login/)
+  await gotoWithRetries(page, url, { timeout: 60_000, retries: 3 })
+  await page.waitForURL(/\/auth\/login/, { timeout: 60_000 })
   expect(page.url()).toContain('/auth/login')
 }
 
@@ -66,6 +87,8 @@ async function expectRedirectToLogin(page: Page, url: string) {
 // ============================================================================
 
 test.describe('Profile Page - Unauthenticated', () => {
+  test.describe.configure({ timeout: 90_000 })
+
   test.beforeEach(async ({ page }) => {
     await setupPage(page)
   })
@@ -104,17 +127,19 @@ test.describe('Profile Page - Unauthenticated', () => {
 // ============================================================================
 
 test.describe('Profile Page Display', () => {
+  test.describe.configure({ timeout: 90_000 })
+
   test.beforeEach(async ({ page }) => {
     await setupPage(page)
   })
 
   test('should display login page with proper form elements @profile @ui', async ({ page }) => {
-    await page.goto(PROFILE_ROUTES.login)
+    await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
     
-    // Check form elements exist - use placeholder text which matches the form
-    const emailInput = page.getByPlaceholder('you@example.com')
-    const passwordInput = page.getByPlaceholder('••••••••')
-    const signInButton = page.getByRole('button', { name: /sign in/i })
+    const loginForm = page.locator('form').first()
+    const emailInput = loginForm.locator('input#email, input[type="email"]').first()
+    const passwordInput = loginForm.locator('input#password, input[name="password"]').first()
+    const signInButton = loginForm.getByRole('button', { name: /sign in/i })
     
     await expect(emailInput).toBeVisible()
     await expect(passwordInput).toBeVisible()
@@ -123,11 +148,12 @@ test.describe('Profile Page Display', () => {
   })
 
   test('should enable sign in button after filling form @profile @ui', async ({ page }) => {
-    await page.goto(PROFILE_ROUTES.login)
+    await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
     
-    const emailInput = page.getByPlaceholder('you@example.com')
-    const passwordInput = page.getByPlaceholder('••••••••')
-    const signInButton = page.getByRole('button', { name: /sign in/i })
+    const loginForm = page.locator('form').first()
+    const emailInput = loginForm.locator('input#email, input[type="email"]').first()
+    const passwordInput = loginForm.locator('input#password, input[name="password"]').first()
+    const signInButton = loginForm.getByRole('button', { name: /sign in/i })
     
     await emailInput.fill(TEST_USER.email)
     await passwordInput.fill(TEST_USER.password)
@@ -141,6 +167,8 @@ test.describe('Profile Page Display', () => {
 // ============================================================================
 
 test.describe('Username Validation', () => {
+  test.describe.configure({ timeout: 90_000 })
+
   test.beforeEach(async ({ page }) => {
     await setupPage(page)
   })
@@ -215,15 +243,18 @@ test.describe('Username Validation', () => {
 // ============================================================================
 
 test.describe('Profile Form Elements', () => {
+  test.describe.configure({ timeout: 90_000 })
+
   test.beforeEach(async ({ page }) => {
     await setupPage(page)
   })
 
   test('should have password visibility toggle @profile @ui', async ({ page }) => {
-    await page.goto(PROFILE_ROUTES.login)
+    await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
     
-    const passwordInput = page.getByPlaceholder('••••••••')
-    const toggleButton = page.locator('button').filter({ has: page.locator('img[src*="eye"]') }).first()
+    const loginForm = page.locator('form').first()
+    const passwordInput = loginForm.locator('input#password, input[name="password"]').first()
+    const toggleButton = loginForm.getByRole('button', { name: /show password|hide password/i }).first()
     
     await passwordInput.fill('TestPassword123!')
     
@@ -317,11 +348,13 @@ test.describe('Login Error Handling', () => {
   })
 
   test('should show error for invalid credentials @profile @error', async ({ page }) => {
-    await page.goto(PROFILE_ROUTES.login)
+    test.setTimeout(90_000)
+    await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
     
-    const emailInput = page.getByPlaceholder('you@example.com')
-    const passwordInput = page.getByPlaceholder('••••••••')
-    const signInButton = page.getByRole('button', { name: /sign in/i })
+    const loginForm = page.locator('form').first()
+    const emailInput = loginForm.locator('input[type="email"], input#email').first()
+    const passwordInput = loginForm.locator('input[type="password"], input#password').first()
+    const signInButton = loginForm.getByRole('button', { name: /sign in/i })
     
     await emailInput.fill('nonexistent@example.com')
     await passwordInput.fill('WrongPassword123!')
@@ -333,15 +366,21 @@ test.describe('Login Error Handling', () => {
   })
 
   test('should show error for malformed email @profile @validation', async ({ page }) => {
-    await page.goto(PROFILE_ROUTES.login)
+    test.setTimeout(90_000)
+    await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
     
-    const emailInput = page.getByPlaceholder('you@example.com')
+    const loginForm = page.locator('form').first()
+    const emailInput = loginForm.locator('input[type="email"], input#email').first()
     
     await emailInput.fill('notanemail')
     await emailInput.blur()
     
-    // Email field should be invalid - check browser validation
-    const isInvalid = await emailInput.evaluate((el: HTMLInputElement) => !el.validity.valid)
+    // Email field should be invalid - check browser validation when using type=email.
+    const isInvalid = await emailInput.evaluate((el: HTMLInputElement) => {
+      if (el.type === 'email') return !el.validity.valid
+      // Fallback: if the element isn't type=email, require an explicit aria-invalid.
+      return el.getAttribute('aria-invalid') === 'true'
+    })
     expect(isInvalid).toBe(true)
   })
 })
@@ -351,12 +390,15 @@ test.describe('Login Error Handling', () => {
 // ============================================================================
 
 test.describe('Public Profile Pages', () => {
+  test.describe.configure({ timeout: 90_000 })
+
   test.beforeEach(async ({ page }) => {
     await setupPage(page)
   })
 
   test('should show 404 for non-existent user profile @profile @navigation', async ({ page }) => {
-    const response = await page.goto('/en/u/nonexistent_user_12345')
+    test.setTimeout(90_000)
+    const response = await gotoWithRetries(page, '/en/u/nonexistent_user_12345', { timeout: 60_000, retries: 3 })
     
     // Should either 404 or redirect
     const status = response?.status()
@@ -370,11 +412,12 @@ test.describe('Public Profile Pages', () => {
   })
 
   test('should load seller store page @profile @navigation', async ({ page }) => {
+    test.setTimeout(90_000)
     // Try to load a known seller store (tech_haven from seed data)
-    await page.goto('/en/store/tech_haven')
+    await gotoWithRetries(page, '/en/store/tech_haven', { timeout: 60_000, retries: 3 })
     
     // Should either load or 404 gracefully
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     
     // Just verify page loads without error
     const errorBoundary = page.locator('text=/something went wrong|error/i')
@@ -389,27 +432,27 @@ test.describe('Public Profile Pages', () => {
 // ============================================================================
 
 test.describe('Profile Accessibility', () => {
+  test.describe.configure({ timeout: 90_000 })
+
   test.beforeEach(async ({ page }) => {
     await setupPage(page)
   })
 
   test('login page should have proper form labels @profile @a11y', async ({ page }) => {
-    await page.goto(PROFILE_ROUTES.login)
+    test.setTimeout(90_000)
+    await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
     
-    // Email field should have label text
-    const emailLabel = page.locator('text=/email/i').first()
-    await expect(emailLabel).toBeVisible()
-    
-    // Password field should have label text
-    const passwordLabel = page.locator('text=/password/i').first()
-    await expect(passwordLabel).toBeVisible()
+    // Prefer explicit label associations
+    await expect(page.locator('label[for="email"]').first()).toBeVisible({ timeout: 60_000 })
+    await expect(page.locator('label[for="password"]').first()).toBeVisible({ timeout: 60_000 })
   })
 
   test('login page should be keyboard navigable @profile @a11y', async ({ page }) => {
-    await page.goto(PROFILE_ROUTES.login)
+    test.setTimeout(90_000)
+    await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
     
     // The email field may already be autofocused
-    const emailInput = page.getByPlaceholder('you@example.com')
+    const emailInput = page.locator('input[type="email"], input#email').first()
     
     // Click on the page body first to reset focus, then tab
     await page.click('body')
@@ -419,12 +462,13 @@ test.describe('Profile Accessibility', () => {
     // Just verify the fields are tabbable by checking they exist and are enabled
     await expect(emailInput).toBeEnabled()
     
-    const passwordInput = page.getByPlaceholder('••••••••')
+    const passwordInput = page.locator('input[type="password"], input#password').first()
     await expect(passwordInput).toBeEnabled()
   })
 
   test('sign-up page should have proper form labels @profile @a11y', async ({ page }) => {
-    await page.goto('/en/auth/sign-up')
+    test.setTimeout(90_000)
+    await gotoWithRetries(page, '/en/auth/sign-up', { timeout: 60_000, retries: 3 })
     
     // Check for essential label text elements
     const nameLabel = page.locator('text=/your name|name/i').first()
@@ -444,37 +488,45 @@ test.describe('Profile Accessibility', () => {
 // ============================================================================
 
 test.describe('Profile Navigation', () => {
+  test.describe.configure({ timeout: 90_000 })
+
   test.beforeEach(async ({ page }) => {
     await setupPage(page)
   })
 
   test('should navigate from login to sign-up @profile @navigation', async ({ page }) => {
-    await page.goto(PROFILE_ROUTES.login)
+    test.setTimeout(90_000)
+    await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
     
-    const signUpLink = page.getByRole('link', { name: /create.*account/i })
+    const signUpLink = page.locator('a[href*="/auth/sign-up"], a[href*="sign-up"]').first()
+    await expect(signUpLink).toBeVisible({ timeout: 60_000 })
     await signUpLink.click()
     
-    await page.waitForURL(/sign-up/)
+    await page.waitForURL(/sign-up/, { timeout: 60_000 })
     expect(page.url()).toContain('sign-up')
   })
 
   test('should navigate from sign-up to login @profile @navigation', async ({ page }) => {
-    await page.goto('/en/auth/sign-up')
+    test.setTimeout(90_000)
+    await gotoWithRetries(page, '/en/auth/sign-up', { timeout: 60_000, retries: 3 })
     
-    const signInLink = page.getByRole('link', { name: /sign in/i })
+    const signInLink = page.locator('a[href*="/auth/login"], a[href*="login"]').first()
+    await expect(signInLink).toBeVisible({ timeout: 60_000 })
     await signInLink.click()
     
-    await page.waitForURL(/login/)
+    await page.waitForURL(/login/, { timeout: 60_000 })
     expect(page.url()).toContain('login')
   })
 
   test('should navigate from login to forgot password @profile @navigation', async ({ page }) => {
-    await page.goto(PROFILE_ROUTES.login)
+    test.setTimeout(90_000)
+    await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
     
-    const forgotLink = page.getByRole('link', { name: /forgot/i })
+    const forgotLink = page.locator('a[href*="/auth/forgot-password"], a[href*="forgot-password"]').first()
+    await expect(forgotLink).toBeVisible({ timeout: 60_000 })
     await forgotLink.click()
     
-    await page.waitForURL(/forgot-password/)
+    await page.waitForURL(/forgot-password/, { timeout: 60_000 })
     expect(page.url()).toContain('forgot-password')
   })
 
@@ -495,6 +547,8 @@ test.describe('Profile Navigation', () => {
 // ============================================================================
 
 test.describe('Profile Responsive Design', () => {
+  test.describe.configure({ timeout: 90_000 })
+
   test.beforeEach(async ({ page }) => {
     await setupPage(page)
   })

@@ -18,8 +18,9 @@ import { Link } from "@/i18n/routing";
 
 import { SellFormProvider, useSellForm, useSellFormContext, defaultSellFormValuesV4 } from "./sell-form-provider";
 import { DesktopLayout, MobileLayout } from "./layouts";
-import type { Category } from "./types";
-import type { SellFormDataV4 } from "@/lib/sell-form-schema-v4";
+import type { Category } from "../_lib/types";
+import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
+import { createListing } from "../_actions/sell";
 
 // ============================================================================
 // UNIFIED SELL FORM - Phase 4: Responsive Unification
@@ -65,7 +66,7 @@ export function UnifiedSellForm({
  * SellFormContent - Inner component that has access to form context
  */
 function SellFormContent({ sellerId }: { sellerId: string }) {
-  const router = useRouter();
+  const _router = useRouter();
   const form = useSellForm();
   const { isBg, clearDraft } = useSellFormContext();
   
@@ -89,30 +90,14 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
           return;
         }
 
-        const response = await fetch("/api/products/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data, sellerId }),
-        });
+        const result = await createListing({ sellerId, data });
 
-        const text = await response.text();
-        let result;
-        try {
-          result = text ? JSON.parse(text) : {};
-        } catch {
-          console.error("Failed to parse response:", text);
-          throw new Error("Server error: " + text.slice(0, 200));
-        }
-
-        if (!response.ok) {
-          console.error("API error:", response.status, result);
-          if (result.details || result.issues) {
-            const issueMessages = result.issues
-              ?.map((i: { path: string[]; message: string }) => `${i.path.join(".")}: ${i.message}`)
-              .join(", ") || "";
-            throw new Error(result.error + (issueMessages ? ` (${issueMessages})` : ""));
-          }
-          throw new Error(result.error || "Failed to create listing");
+        if (!result || ("error" in result && result.error)) {
+          const issueMessages = (result as any)?.issues
+            ?.map((i: { path: string[]; message: string }) => `${i.path.join(".")}: ${i.message}`)
+            .join(", ") || "";
+          const baseError = (result as any)?.message || (result as any)?.error || "Failed to create listing";
+          throw new Error(baseError + (issueMessages ? ` (${issueMessages})` : ""));
         }
 
         // Clear draft after successful submission
@@ -123,9 +108,9 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
           { description: isBg ? "Вашият продукт е на живо" : "Your product is now live" }
         );
 
-        const productId = result?.product?.id || result?.id;
-        const sellerUsername = result?.sellerUsername as string | undefined;
-        const productSlug = result?.product?.slug as string | undefined;
+        const productId = (result as any)?.product?.id || (result as any)?.id;
+        const sellerUsername = (result as any)?.sellerUsername as string | undefined;
+        const productSlug = (result as any)?.product?.slug as string | undefined;
 
         if (productId) {
           setCreatedProductId(productId);

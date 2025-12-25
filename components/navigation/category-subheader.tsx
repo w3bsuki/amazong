@@ -142,9 +142,9 @@ export function CategorySubheader() {
               variant="ghost"
               className={cn(
                 "flex items-center gap-1.5 pl-0 pr-2 py-2 h-auto text-sm font-medium rounded-sm",
-                "bg-transparent hover:bg-subheader-hover",
-                "text-foreground hover:text-brand",
-                isFullMenuOpen && "text-brand bg-subheader-hover"
+                "bg-transparent hover:bg-header-hover",
+                "text-header-text hover:text-header-text",
+                isFullMenuOpen && "bg-header-hover"
               )}
               aria-expanded={isFullMenuOpen}
               aria-haspopup="menu"
@@ -162,7 +162,7 @@ export function CategorySubheader() {
           </NavigationMenuItem>
 
           {/* Separator */}
-          <div className="h-5 w-px bg-border mx-1 shrink-0" aria-hidden="true" />
+          <div className="h-5 w-px bg-header-border/60 mx-1 shrink-0" aria-hidden="true" />
 
           {/* Category items - flex-1 to fill remaining space, with centered distribution */}
           <div className="flex items-center flex-1 min-w-0 overflow-x-auto no-scrollbar">
@@ -189,8 +189,8 @@ export function CategorySubheader() {
               <NavigationMenuTrigger
                 className={cn(
                   "flex items-center gap-1 pl-2 pr-0 py-2.5 text-sm font-medium bg-transparent hover:bg-transparent",
-                  "text-foreground hover:text-brand hover:underline data-[state=open]:bg-transparent",
-                  activeCategory?.id === "more-categories" && "text-brand"
+                  "text-header-text hover:text-header-text hover:underline data-[state=open]:bg-transparent",
+                  activeCategory?.id === "more-categories" && "underline"
                 )}
               >
                 <span>{locale === "bg" ? "Всички" : "All"}</span>
@@ -548,9 +548,9 @@ function CategoryNavItem({ category, isActive, getName, onMouseEnter, onMouseLea
         href={`/categories/${category.slug}`}
         className={cn(
           "flex items-center gap-1 px-2 py-2.5 text-sm font-medium whitespace-nowrap",
-          "text-foreground hover:text-brand hover:underline",
+          "text-header-text hover:text-header-text hover:underline",
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-          isActive && "text-brand"
+          isActive && "underline"
         )}
         aria-expanded={hasChildren ? isActive : undefined}
         aria-haspopup={hasChildren ? "menu" : undefined}

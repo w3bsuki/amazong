@@ -8,6 +8,8 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
 
+const isE2E = process.env.NEXT_PUBLIC_E2E === 'true'
+
 const nextConfig: NextConfig = {
   // ============================================
   // Next.js 16+ Configuration
@@ -46,6 +48,9 @@ const nextConfig: NextConfig = {
 
   // Image optimization configuration
   images: {
+    // E2E runs should not depend on external image optimization/fetching.
+    // This keeps Playwright stable (especially WebKit/mobile-safari).
+    unoptimized: isE2E,
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
@@ -90,6 +95,8 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '10mb',
     },
+    // Persist Turbopack compiler artifacts across restarts for faster local dev.
+    turbopackFileSystemCacheForDev: true,
     // Enable optimistic updates for faster navigation
     optimisticClientCache: true,
     // Optimize package imports for smaller bundles

@@ -34,7 +34,7 @@ import { AiListingAssistant } from "../ai/ai-listing-assistant";
 // Phase 4: Responsive Unification
 // ============================================================================
 
-import type { SellFormDataV4 } from "@/lib/sell-form-schema-v4";
+import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
 
 interface DesktopLayoutProps {
   onSubmit: (data: SellFormDataV4) => void;

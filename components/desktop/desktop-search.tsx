@@ -15,7 +15,6 @@ import { Link, useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
 import { useProductSearch } from "@/hooks/use-product-search"
-import { AiSearchDialog } from "@/components/shared/search/ai-search-dialog"
 
 export function DesktopSearch() {
   const router = useRouter()
@@ -25,7 +24,6 @@ export function DesktopSearch() {
   const formRef = useRef<HTMLFormElement>(null)
   
   const [isOpen, setIsOpen] = React.useState(false)
-  const [isAiOpen, setIsAiOpen] = React.useState(false)
   const [popoverWidth, setPopoverWidth] = React.useState(0)
   
   const { products: recentlyViewed, clearProducts: clearRecentlyViewed } = useRecentlyViewed()
@@ -107,19 +105,12 @@ export function DesktopSearch() {
 
   return (
     <div className="w-full h-10">
-      <AiSearchDialog
-        open={isAiOpen}
-        onOpenChange={(open) => {
-          setIsAiOpen(open)
-          if (open) setIsOpen(false)
-        }}
-      />
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverAnchor asChild>
           <form 
             ref={formRef}
             onSubmit={handleSearch}
-            className="flex h-full w-full rounded-full overflow-hidden bg-muted border border-border focus-within:border-brand focus-within:bg-background"
+            className="flex h-full w-full rounded-full overflow-hidden bg-background border border-white/20 focus-within:border-white/35 focus-within:bg-background"
           >
             {/* Search Input */}
             <div className="relative flex-1 flex items-center">
@@ -150,18 +141,6 @@ export function DesktopSearch() {
                 </button>
               )}
             </div>
-
-            {/* Switch to AI */}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsAiOpen(true)}
-              className="h-8 my-auto mr-2 rounded-full px-3"
-            >
-              <Sparkle size={14} weight="fill" />
-              AI
-            </Button>
 
             {/* Search Button */}
             <Button

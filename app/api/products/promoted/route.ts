@@ -76,6 +76,8 @@ export async function GET(request: NextRequest) {
         product_images: p.product_images,
         product_attributes: p.product_attributes,
         is_prime: p.is_prime,
+        is_boosted: p.is_boosted,
+        boost_expires_at: p.boost_expires_at,
         slug: p.slug,
         store_slug: p.seller?.username ?? null,
         category_slug: p.categories?.slug ?? null,

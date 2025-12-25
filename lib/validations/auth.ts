@@ -12,6 +12,17 @@ export const emailSchema = z
   .string()
   .min(1, { message: "Email is required" })
   .email({ message: "Please enter a valid email address" })
+  // zod's email() can accept short domains like "a@b"; for our UX/tests we
+  // require a dot in the domain part.
+  .refine(
+    (value) => {
+      const at = value.lastIndexOf("@")
+      if (at === -1) return false
+      const domain = value.slice(at + 1)
+      return domain.includes(".")
+    },
+    { message: "Please enter a valid email address" }
+  )
 
 // Username validation schema
 export const usernameSchema = z

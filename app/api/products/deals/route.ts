@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
 
   const safeLimit = Math.min(limit, 24)
   const offset = (page - 1) * safeLimit
+  const nowIso = new Date().toISOString()
 
   try {
     const supabase = createStaticClient()
@@ -19,9 +20,8 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // "Deals" = products with a list price set.
-    // Note: we can't reliably compare list_price > price server-side with the basic query builder,
-    // so we treat list_price presence as the deal signal (and the UI will show the strikethrough).
+    // Truth semantics: "Deals" are explicitly marked as on sale.
+    // A deal is active when is_on_sale=true, sale_percent>0, and sale_end_date is null or in the future.
     const { data, error, count } = await supabase
       .from("products")
       .select(
@@ -31,12 +31,17 @@ export async function GET(request: NextRequest) {
         price,
         seller_id,
         list_price,
+        is_on_sale,
+        sale_percent,
+        sale_end_date,
         rating,
         review_count,
         images,
         product_images(image_url,thumbnail_url,display_order,is_primary),
         product_attributes(name,value),
         is_prime,
+        is_boosted,
+        boost_expires_at,
         created_at,
         slug,
         attributes,
@@ -45,7 +50,9 @@ export async function GET(request: NextRequest) {
       `,
         { count: "exact" }
       )
-      .not("list_price", "is", null)
+      .eq("is_on_sale", true)
+      .gt("sale_percent", 0)
+      .or(`sale_end_date.is.null,sale_end_date.gt.${nowIso}`)
       .order("created_at", { ascending: false })
       .range(offset, offset + safeLimit - 1)
 
@@ -64,12 +71,17 @@ export async function GET(request: NextRequest) {
         price: p.price,
         seller_id: p.seller_id,
         list_price: p.list_price,
+        is_on_sale: p.is_on_sale,
+        sale_percent: p.sale_percent,
+        sale_end_date: p.sale_end_date,
         rating: p.rating,
         review_count: p.review_count,
         images: p.images,
         product_images: p.product_images,
         product_attributes: p.product_attributes,
         is_prime: p.is_prime,
+        is_boosted: (p as any).is_boosted,
+        boost_expires_at: (p as any).boost_expires_at,
         slug: p.slug,
         store_slug: p.seller?.username ?? null,
         category_slug: p.categories?.slug ?? null,

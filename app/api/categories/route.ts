@@ -1,6 +1,10 @@
-import { createClient } from "@/lib/supabase/server"
-import { NextResponse, connection } from "next/server"
+import { createStaticClient } from "@/lib/supabase/server"
+import { NextResponse } from "next/server"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"
+
+// NOTE: This endpoint serves public data (no user cookies required).
+// In Cache Components mode, avoid Dynamic APIs like `connection()` and avoid
+// cookie-backed clients in route handlers to keep responses stable.
 
 // Type for the RPC return
 interface CategoryHierarchyRow {
@@ -93,16 +97,18 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
 }
 
 export async function GET(request: Request) {
-  await connection()
   try {
     const { searchParams } = new URL(request.url)
     const parentSlug = searchParams.get("parent")
     const includeChildren = searchParams.get("children") === "true"
     const depth = parseInt(searchParams.get("depth") || "1")
 
-    const supabase = await createClient()
-    if (!supabase) {
-      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
+    let supabase
+    try {
+      supabase = createStaticClient()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Database connection failed"
+      return NextResponse.json({ error: message }, { status: 500 })
     }
 
     if (parentSlug) {
@@ -173,32 +179,50 @@ export async function GET(request: Request) {
       if (depth >= 2 && l1Cats && l1Cats.length > 0) {
         const l1Ids = l1Cats.map(c => c.id)
         const BATCH_SIZE = 50
+        const CONCURRENCY = 4
         
-        // Process in batches
+        // Build batches
+        const batches: Array<{ index: number; ids: string[] }> = []
         for (let i = 0; i < l1Ids.length; i += BATCH_SIZE) {
-          const batchIds = l1Ids.slice(i, i + BATCH_SIZE)
-          try {
-            const { data: l2Data, error: l2Error } = await supabase
-              .from("categories")
-              .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
-              .in("parent_id", batchIds)
-              .lt("display_order", 9000)
-              .order("display_order", { ascending: true })
-
-            if (l2Error) {
-              console.error(`L2 Categories Query Error (batch ${i / BATCH_SIZE}):`, l2Error)
-            } else if (l2Data) {
-              l2Cats = [...l2Cats, ...l2Data]
-            }
-          } catch (err) {
-            const error = err instanceof Error ? err : new Error(String(err))
-            console.error(`L2 Categories Batch Error (batch ${i / BATCH_SIZE}):`, {
-              message: error.message,
-              details: error.toString()
-            })
-          }
+          batches.push({ index: i / BATCH_SIZE, ids: l1Ids.slice(i, i + BATCH_SIZE) })
         }
-        console.log(`[API] Found ${l2Cats.length} L2 categories (from ${Math.ceil(l1Ids.length / BATCH_SIZE)} batches)`)
+
+        // Fetch batches with limited concurrency to keep TTFB low.
+        // Sequential batching can exceed typical client/server timeouts.
+        const results: typeof l1Cats = []
+        for (let start = 0; start < batches.length; start += CONCURRENCY) {
+          const chunk = batches.slice(start, start + CONCURRENCY)
+          const chunkResults = await Promise.all(
+            chunk.map(async ({ index, ids }) => {
+              try {
+                const { data: l2Data, error: l2Error } = await supabase
+                  .from("categories")
+                  .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+                  .in("parent_id", ids)
+                  .lt("display_order", 9000)
+                  .order("display_order", { ascending: true })
+
+                if (l2Error) {
+                  console.error(`L2 Categories Query Error (batch ${index}):`, l2Error)
+                  return []
+                }
+                return l2Data || []
+              } catch (err) {
+                const error = err instanceof Error ? err : new Error(String(err))
+                console.error(`L2 Categories Batch Error (batch ${index}):`, {
+                  message: error.message,
+                  details: error.toString(),
+                })
+                return []
+              }
+            })
+          )
+
+          for (const part of chunkResults) results.push(...part)
+        }
+
+        l2Cats = results
+        console.log(`[API] Found ${l2Cats.length} L2 categories (from ${batches.length} batches, concurrency=${CONCURRENCY})`)
       }
 
       // Combine all categories

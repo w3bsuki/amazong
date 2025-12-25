@@ -7,6 +7,14 @@ import { useLocale } from "next-intl"
 import { Link } from "@/i18n/routing"
 import type { UIProduct } from "@/lib/data/products"
 import { cn } from "@/lib/utils"
+import { BULGARIAN_CITIES, getCityLabel } from "@/lib/bulgarian-cities"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface NewestListingsSectionProps {
   initialProducts: UIProduct[]
@@ -45,13 +53,24 @@ export function NewestListingsSection({
 }: NewestListingsSectionProps) {
   const locale = useLocale()
 
+  const [nearMeCity, setNearMeCity] = useState<string>("")
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("near-me-city")
+      if (saved) setNearMeCity(saved)
+    } catch {
+      // ignore
+    }
+  }, [])
+
   type FeedTab = "newest" | "promoted" | "near_me" | string
 
   const tabs = useMemo(
     () => {
       const baseTabs = [
         { id: "newest", label: locale === "bg" ? "За теб" : "For you" },
-        { id: "promoted", label: locale === "bg" ? "Оферти" : "Offers" },
+        { id: "promoted", label: locale === "bg" ? "Промотирани" : "Promoted" },
         { id: "near_me", label: locale === "bg" ? "Наблизо" : "Near me" },
       ]
       
@@ -96,7 +115,7 @@ export function NewestListingsSection({
 
   const getEndpointForTab = useCallback((tab: string) => {
     if (tab === "promoted") return "/api/products/promoted"
-    if (tab === "near_me") return "/api/products/newest" // For now, just newest
+    if (tab === "near_me") return "/api/products/nearby"
     if (tab.startsWith("cat:")) return "/api/products/newest"
     return "/api/products/newest"
   }, [])
@@ -105,6 +124,10 @@ export function NewestListingsSection({
     async (tab: string, nextPage: number) => {
       const endpoint = getEndpointForTab(tab)
       let url = `${endpoint}?page=${nextPage}&limit=12`
+
+      if (tab === "near_me") {
+        url += `&city=${encodeURIComponent(nearMeCity)}`
+      }
       
       if (tab.startsWith("cat:")) {
         const slug = tab.split(":")[1]
@@ -119,8 +142,46 @@ export function NewestListingsSection({
         totalCount?: number
       }
     },
-    [getEndpointForTab]
+    [getEndpointForTab, nearMeCity]
   )
+
+  // Reset and reload Near Me when city changes
+  useEffect(() => {
+    if (activeTab !== "near_me") return
+
+    setTabData(prev => ({
+      ...prev,
+      near_me: { products: [], page: 0, hasMore: true },
+    }))
+
+    if (!nearMeCity) return
+
+    let cancelled = false
+    setIsLoading(true)
+    loadPage("near_me", 1)
+      .then((data) => {
+        if (cancelled) return
+        const first = data.products || []
+        setTabData(prev => ({
+          ...prev,
+          near_me: {
+            products: first,
+            page: first.length > 0 ? 1 : 0,
+            hasMore: data.hasMore ?? first.length === 12,
+          },
+        }))
+      })
+      .catch((error) => {
+        if (!cancelled) console.error("Failed to load near me products:", error)
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [activeTab, loadPage, nearMeCity])
 
   // Fetch more products
   const loadMoreProducts = useCallback(async () => {
@@ -262,10 +323,57 @@ export function NewestListingsSection({
             ))}
           </div>
         </div>
+
+        {activeTab === "near_me" && (
+          <div className="mt-2">
+            <Select
+              value={nearMeCity}
+              onValueChange={(val) => {
+                setNearMeCity(val)
+                try {
+                  localStorage.setItem("near-me-city", val)
+                } catch {
+                  // ignore
+                }
+              }}
+            >
+              <SelectTrigger className="h-10 rounded-full">
+                <SelectValue
+                  placeholder={locale === "bg" ? "Изберете град..." : "Select city..."}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {BULGARIAN_CITIES.map((city) => (
+                  <SelectItem key={city.value} value={city.value} className="font-medium">
+                    {locale === "bg" ? city.labelBg : city.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {!!nearMeCity && (
+              <p className="mt-1 px-1 text-xs text-muted-foreground">
+                {locale === "bg"
+                  ? `Показваме обяви от ${getCityLabel(nearMeCity, "bg")}`
+                  : `Showing listings from ${getCityLabel(nearMeCity, "en")}`}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Product Grid - 2 columns on mobile, consistent gap */}
-      {active.products.length === 0 && activeTab === "promoted" && !isLoading ? (
+      {active.products.length === 0 && activeTab === "near_me" && !isLoading && !nearMeCity ? (
+        <div className="px-3 py-4">
+          <div className="rounded-xl border border-border bg-card px-4 py-6 text-center">
+            <p className="text-sm font-semibold text-foreground">
+              {locale === "bg" ? "Изберете град" : "Select a city"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {locale === "bg" ? "За да видите обяви наблизо" : "To see listings near you"}
+            </p>
+          </div>
+        </div>
+      ) : active.products.length === 0 && activeTab === "promoted" && !isLoading ? (
         <div className="px-3 py-4">
           <div className="rounded-xl border border-border bg-card px-4 py-6 text-center">
             <p className="text-sm font-semibold text-foreground">
@@ -288,6 +396,7 @@ export function NewestListingsSection({
               image={product.image}
               rating={product.rating}
               reviews={product.reviews}
+              state={activeTab === "promoted" || product.isBoosted ? "promoted" : undefined}
               index={index}
               slug={product.slug}
               storeSlug={product.storeSlug}

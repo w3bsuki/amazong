@@ -67,19 +67,19 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
   }, [locale])
 
   return (
-    <header className="sticky top-0 z-50 w-full flex flex-col bg-background">
+    <header className="sticky top-0 z-50 w-full flex flex-col bg-header-bg">
       {/* Mobile Header + Search - Unified container like Target */}
-      <div className="md:hidden bg-background text-header-text">
+      <div className="md:hidden bg-header-bg text-header-text">
         {/* Top row - Logo & Actions */}
         <div className={cn(
           "px-2 py-1 flex items-center",
-          isProductPage && "border-b border-border/50"
+          isProductPage && "border-b border-header-border/50"
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
           {isProductPage ? (
             <button 
               onClick={() => router.back()}
-              className="flex items-center justify-center size-9 -ml-1 rounded-full text-foreground hover:bg-muted active:bg-muted/80"
+              className="flex items-center justify-center size-9 -ml-1 rounded-full text-header-text hover:bg-header-hover active:bg-header-active"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
               <CaretLeft size={20} weight="bold" />
@@ -91,10 +91,11 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
             "flex items-center shrink-0",
             isProductPage ? "ml-1" : "ml-0"
           )}>
-            <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
+            <span className="text-xl font-bold tracking-tight text-header-text">AMZN</span>
           </Link>
           <div className="flex-1" />
           <div className="flex items-center gap-0.5">
+            {user && <NotificationsDropdown user={user} />}
             <MobileWishlistButton />
             <MobileCartDropdown />
           </div>
@@ -107,9 +108,9 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
             onClick={() => setIsMobileSearchOpen(true)}
             className={cn(
               "w-full flex items-center gap-2 h-10 px-3.5 rounded-lg",
-              "bg-muted/50",
-              "text-muted-foreground/70 text-2xs text-left",
-              "active:bg-muted/80",
+              "bg-background",
+              "text-muted-foreground text-2xs text-left",
+              "active:bg-muted",
               "transition-colors duration-200",
               "touch-action-manipulation tap-transparent"
             )}
@@ -135,12 +136,12 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
       </div>
 
       {/* Desktop Top Header - CSS Grid for stable search bar alignment */}
-      <div className="hidden md:block text-header-text">
+      <div className="hidden md:block bg-header-bg text-header-text">
         <div className="container grid grid-cols-[auto_1fr_auto] items-center h-14 md:h-16 gap-3">
           {/* Left Section - Logo + Location */}
           <div className="flex items-center gap-1">
             <Link href="/" prefetch={true} className="flex items-center shrink-0 outline-none">
-              <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
+              <span className="text-xl font-bold tracking-tight text-header-text">AMZN</span>
             </Link>
             {/* Location dropdown */}
             <div className="hidden lg:block">
@@ -155,8 +156,8 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
           </div>
 
           {/* Search Bar - Fixed grid column, doesn't shift */}
-          <div className="flex justify-center px-4">
-            <div className="w-full max-w-5xl">
+          <div className="flex justify-center px-2 lg:px-4">
+            <div className="w-full max-w-[var(--container-header-content)]">
               <DesktopSearch />
             </div>
           </div>
@@ -202,13 +203,13 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
                 <div className="hidden md:flex items-center gap-2">
                   <Link
                     href="/auth/login"
-                    className="text-sm font-medium text-header-text hover:text-brand px-3 py-2 rounded-md hover:bg-header-hover"
+                    className="text-sm font-medium text-header-text hover:bg-header-hover px-3 py-2 rounded-md transition-colors"
                   >
                     {t('signIn')}
                   </Link>
                   <Link
                     href="/auth/sign-up"
-                    className="text-sm font-medium bg-brand text-white hover:bg-brand-dark px-4 py-2 rounded-md"
+                    className="text-sm font-medium bg-cta-secondary text-cta-secondary-text hover:bg-cta-secondary-hover px-4 py-2 rounded-md transition-colors shadow-sm"
                   >
                     {t('register')}
                   </Link>
@@ -226,23 +227,23 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
 
       {/* Category Subheader - Hide on category/product pages (eBay/Target pattern) */}
       {!pathname.startsWith("/categories") && !pathname.startsWith("/product") && !hideSubheader && (
-        <nav className="hidden sm:block bg-subheader-bg text-sm border-t border-header-border relative">
-          <div className="container text-subheader-text">
+        <nav className="hidden sm:block bg-header-bg text-sm border-t border-white/15 relative">
+          <div className="container text-header-text">
             {/* Mobile/Tablet: Quick Links with Sidebar Menu */}
             <div className="lg:hidden">
-              <div className="mx-auto w-full max-w-5xl flex items-center gap-0.5 overflow-x-auto no-scrollbar">
+              <div className="mx-auto w-full max-w-[var(--container-header-content)] flex items-center gap-0.5 overflow-x-auto no-scrollbar">
                 <SidebarMenu user={user} />
-                <Link href="/todays-deals" prefetch={true} className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
-                <Link href="/customer-service" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
-                <Link href="/registry" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('registry')}</Link>
-                <Link href="/gift-cards" className="text-foreground hover:text-brand hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('giftCards')}</Link>
-                <Link href="/sell" className="font-normal text-brand hover:text-brand-dark hover:bg-subheader-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
+                <Link href="/todays-deals" prefetch={true} className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
+                <Link href="/customer-service" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
+                <Link href="/registry" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('registry')}</Link>
+                <Link href="/gift-cards" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('giftCards')}</Link>
+                <Link href="/sell" className="font-normal text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
               </div>
             </div>
             
             {/* Desktop: Categories fill container width */}
             <div className="hidden lg:block">
-              <div className="mx-auto w-full max-w-5xl">
+              <div className="mx-auto w-full max-w-[var(--container-header-content)]">
                 <CategorySubheader />
               </div>
             </div>

@@ -1,30 +1,18 @@
 import { notFound } from "next/navigation"
 import { setRequestLocale, getTranslations } from "next-intl/server"
-import { connection } from "next/server"
 
 import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { fetchProductByUsernameAndSlug } from "@/lib/data/product-page"
 
 import { ProductPageContentBlocksInspired } from "@/components/shared/product/product-page-content-blocks-inspired"
 import { ProductBreadcrumb } from "@/components/shared/product/product-breadcrumb"
-
-function getDeliveryDate(locale: string): string {
-  const deliveryDate = new Date()
-  deliveryDate.setDate(deliveryDate.getDate() + 3)
-  return deliveryDate.toLocaleDateString(locale === "bg" ? "bg-BG" : "en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  })
-}
+import { getDeliveryDate } from "../../../../_lib/delivery-date"
 
 interface PreviewProductPageProps {
   params: Promise<{ username: string; productSlug: string; locale: string }>
 }
 
 export default async function PreviewProductDetailBlocksInspired({ params }: PreviewProductPageProps) {
-  await connection()
-
   const { username, productSlug, locale } = await params
   setRequestLocale(locale)
 

@@ -13,8 +13,8 @@ import { ReviewsLoadingSkeleton } from "./_components/reviews-loading-skeleton"
 import {
   extractProductId,
   fetchProductByIdOrSlug,
-  getDeliveryDate,
-} from "./_components/product-page-utils"
+} from "./_lib/product-page-utils"
+import { getDeliveryDate } from "../../../_lib/delivery-date"
 
 interface ProductPageProps {
   params: Promise<{

@@ -92,7 +92,7 @@ export function useCategoriesCache(
         ? `/api/categories?children=true&depth=${depth}`
         : "/api/categories?children=true"
       
-      const response = await fetch(url, { cache: 'no-store' })
+      const response = await fetch(url)
       
       if (!response.ok) {
         throw new Error(`Failed to fetch categories: ${response.status}`)

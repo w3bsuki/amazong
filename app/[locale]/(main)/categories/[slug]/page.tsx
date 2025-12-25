@@ -21,8 +21,8 @@ import {
   getCategoryContext,
   getRootCategoriesWithChildren,
 } from "@/lib/data/categories"
-import { searchProducts } from "./_components/search-products"
-import type { Product } from "./_components/types"
+import { searchProducts } from "./_lib/search-products"
+import type { Product } from "./_lib/types"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
 
 // Generate static params for all categories (for SSG)

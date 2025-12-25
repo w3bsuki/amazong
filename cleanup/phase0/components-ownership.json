@@ -1,199 +1,10 @@
 {
-  "generatedAt": "2025-12-21T14:44:27.977Z",
+  "generatedAt": "2025-12-23T12:59:47.852Z",
   "componentsDir": "components",
   "totals": {
-    "files": 296
+    "files": 241
   },
   "records": [
-    {
-      "file": "components/account-addresses-grid.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-addresses-stats.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-badges.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-chart.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-header.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-hero-card.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-orders-grid.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-orders-stats.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-orders-toolbar.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-recent-activity.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-sidebar.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-stats-cards.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-tab-bar.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-wishlist-grid.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-wishlist-stats.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/account-wishlist-toolbar.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: account",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/add-to-cart.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/admin-recent-activity.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: admin",
-      "usageGroups": [
-        "admin"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/admin-sidebar.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "admin"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/admin-stats-cards.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: admin",
-      "usageGroups": [
-        "admin"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/ai-chatbot.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
-    },
     {
       "file": "components/ai-elements/artifact.tsx",
       "bucket": "components/common (shared composite)",
@@ -351,8 +162,8 @@
     },
     {
       "file": "components/ai-elements/prompt-input.tsx",
-      "bucket": "components/providers",
-      "reason": "Provider/context heuristics",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
         "unknown"
       ],
@@ -426,16 +237,16 @@
       "refCount": 0
     },
     {
-      "file": "components/ai-search-dialog.tsx",
+      "file": "components/ai/ai-chatbot.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
         "unknown"
       ],
-      "refCount": 2
+      "refCount": 1
     },
     {
-      "file": "components/ai-sell-assistant.tsx",
+      "file": "components/ai/ai-sell-assistant.tsx",
       "bucket": "should move to route-owned _components",
       "reason": "Referenced only from app group: sell",
       "usageGroups": [
@@ -444,47 +255,11 @@
       "refCount": 1
     },
     {
-      "file": "components/analytics.tsx",
+      "file": "components/auth/sign-out-button.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
-    },
-    {
-      "file": "components/app-breadcrumb.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "account",
-        "main",
-        "unknown"
-      ],
-      "refCount": 15
-    },
-    {
-      "file": "components/app-sidebar.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/attribute-filters.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/auth-state-listener.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: root",
-      "usageGroups": [
-        "root"
-      ],
-      "refCount": 1
     },
     {
       "file": "components/badges/badge-progress.tsx",
@@ -515,7 +290,7 @@
       "refCount": 0
     },
     {
-      "file": "components/boost-dialog.tsx",
+      "file": "components/buyer/buyer-order-actions.tsx",
       "bucket": "should move to route-owned _components",
       "reason": "Referenced only from app group: account",
       "usageGroups": [
@@ -524,210 +299,39 @@
       "refCount": 1
     },
     {
-      "file": "components/business/business-activity-feed.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/business-command-palette.tsx",
+      "file": "components/category/category-browse-card.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
     },
     {
-      "file": "components/business/business-date-range-picker.tsx",
+      "file": "components/category/category-circles.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
     },
     {
-      "file": "components/business/business-empty-state.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/business/business-header.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/business-live-activity.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/business-notifications.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/business/business-page-header.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/business/business-performance-score.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/business-quick-actions.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/business-recent-activity.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/business-setup-guide.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/business-sidebar.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/business-stats-cards.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/business-task-cards.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/order-detail-view.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/orders-table.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/business/product-form-modal.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/business/products-table.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: business",
-      "usageGroups": [
-        "business"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/buyer-order-actions.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "account",
-        "unknown"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/category-browse-card.tsx",
+      "file": "components/category/subcategory-circles.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
         "unknown"
       ],
-      "refCount": 2
+      "refCount": 1
     },
     {
-      "file": "components/category-circles.tsx",
+      "file": "components/category/subcategory-tabs.tsx",
       "bucket": "should move to route-owned _components",
       "reason": "Referenced only from app group: main",
       "usageGroups": [
         "main"
       ],
-      "refCount": 1
+      "refCount": 2
     },
     {
-      "file": "components/category-page-breadcrumb.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/category-sidebar.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/chart-area-interactive.tsx",
+      "file": "components/charts/chart-area-interactive.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
@@ -737,29 +341,18 @@
       "refCount": 3
     },
     {
-      "file": "components/chat-interface.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: chat",
-      "usageGroups": [
-        "chat"
-      ],
-      "refCount": 1
+      "file": "components/common/ai-assistant-interface.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [],
+      "refCount": 0
     },
     {
-      "file": "components/checkout-footer.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
+      "file": "components/common/button-group.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
       "usageGroups": [
-        "checkout"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/checkout-header.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "checkout"
+        "unknown"
       ],
       "refCount": 1
     },
@@ -778,11 +371,86 @@
       "refCount": 0
     },
     {
+      "file": "components/common/data-table.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/common/error-boundary.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/common/field.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [
+        "sell"
+      ],
+      "refCount": 10
+    },
+    {
+      "file": "components/common/filters/desktop-filters.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [
+        "main"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/common/filters/filter-chips.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [
+        "main"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/common/filters/mobile-filters.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [
+        "main"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/common/geo-welcome-modal.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [
+        "root"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/common/image-upload.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
       "file": "components/common/index.ts",
       "bucket": "components/common (shared composite)",
       "reason": "Located under components/common/",
       "usageGroups": [],
       "refCount": 0
+    },
+    {
+      "file": "components/common/input-group.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
     },
     {
       "file": "components/common/markdown.tsx",
@@ -803,7 +471,7 @@
       "bucket": "components/common (shared composite)",
       "reason": "Located under components/common/",
       "usageGroups": [
-        "unknown"
+        "account"
       ],
       "refCount": 1
     },
@@ -812,19 +480,23 @@
       "bucket": "components/common (shared composite)",
       "reason": "Located under components/common/",
       "usageGroups": [
-        "sell",
-        "unknown"
+        "sell"
       ],
-      "refCount": 3
+      "refCount": 2
     },
     {
       "file": "components/common/pricing-card.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Located under components/common/",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/common/product-card.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [],
+      "refCount": 0
     },
     {
       "file": "components/common/product-card/product-card-featured.tsx",
@@ -841,140 +513,48 @@
       "refCount": 0
     },
     {
-      "file": "components/contact-seller-button.tsx",
+      "file": "components/common/prompt-input.tsx",
       "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/conversation-list.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: chat",
-      "usageGroups": [
-        "chat"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/cookie-consent.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "main",
-        "root"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/dashboard-header.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "admin"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/data-table.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
+      "reason": "Located under components/common/",
       "usageGroups": [],
       "refCount": 0
     },
     {
-      "file": "components/deals-section.tsx",
+      "file": "components/common/scroll-button.tsx",
       "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/demo/best-product-cards-showcase.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
+      "reason": "Located under components/common/",
       "usageGroups": [],
       "refCount": 0
     },
     {
-      "file": "components/demo/category-variants.tsx",
+      "file": "components/common/wishlist/mobile-wishlist-button.tsx",
       "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
+      "reason": "Located under components/common/",
       "usageGroups": [
-        "main",
         "unknown"
       ],
-      "refCount": 5
+      "refCount": 1
     },
     {
-      "file": "components/demo/gemini-perfected.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
+      "file": "components/common/wishlist/wishlist-button.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
       "usageGroups": [
-        "main"
+        "unknown"
+      ],
+      "refCount": 3
+    },
+    {
+      "file": "components/common/wishlist/wishlist-drawer.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Located under components/common/",
+      "usageGroups": [
+        "unknown"
       ],
       "refCount": 1
     },
     {
-      "file": "components/demo/gemini-refined.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/demo/gemini-ultimate.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/demo/gemini-variants.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/demo/gpt-category-variants.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/demo/marketplace-card.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/demo/mobile-category-cards.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/desktop-filter-modal.tsx",
+      "file": "components/desktop/desktop-filter-modal.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
@@ -983,16 +563,7 @@
       "refCount": 1
     },
     {
-      "file": "components/desktop-filters.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/desktop-hero-cta.tsx",
+      "file": "components/desktop/desktop-hero-cta.tsx",
       "bucket": "should move to route-owned _components",
       "reason": "Referenced only from app group: main",
       "usageGroups": [
@@ -1001,23 +572,16 @@
       "refCount": 1
     },
     {
-      "file": "components/desktop-search.tsx",
+      "file": "components/desktop/desktop-search.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
         "unknown"
       ],
-      "refCount": 2
+      "refCount": 1
     },
     {
       "file": "components/dropdowns/account-dropdown.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/dropdowns/cart-dropdown.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
@@ -1080,64 +644,6 @@
       "refCount": 0
     },
     {
-      "file": "components/error-boundary.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/featured-products-section.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/filter-chips.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/follow-seller-button.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "root",
-        "unknown"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/geo-welcome-modal.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: root",
-      "usageGroups": [
-        "root"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/header-dropdowns.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/hero-carousel.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
       "file": "components/icons/index.ts",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
@@ -1145,22 +651,14 @@
       "refCount": 0
     },
     {
-      "file": "components/image-upload.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
+      "file": "components/layout/cookie-consent.tsx",
+      "bucket": "components/layout",
+      "reason": "Located under components/layout/",
       "usageGroups": [
-        "main"
+        "main",
+        "root"
       ],
-      "refCount": 1
-    },
-    {
-      "file": "components/language-switcher.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
+      "refCount": 2
     },
     {
       "file": "components/layout/footer/index.ts",
@@ -1173,8 +671,38 @@
       "file": "components/layout/footer/site-footer.tsx",
       "bucket": "components/layout",
       "reason": "Located under components/layout/",
-      "usageGroups": [],
-      "refCount": 0
+      "usageGroups": [
+        "main",
+        "root"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/layout/header/cart/cart-dropdown.tsx",
+      "bucket": "components/layout",
+      "reason": "Located under components/layout/",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/layout/header/cart/mobile-cart-dropdown.tsx",
+      "bucket": "components/layout",
+      "reason": "Located under components/layout/",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/layout/header/dashboard-header.tsx",
+      "bucket": "components/layout",
+      "reason": "Located under components/layout/",
+      "usageGroups": [
+        "admin"
+      ],
+      "refCount": 1
     },
     {
       "file": "components/layout/header/index.ts",
@@ -1184,11 +712,23 @@
       "refCount": 0
     },
     {
+      "file": "components/layout/header/minimal-header.tsx",
+      "bucket": "components/layout",
+      "reason": "Located under components/layout/",
+      "usageGroups": [
+        "plans"
+      ],
+      "refCount": 1
+    },
+    {
       "file": "components/layout/header/site-header.tsx",
       "bucket": "components/layout",
       "reason": "Located under components/layout/",
-      "usageGroups": [],
-      "refCount": 0
+      "usageGroups": [
+        "main",
+        "root"
+      ],
+      "refCount": 2
     },
     {
       "file": "components/layout/index.ts",
@@ -1196,6 +736,37 @@
       "reason": "Located under components/layout/",
       "usageGroups": [],
       "refCount": 0
+    },
+    {
+      "file": "components/layout/nav-main.tsx",
+      "bucket": "components/layout",
+      "reason": "Located under components/layout/",
+      "usageGroups": [
+        "admin",
+        "unknown"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/layout/nav-secondary.tsx",
+      "bucket": "components/layout",
+      "reason": "Located under components/layout/",
+      "usageGroups": [
+        "admin",
+        "unknown"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/layout/nav-user.tsx",
+      "bucket": "components/layout",
+      "reason": "Located under components/layout/",
+      "usageGroups": [
+        "admin",
+        "business",
+        "unknown"
+      ],
+      "refCount": 3
     },
     {
       "file": "components/layout/sidebar/app-sidebar.tsx",
@@ -1212,32 +783,28 @@
       "refCount": 0
     },
     {
-      "file": "components/main-nav.tsx",
+      "file": "components/layout/sidebar/sidebar-menu.tsx",
       "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/minimal-header.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
+      "reason": "Located under components/layout/",
       "usageGroups": [
-        "plans"
+        "unknown"
       ],
       "refCount": 1
     },
     {
-      "file": "components/mobile-cart-dropdown.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
+      "file": "components/layout/sidebar/sidebar.tsx",
+      "bucket": "components/layout",
+      "reason": "Located under components/layout/",
       "usageGroups": [
+        "account",
+        "admin",
+        "business",
         "unknown"
       ],
-      "refCount": 2
+      "refCount": 15
     },
     {
-      "file": "components/mobile-category-rail.tsx",
+      "file": "components/mobile/mobile-category-rail.tsx",
       "bucket": "should move to route-owned _components",
       "reason": "Referenced only from app group: main",
       "usageGroups": [
@@ -1246,16 +813,7 @@
       "refCount": 1
     },
     {
-      "file": "components/mobile-filters.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/mobile-menu-sheet.tsx",
+      "file": "components/mobile/mobile-menu-sheet.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
@@ -1264,23 +822,14 @@
       "refCount": 1
     },
     {
-      "file": "components/mobile-search-bar.tsx",
+      "file": "components/mobile/mobile-search-bar.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
     },
     {
-      "file": "components/mobile-search-overlay.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 3
-    },
-    {
-      "file": "components/mobile-tab-bar.tsx",
+      "file": "components/mobile/mobile-tab-bar.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
@@ -1290,53 +839,15 @@
       "refCount": 2
     },
     {
-      "file": "components/mobile-wishlist-button.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/nav-documents.tsx",
+      "file": "components/navigation/app-breadcrumb.tsx",
       "bucket": "components/layout",
       "reason": "Layout/navigation naming heuristics",
       "usageGroups": [
+        "account",
+        "main",
         "unknown"
       ],
-      "refCount": 2
-    },
-    {
-      "file": "components/nav-main.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "admin",
-        "unknown"
-      ],
-      "refCount": 4
-    },
-    {
-      "file": "components/nav-secondary.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "admin",
-        "unknown"
-      ],
-      "refCount": 4
-    },
-    {
-      "file": "components/nav-user.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
-      "usageGroups": [
-        "admin",
-        "business",
-        "unknown"
-      ],
-      "refCount": 6
+      "refCount": 15
     },
     {
       "file": "components/navigation/category-subheader.tsx",
@@ -1345,10 +856,17 @@
       "usageGroups": [
         "unknown"
       ],
-      "refCount": 2
+      "refCount": 1
     },
     {
       "file": "components/navigation/index.ts",
+      "bucket": "components/layout",
+      "reason": "Layout/navigation naming heuristics",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/navigation/language-switcher.tsx",
       "bucket": "components/layout",
       "reason": "Layout/navigation naming heuristics",
       "usageGroups": [],
@@ -1362,7 +880,16 @@
       "refCount": 0
     },
     {
-      "file": "components/order-status-actions.tsx",
+      "file": "components/navigation/nav-documents.tsx",
+      "bucket": "components/layout",
+      "reason": "Layout/navigation naming heuristics",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/orders/order-status-actions.tsx",
       "bucket": "should move to route-owned _components",
       "reason": "Referenced only from app group: sell",
       "usageGroups": [
@@ -1371,145 +898,74 @@
       "refCount": 1
     },
     {
-      "file": "components/order-status-badge.tsx",
+      "file": "components/orders/order-status-badge.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
         "account",
-        "sell",
-        "unknown"
+        "sell"
       ],
-      "refCount": 3
+      "refCount": 2
     },
     {
-      "file": "components/plan-card.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "account",
-        "main",
-        "unknown"
-      ],
-      "refCount": 3
-    },
-    {
-      "file": "components/plans-modal.tsx",
+      "file": "components/pricing/plan-card.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
         "account",
         "unknown"
       ],
-      "refCount": 4
+      "refCount": 2
     },
     {
-      "file": "components/pricing-card.tsx",
+      "file": "components/pricing/plans-modal.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "account",
+        "unknown"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/pricing/pricing-card.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
     },
     {
-      "file": "components/product-actions.tsx",
+      "file": "components/pricing/upgrade-banner.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
     },
     {
-      "file": "components/product-breadcrumb.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
+      "file": "components/pricing/upgrade-to-business-modal.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/product-detail6.tsx",
+      "bucket": "should move to route-owned _components",
+      "reason": "Referenced only from app group: root",
       "usageGroups": [
-        "main",
         "root"
       ],
-      "refCount": 2
-    },
-    {
-      "file": "components/product-card-menu.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
       "refCount": 1
-    },
-    {
-      "file": "components/product-card.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/product-carousel-section.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 4
-    },
-    {
-      "file": "components/product-form-enhanced.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/product-form.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/product-page-content-new.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "main",
-        "root"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/product-price.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "main",
-        "unknown"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/product-quick-view-dialog.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/product-row.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/product-variant-selector.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
     },
     {
       "file": "components/product/index.ts",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/product/product-actions.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
@@ -1523,7 +979,53 @@
       "refCount": 0
     },
     {
+      "file": "components/product/product-card-menu.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/product/product-card.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/product/product-form-enhanced.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/product/product-form.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
       "file": "components/product/product-gallery.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/product/product-quick-view-dialog.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/product/product-row.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
@@ -1535,6 +1037,53 @@
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
+    },
+    {
+      "file": "components/product/product-variant-selector.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/product/rating-scroll-link.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/product/reviews/review-form.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/product/reviews/reviews-section-client.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/product/reviews/reviews-section-server.tsx",
+      "bucket": "should move to route-owned _components",
+      "reason": "Referenced only from app group: main",
+      "usageGroups": [
+        "main"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/product/reviews/reviews-section.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "main",
+        "root"
+      ],
+      "refCount": 2
     },
     {
       "file": "components/product/seller-info-card.tsx",
@@ -1551,60 +1100,14 @@
       "refCount": 0
     },
     {
-      "file": "components/promo-banner-strip.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/promo-card.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/rating-scroll-link.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/recently-viewed-tracker.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "main",
-        "root"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/review-form.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/reviews-section-client.tsx",
+      "file": "components/promo/promo-banner-strip.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
     },
     {
-      "file": "components/reviews-section-server.tsx",
+      "file": "components/promo/promo-card.tsx",
       "bucket": "should move to route-owned _components",
       "reason": "Referenced only from app group: main",
       "usageGroups": [
@@ -1613,50 +1116,86 @@
       "refCount": 1
     },
     {
-      "file": "components/reviews-section.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
+      "file": "components/providers/analytics.tsx",
+      "bucket": "components/providers",
+      "reason": "Located under components/providers/",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/providers/auth-state-listener.tsx",
+      "bucket": "components/providers",
+      "reason": "Located under components/providers/",
       "usageGroups": [
-        "main",
         "root"
       ],
-      "refCount": 2
+      "refCount": 1
     },
     {
-      "file": "components/search-filters.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
+      "file": "components/providers/cart-context.tsx",
+      "bucket": "components/providers",
+      "reason": "Located under components/providers/",
       "usageGroups": [
-        "main"
+        "account",
+        "checkout",
+        "main",
+        "root",
+        "unknown"
       ],
-      "refCount": 2
+      "refCount": 17
     },
     {
-      "file": "components/search-header.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
+      "file": "components/providers/message-context.tsx",
+      "bucket": "components/providers",
+      "reason": "Located under components/providers/",
       "usageGroups": [
-        "main"
+        "chat",
+        "unknown"
+      ],
+      "refCount": 4
+    },
+    {
+      "file": "components/providers/prompt-input-context.tsx",
+      "bucket": "components/providers",
+      "reason": "Located under components/providers/",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 4
+    },
+    {
+      "file": "components/providers/sonner.tsx",
+      "bucket": "components/providers",
+      "reason": "Located under components/providers/",
+      "usageGroups": [
+        "root"
       ],
       "refCount": 1
     },
     {
-      "file": "components/search-pagination.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 2
+      "file": "components/providers/theme-provider.tsx",
+      "bucket": "components/providers",
+      "reason": "Located under components/providers/",
+      "usageGroups": [],
+      "refCount": 0
     },
     {
-      "file": "components/section-cards.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
+      "file": "components/providers/wishlist-context.tsx",
+      "bucket": "components/providers",
+      "reason": "Located under components/providers/",
       "usageGroups": [
-        "main"
+        "main",
+        "root",
+        "unknown"
       ],
-      "refCount": 1
+      "refCount": 8
+    },
+    {
+      "file": "components/sections/category-carousel-client.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
     },
     {
       "file": "components/sections/category-carousel.tsx",
@@ -1673,6 +1212,15 @@
       "refCount": 0
     },
     {
+      "file": "components/sections/deals-section.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
+    },
+    {
       "file": "components/sections/deals-wrapper.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
@@ -1680,7 +1228,23 @@
       "refCount": 0
     },
     {
+      "file": "components/sections/featured-products-section.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
+    },
+    {
       "file": "components/sections/featured-section.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/sections/hero-carousel.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
@@ -1722,11 +1286,52 @@
       "refCount": 0
     },
     {
+      "file": "components/sections/section-cards.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
       "file": "components/sections/sign-in-cta.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
+    },
+    {
+      "file": "components/sections/start-selling-banner.tsx",
+      "bucket": "should move to route-owned _components",
+      "reason": "Referenced only from app group: main",
+      "usageGroups": [
+        "main"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/sections/tabbed-product-feed.tsx",
+      "bucket": "should move to route-owned _components",
+      "reason": "Referenced only from app group: main",
+      "usageGroups": [
+        "main"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/sections/tabbed-product-section.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [],
+      "refCount": 0
+    },
+    {
+      "file": "components/sections/trending-products-section.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
     },
     {
       "file": "components/sections/trending-section.tsx",
@@ -1736,14 +1341,33 @@
       "refCount": 0
     },
     {
-      "file": "components/seller-card.tsx",
+      "file": "components/seller/contact-seller-button.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/seller/follow-seller-button.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "root",
+        "unknown"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/seller/seller-card.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
     },
     {
-      "file": "components/seller-rate-buyer-actions.tsx",
+      "file": "components/seller/seller-rate-buyer-actions.tsx",
       "bucket": "should move to route-owned _components",
       "reason": "Referenced only from app group: sell",
       "usageGroups": [
@@ -1752,27 +1376,57 @@
       "refCount": 1
     },
     {
-      "file": "components/sidebar-menu.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
+      "file": "components/shared/cart/add-to-cart.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
         "unknown"
       ],
-      "refCount": 3
+      "refCount": 2
     },
     {
-      "file": "components/sign-out-button.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/site-footer.tsx",
+      "file": "components/shared/product/product-breadcrumb.tsx",
       "bucket": "components/layout",
       "reason": "Layout/navigation naming heuristics",
+      "usageGroups": [
+        "main",
+        "root"
+      ],
+      "refCount": 5
+    },
+    {
+      "file": "components/shared/product/product-card.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "main",
+        "root",
+        "unknown"
+      ],
+      "refCount": 13
+    },
+    {
+      "file": "components/shared/product/product-carousel-section.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 5
+    },
+    {
+      "file": "components/shared/product/product-page-content-blocks-inspired.tsx",
+      "bucket": "should move to route-owned _components",
+      "reason": "Referenced only from app group: root",
+      "usageGroups": [
+        "root"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/shared/product/product-page-content-new.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
         "main",
         "root"
@@ -1780,12 +1434,84 @@
       "refCount": 2
     },
     {
-      "file": "components/site-header.tsx",
-      "bucket": "components/layout",
-      "reason": "Layout/navigation naming heuristics",
+      "file": "components/shared/product/product-page-hybrid.tsx",
+      "bucket": "should move to route-owned _components",
+      "reason": "Referenced only from app group: root",
+      "usageGroups": [
+        "root"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/shared/product/product-price.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 1
+    },
+    {
+      "file": "components/shared/product/recently-viewed-tracker.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [
         "main",
         "root"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/shared/product/reviews/review-form.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/shared/search/ai-search-dialog.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/shared/search/mobile-search-overlay.tsx",
+      "bucket": "components/common (shared composite)",
+      "reason": "Default bucket (shared component under components/ root)",
+      "usageGroups": [
+        "unknown"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/shared/search/search-filters.tsx",
+      "bucket": "should move to route-owned _components",
+      "reason": "Referenced only from app group: main",
+      "usageGroups": [
+        "main"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/shared/search/search-pagination.tsx",
+      "bucket": "should move to route-owned _components",
+      "reason": "Referenced only from app group: main",
+      "usageGroups": [
+        "main"
+      ],
+      "refCount": 2
+    },
+    {
+      "file": "components/shared/search/sort-select.tsx",
+      "bucket": "should move to route-owned _components",
+      "reason": "Referenced only from app group: main",
+      "usageGroups": [
+        "main"
       ],
       "refCount": 2
     },
@@ -1811,88 +1537,18 @@
       "refCount": 0
     },
     {
-      "file": "components/sort-select.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/start-selling-banner.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/sticky-add-to-cart.tsx",
+      "file": "components/sticky/sticky-add-to-cart.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
     },
     {
-      "file": "components/sticky-checkout-button.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/subcategory-circles.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/subcategory-tabs.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/tabbed-product-feed.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/tabbed-product-section.tsx",
+      "file": "components/sticky/sticky-checkout-button.tsx",
       "bucket": "components/common (shared composite)",
       "reason": "Default bucket (shared component under components/ root)",
       "usageGroups": [],
       "refCount": 0
-    },
-    {
-      "file": "components/theme-provider.tsx",
-      "bucket": "components/providers",
-      "reason": "Provider/context heuristics",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/trending-products-section.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
     },
     {
       "file": "components/ui/accordion.tsx",
@@ -1906,13 +1562,6 @@
       "refCount": 7
     },
     {
-      "file": "components/ui/ai-assistant-interface.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
       "file": "components/ui/alert-dialog.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
@@ -1920,7 +1569,7 @@
         "account",
         "sell"
       ],
-      "refCount": 6
+      "refCount": 7
     },
     {
       "file": "components/ui/alert.tsx",
@@ -1931,17 +1580,16 @@
         "sell",
         "unknown"
       ],
-      "refCount": 8
+      "refCount": 9
     },
     {
       "file": "components/ui/aspect-ratio.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
       "usageGroups": [
-        "main",
         "unknown"
       ],
-      "refCount": 8
+      "refCount": 7
     },
     {
       "file": "components/ui/avatar.tsx",
@@ -1956,7 +1604,7 @@
         "sell",
         "unknown"
       ],
-      "refCount": 25
+      "refCount": 20
     },
     {
       "file": "components/ui/badge.tsx",
@@ -1972,20 +1620,10 @@
         "sell",
         "unknown"
       ],
-      "refCount": 92
+      "refCount": 73
     },
     {
       "file": "components/ui/breadcrumb.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [
-        "main",
-        "unknown"
-      ],
-      "refCount": 2
-    },
-    {
-      "file": "components/ui/button-group.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
       "usageGroups": [
@@ -2009,18 +1647,16 @@
         "sell",
         "unknown"
       ],
-      "refCount": 190
+      "refCount": 173
     },
     {
       "file": "components/ui/calendar.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
       "usageGroups": [
-        "business",
-        "main",
-        "unknown"
+        "business"
       ],
-      "refCount": 3
+      "refCount": 1
     },
     {
       "file": "components/ui/card.tsx",
@@ -2036,17 +1672,16 @@
         "sell",
         "unknown"
       ],
-      "refCount": 116
+      "refCount": 100
     },
     {
       "file": "components/ui/carousel.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
       "usageGroups": [
-        "main",
         "unknown"
       ],
-      "refCount": 2
+      "refCount": 3
     },
     {
       "file": "components/ui/chart.tsx",
@@ -2056,7 +1691,7 @@
         "account",
         "unknown"
       ],
-      "refCount": 5
+      "refCount": 4
     },
     {
       "file": "components/ui/checkbox.tsx",
@@ -2064,10 +1699,11 @@
       "reason": "Located under components/ui/",
       "usageGroups": [
         "business",
+        "main",
         "sell",
         "unknown"
       ],
-      "refCount": 11
+      "refCount": 9
     },
     {
       "file": "components/ui/collapsible.tsx",
@@ -2077,7 +1713,7 @@
         "main",
         "unknown"
       ],
-      "refCount": 10
+      "refCount": 9
     },
     {
       "file": "components/ui/command.tsx",
@@ -2088,16 +1724,14 @@
         "sell",
         "unknown"
       ],
-      "refCount": 5
+      "refCount": 4
     },
     {
       "file": "components/ui/context-menu.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
+      "usageGroups": [],
+      "refCount": 0
     },
     {
       "file": "components/ui/dialog.tsx",
@@ -2109,7 +1743,7 @@
         "sell",
         "unknown"
       ],
-      "refCount": 24
+      "refCount": 25
     },
     {
       "file": "components/ui/drawer.tsx",
@@ -2119,7 +1753,7 @@
         "sell",
         "unknown"
       ],
-      "refCount": 14
+      "refCount": 16
     },
     {
       "file": "components/ui/dropdown-menu.tsx",
@@ -2128,11 +1762,11 @@
       "usageGroups": [
         "account",
         "business",
-        "main",
+        "chat",
         "sell",
         "unknown"
       ],
-      "refCount": 23
+      "refCount": 16
     },
     {
       "file": "components/ui/empty.tsx",
@@ -2142,22 +1776,14 @@
       "refCount": 0
     },
     {
-      "file": "components/ui/field.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [
-        "sell"
-      ],
-      "refCount": 10
-    },
-    {
       "file": "components/ui/form.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
       "usageGroups": [
-        "auth"
+        "auth",
+        "unknown"
       ],
-      "refCount": 4
+      "refCount": 2
     },
     {
       "file": "components/ui/hover-card.tsx",
@@ -2166,25 +1792,14 @@
       "usageGroups": [
         "unknown"
       ],
-      "refCount": 14
-    },
-    {
-      "file": "components/ui/input-group.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
+      "refCount": 12
     },
     {
       "file": "components/ui/input-otp.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
+      "usageGroups": [],
+      "refCount": 0
     },
     {
       "file": "components/ui/input.tsx",
@@ -2200,7 +1815,7 @@
         "sell",
         "unknown"
       ],
-      "refCount": 56
+      "refCount": 49
     },
     {
       "file": "components/ui/item.tsx",
@@ -2228,37 +1843,17 @@
         "sell",
         "unknown"
       ],
-      "refCount": 26
+      "refCount": 27
     },
     {
       "file": "components/ui/menubar.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/ui/modal.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [
-        "account"
-      ],
-      "refCount": 1
+      "usageGroups": [],
+      "refCount": 0
     },
     {
       "file": "components/ui/navigation-menu.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/ui/page-container.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
       "usageGroups": [
@@ -2284,27 +1879,7 @@
         "sell",
         "unknown"
       ],
-      "refCount": 8
-    },
-    {
-      "file": "components/ui/pricing-card.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [
-        "plans"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/ui/product-card.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [
-        "main",
-        "root",
-        "unknown"
-      ],
-      "refCount": 21
+      "refCount": 6
     },
     {
       "file": "components/ui/progress.tsx",
@@ -2315,14 +1890,7 @@
         "sell",
         "unknown"
       ],
-      "refCount": 13
-    },
-    {
-      "file": "components/ui/prompt-input.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [],
-      "refCount": 0
+      "refCount": 11
     },
     {
       "file": "components/ui/radio-group.tsx",
@@ -2330,18 +1898,17 @@
       "reason": "Located under components/ui/",
       "usageGroups": [
         "checkout",
+        "main",
         "unknown"
       ],
-      "refCount": 2
+      "refCount": 3
     },
     {
       "file": "components/ui/resizable.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
+      "usageGroups": [],
+      "refCount": 0
     },
     {
       "file": "components/ui/scroll-area.tsx",
@@ -2351,17 +1918,11 @@
         "account",
         "admin",
         "business",
+        "main",
         "sell",
         "unknown"
       ],
-      "refCount": 22
-    },
-    {
-      "file": "components/ui/scroll-button.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [],
-      "refCount": 0
+      "refCount": 16
     },
     {
       "file": "components/ui/select.tsx",
@@ -2374,7 +1935,7 @@
         "sell",
         "unknown"
       ],
-      "refCount": 23
+      "refCount": 22
     },
     {
       "file": "components/ui/separator.tsx",
@@ -2388,7 +1949,7 @@
         "root",
         "unknown"
       ],
-      "refCount": 31
+      "refCount": 26
     },
     {
       "file": "components/ui/sheet.tsx",
@@ -2398,19 +1959,7 @@
         "account",
         "unknown"
       ],
-      "refCount": 7
-    },
-    {
-      "file": "components/ui/sidebar.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [
-        "account",
-        "admin",
-        "business",
-        "unknown"
-      ],
-      "refCount": 20
+      "refCount": 4
     },
     {
       "file": "components/ui/skeleton.tsx",
@@ -2429,32 +1978,23 @@
         "sell",
         "unknown"
       ],
-      "refCount": 74
+      "refCount": 76
     },
     {
       "file": "components/ui/slider.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
       "usageGroups": [
+        "main",
         "unknown"
       ],
       "refCount": 2
-    },
-    {
-      "file": "components/ui/sonner.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [
-        "root"
-      ],
-      "refCount": 1
     },
     {
       "file": "components/ui/spinner.tsx",
       "bucket": "components/ui (primitive)",
       "reason": "Located under components/ui/",
       "usageGroups": [
-        "main",
         "unknown"
       ],
       "refCount": 3
@@ -2471,7 +2011,7 @@
         "sell",
         "unknown"
       ],
-      "refCount": 9
+      "refCount": 7
     },
     {
       "file": "components/ui/table.tsx",
@@ -2481,11 +2021,10 @@
         "account",
         "admin",
         "business",
-        "main",
         "plans",
         "unknown"
       ],
-      "refCount": 17
+      "refCount": 14
     },
     {
       "file": "components/ui/tabs.tsx",
@@ -2494,12 +2033,11 @@
       "usageGroups": [
         "account",
         "business",
-        "main",
         "root",
         "sell",
         "unknown"
       ],
-      "refCount": 14
+      "refCount": 12
     },
     {
       "file": "components/ui/textarea.tsx",
@@ -2522,14 +2060,7 @@
       "usageGroups": [
         "unknown"
       ],
-      "refCount": 2
-    },
-    {
-      "file": "components/ui/toaster.tsx",
-      "bucket": "components/ui (primitive)",
-      "reason": "Located under components/ui/",
-      "usageGroups": [],
-      "refCount": 0
+      "refCount": 1
     },
     {
       "file": "components/ui/toggle-group.tsx",
@@ -2540,7 +2071,7 @@
         "main",
         "unknown"
       ],
-      "refCount": 4
+      "refCount": 3
     },
     {
       "file": "components/ui/toggle.tsx",
@@ -2551,7 +2082,7 @@
         "main",
         "unknown"
       ],
-      "refCount": 5
+      "refCount": 4
     },
     {
       "file": "components/ui/tooltip.tsx",
@@ -2562,41 +2093,7 @@
         "business",
         "unknown"
       ],
-      "refCount": 15
-    },
-    {
-      "file": "components/upgrade-banner.tsx",
-      "bucket": "should move to route-owned _components",
-      "reason": "Referenced only from app group: main",
-      "usageGroups": [
-        "main"
-      ],
-      "refCount": 1
-    },
-    {
-      "file": "components/upgrade-to-business-modal.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [],
-      "refCount": 0
-    },
-    {
-      "file": "components/wishlist-button.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 4
-    },
-    {
-      "file": "components/wishlist-drawer.tsx",
-      "bucket": "components/common (shared composite)",
-      "reason": "Default bucket (shared component under components/ root)",
-      "usageGroups": [
-        "unknown"
-      ],
-      "refCount": 1
+      "refCount": 13
     }
   ]
 }

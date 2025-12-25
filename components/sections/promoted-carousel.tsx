@@ -24,6 +24,7 @@ export async function PromotedCarousel() {
         title: ui.title,
         price: ui.price,
         listPrice: ui.listPrice,
+        isBoosted: true,
         image: ui.image,
         rating: ui.rating,
         reviews: ui.reviews,

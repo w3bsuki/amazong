@@ -2,7 +2,7 @@
 
 import { ArrowLeft, CaretRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import type { Category } from "../../types";
+import type { Category } from "../../../_lib/types";
 
 interface CategoryBreadcrumbProps {
   path: Category[];

@@ -4,8 +4,8 @@ import { ProductCard } from "@/components/shared/product/product-card"
 import { SearchFilters } from "@/components/shared/search/search-filters"
 import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
 import { SearchHeader } from "./_components/search-header"
-import { searchProducts } from "./_components/search-products"
-import type { Category, Product } from "./_components/types"
+import { searchProducts } from "./_lib/search-products"
+import type { Category, Product } from "./_lib/types"
 import { MobileFilters } from "@/components/common/filters/mobile-filters"
 import { DesktopFilters } from "@/components/common/filters/desktop-filters"
 import { FilterChips } from "@/components/common/filters/filter-chips"
@@ -18,6 +18,7 @@ import { cookies } from "next/headers"
 import type { Metadata } from 'next'
 import { getShippingFilter, parseShippingRegion } from '@/lib/shipping'
 import { ITEMS_PER_PAGE } from "../_lib/pagination"
+
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -64,6 +65,7 @@ export default async function SearchPage({
     tag?: string
     prime?: string
     deals?: string
+    verified?: string
     brand?: string
     availability?: string
     sort?: string
@@ -153,6 +155,8 @@ export default async function SearchPage({
           tag: searchParams.tag,
           minRating: searchParams.minRating,
           prime: searchParams.prime,
+          deals: searchParams.deals,
+          verified: searchParams.verified,
           availability: searchParams.availability,
           sort: searchParams.sort,
           attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
@@ -177,6 +181,8 @@ export default async function SearchPage({
         tag: searchParams.tag,
         minRating: searchParams.minRating,
         prime: searchParams.prime,
+        deals: searchParams.deals,
+        verified: searchParams.verified,
         availability: searchParams.availability,
         sort: searchParams.sort,
         attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,

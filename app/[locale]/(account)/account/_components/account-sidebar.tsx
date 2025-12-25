@@ -18,6 +18,7 @@ import {
   IconCrown,
   IconHome,
   IconSettings,
+  IconBell,
   IconLogout,
   IconSparkles,
 } from "@tabler/icons-react"
@@ -105,6 +106,11 @@ const getAccountManageItems = (locale: string) => [
     title: locale === 'bg' ? 'Фактуриране' : 'Billing',
     url: "/account/billing",
     icon: IconReceipt,
+  },
+  {
+    title: locale === 'bg' ? 'Известия' : 'Notifications',
+    url: "/account/notifications",
+    icon: IconBell,
   },
 ]
 

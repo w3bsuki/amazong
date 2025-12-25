@@ -1,0 +1,1900 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "results": [
+    {
+      "pageName": "home",
+      "pagePath": "/",
+      "url": "http://localhost:3000/",
+      "finalUrl": "about:blank",
+      "title": "",
+      "viewportName": "desktop-1280x720",
+      "viewportTag": "desktop",
+      "responseStatus": null,
+      "durationMs": 53479,
+      "screenshotFile": "home__desktop-1280x720__2025-12-24T17-01-02-979Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "goto failed: TimeoutError: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/\", waiting until \"domcontentloaded\"\u001b[22m\n"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "doc": {
+          "scrollWidth": 1280,
+          "scrollHeight": 720
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    },
+    {
+      "pageName": "locale-root-en",
+      "pagePath": "/en",
+      "url": "http://localhost:3000/en",
+      "finalUrl": "chrome-error://chromewebdata/",
+      "title": "",
+      "viewportName": "desktop-1280x720",
+      "viewportTag": "desktop",
+      "responseStatus": null,
+      "durationMs": 4690,
+      "screenshotFile": "locale-root-en__desktop-1280x720__2025-12-24T17-01-07-810Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "goto failed: Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/en\", waiting until \"domcontentloaded\"\u001b[22m\n"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "doc": {
+          "scrollWidth": 1280,
+          "scrollHeight": 720
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    },
+    {
+      "pageName": "search-en",
+      "pagePath": "/en/search",
+      "url": "http://localhost:3000/en/search",
+      "finalUrl": "http://localhost:3000/en/search",
+      "title": "Search Results | AMZN",
+      "viewportName": "desktop-1280x720",
+      "viewportTag": "desktop",
+      "responseStatus": null,
+      "durationMs": 37251,
+      "screenshotFile": "search-en__desktop-1280x720__2025-12-24T17-01-45-198Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "goto failed: TimeoutError: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/en/search\", waiting until \"domcontentloaded\"\u001b[22m\n"
+        },
+        {
+          "type": "info",
+          "text": "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold"
+        },
+        {
+          "type": "log",
+          "text": "[HMR] connected"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] rebuilding"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] done in 115ms"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] rebuilding"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] done in 296ms"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] rebuilding"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] done in 189ms"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] rebuilding"
+        },
+        {
+          "type": "log",
+          "text": "[Fast Refresh] done in 2599ms"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "doc": {
+          "scrollWidth": 1280,
+          "scrollHeight": 1686
+        },
+        "hasHOverflow": false,
+        "stickyCount": 2,
+        "visibleDialogsCount": 3
+      },
+      "contrastFindings": [
+        {
+          "tag": "a",
+          "text": "Register",
+          "ratio": 1,
+          "needed": 4.5
+        },
+        {
+          "tag": "button",
+          "text": "Accept All Cookies",
+          "ratio": 1,
+          "needed": 4.5
+        }
+      ],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "button",
+          "activeText": "Yes, show Bulgaria products",
+          "focusVisible": true,
+          "outline": "0px none oklab(0.479988 -0.0382175 -0.21664 / 0.5)",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, oklab(0.479988 -0.0382175 -0.21664 / 0.5) 0px 0px 0px 5px, rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+        },
+        {
+          "step": 2,
+          "activeTag": "button",
+          "activeText": "No, show all products",
+          "focusVisible": true,
+          "outline": "1px auto oklab(0.479988 -0.0382175 -0.21664 / 0.5)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "button",
+          "activeText": "🇧🇬Bulgaria",
+          "focusVisible": true,
+          "outline": "0px none oklab(0.479988 -0.0382175 -0.21664 / 0.5)",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.479988 -0.0382175 -0.21664 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+        },
+        {
+          "step": 4,
+          "activeTag": "button",
+          "activeText": "Yes, show Bulgaria products",
+          "focusVisible": true,
+          "outline": "0px none oklab(0.479988 -0.0382175 -0.21664 / 0.5)",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, oklab(0.479988 -0.0382175 -0.21664 / 0.5) 0px 0px 0px 5px, rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+        },
+        {
+          "step": 5,
+          "activeTag": "button",
+          "activeText": "No, show all products",
+          "focusVisible": true,
+          "outline": "1px auto oklab(0.479988 -0.0382175 -0.21664 / 0.5)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "button",
+          "activeText": "🇧🇬Bulgaria",
+          "focusVisible": true,
+          "outline": "0px none oklab(0.479988 -0.0382175 -0.21664 / 0.5)",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, oklab(0.479988 -0.0382175 -0.21664 / 0.5) 0px 0px 0px 3px, rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+        },
+        {
+          "step": 7,
+          "activeTag": "button",
+          "activeText": "Yes, show Bulgaria products",
+          "focusVisible": true,
+          "outline": "0px none oklab(0.479988 -0.0382175 -0.21664 / 0.5)",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, oklab(0.479988 -0.0382175 -0.21664 / 0.5) 0px 0px 0px 5px, rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+        },
+        {
+          "step": 8,
+          "activeTag": "button",
+          "activeText": "No, show all products",
+          "focusVisible": true,
+          "outline": "1px auto oklab(0.479988 -0.0382175 -0.21664 / 0.5)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": true
+      }
+    },
+    {
+      "pageName": "category-en-fashion",
+      "pagePath": "/en/categories/fashion",
+      "url": "http://localhost:3000/en/categories/fashion",
+      "finalUrl": "http://localhost:3000/en/categories/fashion",
+      "title": "",
+      "viewportName": "desktop-1280x720",
+      "viewportTag": "desktop",
+      "responseStatus": 500,
+      "durationMs": 13352,
+      "screenshotFile": "category-en-fashion__desktop-1280x720__2025-12-24T17-01-58-924Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "doc": {
+          "scrollWidth": 1280,
+          "scrollHeight": 720
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      },
+      "note": "Representative category picked from homepage links."
+    },
+    {
+      "pageName": "product-en-shop4e-aysifon",
+      "pagePath": "/en/shop4e/aysifon",
+      "url": "http://localhost:3000/en/shop4e/aysifon",
+      "finalUrl": "http://localhost:3000/en/shop4e/aysifon",
+      "title": "",
+      "viewportName": "desktop-1280x720",
+      "viewportTag": "desktop",
+      "responseStatus": 500,
+      "durationMs": 4153,
+      "screenshotFile": "product-en-shop4e-aysifon__desktop-1280x720__2025-12-24T17-02-03-206Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "doc": {
+          "scrollWidth": 1280,
+          "scrollHeight": 720
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      },
+      "note": "Representative product picked from homepage links."
+    },
+    {
+      "pageName": "auth-sign-up-en",
+      "pagePath": "/en/auth/sign-up",
+      "url": "http://localhost:3000/en/auth/sign-up",
+      "finalUrl": "http://localhost:3000/en/auth/sign-up",
+      "title": "",
+      "viewportName": "desktop-1280x720",
+      "viewportTag": "desktop",
+      "responseStatus": 500,
+      "durationMs": 2937,
+      "screenshotFile": "auth-sign-up-en__desktop-1280x720__2025-12-24T17-02-06-252Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "doc": {
+          "scrollWidth": 1280,
+          "scrollHeight": 720
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    },
+    {
+      "pageName": "auth-sign-in-en",
+      "pagePath": "/en/auth/login",
+      "url": "http://localhost:3000/en/auth/login",
+      "finalUrl": "http://localhost:3000/en/auth/login",
+      "title": "",
+      "viewportName": "desktop-1280x720",
+      "viewportTag": "desktop",
+      "responseStatus": 500,
+      "durationMs": 3278,
+      "screenshotFile": "auth-sign-in-en__desktop-1280x720__2025-12-24T17-02-09-630Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "doc": {
+          "scrollWidth": 1280,
+          "scrollHeight": 720
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      },
+      "note": "App uses /en/auth/login for sign-in."
+    },
+    {
+      "pageName": "sell-en",
+      "pagePath": "/en/sell",
+      "url": "http://localhost:3000/en/sell",
+      "finalUrl": "http://localhost:3000/en/sell",
+      "title": "",
+      "viewportName": "desktop-1280x720",
+      "viewportTag": "desktop",
+      "responseStatus": 500,
+      "durationMs": 22289,
+      "screenshotFile": "sell-en__desktop-1280x720__2025-12-24T17-02-32-094Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "doc": {
+          "scrollWidth": 1280,
+          "scrollHeight": 720
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    },
+    {
+      "pageName": "account-en",
+      "pagePath": "/en/account",
+      "url": "http://localhost:3000/en/account",
+      "finalUrl": "http://localhost:3000/en/account",
+      "title": "",
+      "viewportName": "desktop-1280x720",
+      "viewportTag": "desktop",
+      "responseStatus": 500,
+      "durationMs": 7043,
+      "screenshotFile": "account-en__desktop-1280x720__2025-12-24T17-02-39-327Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "doc": {
+          "scrollWidth": 1280,
+          "scrollHeight": 720
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    },
+    {
+      "pageName": "home",
+      "pagePath": "/",
+      "url": "http://localhost:3000/",
+      "finalUrl": "http://localhost:3000/en",
+      "title": "",
+      "viewportName": "mobile-390x844",
+      "viewportTag": "mobile",
+      "responseStatus": 500,
+      "durationMs": 4068,
+      "screenshotFile": "home__mobile-390x844__2025-12-24T17-02-43-506Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 980,
+          "height": 2121
+        },
+        "doc": {
+          "scrollWidth": 980,
+          "scrollHeight": 2121
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    },
+    {
+      "pageName": "locale-root-en",
+      "pagePath": "/en",
+      "url": "http://localhost:3000/en",
+      "finalUrl": "http://localhost:3000/en",
+      "title": "",
+      "viewportName": "mobile-390x844",
+      "viewportTag": "mobile",
+      "responseStatus": 500,
+      "durationMs": 3307,
+      "screenshotFile": "locale-root-en__mobile-390x844__2025-12-24T17-02-47-158Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 980,
+          "height": 2121
+        },
+        "doc": {
+          "scrollWidth": 980,
+          "scrollHeight": 2121
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    },
+    {
+      "pageName": "search-en",
+      "pagePath": "/en/search",
+      "url": "http://localhost:3000/en/search",
+      "finalUrl": "http://localhost:3000/en/search",
+      "title": "",
+      "viewportName": "mobile-390x844",
+      "viewportTag": "mobile",
+      "responseStatus": 500,
+      "durationMs": 3472,
+      "screenshotFile": "search-en__mobile-390x844__2025-12-24T17-02-50-982Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 980,
+          "height": 2121
+        },
+        "doc": {
+          "scrollWidth": 980,
+          "scrollHeight": 2121
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    },
+    {
+      "pageName": "category-en-fashion",
+      "pagePath": "/en/categories/fashion",
+      "url": "http://localhost:3000/en/categories/fashion",
+      "finalUrl": "http://localhost:3000/en/categories/fashion",
+      "title": "",
+      "viewportName": "mobile-390x844",
+      "viewportTag": "mobile",
+      "responseStatus": 500,
+      "durationMs": 2577,
+      "screenshotFile": "category-en-fashion__mobile-390x844__2025-12-24T17-02-53-924Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 980,
+          "height": 2121
+        },
+        "doc": {
+          "scrollWidth": 980,
+          "scrollHeight": 2121
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      },
+      "note": "Representative category picked from homepage links."
+    },
+    {
+      "pageName": "product-en-shop4e-aysifon",
+      "pagePath": "/en/shop4e/aysifon",
+      "url": "http://localhost:3000/en/shop4e/aysifon",
+      "finalUrl": "http://localhost:3000/en/shop4e/aysifon",
+      "title": "",
+      "viewportName": "mobile-390x844",
+      "viewportTag": "mobile",
+      "responseStatus": 500,
+      "durationMs": 2562,
+      "screenshotFile": "product-en-shop4e-aysifon__mobile-390x844__2025-12-24T17-02-56-800Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 980,
+          "height": 2121
+        },
+        "doc": {
+          "scrollWidth": 980,
+          "scrollHeight": 2121
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      },
+      "note": "Representative product picked from homepage links."
+    },
+    {
+      "pageName": "auth-sign-up-en",
+      "pagePath": "/en/auth/sign-up",
+      "url": "http://localhost:3000/en/auth/sign-up",
+      "finalUrl": "http://localhost:3000/en/auth/sign-up",
+      "title": "",
+      "viewportName": "mobile-390x844",
+      "viewportTag": "mobile",
+      "responseStatus": 500,
+      "durationMs": 3086,
+      "screenshotFile": "auth-sign-up-en__mobile-390x844__2025-12-24T17-03-00-224Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 980,
+          "height": 2121
+        },
+        "doc": {
+          "scrollWidth": 980,
+          "scrollHeight": 2121
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    },
+    {
+      "pageName": "auth-sign-in-en",
+      "pagePath": "/en/auth/login",
+      "url": "http://localhost:3000/en/auth/login",
+      "finalUrl": "http://localhost:3000/en/auth/login",
+      "title": "",
+      "viewportName": "mobile-390x844",
+      "viewportTag": "mobile",
+      "responseStatus": 500,
+      "durationMs": 3093,
+      "screenshotFile": "auth-sign-in-en__mobile-390x844__2025-12-24T17-03-03-637Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 980,
+          "height": 2121
+        },
+        "doc": {
+          "scrollWidth": 980,
+          "scrollHeight": 2121
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      },
+      "note": "App uses /en/auth/login for sign-in."
+    },
+    {
+      "pageName": "sell-en",
+      "pagePath": "/en/sell",
+      "url": "http://localhost:3000/en/sell",
+      "finalUrl": "http://localhost:3000/en/sell",
+      "title": "",
+      "viewportName": "mobile-390x844",
+      "viewportTag": "mobile",
+      "responseStatus": 500,
+      "durationMs": 3439,
+      "screenshotFile": "sell-en__mobile-390x844__2025-12-24T17-03-07-450Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 980,
+          "height": 2121
+        },
+        "doc": {
+          "scrollWidth": 980,
+          "scrollHeight": 2121
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    },
+    {
+      "pageName": "account-en",
+      "pagePath": "/en/account",
+      "url": "http://localhost:3000/en/account",
+      "finalUrl": "http://localhost:3000/en/account",
+      "title": "",
+      "viewportName": "mobile-390x844",
+      "viewportTag": "mobile",
+      "responseStatus": 500,
+      "durationMs": 3195,
+      "screenshotFile": "account-en__mobile-390x844__2025-12-24T17-03-10-969Z.png",
+      "consoleMessages": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+        }
+      ],
+      "pageErrors": [],
+      "layout": {
+        "viewport": {
+          "width": 980,
+          "height": 2121
+        },
+        "doc": {
+          "scrollWidth": 980,
+          "scrollHeight": 2121
+        },
+        "hasHOverflow": false,
+        "stickyCount": 0,
+        "visibleDialogsCount": 0
+      },
+      "contrastFindings": [],
+      "focusTrail": [
+        {
+          "step": 1,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 2,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 3,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 4,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 5,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 6,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 7,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        },
+        {
+          "step": 8,
+          "activeTag": "body",
+          "activeText": "Internal Server Error",
+          "focusVisible": false,
+          "outline": "0px none rgb(0, 0, 0)",
+          "boxShadow": "none"
+        }
+      ],
+      "modalCheck": {
+        "hadDialog": false
+      }
+    }
+  ]
+}

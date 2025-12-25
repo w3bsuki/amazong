@@ -3,8 +3,8 @@ import { setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 import type { Metadata } from "next"
 import MembersPageClient from "./_components/members-page-client"
-import type { MembersSearchParams } from "./_components/members-types"
-import { getMembersPageData } from "./_components/get-members-page-data"
+import type { MembersSearchParams } from "./_lib/members-types"
+import { getMembersPageData } from "./_lib/get-members-page-data"
 
 export const metadata: Metadata = {
   title: "Members | Amazong Community",
@@ -27,7 +27,7 @@ export default async function MembersPage({ params, searchParams }: MembersPageP
   setRequestLocale(locale)
 
   const data = await getMembersPageData(resolvedSearchParams)
-  
+
   return (
     <MembersPageClient {...data} locale={locale} />
   )

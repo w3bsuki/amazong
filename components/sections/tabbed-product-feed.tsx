@@ -14,6 +14,9 @@ interface Product {
   title: string
   price: number
   listPrice?: number
+  isOnSale?: boolean
+  salePercent?: number
+  saleEndDate?: string | null
   image: string
   rating?: number
   reviews?: number
@@ -153,11 +156,33 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
             ? (p.attributes as Record<string, string>)
             : undefined
 
+          const isOnSale = (typeof p.isOnSale === 'boolean')
+            ? (p.isOnSale as boolean)
+            : (typeof (p as { is_on_sale?: unknown }).is_on_sale === 'boolean')
+              ? Boolean((p as { is_on_sale?: boolean }).is_on_sale)
+              : undefined
+
+          const salePercentRaw = (p.salePercent ?? (p as { sale_percent?: unknown }).sale_percent) as unknown
+          const salePercent = (typeof salePercentRaw === 'number')
+            ? salePercentRaw
+            : (typeof salePercentRaw === 'string')
+              ? Number(salePercentRaw)
+              : undefined
+
+          const saleEndDate = (typeof p.saleEndDate === 'string')
+            ? (p.saleEndDate as string)
+            : (typeof (p as { sale_end_date?: unknown }).sale_end_date === 'string')
+              ? ((p as { sale_end_date?: string }).sale_end_date ?? null)
+              : null
+
           return {
             id: p.id as string,
             title: p.title as string,
             price: typeof p.price === 'number' ? (p.price as number) : Number(p.price ?? 0),
             listPrice,
+            isOnSale,
+            salePercent,
+            saleEndDate,
             image,
             rating: typeof p.rating === 'number' ? (p.rating as number) : undefined,
             reviews: typeof p.reviews === 'number'
@@ -206,112 +231,70 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
     }
   }, [])
 
-  // Fetch on tab change
+  // Fetch on mount
   useEffect(() => {
     setPage(1)
     setProducts([])
-    fetchProducts(activeTab, 1, pageSize, false)
-  }, [activeTab, pageSize, fetchProducts])
+    fetchProducts("newest", 1, pageSize, false)
+  }, [pageSize, fetchProducts])
 
   const loadMore = () => {
     if (!isLoading && hasMore) {
       const nextPage = page + 1
       setPage(nextPage)
-      fetchProducts(activeTab, nextPage, pageSize, true)
+      fetchProducts("newest", nextPage, pageSize, true)
     }
   }
 
   return (
     <section 
-      className="rounded-xl border border-border/60 bg-card overflow-hidden"
+      className="w-full"
       aria-label={locale === "bg" ? "Обяви" : "Listings"}
     >
-      {/* Header with Tabs - Refined Typography */}
-      <div className="px-4 pt-4 pb-2">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <h2 className="text-lg font-bold tracking-tight text-foreground/90 shrink-0">
-              {locale === "bg" ? "Обяви" : "Listings"}
-            </h2>
-            <div className="h-1 w-1 rounded-full bg-muted-foreground/30 hidden sm:block" />
-          </div>
+      {/* Header - Simple Title */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">
+          {locale === "bg" ? "Най-нови обяви" : "New Arrivals"}
+        </h2>
 
-          {/* Tab Navigation - Refined Pill style */}
-          <div 
-            className="flex items-center gap-1 p-0.5 rounded-full bg-muted/40 border border-border/50"
-            role="tablist"
-            aria-label={locale === "bg" ? "Филтриране на обяви" : "Filter listings"}
-          >
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  aria-selected={isActive}
-                  aria-controls={`tabpanel-${tab.id}`}
-                  id={`tab-${tab.id}`}
-                  role="tab"
-                  tabIndex={isActive ? 0 : -1}
-                  className={cn(
-                    "flex items-center gap-2 px-4 h-touch-xs rounded-full text-2xs font-bold transition-none",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    isActive
-                      ? "bg-cta-trust-blue text-cta-trust-blue-text"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                  )}
-                >
-                  <Icon size={14} weight={isActive ? "fill" : "bold"} aria-hidden="true" />
-                  <span>{tab.label}</span>
-                </button>
-              )
-            })}
-          </div>
-
-          {/* See All Link */}
-          <Link
-            href={`/search?sort=${activeTab === "deals" ? "deals" : activeTab === "promoted" ? "promoted" : "newest"}`}
-            className="text-2xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 shrink-0"
-          >
-            {locale === "bg" ? "Виж всички" : "See all"}
-            <CaretRight size={12} weight="bold" aria-hidden="true" />
-          </Link>
-        </div>
+        {/* See All Link */}
+        <Link
+          href="/search?sort=newest"
+          className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+        >
+          {locale === "bg" ? "Виж всички" : "See all"}
+          <CaretRight size={16} weight="bold" aria-hidden="true" />
+        </Link>
       </div>
 
-      {/* Product Grid - with proper tabpanel ARIA */}
+      {/* Product Grid */}
       <div 
-        className="px-4 pt-1.5 pb-3"
-        role="tabpanel"
-        id={`tabpanel-${activeTab}`}
-        aria-labelledby={`tab-${activeTab}`}
-        tabIndex={0}
+        role="list"
+        aria-live="polite"
       >
         {products.length === 0 && isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-2.5 xl:gap-3" aria-busy="true" aria-live="polite">
-            {Array.from({ length: 14 }).map((_, i) => (
-              <div key={i} className="space-y-1.5">
-                <Skeleton className="aspect-square rounded-md" />
-                <Skeleton className="h-3 w-full" />
-                <Skeleton className="h-3.5 w-1/3" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4" aria-busy="true">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="space-y-3">
+                <Skeleton className="aspect-[3/4] w-full rounded-lg" />
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
               </div>
             ))}
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-10 text-muted-foreground" role="status">
-            <div className="text-3xl mb-2" aria-hidden="true">📦</div>
-            {locale === "bg" ? "Няма намерени обяви" : "No listings found"}
+          <div className="text-center py-20 text-muted-foreground" role="status">
+            <div className="text-4xl mb-4" aria-hidden="true">📦</div>
+            <p className="text-lg">{locale === "bg" ? "Няма намерени обяви" : "No listings found"}</p>
           </div>
         ) : (
           <>
             {/* 
-              Grid Layout - Optimized for all screen sizes:
-              - 2 cols mobile, 3 cols md, 4 cols lg, 5 cols xl, 6 cols 2xl
-              - 7 columns at 2xl better matches the carousel density on wide screens
-              - gap-2.5 base, gap-3 at xl+ for breathing room
+              Grid Layout - Clean, no cards
             */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-2.5 xl:gap-3" role="list" aria-live="polite">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8">
               {products.map((product, index) => (
                 <div key={product.id} role="listitem">
                   <ProductCard
@@ -319,6 +302,9 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
                     title={product.title}
                     price={product.price}
                     originalPrice={product.listPrice}
+                    isOnSale={product.isOnSale}
+                    salePercent={product.salePercent}
+                    saleEndDate={product.saleEndDate}
                     image={product.image}
                     rating={product.rating}
                     reviews={product.reviews}
@@ -346,15 +332,15 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 
             {/* Load More Button */}
             {hasMore && (
-              <div className="mt-4 text-center">
+              <div className="mt-12 text-center">
                 <button
                   onClick={loadMore}
                   disabled={isLoading}
                   className={cn(
-                    "px-8 py-3 rounded-lg font-medium text-sm transition-all",
-                    "bg-brand/10 hover:bg-brand/20 text-brand border border-brand/20",
+                    "px-8 py-3 rounded-full font-medium text-sm transition-all",
+                    "bg-primary text-primary-foreground hover:bg-primary/90",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   )}
                 >
                   {isLoading ? (
@@ -380,19 +366,19 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
  */
 export function TabbedProductFeedSkeleton() {
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
-      <div className="px-5 pt-4 pb-2 flex items-center justify-between">
-        <Skeleton className="h-6 w-24" />
-        <Skeleton className="h-10 w-80 rounded-full" />
-        <Skeleton className="h-4 w-16" />
+    <div className="w-full">
+      <div className="flex items-center justify-between mb-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-5 w-20" />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-3 xl:gap-4 px-5 pt-2 pb-4">
-        {Array.from({ length: 14 }).map((_, i) => (
-          <div key={i} className="space-y-2">
-            <Skeleton className="aspect-square rounded-md" />
-            <Skeleton className="h-3.5 w-full" />
-            <Skeleton className="h-4 w-1/3" />
-            <Skeleton className="h-5 w-20" />
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div key={i} className="space-y-3">
+            <Skeleton className="aspect-[3/4] w-full rounded-lg" />
+            <div className="space-y-1">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
           </div>
         ))}
       </div>

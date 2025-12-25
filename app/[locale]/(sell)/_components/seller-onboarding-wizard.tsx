@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase/client"
+import { completeSellerOnboarding } from "../_actions/sell"
 
 interface SellerOnboardingWizardProps {
   userId: string
@@ -144,38 +144,16 @@ export function SellerOnboardingWizard({
     setError(null)
     startTransition(async () => {
       try {
-        const supabase = createClient()
-        
-        // Update profile with seller info
-        const { error: updateError } = await supabase
-          .from("profiles")
-          .update({
-            account_type: accountType,
-            display_name: displayName.trim() || username,
-            bio: bio.trim() || null,
-            is_seller: true,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", userId)
+        const res = await completeSellerOnboarding({
+          userId,
+          accountType,
+          username,
+          displayName,
+          bio,
+        })
 
-        if (updateError) throw updateError
-
-        // Initialize seller_stats if not exists
-        const { error: statsError } = await supabase
-          .from("seller_stats")
-          .upsert({
-            seller_id: userId,
-            total_listings: 0,
-            active_listings: 0,
-            total_sales: 0,
-            total_revenue: 0,
-            average_rating: 0,
-            total_reviews: 0,
-          }, { onConflict: "seller_id" })
-
-        if (statsError) {
-          console.error("Failed to create seller_stats:", statsError)
-          // Don't throw - this is not critical
+        if (res?.error) {
+          throw new Error(res.error)
         }
 
         // Move to success step

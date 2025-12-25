@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { CaretRight, Check } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Category } from "../../types";
+import type { Category } from "../../../_lib/types";
 import { CategorySearch } from "./category-search";
 import { CategoryBreadcrumb } from "./category-breadcrumb";
 import { CategoryOption } from "./category-option";

@@ -7,22 +7,21 @@ import { useTranslations } from "next-intl"
 import Image from "next/image"
 
 import { Link } from "@/i18n/routing"
-import { login, type AuthActionState } from "../_actions/auth"
+import { login } from "../_actions/auth"
+import type { AuthActionState } from "../_actions/auth"
 
 function SubmitButton({
   label,
   pendingLabel,
-  disabled,
 }: {
   label: string
   pendingLabel: string
-  disabled?: boolean
 }) {
   const { pending } = useFormStatus()
   return (
     <button
       type="submit"
-      disabled={pending || disabled}
+      disabled={pending}
       className="w-full h-10 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
     >
       {pending ? (
@@ -50,7 +49,10 @@ export function LoginForm({
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  const initialState = useMemo<AuthActionState>(() => ({ fieldErrors: {}, error: undefined, success: false }), [])
+  const initialState = useMemo(
+    (): AuthActionState => ({ fieldErrors: {}, error: undefined, success: false }),
+    [],
+  )
   const [state, formAction] = useActionState(login.bind(null, locale, redirectPath), initialState)
 
   useEffect(() => {
@@ -73,8 +75,6 @@ export function LoginForm({
       // ignore
     }
   }
-
-  const canSubmit = email.trim().length > 0 && password.length > 0
 
   return (
     <div className="min-h-svh flex items-center justify-center bg-gray-50 p-4">
@@ -102,6 +102,7 @@ export function LoginForm({
                 name="email"
                 type="email"
                 autoComplete="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t("emailPlaceholder")}
@@ -126,6 +127,8 @@ export function LoginForm({
                   name="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
+                  required
+                  value={password}
                   placeholder={t("passwordPlaceholder")}
                   aria-invalid={!!state?.fieldErrors?.password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -156,7 +159,7 @@ export function LoginForm({
             </div>
 
             <div className="pt-1">
-              <SubmitButton label={t("signIn")} pendingLabel={t("signingIn")} disabled={!canSubmit} />
+              <SubmitButton label={t("signIn")} pendingLabel={t("signingIn")} />
             </div>
           </form>
 
@@ -208,3 +211,4 @@ export function LoginForm({
     </div>
   )
 }
+

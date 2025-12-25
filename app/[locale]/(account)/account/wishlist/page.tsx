@@ -35,9 +35,12 @@ export default async function WishlistPage({ params, searchParams }: WishlistPag
   // Fetch wishlist items
   const { data: wishlistData } = await supabase
     .from("wishlists")
-    .select("id, product_id, created_at")
+    .select("id, product_id, created_at, share_token, is_public")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
+
+  const initialShareToken = wishlistData?.[0]?.share_token ?? null
+  const initialIsPublic = Boolean(wishlistData?.[0]?.is_public)
 
   // Fetch products for wishlist items
   const productIds = (wishlistData || []).map((w) => w.product_id)
@@ -130,6 +133,8 @@ export default async function WishlistPage({ params, searchParams }: WishlistPag
         initialCategoryFilter={categoryFilter || null}
         initialSearchQuery={searchQuery || ""}
         initialStockFilter={stockFilter || "all"}
+        initialShareToken={initialShareToken}
+        initialIsPublic={initialIsPublic}
       />
     </div>
   )

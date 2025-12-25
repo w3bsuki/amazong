@@ -22,16 +22,16 @@ module.exports = {
     // ========================================================================
     collect: {
       // Start production server before collecting
-      startServerCommand: 'pnpm start',
+      startServerCommand: 'cross-env PORT=3001 pnpm start',
       startServerReadyPattern: 'Ready in',
       startServerReadyTimeout: 60000,
       
       // URLs to audit
       url: [
-        'http://localhost:3000/en',
-        'http://localhost:3000/en/categories',
-        'http://localhost:3000/en/search?q=phone',
-        'http://localhost:3000/en/cart',
+        'http://localhost:3001/en',
+        'http://localhost:3001/en/categories',
+        'http://localhost:3001/en/search?q=phone',
+        'http://localhost:3001/en/cart',
       ],
       
       // Number of runs per URL (median is used)

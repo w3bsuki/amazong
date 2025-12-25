@@ -669,6 +669,63 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          email_message: boolean
+          email_order_status: boolean
+          email_promotion: boolean
+          email_purchase: boolean
+          email_review: boolean
+          email_system: boolean
+          in_app_message: boolean
+          in_app_order_status: boolean
+          in_app_promotion: boolean
+          in_app_purchase: boolean
+          in_app_review: boolean
+          in_app_system: boolean
+          push_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_message?: boolean
+          email_order_status?: boolean
+          email_promotion?: boolean
+          email_purchase?: boolean
+          email_review?: boolean
+          email_system?: boolean
+          in_app_message?: boolean
+          in_app_order_status?: boolean
+          in_app_promotion?: boolean
+          in_app_purchase?: boolean
+          in_app_review?: boolean
+          in_app_system?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_message?: boolean
+          email_order_status?: boolean
+          email_promotion?: boolean
+          email_purchase?: boolean
+          email_review?: boolean
+          email_system?: boolean
+          in_app_message?: boolean
+          in_app_order_status?: boolean
+          in_app_promotion?: boolean
+          in_app_purchase?: boolean
+          in_app_review?: boolean
+          in_app_system?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           delivered_at: string | null

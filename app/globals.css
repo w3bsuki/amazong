@@ -59,6 +59,8 @@
   --container-3xs: 16rem;
   --container-2xs: 18rem;
   --container-xs: 20rem;
+  --container-gallery: 36rem;   /* 576px - Professional product image size */
+  --container-header-content: 72rem; /* 1152px - Header search/nav content max-width */
 
   /* === TOUCH TARGETS (WCAG 2.1 AA) === */
   /* --size-* tokens for reference */
@@ -92,13 +94,17 @@
   --color-cta-trust-blue: oklch(0.50 0.20 255);
   --color-cta-trust-blue-hover: oklch(0.42 0.22 255);
   --color-cta-trust-blue-text: oklch(1 0 0);
+  /* Secondary CTA - for use on colored backgrounds (header, hero) */
+  --color-cta-secondary: oklch(1 0 0);
+  --color-cta-secondary-hover: oklch(0.96 0 0);
+  --color-cta-secondary-text: var(--color-brand);
 
   /* === HEADER TEXT TOKENS === */
-  --color-header-text: oklch(0.12 0 0);
-  --color-header-text-muted: oklch(0.45 0 0);
-  --color-header-hover: oklch(0.96 0 0);
-  --color-header-active: oklch(0.94 0 0);
-  --color-header-nav-bg: oklch(0.97 0 0);
+  --color-header-text: oklch(1 0 0);
+  --color-header-text-muted: oklch(0.92 0 0);
+  --color-header-hover: var(--color-brand-dark);
+  --color-header-active: oklch(0.34 0.24 260);
+  --color-header-nav-bg: var(--color-brand);
 
   /* === INTERACTIVE TOKENS === */
   --color-interactive: oklch(0.48 0.22 260);
@@ -194,9 +200,9 @@
   --color-section-deals: oklch(0.55 0.22 27);
 
   /* Header */
-  --color-header-bg: oklch(1 0 0);
-  --color-header-border: oklch(0.88 0 0);
-  --color-header-hover: oklch(0.96 0 0);
+  --color-header-bg: var(--color-brand);
+  --color-header-border: var(--color-brand-dark);
+  --color-header-hover: var(--color-brand-dark);
 
   /* Links */
   --color-link: oklch(0.48 0.20 260);
@@ -345,6 +351,10 @@
   --color-cta-trust-blue: oklch(0.55 0.18 255);
   --color-cta-trust-blue-hover: oklch(0.48 0.20 255);
   --color-cta-trust-blue-text: oklch(1 0 0);
+  /* Secondary CTA (dark mode) */
+  --color-cta-secondary: oklch(0.95 0 0);
+  --color-cta-secondary-hover: oklch(0.90 0 0);
+  --color-cta-secondary-text: oklch(0.20 0.02 250);
 
   /* Header text tokens (dark mode) */
   --color-header-text: oklch(0.95 0 0);
@@ -424,6 +434,21 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+
+  :where(
+      a,
+      button,
+      input,
+      select,
+      textarea,
+      summary,
+      [role="button"],
+      [role="link"],
+      [tabindex]:not([tabindex="-1"])
+    ):focus-visible {
+    outline: 2px solid var(--color-ring) !important;
+    outline-offset: 2px !important;
   }
 
   html {

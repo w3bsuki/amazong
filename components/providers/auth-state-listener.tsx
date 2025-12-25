@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useCallback } from "react"
+import { useEffect, useCallback, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/client"
@@ -13,6 +13,27 @@ export function AuthStateListener() {
     const searchParams = useSearchParams()
     const locale = useLocale()
 
+    const lastRefreshAtRef = useRef(0)
+
+    const safeRefresh = useCallback((reason: string) => {
+        // Avoid refresh storms and common transient failures (tab hidden/offline)
+        if (typeof window === "undefined") return
+        if (document.visibilityState === "hidden") return
+        if (typeof navigator !== "undefined" && "onLine" in navigator && !navigator.onLine) return
+
+        const now = Date.now()
+        if (now - lastRefreshAtRef.current < 800) return
+        lastRefreshAtRef.current = now
+
+        try {
+            router.refresh()
+        } catch (err) {
+            // In Next dev/runtime, router.refresh can throw if the underlying RSC fetch fails.
+            // Don't crash the app; best-effort refresh is enough here.
+            console.warn(`[AuthStateListener] router.refresh failed (${reason})`, err)
+        }
+    }, [router])
+
     // Memoized refresh handler that's more aggressive on mobile
     const handleAuthChange = useCallback((event: AuthChangeEvent, session: Session | null) => {
         // Skip refresh on auth pages to avoid conflicts with their own redirect logic
@@ -21,7 +42,7 @@ export function AuthStateListener() {
         if (event === "SIGNED_IN" && !isAuthPage) {
             // For sign-in events outside of auth pages, do a soft refresh
             // This helps with mobile where the router refresh can be flaky
-            router.refresh()
+            safeRefresh("SIGNED_IN")
             
             // Check if this is after email verification (welcome=true in URL)
             const isWelcome = searchParams?.get('welcome') === 'true'
@@ -37,7 +58,7 @@ export function AuthStateListener() {
                 supabase.auth.getSession().then(({ data: { session: currentSession } }: { data: { session: Session | null } }) => {
                     if (currentSession && !document.hidden) {
                         // Session exists but page might not have updated - trigger another refresh
-                        router.refresh()
+                        safeRefresh("SIGNED_IN (delayed)")
                     }
                 })
             }, 500)
@@ -48,18 +69,18 @@ export function AuthStateListener() {
             }
         } else if (event === "TOKEN_REFRESHED") {
             // Silently handle token refresh
-            router.refresh()
+            safeRefresh("TOKEN_REFRESHED")
         } else if (event === "USER_UPDATED") {
             // User was updated (e.g., email verified, profile updated)
             // This fires when email is confirmed via the link
-            router.refresh()
+            safeRefresh("USER_UPDATED")
             
             // If user just confirmed their email, the session will now have email_confirmed_at
             if (session?.user?.email_confirmed_at) {
                 // Email confirmed - session updated
             }
         }
-    }, [router, pathname, searchParams, locale])
+    }, [pathname, searchParams, locale, safeRefresh])
 
     useEffect(() => {
         const supabase = createClient()

@@ -9,13 +9,58 @@ const baseRestrictedImportPatterns = [
     message:
       "Hooks must live in /hooks (do not create or import hooks from components/ui).",
   },
+  {
+    group: ["@/components/ui/hooks/*", "@/components/ui/**/hooks/*"],
+    message:
+      "Hooks must live in /hooks (do not create or import hooks from components/ui).",
+  },
 ];
 
-const sellRouteOwnedPatterns = [
+// Phase 1 (Guardrails): prevent route-to-route dependencies by treating route-owned folders
+// under each route group as private. Use warnings initially; tighten later.
+const routeGroups = [
+  "account",
+  "admin",
+  "auth",
+  "business",
+  "chat",
+  "checkout",
+  "main",
+  "plans",
+  "sell",
+];
+
+function getRouteOwnedPatternsForGroup(group) {
+  const routeGroup = `(${group})`;
+  return [
+    {
+      group: [
+        `**/${routeGroup}/_components`,
+        `**/${routeGroup}/_components/**`,
+        `**/${routeGroup}/_lib`,
+        `**/${routeGroup}/_lib/**`,
+        `**/${routeGroup}/_actions`,
+        `**/${routeGroup}/_actions/**`,
+      ],
+      message: `Route-owned (${group}) code is private to the ${routeGroup} route group (do not import across route groups).`,
+    },
+  ];
+}
+
+const routeOwnedPatterns = routeGroups.flatMap(getRouteOwnedPatternsForGroup);
+
+const appImportLeakPatterns = [
   {
-    group: ["**/(sell)/_components", "**/(sell)/_components/**"],
+    group: [
+      "@/app/**",
+      "../app/**",
+      "../../app/**",
+      "../../../app/**",
+      "../../../../app/**",
+      "../../../../../app/**",
+    ],
     message:
-      "Route-owned (sell) UI under app/[locale]/(sell)/_components is private to the (sell) route group.",
+      "Shared modules must not import from /app (route code). Move shared logic to /lib, /hooks, or /components and keep route-only code under app/**/_lib or app/**/_components.",
   },
 ];
 
@@ -46,20 +91,65 @@ const config = [
       "no-restricted-imports": [
         "warn",
         {
-          patterns: [...baseRestrictedImportPatterns, ...sellRouteOwnedPatterns],
+          patterns: [
+            ...baseRestrictedImportPatterns,
+            ...routeOwnedPatterns,
+
+            // Prevent shared code from importing route code.
+            ...appImportLeakPatterns,
+          ],
         },
       ],
     },
   },
 
-  // Allow route-local imports of route-owned (sell) _components within the (sell) group.
+  // Allow route-local imports of route-owned folders within each group.
+  // (Within a group we still want to prevent importing from other groups.)
+  ...routeGroups.map((group) => ({
+    files: [`app/[locale]/(${group})/**/*.{js,jsx,ts,tsx}`],
+    rules: {
+      "no-restricted-imports": [
+        "warn",
+        {
+          patterns: [
+            ...baseRestrictedImportPatterns,
+            ...routeOwnedPatterns.filter(
+              (p) => !p.group.some((g) => g.includes(`(${group})/`)),
+            ),
+            ...appImportLeakPatterns,
+          ],
+        },
+      ],
+    },
+  })),
+
+  // Back-compat override: keep existing (sell) behavior explicitly.
   {
     files: ["app/[locale]/(sell)/**/*.{js,jsx,ts,tsx}"],
     rules: {
       "no-restricted-imports": [
         "warn",
         {
-          patterns: [...baseRestrictedImportPatterns],
+          patterns: [
+            ...baseRestrictedImportPatterns,
+            ...routeOwnedPatterns.filter(
+              (p) => !p.group.some((g) => g.includes("(sell)/")),
+            ),
+            ...appImportLeakPatterns,
+          ],
+        },
+      ],
+    },
+  },
+
+  // lib/** must never depend on app/** (route code).
+  {
+    files: ["lib/**/*.{js,jsx,ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "warn",
+        {
+          patterns: [...appImportLeakPatterns],
         },
       ],
     },
@@ -76,6 +166,11 @@ const config = [
           patterns: [
             ...baseRestrictedImportPatterns,
             {
+              group: ["@/hooks/**"],
+              message:
+                "components/ui must not depend on app hooks. Move logic to /hooks or build a composite in components/common or app-owned _components.",
+            },
+            {
               group: ["@/app/**"],
               message:
                 "components/ui must not depend on route code (move UI to components/common or app-owned _components).",
@@ -86,6 +181,8 @@ const config = [
                 "@/components/layout/**",
                 "@/components/providers/**",
                 "@/components/ai-elements/**",
+                "@/components/shared/**",
+                "@/components/product/**",
               ],
               message:
                 "components/ui should be primitives-only; composites belong in components/common or route-owned _components.",

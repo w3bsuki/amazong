@@ -3,29 +3,27 @@ import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
-import { fetchProductByUsernameAndSlug } from "@/lib/data/product-page"
-import { ProductPageContent } from "@/components/shared/product/product-page-content-new"
-import { ProductCard } from "@/components/shared/product/product-card"
+import { fetchProductByUsernameAndSlug, fetchSellerProducts } from "@/lib/data/product-page"
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker"
-import { ReviewsSection } from "@/components/product/reviews/reviews-section"
 import { ProductBreadcrumb } from "@/components/shared/product/product-breadcrumb"
+import { getDeliveryDate } from "../../_lib/delivery-date"
+
+import { ProductGalleryHybrid } from "@/components/shared/product/product-gallery-hybrid"
+import { ProductBuyBox } from "@/components/shared/product/product-buy-box"
+import { MobileStickyBar } from "@/components/shared/product/mobile-sticky-bar"
+import { SimilarItemsBar } from "@/components/shared/product/similar-items-bar"
+import { MobileAccordions } from "@/components/shared/product/mobile-accordions"
+import { SellerProductsGrid } from "@/components/shared/product/seller-products-grid"
+import { MobileSellerCard } from "@/components/shared/product/mobile-seller-card"
+import { CustomerReviewsHybrid } from "@/components/shared/product/customer-reviews-hybrid"
+
+import { ItemSpecifics } from "@/components/shared/product/item-specifics"
 
 // =============================================================================
 // SEO-OPTIMIZED PRODUCT PAGE
 // URL Pattern: /{username}/{productSlug}
 // Example: /indecisive_wear/kotka-winter-jacket
 // =============================================================================
-
-// Helper function to get delivery date
-function getDeliveryDate(locale: string): string {
-  const deliveryDate = new Date()
-  deliveryDate.setDate(deliveryDate.getDate() + 3)
-  return deliveryDate.toLocaleDateString(locale === "bg" ? "bg-BG" : "en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  })
-}
 
 interface ProductPageProps {
   params: Promise<{
@@ -100,7 +98,6 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       index: true,
       follow: true,
     },
-    // JSON-LD will be added in the page component
   }
 }
 
@@ -119,46 +116,55 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound()
   }
 
-  // Get current user (requires auth client with cookies)
-  let currentUserId: string | null = null
-  let isFollowingSeller = false
-  if (authClient) {
-    const { data: { user } } = await authClient.auth.getUser()
-    currentUserId = user?.id || null
-    
-    // Check if user follows this seller
-    if (currentUserId) {
-      // First get the seller profile to get their id
-      const { data: sellerProfile } = await supabase
-        .from("profiles")
-        .select("id")
-        .ilike("username", username)
-        .single()
-      
-      if (sellerProfile && currentUserId !== sellerProfile.id) {
-        const { data: followData } = await authClient
-          .from("store_followers")
-          .select("id")
-          .eq("follower_id", currentUserId)
-          .eq("seller_id", sellerProfile.id)
-          .maybeSingle()
-        isFollowingSeller = !!followData
-      }
-    }
-  }
-
-  // Format delivery date
-  const formattedDeliveryDate = getDeliveryDate(locale)
-
   // Fetch product by username + slug (SEO canonical format)
-  const product = await fetchProductByUsernameAndSlug(supabase, username, productSlug)
+  const productFromDb = await fetchProductByUsernameAndSlug(supabase, username, productSlug)
+  const allowSample = process.env.NODE_ENV !== "production"
 
-  if (!product) {
+  const isSample = !productFromDb
+  if (!productFromDb && !allowSample) {
     notFound()
   }
 
-  const category = product.category
-  const seller = product.seller
+  const sampleSeller = {
+    id: "preview-seller",
+    username,
+    display_name: username || "Seller",
+    avatar_url: null,
+    verified: true,
+    created_at: new Date().toISOString(),
+    is_seller: true,
+  }
+
+  const sampleProduct = {
+    id: "preview-product",
+    title: "Preview Product (Sample)",
+    description:
+      "This is sample data because the product lookup did not return a result. The layout and components are what we're previewing.",
+    price: 129.99,
+    list_price: 159.99,
+    images: ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
+    rating: 4.6,
+    review_count: 128,
+    tags: ["New", "Best Seller", "Limited"],
+    is_boosted: true,
+    seller_id: "preview-seller",
+    slug: productSlug,
+    sku: null,
+    stock: 1,
+    attributes: null,
+    meta_description: null,
+    category_id: null,
+    status: "active" as const,
+    seller: sampleSeller,
+    category: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }
+
+  // Use the DB product if available, otherwise use the sample product (if allowed)
+  const productData = (productFromDb ?? sampleProduct) as any
+  const category = productData.category
+  const seller = productData.seller
 
   // Fetch parent category if exists
   let parentCategory = null
@@ -171,131 +177,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
     parentCategory = parent
   }
 
-  // Fetch related products (with seller's username for URLs and attributes for badges)
-  const { data: relatedProductsRaw } = await supabase
-    .from("products")
-    .select("*")
-    .neq("id", product.id)
-    .eq("status", "active")
-    .limit(6)
-
-  // For each related product, fetch its seller and category
-  const relatedProducts = relatedProductsRaw
-    ? await Promise.all(relatedProductsRaw.map(async (p) => {
-        const { data: relSeller } = await supabase
-          .from("profiles")
-          .select("id, username, display_name, avatar_url, verified")
-          .eq("id", p.seller_id)
-          .single()
-        let relCategory = null
-        if (p.category_id) {
-          const { data } = await supabase
-            .from("categories")
-            .select("id, name, slug")
-            .eq("id", p.category_id)
-            .single()
-          relCategory = data
-        }
-        return { ...p, seller: relSeller, category: relCategory }
-      }))
-    : []
-
-  // Prepare translations for client component
-  const translations = {
-    inStock: t("inStock"),
-    freeDeliveryDate: t("freeDeliveryDate", { date: formattedDeliveryDate }),
-    shipsFrom: t("shipsFrom"),
-    amazonStore: t("amazonStore"),
-    soldBy: t("soldBy"),
-    freeReturns: t("freeReturns"),
-    freeDelivery: t("freeDelivery"),
-    secureTransaction: t("secureTransaction"),
-    aboutThisItem: t("aboutThisItem"),
-    ratingLabel: t("ratingLabel", { rating: product.rating || 0, max: 5 }),
-    ratings: t("ratings", { count: product.review_count || 0 }),
-    // New translation keys for product page
-    shipping: t("shipping"),
-    deliveryLabel: t("deliveryLabel"),
-    returnsLabel: t("returnsLabel"),
-    payments: t("payments"),
-    condition: t("condition"),
-    conditionNew: t("conditionNew"),
-    seeDetails: t("seeDetails"),
-    viewStore: t("viewStore"),
-    enlarge: t("enlarge"),
-    addToWatchlist: t("addToWatchlist"),
-    removeFromWatchlist: t("removeFromWatchlist"),
-    watching: t("watching"),
-    picture: t("picture"),
-    of: t("of"),
-    popularItem: t("popularItem"),
-    watchlistCount: t("watchlistCount"),
-    freeShipping: t("freeShipping"),
-    locatedIn: t("locatedIn"),
-    estimatedDelivery: t("estimatedDelivery"),
-    returns30Days: t("returns30Days"),
-    moneyBackGuarantee: t("moneyBackGuarantee"),
-    getItemOrMoneyBack: t("getItemOrMoneyBack"),
-    learnMore: t("learnMore"),
-    description: t("description"),
-    specifications: t("specifications"),
-    inTheBox: t("inTheBox"),
-    technicalSpecs: t("technicalSpecs"),
-    whatsInTheBox: t("whatsInTheBox"),
-    itemNumber: t("itemNumber"),
-    brand: t("brand"),
-    type: t("type"),
-    model: t("model"),
-    countryOfOrigin: t("countryOfOrigin"),
-    warranty: t("warranty"),
-    months: t("months"),
-    mainProduct: t("mainProduct"),
-    userManual: t("userManual"),
-    warrantyCard: t("warrantyCard"),
-    originalPackaging: t("originalPackaging"),
-    detailedSellerRatings: t("detailedSellerRatings"),
-    averageLast12Months: t("averageLast12Months"),
-    accurateDescription: t("accurateDescription"),
-    reasonableShippingCost: t("reasonableShippingCost"),
-    shippingSpeed: t("shippingSpeed"),
-    communication: t("communication"),
-    sellerFeedback: t("sellerFeedback"),
-    allRatings: t("allRatings"),
-    positive: t("positive"),
-    neutral: t("neutral"),
-    negative: t("negative"),
-    seeAllFeedback: t("seeAllFeedback"),
-    noDescriptionAvailable: t("noDescriptionAvailable"),
-    previousImage: t("previousImage"),
-    nextImage: t("nextImage"),
-    imagePreview: t("imagePreview"),
-    clickToEnlarge: t("clickToEnlarge"),
-    sold: t("sold"),
-    positivePercentage: t("positivePercentage"),
-    moreFrom: t("moreFrom"),
-    similarProduct: t("similarProduct"),
-    viewAllItems: t("viewAllItems"),
-    noFeedbackYet: t("noFeedbackYet"),
-    noRatingsYet: t("noRatingsYet"),
-  }
+  // Fetch related products
+  const relatedProducts = await fetchSellerProducts(supabase, seller.id, productData.id, 10)
 
   // Build JSON-LD structured data for SEO
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://amazong.com"
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.title,
-    description: product.description,
-    image: product.images || [],
-    sku: product.sku || product.id,
-    brand: (product.attributes as Record<string, unknown> | null)?.brand
-      ? { "@type": "Brand", name: (product.attributes as Record<string, unknown>).brand as string }
+    name: productData.title,
+    description: productData.description,
+    image: productData.images || [],
+    sku: productData.sku || productData.id,
+    brand: (productData.attributes as Record<string, unknown> | null)?.brand
+      ? { "@type": "Brand", name: (productData.attributes as Record<string, unknown>).brand as string }
       : undefined,
     offers: {
       "@type": "Offer",
-      price: product.price,
+      price: productData.price,
       priceCurrency: "BGN",
-      availability: product.stock > 0
+      availability: productData.stock > 0
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
       seller: {
@@ -305,11 +206,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
       },
       url: `${siteUrl}/${locale}/${username}/${productSlug}`,
     },
-    aggregateRating: product.review_count && product.review_count > 0
+    aggregateRating: productData.review_count && productData.review_count > 0
       ? {
           "@type": "AggregateRating",
-          ratingValue: product.rating || 0,
-          reviewCount: product.review_count,
+          ratingValue: productData.rating || 0,
+          reviewCount: productData.review_count,
         }
       : undefined,
   }
@@ -344,14 +245,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {
         "@type": "ListItem",
         position: (parentCategory ? 3 : 2) + (category ? 1 : 0),
-        name: product.title,
+        name: productData.title,
         item: `${siteUrl}/${locale}/${username}/${productSlug}`,
       },
     ],
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-background pb-24 lg:pb-10">
+    <div className="min-h-screen bg-background pb-24 lg:pb-10">
+      {isSample && allowSample ? (
+        <div className="border-b bg-emerald-50 text-emerald-900">
+          <div className="container py-2 text-sm">
+            ✨ Preview-style fallback: rendering sample product because lookup returned no result.
+          </div>
+        </div>
+      ) : null}
+
       {/* JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -365,140 +274,141 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {/* Track this product as recently viewed */}
       <RecentlyViewedTracker
         product={{
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          image: product.images?.[0] || null,
-          slug: product.slug || product.id,
+          id: productData.id,
+          title: productData.title,
+          price: productData.price,
+          image: productData.images?.[0] || null,
+          slug: productData.slug || productData.id,
           username: seller?.username,
         }}
       />
 
-      {/* Breadcrumb - Desktop only for cleaner mobile UX */}
-      <div className="hidden md:block md:static z-40 bg-background md:border-0">
+      {/* Breadcrumb - Removed as per user request (eBay style) */}
+      {/* <div className="hidden md:block md:static z-40 bg-background md:border-0">
         <div className="container py-1.5 lg:py-2">
           <ProductBreadcrumb
             locale={locale}
             category={category ? { name: category.name, slug: category.slug } : null}
             parentCategory={parentCategory ? { name: parentCategory.name, slug: parentCategory.slug } : null}
-            productTitle={product.title}
+            productTitle={productData.title}
           />
         </div>
-      </div>
+      </div> */}
 
-      {/* Main Product Content - Full width layout with proper container */}
-      <div className="container pt-2 pb-0 lg:py-4">
-        <ProductPageContent
-          product={{
-            id: product.id,
-            title: product.title,
-            description: product.description,
-            price: product.price,
-            original_price: product.list_price,
-            images: product.images || [],
-            rating: product.rating || 0,
-            reviews_count: product.review_count || 0,
-            tags: product.tags || [],
-            is_boosted: product.is_boosted || false,
-            seller_id: product.seller_id,
-            slug: product.slug ?? undefined,
-          }}
-          seller={seller ? {
-            id: seller.id,
-            username: seller.username ?? undefined,
-            display_name: seller.display_name || seller.username || "Seller",
-            verified: seller.verified ?? false,
-            created_at: seller.created_at,
-          } : null}
-          locale={locale}
-          currentUserId={currentUserId}
-          isFollowingSeller={isFollowingSeller}
-          formattedDeliveryDate={formattedDeliveryDate}
-          t={translations}
+      {/* Main content - Hybrid Layout */}
+      <div className="container pt-1">
+        
+        {/* Similar Items Bar */}
+        <SimilarItemsBar
+            seller={{
+                id: seller.id,
+                username: seller.username,
+                display_name: seller.display_name || seller.username || "Seller",
+                avatar_url: seller.avatar_url,
+            }}
+            thumbnails={(relatedProducts || []).map(p => ({
+                src: p.images?.[0] || "",
+                alt: p.title
+            }))}
         />
-      </div>
 
-      {/* Related Products - eBay "People who viewed" style */}
-      {relatedProducts && relatedProducts.length > 0 && (
-        <div className="container pt-4 pb-3 lg:py-6">
-          <h2 className="text-base lg:text-lg font-semibold text-foreground mb-2 lg:mb-4">
-            {locale === "bg" ? "Хората, които разгледаха това, разгледаха и" : "People who viewed this item also viewed"}
-          </h2>
+        {/* Mobile Seller Card */}
+        <MobileSellerCard
+            store={{
+                name: seller.display_name || seller.username || "Seller",
+                rating: "98%", // Placeholder
+                verified: seller.verified || false,
+                avatarUrl: seller.avatar_url || undefined,
+            }}
+        />
 
-          {/* Mobile: Horizontal scroll with 2 cards visible */}
-          <div className="lg:hidden -mx-3 px-3">
-            <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2">
-              {relatedProducts.map((p, idx) => {
-                const attributes = (p.attributes as Record<string, unknown>) || {}
-                return (
-                  <div key={p.id} className="shrink-0 w-[calc(50%-5px)] snap-start">
-                    <ProductCard
-                      id={p.id}
-                      title={p.title}
-                      price={p.price}
-                      image={p.images?.[0] || "/placeholder.svg"}
-                      rating={p.rating || 0}
-                      reviews={p.review_count || 0}
-                      originalPrice={p.list_price}
-                      tags={p.tags || []}
-                      index={idx}
-                      slug={p.slug}
-                      username={p.seller?.username}
-                      categorySlug={p.category?.slug}
-                      condition={attributes.condition as string}
-                      brand={attributes.brand as string}
-                      make={attributes.make as string}
-                      model={attributes.model as string}
-                      year={attributes.year as string}
-                      location={attributes.location as string}
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          </div>
+        <div className="grid grid-cols-1 gap-form lg:grid-cols-[7fr_3fr] lg:items-start mt-form-sm">
+            {/* Left Column: Images & Desktop Details */}
+            <ProductGalleryHybrid
+                images={(productData.images || []).map((src: string) => ({
+                    src,
+                    alt: productData.title,
+                    width: 1000, // Placeholder
+                    height: 1000, // Placeholder
+                }))}
+                galleryID={`gallery-${productData.id}`}
+            />
 
-          {/* Desktop: Grid layout */}
-          <div className="hidden lg:grid lg:grid-cols-5 xl:grid-cols-6 gap-3">
-            {relatedProducts.map((p, idx) => {
-              const attributes = (p.attributes as Record<string, unknown>) || {}
-              return (
-                <ProductCard
-                  key={p.id}
-                  id={p.id}
-                  title={p.title}
-                  price={p.price}
-                  image={p.images?.[0] || "/placeholder.svg"}
-                  rating={p.rating || 0}
-                  reviews={p.review_count || 0}
-                  originalPrice={p.list_price}
-                  tags={p.tags || []}
-                  index={idx}
-                  slug={p.slug}
-                  username={p.seller?.username}
-                  categorySlug={p.category?.slug}
-                  condition={attributes.condition as string}
-                  brand={attributes.brand as string}
-                  make={attributes.make as string}
-                  model={attributes.model as string}
-                  year={attributes.year as string}
-                  location={attributes.location as string}
-                />
-              )
-            })}
-          </div>
+            {/* Right Column: Buy Box */}
+            <ProductBuyBox
+                product={{
+                    name: productData.title,
+                    price: {
+                        sale: productData.price,
+                        regular: productData.list_price || undefined,
+                        currency: "BGN",
+                    },
+                    store: {
+                        name: seller.display_name || seller.username || "Seller",
+                        rating: "98%", // Placeholder
+                        verified: seller.verified || false,
+                    },
+                    images: (productData.images || []).map((src: string) => ({ src, alt: productData.title })),
+                    hinges: {}, // No variants for now as per data model
+                    shipping: {
+                        text: productData.ships_to_bulgaria 
+                            ? "Ships to Bulgaria" 
+                            : "Does not ship to Bulgaria",
+                        canShip: productData.ships_to_bulgaria || false
+                    },
+                    returns: "30 days returns. Buyer pays for return shipping.", // Placeholder until we have return policy in DB
+                    description: productData.description,
+                    itemSpecifics: (
+                        <ItemSpecifics 
+                            attributes={productData.attributes as Record<string, any>}
+                            condition={productData.condition}
+                            categoryName={category?.name}
+                            parentCategoryName={parentCategory?.name}
+                        />
+                    )
+                }}
+            />
         </div>
-      )}
 
-      {/* Product Reviews Section - Full width, eBay style */}
-      <div id="product-reviews-section" className="border-t bg-background scroll-mt-4">
-        <div className="container py-8">
-          <ReviewsSection
-            rating={product.rating || 0}
-            reviewCount={product.review_count || 0}
-            productId={product.id}
-          />
-        </div>
+        {/* Mobile Accordions */}
+        <MobileAccordions
+            description={productData.description || "No description available."}
+            details={[
+                { label: "Category", value: category?.name || "N/A" },
+                { label: "Condition", value: "New" },
+            ]}
+        />
+
+        {/* Seller Products Grid */}
+        <SellerProductsGrid
+            products={(relatedProducts || []).map(p => ({
+                id: p.id,
+                title: p.title,
+                price: p.price,
+                originalPrice: p.list_price,
+                image: p.images?.[0] || "",
+                rating: p.rating || 0,
+                reviews: p.review_count || 0,
+                sellerName: seller.display_name || seller.username || "Seller",
+                sellerVerified: seller.verified || false,
+                sellerAvatarUrl: seller.avatar_url || "",
+                condition: "New",
+                freeShipping: true,
+                categorySlug: category?.slug || "",
+                attributes: p.attributes as Record<string, string> || {},
+            }))}
+        />
+
+        {/* Customer Reviews */}
+        <CustomerReviewsHybrid
+            rating={productData.rating || 0}
+            reviewCount={productData.review_count || 0}
+            reviews={[]}
+        />
+
+        {/* Mobile Sticky Bar */}
+        <MobileStickyBar />
+
       </div>
     </div>
   )

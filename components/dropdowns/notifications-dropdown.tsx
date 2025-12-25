@@ -1,15 +1,16 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
-import { Link } from "@/i18n/routing"
-import { useTranslations } from "next-intl"
+import { Link, useRouter } from "@/i18n/routing"
+import { useLocale, useTranslations } from "next-intl"
 import { User } from "@supabase/supabase-js"
-import { Bell, Package, ChatCircle, Star, Users, Tag, Check, CheckCircle, CaretRight, X } from "@phosphor-icons/react"
+import { Bell, Package, ChatCircle, Star, Users, Tag, CheckCircle, CaretRight } from "@phosphor-icons/react"
 import { createClient } from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 interface Notification {
   id: string
@@ -26,6 +27,58 @@ interface Notification {
 
 interface NotificationsDropdownProps {
   user: User | null
+}
+
+type NotificationPreferences = {
+  in_app_purchase: boolean
+  in_app_order_status: boolean
+  in_app_message: boolean
+  in_app_review: boolean
+  in_app_system: boolean
+  in_app_promotion: boolean
+}
+
+const DEFAULT_PREFS: NotificationPreferences = {
+  in_app_purchase: true,
+  in_app_order_status: true,
+  in_app_message: true,
+  in_app_review: true,
+  in_app_system: true,
+  in_app_promotion: true,
+}
+
+const isInAppEnabled = (prefs: NotificationPreferences, type: Notification["type"]) => {
+  switch (type) {
+    case "purchase":
+      return prefs.in_app_purchase
+    case "order_status":
+      return prefs.in_app_order_status
+    case "message":
+      return prefs.in_app_message
+    case "review":
+      return prefs.in_app_review
+    case "system":
+      return prefs.in_app_system
+    case "promotion":
+      return prefs.in_app_promotion
+    default:
+      return true
+  }
+}
+
+const getStringFromData = (data: Record<string, unknown> | null | undefined, key: string) => {
+  const value = data?.[key]
+  return typeof value === "string" ? value : null
+}
+
+const getNumberFromData = (data: Record<string, unknown> | null | undefined, key: string) => {
+  const value = data?.[key]
+  if (typeof value === "number") return value
+  if (typeof value === "string") {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+  return null
 }
 
 const getNotificationIcon = (type: Notification["type"]) => {
@@ -70,10 +123,45 @@ const getNotificationLink = (notification: Notification): string => {
 
 export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
   const t = useTranslations("NotificationsDropdown")
+  const locale = useLocale()
+  const router = useRouter()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
+  const [prefs, setPrefs] = useState<NotificationPreferences>(DEFAULT_PREFS)
+  const lastToastIdRef = useRef<string | null>(null)
+
+  const fetchPreferences = useCallback(async () => {
+    if (!user) return
+
+    try {
+      const supabase = createClient()
+      const { data, error } = await (supabase as any)
+        .from("notification_preferences")
+        .select(
+          "in_app_purchase,in_app_order_status,in_app_message,in_app_review,in_app_system,in_app_promotion"
+        )
+        .eq("user_id", user.id)
+        .maybeSingle()
+
+      if (!error && data) {
+        setPrefs({
+          in_app_purchase: data.in_app_purchase ?? true,
+          in_app_order_status: data.in_app_order_status ?? true,
+          in_app_message: data.in_app_message ?? true,
+          in_app_review: data.in_app_review ?? true,
+          in_app_system: data.in_app_system ?? true,
+          in_app_promotion: data.in_app_promotion ?? true,
+        })
+      } else {
+        setPrefs(DEFAULT_PREFS)
+      }
+    } catch {
+      // If the table isn't present yet (or any other error), default to all enabled.
+      setPrefs(DEFAULT_PREFS)
+    }
+  }, [user])
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return
@@ -87,13 +175,19 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
       .limit(10)
 
     if (!error && data) {
-      setNotifications(data as Notification[])
-      setUnreadCount(data.filter(n => !n.is_read).length)
+      const filtered = (data as Notification[]).filter(n => isInAppEnabled(prefs, n.type))
+      setNotifications(filtered)
+      setUnreadCount(filtered.filter(n => !n.is_read).length)
     }
     setIsLoading(false)
-  }, [user])
+  }, [user, prefs])
 
-  // Initial fetch
+  // Load preferences once per user
+  useEffect(() => {
+    fetchPreferences()
+  }, [fetchPreferences])
+
+  // Fetch notifications whenever preferences (filtering) changes
   useEffect(() => {
     fetchNotifications()
   }, [fetchNotifications])
@@ -115,8 +209,112 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
         },
         (payload) => {
           const newNotification = payload.new as Notification
+
+          if (!isInAppEnabled(prefs, newNotification.type)) {
+            return
+          }
+
           setNotifications(prev => [newNotification, ...prev.slice(0, 9)])
           setUnreadCount(prev => prev + 1)
+
+          // Toast important notifications (avoid duplicates).
+          if (lastToastIdRef.current !== newNotification.id) {
+            lastToastIdRef.current = newNotification.id
+
+            if (newNotification.type === "purchase") {
+              const buyerName = getStringFromData(newNotification.data, "buyer_name")
+              const productTitle =
+                getStringFromData(newNotification.data, "product_title") ??
+                getStringFromData(newNotification.data, "title")
+              const price = getNumberFromData(newNotification.data, "price")
+
+              const currencyLocale = locale === "bg" ? "bg-BG" : "en-US"
+              const formattedPrice =
+                typeof price === "number"
+                  ? new Intl.NumberFormat(currencyLocale, { style: "currency", currency: "BGN" }).format(price)
+                  : null
+
+              const baseDescription = (
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-foreground line-clamp-1">
+                      {buyerName ? (locale === "bg" ? `${buyerName} направи поръчка` : `${buyerName} placed an order`) : (locale === "bg" ? "Нова поръчка" : "New order")}
+                    </div>
+                    <div className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                      {productTitle ? `“${productTitle}”` : (newNotification.body ?? "")}
+                    </div>
+                    {formattedPrice && (
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {locale === "bg" ? "Сума:" : "Amount:"} {formattedPrice}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+
+              // Show immediately, then try to enrich with product image.
+              toast(newNotification.title, {
+                id: newNotification.id,
+                description: baseDescription,
+                action: {
+                  label: locale === "bg" ? "Виж продажбата" : "View Sale",
+                  onClick: () => router.push("/account/sales"),
+                },
+              })
+
+              // Optional: load a product image for a richer toast.
+              const productId = newNotification.product_id
+              if (productId) {
+                const supabase = createClient()
+                void (async () => {
+                  const { data } = await supabase
+                    .from("products")
+                    .select(
+                      "images, product_images(image_url,thumbnail_url,display_order,is_primary)"
+                    )
+                    .eq("id", productId)
+                    .maybeSingle()
+
+                  const productImages = (data as any)?.product_images as
+                    | Array<{ image_url: string | null; thumbnail_url: string | null; is_primary: boolean | null; display_order: number | null }>
+                    | null
+
+                  const primary = productImages?.find((img) => img.is_primary) ??
+                    productImages?.slice().sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))[0]
+
+                  const imageUrl =
+                    primary?.thumbnail_url ??
+                    primary?.image_url ??
+                    ((data as any)?.images?.[0] as string | undefined) ??
+                    null
+
+                  if (!imageUrl) return
+
+                  toast(newNotification.title, {
+                    id: newNotification.id,
+                    description: (
+                      <div className="flex items-start gap-3">
+                        <img
+                          src={imageUrl ?? undefined}
+                          alt={productTitle ?? "Product"}
+                          className="h-10 w-10 rounded-md object-cover border"
+                        />
+                        {baseDescription}
+                      </div>
+                    ),
+                    action: {
+                      label: locale === "bg" ? "Виж продажбата" : "View Sale",
+                      onClick: () => router.push("/account/sales"),
+                    },
+                  })
+                })()
+              }
+            } else if (newNotification.type === "order_status") {
+              toast(newNotification.title, {
+                description: newNotification.body ?? undefined,
+              })
+            }
+          }
         }
       )
       .subscribe()
@@ -124,7 +322,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [user])
+  }, [user, prefs, locale, router])
 
   const markAsRead = async (notificationId: string) => {
     const supabase = createClient()
@@ -151,6 +349,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
     <HoverCard open={isOpen} onOpenChange={setIsOpen} openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
         <Button
+          data-testid="notifications-dropdown"
           variant="ghost"
           size="icon-xl"
           className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
@@ -165,7 +364,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
         </Button>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-96 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
+        className="w-80 sm:w-96 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
         align="end"
         sideOffset={8}
       >

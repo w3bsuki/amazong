@@ -14,7 +14,7 @@ import {
   ReviewField,
 } from "../fields";
 import { StepperWrapper } from "./stepper-wrapper";
-import type { SellFormDataV4 } from "@/lib/sell-form-schema-v4";
+import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
 
 // ============================================================================
 // MOBILE LAYOUT - Clean step-by-step wizard with proper mobile UX

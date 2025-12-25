@@ -1,5 +1,5 @@
 import { test, expect, formatViolations } from './fixtures/axe-test'
-import type { Page } from '@playwright/test'
+import type { Page } from './fixtures/test'
 
 /**
  * Accessibility Tests for WCAG 2.1 AA Compliance
@@ -58,9 +58,11 @@ const KNOWN_VIOLATIONS: Record<string, string> = {
  * Wait for page to be fully loaded and interactive
  */
 async function waitForPageReady(page: Page) {
-  await page.waitForLoadState('networkidle')
-  // Wait for any lazy-loaded content
-  await page.waitForTimeout(500)
+  // Avoid 'networkidle' in Next.js dev mode (HMR/websockets can keep the network busy)
+  await page.waitForLoadState('domcontentloaded')
+  await page.locator('main').first().waitFor({ state: 'visible' })
+  // Give a brief moment for client hydration / lazy content
+  await page.waitForTimeout(250)
 }
 
 // ============================================================================

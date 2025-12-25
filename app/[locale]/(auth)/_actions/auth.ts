@@ -69,6 +69,11 @@ const resetPasswordSchema = z
 
 export async function checkUsernameAvailability(username: string): Promise<{ available: boolean }>
 {
+  if (process.env.NEXT_PUBLIC_E2E === "true") {
+    // E2E should not depend on external Supabase availability.
+    return { available: true }
+  }
+
   const cleaned = username.trim().toLowerCase()
   if (!cleaned || cleaned.length < 3) return { available: false }
 

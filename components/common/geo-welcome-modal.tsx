@@ -71,16 +71,44 @@ interface GeoWelcomeModalProps {
 
 export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
   const t = useTranslations('GeoWelcome');
-  const [hydrated, setHydrated] = useState(false);
+  const [safeToOpen, setSafeToOpen] = useState(false);
+
+  // Never block E2E runs with region/cookie modals.
+  if (process.env.NEXT_PUBLIC_E2E === 'true') {
+    return null;
+  }
 
   useEffect(() => {
-    // Use a small timeout to ensure React hydration has fully completed.
-    // Dialogs add aria-hidden to siblings which causes hydration mismatches
-    // if they open before hydration finishes.
-    const timer = setTimeout(() => {
-      setHydrated(true);
-    }, 100);
-    return () => clearTimeout(timer);
+    // IMPORTANT: Radix Dialog adds aria-hidden to siblings.
+    // In Next.js, different Client Component boundaries hydrate at different times.
+    // If this dialog opens too early it can mutate DOM nodes (e.g. <header>) before
+    // their boundary hydrates, triggering hydration mismatch warnings.
+    //
+    // Waiting until the browser is idle (or a short fallback timeout) keeps hydration stable.
+    let cancelled = false;
+    const markReady = () => {
+      if (!cancelled) setSafeToOpen(true);
+    };
+
+    // Prefer requestIdleCallback when available.
+    const w = window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    if (typeof w.requestIdleCallback === 'function') {
+      const id = w.requestIdleCallback(markReady, { timeout: 1000 });
+      return () => {
+        cancelled = true;
+        w.cancelIdleCallback?.(id);
+      };
+    }
+
+    const timer = setTimeout(markReady, 750);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, []);
 
   const {
@@ -94,9 +122,8 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
     closeModal,
   } = useGeoWelcome();
 
-  // Avoid SSR/client mismatches by only rendering after hydration completes.
-  // The hydrated check ensures we don't open the dialog during React's hydration phase.
-  if (!hydrated || isLoading || !isOpen) {
+  // Avoid SSR/client mismatches by only rendering after the app is safe to open dialogs.
+  if (!safeToOpen || isLoading || !isOpen) {
     return null;
   }
 

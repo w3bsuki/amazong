@@ -37,6 +37,7 @@ import {
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { createBillingPortalSession } from "@/app/[locale]/(account)/_actions/subscriptions"
 import { format, formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
 
@@ -289,18 +290,14 @@ export function BillingContent({
   const handleManageSubscription = async () => {
     setIsPortalLoading(true)
     try {
-      const response = await fetch('/api/subscriptions/portal', {
-        method: 'POST',
-      })
+      const { url, error } = await createBillingPortalSession()
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to open portal')
+      if (error) {
+        throw new Error(error)
       }
 
-      if (data.url) {
-        window.location.href = data.url
+      if (url) {
+        window.location.href = url
       }
     } catch (error) {
       console.error('Portal error:', error)

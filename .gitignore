@@ -37,8 +37,15 @@ tsconfig.tsbuildinfo
 
 # Playwright test output
 /playwright-report/
+/playwright-report-*/
 /test-results/
 /blob-report/
+
+# Typecheck/task outputs
+tsc.task.out
+tsc.err
+*.task.out
+*.err
 
 # Lighthouse CI output
 /.lighthouseci/

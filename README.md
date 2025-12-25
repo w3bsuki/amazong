@@ -46,6 +46,7 @@ Use these rules before adding new files (see [STRUCTURE.md](./STRUCTURE.md) for 
 Planning and audit docs live in-repo (this workspace does not use a `/docs` tree):
 
 - [STRUCTURE.md](STRUCTURE.md) — canonical phased refactor plan
+- [PRODUCT_IMPROVEMENTS_PLAN.md](PRODUCT_IMPROVEMENTS_PLAN.md) — post-refactor UI/UX + behavior improvements plan
 - [cleanup/FULL_CODEBASE_AUDIT.md](cleanup/FULL_CODEBASE_AUDIT.md) — dead code / duplicates / cycles
 - [cleanup/FILE_INVENTORY.md](cleanup/FILE_INVENTORY.md) — file inventory (used/unused flags)
 - [production/02-CLEANUP.md](production/02-CLEANUP.md) — cleanup execution checklist

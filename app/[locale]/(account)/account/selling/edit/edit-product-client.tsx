@@ -14,6 +14,14 @@ import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities"
 import { useToast } from "@/hooks/use-toast"
 import {
   ArrowLeft,
@@ -31,6 +39,10 @@ interface Product {
   description: string | null
   price: number
   list_price: number | null
+  is_on_sale?: boolean | null
+  sale_percent?: number | null
+  sale_end_date?: string | null
+  seller_city?: string | null
   stock: number
   images: string[] | null
   is_boosted: boolean | null
@@ -64,6 +76,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
   // Discount state
   const [isOnSale, setIsOnSale] = useState(false)
   const [originalPrice, setOriginalPrice] = useState("")
+  const [saleEndDateLocal, setSaleEndDateLocal] = useState("")
   
   // Boost state
   const [isBoosted, setIsBoosted] = useState(false)
@@ -73,6 +86,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
   const [shipsEurope, setShipsEurope] = useState(false)
   const [shipsUSA, setShipsUSA] = useState(false)
   const [shipsWorldwide, setShipsWorldwide] = useState(false)
+  const [sellerCity, setSellerCity] = useState<string>("")
 
   useEffect(() => {
     async function fetchProduct() {
@@ -113,11 +127,31 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
       setShipsEurope(data.ships_to_europe ?? false)
       setShipsUSA(data.ships_to_usa ?? false)
       setShipsWorldwide(data.ships_to_worldwide ?? false)
+      setSellerCity((data.seller_city as string | null) || "")
       
-      // Check if product is on sale (has list_price > price)
-      if (data.list_price && data.list_price > data.price) {
+      // Truth semantics: prefer explicit sale fields; fall back to legacy list_price > price.
+      const truthOnSale = Boolean(data.is_on_sale) && (Number(data.sale_percent) || 0) > 0
+      const legacyOnSale = Boolean(data.list_price && data.list_price > data.price)
+
+      if (truthOnSale || legacyOnSale) {
         setIsOnSale(true)
-        setOriginalPrice(String(data.list_price))
+        if (data.list_price && data.list_price > data.price) {
+          setOriginalPrice(String(data.list_price))
+        } else {
+          setOriginalPrice("")
+        }
+      }
+
+      if (data.sale_end_date) {
+        const d = new Date(data.sale_end_date)
+        if (!Number.isNaN(d.getTime())) {
+          // Convert to datetime-local value in local time.
+          const tzOffsetMs = d.getTimezoneOffset() * 60 * 1000
+          const local = new Date(d.getTime() - tzOffsetMs)
+          setSaleEndDateLocal(local.toISOString().slice(0, 16))
+        }
+      } else {
+        setSaleEndDateLocal("")
       }
       
       setIsLoading(false)
@@ -132,6 +166,13 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
     const current = parseFloat(price)
     if (orig <= 0 || current >= orig) return 0
     return Math.round(((orig - current) / orig) * 100)
+  }
+
+  const getSaleEndDateIso = (): string | null => {
+    if (!saleEndDateLocal) return null
+    const d = new Date(saleEndDateLocal)
+    if (Number.isNaN(d.getTime())) return null
+    return d.toISOString()
   }
 
   const handleSave = async () => {
@@ -150,13 +191,20 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
       ships_to_europe: shipsEurope,
       ships_to_usa: shipsUSA,
       ships_to_worldwide: shipsWorldwide,
+      seller_city: sellerCity || null,
     }
 
     // Handle discount pricing
     if (isOnSale && originalPrice) {
       updateData.list_price = parseFloat(originalPrice)
+      updateData.is_on_sale = true
+      updateData.sale_percent = calculateDiscount()
+      updateData.sale_end_date = getSaleEndDateIso()
     } else {
       updateData.list_price = null
+      updateData.is_on_sale = false
+      updateData.sale_percent = 0
+      updateData.sale_end_date = null
     }
 
     const { error } = await supabase
@@ -348,6 +396,18 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                         </span>
                       </div>
                     )}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="saleEndDate" className="text-deal font-medium">
+                        {locale === 'bg' ? 'Край на офертата (по избор)' : 'Sale end date (optional)'}
+                      </Label>
+                      <Input
+                        id="saleEndDate"
+                        type="datetime-local"
+                        value={saleEndDateLocal}
+                        onChange={(e) => setSaleEndDateLocal(e.target.value)}
+                      />
+                    </div>
                   </div>
                 )}
               </CardContent>
@@ -366,6 +426,28 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {shipsBulgaria && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">
+                      {locale === 'bg' ? 'Град (за Наблизо)' : 'City (for Near Me)'}
+                    </Label>
+                    <Select value={sellerCity} onValueChange={setSellerCity}>
+                      <SelectTrigger className="h-11 rounded-lg">
+                        <SelectValue placeholder={locale === 'bg' ? 'Изберете град...' : 'Select city...'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BULGARIAN_CITIES.map((city) => (
+                          <SelectItem key={city.value} value={city.value} className="font-medium">
+                            {locale === 'bg' ? city.labelBg : city.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      {locale === 'bg' ? 'Градът, от който изпращате продукта' : 'The city you ship the item from'}
+                    </p>
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex items-center gap-2">

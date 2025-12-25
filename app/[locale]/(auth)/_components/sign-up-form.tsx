@@ -93,9 +93,30 @@ export function SignUpForm({ locale }: { locale: string }) {
 
   const usernameIndicator = (() => {
     if (!username || username.trim().length < 3) return null
-    if (isCheckingUsername) return <SpinnerGap className="size-4 animate-spin text-gray-400" weight="bold" />
-    if (usernameAvailable === true) return <CheckCircle className="size-4 text-emerald-600" weight="fill" />
-    if (usernameAvailable === false) return <X className="size-4 text-red-500" />
+    if (isCheckingUsername) {
+      return (
+        <span data-testid="username-availability" aria-label="Checking username availability">
+          <span className="sr-only">Checking username availability</span>
+          <SpinnerGap className="size-4 animate-spin text-gray-400" weight="bold" />
+        </span>
+      )
+    }
+    if (usernameAvailable === true) {
+      return (
+        <span data-testid="username-availability" aria-label="Username available">
+          <span className="sr-only">Username available</span>
+          <CheckCircle className="size-4 text-emerald-600" weight="fill" />
+        </span>
+      )
+    }
+    if (usernameAvailable === false) {
+      return (
+        <span data-testid="username-availability" aria-label="Username unavailable">
+          <span className="sr-only">Username unavailable</span>
+          <X className="size-4 text-red-500" />
+        </span>
+      )
+    }
     return null
   })()
 

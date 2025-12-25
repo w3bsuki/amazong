@@ -9,8 +9,8 @@ import {
   defaultSellFormValuesV4,
   calculateFormProgress,
   type ProgressItem,
-} from "@/lib/sell-form-schema-v4";
-import type { Category } from "./types";
+} from "@/lib/sell/schema-v4";
+import type { Category } from "../_lib/types";
 
 // ============================================================================
 // SELL FORM CONTEXT - Extended state beyond react-hook-form

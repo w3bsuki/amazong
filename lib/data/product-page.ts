@@ -40,3 +40,27 @@ export async function fetchProductByUsernameAndSlug(
 
   return { ...product, seller: profile, category }
 }
+
+export async function fetchSellerProducts(
+  supabase: ReturnType<typeof createStaticClient>,
+  sellerId: string,
+  excludeProductId?: string,
+  limit = 10
+) {
+  if (!supabase) return []
+
+  let query = supabase
+    .from("products")
+    .select("*")
+    .eq("seller_id", sellerId)
+    .order("created_at", { ascending: false })
+    .limit(limit)
+
+  if (excludeProductId) {
+    query = query.neq("id", excludeProductId)
+  }
+
+  const { data } = await query
+  return data || []
+}
+

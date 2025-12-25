@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 
-import type { Seller } from "./top-sellers-types"
+import type { Seller } from "../_lib/top-sellers-types"
 
 export default function SellersGrid({
   sellers,

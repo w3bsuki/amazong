@@ -1,6 +1,6 @@
 # Phase 0 — Route Map
 
-Generated: 2025-12-21T14:44:27.396Z
+Generated: 2025-12-23T12:59:47.489Z
 
 ## Root (app/[locale])
 - Special files: error.tsx, layout.tsx, loading.tsx, not-found.tsx
@@ -68,40 +68,24 @@ Generated: 2025-12-21T14:44:27.396Z
 
 ## (main)
 - (main) — layout: layout.tsx | page: page.tsx
+- (main)/(legal)/privacy — page: page.tsx
+- (main)/(legal)/returns — page: page.tsx
+- (main)/(legal)/terms — page: page.tsx
+- (main)/(support)/contact — page: page.tsx
+- (main)/(support)/customer-service — page: page.tsx
+- (main)/(support)/help — page: page.tsx
 - (main)/about — page: page.tsx
 - (main)/cart — page: page.tsx
 - (main)/categories — page: page.tsx
 - (main)/categories/[slug] — page: page.tsx
-- (main)/component-audit — page: page.tsx
-- (main)/contact — page: page.tsx
-- (main)/customer-service — page: page.tsx
-- (main)/demo — page: page.tsx
-- (main)/demo/cards — page: page.tsx
-- (main)/demo/cards/gpt — page: page.tsx
-- (main)/demo/cards/marketplace — page: page.tsx
-- (main)/demo/cards/merged — page: page.tsx
-- (main)/demo/cards/v2 — page: page.tsx
-- (main)/demo/gemini — page: page.tsx
-- (main)/demo/gpt — page: page.tsx
-- (main)/demo/landing — page: page.tsx
-- (main)/demo/landing-gemini — page: page.tsx
-- (main)/demo/landing-gemini-mobile — page: page.tsx
-- (main)/demo/landing-gpt — page: page.tsx
-- (main)/demo/landing-mobile — page: page.tsx
-- (main)/demo/landing1 — page: page.tsx
-- (main)/demo/plans — page: page.tsx
 - (main)/gift-cards — page: page.tsx
-- (main)/help — page: page.tsx
 - (main)/members — page: page.tsx
-- (main)/privacy — page: page.tsx
 - (main)/product/[...slug] — page: page.tsx
 - (main)/product/[id] — page: page.tsx
 - (main)/registry — page: page.tsx
-- (main)/returns — page: page.tsx
 - (main)/search — page: page.tsx
 - (main)/seller/dashboard — page: page.tsx
 - (main)/sellers — page: page.tsx
-- (main)/terms — page: page.tsx
 - (main)/todays-deals — page: page.tsx
 - (main)/wishlist — page: page.tsx
 - (main)/wishlist/shared/[token] — page: page.tsx

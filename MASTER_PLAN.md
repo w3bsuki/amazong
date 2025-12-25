@@ -6,6 +6,14 @@ This repo’s active plan is intentionally consolidated into existing top-level 
 
 - [STRUCTURE.md](STRUCTURE.md) — the phased plan we will follow (ownership rules, phase gates, acceptance criteria).
 
+## UX alignment (correctness-first)
+
+- [UX.md](UX.md) — UX correctness + frontend/backend alignment plan (recommended before broad cleanup/dependency pruning).
+
+## Post-refactor product plan
+
+- [PRODUCT_IMPROVEMENTS_PLAN.md](PRODUCT_IMPROVEMENTS_PLAN.md) — UI/UX + behavior improvements to execute after the structural refactor.
+
 ## Evidence / inputs (read before deleting anything)
 
 - [cleanup/FULL_CODEBASE_AUDIT.md](cleanup/FULL_CODEBASE_AUDIT.md) — audit results (dead code, duplicates, cycles).

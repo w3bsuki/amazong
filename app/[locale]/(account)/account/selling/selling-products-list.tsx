@@ -50,6 +50,9 @@ interface Product {
   description: string | null
   price: number
   list_price: number | null
+  is_on_sale: boolean | null
+  sale_percent: number | null
+  sale_end_date: string | null
   stock: number
   images: string[]
   rating: number | null
@@ -152,6 +155,25 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
       style: 'currency',
       currency: 'EUR',
     }).format(value)
+  }
+
+  const getSalePercentForDisplay = (product: Product) => {
+    const percent = Number(product.sale_percent || 0)
+    if (percent > 0) return Math.round(percent)
+
+    if (product.list_price && product.list_price > product.price) {
+      return Math.round(((product.list_price - product.price) / product.list_price) * 100)
+    }
+    return 0
+  }
+
+  const isSaleActive = (product: Product) => {
+    const truth = Boolean(product.is_on_sale) && (Number(product.sale_percent) || 0) > 0
+    if (!truth) return false
+    if (!product.sale_end_date) return true
+    const d = new Date(product.sale_end_date)
+    if (Number.isNaN(d.getTime())) return true
+    return d.getTime() > Date.now()
   }
 
   const openDiscountDialog = (product: Product) => {
@@ -283,6 +305,8 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
         {productsList.map((product) => {
           const boosted = isBoostActive(product)
           const daysLeft = getBoostDaysLeft(product)
+          const saleActive = isSaleActive(product)
+          const salePercent = getSalePercentForDisplay(product)
           
           return (
             <div 
@@ -326,13 +350,13 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       {product.title}
                     </Link>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className={`text-sm font-semibold ${product.list_price && product.list_price > product.price ? 'text-deal' : 'text-foreground'}`}>
+                      <span className={`text-sm font-semibold ${saleActive ? 'text-deal' : 'text-foreground'}`}>
                         {formatCurrency(Number(product.price))}
                       </span>
-                      {product.list_price && product.list_price > product.price && (
+                      {saleActive && salePercent > 0 && (
                         <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-[10px] px-1.5 py-0">
                           <Tag weight="fill" className="size-2.5 mr-0.5" />
-                          -{Math.round(((product.list_price - product.price) / product.list_price) * 100)}%
+                          -{salePercent}%
                         </Badge>
                       )}
                     </div>
@@ -463,6 +487,8 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
         {productsList.map((product) => {
           const boosted = isBoostActive(product)
           const daysLeft = getBoostDaysLeft(product)
+          const saleActive = isSaleActive(product)
+          const salePercent = getSalePercentForDisplay(product)
           
           return (
             <div 
@@ -504,10 +530,10 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                 >
                   {product.title}
                 </Link>
-                {product.list_price && product.list_price > product.price && (
+                {saleActive && salePercent > 0 && (
                   <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-xs shrink-0">
                     <Tag weight="fill" className="size-3 mr-0.5" />
-                    -{Math.round(((product.list_price - product.price) / product.list_price) * 100)}%
+                    -{salePercent}%
                   </Badge>
                 )}
                 {boosted && (
@@ -519,7 +545,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
               </div>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
                 <div className="flex items-baseline gap-1.5">
-                  <span className={`font-semibold ${product.list_price && product.list_price > product.price ? 'text-deal' : 'text-foreground'}`}>
+                  <span className={`font-semibold ${saleActive ? 'text-deal' : 'text-foreground'}`}>
                     {formatCurrency(Number(product.price))}
                   </span>
                   {product.list_price && product.list_price > product.price && (

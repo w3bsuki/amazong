@@ -1,5 +1,7 @@
 "use client"
 
+import { Package, FileText, Info } from "lucide-react"
+
 interface ProductSpecsProps {
   productId: string
   description: string | null
@@ -33,6 +35,7 @@ export function ProductSpecs({
   variant,
   t,
 }: ProductSpecsProps) {
+  // eBay-style item specifics - organized as clean key-value pairs
   const specs = [
     { label: t.itemNumber, value: productId.slice(0, 8) },
     { label: t.condition.replace(':', ''), value: t.conditionNew },
@@ -88,60 +91,101 @@ export function ProductSpecs({
     )
   }
 
-  // Desktop variant - Card-based 3-column layout
+  // Desktop variant - eBay-style clean 2-column table layout
+  // Based on eBay's ItemSpecifics pattern: professional, scannable, organized
   return (
-    <div className="hidden lg:block pt-6">
-      <div className="grid lg:grid-cols-3 gap-4">
-        {/* Description Card */}
-        <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-lg p-5">
-          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-            <span className="w-1 h-4 bg-verified rounded-full" />
-            {t.description}
-          </h3>
-          {description ? (
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {description}
-            </p>
-          ) : (
-            <p className="text-sm text-muted-foreground/60 italic">
-              {t.noDescriptionAvailable}
-            </p>
-          )}
-        </div>
-
-        {/* Specifications Card */}
-        <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-lg p-5">
-          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-            <span className="w-1 h-4 bg-verified rounded-full" />
-            {t.specifications}
-          </h3>
-          <div className="space-y-2.5">
-            {specs.slice(0, 5).map((spec, idx) => (
-              <div key={idx} className="flex justify-between items-center py-1.5 border-b border-border/30 last:border-0">
-                <span className="text-xs font-medium text-muted-foreground">{spec.label}</span>
-                <span className="text-sm font-medium text-foreground">{spec.value}</span>
-              </div>
-            ))}
+    <div className="hidden lg:block pt-8">
+      <div className="space-y-8">
+        
+        {/* Item Specifics Section - eBay-style 2-column table */}
+        <section>
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="flex size-7 items-center justify-center rounded-md bg-primary/10">
+              <Info className="size-4 text-primary" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground">
+              {t.specifications}
+            </h3>
           </div>
-        </div>
+          
+          {/* eBay-style specifications table - clean 2-column grid */}
+          <div className="rounded-lg border border-border overflow-hidden">
+            <table className="w-full">
+              <tbody>
+                {specs.map((spec, idx) => (
+                  <tr 
+                    key={idx} 
+                    className={idx % 2 === 0 ? "bg-muted/30" : "bg-background"}
+                  >
+                    <td className="px-4 py-3 text-sm font-medium text-muted-foreground w-2/5 border-r border-border/50">
+                      {spec.label}
+                    </td>
+                    <td className="px-4 py-3 text-sm font-medium text-foreground">
+                      {spec.value}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-        {/* Contents Card */}
-        <div className="bg-muted/30 dark:bg-muted/10 border border-border/50 rounded-lg p-5">
-          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-            <span className="w-1 h-4 bg-verified rounded-full" />
-            {t.inTheBox}
-          </h3>
-          <ul className="space-y-2.5">
-            {boxContents.map((content, idx) => (
-              <li key={idx} className="flex items-center gap-3 text-sm">
-                <span className="w-6 h-6 flex items-center justify-center bg-verified/10 text-verified text-[10px] font-bold rounded-md shrink-0">
-                  {content.qty}
-                </span>
-                <span className="text-foreground font-medium text-sm">{content.item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* Description Section */}
+        <section>
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="flex size-7 items-center justify-center rounded-md bg-info/10">
+              <FileText className="size-4 text-info" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground">
+              {t.description}
+            </h3>
+          </div>
+          
+          <div className="rounded-lg border border-border bg-muted/20 p-5">
+            {description ? (
+              <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">
+                {description}
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                {t.noDescriptionAvailable}
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* What's in the Box Section - eBay-style checklist */}
+        <section>
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="flex size-7 items-center justify-center rounded-md bg-success/10">
+              <Package className="size-4 text-success" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground">
+              {t.inTheBox}
+            </h3>
+          </div>
+          
+          <div className="rounded-lg border border-border overflow-hidden">
+            <div className="grid grid-cols-2 divide-x divide-border">
+              {boxContents.map((content, idx) => (
+                <div 
+                  key={idx} 
+                  className={`flex items-center gap-3 px-4 py-3 ${
+                    idx < 2 ? "border-b border-border" : ""
+                  } ${idx % 2 === 0 ? "bg-muted/30" : "bg-background"}`}
+                >
+                  <span className="flex size-6 items-center justify-center rounded-md bg-success/10 text-success text-xs font-bold shrink-0">
+                    {content.qty}
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {content.item}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        
       </div>
     </div>
   )

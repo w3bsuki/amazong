@@ -20,6 +20,7 @@ export function AccountHeader() {
       '/account/wishlist': { en: 'Wishlist', bg: 'Любими' },
       '/account/security': { en: 'Security', bg: 'Сигурност' },
       '/account/addresses': { en: 'Addresses', bg: 'Адреси' },
+      '/account/notifications': { en: 'Notifications', bg: 'Известия' },
       '/account/payments': { en: 'Payments', bg: 'Плащания' },
       '/account/selling': { en: 'Selling', bg: 'Продавам' },
       '/account/sales': { en: 'Sales', bg: 'Продажби' },

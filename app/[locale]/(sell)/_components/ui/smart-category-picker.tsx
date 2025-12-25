@@ -26,7 +26,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { Category } from "../types";
+import type { Category } from "../../_lib/types";
 
 interface SmartCategoryPickerProps {
   categories: Category[];

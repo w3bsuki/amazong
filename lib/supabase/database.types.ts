@@ -669,6 +669,63 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          email_message: boolean
+          email_order_status: boolean
+          email_promotion: boolean
+          email_purchase: boolean
+          email_review: boolean
+          email_system: boolean
+          in_app_message: boolean
+          in_app_order_status: boolean
+          in_app_promotion: boolean
+          in_app_purchase: boolean
+          in_app_review: boolean
+          in_app_system: boolean
+          push_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_message?: boolean
+          email_order_status?: boolean
+          email_promotion?: boolean
+          email_purchase?: boolean
+          email_review?: boolean
+          email_system?: boolean
+          in_app_message?: boolean
+          in_app_order_status?: boolean
+          in_app_promotion?: boolean
+          in_app_purchase?: boolean
+          in_app_review?: boolean
+          in_app_system?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_message?: boolean
+          email_order_status?: boolean
+          email_promotion?: boolean
+          email_purchase?: boolean
+          email_review?: boolean
+          email_system?: boolean
+          in_app_message?: boolean
+          in_app_order_status?: boolean
+          in_app_promotion?: boolean
+          in_app_purchase?: boolean
+          in_app_review?: boolean
+          in_app_system?: boolean
+          push_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           delivered_at: string | null
@@ -932,6 +989,7 @@ export type Database = {
           is_boosted: boolean | null
           is_featured: boolean | null
           is_prime: boolean | null
+          is_on_sale: boolean | null
           list_price: number | null
           listing_type: string | null
           meta_description: string | null
@@ -940,6 +998,8 @@ export type Database = {
           price: number
           rating: number | null
           review_count: number | null
+          sale_end_date: string | null
+          sale_percent: number | null
           search_vector: unknown
           seller_city: string | null
           seller_id: string
@@ -1197,6 +1257,7 @@ export type Database = {
           images?: string[] | null
           product_id: string
           rating: number
+              is_on_sale?: boolean | null
           seller_response?: string | null
           seller_response_at?: string | null
           title?: string | null
@@ -1205,6 +1266,8 @@ export type Database = {
         }
         Update: {
           comment?: string | null
+              sale_end_date?: string | null
+              sale_percent?: number | null
           created_at?: string
           helpful_count?: number | null
           id?: string
@@ -1320,6 +1383,7 @@ export type Database = {
           response_time_hours: number | null
           seller_id: string
           shipped_on_time_pct: number | null
+          is_on_sale?: boolean | null
           shipping_speed_pct: number | null
           total_listings: number | null
           total_revenue: number | null
@@ -1328,6 +1392,8 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          sale_end_date?: string | null
+          sale_percent?: number | null
           active_listings?: number | null
           average_rating?: number | null
           communication_pct?: number | null

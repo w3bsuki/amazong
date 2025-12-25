@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
-import { conditionOptions } from "@/lib/sell-form-schema-v4";
+import { conditionOptions } from "@/lib/sell/schema-v4";
 
 // ============================================================================
 // REVIEW FIELD - Final review step using context pattern

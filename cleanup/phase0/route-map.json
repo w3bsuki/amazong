@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-12-21T14:44:27.396Z",
+  "generatedAt": "2025-12-23T12:59:47.489Z",
   "appLocaleDir": "app/[locale]",
   "groups": {
     "account": {
@@ -13,6 +13,14 @@
           ],
           "other": [
             "app/[locale]/(account)/account-layout-content.tsx"
+          ]
+        },
+        "app/[locale]/(account)/_actions": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/_actions/subscriptions.ts"
           ]
         },
         "app/[locale]/(account)/@modal": {
@@ -53,17 +61,19 @@
             "app/[locale]/(account)/account/_components/account-chart.tsx",
             "app/[locale]/(account)/account/_components/account-header.tsx",
             "app/[locale]/(account)/account/_components/account-hero-card.tsx",
-            "app/[locale]/(account)/account/_components/account-orders-grid.tsx",
-            "app/[locale]/(account)/account/_components/account-orders-stats.tsx",
-            "app/[locale]/(account)/account/_components/account-orders-toolbar.tsx",
             "app/[locale]/(account)/account/_components/account-recent-activity.tsx",
             "app/[locale]/(account)/account/_components/account-sidebar.tsx",
             "app/[locale]/(account)/account/_components/account-stats-cards.tsx",
             "app/[locale]/(account)/account/_components/account-tab-bar.tsx",
-            "app/[locale]/(account)/account/_components/account-wishlist-grid.tsx",
-            "app/[locale]/(account)/account/_components/account-wishlist-stats.tsx",
-            "app/[locale]/(account)/account/_components/account-wishlist-toolbar.tsx",
             "app/[locale]/(account)/account/_components/index.ts"
+          ]
+        },
+        "app/[locale]/(account)/account/(settings)/addresses": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/(settings)/addresses/addresses-content.tsx"
           ]
         },
         "app/[locale]/(account)/account/addresses": {
@@ -110,14 +120,30 @@
             "app/[locale]/(account)/account/orders/loading.tsx"
           ]
         },
+        "app/[locale]/(account)/account/orders/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/orders/_components/account-orders-grid.tsx",
+            "app/[locale]/(account)/account/orders/_components/account-orders-stats.tsx",
+            "app/[locale]/(account)/account/orders/_components/account-orders-toolbar.tsx"
+          ]
+        },
         "app/[locale]/(account)/account/orders/[id]": {
           "pages": [
             "app/[locale]/(account)/account/orders/[id]/page.tsx"
           ],
           "routes": [],
           "layouts": [],
+          "other": []
+        },
+        "app/[locale]/(account)/account/orders/[id]/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
           "other": [
-            "app/[locale]/(account)/account/orders/[id]/order-detail-content.tsx"
+            "app/[locale]/(account)/account/orders/[id]/_components/order-detail-content.tsx"
           ]
         },
         "app/[locale]/(account)/account/payments": {
@@ -172,10 +198,17 @@
           "layouts": [],
           "other": [
             "app/[locale]/(account)/account/sales/loading.tsx",
-            "app/[locale]/(account)/account/sales/sales-chart.tsx",
-            "app/[locale]/(account)/account/sales/sales-stats.tsx",
-            "app/[locale]/(account)/account/sales/sales-table.tsx",
             "app/[locale]/(account)/account/sales/types.ts"
+          ]
+        },
+        "app/[locale]/(account)/account/sales/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/sales/_components/sales-chart.tsx",
+            "app/[locale]/(account)/account/sales/_components/sales-stats.tsx",
+            "app/[locale]/(account)/account/sales/_components/sales-table.tsx"
           ]
         },
         "app/[locale]/(account)/account/security": {
@@ -198,6 +231,14 @@
           "other": [
             "app/[locale]/(account)/account/selling/loading.tsx",
             "app/[locale]/(account)/account/selling/selling-products-list.tsx"
+          ]
+        },
+        "app/[locale]/(account)/account/selling/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/selling/_components/boost-dialog.tsx"
           ]
         },
         "app/[locale]/(account)/account/selling/[id]/edit": {
@@ -228,12 +269,32 @@
             "app/[locale]/(account)/account/wishlist/loading.tsx",
             "app/[locale]/(account)/account/wishlist/wishlist-content.tsx"
           ]
+        },
+        "app/[locale]/(account)/account/wishlist/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(account)/account/wishlist/_components/account-wishlist-grid.tsx",
+            "app/[locale]/(account)/account/wishlist/_components/account-wishlist-stats.tsx",
+            "app/[locale]/(account)/account/wishlist/_components/account-wishlist-toolbar.tsx"
+          ]
         }
       }
     },
     "admin": {
       "dir": "app/[locale]/(admin)",
       "directories": {
+        "app/[locale]/(admin)/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(admin)/_components/admin-recent-activity.tsx",
+            "app/[locale]/(admin)/_components/admin-sidebar.tsx",
+            "app/[locale]/(admin)/_components/admin-stats-cards.tsx"
+          ]
+        },
         "app/[locale]/(admin)/admin": {
           "pages": [
             "app/[locale]/(admin)/admin/page.tsx"
@@ -244,17 +305,6 @@
           ],
           "other": [
             "app/[locale]/(admin)/admin/loading.tsx"
-          ]
-        },
-        "app/[locale]/(admin)/admin/_components": {
-          "pages": [],
-          "routes": [],
-          "layouts": [],
-          "other": [
-            "app/[locale]/(admin)/admin/_components/admin-recent-activity.tsx",
-            "app/[locale]/(admin)/admin/_components/admin-sidebar.tsx",
-            "app/[locale]/(admin)/admin/_components/admin-stats-cards.tsx",
-            "app/[locale]/(admin)/admin/_components/index.ts"
           ]
         },
         "app/[locale]/(admin)/admin/orders": {
@@ -310,6 +360,26 @@
           ],
           "other": []
         },
+        "app/[locale]/(auth)/_actions": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(auth)/_actions/auth.ts"
+          ]
+        },
+        "app/[locale]/(auth)/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(auth)/_components/forgot-password-form.tsx",
+            "app/[locale]/(auth)/_components/login-form.tsx",
+            "app/[locale]/(auth)/_components/reset-password-form.tsx",
+            "app/[locale]/(auth)/_components/sign-up-form.tsx",
+            "app/[locale]/(auth)/_components/welcome-client.tsx"
+          ]
+        },
         "app/[locale]/(auth)/auth": {
           "pages": [],
           "routes": [],
@@ -348,7 +418,9 @@
           ],
           "routes": [],
           "layouts": [],
-          "other": []
+          "other": [
+            "app/[locale]/(auth)/auth/reset-password/reset-password-client.tsx"
+          ]
         },
         "app/[locale]/(auth)/auth/sign-up": {
           "pages": [
@@ -379,6 +451,32 @@
     "business": {
       "dir": "app/[locale]/(business)",
       "directories": {
+        "app/[locale]/(business)/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/_components/business-activity-feed.tsx",
+            "app/[locale]/(business)/_components/business-command-palette.tsx",
+            "app/[locale]/(business)/_components/business-date-range-picker.tsx",
+            "app/[locale]/(business)/_components/business-empty-state.tsx",
+            "app/[locale]/(business)/_components/business-header.tsx",
+            "app/[locale]/(business)/_components/business-live-activity.tsx",
+            "app/[locale]/(business)/_components/business-notifications.tsx",
+            "app/[locale]/(business)/_components/business-page-header.tsx",
+            "app/[locale]/(business)/_components/business-performance-score.tsx",
+            "app/[locale]/(business)/_components/business-quick-actions.tsx",
+            "app/[locale]/(business)/_components/business-recent-activity.tsx",
+            "app/[locale]/(business)/_components/business-setup-guide.tsx",
+            "app/[locale]/(business)/_components/business-sidebar.tsx",
+            "app/[locale]/(business)/_components/business-stats-cards.tsx",
+            "app/[locale]/(business)/_components/business-task-cards.tsx",
+            "app/[locale]/(business)/_components/order-detail-view.tsx",
+            "app/[locale]/(business)/_components/orders-table.tsx",
+            "app/[locale]/(business)/_components/product-form-modal.tsx",
+            "app/[locale]/(business)/_components/products-table.tsx"
+          ]
+        },
         "app/[locale]/(business)/dashboard": {
           "pages": [
             "app/[locale]/(business)/dashboard/page.tsx"
@@ -391,31 +489,12 @@
             "app/[locale]/(business)/dashboard/loading.tsx"
           ]
         },
-        "app/[locale]/(business)/dashboard/_components": {
+        "app/[locale]/(business)/dashboard/_lib": {
           "pages": [],
           "routes": [],
           "layouts": [],
           "other": [
-            "app/[locale]/(business)/dashboard/_components/business-activity-feed.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-command-palette.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-date-range-picker.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-empty-state.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-header.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-live-activity.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-notifications.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-page-header.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-performance-score.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-quick-actions.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-recent-activity.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-setup-guide.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-sidebar.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-stats-cards.tsx",
-            "app/[locale]/(business)/dashboard/_components/business-task-cards.tsx",
-            "app/[locale]/(business)/dashboard/_components/index.ts",
-            "app/[locale]/(business)/dashboard/_components/order-detail-view.tsx",
-            "app/[locale]/(business)/dashboard/_components/orders-table.tsx",
-            "app/[locale]/(business)/dashboard/_components/product-form-modal.tsx",
-            "app/[locale]/(business)/dashboard/_components/products-table.tsx"
+            "app/[locale]/(business)/dashboard/_lib/categories.ts"
           ]
         },
         "app/[locale]/(business)/dashboard/accounting": {
@@ -466,6 +545,22 @@
           "layouts": [],
           "other": [
             "app/[locale]/(business)/dashboard/inventory/loading.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/inventory/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/inventory/_components/inventory-header.tsx"
+          ]
+        },
+        "app/[locale]/(business)/dashboard/inventory/_lib": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(business)/dashboard/inventory/_lib/format-currency.ts"
           ]
         },
         "app/[locale]/(business)/dashboard/marketing": {
@@ -539,6 +634,24 @@
           ],
           "other": []
         },
+        "app/[locale]/(chat)/_actions": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(chat)/_actions/report-conversation.ts"
+          ]
+        },
+        "app/[locale]/(chat)/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(chat)/_components/chat-interface.tsx",
+            "app/[locale]/(chat)/_components/conversation-list.tsx",
+            "app/[locale]/(chat)/_components/messages-page-client.tsx"
+          ]
+        },
         "app/[locale]/(chat)/chat": {
           "pages": [
             "app/[locale]/(chat)/chat/page.tsx"
@@ -546,8 +659,7 @@
           "routes": [],
           "layouts": [],
           "other": [
-            "app/[locale]/(chat)/chat/loading.tsx",
-            "app/[locale]/(chat)/chat/messages-client.tsx"
+            "app/[locale]/(chat)/chat/loading.tsx"
           ]
         }
       }
@@ -562,6 +674,25 @@
             "app/[locale]/(checkout)/layout.tsx"
           ],
           "other": []
+        },
+        "app/[locale]/(checkout)/_actions": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(checkout)/_actions/checkout.ts"
+          ]
+        },
+        "app/[locale]/(checkout)/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(checkout)/_components/checkout-footer.tsx",
+            "app/[locale]/(checkout)/_components/checkout-header.tsx",
+            "app/[locale]/(checkout)/_components/checkout-page-client.tsx",
+            "app/[locale]/(checkout)/_components/checkout-success-page-client.tsx"
+          ]
         },
         "app/[locale]/(checkout)/checkout": {
           "pages": [
@@ -596,6 +727,87 @@
           ],
           "other": []
         },
+        "app/[locale]/(main)/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/_components/more-ways-to-shop.tsx",
+            "app/[locale]/(main)/_components/promo-cards.tsx",
+            "app/[locale]/(main)/_components/sign-in-cta-skeleton.tsx"
+          ]
+        },
+        "app/[locale]/(main)/_lib": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/_lib/attribute-filters.ts",
+            "app/[locale]/(main)/_lib/format-eur-price.ts",
+            "app/[locale]/(main)/_lib/pagination.ts",
+            "app/[locale]/(main)/_lib/product-url.ts"
+          ]
+        },
+        "app/[locale]/(main)/(legal)/privacy": {
+          "pages": [
+            "app/[locale]/(main)/(legal)/privacy/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/(legal)/privacy/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/(legal)/returns": {
+          "pages": [
+            "app/[locale]/(main)/(legal)/returns/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/(legal)/returns/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/(legal)/terms": {
+          "pages": [
+            "app/[locale]/(main)/(legal)/terms/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/(legal)/terms/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/(support)/contact": {
+          "pages": [
+            "app/[locale]/(main)/(support)/contact/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/(support)/contact/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/(support)/customer-service": {
+          "pages": [
+            "app/[locale]/(main)/(support)/customer-service/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/(support)/customer-service/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/(support)/help": {
+          "pages": [
+            "app/[locale]/(main)/(support)/help/page.tsx"
+          ],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/(support)/help/loading.tsx"
+          ]
+        },
         "app/[locale]/(main)/about": {
           "pages": [
             "app/[locale]/(main)/about/page.tsx"
@@ -604,6 +816,15 @@
           "layouts": [],
           "other": [
             "app/[locale]/(main)/about/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/about/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/about/_components/about-page-content.tsx",
+            "app/[locale]/(main)/about/_components/about-page-skeleton.tsx"
           ]
         },
         "app/[locale]/(main)/cart": {
@@ -617,6 +838,14 @@
             "app/[locale]/(main)/cart/loading.tsx"
           ]
         },
+        "app/[locale]/(main)/cart/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/cart/_components/cart-page-client.tsx"
+          ]
+        },
         "app/[locale]/(main)/categories": {
           "pages": [
             "app/[locale]/(main)/categories/page.tsx"
@@ -626,6 +855,32 @@
           "other": [
             "app/[locale]/(main)/categories/error.tsx",
             "app/[locale]/(main)/categories/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/categories/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/categories/_components/attribute-filters.tsx",
+            "app/[locale]/(main)/categories/_components/category-page-breadcrumb.tsx",
+            "app/[locale]/(main)/categories/_components/category-sidebar.tsx"
+          ]
+        },
+        "app/[locale]/(main)/categories/_data": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/categories/_data/category-images.ts"
+          ]
+        },
+        "app/[locale]/(main)/categories/_lib": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/categories/_lib/categories-data.ts"
           ]
         },
         "app/[locale]/(main)/categories/[slug]": {
@@ -638,153 +893,14 @@
             "app/[locale]/(main)/categories/[slug]/loading.tsx"
           ]
         },
-        "app/[locale]/(main)/component-audit": {
-          "pages": [
-            "app/[locale]/(main)/component-audit/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/contact": {
-          "pages": [
-            "app/[locale]/(main)/contact/page.tsx"
-          ],
+        "app/[locale]/(main)/categories/[slug]/_lib": {
+          "pages": [],
           "routes": [],
           "layouts": [],
           "other": [
-            "app/[locale]/(main)/contact/loading.tsx"
+            "app/[locale]/(main)/categories/[slug]/_lib/search-products.ts",
+            "app/[locale]/(main)/categories/[slug]/_lib/types.ts"
           ]
-        },
-        "app/[locale]/(main)/customer-service": {
-          "pages": [
-            "app/[locale]/(main)/customer-service/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": [
-            "app/[locale]/(main)/customer-service/loading.tsx"
-          ]
-        },
-        "app/[locale]/(main)/demo": {
-          "pages": [
-            "app/[locale]/(main)/demo/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/cards": {
-          "pages": [
-            "app/[locale]/(main)/demo/cards/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/cards/gpt": {
-          "pages": [
-            "app/[locale]/(main)/demo/cards/gpt/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/cards/marketplace": {
-          "pages": [
-            "app/[locale]/(main)/demo/cards/marketplace/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/cards/merged": {
-          "pages": [
-            "app/[locale]/(main)/demo/cards/merged/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/cards/v2": {
-          "pages": [
-            "app/[locale]/(main)/demo/cards/v2/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/gemini": {
-          "pages": [
-            "app/[locale]/(main)/demo/gemini/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/gpt": {
-          "pages": [
-            "app/[locale]/(main)/demo/gpt/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/landing": {
-          "pages": [
-            "app/[locale]/(main)/demo/landing/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/landing-gemini": {
-          "pages": [
-            "app/[locale]/(main)/demo/landing-gemini/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/landing-gemini-mobile": {
-          "pages": [
-            "app/[locale]/(main)/demo/landing-gemini-mobile/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/landing-gpt": {
-          "pages": [
-            "app/[locale]/(main)/demo/landing-gpt/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/landing-mobile": {
-          "pages": [
-            "app/[locale]/(main)/demo/landing-mobile/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/landing1": {
-          "pages": [
-            "app/[locale]/(main)/demo/landing1/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
-        },
-        "app/[locale]/(main)/demo/plans": {
-          "pages": [
-            "app/[locale]/(main)/demo/plans/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": []
         },
         "app/[locale]/(main)/gift-cards": {
           "pages": [
@@ -796,14 +912,15 @@
             "app/[locale]/(main)/gift-cards/loading.tsx"
           ]
         },
-        "app/[locale]/(main)/help": {
-          "pages": [
-            "app/[locale]/(main)/help/page.tsx"
-          ],
+        "app/[locale]/(main)/gift-cards/_components": {
+          "pages": [],
           "routes": [],
           "layouts": [],
           "other": [
-            "app/[locale]/(main)/help/loading.tsx"
+            "app/[locale]/(main)/gift-cards/_components/gift-cards-featured-designs.tsx",
+            "app/[locale]/(main)/gift-cards/_components/gift-cards-hero.tsx",
+            "app/[locale]/(main)/gift-cards/_components/gift-cards-loading-skeleton.tsx",
+            "app/[locale]/(main)/gift-cards/_components/gift-cards-quick-actions.tsx"
           ]
         },
         "app/[locale]/(main)/members": {
@@ -813,18 +930,25 @@
           "routes": [],
           "layouts": [],
           "other": [
-            "app/[locale]/(main)/members/loading.tsx",
-            "app/[locale]/(main)/members/members-client.tsx"
+            "app/[locale]/(main)/members/loading.tsx"
           ]
         },
-        "app/[locale]/(main)/privacy": {
-          "pages": [
-            "app/[locale]/(main)/privacy/page.tsx"
-          ],
+        "app/[locale]/(main)/members/_components": {
+          "pages": [],
           "routes": [],
           "layouts": [],
           "other": [
-            "app/[locale]/(main)/privacy/loading.tsx"
+            "app/[locale]/(main)/members/_components/members-loading-skeleton.tsx",
+            "app/[locale]/(main)/members/_components/members-page-client.tsx"
+          ]
+        },
+        "app/[locale]/(main)/members/_lib": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/members/_lib/get-members-page-data.ts",
+            "app/[locale]/(main)/members/_lib/members-types.ts"
           ]
         },
         "app/[locale]/(main)/product/[...slug]": {
@@ -846,6 +970,22 @@
           "layouts": [],
           "other": []
         },
+        "app/[locale]/(main)/product/[id]/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/product/[id]/_components/reviews-loading-skeleton.tsx"
+          ]
+        },
+        "app/[locale]/(main)/product/[id]/_lib": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/product/[id]/_lib/product-page-utils.ts"
+          ]
+        },
         "app/[locale]/(main)/registry": {
           "pages": [
             "app/[locale]/(main)/registry/page.tsx"
@@ -854,16 +994,6 @@
           "layouts": [],
           "other": [
             "app/[locale]/(main)/registry/loading.tsx"
-          ]
-        },
-        "app/[locale]/(main)/returns": {
-          "pages": [
-            "app/[locale]/(main)/returns/page.tsx"
-          ],
-          "routes": [],
-          "layouts": [],
-          "other": [
-            "app/[locale]/(main)/returns/loading.tsx"
           ]
         },
         "app/[locale]/(main)/search": {
@@ -877,6 +1007,23 @@
             "app/[locale]/(main)/search/loading.tsx"
           ]
         },
+        "app/[locale]/(main)/search/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/search/_components/search-header.tsx"
+          ]
+        },
+        "app/[locale]/(main)/search/_lib": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/search/_lib/search-products.ts",
+            "app/[locale]/(main)/search/_lib/types.ts"
+          ]
+        },
         "app/[locale]/(main)/seller/dashboard": {
           "pages": [
             "app/[locale]/(main)/seller/dashboard/page.tsx"
@@ -885,6 +1032,23 @@
           "layouts": [],
           "other": [
             "app/[locale]/(main)/seller/dashboard/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/seller/dashboard/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/seller/dashboard/_components/seller-dashboard-client.tsx",
+            "app/[locale]/(main)/seller/dashboard/_components/seller-dashboard-loading-skeleton.tsx"
+          ]
+        },
+        "app/[locale]/(main)/seller/dashboard/_lib": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/seller/dashboard/_lib/types.ts"
           ]
         },
         "app/[locale]/(main)/sellers": {
@@ -897,14 +1061,24 @@
             "app/[locale]/(main)/sellers/loading.tsx"
           ]
         },
-        "app/[locale]/(main)/terms": {
-          "pages": [
-            "app/[locale]/(main)/terms/page.tsx"
-          ],
+        "app/[locale]/(main)/sellers/_components": {
+          "pages": [],
           "routes": [],
           "layouts": [],
           "other": [
-            "app/[locale]/(main)/terms/loading.tsx"
+            "app/[locale]/(main)/sellers/_components/sellers-empty-state.tsx",
+            "app/[locale]/(main)/sellers/_components/sellers-grid.tsx",
+            "app/[locale]/(main)/sellers/_components/sellers-loading-skeleton.tsx",
+            "app/[locale]/(main)/sellers/_components/top-sellers-hero.tsx"
+          ]
+        },
+        "app/[locale]/(main)/sellers/_lib": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/sellers/_lib/get-top-sellers.ts",
+            "app/[locale]/(main)/sellers/_lib/top-sellers-types.ts"
           ]
         },
         "app/[locale]/(main)/todays-deals": {
@@ -918,6 +1092,14 @@
             "app/[locale]/(main)/todays-deals/loading.tsx"
           ]
         },
+        "app/[locale]/(main)/todays-deals/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/todays-deals/_components/todays-deals-page-client.tsx"
+          ]
+        },
         "app/[locale]/(main)/wishlist": {
           "pages": [
             "app/[locale]/(main)/wishlist/page.tsx"
@@ -927,6 +1109,14 @@
           "other": [
             "app/[locale]/(main)/wishlist/error.tsx",
             "app/[locale]/(main)/wishlist/loading.tsx"
+          ]
+        },
+        "app/[locale]/(main)/wishlist/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(main)/wishlist/_components/wishlist-page-client.tsx"
           ]
         },
         "app/[locale]/(main)/wishlist/shared/[token]": {
@@ -949,6 +1139,23 @@
             "app/[locale]/(plans)/layout.tsx"
           ],
           "other": []
+        },
+        "app/[locale]/(plans)/_actions": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(plans)/_actions/subscriptions.ts"
+          ]
+        },
+        "app/[locale]/(plans)/_components": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(plans)/_components/plans-page-client.tsx",
+            "app/[locale]/(plans)/_components/pricing-card.tsx"
+          ]
         },
         "app/[locale]/(plans)/plans": {
           "pages": [
@@ -973,6 +1180,14 @@
           ],
           "other": []
         },
+        "app/[locale]/(sell)/_actions": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/_actions/sell.ts"
+          ]
+        },
         "app/[locale]/(sell)/_components": {
           "pages": [],
           "routes": [],
@@ -984,8 +1199,7 @@
             "app/[locale]/(sell)/_components/sell-header-v3.tsx",
             "app/[locale]/(sell)/_components/sell-header.tsx",
             "app/[locale]/(sell)/_components/seller-onboarding-wizard.tsx",
-            "app/[locale]/(sell)/_components/sign-in-prompt.tsx",
-            "app/[locale]/(sell)/_components/types.ts"
+            "app/[locale]/(sell)/_components/sign-in-prompt.tsx"
           ]
         },
         "app/[locale]/(sell)/_components/ai": {
@@ -1075,6 +1289,14 @@
             "app/[locale]/(sell)/_components/ui/category-picker/index.tsx"
           ]
         },
+        "app/[locale]/(sell)/_lib": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/_lib/types.ts"
+          ]
+        },
         "app/[locale]/(sell)/sell": {
           "pages": [
             "app/[locale]/(sell)/sell/page.tsx"
@@ -1084,6 +1306,14 @@
           "other": [
             "app/[locale]/(sell)/sell/client.tsx",
             "app/[locale]/(sell)/sell/loading.tsx"
+          ]
+        },
+        "app/[locale]/(sell)/sell/_lib": {
+          "pages": [],
+          "routes": [],
+          "layouts": [],
+          "other": [
+            "app/[locale]/(sell)/sell/_lib/categories.ts"
           ]
         },
         "app/[locale]/(sell)/sell/orders": {

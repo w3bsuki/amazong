@@ -12,6 +12,9 @@ export interface Product {
   price: number
   seller_id?: string | null
   list_price?: number | null
+  is_on_sale?: boolean | null
+  sale_percent?: number | null
+  sale_end_date?: string | null
   rating?: number | null
   review_count?: number | null
   images: string[] | null
@@ -23,6 +26,7 @@ export interface Product {
   }> | null
   is_prime?: boolean | null
   is_boosted?: boolean | null
+  boost_expires_at?: string | null
   is_featured?: boolean | null
   created_at?: string | null
   ships_to_bulgaria?: boolean | null
@@ -58,6 +62,11 @@ export interface UIProduct {
   title: string
   price: number
   listPrice?: number
+  isOnSale?: boolean
+  salePercent?: number
+  saleEndDate?: string | null
+  isBoosted?: boolean
+  boostExpiresAt?: string | null
   image: string
   rating: number
   reviews: number
@@ -173,7 +182,7 @@ export async function getProductsByCategorySlug(
   let query = supabase
     .from('products')
     .select(
-      'id, title, price, seller_id, list_price, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories!inner(slug)'
+      'id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories!inner(slug)'
     )
     .eq('categories.slug', categorySlug)
     .order('created_at', { ascending: false })
@@ -215,7 +224,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   // Join categories to get the slug for category-aware badge display
   let query = supabase
     .from('products')
-    .select('id, title, price, seller_id, list_price, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories(slug)')
+    .select('id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories(slug)')
 
   // Apply shipping zone filter (WW = show all, so no filter)
   if (zone && zone !== 'WW') {
@@ -227,7 +236,11 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
 
   switch (type) {
     case 'deals':
+      // Truth semantics: deals are explicitly marked on-sale.
+      query = query.eq('is_on_sale', true).gt('sale_percent', 0)
+      break
     case 'promo':
+      // Legacy "promo" uses compare-at pricing.
       query = query.not('list_price', 'is', null).gt('list_price', 0)
       break
     case 'newest':
@@ -333,6 +346,11 @@ export function toUI(p: Product): UIProduct {
     title: p.title,
     price: p.price,
     listPrice: p.list_price ?? undefined,
+    isOnSale: p.is_on_sale ?? undefined,
+    salePercent: p.sale_percent ?? undefined,
+    saleEndDate: p.sale_end_date ?? null,
+    isBoosted: Boolean(p.is_boosted),
+    boostExpiresAt: p.boost_expires_at ?? null,
     image: pickPrimaryImage(p),
     rating: p.rating ?? 0,
     reviews: p.review_count ?? 0,

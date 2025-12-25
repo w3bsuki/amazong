@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
 
-import type { ProductImage } from "@/lib/sell-form-schema-v4";
+import type { ProductImage } from "@/lib/sell/schema-v4";
 import { compressImage } from "@/lib/image-compression";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { PhotoThumbnail, UploadZone, ImagePreviewModal } from "../ui";

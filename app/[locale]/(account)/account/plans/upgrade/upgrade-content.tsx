@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Check, Crown, Buildings, User, SpinnerGap } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { createSubscriptionCheckoutSession } from "@/app/[locale]/(account)/_actions/subscriptions"
 
 type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
@@ -85,25 +86,17 @@ export function UpgradeContent({
     setLoadingPlan(plan.id)
     
     try {
-      const response = await fetch('/api/subscriptions/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          planId: plan.id,
-          billingPeriod,
-        }),
+      const { url, error } = await createSubscriptionCheckoutSession({
+        planId: plan.id,
+        billingPeriod,
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session')
+      if (error) {
+        throw new Error(error)
       }
 
-      if (data.url) {
-        window.location.href = data.url
+      if (url) {
+        window.location.href = url
       }
     } catch (error) {
       console.error('Checkout error:', error)

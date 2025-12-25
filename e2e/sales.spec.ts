@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test"
+import { test, expect } from "./fixtures/test"
 
 /**
  * E2E Tests for Seller Sales Management (Phase 9)
@@ -189,21 +189,21 @@ test.describe("Seller Orders Page", () => {
     test.skip("shows Start Processing button for received orders", async ({ page }) => {
       await page.goto("/en/sell/orders")
 
-      const processButton = page.getByRole("button", { name: /Start Processing|Processing/i })
+      const _processButton = page.getByRole("button", { name: /Start Processing|Processing/i })
       // May or may not have received orders
     })
 
     test.skip("shows Mark as Shipped button for processing orders", async ({ page }) => {
       await page.goto("/en/sell/orders")
 
-      const shipButton = page.getByRole("button", { name: /Mark as Shipped|Ship/i })
+      const _shipButton = page.getByRole("button", { name: /Mark as Shipped|Ship/i })
       // Check if exists without asserting
     })
 
     test.skip("shows Chat button for orders with conversations", async ({ page }) => {
       await page.goto("/en/sell/orders")
 
-      const chatButton = page.getByRole("link", { name: /Chat/i }).or(
+      const _chatButton = page.getByRole("link", { name: /Chat/i }).or(
         page.getByRole("button", { name: /Chat/i })
       )
       // May exist if conversation started
@@ -275,7 +275,7 @@ test.describe("Seller Orders Page", () => {
       await page.goto("/en/sell/orders")
       await page.getByRole("tab", { name: /Delivered/i }).click()
 
-      const rateButton = page.getByRole("button", { name: /Rate Buyer/i }).first()
+      const _rateButton = page.getByRole("button", { name: /Rate Buyer/i }).first()
       // May exist if delivered orders present and not yet rated
     })
 
@@ -283,7 +283,7 @@ test.describe("Seller Orders Page", () => {
       await page.goto("/en/sell/orders")
       await page.getByRole("tab", { name: /Delivered/i }).click()
 
-      const ratedBadge = page.getByText(/Rated/i).first()
+      const _ratedBadge = page.getByText(/Rated/i).first()
       // May exist if buyer already rated
     })
 
@@ -309,7 +309,7 @@ test.describe("Seller Orders Page", () => {
         await rateButton.click()
 
         // 5 star buttons
-        const stars = page.locator('[data-testid="star"]').or(
+        const _stars = page.locator('[data-testid="star"]').or(
           page.getByRole("button").filter({ hasText: /★|star/i })
         )
         // Stars should be interactive
@@ -356,7 +356,7 @@ test.describe("Seller Orders Page", () => {
       await page.goto("/en/sell/orders")
 
       // Check for loading indicator (may be quick)
-      const loader = page.locator('[class*="animate-spin"]').or(
+      const _loader = page.locator('[class*="animate-spin"]').or(
         page.getByText(/Loading/i)
       )
       // May have already loaded
@@ -422,8 +422,8 @@ test.describe("Seller Orders Page", () => {
 test.describe("Sales Dashboard Page", () => {
   test.describe("Unauthenticated Access", () => {
     test("redirects to login when not authenticated", async ({ page }) => {
-      await page.goto("/en/account/sales")
-      await expect(page).toHaveURL(/\/auth\/login/)
+      await page.goto("/en/account/sales", { waitUntil: "domcontentloaded" })
+      await expect(page).toHaveURL(/\/auth\/login/, { timeout: 60_000 })
     })
   })
 
@@ -512,7 +512,7 @@ test.describe("Sales Dashboard Page", () => {
     test.skip("shows empty state when no sales", async ({ page }) => {
       await page.goto("/en/account/sales")
 
-      const emptyState = page.getByText(/No sales yet|Нямате продажби/i)
+      const _emptyState = page.getByText(/No sales yet|Нямате продажби/i)
       // May or may not show depending on seller data
     })
   })
@@ -528,7 +528,7 @@ test.describe("Sales Dashboard Page", () => {
       await page.goto("/en/account/sales")
 
       // Should show EUR currency
-      const currency = page.getByText(/€|EUR/i)
+      const _currency = page.getByText(/€|EUR/i)
       // Currency formatting depends on data
     })
   })

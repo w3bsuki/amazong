@@ -37,6 +37,7 @@ interface OrderItem {
   quantity: number
   price_at_purchase: number
   status: OrderItemStatus | null
+  seller_received_at: string | null
   tracking_number: string | null
   shipping_carrier: string | null
   shipped_at: string | null
@@ -110,6 +111,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     quantity: number
     price_at_purchase: number
     status: OrderItemStatus | null
+    seller_received_at: string | null
     tracking_number: string | null
     shipping_carrier: string | null
     shipped_at: string | null
@@ -165,6 +167,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       quantity: item.quantity,
       price_at_purchase: item.price_at_purchase,
       status: item.status,
+      seller_received_at: item.seller_received_at,
       tracking_number: item.tracking_number,
       shipping_carrier: item.shipping_carrier,
       shipped_at: item.shipped_at,

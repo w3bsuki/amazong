@@ -1,19 +1,45 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
-const AUTH_COOKIE_DOMAIN = process.env.AUTH_COOKIE_DOMAIN
+function getLocaleFromPath(pathname: string): string | null {
+  const match = pathname.match(/^\/([a-zA-Z]{2})(?:\/|$)/)
+  return match ? match[1].toLowerCase() : null
+}
+
+function isAccountPath(pathname: string): boolean {
+  const locale = getLocaleFromPath(pathname)
+  if (locale) return pathname === `/${locale}/account` || pathname.startsWith(`/${locale}/account/`)
+  return pathname === '/account' || pathname.startsWith('/account/')
+}
 
 function withAuthCookieDomain(options: unknown): unknown {
-  if (!AUTH_COOKIE_DOMAIN || !options || typeof options !== 'object') return options
-  return { ...(options as Record<string, unknown>), domain: AUTH_COOKIE_DOMAIN }
+  if (!options || typeof options !== 'object') return options
+  const domain = process.env.AUTH_COOKIE_DOMAIN
+  // Only apply an explicit cookie domain in production. In local dev/E2E on
+  // localhost, setting a non-local domain prevents the browser from sending
+  // the auth cookies back, which breaks SSR-protected routes.
+  if (!domain || process.env.NODE_ENV !== 'production') return options
+  return { ...(options as Record<string, unknown>), domain }
 }
 
 export async function updateSession(request: NextRequest, response?: NextResponse) {
+  const pathname = request.nextUrl.pathname
+  const locale = getLocaleFromPath(pathname)
+  const authPrefix = locale ? `/${locale}/auth` : '/auth'
+  const loginPath = locale ? `/${locale}/auth/login` : '/auth/login'
+
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    // In E2E/local tests we still want account routes to be protected.
+    // If Supabase isn't configured, treat user as unauthenticated.
+    if (isAccountPath(pathname) && !pathname.startsWith(authPrefix)) {
+      const url = request.nextUrl.clone()
+      url.pathname = loginPath
+      url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)
+      return NextResponse.redirect(url)
+    }
+
     console.warn("Supabase environment variables are missing. Skipping session update.")
-    return response || NextResponse.next({
-      request,
-    })
+    return response || NextResponse.next({ request })
   }
 
   let supabaseResponse = response || NextResponse.next({
@@ -47,10 +73,19 @@ export async function updateSession(request: NextRequest, response?: NextRespons
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user && !request.nextUrl.pathname.startsWith("/auth") && request.nextUrl.pathname.startsWith("/protected")) {
-    // no user, potentially respond by redirecting the user to the login page
+  // Protect /[locale]/account/* (and legacy /account/*) routes.
+  if (!user && isAccountPath(pathname) && !pathname.startsWith(authPrefix)) {
     const url = request.nextUrl.clone()
-    url.pathname = "/auth/login"
+    url.pathname = loginPath
+    url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)
+    return NextResponse.redirect(url)
+  }
+
+  // Keep legacy protection behavior (but make it locale-aware as well).
+  if (!user && !pathname.startsWith(authPrefix) && pathname.startsWith("/protected")) {
+    const url = request.nextUrl.clone()
+    url.pathname = loginPath
+    url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)
     return NextResponse.redirect(url)
   }
 

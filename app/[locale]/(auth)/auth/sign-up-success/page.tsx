@@ -37,28 +37,17 @@ export default async function SignUpSuccessPage() {
 
           {/* Buttons */}
           <div className="space-y-3">
-            <Link href="/auth/login" className="block">
-              <button className="
-                w-full h-10 
-                bg-blue-600 hover:bg-blue-700
-                text-white text-sm font-medium rounded-lg 
-                transition-colors
-                flex items-center justify-center
-              ">
-                {t('goToSignIn')}
-              </button>
+            <Link
+              href="/auth/login"
+              className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center"
+            >
+              {t('goToSignIn')}
             </Link>
-            <Link href="/" className="block">
-              <button className="
-                w-full h-10 
-                bg-white border border-gray-300 
-                text-gray-700 text-sm font-medium rounded-lg 
-                hover:bg-gray-50
-                transition-colors 
-                flex items-center justify-center
-              ">
-                {t('backToHome')}
-              </button>
+            <Link
+              href="/"
+              className="w-full h-10 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
+            >
+              {t('backToHome')}
             </Link>
           </div>
 

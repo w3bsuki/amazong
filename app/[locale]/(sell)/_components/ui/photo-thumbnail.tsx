@@ -9,7 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import type { ProductImage } from "@/lib/sell-form-schema-v4";
+import type { ProductImage } from "@/lib/sell/schema-v4";
 
 interface PhotoThumbnailProps {
   image: ProductImage;

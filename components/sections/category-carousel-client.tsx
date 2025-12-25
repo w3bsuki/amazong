@@ -10,6 +10,7 @@ interface CategoryCarouselClientProps {
   initialProducts: CarouselProduct[]
   tabs: { id: string; label: string }[]
   icon?: React.ReactNode
+  variant?: "default" | "highlighted" | "clean"
 }
 
 export function CategoryCarouselClient({
@@ -19,6 +20,7 @@ export function CategoryCarouselClient({
   initialProducts,
   tabs,
   icon,
+  variant = "default",
 }: CategoryCarouselClientProps) {
   const [activeTabId, setActiveTabId] = useState("all")
   const [products, setProducts] = useState<CarouselProduct[]>(initialProducts)
@@ -62,6 +64,7 @@ export function CategoryCarouselClient({
       activeTabId={activeTabId}
       onTabChange={handleTabChange}
       isLoading={isLoading}
+      variant={variant}
     />
   )
 }

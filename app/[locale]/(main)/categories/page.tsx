@@ -10,7 +10,7 @@ import {
   getCategoryImageUrl,
   getCategoryName,
   getRootCategories,
-} from "./_components/categories-data"
+} from "./_lib/categories-data"
 
 // SEO Metadata
 export const metadata: Metadata = {

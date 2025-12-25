@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 import { AccountWishlistStats } from "./_components/account-wishlist-stats"
 import { AccountWishlistGrid, type WishlistItem } from "./_components/account-wishlist-grid"
 import { AccountWishlistToolbar, type WishlistCategory } from "./_components/account-wishlist-toolbar"
+import { ShareWishlistButton } from "./_components/share-wishlist-button"
 
 interface WishlistContentProps {
   initialItems: WishlistItem[]
@@ -18,6 +19,8 @@ interface WishlistContentProps {
   initialCategoryFilter: string | null
   initialSearchQuery: string
   initialStockFilter: string
+  initialShareToken: string | null
+  initialIsPublic: boolean
 }
 
 export function WishlistContent({ 
@@ -27,6 +30,8 @@ export function WishlistContent({
   initialCategoryFilter,
   initialSearchQuery,
   initialStockFilter,
+  initialShareToken,
+  initialIsPublic,
 }: WishlistContentProps) {
   const [items, setItems] = useState(initialItems)
   
@@ -105,6 +110,14 @@ export function WishlistContent({
 
   return (
     <>
+      <div className="flex items-center justify-end">
+        <ShareWishlistButton
+          locale={locale}
+          disabled={items.length === 0}
+          initialShareToken={initialShareToken}
+          initialIsPublic={initialIsPublic}
+        />
+      </div>
       <AccountWishlistStats stats={stats} locale={locale} />
       
       {/* Toolbar with filters - only show if we have items */}

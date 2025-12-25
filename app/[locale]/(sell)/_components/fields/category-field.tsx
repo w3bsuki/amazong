@@ -7,7 +7,7 @@ import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { CategorySelector } from "../ui/category-modal";
-import type { CategoryPathItem } from "../types";
+import type { CategoryPathItem } from "../../_lib/types";
 
 // ============================================================================
 // CATEGORY FIELD - Category picker using context pattern

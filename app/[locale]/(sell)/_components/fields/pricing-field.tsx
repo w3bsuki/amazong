@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
 import { cn } from "@/lib/utils";
-import { formatOptions } from "@/lib/sell-form-schema-v4";
+import { formatOptions } from "@/lib/sell/schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { SelectDrawer } from "../ui/select-drawer";
 

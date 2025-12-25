@@ -6,6 +6,8 @@ import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
 import { SalesChart } from "./_components/sales-chart"
 import { SalesStats } from "./_components/sales-stats"
 import { SalesTable } from "./_components/sales-table"
+import { PendingActions } from "./_components/pending-actions"
+import { ExportSales } from "./_components/export-sales"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -88,6 +90,28 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
     .from("order_items")
     .select("id, order_id, product_id, quantity, price_at_purchase, status")
     .eq("seller_id", user.id)
+
+  // Pending actions (counts)
+  const { count: ordersToShipCount } = await supabase
+    .from("order_items")
+    .select("id", { count: "exact", head: true })
+    .eq("seller_id", user.id)
+    .is("shipped_at", null)
+    .in("status", ["paid", "processing"])
+
+  const { count: unreadMessagesCount } = await supabase
+    .from("conversations")
+    .select("id", { count: "exact", head: true })
+    .eq("seller_id", user.id)
+    .gt("seller_unread_count", 0)
+
+  const { count: lowStockCount } = await supabase
+    .from("products")
+    .select("id", { count: "exact", head: true })
+    .eq("seller_id", user.id)
+    .eq("status", "active")
+    .gt("stock", 0)
+    .lte("stock", 2)
 
   // Get unique order IDs and product IDs
   const orderIds = [...new Set((salesData || []).map(s => s.order_id))]
@@ -271,6 +295,13 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
           </div>
         </div>
 
+        <PendingActions
+          locale={locale}
+          ordersToShipCount={ordersToShipCount ?? 0}
+          unreadMessagesCount={unreadMessagesCount ?? 0}
+          lowStockCount={lowStockCount ?? 0}
+        />
+
         {/* Stats Cards */}
         <SalesStats
           locale={locale}
@@ -352,6 +383,11 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
                   }
                 </CardDescription>
               </div>
+              <ExportSales
+                locale={locale}
+                defaultFrom={startDate.toISOString().slice(0, 10)}
+                defaultTo={now.toISOString().slice(0, 10)}
+              />
             </div>
           </CardHeader>
           <CardContent>

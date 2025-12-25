@@ -14,6 +14,8 @@ import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { productBlurDataURL, getImageLoadingStrategy } from "@/lib/image-utils"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import { Badge } from "@/components/ui/badge"
+import { FollowSellerButton } from "@/components/seller/follow-seller-button"
 import { cva, type VariantProps } from "class-variance-authority"
 import {
   Heart,
@@ -126,6 +128,11 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   /** @deprecated Use originalPrice */
   listPrice?: number | null
 
+  // Sale semantics (truth)
+  isOnSale?: boolean
+  salePercent?: number
+  saleEndDate?: string | null
+
   // Product info
   rating?: number
   reviews?: number
@@ -148,6 +155,9 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   sellerRating?: number
   sellerTier?: "basic" | "premium" | "business"
   location?: string
+
+  // Social
+  initialIsFollowingSeller?: boolean
 
   // Shipping
   freeShipping?: boolean
@@ -265,6 +275,9 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
       // Pricing
       originalPrice,
       listPrice,
+      isOnSale,
+      salePercent,
+      saleEndDate,
 
       // Product info
       rating = 0,
@@ -280,6 +293,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
       sellerAvatarUrl,
       sellerVerified = false,
       sellerTier = "basic",
+      initialIsFollowingSeller = false,
 
       // Shipping
       freeShipping = false,
@@ -326,18 +340,32 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
 
     // Derived values
     const hasDiscount = resolvedOriginalPrice && resolvedOriginalPrice > price
-    const discountPercent = hasDiscount
+    const priceDerivedDiscountPercent = hasDiscount
       ? Math.round(
           ((resolvedOriginalPrice - price) / resolvedOriginalPrice) * 100
         )
       : 0
+
+    const resolvedSalePercent =
+      typeof salePercent === "number" && Number.isFinite(salePercent)
+        ? salePercent
+        : priceDerivedDiscountPercent
+
+    const saleEndOk = (() => {
+      if (!saleEndDate) return true
+      const d = new Date(saleEndDate)
+      if (Number.isNaN(d.getTime())) return true
+      return d.getTime() > Date.now()
+    })()
+
+    const saleByTruthSemantics = isOnSale === true && resolvedSalePercent > 0 && saleEndOk
 
     // Auto-detect state
     const resolvedState =
       state ||
       (isBoosted
         ? "promoted"
-        : hasDiscount && discountPercent >= 10
+        : saleByTruthSemantics || (isOnSale == null && hasDiscount && priceDerivedDiscountPercent >= 10)
           ? "sale"
           : "default")
 
@@ -466,18 +494,39 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
                 <span className="text-[10px] text-muted-foreground">{tierLabel}</span>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7 shrink-0 rounded-full"
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-              }}
-            >
-              <DotsThree size={16} weight="bold" />
-              <span className="sr-only">More options</span>
-            </Button>
+            <div className="flex items-center gap-1">
+              {!!sellerId && !isOwnProduct && (
+                <div
+                  className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
+                >
+                  <FollowSellerButton
+                    sellerId={sellerId}
+                    initialIsFollowing={initialIsFollowingSeller}
+                    locale={locale}
+                    showLabel={false}
+                    size="icon"
+                    variant="ghost"
+                    className="size-7 rounded-full"
+                  />
+                </div>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7 shrink-0 rounded-full"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+              >
+                <DotsThree size={16} weight="bold" />
+                <span className="sr-only">More options</span>
+              </Button>
+            </div>
           </div>
         )}
 
@@ -557,14 +606,14 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
           {/* Badges - Top Left (Flat, no shadows per Swiss design) */}
           <div className="absolute left-2 top-2 z-10 flex flex-col gap-1">
             {resolvedState === "promoted" && (
-              <span className="inline-flex items-center gap-0.5 rounded-md bg-cta-trust-blue px-1.5 py-0.5 text-[10px] font-semibold text-cta-trust-blue-text">
+              <Badge className="inline-flex items-center gap-0.5 rounded-md bg-cta-trust-blue px-1.5 py-0.5 text-[10px] font-semibold text-cta-trust-blue-text">
                 <Sparkle size={10} weight="fill" />
-                {locale === "bg" ? "Промо" : "Ad"}
-              </span>
+                {locale === "bg" ? "Промотирано" : "Promoted"}
+              </Badge>
             )}
-            {hasDiscount && discountPercent >= 5 && (
+            {(saleByTruthSemantics || (isOnSale == null && hasDiscount && priceDerivedDiscountPercent >= 5)) && (
               <span className="rounded-md bg-destructive px-1.5 py-0.5 text-[10px] font-bold text-destructive-foreground">
-                -{discountPercent}%
+                -{Math.max(0, Math.round(resolvedSalePercent))}%
               </span>
             )}
           </div>
@@ -601,18 +650,32 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
             {title}
           </h3>
 
+          {/* Smart pills (optional, featured variant only) */}
+          {smartPills.length > 0 && (
+            <div className="flex flex-wrap gap-1 pt-0.5">
+              {smartPills.map((pill) => (
+                <span
+                  key={pill.key}
+                  className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+                >
+                  {pill.label}
+                </span>
+              ))}
+            </div>
+          )}
+
           {/* Price Row - Bold, prominent */}
           <div className="flex items-baseline gap-1 pt-0.5">
             <span
               className={cn(
                 "text-base font-bold tracking-tight",
-                hasDiscount ? "text-destructive" : "text-foreground"
+                (saleByTruthSemantics || hasDiscount) ? "text-destructive" : "text-foreground"
               )}
             >
               {formatPrice(price)}
             </span>
             {hasDiscount && resolvedOriginalPrice && (
-              <span className="text-2xs text-muted-foreground/50 line-through decoration-muted-foreground/30">
+              <span className="text-2xs text-muted-foreground line-through decoration-muted-foreground/30">
                 {formatPrice(resolvedOriginalPrice)}
               </span>
             )}

@@ -3,7 +3,7 @@
 import { forwardRef, KeyboardEvent } from "react";
 import { CaretRight, Check } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import type { Category } from "../../types";
+import type { Category } from "../../../_lib/types";
 
 interface CategoryOptionProps {
   category: Category;

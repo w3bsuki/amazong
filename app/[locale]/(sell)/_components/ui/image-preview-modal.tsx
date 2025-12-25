@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "@phosphor-icons/react";
-import type { ProductImage } from "@/lib/sell-form-schema-v4";
+import type { ProductImage } from "@/lib/sell/schema-v4";
 
 interface ImagePreviewModalProps {
   image: ProductImage;
