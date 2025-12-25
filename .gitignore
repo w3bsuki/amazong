@@ -49,3 +49,7 @@ tsc.err
 
 # Lighthouse CI output
 /.lighthouseci/
+
+# Cleanup/audit report output
+/cleanup/jscpd-report.json
+/cleanup/knip-report.json

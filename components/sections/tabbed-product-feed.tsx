@@ -231,18 +231,25 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
     }
   }, [])
 
-  // Fetch on mount
+  // Fetch on mount and when filters change
   useEffect(() => {
     setPage(1)
     setProducts([])
-    fetchProducts("newest", 1, pageSize, false)
-  }, [pageSize, fetchProducts])
+    fetchProducts(activeTab, 1, pageSize, false)
+  }, [pageSize, fetchProducts, activeTab])
+
+  // Handle tab change
+  const handleTabChange = (tab: FeedTab) => {
+    setActiveTab(tab)
+    setPage(1)
+    setProducts([])
+  }
 
   const loadMore = () => {
     if (!isLoading && hasMore) {
       const nextPage = page + 1
       setPage(nextPage)
-      fetchProducts("newest", nextPage, pageSize, true)
+      fetchProducts(activeTab, nextPage, pageSize, true)
     }
   }
 
@@ -251,20 +258,55 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
       className="w-full"
       aria-label={locale === "bg" ? "Обяви" : "Listings"}
     >
-      {/* Header - Simple Title */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
-          {locale === "bg" ? "Най-нови обяви" : "New Arrivals"}
-        </h2>
+      {/* Section Header with Title + Tabs */}
+      <div className="flex flex-col gap-4 mb-6">
+        {/* Title Row */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            {locale === "bg" ? "Обяви" : "Listings"}
+          </h2>
 
-        {/* See All Link */}
-        <Link
-          href="/search?sort=newest"
-          className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-        >
-          {locale === "bg" ? "Виж всички" : "See all"}
-          <CaretRight size={16} weight="bold" aria-hidden="true" />
-        </Link>
+          {/* See All Link */}
+          <Link
+            href="/search?sort=newest"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+          >
+            {locale === "bg" ? "виж всички" : "see all"}
+            <CaretRight size={14} weight="bold" aria-hidden="true" />
+          </Link>
+        </div>
+
+        {/* Filter Controls - Tabs + Category Pills */}
+        <div className="flex flex-col gap-3">
+          {/* Feed Type Tabs */}
+          <div className="flex items-center gap-1.5" role="tablist">
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              const isActive = activeTab === tab.id
+              return (
+                <button
+                  key={tab.id}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => handleTabChange(tab.id)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all",
+                    "border",
+                    isActive
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                      : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground hover:border-muted-foreground/30"
+                  )}
+                >
+                  <Icon 
+                    size={14} 
+                    weight={isActive ? "fill" : "regular"} 
+                  />
+                  {tab.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Product Grid */}
@@ -367,10 +409,26 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 export function TabbedProductFeedSkeleton() {
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-6">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-5 w-20" />
+      {/* Header skeleton */}
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-6 w-24" />
+          <Skeleton className="h-4 w-16" />
+        </div>
+        {/* Tabs skeleton */}
+        <div className="flex items-center gap-1.5">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-8 w-20 rounded-full" />
+          ))}
+        </div>
+        {/* Category pills skeleton */}
+        <div className="flex items-center gap-2 overflow-hidden">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className="h-7 w-24 rounded-full shrink-0" />
+          ))}
+        </div>
       </div>
+      {/* Grid skeleton */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="space-y-3">
