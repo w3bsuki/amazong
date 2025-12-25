@@ -132,7 +132,7 @@ export function SellerRateBuyerActions({
 
       {/* Already Rated Badge */}
       {hasRated && (
-        <span className="inline-flex items-center gap-1 text-sm text-green-600">
+        <span className="inline-flex items-center gap-1 text-sm text-success">
           <CheckCircle className="h-4 w-4" />
           {t.ratedBuyer}
         </span>
@@ -163,8 +163,8 @@ export function SellerRateBuyerActions({
                       className={cn(
                         "h-8 w-8 transition-colors",
                         (hoverRating || rating) >= star
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-gray-300"
+                          ? "fill-rating text-rating"
+                          : "text-rating-empty"
                       )}
                     />
                   </button>

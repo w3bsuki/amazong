@@ -55,17 +55,17 @@ function getTrustLevel(score: number): "low" | "medium" | "high" | "excellent" {
 }
 
 const levelColors = {
-  low: "text-gray-500",
-  medium: "text-blue-500",
-  high: "text-emerald-500",
-  excellent: "text-amber-500",
+  low: "text-muted-foreground",
+  medium: "text-info",
+  high: "text-success",
+  excellent: "text-rating",
 }
 
 const levelBgColors = {
-  low: "bg-gray-500",
-  medium: "bg-blue-500",
-  high: "bg-emerald-500",
-  excellent: "bg-amber-500",
+  low: "bg-muted-foreground",
+  medium: "bg-info",
+  high: "bg-success",
+  excellent: "bg-rating",
 }
 
 const levelIcons = {
@@ -216,10 +216,10 @@ export function TrustIndicator({ score, className }: TrustIndicatorProps) {
           <div
             className={cn(
               "flex items-center justify-center w-6 h-6 rounded-full",
-              level === "excellent" && "bg-amber-100 dark:bg-amber-900/30",
-              level === "high" && "bg-emerald-100 dark:bg-emerald-900/30",
-              level === "medium" && "bg-blue-100 dark:bg-blue-900/30",
-              level === "low" && "bg-gray-100 dark:bg-gray-800",
+              level === "excellent" && "bg-rating/15",
+              level === "high" && "bg-success/15",
+              level === "medium" && "bg-info/15",
+              level === "low" && "bg-muted",
               className
             )}
           >

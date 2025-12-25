@@ -120,7 +120,7 @@ export function SignInPrompt() {
               <div className="bg-muted/50 rounded-xl p-3 sm:p-4 border border-border/50">
                 <div className="flex gap-0.5 mb-2">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} weight="fill" className="size-3.5 sm:size-4 text-yellow-500" />
+                    <Star key={i} weight="fill" className="size-3.5 sm:size-4 text-rating" />
                   ))}
                 </div>
                 <p className="text-xs sm:text-sm text-foreground mb-2">

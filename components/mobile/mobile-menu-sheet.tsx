@@ -40,12 +40,20 @@ import {
 } from "@phosphor-icons/react"
 import { useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
+import { useSearchParams } from "next/navigation"
 
 interface Category {
   id: string
   name: string
   name_bg: string | null
   slug: string
+}
+
+type CategoryCircleStyle = "neutral" | "brand" | "brandText"
+
+function parseCircleStyle(value: string | null): CategoryCircleStyle {
+  if (value === "brand" || value === "brandText" || value === "neutral") return value
+  return "neutral"
 }
 
 // Map category slugs to Phosphor icons - same as category-circles.tsx
@@ -103,6 +111,17 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
     const [open, setOpen] = useState(false)
     const [categories, setCategories] = useState<Category[]>([])
     const locale = useLocale()
+    const searchParams = useSearchParams()
+    const uiDebug = searchParams.get("uiDebug") === "1"
+    const [circleStyle, setCircleStyle] = useState<CategoryCircleStyle>(() =>
+      parseCircleStyle(searchParams.get("catCircles"))
+    )
+
+    // Keep local state in sync with URL param (lets you A/B quickly)
+    useEffect(() => {
+      setCircleStyle(parseCircleStyle(searchParams.get("catCircles")))
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams])
 
     useImperativeHandle(ref, () => ({
       open: () => setOpen(true),
@@ -176,6 +195,30 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                   <CaretRight size={10} weight="bold" />
                 </Link>
               </div>
+
+              {uiDebug && (
+                <div className="mb-4 inline-flex rounded-full bg-muted p-1">
+                  {([
+                    ["neutral", locale === "bg" ? "Неутрално" : "Neutral"],
+                    ["brand", locale === "bg" ? "Синьо" : "Blue"],
+                    ["brandText", locale === "bg" ? "Синьо + текст" : "Blue + text"],
+                  ] as const).map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setCircleStyle(value)}
+                      className={cn(
+                        "h-7 px-3 rounded-full text-[11px] font-semibold transition-colors",
+                        value === circleStyle
+                          ? "bg-background text-foreground shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
               
               {/* Category Circles Grid - 4 columns */}
               <div className="grid grid-cols-4 gap-y-5 gap-x-1.5">
@@ -193,20 +236,34 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                         className={cn(
                           "rounded-full flex items-center justify-center",
                           "size-[54px]",
-                          "bg-background ring-1 ring-border/60",
+                          circleStyle === "neutral"
+                            ? "bg-background ring-1 ring-border/60"
+                            : "bg-cta-trust-blue ring-1 ring-cta-trust-blue/40",
                           "transition-all duration-150",
-                          "group-hover:bg-accent/40 group-hover:ring-ring/30 group-hover:scale-105 group-active:scale-95"
+                          circleStyle === "neutral"
+                            ? "group-hover:bg-accent/40 group-hover:ring-ring/30"
+                            : "group-hover:bg-cta-trust-blue-hover group-hover:ring-cta-trust-blue/60",
+                          "group-hover:scale-105 group-active:scale-95"
                         )}
                       >
                         <Icon
-                          className="size-6 text-cta-trust-blue transition-colors duration-150"
+                          className={cn(
+                            "size-6 transition-colors duration-150",
+                            circleStyle === "neutral" ? "text-cta-trust-blue" : "text-cta-trust-blue-text"
+                          )}
                           weight="regular"
                         />
                       </div>
                       {/* Category name */}
-                      <span className="text-[10px] font-medium text-center text-foreground leading-[1.1] line-clamp-2 max-w-[72px] group-hover:text-cta-trust-blue transition-colors duration-150">
-                        {getShortName(cat)}
-                      </span>
+                      {circleStyle === "brandText" ? (
+                        <span className="max-w-[76px] rounded-md bg-cta-trust-blue px-1.5 py-1 text-[10px] font-semibold text-center text-cta-trust-blue-text leading-[1.1] line-clamp-2">
+                          {getShortName(cat)}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-medium text-center text-foreground leading-[1.1] line-clamp-2 max-w-[72px] group-hover:text-cta-trust-blue transition-colors duration-150">
+                          {getShortName(cat)}
+                        </span>
+                      )}
                     </Link>
                   )
                 })}

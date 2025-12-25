@@ -309,7 +309,7 @@ export function NewestListingsSection({
                 aria-controls={`panel-${tab.id}`}
               >
                 {tab.id === "promoted" && (
-                  <span className="mr-1 inline-flex items-center justify-center size-3.5 rounded-full bg-emerald-500 text-[9px] text-white">
+                  <span className="mr-1 inline-flex items-center justify-center size-3.5 rounded-full bg-success text-[9px] text-primary-foreground">
                     %
                   </span>
                 )}

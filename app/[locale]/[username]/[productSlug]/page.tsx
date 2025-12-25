@@ -254,7 +254,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="min-h-screen bg-background pb-24 lg:pb-10">
       {isSample && allowSample ? (
-        <div className="border-b bg-emerald-50 text-emerald-900">
+        <div className="border-b border-border bg-success/10 text-success">
           <div className="container py-2 text-sm">
             ✨ Preview-style fallback: rendering sample product because lookup returned no result.
           </div>

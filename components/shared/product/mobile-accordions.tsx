@@ -17,7 +17,7 @@ export function MobileAccordions({ description, details }: MobileAccordionsProps
     <div className="mt-6 lg:hidden">
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="description">
-          <AccordionTrigger className="font-bold text-slate-900">Description</AccordionTrigger>
+          <AccordionTrigger className="font-bold text-foreground">Description</AccordionTrigger>
           <AccordionContent>
             <div className="richtext max-w-none text-muted-foreground text-sm">
               <p>{description}</p>
@@ -25,7 +25,7 @@ export function MobileAccordions({ description, details }: MobileAccordionsProps
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="details">
-          <AccordionTrigger className="font-bold text-slate-900">Product Details</AccordionTrigger>
+          <AccordionTrigger className="font-bold text-foreground">Product Details</AccordionTrigger>
           <AccordionContent>
             <div className="grid grid-cols-1 gap-y-2 text-sm">
               {details.map((detail, idx) => (
@@ -38,7 +38,7 @@ export function MobileAccordions({ description, details }: MobileAccordionsProps
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="shipping">
-          <AccordionTrigger className="font-bold text-slate-900">Shipping & Returns</AccordionTrigger>
+          <AccordionTrigger className="font-bold text-foreground">Shipping & Returns</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-3 text-sm">
               <div className="grid grid-cols-[90px_1fr] gap-2">

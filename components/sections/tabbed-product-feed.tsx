@@ -88,9 +88,9 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 
   const tabs: { id: FeedTab; label: string; icon: typeof GridFour; color?: string }[] = [
     { id: "all", label: locale === "bg" ? "Всички" : "All", icon: GridFour },
-    { id: "newest", label: locale === "bg" ? "Най-нови" : "Newest", icon: TrendUp, color: "text-emerald-500" },
-    { id: "promoted", label: locale === "bg" ? "Топ" : "Featured", icon: Fire, color: "text-orange-500" },
-    { id: "deals", label: locale === "bg" ? "Оферти" : "Deals", icon: Percent, color: "text-red-500" },
+    { id: "newest", label: locale === "bg" ? "Най-нови" : "Newest", icon: TrendUp, color: "text-success" },
+    { id: "promoted", label: locale === "bg" ? "Топ" : "Featured", icon: Fire, color: "text-warning" },
+    { id: "deals", label: locale === "bg" ? "Оферти" : "Deals", icon: Percent, color: "text-destructive" },
   ]
 
   const fetchProducts = useCallback(async (tab: FeedTab, pageNum: number, limit: number, append = false, categorySlug?: string | null) => {

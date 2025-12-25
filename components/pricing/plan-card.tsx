@@ -153,7 +153,7 @@ export function PlanCard({
           : "w-[calc(100vw-3rem)] shrink-0 snap-center md:w-auto md:max-w-none md:shrink md:snap-none",
         // Styling based on plan type
         isPopular && "border-primary ring-1 ring-primary/20 shadow-md",
-        isBest && "border-amber-500 ring-1 ring-amber-500/20 shadow-md",
+        isBest && "border-rating ring-1 ring-rating/20 shadow-md",
         isCurrentPlan && "bg-muted/30",
         // Padding
         variant === "compact" ? "p-4" : "p-5 md:p-6"
@@ -165,7 +165,7 @@ export function PlanCard({
           className={cn(
             "absolute -top-2.5 left-1/2 -translate-x-1/2 text-xs px-2 py-0.5",
             isPopular && "bg-primary text-primary-foreground",
-            isBest && "bg-amber-500 text-white"
+            isBest && "bg-rating text-primary-foreground"
           )}
         >
           {isBest ? t.bestValue : t.popular}
@@ -180,7 +180,7 @@ export function PlanCard({
             isPopular
               ? "bg-primary text-primary-foreground"
               : isBest
-                ? "bg-amber-500 text-white"
+                ? "bg-rating text-primary-foreground"
                 : "bg-muted text-muted-foreground"
           )}
         >
@@ -259,7 +259,7 @@ export function PlanCard({
                 weight="bold"
                 className={cn(
                   "size-3.5 shrink-0 mt-0.5",
-                  isPopular ? "text-primary" : isBest ? "text-amber-500" : "text-muted-foreground"
+                  isPopular ? "text-primary" : isBest ? "text-rating" : "text-muted-foreground"
                 )}
               />
               <span className="line-clamp-1">{feature}</span>
@@ -280,7 +280,7 @@ export function PlanCard({
         className={cn(
           "w-full",
           isPopular && "bg-primary hover:bg-primary/90",
-          isBest && "bg-amber-500 hover:bg-amber-600 text-white",
+          isBest && "bg-rating hover:bg-rating/90 text-primary-foreground",
           isCurrentPlan && "opacity-50 cursor-not-allowed"
         )}
         disabled={isCurrentPlan || isLoading}

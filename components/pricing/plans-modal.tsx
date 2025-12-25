@@ -249,7 +249,7 @@ export function PlansModal({
                 )}
               >
                 {t.yearly}
-                <Badge variant="secondary" className="text-2xs bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-1 py-0">
+                <Badge variant="secondary" className="text-2xs bg-success/10 text-success border-success/20 px-1 py-0">
                   {t.save}
                 </Badge>
               </button>

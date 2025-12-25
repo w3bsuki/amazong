@@ -242,7 +242,7 @@ export function ReviewsSectionClient({
                       </div>
                       {review.verified_purchase && (
                         <>
-                          <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-500 font-medium">
+                          <span className="flex items-center gap-1 text-xs text-success font-medium">
                             <CheckCircle size={12} weight="fill" />
                             {t("verifiedPurchase")}
                           </span>

@@ -73,11 +73,11 @@ function StarRating({ rating, count, size = "sm" }: { rating: number; count: num
   
   for (let i = 0; i < 5; i++) {
     if (i < fullStars) {
-      stars.push(<Star key={i} weight="fill" className={`text-yellow-500 ${size === "md" ? "size-5" : "size-4"}`} />)
+      stars.push(<Star key={i} weight="fill" className={`text-rating ${size === "md" ? "size-5" : "size-4"}`} />)
     } else if (i === fullStars && hasHalf) {
-      stars.push(<Star key={i} weight="duotone" className={`text-yellow-500 ${size === "md" ? "size-5" : "size-4"}`} />)
+      stars.push(<Star key={i} weight="duotone" className={`text-rating ${size === "md" ? "size-5" : "size-4"}`} />)
     } else {
-      stars.push(<Star key={i} weight="regular" className={`text-gray-300 ${size === "md" ? "size-5" : "size-4"}`} />)
+      stars.push(<Star key={i} weight="regular" className={`text-rating-empty ${size === "md" ? "size-5" : "size-4"}`} />)
     }
   }
   
@@ -144,8 +144,8 @@ export function PublicProfileClient({
               </AvatarFallback>
             </Avatar>
             {profile.is_verified_business && (
-              <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1.5 border-2 border-background">
-                <CheckCircle className="size-5 text-white" weight="fill" />
+              <div className="absolute -bottom-1 -right-1 bg-primary rounded-full p-1.5 border-2 border-background">
+                <CheckCircle className="size-5 text-primary-foreground" weight="fill" />
               </div>
             )}
           </div>
@@ -162,7 +162,7 @@ export function PublicProfileClient({
                   </Badge>
                 )}
                 {profile.is_seller && (
-                  <Badge variant="outline" className="gap-1 text-emerald-600 border-emerald-200 bg-emerald-50">
+                  <Badge variant="outline" className="gap-1 text-success border-success/20 bg-success/10">
                     <Package className="size-3.5" />
                     {locale === "bg" ? "Продавач" : "Seller"}
                   </Badge>

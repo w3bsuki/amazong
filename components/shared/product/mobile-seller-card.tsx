@@ -22,7 +22,7 @@ export function MobileSellerCard({ store }: MobileSellerCardProps) {
           <AvatarFallback>{store.name.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
-          <div className="font-bold text-slate-900 text-sm hover:underline cursor-pointer truncate">
+          <div className="font-bold text-foreground text-sm hover:underline cursor-pointer truncate">
             {store.name}
           </div>
           <div className="text-xs text-muted-foreground truncate">
