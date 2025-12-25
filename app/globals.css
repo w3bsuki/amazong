@@ -161,6 +161,14 @@
   --color-status-info: var(--color-info);
   --color-status-neutral: oklch(0.92 0 0);
 
+  /* Order status (domain semantic) */
+  --color-order-pending: var(--color-warning);
+  --color-order-received: var(--color-info);
+  --color-order-processing: oklch(0.55 0.18 275);
+  --color-order-shipped: oklch(0.55 0.18 310);
+  --color-order-delivered: var(--color-success);
+  --color-order-cancelled: var(--color-error);
+
   /* Shadcn-compatible aliases */
   --color-background: var(--color-canvas-default);
   --color-foreground: oklch(0.12 0 0);
@@ -343,6 +351,14 @@
   --color-status-error: var(--color-error);
   --color-status-info: var(--color-info);
   --color-status-neutral: oklch(0.32 0.02 250);
+
+  /* Order status (domain semantic) - dark mode */
+  --color-order-pending: var(--color-warning);
+  --color-order-received: var(--color-info);
+  --color-order-processing: oklch(0.65 0.14 275);
+  --color-order-shipped: oklch(0.65 0.14 310);
+  --color-order-delivered: var(--color-success);
+  --color-order-cancelled: var(--color-error);
 
   --color-background: oklch(0.18 0.02 250);
   --color-foreground: oklch(0.95 0 0);

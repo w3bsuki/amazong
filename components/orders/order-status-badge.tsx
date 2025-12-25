@@ -46,12 +46,12 @@ export function OrderStatusDot({ status }: { status: OrderItemStatus }) {
   const config = ORDER_STATUS_CONFIG[status] || ORDER_STATUS_CONFIG.pending
   
   const dotColors: Record<OrderItemStatus, string> = {
-    pending: 'bg-yellow-500',
-    received: 'bg-blue-500',
-    processing: 'bg-indigo-500',
-    shipped: 'bg-purple-500',
-    delivered: 'bg-green-500',
-    cancelled: 'bg-red-500',
+    pending: 'bg-order-pending',
+    received: 'bg-order-received',
+    processing: 'bg-order-processing',
+    shipped: 'bg-order-shipped',
+    delivered: 'bg-order-delivered',
+    cancelled: 'bg-order-cancelled',
   }
 
   return (

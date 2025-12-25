@@ -252,7 +252,7 @@ export function BuyerOrderActions({
           variant="outline"
           onClick={() => setShowCancelDialog(true)}
           disabled={isLoading}
-          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          className="text-status-error hover:bg-status-error/10"
         >
           <XCircle className="h-4 w-4 mr-1.5" />
           {t.cancelOrder}
@@ -266,7 +266,7 @@ export function BuyerOrderActions({
           variant="outline"
           onClick={() => setShowIssueDialog(true)}
           disabled={isLoading}
-          className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+          className="text-status-warning hover:bg-status-warning/10"
         >
           <AlertTriangle className="h-4 w-4 mr-1.5" />
           {t.reportIssue}
@@ -279,7 +279,7 @@ export function BuyerOrderActions({
           size="sm"
           onClick={handleConfirmDelivery}
           disabled={isLoading}
-          className="bg-green-600 hover:bg-green-700"
+          className="bg-status-success text-white hover:brightness-95"
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
@@ -305,7 +305,7 @@ export function BuyerOrderActions({
 
       {/* Already Rated Badge */}
       {isDelivered && hasRated && (
-        <span className="inline-flex items-center gap-1 text-sm text-green-600">
+        <span className="inline-flex items-center gap-1 text-sm text-status-success">
           <CheckCircle className="h-4 w-4" />
           {t.ratedSeller}
         </span>
@@ -315,7 +315,7 @@ export function BuyerOrderActions({
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-600">
+            <DialogTitle className="flex items-center gap-2 text-status-error">
               <XCircle className="h-5 w-5" />
               {t.cancelTitle}
             </DialogTitle>
@@ -368,7 +368,7 @@ export function BuyerOrderActions({
       <Dialog open={showIssueDialog} onOpenChange={setShowIssueDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-yellow-600">
+            <DialogTitle className="flex items-center gap-2 text-status-warning">
               <AlertTriangle className="h-5 w-5" />
               {t.issueTitle}
             </DialogTitle>
@@ -414,7 +414,7 @@ export function BuyerOrderActions({
             <Button 
               onClick={handleReportIssue} 
               disabled={isLoading || !issueType || issueDescription.length < 10}
-              className="bg-yellow-600 hover:bg-yellow-700"
+              className="bg-status-warning text-white hover:brightness-95"
             >
               {isLoading ? (
                 <>
@@ -457,8 +457,8 @@ export function BuyerOrderActions({
                       className={cn(
                         "h-8 w-8 transition-colors",
                         (hoverRating || rating) >= star
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-gray-300"
+                          ? "fill-rating text-rating"
+                          : "text-rating-empty"
                       )}
                     />
                   </button>

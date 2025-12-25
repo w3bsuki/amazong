@@ -151,7 +151,7 @@ export function OrderStatusActions({
         <Button
           variant="ghost"
           size="sm"
-          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          className="text-status-error hover:bg-status-error/10"
           onClick={() => handleStatusUpdate('cancelled')}
           disabled={isLoading}
         >

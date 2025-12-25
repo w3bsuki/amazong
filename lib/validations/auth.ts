@@ -114,12 +114,12 @@ export function getPasswordStrength(password: string): {
     return { score, label: "Weak", color: "bg-destructive", width: "w-1/4" }
   }
   if (score <= 4) {
-    return { score, label: "Fair", color: "bg-amber-500", width: "w-2/4" }
+    return { score, label: "Fair", color: "bg-status-warning", width: "w-2/4" }
   }
   if (score <= 5) {
-    return { score, label: "Good", color: "bg-emerald-500", width: "w-3/4" }
+    return { score, label: "Good", color: "bg-status-success/80", width: "w-3/4" }
   }
-  return { score, label: "Strong", color: "bg-emerald-600", width: "w-full" }
+  return { score, label: "Strong", color: "bg-status-success", width: "w-full" }
 }
 
 // Change password form schema
