@@ -70,19 +70,19 @@ export default async function AdminOrdersPage() {
   const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'paid':
-        return 'bg-emerald-100 text-emerald-700 border-emerald-200'
+        return 'bg-success/15 text-success border-success/25'
       case 'pending':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200'
+        return 'bg-order-pending/15 text-order-pending border-order-pending/25'
       case 'processing':
-        return 'bg-blue-100 text-blue-700 border-blue-200'
+        return 'bg-order-processing/15 text-order-processing border-order-processing/25'
       case 'shipped':
-        return 'bg-purple-100 text-purple-700 border-purple-200'
+        return 'bg-order-shipped/15 text-order-shipped border-order-shipped/25'
       case 'delivered':
-        return 'bg-green-100 text-green-700 border-green-200'
+        return 'bg-order-delivered/15 text-order-delivered border-order-delivered/25'
       case 'cancelled':
-        return 'bg-red-100 text-red-700 border-red-200'
+        return 'bg-order-cancelled/15 text-order-cancelled border-order-cancelled/25'
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200'
+        return 'bg-muted text-muted-foreground border-border'
     }
   }
 
@@ -104,7 +104,7 @@ export default async function AdminOrdersPage() {
           <Badge variant="outline" className="text-base">
             {orders.length} orders
           </Badge>
-          <Badge variant="outline" className="text-base bg-emerald-50 text-emerald-700 border-emerald-200">
+          <Badge variant="outline" className="text-base bg-success/10 text-success border-success/25">
             {formatCurrency(totalRevenue)} revenue
           </Badge>
         </div>

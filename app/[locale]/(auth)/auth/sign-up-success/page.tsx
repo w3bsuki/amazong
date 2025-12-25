@@ -8,30 +8,30 @@ export default async function SignUpSuccessPage() {
   const t = await getTranslations('Auth')
 
   return (
-    <div className="min-h-svh flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-sm bg-white rounded-xl border border-gray-200 relative">
+    <div className="min-h-svh flex items-center justify-center bg-muted p-4">
+      <div className="w-full max-w-sm bg-card rounded-xl border border-border relative">
         <div className="p-6">
           {/* Header */}
           <div className="flex flex-col items-center mb-6">
             {/* Success Icon */}
-            <div className="size-14 bg-emerald-100 rounded-full flex items-center justify-center mb-3">
-              <CheckCircle className="size-8 text-emerald-600" weight="fill" />
+            <div className="size-14 bg-success/15 rounded-full flex items-center justify-center mb-3">
+              <CheckCircle className="size-8 text-success" weight="fill" />
             </div>
             
-            <h1 className="text-xl font-semibold text-gray-900">
+            <h1 className="text-xl font-semibold text-foreground">
               {t('signUpSuccessTitle')}
             </h1>
-            <p className="text-sm text-gray-500 mt-1 text-center">
+            <p className="text-sm text-muted-foreground mt-1 text-center">
               {t('signUpSuccessDescription')}
             </p>
           </div>
 
           {/* Email Notice */}
-          <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-100 rounded-lg text-left mb-6">
-            <EnvelopeSimple className="size-5 text-blue-600 shrink-0 mt-0.5" weight="duotone" />
+          <div className="flex items-start gap-3 p-4 bg-primary/10 border border-primary/20 rounded-lg text-left mb-6">
+            <EnvelopeSimple className="size-5 text-primary shrink-0 mt-0.5" weight="duotone" />
             <div>
-              <p className="text-sm font-medium text-gray-900 mb-0.5">{t('checkYourEmail')}</p>
-              <p className="text-xs text-gray-600">{t('confirmEmailInstructions')}</p>
+              <p className="text-sm font-medium text-foreground mb-0.5">{t('checkYourEmail')}</p>
+              <p className="text-xs text-muted-foreground">{t('confirmEmailInstructions')}</p>
             </div>
           </div>
 
@@ -39,32 +39,32 @@ export default async function SignUpSuccessPage() {
           <div className="space-y-3">
             <Link
               href="/auth/login"
-              className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center"
+              className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium rounded-lg transition-colors flex items-center justify-center"
             >
               {t('goToSignIn')}
             </Link>
             <Link
               href="/"
-              className="w-full h-10 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
+              className="w-full h-10 bg-background border border-border text-foreground text-sm font-medium rounded-lg hover:bg-muted transition-colors flex items-center justify-center"
             >
               {t('backToHome')}
             </Link>
           </div>
 
-          <p className="text-xs text-center text-gray-500 mt-4">
+          <p className="text-xs text-center text-muted-foreground mt-4">
             {t('didNotReceiveEmail')}{" "}
-            <button className="text-blue-600 hover:underline">{t('resendEmail')}</button>
+            <button className="text-primary hover:underline">{t('resendEmail')}</button>
           </p>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
-          <div className="flex justify-center gap-4 text-xs text-gray-500">
-            <Link href="/terms" className="hover:text-blue-600 transition-colors">{t('conditionsOfUse')}</Link>
-            <Link href="/privacy" className="hover:text-blue-600 transition-colors">{t('privacyNotice')}</Link>
-            <Link href="/help" className="hover:text-blue-600 transition-colors">{t('help')}</Link>
+        <div className="px-6 py-4 bg-muted border-t border-border rounded-b-xl">
+          <div className="flex justify-center gap-4 text-xs text-muted-foreground">
+            <Link href="/terms" className="hover:text-primary transition-colors">{t('conditionsOfUse')}</Link>
+            <Link href="/privacy" className="hover:text-primary transition-colors">{t('privacyNotice')}</Link>
+            <Link href="/help" className="hover:text-primary transition-colors">{t('help')}</Link>
           </div>
-          <p className="text-xs text-center text-gray-400 mt-2">
+          <p className="text-xs text-center text-muted-foreground/70 mt-2">
             {t('copyright', { year: new Date().getFullYear() })}
           </p>
         </div>

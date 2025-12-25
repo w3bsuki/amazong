@@ -692,8 +692,8 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
                     weight="fill"
                     className={cn(
                       i <= Math.floor(rating)
-                        ? "text-amber-500 dark:text-amber-400"
-                        : "text-muted-foreground/30"
+                        ? "text-rating"
+                        : "text-rating-empty"
                     )}
                   />
                 ))}
@@ -706,7 +706,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
 
           {/* Free Shipping - Trust signal */}
           {freeShipping && (
-            <p className="inline-flex items-center gap-1 pt-0.5 text-2xs font-medium text-emerald-600 dark:text-emerald-400">
+            <p className="inline-flex items-center gap-1 pt-0.5 text-2xs font-medium text-success">
               <Truck size={12} weight="bold" />
               {locale === "bg" ? "Безплатна доставка" : "Free shipping"}
             </p>

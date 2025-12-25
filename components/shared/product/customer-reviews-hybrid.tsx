@@ -25,7 +25,7 @@ interface CustomerReviewsHybridProps {
 export function CustomerReviewsHybrid({ rating, reviewCount, reviews }: CustomerReviewsHybridProps) {
   return (
     <div className="mt-12 rounded-xl bg-muted/40 p-6">
-      <h3 className="mb-6 text-lg font-bold text-slate-900">Customer Reviews</h3>
+      <h3 className="mb-6 text-lg font-bold text-foreground">Customer Reviews</h3>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_1fr]">
         {/* Summary Column */}
         <div className="flex flex-col gap-6">
@@ -34,7 +34,7 @@ export function CustomerReviewsHybrid({ rating, reviewCount, reviews }: Customer
               {rating}
             </div>
             <div>
-              <div className="flex gap-0.5 text-orange-400 mb-1.5">
+              <div className="flex gap-0.5 text-rating mb-1.5">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className={`h-4 w-4 ${i < Math.round(rating) ? "fill-current" : "text-muted-foreground/30"}`} />
                 ))}
@@ -48,7 +48,7 @@ export function CustomerReviewsHybrid({ rating, reviewCount, reviews }: Customer
             {[5, 4, 3, 2, 1].map((star) => (
               <div key={star} className="flex items-center gap-2 text-xs">
                 <div className="flex items-center gap-1 w-8">
-                  <Star className="h-3 w-3 fill-orange-400 text-orange-400" />
+                  <Star className="h-3 w-3 fill-rating text-rating" />
                   <span className="font-medium text-muted-foreground">{star}</span>
                 </div>
                 <Progress value={star === 5 ? 80 : star === 4 ? 15 : 2} className="h-1.5 bg-muted [&>div]:bg-foreground" />
@@ -63,10 +63,10 @@ export function CustomerReviewsHybrid({ rating, reviewCount, reviews }: Customer
         {/* Reviews Column */}
         <div>
           <div className="mb-6 flex flex-wrap gap-2">
-            <Button variant="default" size="sm" className="h-7 text-xs bg-slate-900 text-white hover:bg-slate-800 rounded-full px-4 border-none shadow-none">All ({reviewCount})</Button>
-            <Button variant="secondary" size="sm" className="h-7 text-xs bg-background text-slate-900 hover:bg-muted rounded-full px-4 border-none shadow-none">Pic Review (12)</Button>
-            <Button variant="secondary" size="sm" className="h-7 text-xs bg-background text-slate-900 hover:bg-muted rounded-full px-4 border-none shadow-none">Fast Shipping (12)</Button>
-            <Button variant="secondary" size="sm" className="h-7 text-xs bg-background text-slate-900 hover:bg-muted rounded-full px-4 border-none shadow-none">5 Stars (136)</Button>
+            <Button variant="default" size="sm" className="h-7 text-xs bg-foreground text-background hover:bg-foreground/90 rounded-full px-4 border-none shadow-none">All ({reviewCount})</Button>
+            <Button variant="secondary" size="sm" className="h-7 text-xs bg-background text-foreground hover:bg-muted rounded-full px-4 border-none shadow-none">Pic Review (12)</Button>
+            <Button variant="secondary" size="sm" className="h-7 text-xs bg-background text-foreground hover:bg-muted rounded-full px-4 border-none shadow-none">Fast Shipping (12)</Button>
+            <Button variant="secondary" size="sm" className="h-7 text-xs bg-background text-foreground hover:bg-muted rounded-full px-4 border-none shadow-none">5 Stars (136)</Button>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -74,7 +74,7 @@ export function CustomerReviewsHybrid({ rating, reviewCount, reviews }: Customer
               <Card key={review.id} className="border-none shadow-none bg-background">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex text-orange-400 gap-0.5">
+                    <div className="flex text-rating gap-0.5">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className={`h-3 w-3 ${i < review.rating ? "fill-current" : "text-muted-foreground/30"}`} />
                       ))}

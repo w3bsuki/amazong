@@ -104,8 +104,8 @@ export default function ResetPasswordPage() {
   if (isValidSession === null) {
     return (
       <div className="w-full max-w-sm mx-auto text-center">
-        <SpinnerGap className="size-8 animate-spin mx-auto text-blue-600" />
-        <p className="text-sm text-gray-600 mt-4">{locale === "bg" ? "Зареждане..." : "Loading..."}</p>
+        <SpinnerGap className="size-8 animate-spin mx-auto text-primary" />
+        <p className="text-sm text-muted-foreground mt-4">{locale === "bg" ? "Зареждане..." : "Loading..."}</p>
       </div>
     )
   }
@@ -115,15 +115,15 @@ export default function ResetPasswordPage() {
     return (
       <div className="w-full max-w-sm mx-auto text-center">
         <div className="flex flex-col items-center gap-4 mb-6">
-          <div className="size-16 bg-red-100 rounded-full flex items-center justify-center">
-            <Lock className="size-8 text-red-600" weight="bold" />
+          <div className="size-16 bg-destructive/15 rounded-full flex items-center justify-center">
+            <Lock className="size-8 text-destructive" weight="bold" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{locale === "bg" ? "Линкът е изтекъл" : "Link expired"}</h1>
-          <p className="text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-foreground">{locale === "bg" ? "Линкът е изтекъл" : "Link expired"}</h1>
+          <p className="text-sm text-muted-foreground">
             {locale === "bg" ? "Линкът за възстановяване на паролата е изтекъл или е невалиден." : "The password reset link has expired or is invalid."}
           </p>
         </div>
-        <Link href="/auth/forgot-password" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline">
+        <Link href="/auth/forgot-password" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
           {locale === "bg" ? "Заявете нов линк" : "Request a new link"}
         </Link>
       </div>
@@ -135,17 +135,17 @@ export default function ResetPasswordPage() {
     return (
       <div className="w-full max-w-sm mx-auto text-center">
         <div className="flex flex-col items-center gap-4 mb-6">
-          <div className="size-16 bg-green-100 rounded-full flex items-center justify-center">
-            <Check className="size-8 text-green-600" weight="bold" />
+          <div className="size-16 bg-success/15 rounded-full flex items-center justify-center">
+            <Check className="size-8 text-success" weight="bold" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{locale === "bg" ? "Паролата е променена!" : "Password updated!"}</h1>
-          <p className="text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-foreground">{locale === "bg" ? "Паролата е променена!" : "Password updated!"}</h1>
+          <p className="text-sm text-muted-foreground">
             {locale === "bg"
               ? "Вашата парола беше успешно променена. Пренасочване към вход..."
               : "Your password has been successfully updated. Redirecting to login..."}
           </p>
         </div>
-        <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline">
+        <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
           <ArrowLeft className="size-4" />
           {locale === "bg" ? "Към вход" : "Go to login"}
         </Link>
@@ -157,23 +157,23 @@ export default function ResetPasswordPage() {
   return (
     <div className="w-full max-w-sm mx-auto">
       <div className="text-center mb-8">
-        <div className="size-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Lock className="size-6 text-blue-600" weight="bold" />
+        <div className="size-12 bg-primary/15 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Lock className="size-6 text-primary" weight="bold" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">{locale === "bg" ? "Нова парола" : "Set new password"}</h1>
-        <p className="text-sm text-gray-600 mt-2">{locale === "bg" ? "Въведете новата си парола по-долу." : "Enter your new password below."}</p>
+        <h1 className="text-2xl font-bold text-foreground">{locale === "bg" ? "Нова парола" : "Set new password"}</h1>
+        <p className="text-sm text-muted-foreground mt-2">{locale === "bg" ? "Въведете новата си парола по-долу." : "Enter your new password below."}</p>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {serverError && <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">{serverError}</div>}
+          {serverError && <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">{serverError}</div>}
 
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">
                   {locale === "bg" ? "Нова парола" : "New password"}
                 </label>
                 <FormControl>
@@ -184,18 +184,18 @@ export default function ResetPasswordPage() {
                       type={showPassword ? "text" : "password"}
                       autoComplete="new-password"
                       placeholder="••••••••"
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 pr-10 border border-input rounded-md shadow-sm bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
                       {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
                     </button>
                   </div>
                 </FormControl>
-                <FormMessage className="text-xs text-red-500 mt-1" />
+                <FormMessage className="text-xs text-destructive mt-1" />
               </FormItem>
             )}
           />
@@ -205,7 +205,7 @@ export default function ResetPasswordPage() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-1">
                   {locale === "bg" ? "Потвърдете паролата" : "Confirm password"}
                 </label>
                 <FormControl>
@@ -216,24 +216,24 @@ export default function ResetPasswordPage() {
                       type={showConfirmPassword ? "text" : "password"}
                       autoComplete="new-password"
                       placeholder="••••••••"
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 pr-10 border border-input rounded-md shadow-sm bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
                       {showConfirmPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
                     </button>
                   </div>
                 </FormControl>
-                <FormMessage className="text-xs text-red-500 mt-1" />
+                <FormMessage className="text-xs text-destructive mt-1" />
               </FormItem>
             )}
           />
 
           {/* Password requirements hint */}
-          <div className="text-xs text-gray-500 space-y-1">
+          <div className="text-xs text-muted-foreground space-y-1">
             <p>{locale === "bg" ? "Паролата трябва да съдържа:" : "Password must contain:"}</p>
             <ul className="list-disc list-inside space-y-0.5 ml-2">
               <li>{locale === "bg" ? "Минимум 8 символа" : "At least 8 characters"}</li>
@@ -246,7 +246,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={isPending || !isValid}
-            className="w-full py-2.5 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="w-full py-2.5 px-4 bg-primary text-primary-foreground font-medium rounded-md hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             {isPending ? (
               <>
@@ -263,7 +263,7 @@ export default function ResetPasswordPage() {
       </Form>
 
       <div className="mt-6 text-center">
-        <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800">
+        <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" />
           {locale === "bg" ? "Обратно към вход" : "Back to login"}
         </Link>

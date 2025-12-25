@@ -91,7 +91,7 @@ export default async function LocaleLayout({
     const messages = await getMessages();
 
     return (
-        <html lang={locale}>
+        <html lang={locale} className={inter.variable}>
             <head>
           <meta
             name="description"
@@ -101,10 +101,8 @@ export default async function LocaleLayout({
                 : "Discover the best products at affordable prices. Fast delivery."
             }
           />
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
             </head>
-            <body className={`${inter.className} ${inter.variable} bg-background min-h-screen`}>
+            <body className="bg-background min-h-screen">
                 <NextIntlClientProvider messages={messages}>
                     <Suspense fallback={null}>
                         <AuthStateListener />

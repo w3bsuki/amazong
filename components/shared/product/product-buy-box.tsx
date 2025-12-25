@@ -223,7 +223,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
                       </Button>
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-xs font-medium text-emerald-600">
+                      <span className="text-xs font-medium text-success">
                         {stockInfo?.stockQuantity ? `${stockInfo.stockQuantity} available` : "In Stock"}
                       </span>
                       {product.soldCount ? <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{product.soldCount} sold</span> : null}

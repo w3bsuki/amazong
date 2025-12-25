@@ -90,10 +90,10 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
 
   // Stats cards
   const statCards = [
-    { key: 'pending' as const, label: 'Pending', icon: '⏳', color: 'bg-yellow-500' },
-    { key: 'processing' as const, label: 'Processing', icon: '📦', color: 'bg-indigo-500' },
-    { key: 'shipped' as const, label: 'Shipped', icon: '🚚', color: 'bg-purple-500' },
-    { key: 'delivered' as const, label: 'Delivered', icon: '🎉', color: 'bg-green-500' },
+    { key: 'pending' as const, label: 'Pending', icon: '⏳', color: 'bg-order-pending' },
+    { key: 'processing' as const, label: 'Processing', icon: '📦', color: 'bg-order-processing' },
+    { key: 'shipped' as const, label: 'Shipped', icon: '🚚', color: 'bg-order-shipped' },
+    { key: 'delivered' as const, label: 'Delivered', icon: '🎉', color: 'bg-order-delivered' },
   ]
 
   return (

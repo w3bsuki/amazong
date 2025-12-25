@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@import "@fontsource-variable/inter/index.css";
+/* Fonts are self-hosted via next/font (see app/[locale]/layout.tsx). */
 
 /* ===== iOS ZOOM PREVENTION ===== */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
@@ -24,7 +24,7 @@
 /* ===== TAILWIND V4 THEME - All design tokens in one place ===== */
 @theme {
   /* === FONTS === */
-  --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system,
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;

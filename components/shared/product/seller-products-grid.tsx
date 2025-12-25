@@ -29,7 +29,7 @@ export function SellerProductsGrid({ products, totalCount = 519 }: SellerProduct
   return (
     <div className="mt-6 rounded-xl bg-muted/40 p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-bold text-slate-900">More from this seller</h3>
+        <h3 className="text-lg font-bold text-foreground">More from this seller</h3>
         <Button variant="link" className="text-primary font-medium hover:underline h-auto p-0">See all ({totalCount})</Button>
       </div>
       <div className="flex overflow-x-auto gap-3 pb-4 -mx-4 px-4 snap-x lg:grid lg:grid-cols-5 lg:gap-4 lg:pb-0 lg:mx-0 lg:px-0 no-scrollbar">
