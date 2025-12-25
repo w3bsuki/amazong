@@ -142,7 +142,6 @@ function MessagesContent() {
       } else if (conversations.length > 0) {
         // Conversations loaded but target not found - still mark as attempted
         // This prevents infinite retries
-        console.log('Conversation not found:', conversationParam)
         setHasAutoSelected(true)
       }
     }

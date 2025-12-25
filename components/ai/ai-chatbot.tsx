@@ -263,10 +263,9 @@ export function AIChatbot({
     onError: (err) => {
       console.error("Chat error:", err)
     },
-    onFinish: ({ message, isAbort }) => {
+    onFinish: ({ message: _message, isAbort }) => {
       if (!isAbort) {
         // Could add analytics or persistence here
-        console.log("Message complete:", message.id)
       }
     },
   })

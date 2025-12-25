@@ -106,8 +106,8 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
 
   const stockInfo = selectedItem?.stockInfo;
 
-  const onSubmit = (data: FormType) => {
-    console.log(data);
+  const onSubmit = (_data: FormType) => {
+    // TODO: Implement add to cart functionality
   };
 
   return (
