@@ -233,11 +233,11 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
             <div className="lg:hidden">
               <div className="mx-auto w-full max-w-[var(--container-header-content)] flex items-center gap-0.5 overflow-x-auto no-scrollbar">
                 <SidebarMenu user={user} />
-                <Link href="/todays-deals" prefetch={true} className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
-                <Link href="/customer-service" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
-                <Link href="/registry" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('registry')}</Link>
-                <Link href="/gift-cards" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('giftCards')}</Link>
-                <Link href="/sell" className="font-normal text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
+                <Link href="/todays-deals" prefetch={true} className="text-header-text min-h-10 px-3 flex items-center rounded-sm shrink-0 active:bg-header-active">{t('todaysDeals')}</Link>
+                <Link href="/customer-service" className="text-header-text min-h-10 px-3 flex items-center rounded-sm shrink-0 active:bg-header-active">{t('customerService')}</Link>
+                <Link href="/registry" className="text-header-text min-h-10 px-3 flex items-center rounded-sm shrink-0 active:bg-header-active">{t('registry')}</Link>
+                <Link href="/gift-cards" className="text-header-text min-h-10 px-3 flex items-center rounded-sm shrink-0 active:bg-header-active">{t('giftCards')}</Link>
+                <Link href="/sell" className="font-normal text-header-text min-h-10 px-3 flex items-center rounded-sm shrink-0 active:bg-header-active">{t('sell')}</Link>
               </div>
             </div>
             

@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
-@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -26,6 +25,15 @@
   --font-sans: Inter, sans-serif;
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
+
+  /* === SEMANTIC TYPE SCALE (App UI) === */
+  /* Use these in UI instead of prose/blog sizing. */
+  --text-tiny: 0.6875rem; /* 11px: legal, helper, micro */
+  --text-tiny--line-height: 1rem;
+  --text-body: 0.875rem; /* 14px: standard body */
+  --text-body--line-height: 1.25rem;
+  --text-price: 1rem; /* 16px: price emphasis */
+  --text-price--line-height: 1.25rem;
 
   /* === PROFESSIONAL TYPOGRAPHY SCALE (Amazon/eBay/Target inspired) ===
    * Using Tailwind's font-size/line-height shorthand pattern
@@ -53,6 +61,7 @@
   --radius-lg: 0.375rem;
   --radius-xl: 0.5rem;
   --radius-2xl: 0.75rem;
+  --radius-pill: 9999px;
   --radius-full: 9999px;
 
   /* === CONTAINER WIDTHS === */
@@ -129,9 +138,18 @@
   --shadow-product-hover: none;
 
   /* === COLORS - Light Mode (default) === */
-  --color-background: oklch(1 0 0);
+  /* Marketplace semantic tokens (required) */
+  --color-canvas-default: oklch(0.985 0 0);
+  --color-surface-card: oklch(1 0 0);
+  --color-border-subtle: oklch(0.88 0 0);
+  --color-action-primary: var(--color-brand);
+  --color-status-success: var(--color-success);
+  --color-status-neutral: oklch(0.92 0 0);
+
+  /* Shadcn-compatible aliases */
+  --color-background: var(--color-canvas-default);
   --color-foreground: oklch(0.12 0 0);
-  --color-card: oklch(1 0 0);
+  --color-card: var(--color-surface-card);
   --color-card-foreground: oklch(0.12 0 0);
   --color-popover: oklch(1 0 0);
   --color-popover-foreground: oklch(0.12 0 0);
@@ -145,7 +163,7 @@
   --color-accent-foreground: oklch(0.20 0 0);
   --color-destructive: oklch(0.55 0.25 27);
   --color-destructive-foreground: oklch(1 0 0);
-  --color-border: oklch(0.88 0 0);
+  --color-border: var(--color-border-subtle);
   --color-input: oklch(0.97 0 0);
   --color-ring: oklch(0.48 0.22 260);
 
@@ -300,6 +318,14 @@
 
 /* ===== DARK MODE OVERRIDES ===== */
 .dark {
+  /* Marketplace semantic tokens (required) */
+  --color-canvas-default: oklch(0.18 0.02 250);
+  --color-surface-card: oklch(0.22 0.02 250);
+  --color-border-subtle: oklch(0.35 0.02 250);
+  --color-action-primary: var(--color-brand);
+  --color-status-success: var(--color-success);
+  --color-status-neutral: oklch(0.32 0.02 250);
+
   --color-background: oklch(0.18 0.02 250);
   --color-foreground: oklch(0.95 0 0);
   --color-card: oklch(0.22 0.02 250);

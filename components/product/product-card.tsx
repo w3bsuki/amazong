@@ -309,10 +309,10 @@ export function ProductCard({
   // Determine Seller Icon & Badge
   const getSellerBadge = () => {
     if (sellerTier === 'business') {
-      return { icon: Briefcase, label: locale === 'bg' ? 'Бизнес' : 'Business', color: 'text-blue-600 bg-blue-50 border-blue-100' }
+      return { icon: Briefcase, label: locale === 'bg' ? 'Бизнес' : 'Business', color: 'text-primary bg-primary/10 border-primary/20' }
     }
     if (sellerTier === 'premium') {
-      return { icon: Crown, label: 'Pro', color: 'text-amber-600 bg-amber-50 border-amber-100' }
+      return { icon: Crown, label: 'Pro', color: 'text-primary bg-primary/10 border-primary/20' }
     }
     // Default / Basic / Personal
     return { icon: User, label: null, color: 'text-muted-foreground bg-background border-border/60' }
