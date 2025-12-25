@@ -48,6 +48,7 @@ import {
   Buildings,
   Ticket,
   Storefront,
+  Tag,
   Truck,
   Flag,
   Desktop,
@@ -228,6 +229,7 @@ export function getCategoryIcon(
     "services": <Briefcase {...iconProps} />,
     
     // Shopping & Deals
+    "deals": <Tag {...iconProps} />,
     "grocery": <ShoppingCart {...iconProps} />,
     "handmade": <Palette {...iconProps} />,
     "collectibles": <Trophy {...iconProps} />,
