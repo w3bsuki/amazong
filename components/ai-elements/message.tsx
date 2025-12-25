@@ -312,9 +312,7 @@ export const MessageResponse = memo(
   ({ className, ...props }: MessageResponseProps) => (
     <Streamdown
       className={cn(
-        "prose prose-sm max-w-none dark:prose-invert",
-        "prose-p:leading-relaxed",
-        "prose-pre:whitespace-pre-wrap",
+        "richtext max-w-none text-sm leading-relaxed",
         "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
         className
       )}

@@ -19,7 +19,7 @@ export function MobileAccordions({ description, details }: MobileAccordionsProps
         <AccordionItem value="description">
           <AccordionTrigger className="font-bold text-slate-900">Description</AccordionTrigger>
           <AccordionContent>
-            <div className="prose prose-sm max-w-none text-muted-foreground">
+            <div className="richtext max-w-none text-muted-foreground text-sm">
               <p>{description}</p>
             </div>
           </AccordionContent>

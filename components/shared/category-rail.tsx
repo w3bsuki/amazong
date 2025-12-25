@@ -14,15 +14,12 @@ const fallbackCategories = [
   { id: "5", name: "Gaming", name_bg: "Гейминг", slug: "gaming", image_url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500&auto=format&fit=crop" },
 ] as any[]
 
-interface CategoryRailProps {
+interface MobileCategoryRailProps {
   locale: string
-  className?: string
-  onCategorySelect?: (slug: string) => void
-  activeCategory?: string
 }
 
-// Shared version - Rounded rectangles with images
-export function CategoryRail({ locale, className, onCategorySelect, activeCategory }: CategoryRailProps) {
+// Mobile version - Rounded rectangles with images (Premium look like reference)
+export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
   const sectionLabel = locale === "bg" ? "Категории" : "Categories"
   const { categories: fetchedCategories, isLoading } = useCategoriesCache()
   
@@ -33,7 +30,7 @@ export function CategoryRail({ locale, className, onCategorySelect, activeCatego
   return (
     <nav 
       aria-label={sectionLabel}
-      className={cn("py-0.5", className)}
+      className="py-0.5"
     >
       <div 
         className="flex overflow-x-auto no-scrollbar gap-2.5 px-3 py-0.5 snap-x snap-mandatory scroll-pl-3"
@@ -48,104 +45,48 @@ export function CategoryRail({ locale, className, onCategorySelect, activeCatego
             </div>
           ))
         ) : (
-          <>
-            {/* "All" option for desktop filtering mode */}
-            {onCategorySelect && (
-              <button
-                onClick={() => onCategorySelect("all")}
-                className="flex flex-col items-center gap-1.5 shrink-0 snap-start group cursor-pointer"
+          displayCategories.map((cat) => {
+            const categoryName = getCategoryName(cat, locale)
+            return (
+              <Link
+                key={cat.slug}
+                href={`/categories/${cat.slug}`}
+                aria-label={categoryName}
+                className={cn(
+                  "group snap-start shrink-0",
+                  "flex flex-col items-center",
+                  "touch-action-manipulation",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-full",
+                )}
+                role="listitem"
               >
-                <div className={cn(
-                  "size-[72px] rounded-full flex items-center justify-center transition-all duration-300 border-2",
-                  activeCategory === "all" 
-                    ? "border-primary bg-primary/5" 
-                    : "border-transparent bg-muted/50 group-hover:bg-muted"
-                )}>
-                  <span className={cn(
-                    "text-2xl font-medium",
-                    activeCategory === "all" ? "text-primary" : "text-muted-foreground"
-                  )}>
-                    ∞
+                {/* Icon Tile - Consistent, curated look (no random images) */}
+                <div
+                  className={cn(
+                    "flex items-center justify-center",
+                    "size-[72px] rounded-full",
+                    "bg-brand-muted/50 ring-1 ring-border/35",
+                    "transition-all duration-200 ease-out",
+                    "group-hover:bg-brand-muted/70 group-hover:ring-brand/15",
+                    "group-active:scale-[0.96]"
+                  )}
+                >
+                  <span className="text-brand group-hover:text-brand-dark transition-colors scale-110">
+                    {getCategoryIcon(cat.slug, { size: 24, weight: "regular" })}
                   </span>
                 </div>
-                <span className={cn(
-                  "text-[11px] font-medium text-center leading-tight max-w-[72px] truncate transition-colors",
-                  activeCategory === "all" ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                )}>
-                  {locale === "bg" ? "Всички" : "All"}
+                {/* Label */}
+                <span className="mt-1.5 text-foreground font-semibold text-2xs text-center max-w-[72px] leading-tight line-clamp-1 group-hover:text-cta-trust-blue transition-colors duration-150">
+                  {categoryName}
                 </span>
-              </button>
-            )}
-
-            {displayCategories.map((cat) => {
-              const categoryName = getCategoryName(cat, locale)
-              const isActive = activeCategory === cat.slug
-
-              // If onCategorySelect is provided, behave as a filter button
-              if (onCategorySelect) {
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => onCategorySelect(cat.slug)}
-                    className="flex flex-col items-center gap-1.5 shrink-0 snap-start group cursor-pointer"
-                  >
-                    <div className={cn(
-                      "size-[72px] rounded-full p-0.5 transition-all duration-300 border-2",
-                      isActive 
-                        ? "border-primary ring-2 ring-primary/20" 
-                        : "border-transparent group-hover:border-primary/50"
-                    )}>
-                      <div className="relative size-full rounded-full overflow-hidden bg-white">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img 
-                          src={cat.image_url || "/placeholder.svg"} 
-                          alt=""
-                          className={cn(
-                            "size-full object-cover transition-transform duration-500",
-                            isActive ? "scale-110" : "group-hover:scale-110"
-                          )}
-                          loading="lazy"
-                        />
-                      </div>
-                    </div>
-                    <span className={cn(
-                      "text-[11px] font-medium text-center leading-tight max-w-[72px] truncate transition-colors",
-                      isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                    )}>
-                      {categoryName}
-                    </span>
-                  </button>
-                )
-              }
-
-              // Default link behavior (for mobile nav)
-              return (
-                <Link 
-                  key={cat.id}
-                  href={`/categories/${cat.slug}`}
-                  className="flex flex-col items-center gap-1.5 shrink-0 snap-start group"
-                >
-                  <div className="size-[72px] rounded-full p-0.5 border-2 border-transparent group-hover:border-primary/50 transition-all duration-300">
-                    <div className="relative size-full rounded-full overflow-hidden bg-white">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img 
-                        src={cat.image_url || "/placeholder.svg"} 
-                        alt=""
-                        className="size-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                    </div>
-                  </div>
-                  <span className="text-[11px] font-medium text-muted-foreground group-hover:text-foreground text-center leading-tight max-w-[72px] truncate transition-colors">
-                    {categoryName}
-                  </span>
-                </Link>
-              )
-            })}
-          </>
+              </Link>
+            )
+          })
         )}
       </div>
     </nav>
   )
 }
 
+// Alias for backward compatibility - used by tabbed-product-feed
+export const CategoryRail = MobileCategoryRail

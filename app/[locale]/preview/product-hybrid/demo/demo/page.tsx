@@ -560,7 +560,7 @@ export default function ProductPage() {
             <div className="mt-8 hidden lg:block">
               <div className="py-6">
                 <h3 className="mb-3 text-lg font-bold text-slate-900">Product Details</h3>
-                <div className="prose prose-sm max-w-none text-muted-foreground mb-6">
+                <div className="richtext max-w-none text-muted-foreground text-sm mb-6">
                   <p className="leading-relaxed">
                     {PRODUCT_DETAILS.description}
                   </p>
@@ -713,7 +713,7 @@ export default function ProductPage() {
               <AccordionItem value="description">
                  <AccordionTrigger className="font-bold text-slate-900">Description</AccordionTrigger>
                  <AccordionContent>
-                    <div className="prose prose-sm max-w-none text-muted-foreground">
+                    <div className="richtext max-w-none text-muted-foreground text-sm">
                        <p>{PRODUCT_DETAILS.description}</p>
                     </div>
                  </AccordionContent>

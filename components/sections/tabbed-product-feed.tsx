@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { cn } from "@/lib/utils"
-import { CaretRight, TrendUp, Tag, Sparkle, GridFour } from "@phosphor-icons/react"
+import { CaretRight, TrendUp, GridFour, Fire, Percent } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { Link } from "@/i18n/routing"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -44,20 +44,22 @@ interface TabbedProductFeedProps {
 }
 
 /**
- * TabbedProductFeed - Desktop optimized product feed
- * Single container with tab navigation for All/Newest/Promoted/Deals
- * Provides better UX than separate carousels - unified browsing experience
+ * TabbedProductFeed - Desktop optimized product feed with discovery UX
+ * Features:
+ * - Category quick filters (horizontal scrollable pills)
+ * - Feed type tabs (All/Newest/Promoted/Deals)
+ * - Clean product grid with load more
  */
 export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
   const [activeTab, setActiveTab] = useState<FeedTab>("all")
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [pageSize, setPageSize] = useState(12)
 
-  // Keep the homepage module compact: target ~2 rows at each desktop breakpoint.
-  // md=3 cols => 6 items, lg=4 => 8, xl=5 => 10, 2xl=7 => 14
+  // Keep the homepage module compact
   useEffect(() => {
     const computePageSize = () => {
       const w = window.innerWidth
@@ -84,163 +86,116 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
     }
   }, [])
 
-  const tabs: { id: FeedTab; label: string; icon: typeof GridFour }[] = [
+  const tabs: { id: FeedTab; label: string; icon: typeof GridFour; color?: string }[] = [
     { id: "all", label: locale === "bg" ? "Всички" : "All", icon: GridFour },
-    { id: "newest", label: locale === "bg" ? "Най-нови" : "Newest", icon: TrendUp },
-    { id: "promoted", label: locale === "bg" ? "Промотирани" : "Promoted", icon: Sparkle },
-    { id: "deals", label: locale === "bg" ? "Оферти" : "Deals", icon: Tag },
+    { id: "newest", label: locale === "bg" ? "Най-нови" : "Newest", icon: TrendUp, color: "text-emerald-500" },
+    { id: "promoted", label: locale === "bg" ? "Топ" : "Featured", icon: Fire, color: "text-orange-500" },
+    { id: "deals", label: locale === "bg" ? "Оферти" : "Deals", icon: Percent, color: "text-red-500" },
   ]
 
-  const fetchProducts = useCallback(async (tab: FeedTab, pageNum: number, limit: number, append = false) => {
+  const fetchProducts = useCallback(async (tab: FeedTab, pageNum: number, limit: number, append = false, categorySlug?: string | null) => {
     setIsLoading(true)
     try {
-      // Map tab to correct API endpoint
       const endpoint = tab === "promoted"
         ? "/api/products/promoted"
         : tab === "deals"
           ? "/api/products/deals"
           : "/api/products/newest"
-      const url = `${endpoint}?page=${pageNum}&limit=${limit}`
+      
+      const params = new URLSearchParams({ page: String(pageNum), limit: String(limit) })
+      if (categorySlug) {
+        params.set("category", categorySlug)
+      }
+      const url = `${endpoint}?${params.toString()}`
 
       const res = await fetch(url)
-      if (!res.ok) {
-        return
-      }
+      if (!res.ok) return
 
       let data: unknown = null
-      try {
-        data = await res.json()
-      } catch {
-        return
-      }
-
-      if (!data || typeof data !== 'object') {
-        return
-      }
+      try { data = await res.json() } catch { return }
+      if (!data || typeof data !== 'object') return
 
       const productsRaw = (data as { products?: unknown }).products
-      if (!Array.isArray(productsRaw)) {
-        return
-      }
+      if (!Array.isArray(productsRaw)) return
 
-      {
-        const transformed: Product[] = (productsRaw as unknown[]).map((raw) => {
-          const p = raw as Record<string, unknown>
+      const transformed: Product[] = (productsRaw as unknown[]).map((raw) => {
+        const p = raw as Record<string, unknown>
 
-          const image = (typeof p.image === 'string' && p.image.length > 0)
-            ? (p.image as string)
-            : (Array.isArray(p.images) && (p.images as unknown[]).some((x) => typeof x === 'string'))
-              ? ((p.images as unknown[]).find((x): x is string => typeof x === 'string') ?? "/placeholder.svg")
-              : "/placeholder.svg"
+        const image = (typeof p.image === 'string' && p.image.length > 0)
+          ? (p.image as string)
+          : (Array.isArray(p.images) && (p.images as unknown[]).some((x) => typeof x === 'string'))
+            ? ((p.images as unknown[]).find((x): x is string => typeof x === 'string') ?? "/placeholder.svg")
+            : "/placeholder.svg"
 
-          const listPriceRaw = (p.listPrice ?? p.list_price) as unknown
-          const listPrice = (typeof listPriceRaw === 'number')
-            ? listPriceRaw
-            : (typeof listPriceRaw === 'string')
-              ? Number(listPriceRaw)
-              : undefined
+        const listPriceRaw = (p.listPrice ?? p.list_price) as unknown
+        const listPrice = (typeof listPriceRaw === 'number') ? listPriceRaw : (typeof listPriceRaw === 'string') ? Number(listPriceRaw) : undefined
 
-          const storeSlug = (typeof p.storeSlug === 'string')
-            ? (p.storeSlug as string)
-            : (typeof p.store_slug === 'string')
-              ? (p.store_slug as string)
-              : null
+        const storeSlug = (typeof p.storeSlug === 'string') ? p.storeSlug : (typeof p.store_slug === 'string') ? p.store_slug : null
+        const categorySlugVal = (typeof p.categorySlug === 'string') ? p.categorySlug : (typeof p.category_slug === 'string') ? p.category_slug : null
+        const attributes = (p.attributes && typeof p.attributes === 'object' && !Array.isArray(p.attributes)) ? (p.attributes as Record<string, string>) : undefined
 
-          const categorySlug = (typeof p.categorySlug === 'string')
-            ? (p.categorySlug as string)
-            : (typeof p.category_slug === 'string')
-              ? (p.category_slug as string)
-              : null
+        const isOnSale = (typeof p.isOnSale === 'boolean') ? p.isOnSale : (typeof (p as { is_on_sale?: unknown }).is_on_sale === 'boolean') ? Boolean((p as { is_on_sale?: boolean }).is_on_sale) : undefined
+        const salePercentRaw = (p.salePercent ?? (p as { sale_percent?: unknown }).sale_percent) as unknown
+        const salePercent = (typeof salePercentRaw === 'number') ? salePercentRaw : (typeof salePercentRaw === 'string') ? Number(salePercentRaw) : undefined
+        const saleEndDate = (typeof p.saleEndDate === 'string') ? p.saleEndDate : (typeof (p as { sale_end_date?: unknown }).sale_end_date === 'string') ? ((p as { sale_end_date?: string }).sale_end_date ?? null) : null
 
-          const attributes = (p.attributes && typeof p.attributes === 'object' && !Array.isArray(p.attributes))
-            ? (p.attributes as Record<string, string>)
-            : undefined
-
-          const isOnSale = (typeof p.isOnSale === 'boolean')
-            ? (p.isOnSale as boolean)
-            : (typeof (p as { is_on_sale?: unknown }).is_on_sale === 'boolean')
-              ? Boolean((p as { is_on_sale?: boolean }).is_on_sale)
-              : undefined
-
-          const salePercentRaw = (p.salePercent ?? (p as { sale_percent?: unknown }).sale_percent) as unknown
-          const salePercent = (typeof salePercentRaw === 'number')
-            ? salePercentRaw
-            : (typeof salePercentRaw === 'string')
-              ? Number(salePercentRaw)
-              : undefined
-
-          const saleEndDate = (typeof p.saleEndDate === 'string')
-            ? (p.saleEndDate as string)
-            : (typeof (p as { sale_end_date?: unknown }).sale_end_date === 'string')
-              ? ((p as { sale_end_date?: string }).sale_end_date ?? null)
-              : null
-
-          return {
-            id: p.id as string,
-            title: p.title as string,
-            price: typeof p.price === 'number' ? (p.price as number) : Number(p.price ?? 0),
-            listPrice,
-            isOnSale,
-            salePercent,
-            saleEndDate,
-            image,
-            rating: typeof p.rating === 'number' ? (p.rating as number) : undefined,
-            reviews: typeof p.reviews === 'number'
-              ? (p.reviews as number)
-              : (typeof p.review_count === 'number' ? (p.review_count as number) : undefined),
-            slug: (p.slug as string | null) ?? null,
-            storeSlug,
-            categorySlug,
-            sellerId: typeof p.sellerId === 'string' ? (p.sellerId as string) : null,
-            sellerName: typeof p.sellerName === 'string' ? (p.sellerName as string) : null,
-            sellerAvatarUrl: typeof p.sellerAvatarUrl === 'string' ? (p.sellerAvatarUrl as string) : null,
-            sellerTier: (p.sellerTier === 'basic' || p.sellerTier === 'premium' || p.sellerTier === 'business') 
-              ? (p.sellerTier as 'basic' | 'premium' | 'business') 
-              : undefined,
-            sellerVerified: typeof p.sellerVerified === 'boolean' ? (p.sellerVerified as boolean) : undefined,
-            location: typeof p.location === 'string' ? (p.location as string) : undefined,
-            condition: typeof p.condition === 'string' ? (p.condition as string) : undefined,
-            brand: typeof p.brand === 'string' ? (p.brand as string) : undefined,
-            make: typeof p.make === 'string' ? (p.make as string) : undefined,
-            model: typeof p.model === 'string' ? (p.model as string) : undefined,
-            year: typeof p.year === 'string' ? (p.year as string) : undefined,
-            isBoosted: tab === 'promoted' || Boolean(p.isBoosted) || Boolean((p as { is_boosted?: boolean | null }).is_boosted),
-            tags: Array.isArray(p.tags)
-              ? (p.tags as unknown[]).filter((x): x is string => typeof x === 'string')
-              : [],
-            attributes,
-          }
-        })
-
-        const hasMoreRaw = (data as { hasMore?: unknown }).hasMore
-        const hasMoreFromApi = typeof hasMoreRaw === 'boolean' ? hasMoreRaw : undefined
-
-        if (append) {
-          setProducts(prev => [...prev, ...transformed])
-        } else {
-          setProducts(transformed)
+        return {
+          id: p.id as string,
+          title: p.title as string,
+          price: typeof p.price === 'number' ? p.price : Number(p.price ?? 0),
+          listPrice, isOnSale, salePercent, saleEndDate, image,
+          rating: typeof p.rating === 'number' ? p.rating : undefined,
+          reviews: typeof p.reviews === 'number' ? p.reviews : (typeof p.review_count === 'number' ? p.review_count : undefined),
+          slug: (p.slug as string | null) ?? null,
+          storeSlug, categorySlug: categorySlugVal,
+          sellerId: typeof p.sellerId === 'string' ? p.sellerId : null,
+          sellerName: typeof p.sellerName === 'string' ? p.sellerName : null,
+          sellerAvatarUrl: typeof p.sellerAvatarUrl === 'string' ? p.sellerAvatarUrl : null,
+          sellerTier: (p.sellerTier === 'basic' || p.sellerTier === 'premium' || p.sellerTier === 'business') ? p.sellerTier : undefined,
+          sellerVerified: typeof p.sellerVerified === 'boolean' ? p.sellerVerified : undefined,
+          location: typeof p.location === 'string' ? p.location : undefined,
+          condition: typeof p.condition === 'string' ? p.condition : undefined,
+          brand: typeof p.brand === 'string' ? p.brand : undefined,
+          make: typeof p.make === 'string' ? p.make : undefined,
+          model: typeof p.model === 'string' ? p.model : undefined,
+          year: typeof p.year === 'string' ? p.year : undefined,
+          isBoosted: tab === 'promoted' || Boolean(p.isBoosted) || Boolean((p as { is_boosted?: boolean | null }).is_boosted),
+          tags: Array.isArray(p.tags) ? (p.tags as unknown[]).filter((x): x is string => typeof x === 'string') : [],
+          attributes,
         }
+      })
 
-        // Prefer API-provided pagination hint; fall back to heuristic.
-        setHasMore(hasMoreFromApi ?? (transformed.length === limit))
+      const hasMoreRaw = (data as { hasMore?: unknown }).hasMore
+      const hasMoreFromApi = typeof hasMoreRaw === 'boolean' ? hasMoreRaw : undefined
+
+      if (append) {
+        setProducts(prev => [...prev, ...transformed])
+      } else {
+        setProducts(transformed)
       }
-    } catch (error) {
-      // Avoid console noise; UI can safely show empty state.
+      setHasMore(hasMoreFromApi ?? (transformed.length === limit))
+    } catch {
+      // Silent fail
     } finally {
       setIsLoading(false)
     }
   }, [])
 
-  // Fetch on mount and when filters change
   useEffect(() => {
     setPage(1)
     setProducts([])
-    fetchProducts(activeTab, 1, pageSize, false)
-  }, [pageSize, fetchProducts, activeTab])
+    fetchProducts(activeTab, 1, pageSize, false, activeCategory)
+  }, [pageSize, fetchProducts, activeTab, activeCategory])
 
-  // Handle tab change
   const handleTabChange = (tab: FeedTab) => {
     setActiveTab(tab)
+    setPage(1)
+    setProducts([])
+  }
+
+  const handleCategoryChange = (slug: string | null) => {
+    const newSlug = slug === "all" ? null : slug
+    setActiveCategory(newSlug)
     setPage(1)
     setProducts([])
   }
@@ -249,26 +204,20 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
     if (!isLoading && hasMore) {
       const nextPage = page + 1
       setPage(nextPage)
-      fetchProducts(activeTab, nextPage, pageSize, true)
+      fetchProducts(activeTab, nextPage, pageSize, true, activeCategory)
     }
   }
 
   return (
-    <section 
-      className="w-full"
-      aria-label={locale === "bg" ? "Обяви" : "Listings"}
-    >
+    <section className="w-full" aria-label={locale === "bg" ? "Обяви" : "Listings"}>
       {/* Section Header with Title + Tabs */}
       <div className="flex flex-col gap-4 mb-6">
-        {/* Title Row */}
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold tracking-tight text-foreground">
             {locale === "bg" ? "Обяви" : "Listings"}
           </h2>
-
-          {/* See All Link */}
           <Link
-            href="/search?sort=newest"
+            href={activeCategory ? `/categories/${activeCategory}` : "/search?sort=newest"}
             className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
           >
             {locale === "bg" ? "виж всички" : "see all"}
@@ -276,7 +225,6 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
           </Link>
         </div>
 
-        {/* Filter Controls - Tabs + Category Pills */}
         <div className="flex flex-col gap-3">
           {/* Feed Type Tabs */}
           <div className="flex items-center gap-1.5" role="tablist">
@@ -290,30 +238,28 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
                   aria-selected={isActive}
                   onClick={() => handleTabChange(tab.id)}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all",
-                    "border",
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all border",
                     isActive
                       ? "bg-primary text-primary-foreground border-primary shadow-sm"
                       : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground hover:border-muted-foreground/30"
                   )}
                 >
-                  <Icon 
-                    size={14} 
-                    weight={isActive ? "fill" : "regular"} 
-                  />
+                  <Icon size={14} weight={isActive ? "fill" : "regular"} className={cn(!isActive && tab.color)} />
                   {tab.label}
                 </button>
               )
             })}
           </div>
+
+          {/* Category Filter Pills */}
+          <div className="mb-2">
+            {/* Category filtering removed - use tab navigation instead */}
+          </div>
         </div>
       </div>
 
       {/* Product Grid */}
-      <div 
-        role="list"
-        aria-live="polite"
-      >
+      <div role="list" aria-live="polite">
         {products.length === 0 && isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4" aria-busy="true">
             {Array.from({ length: 12 }).map((_, i) => (
@@ -330,12 +276,14 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
           <div className="text-center py-20 text-muted-foreground" role="status">
             <div className="text-4xl mb-4" aria-hidden="true">📦</div>
             <p className="text-lg">{locale === "bg" ? "Няма намерени обяви" : "No listings found"}</p>
+            {activeCategory && (
+              <button onClick={() => handleCategoryChange(null)} className="mt-4 text-sm text-primary hover:underline">
+                {locale === "bg" ? "Покажи всички категории" : "Show all categories"}
+              </button>
+            )}
           </div>
         ) : (
           <>
-            {/* 
-              Grid Layout - Clean, no cards
-            */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8">
               {products.map((product, index) => (
                 <div key={product.id} role="listitem">
@@ -372,7 +320,6 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
               ))}
             </div>
 
-            {/* Load More Button */}
             {hasMore && (
               <div className="mt-12 text-center">
                 <button
@@ -403,32 +350,25 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
   )
 }
 
-/**
- * Skeleton fallback for TabbedProductFeed
- */
 export function TabbedProductFeedSkeleton() {
   return (
     <div className="w-full">
-      {/* Header skeleton */}
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center justify-between">
           <Skeleton className="h-6 w-24" />
           <Skeleton className="h-4 w-16" />
         </div>
-        {/* Tabs skeleton */}
         <div className="flex items-center gap-1.5">
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-8 w-20 rounded-full" />
           ))}
         </div>
-        {/* Category pills skeleton */}
         <div className="flex items-center gap-2 overflow-hidden">
           {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} className="h-7 w-24 rounded-full shrink-0" />
           ))}
         </div>
       </div>
-      {/* Grid skeleton */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="space-y-3">

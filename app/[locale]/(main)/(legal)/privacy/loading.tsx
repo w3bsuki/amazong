@@ -12,7 +12,7 @@ export default function PrivacyLoading() {
       </div>
 
       <div className="container py-8 max-w-4xl">
-        <div className="prose prose-sm max-w-none">
+        <div className="richtext max-w-none text-sm">
           {/* Table of Contents */}
           <div className="bg-card rounded-lg border border-border p-4 mb-8">
             <Skeleton className="h-5 w-40 mb-4" />
