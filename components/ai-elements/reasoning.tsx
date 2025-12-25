@@ -99,7 +99,7 @@ export const Reasoning = memo(
         value={{ isStreaming, isOpen, setIsOpen, duration }}
       >
         <Collapsible
-          className={cn("not-prose mb-4", className)}
+          className={cn("richtext-skip mb-4", className)}
           onOpenChange={handleOpenChange}
           open={isOpen}
           {...props}

@@ -24,7 +24,7 @@ export type ToolProps = ComponentProps<typeof Collapsible>;
 
 export const Tool = ({ className, ...props }: ToolProps) => (
   <Collapsible
-    className={cn("not-prose mb-4 w-full rounded-md border", className)}
+    className={cn("richtext-skip mb-4 w-full rounded-md border", className)}
     {...props}
   />
 );
@@ -52,11 +52,11 @@ const getStatusBadge = (status: ToolUIPart["state"]) => {
     "input-streaming": <CircleIcon className="size-4" />,
     "input-available": <ClockIcon className="size-4 animate-pulse" />,
     // @ts-expect-error state only available in AI SDK v6
-    "approval-requested": <ClockIcon className="size-4 text-yellow-600" />,
-    "approval-responded": <CheckCircleIcon className="size-4 text-blue-600" />,
-    "output-available": <CheckCircleIcon className="size-4 text-green-600" />,
-    "output-error": <XCircleIcon className="size-4 text-red-600" />,
-    "output-denied": <XCircleIcon className="size-4 text-orange-600" />,
+    "approval-requested": <ClockIcon className="size-4 text-status-warning" />,
+    "approval-responded": <CheckCircleIcon className="size-4 text-status-info" />,
+    "output-available": <CheckCircleIcon className="size-4 text-status-success" />,
+    "output-error": <XCircleIcon className="size-4 text-status-error" />,
+    "output-denied": <XCircleIcon className="size-4 text-status-warning" />,
   };
 
   return (

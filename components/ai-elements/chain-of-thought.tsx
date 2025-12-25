@@ -65,7 +65,7 @@ export const ChainOfThought = memo(
     return (
       <ChainOfThoughtContext.Provider value={chainOfThoughtContext}>
         <div
-          className={cn("not-prose max-w-prose space-y-4", className)}
+          className={cn("richtext-skip max-w-[70ch] space-y-4", className)}
           {...props}
         >
           {children}
