@@ -285,7 +285,7 @@ export function MobileSearchOverlay({
                   placeholder={strings.searchProducts}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="h-11 w-full pl-11 pr-11 text-base bg-muted/50 border-0 rounded-xl focus-visible:ring-0 focus-visible:bg-muted/80 transition-colors"
+                  className="h-touch w-full pl-11 pr-11 text-base bg-muted/50 border-0 rounded-xl focus-visible:ring-0 focus-visible:bg-muted/80"
                   autoComplete="off"
                   autoCapitalize="off"
                   autoCorrect="off"
@@ -296,7 +296,7 @@ export function MobileSearchOverlay({
                   <button
                     type="button"
                     onClick={handleClearInput}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 size-6 rounded-full flex items-center justify-center bg-muted-foreground/20 text-muted-foreground hover:bg-muted-foreground/30 hover:text-foreground transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 size-6 rounded-full flex items-center justify-center bg-muted-foreground/20 text-muted-foreground hover:bg-muted-foreground/30 hover:text-foreground"
                     aria-label={strings.clear}
                   >
                     <X size={14} weight="bold" aria-hidden="true" />

@@ -62,7 +62,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
               </div>
               <DrawerClose asChild>
                 <button 
-                  className="flex items-center justify-center size-10 -mr-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors touch-action-manipulation"
+                  className="flex items-center justify-center h-touch w-touch -mr-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted touch-action-manipulation"
                   aria-label="Close menu"
                 >
                   <X size={18} weight="regular" />
@@ -111,22 +111,19 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
                           "rounded-full flex items-center justify-center",
                           "size-[54px]",
                           "bg-cta-trust-blue ring-1 ring-cta-trust-blue/40",
-                          "transition-all duration-150",
-                          "group-hover:bg-cta-trust-blue-hover group-hover:ring-cta-trust-blue/60",
-                          "group-hover:scale-105 group-active:scale-95"
+                          "group-hover:bg-cta-trust-blue-hover group-hover:ring-cta-trust-blue/60"
                         )}
                       >
                         {getCategoryIcon(cat.slug, {
                           size: 24,
                           weight: "regular",
                           className: cn(
-                            "transition-colors duration-150",
                             "text-cta-trust-blue-text"
                           ),
                         })}
                       </div>
                       {/* Category name */}
-                      <span className="text-[10px] font-medium text-center text-foreground leading-[1.1] line-clamp-2 max-w-[72px] group-hover:text-cta-trust-blue transition-colors duration-150">
+                      <span className="text-[10px] font-medium text-center text-foreground leading-[1.1] line-clamp-2 max-w-[72px]">
                         {getShortName(cat)}
                       </span>
                     </Link>

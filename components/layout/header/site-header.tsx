@@ -78,7 +78,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
           {isProductPage ? (
             <button 
               onClick={() => router.back()}
-              className="flex items-center justify-center size-9 -ml-1 rounded-full text-header-text hover:bg-header-hover active:bg-header-active"
+              className="flex items-center justify-center h-touch w-touch -ml-1 rounded-full text-header-text hover:bg-header-hover active:bg-header-active"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
               <CaretLeft size={20} weight="bold" />
@@ -102,7 +102,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
         
         {/* Search bar row - integrated into header, hidden on product pages */}
         {!isProductPage && (
-        <div className="px-3 pb-2">
+        <div className="px-3 pb-1.5">
           <button
             onClick={() => setIsMobileSearchOpen(true)}
             className={cn(
@@ -110,7 +110,6 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
               "bg-background",
               "text-muted-foreground text-sm text-left",
               "active:bg-muted",
-              "transition-colors duration-200",
               "touch-action-manipulation tap-transparent"
             )}
             aria-label={searchPlaceholder}

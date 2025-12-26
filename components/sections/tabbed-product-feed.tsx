@@ -271,7 +271,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
                         key={tab.id}
                         value={tab.id}
                         className={cn(
-                          "h-9 flex-none rounded-full border-none px-5 text-sm font-semibold transition-all",
+                          "h-touch-sm flex-none rounded-full border-none px-4 text-sm font-semibold",
                           "text-muted-foreground hover:text-foreground hover:bg-background/50",
                           "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm",
                           "md:flex-1 md:justify-center"

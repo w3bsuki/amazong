@@ -2,14 +2,16 @@
 
 import * as React from "react"
 import Image from "next/image"
-import { Link } from "@/i18n/routing"
+import { Link, useRouter } from "@/i18n/routing"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Spinner } from "@/components/ui/spinner"
 import BoringAvatar from "boring-avatars"
 import { useCart } from "@/components/providers/cart-context"
+import { useWishlist } from "@/components/providers/wishlist-context"
 import { toast } from "sonner"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
@@ -82,7 +84,7 @@ const productCardVariants = cva(
       {
         variant: "default",
         state: "promoted",
-        className: "ring-1 ring-primary/10",
+        className: "",
       },
       {
         variant: "default",
@@ -98,7 +100,7 @@ const productCardVariants = cva(
       {
         variant: "featured",
         state: "promoted",
-        className: "border-primary/20 ring-1 ring-primary/10",
+        className: "",
       },
       {
         variant: "featured",
@@ -391,14 +393,14 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
     },
     ref
   ) => {
-    const { addToCart } = useCart()
+    const router = useRouter()
+    const { addToCart, items: cartItems } = useCart()
+    const { isInWishlist, toggleWishlist } = useWishlist()
     const t = useTranslations("Product")
     const tCart = useTranslations("Cart")
     const locale = useLocale()
 
-    // Local state
-    const [wishlisted, setWishlisted] = React.useState(false)
-    const [inCart, setInCart] = React.useState(false)
+    const [isWishlistPending, setIsWishlistPending] = React.useState(false)
 
     // Resolve deprecated props
     const resolvedOriginalPrice = originalPrice ?? listPrice ?? null
@@ -439,6 +441,13 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
     const productUrl =
       resolvedUsername && slug ? `/${resolvedUsername}/${slug}` : `/product/${slug || id}`
     const displayName = sellerName || resolvedUsername || "Seller"
+
+    const inWishlist = isInWishlist(id)
+    const inCart = React.useMemo(() => cartItems.some((item) => item.id === id), [cartItems, id])
+
+    const handleOpenProduct = React.useCallback(() => {
+      router.push(productUrl)
+    }, [router, productUrl])
 
     // Loading strategy
     const loadingStrategy = getImageLoadingStrategy(index, 4)
@@ -506,23 +515,25 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
         slug: slug || undefined,
         username: username || undefined,
       })
-      setInCart(true)
       toast.success(tCart("itemAdded"))
     }
 
-    const handleWishlist = (e: React.MouseEvent) => {
+    const handleWishlist = async (e: React.MouseEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      setWishlisted(!wishlisted)
-      toast.success(
-        wishlisted
-          ? locale === "bg"
-            ? "Премахнато от любими"
-            : "Removed from favorites"
-          : locale === "bg"
-            ? "Добавено в любими"
-            : "Added to favorites"
-      )
+      if (isWishlistPending) return
+
+      setIsWishlistPending(true)
+      try {
+        await toggleWishlist({
+          id,
+          title,
+          price,
+          image,
+        })
+      } finally {
+        setIsWishlistPending(false)
+      }
     }
 
     // Tier label for featured variant
@@ -543,6 +554,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
       <div
         ref={ref}
         className={cn(productCardVariants({ variant, state: resolvedState }), className)}
+        onClick={handleOpenProduct}
       >
         {/* Overlay link for full-card navigation.
             IMPORTANT: Do not nest interactive controls inside an anchor. */}
@@ -706,71 +718,93 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
             />
           </AspectRatio>
 
-          {/* Wishlist Button - Top Right (Shadcn Ghost Button) */}
-          {showWishlist && (
-            <Button
-              variant="ghost"
-              size="icon"
+          {/* Action Buttons - Bottom Row (prevents badge crowding) */}
+          {(showWishlist || showQuickAdd) && (
+            <div
               className={cn(
-                "absolute right-1.5 top-1.5 z-10 h-touch w-touch rounded-full p-0",
-                "bg-transparent hover:bg-transparent",
-                "transition-transform duration-150 active:scale-[0.98]"
+                "absolute inset-x-1.5 bottom-1.5 z-10 flex items-end justify-between gap-2",
+                // Mobile: always visible.
+                // Desktop: only hide when *not* in a saved/added state.
+                "opacity-100",
+                !(inWishlist || inCart) &&
+                  "md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100",
+                "transition-opacity duration-150",
+                // Prevent invisible buttons from stealing clicks on desktop.
+                !(inWishlist || inCart) &&
+                  "md:pointer-events-none md:group-hover:pointer-events-auto md:group-focus-within:pointer-events-auto"
               )}
-              onClick={handleWishlist}
             >
-              <span
-                className={cn(
-                  "flex size-8 items-center justify-center rounded-full",
-                  "bg-background/80 backdrop-blur-sm",
-                  "transition-colors duration-150",
-                  wishlisted ? "bg-cta-trust-blue/10" : "hover:bg-background"
-                )}
-              >
-                <Heart
-                  size={16}
-                  weight={wishlisted ? "fill" : "regular"}
-                  className={wishlisted ? "text-cta-trust-blue" : "text-muted-foreground"}
-                />
-              </span>
-              <span className="sr-only">
-                {wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-              </span>
-            </Button>
-          )}
+              {showWishlist ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-touch w-touch rounded-full p-0",
+                    "bg-transparent hover:bg-transparent",
+                    "transition-transform duration-150 active:scale-[0.98]"
+                  )}
+                  onClick={handleWishlist}
+                >
+                  <span
+                    className={cn(
+                      "flex size-8 items-center justify-center rounded-full",
+                      "bg-background/80 backdrop-blur-sm ring-1 ring-border/50",
+                      "transition-colors duration-150",
+                      inWishlist ? "bg-cta-trust-blue/10" : "hover:bg-background"
+                    )}
+                  >
+                    {isWishlistPending ? (
+                      <Spinner className="size-4" />
+                    ) : (
+                      <Heart
+                        size={16}
+                        weight={inWishlist ? "fill" : "regular"}
+                        className={inWishlist ? "text-cta-trust-blue" : "text-muted-foreground"}
+                      />
+                    )}
+                  </span>
+                  <span className="sr-only">
+                    {inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                  </span>
+                </Button>
+              ) : (
+                <div className="h-touch w-touch" />
+              )}
 
-          {/* Quick Add Button - Blue on card hover as requested */}
-          {showQuickAdd && (
-            <Button
-              variant={inCart ? "default" : "outline"}
-              size="icon"
-              className={cn(
-                "absolute bottom-1.5 right-1.5 z-10 h-touch w-touch rounded-full p-0",
-                "bg-transparent hover:bg-transparent",
-                "border-0",
-                "transition-transform duration-150 active:scale-[0.98]"
+              {showQuickAdd && (
+                <Button
+                  variant={inCart ? "default" : "outline"}
+                  size="icon"
+                  className={cn(
+                    "h-touch w-touch rounded-full p-0",
+                    "bg-transparent hover:bg-transparent",
+                    "border-0",
+                    "transition-transform duration-150 active:scale-[0.98]"
+                  )}
+                  onClick={handleAddToCart}
+                  disabled={isOwnProduct || !inStock}
+                >
+                  <span
+                    className={cn(
+                      "flex size-8 items-center justify-center rounded-full",
+                      "transition-colors duration-150",
+                      !inCart && [
+                        "bg-background/90 backdrop-blur-sm ring-1 ring-border/50",
+                        "group-hover:bg-cta-trust-blue group-hover:text-cta-trust-blue-text"
+                      ],
+                      inCart && "bg-cta-trust-blue text-cta-trust-blue-text"
+                    )}
+                  >
+                    {inCart ? (
+                      <ShoppingCart size={14} weight="fill" />
+                    ) : (
+                      <Plus size={14} weight="bold" />
+                    )}
+                  </span>
+                  <span className="sr-only">{inCart ? "In cart" : "Add to cart"}</span>
+                </Button>
               )}
-              onClick={handleAddToCart}
-              disabled={isOwnProduct || !inStock}
-            >
-              <span
-                className={cn(
-                  "flex size-8 items-center justify-center rounded-full",
-                  "transition-colors duration-150",
-                  !inCart && [
-                    "bg-background/90 backdrop-blur-sm ring-1 ring-border/50",
-                    "group-hover:bg-cta-trust-blue group-hover:text-cta-trust-blue-text"
-                  ],
-                  inCart && "bg-cta-trust-blue text-cta-trust-blue-text"
-                )}
-              >
-                {inCart ? (
-                  <ShoppingCart size={14} weight="fill" />
-                ) : (
-                  <Plus size={14} weight="bold" />
-                )}
-              </span>
-              <span className="sr-only">{inCart ? "In cart" : "Add to cart"}</span>
-            </Button>
+            </div>
           )}
 
           {/* Badges - Top Left (Flat, no shadows per Swiss design) */}

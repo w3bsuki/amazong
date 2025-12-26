@@ -74,7 +74,7 @@ function HamburgerCategoryCircles({
     const displayCategories = categories.slice(0, 20)
 
     return (
-        <section id="sidebar-categories" className="px-4 py-6">
+        <section id="sidebar-categories" className="px-4 py-4">
             {isLoading && categories.length === 0 ? (
                 <div className="grid grid-cols-4 gap-y-6 gap-x-2">
                     {Array.from({ length: 8 }).map((_, i) => (
@@ -105,11 +105,11 @@ function HamburgerCategoryCircles({
                                         "group-hover:bg-brand-dark"
                                     )}
                                 >
-                                    <span className="text-white transition-colors scale-110">
+                                    <span className="text-white">
                                         {getCategoryIcon(cat.slug, { size: 20, weight: "regular" })}
                                     </span>
                                 </div>
-                                <span className="text-tiny font-semibold text-center text-foreground leading-tight line-clamp-2 max-w-[60px] group-hover:text-brand transition-colors duration-150">
+                                <span className="text-tiny font-medium text-center text-foreground leading-tight line-clamp-2 max-w-[60px] group-hover:text-brand transition-colors duration-150">
                                     {name}
                                 </span>
                             </Link>
@@ -197,143 +197,141 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                 </Button>
             </DrawerTrigger>
             <DrawerContent
-                className="p-0 bg-background text-foreground gap-0 flex flex-col h-full w-[85vw] max-w-[320px] border-r border-border/50 rounded-none shadow-none"
+                className="p-0 bg-background text-foreground gap-0 flex flex-col h-full w-[85vw] max-w-[300px] border-r border-border/50 rounded-none shadow-none"
             >
-                {/* Header - Account area - Compact & Professional */}
-                <div className="relative bg-brand text-white px-4 py-4 shrink-0 overflow-hidden">
-                    <div className="relative flex items-center justify-between">
+                {/* Header - Account area */}
+                <div className="relative bg-brand px-4 py-4 shrink-0 overflow-hidden">
+                    <div className="relative flex items-center justify-between gap-2">
                         {/* Profile info */}
-                        <div className="flex items-center gap-3 min-w-0">
-                            <div className="size-11 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <div className="size-10 shrink-0 rounded-full bg-white/20 flex items-center justify-center ring-1 ring-white/10">
                                 <UserCircle size={28} weight="fill" className="text-white" />
                             </div>
-                            <div className="min-w-0">
-                                <DrawerTitle className="text-white text-base font-bold truncate text-left leading-tight tracking-tight">
-                                    {isLoggedIn 
-                                        ? displayName
-                                        : (locale === 'bg' ? 'Здравей!' : 'Hello!')
-                                    }
-                                </DrawerTitle>
+                            <div className="min-w-0 flex-1 flex flex-col">
+                                <div className="flex items-center gap-2">
+                                    <DrawerTitle className="text-white text-base font-bold truncate leading-tight tracking-tight">
+                                        {isLoggedIn 
+                                            ? displayName
+                                            : (locale === 'bg' ? 'Здравей!' : 'Hello!')
+                                        }
+                                    </DrawerTitle>
+                                    
+                                    {/* Locale Selector - Next to name */}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <button 
+                                                type="button"
+                                                className="flex items-center justify-center size-5 rounded-full bg-white/10 hover:bg-white/20 transition-colors ring-1 ring-white/20"
+                                            >
+                                                <span className="text-[10px] font-bold uppercase text-white">{locale}</span>
+                                            </button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="start" className="min-w-[140px] rounded-xl p-1 border border-border/50 shadow-lg">
+                                            <DropdownMenuItem asChild>
+                                                <Link
+                                                    href="/"
+                                                    locale="en"
+                                                    onClick={() => setOpen(false)}
+                                                    className="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg"
+                                                >
+                                                    <img
+                                                        src="https://flagcdn.com/w40/gb.png"
+                                                        alt="EN"
+                                                        className="w-5 h-3.5 rounded-sm object-cover"
+                                                    />
+                                                    <span className="text-sm font-medium">English</span>
+                                                    {locale === 'en' && <span className="ml-auto text-brand font-bold">✓</span>}
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
+                                                <Link
+                                                    href="/"
+                                                    locale="bg"
+                                                    onClick={() => setOpen(false)}
+                                                    className="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg"
+                                                >
+                                                    <img
+                                                        src="https://flagcdn.com/w40/bg.png"
+                                                        alt="BG"
+                                                        className="w-5 h-3.5 rounded-sm object-cover"
+                                                    />
+                                                    <span className="text-sm font-medium">Български</span>
+                                                    {locale === 'bg' && <span className="ml-auto text-brand font-bold">✓</span>}
+                                                </Link>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+
                                 <DrawerDescription className="sr-only">
-                                    {locale === 'bg' ? 'Навигационно меню с категории и настройки на акаунта' : 'Navigation menu with categories and account settings'}
+                                    {locale === 'bg' ? 'Навигационно меню' : 'Navigation menu'}
                                 </DrawerDescription>
                                 {isLoggedIn ? (
                                     <Link 
                                         href="/account"
                                         onClick={() => setOpen(false)}
-                                        className="text-2xs font-medium text-white/90 hover:text-white flex items-center gap-0.5 transition-colors"
+                                        className="text-xs font-medium text-white/80 hover:text-white flex items-center gap-1 transition-colors mt-0.5"
                                     >
                                         {locale === 'bg' ? 'Моят акаунт' : 'My account'}
-                                        <CaretRight size={10} weight="bold" />
+                                        <CaretRight size={12} weight="bold" />
                                     </Link>
                                 ) : (
-                                    <p className="text-2xs font-medium text-white/80">
+                                    <p className="text-[11px] font-medium text-white/70 mt-0.5">
                                         {locale === 'bg' ? 'Влез или се регистрирай' : 'Sign in or register'}
                                     </p>
                                 )}
                             </div>
                         </div>
-                        {/* Actions: Language + Close */}
-                        <div className="flex items-center gap-1 -mr-1">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <button
-                                        type="button"
-                                        aria-label={locale === 'bg' ? 'Език' : 'Language'}
-                                        className="flex items-center gap-1.5 px-2 h-9 rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors"
-                                    >
-                                        <img
-                                            src={locale === 'bg' ? 'https://flagcdn.com/w40/bg.png' : 'https://flagcdn.com/w40/gb.png'}
-                                            alt={locale === 'bg' ? 'BG' : 'EN'}
-                                            className="w-4 h-2.5 rounded-sm object-cover ring-1 ring-white/20"
-                                        />
-                                        <span className="text-2xs font-bold uppercase tracking-wider text-white/90">
-                                            {locale}
-                                        </span>
-                                    </button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="min-w-[140px] rounded-xl p-1 border border-border/50 shadow-none">
-                                    <DropdownMenuItem asChild>
-                                        <Link
-                                            href="/"
-                                            locale="en"
-                                            onClick={() => setOpen(false)}
-                                            className="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg"
-                                        >
-                                            <img
-                                                src="https://flagcdn.com/w40/gb.png"
-                                                alt="EN"
-                                                className="w-5 h-3.5 rounded-sm object-cover"
-                                            />
-                                            <span className="text-sm font-medium">English</span>
-                                            {locale === 'en' && <span className="ml-auto text-brand font-bold">✓</span>}
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild>
-                                        <Link
-                                            href="/"
-                                            locale="bg"
-                                            onClick={() => setOpen(false)}
-                                            className="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg"
-                                        >
-                                            <img
-                                                src="https://flagcdn.com/w40/bg.png"
-                                                alt="BG"
-                                                className="w-5 h-3.5 rounded-sm object-cover"
-                                            />
-                                            <span className="text-sm font-medium">Български</span>
-                                            {locale === 'bg' && <span className="ml-auto text-brand font-bold">✓</span>}
-                                        </Link>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-
-                            <DrawerClose asChild>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    className="size-9 text-white hover:bg-white/10 active:bg-white/20 rounded-full"
-                                >
-                                    <X size={20} weight="bold" />
-                                    <span className="sr-only">{t('close')}</span>
-                                </Button>
-                            </DrawerClose>
-                        </div>
+                        
+                        {/* Close Button */}
+                        <DrawerClose asChild>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="size-8 text-white/80 hover:text-white hover:bg-white/10 rounded-full"
+                            >
+                                <X size={20} weight="bold" />
+                                <span className="sr-only">{t('close')}</span>
+                            </Button>
+                        </DrawerClose>
                     </div>
                 </div>
 
-                {/* Search Bar - Clean & Integrated */}
-                <div className="px-4 py-3 bg-muted/30 border-b border-border/50">
-                    <div className="relative">
-                        <MagnifyingGlass size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+                {/* Search Bar */}
+                <div className="px-4 py-3 bg-background border-b border-border/40">
+                    <div className="relative group">
+                        <MagnifyingGlass size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-brand transition-colors" />
                         <Input
                             type="search"
                             placeholder={locale === 'bg' ? 'Търси в категории...' : 'Search categories...'}
                             aria-label={locale === 'bg' ? 'Търси в категории' : 'Search categories'}
-                            className="h-10 pl-10 pr-4 rounded-lg border-border/60 placeholder:text-muted-foreground/50"
+                            className="h-10 pl-10 pr-4 rounded-xl border-border/60 bg-muted/30 focus:bg-background transition-all placeholder:text-muted-foreground/70"
                         />
                     </div>
                 </div>
 
-                {/* Main content - Native scrolling */}
-                <div className="flex-1 overflow-y-auto overscroll-contain no-scrollbar">
+                {/* Main content */}
+                <div
+                    data-vaul-no-drag
+                    className="flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar touch-pan-y [-webkit-overflow-scrolling:touch]"
+                >
                     <div className="flex flex-col pb-8">
                         {/* Auth Actions - Only when not logged in */}
                         {!isLoggedIn && (
-                            <div className="px-4 py-4 bg-muted/30 border-b border-border">
-                                <div className="flex gap-3">
+                            <div className="px-4 py-4 border-b border-border/40">
+                                <div className="grid grid-cols-2 gap-3">
                                     <Link
                                         href="/auth/login"
-                                        className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand text-white rounded-xl text-sm font-bold hover:bg-brand-dark transition-colors"
+                                        className="flex items-center justify-center gap-2 py-2.5 bg-brand text-white rounded-lg text-sm font-bold hover:bg-brand-dark transition-colors shadow-sm shadow-brand/20"
                                         onClick={() => setOpen(false)}
                                     >
-                                        <SignInIcon size={20} weight="bold" />
+                                        <SignInIcon size={18} weight="bold" />
                                         {locale === 'bg' ? 'Влез' : 'Sign In'}
                                     </Link>
                                     <Link
                                         href="/auth/sign-up"
-                                        className="flex-1 flex items-center justify-center gap-2 py-3 bg-background border border-border rounded-xl text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+                                        className="flex items-center justify-center gap-2 py-2.5 bg-background border border-border rounded-lg text-sm font-semibold text-foreground hover:bg-muted transition-colors"
                                         onClick={() => setOpen(false)}
                                     >
                                         {locale === 'bg' ? 'Регистрация' : 'Register'}
@@ -342,53 +340,53 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                             </div>
                         )}
 
-                        {/* Quick Actions - Action buttons for users */}
-                        <div className="px-4 py-4 bg-muted/10 border-b border-border/40">
+                        {/* Quick Actions */}
+                        <div className="px-4 py-4 border-b border-border/40">
                             {isLoggedIn ? (
-                                <div className="grid grid-cols-4 gap-2">
+                                <div className="grid grid-cols-4 gap-3">
                                     <Link
                                         href="/account/orders"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-2 p-2 rounded-xl border border-border/50 bg-background hover:bg-muted transition-colors"
+                                        className="flex flex-col items-center gap-2 group"
                                     >
-                                        <div className="size-10 rounded-full bg-muted/50 flex items-center justify-center">
-                                            <Receipt size={20} weight="regular" className="text-foreground" />
+                                        <div className="size-12 rounded-2xl bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                            <Receipt size={24} weight="regular" />
                                         </div>
-                                        <span className="text-tiny font-semibold text-foreground tracking-tight">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
+                                        <span className="text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
                                     </Link>
                                     <Link
                                         href="/account/sales"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-2 p-2 rounded-xl border border-border/50 bg-background hover:bg-muted transition-colors"
+                                        className="flex flex-col items-center gap-2 group"
                                     >
-                                        <div className="size-10 rounded-full bg-muted/50 flex items-center justify-center">
-                                            <ChartLineUp size={20} weight="regular" className="text-foreground" />
+                                        <div className="size-12 rounded-2xl bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                            <ChartLineUp size={24} weight="regular" />
                                         </div>
-                                        <span className="text-tiny font-semibold text-foreground tracking-tight">{locale === 'bg' ? 'Продажби' : 'Sales'}</span>
+                                        <span className="text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Продажби' : 'Sales'}</span>
                                     </Link>
                                     <Link
                                         href="/wishlist"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-2 p-2 rounded-xl border border-border/50 bg-background hover:bg-muted transition-colors"
+                                        className="flex flex-col items-center gap-2 group"
                                     >
-                                        <div className="size-10 rounded-full bg-muted/50 flex items-center justify-center">
-                                            <Heart size={20} weight="regular" className="text-foreground" />
+                                        <div className="size-12 rounded-2xl bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                            <Heart size={24} weight="regular" />
                                         </div>
-                                        <span className="text-tiny font-semibold text-foreground tracking-tight">{locale === 'bg' ? 'Любими' : 'Saved'}</span>
+                                        <span className="text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Любими' : 'Saved'}</span>
                                     </Link>
                                     <Link
                                         href="/chat"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-2 p-2 rounded-xl border border-border/50 bg-background hover:bg-muted transition-colors"
+                                        className="flex flex-col items-center gap-2 group"
                                     >
-                                        <div className="size-10 rounded-full bg-muted/50 flex items-center justify-center">
-                                            <ChatCircleText size={20} weight="regular" className="text-foreground" />
+                                        <div className="size-12 rounded-2xl bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                            <ChatCircleText size={24} weight="regular" />
                                         </div>
-                                        <span className="text-tiny font-semibold text-foreground tracking-tight">{locale === 'bg' ? 'Чат' : 'Chat'}</span>
+                                        <span className="text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Чат' : 'Chat'}</span>
                                     </Link>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-3 gap-2">
+                                <div className="grid grid-cols-3 gap-3">
                                     {guestQuickLinks.map((link, i) => (
                                         <Link
                                             key={i}
@@ -400,15 +398,12 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                                 }
                                                 setOpen(false)
                                             }}
-                                            className={cn(
-                                                "flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-colors border border-border/40",
-                                                "bg-background hover:bg-muted text-foreground"
-                                            )}
+                                            className="flex flex-col items-center gap-2 group"
                                         >
-                                            <div className="size-10 rounded-full bg-muted/30 flex items-center justify-center ring-1 ring-black/5">
+                                            <div className="size-12 rounded-2xl bg-muted/50 flex items-center justify-center group-hover:bg-muted transition-colors">
                                                 {link.icon}
                                             </div>
-                                            <span className="text-tiny font-bold text-center leading-tight tracking-tight">
+                                            <span className="text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
                                                 {link.label}
                                             </span>
                                         </Link>
@@ -417,7 +412,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                             )}
                         </div>
 
-                        {/* Browse - circles instead of accordions */}
+                        {/* Browse */}
                         <div className="pt-2">
                             <HamburgerCategoryCircles
                                 open={open}
@@ -429,16 +424,16 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                     </div>
                 </div>
 
-                {/* Footer actions (pinned) */}
-                <div className="shrink-0 border-t border-border/50 bg-background pb-safe">
-                    <div className="px-4 py-4">
+                {/* Footer actions */}
+                <div className="shrink-0 border-t border-border/50 bg-muted/10 pb-safe">
+                    <div className="px-4 py-3">
                         <div className="grid grid-cols-2 gap-3">
                             <Link
                                 href="/customer-service"
                                 onClick={() => setOpen(false)}
-                                className="flex items-center justify-center gap-2 h-11 rounded-lg bg-muted/50 border border-border/50 text-sm font-bold text-foreground hover:bg-muted transition-colors"
+                                className="flex items-center justify-center gap-2 h-10 rounded-lg bg-background border border-border/50 text-sm font-medium text-foreground hover:bg-muted transition-colors"
                             >
-                                <Question size={20} weight="bold" className="text-muted-foreground" />
+                                <Question size={18} weight="regular" className="text-muted-foreground" />
                                 <span>{locale === 'bg' ? 'Помощ' : 'Help'}</span>
                             </Link>
 
@@ -448,12 +443,12 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                         <button
                                             type="button"
                                             disabled={isSigningOut}
-                                            className="flex items-center justify-center gap-2 h-11 rounded-lg bg-destructive/5 text-destructive border border-destructive/10 text-sm font-bold hover:bg-destructive/10 transition-colors"
+                                            className="flex items-center justify-center gap-2 h-10 rounded-lg bg-background border border-border/50 text-sm font-medium text-destructive hover:bg-destructive/5 hover:border-destructive/20 transition-colors"
                                         >
                                             {isSigningOut ? (
-                                                <SpinnerGap size={20} className="animate-spin" />
+                                                <SpinnerGap size={18} className="animate-spin" />
                                             ) : (
-                                                <SignOut size={20} weight="bold" />
+                                                <SignOut size={18} weight="regular" />
                                             )}
                                             <span>{locale === 'bg' ? 'Изход' : 'Sign Out'}</span>
                                         </button>
@@ -481,14 +476,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                     </AlertDialogContent>
                                 </AlertDialog>
                             ) : (
-                                <Link
-                                    href="/auth/login"
-                                    onClick={() => setOpen(false)}
-                                    className="flex items-center justify-center gap-2 h-11 rounded-lg bg-brand/5 text-brand border border-brand/10 text-sm font-bold hover:bg-brand/10 transition-colors"
-                                >
-                                    <SignInIcon size={20} weight="bold" />
-                                    <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
-                                </Link>
+                                <div /> /* Spacer if needed or just empty */
                             )}
                         </div>
                     </div>
