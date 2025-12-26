@@ -19,7 +19,7 @@ export function SignInPrompt() {
   const router = useRouter();
   
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-6 sm:py-8 lg:py-16">
+    <div className="container-content py-6 sm:py-8 lg:py-16">
       <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
         {/* Left Side - Hero Content */}
         <div className="order-2 lg:order-1 text-center lg:text-left">

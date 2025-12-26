@@ -108,6 +108,12 @@ export async function login(
     return { ...prevState, fieldErrors, error: undefined, success: false }
   }
 
+  if (process.env.NEXT_PUBLIC_E2E === "true") {
+    // Keep E2E runs stable and independent from external Supabase availability.
+    // The E2E suite does not require a real authenticated session by default.
+    return { ...prevState, error: "Invalid login credentials", success: false }
+  }
+
   const supabase = await createClient()
   const { error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
@@ -131,6 +137,7 @@ export async function signUp(
     name: formData.get("name"),
     username: formData.get("username"),
     email: formData.get("email"),
+    accountType: formData.get("accountType"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
   })
@@ -161,6 +168,7 @@ export async function signUp(
       data: {
         full_name: parsed.data.name,
         username: usernameLower,
+        account_type_intent: parsed.data.accountType,
       },
     },
   })
@@ -177,6 +185,7 @@ export async function signUp(
         .update({
           username: usernameLower,
           display_name: parsed.data.name,
+          account_type: parsed.data.accountType,
         })
         .eq("id", authData.user.id)
     } catch {

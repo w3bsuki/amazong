@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { CountBadge } from "@/components/ui/count-badge"
 
 interface Notification {
   id: string
@@ -29,7 +30,7 @@ interface NotificationsDropdownProps {
   user: User | null
 }
 
-type NotificationPreferences = {
+interface NotificationPreferences {
   in_app_purchase: boolean
   in_app_order_status: boolean
   in_app_message: boolean
@@ -65,6 +66,8 @@ const isInAppEnabled = (prefs: NotificationPreferences, type: Notification["type
       return true
   }
 }
+
+const isUpdateNotification = (notification: Notification) => notification.type !== "message"
 
 const getStringFromData = (data: Record<string, unknown> | null | undefined, key: string) => {
   const value = data?.[key]
@@ -127,10 +130,25 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
   const router = useRouter()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
   const [prefs, setPrefs] = useState<NotificationPreferences>(DEFAULT_PREFS)
   const lastToastIdRef = useRef<string | null>(null)
+
+  const fetchUnreadMessagesCount = useCallback(async () => {
+    if (!user) return
+
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase.rpc("get_total_unread_messages")
+      if (!error && typeof data === "number") {
+        setUnreadMessagesCount(data)
+      }
+    } catch {
+      // Keep the last known value; header should stay resilient.
+    }
+  }, [user])
 
   const fetchPreferences = useCallback(async () => {
     if (!user) return
@@ -175,9 +193,10 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
       .limit(10)
 
     if (!error && data) {
-      const filtered = (data as Notification[]).filter(n => isInAppEnabled(prefs, n.type))
-      setNotifications(filtered)
-      setUnreadCount(filtered.filter(n => !n.is_read).length)
+      const filtered = (data as Notification[]).filter((n) => isInAppEnabled(prefs, n.type))
+      const updatesOnly = filtered.filter(isUpdateNotification)
+      setNotifications(updatesOnly)
+      setUnreadCount(updatesOnly.filter((n) => !n.is_read).length)
     }
     setIsLoading(false)
   }, [user, prefs])
@@ -191,6 +210,61 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
   useEffect(() => {
     fetchNotifications()
   }, [fetchNotifications])
+
+  // Fetch unread messages count (Inbox badge should light up for messages too)
+  useEffect(() => {
+    fetchUnreadMessagesCount()
+  }, [fetchUnreadMessagesCount])
+
+  // Refresh counts when opening (keeps badge accurate even after long idle)
+  useEffect(() => {
+    if (!isOpen) return
+    fetchUnreadMessagesCount()
+    fetchNotifications()
+  }, [isOpen, fetchUnreadMessagesCount, fetchNotifications])
+
+  // Realtime: refresh unread messages when conversation counters change
+  useEffect(() => {
+    if (!user) return
+
+    const supabase = createClient()
+    const refresh = () => {
+      void fetchUnreadMessagesCount()
+    }
+
+    const buyerChannel = supabase
+      .channel(`conversations-unread-buyer:${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "conversations",
+          filter: `buyer_id=eq.${user.id}`,
+        },
+        refresh
+      )
+      .subscribe()
+
+    const sellerChannel = supabase
+      .channel(`conversations-unread-seller:${user.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "conversations",
+          filter: `seller_id=eq.${user.id}`,
+        },
+        refresh
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(buyerChannel)
+      supabase.removeChannel(sellerChannel)
+    }
+  }, [user, fetchUnreadMessagesCount])
 
   // Real-time subscription
   useEffect(() => {
@@ -211,6 +285,12 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
           const newNotification = payload.new as Notification
 
           if (!isInAppEnabled(prefs, newNotification.type)) {
+            return
+          }
+
+          // Message notifications are represented by the messages counter.
+          // Keep updates list/count focused on non-message updates.
+          if (!isUpdateNotification(newNotification)) {
             return
           }
 
@@ -345,23 +425,30 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
     return null
   }
 
+  const totalUnread = unreadCount + unreadMessagesCount
+
   return (
     <HoverCard open={isOpen} onOpenChange={setIsOpen} openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <Button
-          data-testid="notifications-dropdown"
-          variant="ghost"
-          size="icon-xl"
-          className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
-          aria-label={`${t("title")}${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
-        >
-          <Bell weight="regular" />
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-destructive text-destructive-foreground text-2xs font-bold rounded-full flex items-center justify-center px-1">
-              {unreadCount > 99 ? "99+" : unreadCount}
+        <div data-testid="notifications-dropdown">
+          <Button
+            variant="ghost"
+            size="icon-xl"
+            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
+            aria-label={`${t("title")} ${t("ariaNotificationsHint")}${totalUnread > 0 ? ` (${totalUnread} unread)` : ""}`}
+          >
+            <span className="relative" aria-hidden="true">
+              <ChatCircle weight="regular" />
+              {totalUnread > 0 && (
+                <CountBadge
+                  count={totalUnread}
+                  className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-[10px] shadow-sm"
+                  aria-hidden="true"
+                />
+              )}
             </span>
-          )}
-        </Button>
+          </Button>
+        </div>
       </HoverCardTrigger>
       <HoverCardContent
         className="w-80 sm:w-96 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
@@ -371,11 +458,11 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-muted border-b border-border">
           <div className="flex items-center gap-2">
-            <Bell size={20} weight="regular" className="text-muted-foreground" />
+            <ChatCircle size={20} weight="regular" className="text-muted-foreground" />
             <h3 className="font-semibold text-base text-foreground">{t("title")}</h3>
-            {unreadCount > 0 && (
+            {totalUnread > 0 && (
               <span className="text-xs bg-destructive text-destructive-foreground px-2 py-0.5 rounded-full">
-                {unreadCount}
+                {totalUnread}
               </span>
             )}
           </div>
@@ -395,15 +482,47 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
           )}
         </div>
 
+        {/* Messages quick access (no tabs) */}
+        <div className="p-2 border-b border-border">
+          <Link
+            href="/chat"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-2 rounded-md hover:bg-muted group transition-colors"
+          >
+            <div className="w-8 h-8 bg-brand/10 rounded-full flex items-center justify-center shrink-0">
+              <ChatCircle size={16} weight="duotone" className="text-brand" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-foreground group-hover:text-brand transition-colors">{t("messagesSection")}</p>
+                {unreadMessagesCount > 0 && (
+                  <span className="text-[10px] bg-destructive text-destructive-foreground px-1.5 py-0.5 rounded-full font-medium">
+                    {unreadMessagesCount}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground truncate">
+                {unreadMessagesCount > 0
+                  ? t("unreadMessages", { count: unreadMessagesCount })
+                  : t("noUnreadMessages")}
+              </p>
+            </div>
+            {unreadMessagesCount === 0 && (
+              <CaretRight size={14} weight="regular" className="text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+            )}
+          </Link>
+        </div>
+
         {/* Notifications List */}
         <div className="max-h-80 overflow-y-auto">
+          <div className="px-4 pt-3 pb-1 text-xs font-medium text-muted-foreground">{t("updatesSection")}</div>
           {isLoading ? (
             <div className="p-4 text-center text-muted-foreground">
               {t("loading")}
             </div>
           ) : notifications.length === 0 ? (
             <div className="p-8 text-center">
-              <Bell size={40} weight="thin" className="mx-auto mb-2 text-muted-foreground/50" />
+              <ChatCircle size={40} weight="thin" className="mx-auto mb-2 text-muted-foreground/50" />
               <p className="text-sm text-muted-foreground">{t("noNotifications")}</p>
             </div>
           ) : (
@@ -453,12 +572,19 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
 
         {/* Footer */}
         <div className="p-3 bg-muted border-t border-border">
-          <Link href="/account/notifications" onClick={() => setIsOpen(false)}>
-            <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
-              {t("viewAll")}
-              <CaretRight size={14} className="ml-1" />
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <Link href="/chat" onClick={() => setIsOpen(false)} className="flex-1">
+              <Button variant="outline" className="w-full h-9 text-sm">
+                {t("openMessages")}
+              </Button>
+            </Link>
+            <Link href="/chat?filter=notifications" onClick={() => setIsOpen(false)} className="flex-1">
+              <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+                {t("viewAll")}
+                <CaretRight size={14} className="ml-1" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </HoverCardContent>
     </HoverCard>

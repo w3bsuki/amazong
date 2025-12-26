@@ -12,13 +12,6 @@ import {
 } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -163,7 +156,7 @@ interface ProductPageContentProps {
 export function ProductPageContent({
   product,
   seller,
-  sellerFeedback = [],
+  sellerFeedback: _sellerFeedback = [],
   locale,
   currentUserId,
   isFollowingSeller = false,
@@ -604,7 +597,7 @@ export function ProductPageContent({
           showStickyBuyBox ? "translate-y-0" : "-translate-y-full"
         )}
       >
-        <div className="container max-w-7xl mx-auto px-4 py-2.5 flex items-center gap-4">
+        <div className="container py-2.5 flex items-center gap-4">
           <div className="shrink-0 w-14 h-14 bg-white border border-border rounded-md overflow-hidden">
             <Image
               src={images[0]}

@@ -171,7 +171,7 @@ export function SellFormSkeleton() {
     <div className="min-h-screen bg-muted/30">
       {/* Header skeleton */}
       <div className="sticky top-0 z-50 h-14 border-b border-border bg-background/95 backdrop-blur-xl">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+        <div className="container-content h-full flex items-center justify-between">
           <Skeleton className="h-5 w-24" />
           <div className="flex items-center gap-3">
             <Skeleton className="h-9 w-24 rounded-lg" />
@@ -182,7 +182,7 @@ export function SellFormSkeleton() {
 
       {/* Main content */}
       <main className="pt-14">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="container-content">
           <div className="lg:grid lg:grid-cols-[1fr_340px] lg:gap-8 py-6 lg:py-8">
             {/* Left column - Form sections */}
             <div className="space-y-6">

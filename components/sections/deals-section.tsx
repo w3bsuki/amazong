@@ -195,19 +195,14 @@ export function DealsSection({
 
       {/* Tabs */}
       <Tabs defaultValue={tabs[0]?.id} className="w-full">
-        {/* Tab List - Hidden on mobile, show on md+ with rounded-full pills */}
+        {/* Tab List - Hidden on mobile, show on md+ with clean underline style */}
         <div className="hidden md:flex justify-center px-4 pb-2 overflow-x-auto no-scrollbar">
-          <TabsList className="h-auto p-0.5 gap-1 rounded-full bg-muted border border-border">
+          <TabsList className="w-max">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
-                className={cn(
-                  "px-5 h-touch-xs text-2xs sm:text-sm font-semibold rounded-full",
-                  "text-muted-foreground hover:text-foreground hover:bg-secondary",
-                  "data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
-                  "whitespace-nowrap"
-                )}
+                className="whitespace-nowrap"
               >
                 {tab.label}
               </TabsTrigger>

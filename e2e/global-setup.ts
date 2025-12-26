@@ -43,8 +43,14 @@ export default async function globalSetup(config: FullConfig) {
     '/en',
     '/en/auth/login',
     '/en/auth/sign-up',
+    '/en/auth/forgot-password',
     '/en/search?q=warmup',
     '/en/cart',
+    '/en/categories',
+    '/en/account',
+    '/en/sell',
+    '/en/plans',
+    '/en/chat',
   ]
 
   const urls = warmPaths.map((p) => new URL(p, baseURL).toString())
@@ -60,7 +66,7 @@ export default async function globalSetup(config: FullConfig) {
     for (const url of urls) {
       // eslint-disable-next-line no-console
       console.log(`[e2e] warm: ${url}`)
-      await warmUrl(page, url, { attempts: 6, timeoutMs: 45_000 })
+      await warmUrl(page, url, { attempts: 6, timeoutMs: 60_000 })
     }
   } finally {
     await browser.close()

@@ -253,9 +253,9 @@ export function MobileSearchOverlay({
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
+                size="icon-xl"
                 onClick={handleClose}
-                className="size-10 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
                 aria-label={strings.close}
               >
                 <X size={22} weight="regular" aria-hidden="true" />

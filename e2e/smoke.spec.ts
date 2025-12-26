@@ -155,7 +155,7 @@ function assertNoConsoleErrors(capture: ConsoleErrorCapture, routeName: string) 
 test.describe('Smoke Tests - Core Routes', () => {
   test.setTimeout(60_000)
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page: _page }) => {
     // Dismissal init script is applied via shared fixtures.
   })
 

@@ -16,6 +16,8 @@ This project uses Playwright for end-to-end testing against **both**:
 - `BASE_URL` (default: `http://localhost:3000`)
 - `TEST_PROD=true` runs against a production build (`pnpm build && pnpm start`)
 - `REUSE_EXISTING_SERVER=true` (local only) reuses an already running server
+ - `PW_OUTPUT_DIR` overrides Playwright `outputDir` (useful to avoid clobbering artifacts when running multiple suites at once)
+ - `PW_HTML_REPORT_DIR` overrides the Playwright HTML report folder
 
 Authenticated suites (opt-in):
 - `TEST_USER_EMAIL`
@@ -23,7 +25,7 @@ Authenticated suites (opt-in):
 
 Authenticated suite implementation:
 - Worker-scoped auth uses Playwright `storageState` in [e2e/fixtures/authenticated.ts](e2e/fixtures/authenticated.ts).
-- This logs in once per worker, stores state under `test-results/.auth/`, and reuses it for the worker.
+- This logs in once per worker, stores state under `<outputDir>/.auth/`, and reuses it for the worker.
 
 ## What runs where
 

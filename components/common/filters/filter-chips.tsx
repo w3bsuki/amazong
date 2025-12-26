@@ -19,7 +19,6 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
   const currentMinPrice = searchParams.get("minPrice")
   const currentMaxPrice = searchParams.get("maxPrice")
   const currentRating = searchParams.get("minRating")
-  const currentPrime = searchParams.get("prime")
   const currentDeals = searchParams.get("deals")
   const currentAvailability = searchParams.get("availability")
   const currentFreeShipping = searchParams.get("freeShipping")
@@ -43,16 +42,6 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
     icon?: React.ReactNode
     color?: string
   }> = []
-
-  // Prime chip
-  if (currentPrime === "true") {
-    chips.push({
-      key: 'prime',
-      label: 'Prime',
-      icon: <Truck size={14} weight="regular" />,
-      color: 'bg-primary/10 text-primary border-primary/20'
-    })
-  }
 
   // Free Shipping chip
   if (currentFreeShipping === "true") {

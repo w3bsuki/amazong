@@ -49,10 +49,6 @@ export async function searchProducts(
     countQuery = countQuery.gte("rating", Number(filters.minRating))
     dbQuery = dbQuery.gte("rating", Number(filters.minRating))
   }
-  if (filters.prime === "true") {
-    countQuery = countQuery.eq("is_prime", true)
-    dbQuery = dbQuery.eq("is_prime", true)
-  }
 
   // "Discounts" / "Deals": best-effort (list_price present)
   if (filters.deals === "true") {

@@ -28,7 +28,6 @@ export interface CategoryProductFilters {
   maxPrice?: string
   tag?: string
   minRating?: string
-  prime?: string
   availability?: string
   sort?: string
   attributes?: Record<string, string | string[]>

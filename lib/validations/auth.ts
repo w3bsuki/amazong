@@ -77,6 +77,7 @@ export const signUpSchema = z
       .refine((val) => !val.endsWith("_"), { message: "Cannot end with underscore" })
       .refine((val) => !RESERVED_USERNAMES.includes(val), { message: "This username is reserved" }),
     email: emailSchema,
+    accountType: z.enum(["personal", "business"], { message: "Account type is required" }),
     password: z
       .string()
       .min(1, { message: "Password is required" })

@@ -170,7 +170,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
     .order('price_monthly', { ascending: true })
 
   return (
-    <div className="flex flex-col gap-6 py-6 px-4 lg:px-6 max-w-6xl mx-auto">
+    <div className="container flex flex-col gap-6 py-6">
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 mb-4">

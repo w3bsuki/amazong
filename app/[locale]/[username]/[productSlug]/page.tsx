@@ -1,12 +1,10 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { getTranslations, setRequestLocale } from "next-intl/server"
+import { setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { fetchProductByUsernameAndSlug, fetchSellerProducts } from "@/lib/data/product-page"
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker"
-import { ProductBreadcrumb } from "@/components/shared/product/product-breadcrumb"
-import { getDeliveryDate } from "../../_lib/delivery-date"
 
 import { ProductGalleryHybrid } from "@/components/shared/product/product-gallery-hybrid"
 import { ProductBuyBox } from "@/components/shared/product/product-buy-box"
@@ -105,12 +103,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   await connection()
   const { username, productSlug, locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations("Product")
 
   // Use static client for public data (can be cached)
   const supabase = createStaticClient()
   // Use auth client only for user check
-  const authClient = await createClient()
+  await createClient()
 
   if (!supabase) {
     notFound()

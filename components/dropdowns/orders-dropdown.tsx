@@ -27,7 +27,7 @@ export function OrdersDropdown({ user }: OrdersDropdownProps) {
           <Button
             variant="ghost"
             size="icon-xl"
-            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
+            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
           >
             <Package weight="regular" />
           </Button>

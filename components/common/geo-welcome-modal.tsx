@@ -70,15 +70,16 @@ interface GeoWelcomeModalProps {
 }
 
 export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
+  const isE2E = process.env.NEXT_PUBLIC_E2E === 'true';
   const t = useTranslations('GeoWelcome');
   const [safeToOpen, setSafeToOpen] = useState(false);
 
-  // Never block E2E runs with region/cookie modals.
-  if (process.env.NEXT_PUBLIC_E2E === 'true') {
-    return null;
-  }
-
   useEffect(() => {
+    // Never block E2E runs with region/cookie modals.
+    if (isE2E) {
+      return;
+    }
+
     // IMPORTANT: Radix Dialog adds aria-hidden to siblings.
     // In Next.js, different Client Component boundaries hydrate at different times.
     // If this dialog opens too early it can mutate DOM nodes (e.g. <header>) before
@@ -109,7 +110,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, []);
+  }, [isE2E]);
 
   const {
     isOpen,
@@ -120,10 +121,10 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
     confirmRegion,
     declineAndShowAll,
     closeModal,
-  } = useGeoWelcome();
+  } = useGeoWelcome({ enabled: !isE2E });
 
   // Avoid SSR/client mismatches by only rendering after the app is safe to open dialogs.
-  if (!safeToOpen || isLoading || !isOpen) {
+  if (isE2E || !safeToOpen || isLoading || !isOpen) {
     return null;
   }
 

@@ -95,32 +95,32 @@ type SortOrder = "asc" | "desc"
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
   pending: { 
     label: "Unfulfilled", 
-    color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    color: "bg-muted text-foreground border-border",
     icon: IconPackage
   },
   processing: { 
     label: "In Progress", 
-    color: "bg-blue-100 text-blue-800 border-blue-200",
+    color: "bg-primary/10 text-primary border-primary/20",
     icon: IconRefresh
   },
   shipped: { 
     label: "Shipped", 
-    color: "bg-purple-100 text-purple-800 border-purple-200",
+    color: "bg-muted text-foreground border-border",
     icon: IconTruck
   },
   delivered: { 
     label: "Delivered", 
-    color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    color: "bg-success/10 text-success border-success/20",
     icon: IconCheck
   },
   cancelled: { 
     label: "Cancelled", 
-    color: "bg-red-100 text-red-800 border-red-200",
+    color: "bg-destructive/10 text-destructive border-destructive/20",
     icon: IconX
   },
   paid: { 
     label: "Paid", 
-    color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    color: "bg-success/10 text-success border-success/20",
     icon: IconCheck
   },
 }
@@ -304,33 +304,24 @@ export function OrdersTable({
         </div>
       </div>
 
-      {/* Status Tabs - Shopify Style */}
+      {/* Status Tabs - Professional Underline Style */}
       <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as OrderStatus)} className="w-full">
-        <TabsList className="h-auto p-1 bg-muted/50 rounded-lg inline-flex flex-wrap gap-1">
-          <TabsTrigger 
-            value="all" 
-            className="px-3 py-1.5 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
-          >
+        <TabsList>
+          <TabsTrigger value="all">
             All
             <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-2xs">
               {statusCounts.all || 0}
             </Badge>
           </TabsTrigger>
-          <TabsTrigger 
-            value="pending"
-            className="px-3 py-1.5 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
-          >
+          <TabsTrigger value="pending">
             Unfulfilled
             {(statusCounts.pending || 0) > 0 && (
-              <Badge className="ml-1.5 h-5 px-1.5 text-2xs bg-yellow-500">
+              <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-2xs">
                 {statusCounts.pending}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger 
-            value="processing"
-            className="px-3 py-1.5 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
-          >
+          <TabsTrigger value="processing">
             In Progress
             {(statusCounts.processing || 0) > 0 && (
               <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-2xs">
@@ -338,10 +329,7 @@ export function OrdersTable({
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger 
-            value="shipped"
-            className="px-3 py-1.5 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
-          >
+          <TabsTrigger value="shipped">
             Shipped
             {(statusCounts.shipped || 0) > 0 && (
               <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-2xs">
@@ -349,10 +337,7 @@ export function OrdersTable({
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger 
-            value="delivered"
-            className="px-3 py-1.5 text-sm data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
-          >
+          <TabsTrigger value="delivered">
             Delivered
             {(statusCounts.delivered || 0) > 0 && (
               <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-2xs">
@@ -401,7 +386,7 @@ export function OrdersTable({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
                   onClick={() => handleBulkStatusUpdate("cancelled")}
-                  className="text-red-600"
+                  className="text-destructive focus:bg-destructive/10 focus:text-destructive"
                 >
                   <IconX className="size-4 mr-2" />
                   Cancel Orders
@@ -624,7 +609,7 @@ export function OrdersTable({
                             Mark Delivered
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
+                          <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">
                             <IconX className="size-4 mr-2" />
                             Cancel Order
                           </DropdownMenuItem>

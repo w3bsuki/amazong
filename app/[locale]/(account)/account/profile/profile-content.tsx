@@ -293,12 +293,12 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
 
   return (
     <Tabs defaultValue="account" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-2 max-w-md">
-        <TabsTrigger value="account" className="gap-2">
+      <TabsList className="max-w-md">
+        <TabsTrigger value="account" className="flex-1 gap-2">
           <GearSix className="size-4" />
           {locale === "bg" ? "Акаунт" : "Account"}
         </TabsTrigger>
-        <TabsTrigger value="public" className="gap-2">
+        <TabsTrigger value="public" className="flex-1 gap-2">
           <UserCircle className="size-4" />
           {locale === "bg" ? "Публичен профил" : "Public Profile"}
         </TabsTrigger>

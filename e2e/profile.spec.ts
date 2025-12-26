@@ -1,4 +1,4 @@
-import { test, expect, type Page, setupPage } from './fixtures/test'
+import { test, expect, type Page, setupPage, waitForDevCompilingOverlayToHide } from './fixtures/test'
 
 /**
  * Profile & Account System E2E Tests
@@ -71,6 +71,44 @@ async function gotoWithRetries(
   }
 
   throw lastError
+}
+
+async function ensureLoginHydrated(page: Page) {
+  // LoginForm uses client-side state (submit enablement, password toggle).
+  // In dev mode, hydration can lag behind DOM paint; wait until handlers work.
+  await waitForDevCompilingOverlayToHide(page)
+
+  const loginForm = page.locator('form').first()
+  const passwordInput = loginForm
+    .locator('input[autocomplete="current-password"], input#password, input[name="password"]')
+    .first()
+
+  const showPasswordButton = loginForm.getByRole('button', { name: /show password/i }).first()
+  const hidePasswordButton = loginForm.getByRole('button', { name: /hide password/i }).first()
+
+  await expect(passwordInput).toBeVisible({ timeout: 60_000 })
+  await expect(showPasswordButton).toBeVisible({ timeout: 60_000 })
+
+  const deadline = Date.now() + 60_000
+  while (Date.now() < deadline) {
+    try {
+      await showPasswordButton.click({ timeout: 2_000 })
+      const hideVisible = await hidePasswordButton.isVisible().catch(() => false)
+
+      if (hideVisible) {
+        await expect(passwordInput).toHaveAttribute('type', 'text', { timeout: 2_000 })
+        await hidePasswordButton.click({ timeout: 2_000 })
+        await expect(passwordInput).toHaveAttribute('type', 'password', { timeout: 2_000 })
+        return
+      }
+    } catch {
+      // ignore and retry
+    }
+
+    await page.waitForTimeout(500)
+  }
+
+  throw new Error('Login form did not hydrate in time')
 }
 
 /**
@@ -149,6 +187,7 @@ test.describe('Profile Page Display', () => {
 
   test('should enable sign in button after filling form @profile @ui', async ({ page }) => {
     await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
+    await ensureLoginHydrated(page)
     
     const loginForm = page.locator('form').first()
     const emailInput = loginForm.locator('input#email, input[type="email"]').first()
@@ -157,8 +196,11 @@ test.describe('Profile Page Display', () => {
     
     await emailInput.fill(TEST_USER.email)
     await passwordInput.fill(TEST_USER.password)
+
+    await expect(emailInput).toHaveValue(TEST_USER.email)
+    await expect(passwordInput).toHaveValue(TEST_USER.password)
     
-    await expect(signInButton).toBeEnabled()
+    await expect(signInButton).toBeEnabled({ timeout: 10_000 })
   })
 })
 
@@ -251,26 +293,33 @@ test.describe('Profile Form Elements', () => {
 
   test('should have password visibility toggle @profile @ui', async ({ page }) => {
     await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
+    await ensureLoginHydrated(page)
     
     const loginForm = page.locator('form').first()
-    const passwordInput = loginForm.locator('input#password, input[name="password"]').first()
-    const toggleButton = loginForm.getByRole('button', { name: /show password|hide password/i }).first()
+    const passwordInput = loginForm
+      .locator('input[autocomplete="current-password"], input#password, input[name="password"]')
+      .first()
+
+    const toggleButton = passwordInput
+      .locator('..')
+      .getByRole('button', { name: /show password|hide password/i })
+      .first()
     
     await passwordInput.fill('TestPassword123!')
     
     // Initially password should be hidden (type=password)
     await expect(passwordInput).toHaveAttribute('type', 'password')
     
-    // If toggle exists, test it
-    if (await toggleButton.isVisible()) {
-      // Click toggle to show password
-      await toggleButton.click()
-      await expect(passwordInput).toHaveAttribute('type', 'text')
-      
-      // Click again to hide
-      await toggleButton.click()
-      await expect(passwordInput).toHaveAttribute('type', 'password')
-    }
+    // Toggle should work after hydration
+    await expect(toggleButton).toBeVisible({ timeout: 10_000 })
+
+    // Click toggle to show password
+    await toggleButton.click()
+    await expect(passwordInput).toHaveAttribute('type', 'text')
+
+    // Click again to hide
+    await toggleButton.click()
+    await expect(passwordInput).toHaveAttribute('type', 'password')
   })
 
   test('should have remember me checkbox @profile @ui', async ({ page }) => {
@@ -350,6 +399,7 @@ test.describe('Login Error Handling', () => {
   test('should show error for invalid credentials @profile @error', async ({ page }) => {
     test.setTimeout(90_000)
     await gotoWithRetries(page, PROFILE_ROUTES.login, { timeout: 60_000, retries: 3 })
+    await ensureLoginHydrated(page)
     
     const loginForm = page.locator('form').first()
     const emailInput = loginForm.locator('input[type="email"], input#email').first()
@@ -358,6 +408,10 @@ test.describe('Login Error Handling', () => {
     
     await emailInput.fill('nonexistent@example.com')
     await passwordInput.fill('WrongPassword123!')
+
+    await expect(emailInput).toHaveValue('nonexistent@example.com')
+    await expect(passwordInput).toHaveValue('WrongPassword123!')
+    await expect(signInButton).toBeEnabled({ timeout: 10_000 })
     await signInButton.click()
     
     // Should show error message
@@ -559,7 +613,7 @@ test.describe('Profile Responsive Design', () => {
     
     // All essential elements should still be visible
     const emailInput = page.getByPlaceholder('you@example.com')
-    const passwordInput = page.getByPlaceholder('••••••••')
+    const passwordInput = page.locator('input[autocomplete="current-password"], input#password').first()
     const signInButton = page.getByRole('button', { name: /sign in/i })
     
     await expect(emailInput).toBeVisible()

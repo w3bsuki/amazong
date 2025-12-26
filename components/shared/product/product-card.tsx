@@ -6,6 +6,7 @@ import { Link } from "@/i18n/routing"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import BoringAvatar from "boring-avatars"
 import { useCart } from "@/components/providers/cart-context"
@@ -139,8 +140,11 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   condition?: string
   brand?: string
   categorySlug?: string
+  /** Root (L0) category slug (e.g. fashion, electronics, automotive) */
+  categoryRootSlug?: string
+  /** Category path from L0 -> leaf (includes BG label when available) */
+  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }>
   tags?: string[]
-  isPrime?: boolean
   make?: string | null
   model?: string | null
   year?: string | number | null
@@ -207,12 +211,55 @@ function getProductCardImageSrc(src: string): string {
 // =============================================================================
 
 const CATEGORY_PILL_PRIORITY: Record<string, string[]> = {
+  automotive: ["year", "mileage_km", "fuel_type", "make", "model"],
+  electronics: ["brand", "model", "storage", "condition"],
+  fashion: ["size", "brand", "condition"],
+  // Back-compat / optional granular slugs
   cars: ["year", "mileage_km", "fuel_type"],
   motorcycles: ["year", "mileage_km", "engine_cc"],
-  electronics: ["brand", "storage", "condition"],
   phones: ["brand", "storage", "condition"],
-  fashion: ["size", "brand", "condition"],
   default: ["condition", "brand"],
+}
+
+function pickCategoryBadgeNode(
+  path: NonNullable<ProductCardProps["categoryPath"]> | undefined
+): { slug: string; name: string; nameBg?: string | null; icon?: string | null } | undefined {
+  if (!path || path.length === 0) return undefined
+  if (path.length === 1) return path[0]
+
+  const l0 = path[0]
+  const l1 = path[1]
+  const l2 = path[2]
+
+  // Fashion: L1 is usually just gender (Men's/Women's), so L2 is more useful.
+  if (l0.slug === "fashion") {
+    const genderL1 = new Set(["fashion-mens", "fashion-womens", "fashion-kids", "fashion-unisex"])
+    if (l1 && genderL1.has(l1.slug) && l2) return l2
+    return l1 || l0
+  }
+
+  // Automotive: if L1 is a very broad grouping (Vehicles / Electric Vehicles), L2 is usually the useful type.
+  if (l0.slug === "automotive") {
+    const broadL1 = new Set(["vehicles", "electric-vehicles"])
+    if (l1 && broadL1.has(l1.slug) && l2) return l2
+    return l1 || l0
+  }
+
+  // Default: show L1 when available.
+  return l1 || l0
+}
+
+function getCategoryBadgeLabel(
+  path: ProductCardProps["categoryPath"],
+  locale: string
+): string | null {
+  const node = pickCategoryBadgeNode(path)
+  if (!node) return null
+
+  const raw = locale === "bg" ? (node.nameBg || node.name) : node.name
+  const clean = raw.replace(/^\s*\[HIDDEN\]\s*/i, "").trim()
+  if (!clean) return null
+  return clean.length > 18 ? `${clean.slice(0, 18)}…` : clean
 }
 
 function formatPillValue(key: string, value: string): string {
@@ -222,6 +269,8 @@ function formatPillValue(key: string, value: string): string {
       return `${parseInt(value).toLocaleString()} km`
     case "area_sqm":
       return `${value} m²`
+    case "condition":
+      return value.replace(/[-_]+/g, " ")
     default:
       return value.length > 14 ? `${value.slice(0, 14)}…` : value
   }
@@ -256,6 +305,21 @@ function getSmartPills(
     }
   }
 
+  // Ensure we still show useful pills across all categories.
+  // Some categories prioritize attributes (e.g. year/mileage) and might omit condition/brand.
+  const addFallback = (key: "condition" | "brand") => {
+    if (pills.length >= maxPills) return
+    const value = merged[key]?.trim()
+    if (!value) return
+    const label = formatPillValue(key, value)
+    if (!label) return
+    if (pills.some((p) => p.label.toLowerCase() === label.toLowerCase())) return
+    pills.push({ key, label })
+  }
+
+  addFallback("condition")
+  addFallback("brand")
+
   return pills
 }
 
@@ -263,7 +327,7 @@ function getSmartPills(
 // PRODUCT CARD COMPONENT
 // =============================================================================
 
-const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
+const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
   (
     {
       // Required
@@ -285,6 +349,8 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
       brand,
       condition,
       categorySlug,
+      categoryRootSlug,
+      categoryPath,
       location,
       sellerId,
 
@@ -312,7 +378,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
       showQuickAdd = true,
       showWishlist = true,
       showRating = true,
-      showPills = false,
+      showPills = true,
 
       // Smart pills
       attributes,
@@ -382,11 +448,26 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
     // Smart pills
     const smartPills = React.useMemo(
       () =>
-        showPills && variant === "featured"
-          ? getSmartPills(categorySlug, attributes, condition, brand)
+        showPills
+          ? getSmartPills(categoryRootSlug || categorySlug, attributes, condition, brand)
           : [],
-      [showPills, variant, categorySlug, attributes, condition, brand]
+      [showPills, categoryRootSlug, categorySlug, attributes, condition, brand]
     )
+
+    const conditionPill = smartPills.find((p) => p.key === "condition")
+    const nonConditionPills = smartPills.filter((p) => p.key !== "condition")
+
+    const categoryBadge = React.useMemo(
+      () => getCategoryBadgeLabel(categoryPath, locale),
+      [categoryPath, locale]
+    )
+
+    const showConditionBadge = !!(
+      conditionPill &&
+      conditionPill.label.trim().toLowerCase() !== "new"
+    )
+
+    const displayNonConditionPills = categoryBadge ? nonConditionPills.slice(0, 1) : nonConditionPills
 
     // Check if own product
     const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
@@ -459,17 +540,26 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
             : "Seller"
 
     return (
-      <Link
+      <div
         ref={ref}
-        href={productUrl}
         className={cn(productCardVariants({ variant, state: resolvedState }), className)}
       >
+        {/* Overlay link for full-card navigation.
+            IMPORTANT: Do not nest interactive controls inside an anchor. */}
+        <Link
+          href={productUrl}
+          className="absolute inset-0 z-0"
+          aria-label={locale === "bg" ? `Отвори продукт: ${title}` : `Open product: ${title}`}
+        >
+          <span className="sr-only">{title}</span>
+        </Link>
+
         {/* ═══════════════════════════════════════════════════════════════════
             SELLER HEADER - Featured variant only (promoted/business sellers)
             Swiss Design: Clean horizontal layout, minimal visual weight
         ═══════════════════════════════════════════════════════════════════ */}
         {variant === "featured" && (
-          <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/30 px-3 py-2">
+          <div className="relative z-10 flex items-center justify-between gap-2 border-b border-border bg-muted/30 px-3 py-2">
             <div className="flex min-w-0 items-center gap-2">
               <Avatar className="size-7 shrink-0 border border-border">
                 <AvatarImage src={sellerAvatarUrl || undefined} alt={displayName} />
@@ -491,7 +581,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
                     <ShieldCheck size={12} weight="fill" className="shrink-0 text-cta-trust-blue" />
                   )}
                 </div>
-                <span className="text-[10px] text-muted-foreground">{tierLabel}</span>
+                <span className="text-tiny text-muted-foreground">{tierLabel}</span>
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -530,6 +620,67 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
           </div>
         )}
 
+        {/* Compact Seller Info for C2C feel - Default variant */}
+        {variant === "default" && (sellerName || resolvedUsername) && (
+          <div className="relative z-10 flex items-center gap-1.5 px-1.5 py-1.5">
+            <Avatar className="size-7 shrink-0 border border-border/50">
+              <AvatarImage src={sellerAvatarUrl || undefined} alt={displayName} />
+              <AvatarFallback className="bg-transparent p-0">
+                <BoringAvatar
+                  size={28}
+                  name={sellerId || displayName}
+                  variant="beam"
+                  colors={AVATAR_COLORS}
+                />
+              </AvatarFallback>
+            </Avatar>
+            <HoverCard openDelay={200} closeDelay={100}>
+              <HoverCardTrigger asChild>
+                <span className="truncate text-sm font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                  {displayName}
+                </span>
+              </HoverCardTrigger>
+              <HoverCardContent align="start" side="top" className="w-64 p-3">
+                <div className="flex items-center gap-2">
+                  <Avatar className="size-9 shrink-0 border border-border">
+                    <AvatarImage src={sellerAvatarUrl || undefined} alt={displayName} />
+                    <AvatarFallback className="bg-transparent p-0">
+                      <BoringAvatar
+                        size={36}
+                        name={sellerId || displayName}
+                        variant="beam"
+                        colors={AVATAR_COLORS}
+                      />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <div className="flex min-w-0 items-center gap-1">
+                      <span className="truncate text-sm font-medium text-foreground">{displayName}</span>
+                      {sellerVerified && (
+                        <ShieldCheck size={12} weight="fill" className="shrink-0 text-cta-trust-blue" />
+                      )}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{tierLabel}</div>
+                  </div>
+                </div>
+
+                {resolvedUsername && (
+                  <Link
+                    href={`/${resolvedUsername}`}
+                    className="mt-2 inline-flex text-xs font-medium text-primary hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {locale === "bg" ? "Виж профил" : "View profile"}
+                  </Link>
+                )}
+              </HoverCardContent>
+            </HoverCard>
+            {sellerVerified && (
+              <ShieldCheck size={10} weight="fill" className="shrink-0 text-cta-trust-blue" />
+            )}
+          </div>
+        )}
+
         {/* ═══════════════════════════════════════════════════════════════════
             IMAGE SECTION - Square aspect ratio for maximum image visibility
             Standardized: 1:1 ratio like eBay/Vinted for consistent grid alignment
@@ -561,17 +712,26 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
               variant="ghost"
               size="icon"
               className={cn(
-                "absolute right-1.5 top-1.5 z-10 size-7 rounded-full bg-background/80 backdrop-blur-sm transition-colors duration-150",
-                "hover:bg-background",
-                wishlisted && "bg-cta-trust-blue/10 text-cta-trust-blue"
+                "absolute right-1.5 top-1.5 z-10 h-touch w-touch rounded-full p-0",
+                "bg-transparent hover:bg-transparent",
+                "transition-transform duration-150 active:scale-[0.98]"
               )}
               onClick={handleWishlist}
             >
-              <Heart
-                size={16}
-                weight={wishlisted ? "fill" : "regular"}
-                className={wishlisted ? "text-cta-trust-blue" : "text-muted-foreground"}
-              />
+              <span
+                className={cn(
+                  "flex size-8 items-center justify-center rounded-full",
+                  "bg-background/80 backdrop-blur-sm",
+                  "transition-colors duration-150",
+                  wishlisted ? "bg-cta-trust-blue/10" : "hover:bg-background"
+                )}
+              >
+                <Heart
+                  size={16}
+                  weight={wishlisted ? "fill" : "regular"}
+                  className={wishlisted ? "text-cta-trust-blue" : "text-muted-foreground"}
+                />
+              </span>
               <span className="sr-only">
                 {wishlisted ? "Remove from wishlist" : "Add to wishlist"}
               </span>
@@ -584,21 +744,31 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
               variant={inCart ? "default" : "outline"}
               size="icon"
               className={cn(
-                "absolute bottom-1.5 right-1.5 z-10 size-7 rounded-full",
-                !inCart && [
-                  "bg-background/90 backdrop-blur-sm border-border/50",
-                  "group-hover:bg-cta-trust-blue group-hover:text-cta-trust-blue-text group-hover:border-cta-trust-blue"
-                ],
-                inCart && "bg-cta-trust-blue text-cta-trust-blue-text"
+                "absolute bottom-1.5 right-1.5 z-10 h-touch w-touch rounded-full p-0",
+                "bg-transparent hover:bg-transparent",
+                "border-0",
+                "transition-transform duration-150 active:scale-[0.98]"
               )}
               onClick={handleAddToCart}
               disabled={isOwnProduct || !inStock}
             >
-              {inCart ? (
-                <ShoppingCart size={14} weight="fill" />
-              ) : (
-                <Plus size={14} weight="bold" />
-              )}
+              <span
+                className={cn(
+                  "flex size-8 items-center justify-center rounded-full",
+                  "transition-colors duration-150",
+                  !inCart && [
+                    "bg-background/90 backdrop-blur-sm ring-1 ring-border/50",
+                    "group-hover:bg-cta-trust-blue group-hover:text-cta-trust-blue-text"
+                  ],
+                  inCart && "bg-cta-trust-blue text-cta-trust-blue-text"
+                )}
+              >
+                {inCart ? (
+                  <ShoppingCart size={14} weight="fill" />
+                ) : (
+                  <Plus size={14} weight="bold" />
+                )}
+              </span>
               <span className="sr-only">{inCart ? "In cart" : "Add to cart"}</span>
             </Button>
           )}
@@ -606,13 +776,13 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
           {/* Badges - Top Left (Flat, no shadows per Swiss design) */}
           <div className="absolute left-2 top-2 z-10 flex flex-col gap-1">
             {resolvedState === "promoted" && (
-              <Badge className="inline-flex items-center gap-0.5 rounded-md bg-cta-trust-blue px-1.5 py-0.5 text-[10px] font-semibold text-cta-trust-blue-text">
+              <Badge className="inline-flex items-center gap-0.5 rounded-md bg-cta-trust-blue px-1.5 py-0.5 text-tiny font-semibold text-cta-trust-blue-text">
                 <Sparkle size={10} weight="fill" />
                 {locale === "bg" ? "Промотирано" : "Promoted"}
               </Badge>
             )}
             {(saleByTruthSemantics || (isOnSale == null && hasDiscount && priceDerivedDiscountPercent >= 5)) && (
-              <span className="rounded-md bg-destructive px-1.5 py-0.5 text-[10px] font-bold text-destructive-foreground">
+              <span className="rounded-md bg-destructive px-1.5 py-0.5 text-tiny font-bold text-destructive-foreground">
                 -{Math.max(0, Math.round(resolvedSalePercent))}%
               </span>
             )}
@@ -625,22 +795,33 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
         ═══════════════════════════════════════════════════════════════════ */}
         <div
           className={cn(
-            "flex flex-col gap-0.5",
+            "relative z-10 flex flex-col gap-0.5",
             variant === "featured" ? "p-2" : "p-1.5"
           )}
         >
-          {/* Meta info: Brand & Condition */}
-          {(brand || condition) && (
-            <div className="flex items-center gap-1 truncate text-2xs uppercase tracking-widest font-bold text-muted-foreground/60">
-              {brand && <span className="truncate">{brand}</span>}
-              {brand && condition && (
-                <span className="size-0.5 shrink-0 rounded-full bg-muted-foreground/20" />
+          {/* Compact meta badges: Category (smart level) + Condition (only if not 'new') */}
+          {(categoryBadge || showConditionBadge) && (
+            <div className="flex flex-wrap items-center gap-1">
+              {categoryBadge && (
+                <Badge
+                  variant="secondary"
+                  className="w-fit max-w-full truncate px-2 py-0.5 text-[10px] font-semibold tracking-normal normal-case"
+                >
+                  {categoryBadge}
+                </Badge>
               )}
-              {condition && <span className="shrink-0">{condition}</span>}
+              {showConditionBadge && (
+                <Badge
+                  variant="secondary"
+                  className="w-fit px-2 py-0.5 text-[10px] font-semibold tracking-normal normal-case"
+                >
+                  {conditionPill!.label}
+                </Badge>
+              )}
             </div>
           )}
 
-          {/* Title - Refined for desktop */}
+          {/* Title */}
           <h3
             className={cn(
               "text-sm font-medium leading-tight text-foreground/90",
@@ -650,13 +831,13 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
             {title}
           </h3>
 
-          {/* Smart pills (optional, featured variant only) */}
-          {smartPills.length > 0 && (
+          {/* Quick pills (excluding condition) */}
+          {displayNonConditionPills.length > 0 && (
             <div className="flex flex-wrap gap-1 pt-0.5">
-              {smartPills.map((pill) => (
+              {displayNonConditionPills.map((pill) => (
                 <span
                   key={pill.key}
-                  className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+                  className="rounded-full border border-border/60 bg-muted/50 px-2 py-0.5 text-tiny font-medium leading-none text-muted-foreground"
                 >
                   {pill.label}
                 </span>
@@ -717,7 +898,7 @@ const ProductCard = React.forwardRef<HTMLAnchorElement, ProductCardProps>(
             <p className="truncate text-2xs text-muted-foreground pt-0.5">{location}</p>
           )}
         </div>
-      </Link>
+      </div>
     )
   }
 )

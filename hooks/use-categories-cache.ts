@@ -59,8 +59,11 @@ export function useCategoriesCache(
 ): UseCategoriesCacheReturn {
   const { depth = 1, forceFresh = false, minCategories = 20 } = options
   
-  const [categories, setCategories] = useState<Category[]>(categoriesCache || [])
-  const [isLoading, setIsLoading] = useState(!categoriesCache)
+  // Always start in a deterministic state so SSR HTML matches the initial
+  // client render during hydration. We then hydrate from the module cache
+  // (or fetch) inside an effect.
+  const [categories, setCategories] = useState<Category[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
 
   const fetchCategories = useCallback(async () => {

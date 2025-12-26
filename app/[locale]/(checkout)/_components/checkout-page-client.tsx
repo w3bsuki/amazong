@@ -173,7 +173,7 @@ export default function CheckoutPageClient() {
 
   return (
     <div className="min-h-screen pb-32 lg:pb-8">
-      <div className="container py-4 lg:py-6 max-w-5xl">
+      <div className="container-content py-4 lg:py-6">
         <Link
           href="/cart"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-4"

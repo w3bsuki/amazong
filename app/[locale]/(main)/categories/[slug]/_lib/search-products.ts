@@ -45,10 +45,6 @@ export async function searchProducts(
     countQuery = countQuery.gte("rating", Number(filters.minRating))
     dbQuery = dbQuery.gte("rating", Number(filters.minRating))
   }
-  if (filters.prime === "true") {
-    countQuery = countQuery.eq("is_prime", true)
-    dbQuery = dbQuery.eq("is_prime", true)
-  }
   if (filters.availability === "instock") {
     countQuery = countQuery.gt("stock", 0)
     dbQuery = dbQuery.gt("stock", 0)

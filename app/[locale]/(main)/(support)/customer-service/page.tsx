@@ -34,14 +34,12 @@ export default async function CustomerServicePage({ params }: { params: Promise<
 
     const helpTopics = [
         { icon: Package, title: t('delivery') },
-        { icon: ArrowsClockwise, title: t('prime') },
         { icon: CreditCard, title: t('payment') },
         { icon: User, title: t('address') },
         { icon: Shield, title: t('memberships') },
         { icon: Question, title: t('accessibility') },
         { icon: Question, title: t('somethingElse') },
         { icon: Question, title: t('loginPassword') },
-        { icon: Question, title: t('ebooks') },
     ]
 
     return (

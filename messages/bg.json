@@ -198,8 +198,6 @@
         "shipsFrom": "Изпраща се от",
         "soldBy": "Продава се от",
         "giftReceipt": "Добави подаръчна бележка за лесно връщане",
-        "prime": "prime",
-        "primeOneDay": "Един ден",
         "freeReturns": "Безплатни връщания",
         "secureTransaction": "Сигурна транзакция",
         "aboutThisItem": "За този артикул",
@@ -292,14 +290,12 @@
         "trackOrders": "Проследи последните си поръчки:",
         "goToOrders": "Към твоите поръчки",
         "delivery": "Доставка, поръчка или връщане",
-        "prime": "Prime",
         "payment": "Плащане, такси или подаръчни карти",
         "address": "Адрес, сигурност и поверителност",
         "memberships": "Членства, абонаменти или комуникации",
         "accessibility": "Достъпност",
         "somethingElse": "Нещо друго",
         "loginPassword": "Вход и парола",
-        "ebooks": "eBooks, Prime Video или музика",
         "shipping": "Доставка",
         "returns": "Връщания и възстановявания"
     },
@@ -546,6 +542,10 @@
         "emailNotConfirmed": "Моля, потвърди имейл адреса си преди да влезеш.",
         "createAccountTitle": "Създай акаунт",
         "createAccountDescription": "Въведи данните си, за да създадеш Amazon акаунт",
+        "accountTypeLabel": "Тип акаунт",
+        "accountTypePersonal": "Личен",
+        "accountTypeBusiness": "Бизнес",
+        "accountTypeHint": "Можеш да го промениш по-късно.",
         "yourName": "Твоето име",
         "namePlaceholder": "Име и фамилия",
         "createPasswordPlaceholder": "Създай силна парола",
@@ -603,10 +603,6 @@
         "security": {
             "title": "Вход и сигурност",
             "desc": "Редактирай вход, име и мобилен номер"
-        },
-        "prime": {
-            "title": "Prime",
-            "desc": "Виж предимства и настройки за плащане"
         },
         "addresses": {
             "title": "Твоите адреси",
@@ -696,7 +692,6 @@
         "clearPrice": "Изчисти филтър за цена",
         "loadingCategories": "Зареждане на категории...",
         "deliveryDay": "Ден на доставка",
-        "getPrimeDelivery": "Получи до утре",
         "freeShipping": "Безплатна доставка",
         "clearAllFilters": "Изчисти всички филтри",
         "brand": "Марка",
@@ -716,7 +711,6 @@
         "shopBySubcategory": "Пазарувай по подкатегория",
         "allIn": "Всички в",
         "quickFilters": "Бързи филтри",
-        "primeEligible": "Prime налични",
         "deals": "Оферти",
         "fourStarsUp": "4★ и нагоре",
         "searchResults": "Резултати от търсене",
@@ -792,11 +786,28 @@
         "viewAllMessages": "Виж всички съобщения"
     },
     "NotificationsDropdown": {
-        "title": "Известия",
+        "title": "Входящи",
+        "ariaNotificationsHint": "(известия)",
         "loading": "Зареждане...",
-        "noNotifications": "Все още няма известия",
+        "noNotifications": "Все още няма нови",
         "markAllRead": "Маркирай като прочетени",
-        "viewAll": "Виж всички известия"
+        "messagesSection": "Съобщения",
+        "unreadMessages": "{count, plural, one {# непрочетено съобщение} other {# непрочетени съобщения}}",
+        "noUnreadMessages": "Няма непрочетени съобщения",
+        "updatesSection": "Обновления",
+        "openMessages": "Съобщения",
+        "viewAll": "Всички обновления"
+    },
+    "WishlistDropdown": {
+        "title": "Любими",
+        "loading": "Зареждане...",
+        "empty": "Нямаш добавени любими",
+        "startBrowsing": "Разгледай",
+        "item": "артикул",
+        "items": "артикула",
+        "remove": "Премахни",
+        "moreItems": "още",
+        "viewAll": "Виж любими"
     },
     "ReturnsDropdown": {
         "title": "Твоите поръчки",
@@ -810,13 +821,15 @@
         "viewAllOrders": "Виж всички поръчки"
     },
     "SellingDropdown": {
-        "title": "Твоите продажби",
+        "title": "Твоите обяви",
         "createListing": "Създай обява",
         "createListingDesc": "Обяви артикул за продажба",
         "myListings": "Моите обяви",
         "myListingsDesc": "Виж и управлявай активните си обяви",
         "sellerOrders": "Поръчки от купувачи",
         "sellerOrdersDesc": "Поръчки от твоите купувачи",
+        "sales": "Продажби",
+        "salesDesc": "Плащания, фактури и приключени продажби",
         "dashboard": "Табло за продавачи",
         "dashboardDesc": "Анализи и статистики за продажби",
         "signInToSell": "Влез, за да започнеш да продаваш",

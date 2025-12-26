@@ -24,7 +24,7 @@ function SubmitButton({
     <button
       type="submit"
       disabled={pending || disabled}
-      className="w-full h-10 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+      className="w-full h-10 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
     >
       {pending ? (
         <span className="inline-flex items-center gap-2">
@@ -52,6 +52,8 @@ export function SignUpForm({ locale }: { locale: string }) {
   const [username, setUsername] = useState("")
   const [isCheckingUsername, setIsCheckingUsername] = useState(false)
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
+
+  const [accountType, setAccountType] = useState<"personal" | "business">("personal")
 
   const initialState = useMemo<AuthActionState>(() => ({ fieldErrors: {}, error: undefined, success: false }), [])
   const [state, formAction] = useActionState(signUp.bind(null, locale), initialState)
@@ -97,7 +99,7 @@ export function SignUpForm({ locale }: { locale: string }) {
       return (
         <span data-testid="username-availability" aria-label="Checking username availability">
           <span className="sr-only">Checking username availability</span>
-          <SpinnerGap className="size-4 animate-spin text-gray-400" weight="bold" />
+          <SpinnerGap className="size-4 animate-spin text-muted-foreground" weight="bold" />
         </span>
       )
     }
@@ -105,7 +107,7 @@ export function SignUpForm({ locale }: { locale: string }) {
       return (
         <span data-testid="username-availability" aria-label="Username available">
           <span className="sr-only">Username available</span>
-          <CheckCircle className="size-4 text-emerald-600" weight="fill" />
+          <CheckCircle className="size-4 text-success" weight="fill" />
         </span>
       )
     }
@@ -113,7 +115,7 @@ export function SignUpForm({ locale }: { locale: string }) {
       return (
         <span data-testid="username-availability" aria-label="Username unavailable">
           <span className="sr-only">Username unavailable</span>
-          <X className="size-4 text-red-500" />
+          <X className="size-4 text-destructive" />
         </span>
       )
     }
@@ -129,24 +131,59 @@ export function SignUpForm({ locale }: { locale: string }) {
     password === confirmPassword
 
   return (
-    <div className="min-h-svh flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-sm bg-white rounded-xl border border-gray-200 relative">
+    <div className="min-h-svh flex items-center justify-center bg-muted/30 p-4">
+      <div className="w-full max-w-sm bg-card rounded-xl border border-border relative">
         <div className="p-6">
           <div className="flex flex-col items-center mb-6">
             <Link href="/" className="mb-3 hover:opacity-80 transition-opacity">
               <Image src="/icon.svg" width={40} height={40} alt="AMZN" priority />
             </Link>
-            <h1 className="text-xl font-semibold text-gray-900">{t("createAccountTitle")}</h1>
-            <p className="text-sm text-gray-500 mt-1 text-center">{t("signUpDescription")}</p>
+            <h1 className="text-xl font-semibold text-foreground">{t("createAccountTitle")}</h1>
+            <p className="text-sm text-muted-foreground mt-1 text-center">{t("signUpDescription")}</p>
           </div>
 
           <form action={formAction} className="space-y-4">
             {state?.error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">{state.error}</div>
+              <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">{state.error}</div>
             )}
 
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-foreground mb-2">
+                {t("accountTypeLabel")}
+              </label>
+              <input type="hidden" name="accountType" value={accountType} />
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setAccountType("personal")}
+                  className={
+                    accountType === "personal"
+                      ? "h-10 rounded-lg border border-primary bg-primary/10 text-foreground text-sm font-medium"
+                      : "h-10 rounded-lg border border-input bg-background text-foreground text-sm hover:bg-muted/50"
+                  }
+                  aria-pressed={accountType === "personal"}
+                >
+                  {t("accountTypePersonal")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAccountType("business")}
+                  className={
+                    accountType === "business"
+                      ? "h-10 rounded-lg border border-primary bg-primary/10 text-foreground text-sm font-medium"
+                      : "h-10 rounded-lg border border-input bg-background text-foreground text-sm hover:bg-muted/50"
+                  }
+                  aria-pressed={accountType === "business"}
+                >
+                  {t("accountTypeBusiness")}
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1.5">{t("accountTypeHint")}</p>
+            </div>
+
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
                 {t("yourName")}
               </label>
               <input
@@ -156,14 +193,14 @@ export function SignUpForm({ locale }: { locale: string }) {
                 autoComplete="name"
                 placeholder={t("namePlaceholder")}
                 onChange={(e) => setName(e.target.value)}
-                className={`w-full h-10 px-3 text-sm text-gray-900 placeholder:text-gray-400 bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-colors ${state?.fieldErrors?.name ? "border-red-400 focus:ring-red-500/40 focus:border-red-500" : "border-gray-300"}`}
+                className={`w-full h-10 px-3 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.name ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
                 aria-invalid={!!state?.fieldErrors?.name}
               />
-              {state?.fieldErrors?.name && <p className="text-xs text-red-500 mt-1">{state.fieldErrors.name}</p>}
+              {state?.fieldErrors?.name && <p className="text-xs text-destructive mt-1">{state.fieldErrors.name}</p>}
             </div>
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="username" className="block text-sm font-medium text-foreground mb-1">
                 {t("username")}
               </label>
               <div className="relative">
@@ -175,16 +212,16 @@ export function SignUpForm({ locale }: { locale: string }) {
                   onChange={(e) => setUsername(e.target.value)}
                   autoComplete="username"
                   placeholder={t("usernamePlaceholder")}
-                    className={`w-full h-10 px-3 pr-10 text-sm text-gray-900 placeholder:text-gray-400 bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-colors ${state?.fieldErrors?.username ? "border-red-400 focus:ring-red-500/40 focus:border-red-500" : "border-gray-300"}`}
+                    className={`w-full h-10 px-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.username ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
                   aria-invalid={!!state?.fieldErrors?.username}
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">{usernameIndicator}</div>
               </div>
-              {state?.fieldErrors?.username && <p className="text-xs text-red-500 mt-1">{state.fieldErrors.username}</p>}
+              {state?.fieldErrors?.username && <p className="text-xs text-destructive mt-1">{state.fieldErrors.username}</p>}
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
                 {t("email")}
               </label>
               <input
@@ -194,14 +231,14 @@ export function SignUpForm({ locale }: { locale: string }) {
                 autoComplete="email"
                 placeholder={t("emailPlaceholder")}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full h-10 px-3 text-sm text-gray-900 placeholder:text-gray-400 bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-colors ${state?.fieldErrors?.email ? "border-red-400 focus:ring-red-500/40 focus:border-red-500" : "border-gray-300"}`}
+                className={`w-full h-10 px-3 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.email ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
                 aria-invalid={!!state?.fieldErrors?.email}
               />
-              {state?.fieldErrors?.email && <p className="text-xs text-red-500 mt-1">{state.fieldErrors.email}</p>}
+              {state?.fieldErrors?.email && <p className="text-xs text-destructive mt-1">{state.fieldErrors.email}</p>}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">
                 {t("password")}
               </label>
               <div className="relative">
@@ -213,13 +250,13 @@ export function SignUpForm({ locale }: { locale: string }) {
                   placeholder={t("createPasswordPlaceholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                    className={`w-full h-10 px-3 pr-10 text-sm text-gray-900 placeholder:text-gray-400 bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-colors ${state?.fieldErrors?.password ? "border-red-400 focus:ring-red-500/40 focus:border-red-500" : "border-gray-300"}`}
+                    className={`w-full h-10 px-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.password ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
                   aria-invalid={!!state?.fieldErrors?.password}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                 >
                   {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
@@ -227,10 +264,10 @@ export function SignUpForm({ locale }: { locale: string }) {
               </div>
               {password && (
                 <div className="mt-1.5 space-y-1">
-                  <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                     <div className={`h-full transition-all duration-300 rounded-full ${strength.color} ${strength.width}`} />
                   </div>
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-muted-foreground">
                     {t("passwordStrength")}: {t(`strength${strength.label}`)}
                   </p>
                 </div>
@@ -240,7 +277,7 @@ export function SignUpForm({ locale }: { locale: string }) {
                   {requirements.map((req, i) => (
                     <div
                       key={i}
-                      className={`flex items-center gap-1.5 text-xs transition-colors ${req.met ? "text-emerald-600" : "text-gray-400"}`}
+                      className={`flex items-center gap-1.5 text-xs transition-colors ${req.met ? "text-success" : "text-muted-foreground"}`}
                     >
                       {req.met ? <Check className="size-3" weight="bold" /> : <X className="size-3" />}
                       <span>{req.label}</span>
@@ -248,11 +285,11 @@ export function SignUpForm({ locale }: { locale: string }) {
                   ))}
                 </div>
               )}
-              {state?.fieldErrors?.password && <p className="text-xs text-red-500 mt-1">{state.fieldErrors.password}</p>}
+              {state?.fieldErrors?.password && <p className="text-xs text-destructive mt-1">{state.fieldErrors.password}</p>}
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-1">
                 {t("confirmPassword")}
               </label>
               <div className="relative">
@@ -263,59 +300,59 @@ export function SignUpForm({ locale }: { locale: string }) {
                   autoComplete="new-password"
                   placeholder={t("confirmPasswordPlaceholder")}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className={`w-full h-10 px-3 pr-10 text-sm text-gray-900 placeholder:text-gray-400 bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-colors ${state?.fieldErrors?.confirmPassword ? "border-red-400 focus:ring-red-500/40 focus:border-red-500" : "border-gray-300"}`}
+                    className={`w-full h-10 px-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.confirmPassword ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
                   aria-invalid={!!state?.fieldErrors?.confirmPassword}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}
                 >
                   {showConfirmPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
                 </button>
               </div>
               {state?.fieldErrors?.confirmPassword && (
-                <p className="text-xs text-red-500 mt-1">{state.fieldErrors.confirmPassword}</p>
+                <p className="text-xs text-destructive mt-1">{state.fieldErrors.confirmPassword}</p>
               )}
             </div>
 
             <SubmitButton label={t("createYourAccount")} pendingLabel={t("creatingAccount")} disabled={!canSubmit} />
           </form>
 
-          <p className="text-xs text-gray-600 mt-4 leading-relaxed">
+          <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
             {t("byCreatingAccount")} {" "}
-            <Link href="/terms" className="text-blue-600 hover:underline">
+            <Link href="/terms" className="text-primary hover:underline">
               {t("conditionsOfUse")}
             </Link>{" "}
             {t("and")} {" "}
-            <Link href="/privacy" className="text-blue-600 hover:underline">
+            <Link href="/privacy" className="text-primary hover:underline">
               {t("privacyNotice")}
             </Link>
             .
           </p>
 
-          <div className="mt-6 text-center text-sm text-gray-600">
+          <div className="mt-6 text-center text-sm text-muted-foreground">
             {t("alreadyHaveAccount")} {" "}
-            <Link href="/auth/login" className="text-blue-600 hover:underline font-medium">
+            <Link href="/auth/login" className="text-primary hover:underline font-medium">
               {t("signInArrow")}
             </Link>
           </div>
         </div>
 
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
-          <div className="flex justify-center gap-4 text-xs text-gray-500">
-            <Link href="/terms" className="hover:text-blue-600 transition-colors">
+        <div className="px-6 py-4 bg-muted/30 border-t border-border rounded-b-xl">
+          <div className="flex justify-center gap-4 text-xs text-muted-foreground">
+            <Link href="/terms" className="hover:text-primary transition-colors">
               {t("conditionsOfUse")}
             </Link>
-            <Link href="/privacy" className="hover:text-blue-600 transition-colors">
+            <Link href="/privacy" className="hover:text-primary transition-colors">
               {t("privacyNotice")}
             </Link>
-            <Link href="/help" className="hover:text-blue-600 transition-colors">
+            <Link href="/help" className="hover:text-primary transition-colors">
               {t("help")}
             </Link>
           </div>
-          <p className="text-xs text-center text-gray-400 mt-2">{t("copyright", { year: new Date().getFullYear() })}</p>
+          <p className="text-xs text-center text-muted-foreground/70 mt-2">{t("copyright", { year: new Date().getFullYear() })}</p>
         </div>
       </div>
     </div>

@@ -171,7 +171,7 @@ export function SubcategoryCircles({
       )}
       
       {/* Scrollable Container with circles */}
-      <div className="relative">
+      <div className="relative [--circle-size:52px] sm:[--circle-size:90px] md:[--circle-size:100px] [--circle-top-pad:6px]">
         <div
           ref={scrollRef}
           className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth gap-2 sm:gap-5 py-1.5 pb-2.5 scroll-pl-3"
@@ -254,7 +254,7 @@ export function SubcategoryCircles({
         <button
           onClick={() => scroll("left")}
           className={cn(
-            "absolute left-0 top-10 sm:top-[45px] -translate-y-1/2 z-10",
+            "absolute left-0 top-[calc(var(--circle-top-pad)+var(--circle-size)/2)] -translate-y-1/2 z-10",
             "size-10 bg-white hover:bg-muted rounded-full border border-border",
             "flex items-center justify-center",
             "hidden md:flex",
@@ -269,7 +269,7 @@ export function SubcategoryCircles({
         <button
           onClick={() => scroll("right")}
           className={cn(
-            "absolute right-0 top-10 sm:top-[45px] -translate-y-1/2 z-10",
+            "absolute right-0 top-[calc(var(--circle-top-pad)+var(--circle-size)/2)] -translate-y-1/2 z-10",
             "size-10 bg-white hover:bg-muted rounded-full border border-border",
             "flex items-center justify-center",
             "hidden md:flex",

@@ -49,6 +49,12 @@ export async function fetchSellerProducts(
 ) {
   if (!supabase) return []
 
+  const isUuid = (value: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value)
+
+  // Avoid Postgres errors when sample/placeholder ids are passed in.
+  if (!isUuid(sellerId)) return []
+
   let query = supabase
     .from("products")
     .select("*")
@@ -56,7 +62,7 @@ export async function fetchSellerProducts(
     .order("created_at", { ascending: false })
     .limit(limit)
 
-  if (excludeProductId) {
+  if (excludeProductId && isUuid(excludeProductId)) {
     query = query.neq("id", excludeProductId)
   }
 

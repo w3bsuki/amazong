@@ -6,6 +6,7 @@ import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { User } from "@supabase/supabase-js"
 import { ChatCircle, PaperPlaneTilt, Bell, CaretRight } from "@phosphor-icons/react"
+import { CountBadge } from "@/components/ui/count-badge"
 
 interface MessagesDropdownProps {
   user: User | null
@@ -28,14 +29,18 @@ export function MessagesDropdown({ user, unreadCount = 0 }: MessagesDropdownProp
           <Button
             variant="ghost"
             size="icon-xl"
-            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
+            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
           >
-            <ChatCircle weight="regular" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-destructive text-destructive-foreground text-2xs font-bold rounded-full flex items-center justify-center px-1">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
+            <span className="relative" aria-hidden="true">
+              <ChatCircle weight="regular" />
+              {unreadCount > 0 && (
+                <CountBadge
+                  count={unreadCount}
+                  className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground"
+                  aria-hidden="true"
+                />
+              )}
+            </span>
           </Button>
         </Link>
       </HoverCardTrigger>

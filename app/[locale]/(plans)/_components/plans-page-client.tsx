@@ -370,7 +370,7 @@ export default function PlansPageClient(props: {
         </nav>
       </MinimalHeader>
 
-      <main className="mx-auto max-w-7xl px-4 py-12">
+      <main className="container py-12">
         <section
           id="pricing"
           ref={(el) => {
@@ -739,7 +739,7 @@ export default function PlansPageClient(props: {
       </main>
 
       <footer className="border-t">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row">
+        <div className="container flex flex-col items-center justify-between gap-4 py-8 sm:flex-row">
           <span className="text-sm text-muted-foreground">© 2025 Amazong</span>
           <div className="flex gap-6 text-sm">
             <Link href={`/${locale}/terms`} className="text-muted-foreground hover:text-foreground">

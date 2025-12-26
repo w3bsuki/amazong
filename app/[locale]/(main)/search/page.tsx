@@ -63,7 +63,6 @@ export default async function SearchPage({
     minRating?: string
     subcategory?: string
     tag?: string
-    prime?: string
     deals?: string
     verified?: string
     brand?: string
@@ -154,7 +153,6 @@ export default async function SearchPage({
           maxPrice: searchParams.maxPrice,
           tag: searchParams.tag,
           minRating: searchParams.minRating,
-          prime: searchParams.prime,
           deals: searchParams.deals,
           verified: searchParams.verified,
           availability: searchParams.availability,
@@ -180,7 +178,6 @@ export default async function SearchPage({
         maxPrice: searchParams.maxPrice,
         tag: searchParams.tag,
         minRating: searchParams.minRating,
-        prime: searchParams.prime,
         deals: searchParams.deals,
         verified: searchParams.verified,
         availability: searchParams.availability,

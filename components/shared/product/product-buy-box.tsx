@@ -14,8 +14,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Form,
@@ -234,7 +232,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
             )}
           />
 
-          <div className="flex flex-col gap-2 hidden lg:flex">
+          <div className="hidden flex-col gap-2 lg:flex">
             <Button className="w-full bg-cta-trust-blue text-white hover:bg-cta-trust-blue/90 h-11 text-base font-bold rounded-full shadow-sm transition-all active:scale-[0.98]" size="lg">
               Buy It Now
             </Button>

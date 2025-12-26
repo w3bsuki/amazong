@@ -15,12 +15,14 @@ import { defineConfig, devices } from '@playwright/test'
 const baseURL = process.env.BASE_URL || 'http://localhost:3000'
 const isCI = !!process.env.CI
 const isProdTest = process.env.TEST_PROD === 'true'
-// Local dev defaults to reusing an already-running Next.js dev server.
+const outputDir = process.env.PW_OUTPUT_DIR || 'test-results'
+// E2E should be self-contained by default (start its own server) to avoid
+// flakiness when no dev server is running.
 // Override explicitly via REUSE_EXISTING_SERVER=true/false.
 const reuseExistingServer =
   process.env.REUSE_EXISTING_SERVER != null
     ? process.env.REUSE_EXISTING_SERVER === 'true'
-    : !isCI
+    : false
 const base = new URL(baseURL)
 const basePort =
   base.port ||
@@ -33,7 +35,9 @@ const basePort =
 // NOTE: /robots.txt can be affected by app metadata/route issues; /en is a
 // better readiness signal for this app.
 const webServerURL = `${base.origin}/en`
-const htmlReportFolder = isCI ? 'playwright-report' : `playwright-report-${Date.now()}`
+const htmlReportFolder =
+  process.env.PW_HTML_REPORT_DIR ||
+  (isCI ? 'playwright-report' : `playwright-report-${Date.now()}`)
 
 export default defineConfig({
   // Warm key routes once before all tests so first-hit Next.js dev compilation
@@ -145,12 +149,12 @@ export default defineConfig({
     url: webServerURL,
     reuseExistingServer,
     timeout: 120_000,
-    stdout: 'pipe',
-    stderr: 'pipe',
+    stdout: isCI ? 'pipe' : undefined,
+    stderr: isCI ? 'pipe' : undefined,
   },
 
   // Output directory for test artifacts
-  outputDir: 'test-results',
+  outputDir,
 
   // Expect configuration
   expect: {

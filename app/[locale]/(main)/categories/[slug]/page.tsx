@@ -83,7 +83,6 @@ export default async function CategoryPage({
     minRating?: string
     subcategory?: string
     tag?: string
-    prime?: string
     deals?: string
     brand?: string
     availability?: string
@@ -153,7 +152,6 @@ export default async function CategoryPage({
     maxPrice: searchParams.maxPrice,
     tag: searchParams.tag,
     minRating: searchParams.minRating,
-    prime: searchParams.prime,
     availability: searchParams.availability,
     sort: searchParams.sort,
     attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,

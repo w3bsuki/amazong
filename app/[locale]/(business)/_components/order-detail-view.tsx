@@ -80,36 +80,36 @@ interface OrderDetailViewProps {
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType; nextStatus?: string }> = {
   pending: { 
     label: "Unfulfilled", 
-    color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    color: "bg-muted text-foreground border-border",
     icon: IconPackage,
     nextStatus: "processing",
   },
   paid: { 
     label: "Paid", 
-    color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    color: "bg-success/10 text-success border-success/20",
     icon: IconCheck,
     nextStatus: "processing",
   },
   processing: { 
     label: "Processing", 
-    color: "bg-blue-100 text-blue-800 border-blue-200",
+    color: "bg-primary/10 text-primary border-primary/20",
     icon: IconRefresh,
     nextStatus: "shipped",
   },
   shipped: { 
     label: "Shipped", 
-    color: "bg-purple-100 text-purple-800 border-purple-200",
+    color: "bg-muted text-foreground border-border",
     icon: IconTruck,
     nextStatus: "delivered",
   },
   delivered: { 
     label: "Delivered", 
-    color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    color: "bg-success/10 text-success border-success/20",
     icon: IconCheck,
   },
   cancelled: { 
     label: "Cancelled", 
-    color: "bg-red-100 text-red-800 border-red-200",
+    color: "bg-destructive/10 text-destructive border-destructive/20",
     icon: IconX,
   },
 }
@@ -253,7 +253,7 @@ export function OrderDetailView({
               <DropdownMenuSeparator />
               <DropdownMenuItem 
                 onClick={() => handleStatusUpdate("cancelled")}
-                className="text-red-600"
+                className="text-destructive focus:bg-destructive/10 focus:text-destructive"
                 disabled={status === "cancelled" || status === "delivered"}
               >
                 <IconX className="size-4 mr-2" />

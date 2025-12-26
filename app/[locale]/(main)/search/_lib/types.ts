@@ -39,7 +39,6 @@ export interface SearchProductFilters {
   maxPrice?: string
   tag?: string
   minRating?: string
-  prime?: string
   deals?: string
   verified?: string
   availability?: string

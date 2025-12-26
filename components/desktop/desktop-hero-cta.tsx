@@ -3,6 +3,7 @@
 import type { ReactNode } from "react"
 import { Link } from "@/i18n/routing"
 import { Storefront, ShoppingBag, ArrowRight, Users } from "@phosphor-icons/react"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 interface DesktopHeroCTAProps {
@@ -26,25 +27,25 @@ export function DesktopHeroCTA({ locale = "en", bottomSlot }: DesktopHeroCTAProp
       {/* Compact CTA Banner - Clean trust-blue solid color */}
       <div className="relative overflow-hidden rounded-xl bg-cta-trust-blue">
 
-        <div className="relative px-6 py-3 lg:px-8 lg:py-4">
+        <div className="relative px-6 py-5 lg:px-8 lg:py-7">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8">
             {/* Left Content */}
             <div className="text-center lg:text-left">
               {/* Badge - social proof */}
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 text-white text-[11px] font-medium mb-2">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-cta-trust-blue-text/12 px-3 py-1 text-tiny font-medium text-cta-trust-blue-text/95 mb-3">
                 <Users weight="fill" className="size-3.5" aria-hidden="true" />
                 <span>{isBg ? "10,000+ потребители" : "10,000+ users"}</span>
               </div>
 
               {/* Headline */}
-              <h1 className="text-lg lg:text-xl font-bold text-white tracking-tight mb-1">
+              <h1 className="text-2xl lg:text-4xl font-bold text-cta-trust-blue-text tracking-tight mb-2 text-balance">
                 {isBg 
                   ? "Твоят нов онлайн пазар в България" 
                   : "Your New Marketplace in Bulgaria"}
               </h1>
 
               {/* Subtitle - lighter weight for visual hierarchy */}
-              <p className="text-xs lg:text-sm text-white/85 font-normal">
+              <p className="text-sm lg:text-base text-cta-trust-blue-text/90 font-normal max-w-[54ch] mx-auto lg:mx-0 text-pretty">
                 {isBg 
                   ? "Купувай и продавай лесно. Безплатно публикуване, без такси." 
                   : "Buy and sell easily. Free listings, no fees."}
@@ -53,45 +54,47 @@ export function DesktopHeroCTA({ locale = "en", bottomSlot }: DesktopHeroCTAProp
 
             {/* Right - CTAs with proper focus states */}
             <nav className="flex flex-wrap items-center justify-center lg:justify-end gap-2.5 shrink-0" aria-label={isBg ? "Основни действия" : "Main actions"}>
-              <Link
-                href="/sell"
+              <Button
+                asChild
+                size="lg"
                 className={cn(
-                  "inline-flex items-center gap-2 px-4 py-2 rounded-md",
-                  "bg-white text-cta-trust-blue font-semibold text-xs lg:text-sm",
-                  "hover:bg-white/95 transition-all duration-200 ease-out",
-                  "shadow-sm hover:shadow-md",
-                  "active:scale-[0.98]",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-cta-trust-blue"
+                  "bg-cta-secondary text-cta-secondary-text hover:bg-cta-secondary-hover",
+                  "shadow-xs"
                 )}
               >
-                <Storefront weight="fill" className="size-4" aria-hidden="true" />
-                {isBg ? "Започни да продаваш" : "Start Selling"}
-                <ArrowRight weight="bold" className="size-3.5" aria-hidden="true" />
-              </Link>
-              <Link
-                href="/search"
+                <Link href="/sell">
+                  <Storefront weight="fill" className="size-4" aria-hidden="true" />
+                  {isBg ? "Започни да продаваш" : "Start Selling"}
+                  <ArrowRight weight="bold" className="size-4" aria-hidden="true" />
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
                 className={cn(
-                  "inline-flex items-center gap-2 px-4 py-2 rounded-md",
-                  "bg-white/15 text-white font-semibold text-xs lg:text-sm border border-white/25",
-                  "hover:bg-white/25 transition-all duration-200 ease-out",
-                  "active:scale-[0.98]",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-cta-trust-blue"
+                  "border-cta-trust-blue-text/25 bg-cta-trust-blue-text/10 text-cta-trust-blue-text hover:bg-cta-trust-blue-text/15 hover:text-cta-trust-blue-text",
+                  "shadow-none"
                 )}
               >
-                <ShoppingBag weight="fill" className="size-4" aria-hidden="true" />
-                {isBg ? "Разгледай обяви" : "Browse Listings"}
-              </Link>
+                <Link href="/search">
+                  <ShoppingBag weight="fill" className="size-4" aria-hidden="true" />
+                  {isBg ? "Разгледай обяви" : "Browse Listings"}
+                </Link>
+              </Button>
             </nav>
           </div>
 
-          {/* Optional bottom slot (e.g., categories) */}
-          {typeof bottomSlot !== "undefined" && bottomSlot !== null ? (
-            <div className="mt-3 border-t border-white/15 pt-3">
-              {bottomSlot}
-            </div>
-          ) : null}
         </div>
       </div>
+
+      {/* Optional bottom slot (e.g., categories) - outside the blue hero, like the reference */}
+      {typeof bottomSlot !== "undefined" && bottomSlot !== null ? (
+        <div className="mt-4 rounded-xl border border-border bg-card px-4 py-3 shadow-xs">
+          {bottomSlot}
+        </div>
+      ) : null}
     </section>
   )
 }

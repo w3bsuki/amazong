@@ -14,7 +14,7 @@ function SubmitButton({ locale }: { locale: string }) {
     <button
       type="submit"
       disabled={pending}
-      className="w-full py-2.5 px-4 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+      className="w-full py-2.5 px-4 bg-primary text-primary-foreground font-medium rounded-md hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
     >
       {pending ? (
         <>
@@ -38,15 +38,15 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
     return (
       <div className="w-full max-w-sm mx-auto text-center">
         <div className="flex flex-col items-center gap-4 mb-6">
-          <div className="size-16 bg-green-100 rounded-full flex items-center justify-center">
-            <Check className="size-8 text-green-600" weight="bold" />
+          <div className="size-16 bg-success/10 rounded-full flex items-center justify-center">
+            <Check className="size-8 text-success" weight="bold" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{locale === "bg" ? "Проверете имейла си" : "Check your email"}</h1>
-          <p className="text-sm text-gray-600">
+          <h1 className="text-2xl font-bold text-foreground">{locale === "bg" ? "Проверете имейла си" : "Check your email"}</h1>
+          <p className="text-sm text-muted-foreground">
             {locale === "bg" ? "Изпратихме ви линк за възстановяване на паролата." : "We sent you a password reset link."}
           </p>
         </div>
-        <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline">
+        <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
           <ArrowLeft className="size-4" />
           {locale === "bg" ? "Обратно към вход" : "Back to login"}
         </Link>
@@ -57,11 +57,11 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
   return (
     <div className="w-full max-w-sm mx-auto">
       <div className="text-center mb-8">
-        <div className="size-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Envelope className="size-6 text-blue-600" weight="bold" />
+        <div className="size-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Envelope className="size-6 text-primary" weight="bold" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">{locale === "bg" ? "Забравена парола" : "Forgot password"}</h1>
-        <p className="text-sm text-gray-600 mt-2">
+        <h1 className="text-2xl font-bold text-foreground">{locale === "bg" ? "Забравена парола" : "Forgot password"}</h1>
+        <p className="text-sm text-muted-foreground mt-2">
           {locale === "bg"
             ? "Въведете имейла си и ще ви изпратим линк за възстановяване."
             : "Enter your email and we'll send you a reset link."}
@@ -70,11 +70,11 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
 
       <form action={formAction} className="space-y-4">
         {state?.error && (
-          <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">{state.error}</div>
+          <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">{state.error}</div>
         )}
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
             {locale === "bg" ? "Имейл адрес" : "Email address"}
           </label>
           <input
@@ -84,16 +84,16 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
             autoComplete="email"
             placeholder="you@example.com"
             aria-invalid={!!state?.fieldErrors?.email}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={`w-full px-3 py-2 border rounded-md shadow-sm bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${state?.fieldErrors?.email ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
           />
-          {state?.fieldErrors?.email && <p className="text-xs text-red-500 mt-1">{state.fieldErrors.email}</p>}
+          {state?.fieldErrors?.email && <p className="text-xs text-destructive mt-1">{state.fieldErrors.email}</p>}
         </div>
 
         <SubmitButton locale={locale} />
       </form>
 
       <div className="mt-6 text-center">
-        <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:underline">
+        <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
           <ArrowLeft className="size-4" />
           {locale === "bg" ? "Обратно към вход" : "Back to login"}
         </Link>

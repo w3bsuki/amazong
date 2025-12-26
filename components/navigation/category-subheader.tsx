@@ -3,12 +3,6 @@
 import * as React from "react"
 import { useState, useCallback, useMemo, useRef, useEffect } from "react"
 import { CaretDown, CaretRight, ArrowRight, List, ShoppingBag, Tag } from "@phosphor-icons/react"
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/routing"
@@ -17,7 +11,7 @@ import Image from "next/image"
 import { categoryBlurDataURL } from "@/lib/image-utils"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { getSubcategoryImage } from "@/config/subcategory-images"
-import { MEGA_MENU_CONFIG, MAX_MENU_ITEMS, MAX_VISIBLE_CATEGORIES, PRIORITY_VISIBLE_CATEGORIES, HIDDEN_FROM_SUBHEADER } from "@/config/mega-menu-config"
+import { MEGA_MENU_CONFIG, MAX_MENU_ITEMS, PRIORITY_VISIBLE_CATEGORIES, HIDDEN_FROM_SUBHEADER } from "@/config/mega-menu-config"
 import { useCategoriesCache, getCategoryName, type Category } from "@/hooks/use-categories-cache"
 
 const MAX_VISIBLE_SUBCATEGORIES = 16
@@ -95,29 +89,14 @@ export function CategorySubheader() {
     }
   }, [])
 
-  // Compute visible categories and "more" overflow
-  const maxVisible = locale === "bg" ? MAX_VISIBLE_CATEGORIES : MAX_VISIBLE_CATEGORIES - 1
-  // Filter out specific categories from visible row (they go to Всички dropdown)
+  // Visible subheader row (desktop): scrollable list.
+  // Anything in HIDDEN_FROM_SUBHEADER is accessible via the "All Categories" mega menu.
   const hiddenSet = new Set(HIDDEN_FROM_SUBHEADER)
-  const filteredForVisible = categories.filter(cat => !hiddenSet.has(cat.slug))
-  // Priority categories (like books) should always be visible - move them to front if not already in visible range
+  const filteredForVisible = categories.filter((cat) => !hiddenSet.has(cat.slug))
   const prioritySet = new Set(PRIORITY_VISIBLE_CATEGORIES)
-  const priorityCats = filteredForVisible.filter(cat => prioritySet.has(cat.slug))
-  const nonPriorityCats = filteredForVisible.filter(cat => !prioritySet.has(cat.slug))
-  // Take non-priority cats up to (maxVisible - priorityCats.length), then add priority cats at end
-  const visibleCategories = [...nonPriorityCats.slice(0, maxVisible - priorityCats.length), ...priorityCats]
-  // All remaining categories (including jewelry-watches) go to Всички dropdown
-  const visibleSlugs = new Set(visibleCategories.map(c => c.slug))
-  const moreCategories = categories.filter(cat => !visibleSlugs.has(cat.slug))
-  const showMoreButton = moreCategories.length > 0
-
-  const moreCategoryVirtual: Category = {
-    id: "more-categories",
-    name: "View All",
-    name_bg: "Всички",
-    slug: "more",
-    children: moreCategories,
-  }
+  const priorityCats = filteredForVisible.filter((cat) => prioritySet.has(cat.slug))
+  const nonPriorityCats = filteredForVisible.filter((cat) => !prioritySet.has(cat.slug))
+  const visibleCategories = [...priorityCats, ...nonPriorityCats]
 
   // For full mega menu - limit visible categories
   const MAX_FULL_MENU_CATEGORIES = 25
@@ -130,43 +109,45 @@ export function CategorySubheader() {
 
   return (
     <>
-      <NavigationMenu viewport={false} className="w-full max-w-none -ml-2">
-        <NavigationMenuList className="flex items-center w-full gap-0">
-          {/* All Categories Button - Triggers Full Mega Menu */}
-          <NavigationMenuItem
-            onMouseEnter={handleFullMenuMouseEnter}
-            onMouseLeave={handleFullMenuMouseLeave}
-            className="shrink-0"
+      <div className="flex w-full items-center gap-0">
+        {/* All Categories Button - Triggers Full Mega Menu */}
+        <div
+          onMouseEnter={handleFullMenuMouseEnter}
+          onMouseLeave={handleFullMenuMouseLeave}
+          className="shrink-0 -ml-2"
+        >
+          <Button
+            variant="ghost"
+            className={cn(
+              "flex items-center gap-1.5 h-10 px-2 text-sm font-medium rounded-sm",
+              "bg-transparent hover:bg-header-hover",
+              "text-header-text hover:text-header-text",
+              isFullMenuOpen && "bg-header-hover"
+            )}
+            aria-expanded={isFullMenuOpen}
+            aria-haspopup="menu"
           >
-            <Button
-              variant="ghost"
-              className={cn(
-                "flex items-center gap-1.5 pl-0 pr-2 py-2 h-auto text-sm font-medium rounded-sm",
-                "bg-transparent hover:bg-header-hover",
-                "text-header-text hover:text-header-text",
-                isFullMenuOpen && "bg-header-hover"
-              )}
-              aria-expanded={isFullMenuOpen}
-              aria-haspopup="menu"
-            >
-              <List weight="bold" size={16} aria-hidden="true" />
-              <span className="hidden xl:inline">{locale === "bg" ? "Всички категории" : "All Categories"}</span>
-              <span className="xl:hidden">{locale === "bg" ? "Меню" : "Menu"}</span>
-              <CaretDown
-                size={10}
-                weight="fill"
-                className={cn("opacity-60", isFullMenuOpen && "rotate-180")}
-                aria-hidden="true"
-              />
-            </Button>
-          </NavigationMenuItem>
+            <List weight="bold" size={16} aria-hidden="true" />
+            <span className="hidden xl:inline">{locale === "bg" ? "Всички категории" : "All Categories"}</span>
+            <span className="xl:hidden">{locale === "bg" ? "Меню" : "Menu"}</span>
+            <CaretDown
+              size={10}
+              weight="fill"
+              className={cn("opacity-60", isFullMenuOpen && "rotate-180")}
+              aria-hidden="true"
+            />
+          </Button>
+        </div>
 
-          {/* Separator */}
-          <div className="h-5 w-px bg-header-border/60 mx-1 shrink-0" aria-hidden="true" />
+        {/* Separator */}
+        <div className="h-5 w-px bg-header-border/60 mx-1 shrink-0" aria-hidden="true" />
 
-          {/* Category items - flex-1 to fill remaining space, with centered distribution */}
-          <div className="flex items-center flex-1 min-w-0 overflow-x-auto no-scrollbar">
-
+        {/* Category items - horizontally scrollable on desktop. */}
+        <div
+          className="flex items-center flex-1 min-w-0 overflow-x-auto no-scrollbar"
+          role="navigation"
+          aria-label={locale === "bg" ? "Категории" : "Categories"}
+        >
           {visibleCategories.map((category) => (
             <CategoryNavItem
               key={category.id}
@@ -177,28 +158,8 @@ export function CategorySubheader() {
               onMouseLeave={handleMouseLeave}
             />
           ))}
-
-          </div>
-
-          {showMoreButton && (
-            <NavigationMenuItem
-              onMouseEnter={() => handleMouseEnter(moreCategoryVirtual)}
-              onMouseLeave={handleMouseLeave}
-              className="shrink-0 ml-auto"
-            >
-              <NavigationMenuTrigger
-                className={cn(
-                  "flex items-center gap-1 pl-2 pr-0 py-2.5 text-sm font-medium bg-transparent hover:bg-transparent",
-                  "text-header-text hover:text-header-text hover:underline data-[state=open]:bg-transparent",
-                  activeCategory?.id === "more-categories" && "underline"
-                )}
-              >
-                <span>{locale === "bg" ? "Всички" : "All"}</span>
-              </NavigationMenuTrigger>
-            </NavigationMenuItem>
-          )}
-        </NavigationMenuList>
-      </NavigationMenu>
+        </div>
+      </div>
 
       {/* Individual Category Dropdown Panel */}
       {activeCategory && activeCategory.children && activeCategory.children.length > 0 && (
@@ -301,7 +262,7 @@ function FullMegaMenu({
       {/* Full-width Mega Menu Panel */}
       <div
         className={cn(
-          "fixed left-0 right-0 z-40 bg-popover border-b border-border shadow-lg",
+          "fixed left-0 right-0 z-40",
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         )}
         style={{ top: `${headerHeight}px` }}
@@ -309,7 +270,7 @@ function FullMegaMenu({
         aria-label={locale === "bg" ? "Категории" : "Categories"}
       >
         <div
-          className="container"
+          className="container bg-popover border-b border-border"
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
@@ -539,7 +500,7 @@ function CategoryNavItem({ category, isActive, getName, onMouseEnter, onMouseLea
   const hasChildren = category.children && category.children.length > 0
 
   return (
-    <NavigationMenuItem
+    <div
       onMouseEnter={() => onMouseEnter(category)}
       onMouseLeave={onMouseLeave}
       className="shrink-0"
@@ -547,10 +508,11 @@ function CategoryNavItem({ category, isActive, getName, onMouseEnter, onMouseLea
       <Link
         href={`/categories/${category.slug}`}
         className={cn(
-          "flex items-center gap-1 px-2 py-2.5 text-sm font-medium whitespace-nowrap",
-          "text-header-text hover:text-header-text hover:underline",
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-          isActive && "underline"
+          "flex items-center gap-1.5 rounded-sm px-3 min-h-10 whitespace-nowrap",
+          "text-sm font-medium",
+          "text-header-text hover:text-header-text hover:bg-header-hover",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-header-text/70",
+          isActive && "bg-header-hover"
         )}
         aria-expanded={hasChildren ? isActive : undefined}
         aria-haspopup={hasChildren ? "menu" : undefined}
@@ -565,7 +527,7 @@ function CategoryNavItem({ category, isActive, getName, onMouseEnter, onMouseLea
           />
         )}
       </Link>
-    </NavigationMenuItem>
+    </div>
   )
 }
 
@@ -594,14 +556,14 @@ function MegaMenuPanel({
   return (
     <>
       <div
-        className="fixed left-0 right-0 z-50 bg-popover border-b border-border shadow-lg"
+        className="fixed left-0 right-0 z-50"
         style={{ top: `${headerHeight}px` }}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         role="menu"
         aria-label={getName(activeCategory)}
       >
-        <div className="container py-6 max-h-[70vh] overflow-y-auto">
+        <div className="container bg-popover border-b border-border py-6 max-h-[70vh] overflow-y-auto">
           {activeCategory.id === "more-categories" ? (
             <MoreCategoriesGrid
               categories={activeCategory.children || []}
@@ -621,7 +583,7 @@ function MegaMenuPanel({
 
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/20 z-40"
+        className="fixed inset-0 bg-foreground/20 z-40"
         style={{ top: `${headerHeight}px` }}
         onClick={onClose}
         aria-hidden="true"
@@ -849,11 +811,11 @@ function BannerCTA({ banner, columns, onClose, locale }: BannerCTAProps) {
       className={cn("relative rounded-xl overflow-hidden group", columns === 3 ? "w-2/5" : "w-1/2")}
     >
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${banner.image})` }} />
-      <div className="absolute inset-0 bg-black/40" />
-      <div className="relative z-10 h-full flex flex-col justify-center p-8 text-white">
+      <div className="absolute inset-0 bg-foreground/40" />
+      <div className="relative z-10 h-full flex flex-col justify-center p-8 text-primary-foreground">
         <h3 className="text-2xl font-bold mb-2">{locale === "bg" ? banner.titleBg : banner.title}</h3>
-        <p className="text-white/80 text-sm mb-4 max-w-xs">{locale === "bg" ? banner.subtitleBg : banner.subtitle}</p>
-        <div className="inline-flex items-center gap-2 bg-brand text-white px-4 py-2 rounded-lg text-sm font-medium w-fit">
+        <p className="text-primary-foreground/80 text-sm mb-4 max-w-xs">{locale === "bg" ? banner.subtitleBg : banner.subtitle}</p>
+        <div className="inline-flex items-center gap-2 bg-brand text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium w-fit">
           {locale === "bg" ? banner.ctaBg : banner.cta}
           <ArrowRight size={16} weight="bold" aria-hidden="true" />
         </div>

@@ -572,24 +572,77 @@
 }
 
 /* ===== CUSTOM UTILITIES (only what Tailwind v4 can't do) ===== */
+/*
+  Note: Tailwind's built-in `container` utility does not center itself and has
+  no default horizontal padding. In this project we intentionally define a
+  centered, padded `container` utility for consistent page layout.
+*/
 @utility container {
   margin-inline: auto;
   width: 100%;
-  max-width: 1400px;
+  /* Desktop page container (eBay-ish width). */
+  max-width: 90rem; /* 1440px */
   padding-inline: 0.75rem;
   @media (width >= 40rem) { padding-inline: 1rem; }
   @media (width >= 64rem) { padding-inline: 1.5rem; }
-  @media (width >= 80rem) { max-width: 1500px; }
-  @media (width >= 96rem) { max-width: 1600px; }
+}
+
+@utility container-wide {
+  margin-inline: auto;
+  width: 100%;
+  /* Opt-in wider container for special pages/sections only. */
+  max-width: 96rem; /* 1536px */
+  padding-inline: 0.75rem;
+  @media (width >= 40rem) { padding-inline: 1rem; }
+  @media (width >= 64rem) { padding-inline: 1.5rem; }
+}
+
+@utility container-content {
+  margin-inline: auto;
+  width: 100%;
+  /* Narrower, readability-first content width (forms, account pages, etc.). */
+  max-width: var(--container-header-content); /* 72rem / 1152px */
+  padding-inline: 0.75rem;
+  @media (width >= 40rem) { padding-inline: 1rem; }
+  @media (width >= 64rem) { padding-inline: 1.5rem; }
+}
+
+@utility container-narrow {
+  margin-inline: auto;
+  width: 100%;
+  /* Very narrow content width for auth/settings forms. */
+  max-width: 48rem; /* 768px */
+  padding-inline: 0.75rem;
+  @media (width >= 40rem) { padding-inline: 1rem; }
+  @media (width >= 64rem) { padding-inline: 1.5rem; }
 }
 
 @utility container-bleed {
   margin-inline: auto;
   width: 100%;
-  max-width: 1400px;
+  max-width: 90rem; /* 1440px */
   padding-inline: 0;
-  @media (width >= 80rem) { max-width: 1500px; }
-  @media (width >= 96rem) { max-width: 1600px; }
+}
+
+@utility container-bleed-wide {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 96rem; /* 1536px */
+  padding-inline: 0;
+}
+
+@utility container-bleed-content {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-header-content); /* 72rem / 1152px */
+  padding-inline: 0;
+}
+
+@utility container-bleed-narrow {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 48rem; /* 768px */
+  padding-inline: 0;
 }
 
 /* ===== SCROLLBAR (neutral) ===== */

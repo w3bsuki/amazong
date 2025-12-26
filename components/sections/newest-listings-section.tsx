@@ -298,7 +298,7 @@ export function NewestListingsSection({
                 role="tab"
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "shrink-0 px-4 h-touch-xs rounded-full text-2xs font-bold transition-all duration-200",
+                  "shrink-0 px-4 h-touch rounded-full text-xs font-semibold transition-all duration-200",
                   "flex items-center justify-center",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                   activeTab === tab.id

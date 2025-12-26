@@ -14,7 +14,8 @@ describe('components/shared/product/ProductPrice', () => {
   it('includes original price when discounted', () => {
     render(<ProductPrice price={80} originalPrice={100} locale="en" />)
 
-    const el = screen.getByLabelText(/Price:/i)
+    const els = screen.getAllByLabelText(/Price:/i)
+    const el = els[els.length - 1]
     expect(el.getAttribute('aria-label') || '').toMatch(/was/i)
   })
 })

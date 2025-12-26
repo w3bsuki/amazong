@@ -3,11 +3,9 @@
 // Modular dropdown components
 import {
   AccountDropdown,
-  OrdersDropdown,
-  SellingDropdown,
-  LocationDropdown,
-  MessagesDropdown,
   NotificationsDropdown,
+  LocaleDeliveryDropdown,
+  WishlistDropdown,
 } from "@/components/dropdowns"
 
 // Navigation components
@@ -20,6 +18,7 @@ import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/common/wishlist/mobile-wishlist-button"
 import { DesktopSearch } from "@/components/desktop/desktop-search"
+import { Button } from "@/components/ui/button"
 import { MagnifyingGlass, Camera, CaretLeft } from "@phosphor-icons/react"
 
 // Utilities
@@ -72,7 +71,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
       <div className="md:hidden bg-header-bg text-header-text">
         {/* Top row - Logo & Actions */}
         <div className={cn(
-          "px-2 py-1 flex items-center",
+          "px-1.5 py-1 flex items-center",
           isProductPage && "border-b border-header-border/50"
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
@@ -85,10 +84,10 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
               <CaretLeft size={20} weight="bold" />
             </button>
           ) : (
-            <SidebarMenu user={user} />
+            <SidebarMenu user={user} triggerClassName="justify-start pl-2 pr-3" />
           )}
           <Link href="/" className={cn(
-            "flex items-center shrink-0",
+            "flex items-center shrink-0 min-h-touch px-0",
             isProductPage ? "ml-1" : "ml-0"
           )}>
             <span className="text-xl font-bold tracking-tight text-header-text">AMZN</span>
@@ -107,9 +106,9 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
           <button
             onClick={() => setIsMobileSearchOpen(true)}
             className={cn(
-              "w-full flex items-center gap-2 h-10 px-3.5 rounded-lg",
+              "w-full flex items-center gap-2 h-touch px-3.5 rounded-lg",
               "bg-background",
-              "text-muted-foreground text-2xs text-left",
+              "text-muted-foreground text-sm text-left",
               "active:bg-muted",
               "transition-colors duration-200",
               "touch-action-manipulation tap-transparent"
@@ -143,10 +142,10 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
             <Link href="/" prefetch={true} className="flex items-center shrink-0 outline-none">
               <span className="text-xl font-bold tracking-tight text-header-text">AMZN</span>
             </Link>
-            {/* Location dropdown */}
             <div className="hidden lg:block">
-              <LocationDropdown 
-                country={country} 
+              <LocaleDeliveryDropdown
+                pathname={pathname || "/"}
+                country={country}
                 onCountryChange={(code, name) => {
                   setCountryCode(code)
                   setCountry(name)
@@ -157,7 +156,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
 
           {/* Search Bar - Fixed grid column, doesn't shift */}
           <div className="flex justify-center px-2 lg:px-4">
-            <div className="w-full max-w-[var(--container-header-content)]">
+            <div className="w-full max-w-(--container-header-content)">
               <DesktopSearch />
             </div>
           </div>
@@ -166,25 +165,26 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
           <div className="flex items-center justify-end gap-0.5">
             {user ? (
               <>
-                {/* Authenticated: Show all icon dropdowns */}
-                {/* Orders - With Dropdown */}
-                <div className="hidden lg:block">
-                  <OrdersDropdown user={user} />
+                <div className="hidden md:block">
+                  <WishlistDropdown />
                 </div>
 
-                {/* Selling - With Dropdown */}
-                <div className="hidden lg:block">
-                  <SellingDropdown user={user} />
-                </div>
-
-                {/* Notifications - With Dropdown */}
                 <div className="hidden md:block">
                   <NotificationsDropdown user={user} />
                 </div>
 
-                {/* Messages - With Dropdown */}
                 <div className="hidden md:block">
-                  <MessagesDropdown user={user} />
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="icon-xl"
+                    className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
+                  >
+                    <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"} title={locale === "bg" ? "Продай" : "Sell"}>
+                      <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
+                      <Camera weight="regular" className="scale-110" aria-hidden="true" />
+                    </Link>
+                  </Button>
                 </div>
 
                 {/* Account - With Dropdown */}
@@ -213,6 +213,17 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
                   >
                     {t('register')}
                   </Link>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="icon-xl"
+                    className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
+                  >
+                    <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"} title={locale === "bg" ? "Продай" : "Sell"}>
+                      <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
+                      <Camera weight="regular" className="scale-110" aria-hidden="true" />
+                    </Link>
+                  </Button>
                 </div>
 
                 {/* Cart - Always visible even when logged out */}
@@ -227,11 +238,11 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
 
       {/* Category Subheader - Hide on category/product pages (eBay/Target pattern) */}
       {!pathname.startsWith("/categories") && !pathname.startsWith("/product") && !hideSubheader && (
-        <nav className="hidden sm:block bg-header-bg text-sm border-t border-white/15 relative">
+        <nav className="hidden sm:block bg-header-bg text-sm border-t border-header-text/15 relative">
           <div className="container text-header-text">
             {/* Mobile/Tablet: Quick Links with Sidebar Menu */}
             <div className="lg:hidden">
-              <div className="mx-auto w-full max-w-[var(--container-header-content)] flex items-center gap-0.5 overflow-x-auto no-scrollbar">
+              <div className="w-full flex items-center gap-0.5 overflow-x-auto no-scrollbar">
                 <SidebarMenu user={user} />
                 <Link href="/todays-deals" prefetch={true} className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
                 <Link href="/customer-service" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
@@ -243,9 +254,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
             
             {/* Desktop: Categories fill container width */}
             <div className="hidden lg:block">
-              <div className="mx-auto w-full max-w-[var(--container-header-content)]">
-                <CategorySubheader />
-              </div>
+              <CategorySubheader />
             </div>
           </div>
         </nav>

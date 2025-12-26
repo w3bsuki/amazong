@@ -24,6 +24,8 @@ interface SellerOnboardingWizardProps {
   userId: string
   username: string
   displayName?: string | null
+  initialBusinessName?: string | null
+  initialAccountType?: "personal" | "business" | null
   onComplete: () => void
 }
 
@@ -44,6 +46,9 @@ const translations = {
     displayNameLabel: "Display Name",
     displayNamePlaceholder: "How should buyers call you?",
     displayNameHint: "This will be shown on your profile and listings",
+    businessNameLabel: "Business name",
+    businessNamePlaceholder: "Your company / store name",
+    businessNameHint: "Shown on your public business profile",
     bioLabel: "Short Bio (optional)",
     bioPlaceholder: "Tell buyers a bit about yourself or what you sell...",
     bioHint: "Max 160 characters",
@@ -84,6 +89,9 @@ const translations = {
     displayNameLabel: "Показвано име",
     displayNamePlaceholder: "Как да ви наричат купувачите?",
     displayNameHint: "Ще се показва на вашия профил и обяви",
+    businessNameLabel: "Име на фирмата",
+    businessNamePlaceholder: "Име на фирма / магазин",
+    businessNameHint: "Показва се в публичния бизнес профил",
     bioLabel: "Кратка биография (незадължително)",
     bioPlaceholder: "Разкажете на купувачите малко за себе си или какво продавате...",
     bioHint: "Максимум 160 символа",
@@ -114,6 +122,8 @@ export function SellerOnboardingWizard({
   userId,
   username,
   displayName: initialDisplayName,
+  initialBusinessName,
+  initialAccountType,
   onComplete,
 }: SellerOnboardingWizardProps) {
   const params = useParams()
@@ -126,9 +136,10 @@ export function SellerOnboardingWizard({
   const [error, setError] = useState<string | null>(null)
 
   // Form state
-  const [accountType, setAccountType] = useState<"personal" | "business">("personal")
+  const [accountType, setAccountType] = useState<"personal" | "business">(initialAccountType || "personal")
   const [displayName, setDisplayName] = useState(initialDisplayName || "")
   const [bio, setBio] = useState("")
+  const [businessName, setBusinessName] = useState(initialBusinessName || "")
 
   const totalSteps = 3
 
@@ -150,6 +161,7 @@ export function SellerOnboardingWizard({
           username,
           displayName,
           bio,
+          businessName,
         })
 
         if (res?.error) {
@@ -329,6 +341,24 @@ export function SellerOnboardingWizard({
 
                 {/* Form */}
                 <div className="space-y-4 mb-6">
+                  {/* Business Name (business accounts only) */}
+                  {accountType === "business" && (
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-medium text-gray-700">
+                        {t.businessNameLabel}
+                      </label>
+                      <Input
+                        type="text"
+                        value={businessName}
+                        onChange={(e) => setBusinessName(e.target.value)}
+                        placeholder={t.businessNamePlaceholder}
+                        maxLength={80}
+                        className="h-11"
+                      />
+                      <p className="text-xs text-gray-500">{t.businessNameHint}</p>
+                    </div>
+                  )}
+
                   {/* Display Name */}
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700">

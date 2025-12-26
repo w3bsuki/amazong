@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { User } from "@supabase/supabase-js"
-import { Storefront, Plus, Package, Truck, TrendUp, CaretRight } from "@phosphor-icons/react"
+import { Storefront, Plus, Truck, TrendUp, CaretRight, Receipt } from "@phosphor-icons/react"
 
 interface SellingDropdownProps {
   user: User | null
@@ -27,7 +27,7 @@ export function SellingDropdown({ user }: SellingDropdownProps) {
           <Button
             variant="ghost"
             size="icon-xl"
-            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
+            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
           >
             <Storefront weight="regular" />
           </Button>
@@ -55,17 +55,6 @@ export function SellingDropdown({ user }: SellingDropdownProps) {
               <CaretRight size={16} weight="regular" className="text-muted-foreground" />
             </Link>
 
-            <Link href="/sell/listings" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
-              <div className="w-10 h-10 bg-brand/20 rounded-full flex items-center justify-center">
-                <Package size={20} weight="duotone" className="text-brand" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground group-hover:text-brand">{t("myListings")}</p>
-                <p className="text-xs text-muted-foreground">{t("myListingsDesc")}</p>
-              </div>
-              <CaretRight size={16} weight="regular" className="text-muted-foreground" />
-            </Link>
-
             <Link href="/sell/orders" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
               <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
                 <Truck size={20} weight="duotone" className="text-accent-foreground" />
@@ -77,9 +66,20 @@ export function SellingDropdown({ user }: SellingDropdownProps) {
               <CaretRight size={16} weight="regular" className="text-muted-foreground" />
             </Link>
 
-            <Link href="/sell/dashboard" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+            <Link href="/account/sales" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
               <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
-                <TrendUp size={20} weight="duotone" className="text-secondary-foreground" />
+                <Receipt size={20} weight="duotone" className="text-secondary-foreground" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground group-hover:text-brand">{t("sales")}</p>
+                <p className="text-xs text-muted-foreground">{t("salesDesc")}</p>
+              </div>
+              <CaretRight size={16} weight="regular" className="text-muted-foreground" />
+            </Link>
+
+            <Link href="/sell" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted group">
+              <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
+                <TrendUp size={20} weight="duotone" className="text-muted-foreground" />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground group-hover:text-brand">{t("dashboard")}</p>
@@ -91,7 +91,7 @@ export function SellingDropdown({ user }: SellingDropdownProps) {
         </div>
 
         <div className="p-3 bg-muted border-t border-border">
-          <Link href="/sell/listings">
+          <Link href="/sell">
             <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
               {t("viewAllListings")}
             </Button>

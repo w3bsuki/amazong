@@ -190,7 +190,7 @@ export function SiteFooter() {
 
             {/* Desktop Footer Links - 4-Column Grid */}
             <div className="hidden md:block border-b border-border/20">
-                <div className="max-w-7xl mx-auto py-12 px-6">
+                <div className="container py-12">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
                         {footerSections.map((section) => (
                             <div key={section.id}>
@@ -218,7 +218,7 @@ export function SiteFooter() {
             </div>
 
             {/* Brand Logo, Social Media & Legal Section */}
-            <div className="max-w-7xl mx-auto px-4 py-10">
+            <div className="container py-10">
                 {/* Logo */}
                 <div className="flex justify-center mb-8">
                     <Link href="/" className="inline-block group" aria-label={t('homePage')}>

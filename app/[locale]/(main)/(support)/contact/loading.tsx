@@ -18,8 +18,8 @@ export default function ContactLoading() {
         </div>
       </div>
 
-      <div className="container py-8">
-        <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+      <div className="container-content py-8">
+        <div className="grid lg:grid-cols-2 gap-8">
           {/* Contact Form */}
           <Card>
             <CardHeader>

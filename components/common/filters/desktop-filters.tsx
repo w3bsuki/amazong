@@ -21,7 +21,7 @@ interface DesktopFiltersProps {
 
 // =============================================================================
 // Component: Simplified Desktop Filters
-// Now shows only 3 quick pills (Prime, Price, Rating) + "All Filters" modal
+// Now shows only 2 quick pills (Price, Rating) + "All Filters" modal
 // =============================================================================
 
 export function DesktopFilters({ attributes = [], categorySlug }: DesktopFiltersProps) {
@@ -36,7 +36,6 @@ export function DesktopFilters({ attributes = [], categorySlug }: DesktopFilters
   const currentMinPrice = searchParams.get("minPrice")
   const currentMaxPrice = searchParams.get("maxPrice")
   const currentRating = searchParams.get("minRating")
-  const currentPrime = searchParams.get("prime")
 
   // Build the base path for navigation (preserve current path)
   const basePath = categorySlug ? pathname : '/search'
@@ -91,28 +90,6 @@ export function DesktopFilters({ attributes = [], categorySlug }: DesktopFilters
 
   return (
     <>
-      {/* Prime Filter - Quick Pill */}
-      <button
-        onClick={() => updateParams("prime", currentPrime === "true" ? null : "true")}
-        className={cn(
-          "inline-flex items-center gap-2 h-[38px] px-4 rounded-full",
-          "border text-sm font-medium",
-          "hover:bg-muted hover:border-ring transition-colors",
-          currentPrime === "true"
-            ? "bg-primary/10 border-primary text-primary"
-            : "bg-card border-border text-foreground"
-        )}
-      >
-        <Truck size={16} weight="regular" />
-        <span>Prime</span>
-        {currentPrime === "true" && (
-          <X size={14} weight="regular" className="ml-0.5 hover:text-destructive" onClick={(e) => {
-            e.stopPropagation()
-            updateParams("prime", null)
-          }} />
-        )}
-      </button>
-
       {/* Price Filter - Quick Pill */}
       <Popover open={priceOpen} onOpenChange={setPriceOpen}>
         <PopoverTrigger asChild>

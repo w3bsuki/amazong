@@ -2,13 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
 import { setRequestLocale } from "next-intl/server"
-import { routing } from "@/i18n/routing"
 import { SellerOrdersClient } from "./client"
-
-// Generate static params for all supported locales
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}
 
 export const metadata = {
   title: "Your Orders | Seller Dashboard",

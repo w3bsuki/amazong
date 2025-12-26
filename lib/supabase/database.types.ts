@@ -988,7 +988,6 @@ export type Database = {
           images: string[] | null
           is_boosted: boolean | null
           is_featured: boolean | null
-          is_prime: boolean | null
           is_on_sale: boolean | null
           list_price: number | null
           listing_type: string | null
@@ -1033,7 +1032,6 @@ export type Database = {
           images?: string[] | null
           is_boosted?: boolean | null
           is_featured?: boolean | null
-          is_prime?: boolean | null
           list_price?: number | null
           listing_type?: string | null
           meta_description?: string | null
@@ -1075,7 +1073,6 @@ export type Database = {
           images?: string[] | null
           is_boosted?: boolean | null
           is_featured?: boolean | null
-          is_prime?: boolean | null
           list_price?: number | null
           listing_type?: string | null
           meta_description?: string | null

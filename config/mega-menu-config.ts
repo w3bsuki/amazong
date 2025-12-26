@@ -46,13 +46,24 @@ export const MAX_MENU_ITEMS = 4
  * Maximum categories to show in the subheader row.
  * Categories fill the full container width, rest go to "Всички" dropdown.
  */
-export const MAX_VISIBLE_CATEGORIES = 15
+export const MAX_VISIBLE_CATEGORIES = 14
 
 /** Categories to always show in the visible row (by slug) */
-export const PRIORITY_VISIBLE_CATEGORIES = ["books", "bulgarian-traditional"]
+export const PRIORITY_VISIBLE_CATEGORIES = ["books"]
 
 /** Categories to hide from visible subheader row - they go to Всички dropdown */
-export const HIDDEN_FROM_SUBHEADER = ["jewelry-watches", "software", "wholesale", "tools-home", "collectibles", "services", "movies-music", "jobs"]
+export const HIDDEN_FROM_SUBHEADER = [
+  "jewelry-watches",
+  "software",
+  "wholesale",
+  "tools-home",
+  "collectibles",
+  "services",
+  "movies-music",
+  "jobs",
+  "bulgarian-traditional",
+  "e-mobility",
+]
 
 export const MEGA_MENU_CONFIG: Record<string, MegaMenuConfig> = {
   // ===== FASHION =====

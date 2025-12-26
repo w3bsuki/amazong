@@ -323,32 +323,23 @@ export function PublicProfileClient({
       {/* Tabs Content */}
       <div className="container mt-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent">
+          <TabsList>
             {profile.is_seller && (
-              <TabsTrigger 
-                value="listings" 
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 sm:px-5 sm:py-3.5 sm:text-sm font-semibold"
-              >
-                <Package className="size-4 mr-2" />
-                {locale === "bg" ? "Обяви" : "Listings"} ({productCount})
+              <TabsTrigger value="listings">
+                <Package className="size-4 md:size-5 mr-1" />
+                <span className="tabular-nums">({productCount})</span>
               </TabsTrigger>
             )}
             {profile.is_seller && (
-              <TabsTrigger 
-                value="seller-reviews" 
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 sm:px-5 sm:py-3.5 sm:text-sm font-semibold"
-              >
-                <Star className="size-4 mr-2" />
-                {locale === "bg" ? "Отзиви за продавач" : "Seller Reviews"} ({sellerReviewCount})
+              <TabsTrigger value="seller-reviews">
+                <Star className="size-4 md:size-5 mr-2" />
+                {locale === "bg" ? "Продавач" : "Seller"} ({sellerReviewCount})
               </TabsTrigger>
             )}
             {profile.total_purchases > 0 && (
-              <TabsTrigger 
-                value="buyer-reviews" 
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3 sm:px-5 sm:py-3.5 sm:text-sm font-semibold"
-              >
-                <Star className="size-4 mr-2" />
-                {locale === "bg" ? "Отзиви за купувач" : "Buyer Reviews"} ({buyerReviewCount})
+              <TabsTrigger value="buyer-reviews">
+                <Star className="size-4 md:size-5 mr-2" />
+                {locale === "bg" ? "Купувач" : "Buyer"} ({buyerReviewCount})
               </TabsTrigger>
             )}
           </TabsList>

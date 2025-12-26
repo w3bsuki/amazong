@@ -16,7 +16,6 @@ interface Product {
   image: string
   rating?: number
   reviews?: number
-  isPrime?: boolean
   createdAt?: string
   slug?: string | null
   storeSlug?: string | null
@@ -112,19 +111,14 @@ export function TrendingProductsSection({
       <Tabs defaultValue="newest" className="w-full">
         {/* Tab List - Mobile + Desktop */}
         <div className="flex justify-center px-3 pt-1.5 pb-0.5 md:px-4 md:pt-0 md:pb-2 overflow-x-auto no-scrollbar">
-          <TabsList className="h-auto p-0.5 gap-1 rounded-full bg-muted/70 border border-border w-max">
+          <TabsList className="w-max">
             {tabs.map((tab) => {
               const Icon = tab.icon
               return (
                 <TabsTrigger
                   key={tab.id}
                   value={tab.id}
-                  className={cn(
-                    "px-3 sm:px-5 h-touch-xs text-2xs sm:text-sm font-semibold rounded-full",
-                    "text-muted-foreground hover:text-foreground hover:bg-secondary/70",
-                    "data-[state=active]:text-foreground data-[state=active]:bg-card data-[state=active]:border data-[state=active]:border-border",
-                    "whitespace-nowrap flex items-center gap-1.5"
-                  )}
+                  className="flex items-center gap-1.5 whitespace-nowrap"
                 >
                   <Icon size={14} weight="regular" />
                   {tab.label}

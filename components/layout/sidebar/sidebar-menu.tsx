@@ -1,73 +1,43 @@
 "use client"
 
-import { 
-    Drawer, 
-    DrawerContent, 
-    DrawerHeader, 
-    DrawerTitle, 
-    DrawerTrigger, 
+import {
+    Drawer,
+    DrawerContent,
     DrawerDescription,
-    DrawerClose
+    DrawerClose,
+    DrawerTitle,
+    DrawerTrigger,
 } from "@/components/ui/drawer"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { 
     List, 
     UserCircle, 
     CaretRight, 
-    CaretDown,
     X, 
     SignIn as SignInIcon, 
-    Chat, 
+    ChatCircleText, 
     Heart,
-    Clock,
-    Percent,
-    ShoppingBag,
+    Receipt,
     Question,
-    FireSimple,
-    Trophy,
-    Tag,
-    Lightning,
-    // Category icons
-    Monitor, 
-    Laptop, 
-    House, 
-    GameController, 
-    TShirt, 
-    Baby, 
-    Wrench, 
-    Car, 
-    Gift, 
-    BookOpen, 
-    Barbell, 
-    Dog, 
-    Lightbulb,
-    DeviceMobile,
-    Watch,
-    Headphones,
-    Camera,
-    Television,
-    MusicNotes,
-    Briefcase,
-    ForkKnife,
-    Leaf,
-    Code,
-    ShoppingCart,
-    Diamond,
-    Palette,
-    Pill,
-    GraduationCap,
-    Guitar,
-    FilmStrip,
-    Flask,
-    Hammer,
-    Flower,
-    PaintBrush,
     SignOut,
-    Storefront,
-    SpinnerGap
+    SpinnerGap,
+    SquaresFour,
+    MagnifyingGlass,
+    ChartLineUp,
+    PlusCircle
 } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
+import { Input } from "@/components/ui/input"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -75,80 +45,96 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link } from "@/i18n/routing"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { User as SupabaseUser } from "@supabase/supabase-js"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
-
-interface Category {
-    id: string
-    name: string
-    name_bg: string | null
-    slug: string
-    children?: Category[]
-}
-
-// Category icon mapping (same as mega-menu)
-const categoryIconMap: Record<string, React.ReactNode> = {
-    "electronics": <Monitor size={20} weight="regular" />,
-    "computers": <Laptop size={20} weight="regular" />,
-    "smart-home": <Lightbulb size={20} weight="regular" />,
-    "gaming": <GameController size={20} weight="regular" />,
-    "fashion": <TShirt size={20} weight="regular" />,
-    "home": <House size={20} weight="regular" />,
-    "home-kitchen": <ForkKnife size={20} weight="regular" />,
-    "sports": <Barbell size={20} weight="regular" />,
-    "sports-outdoors": <Barbell size={20} weight="regular" />,
-    "beauty": <PaintBrush size={20} weight="regular" />,
-    "toys": <Gift size={20} weight="regular" />,
-    "books": <BookOpen size={20} weight="regular" />,
-    "automotive": <Car size={20} weight="regular" />,
-    "health": <Heart size={20} weight="regular" />,
-    "baby": <Baby size={20} weight="regular" />,
-    "pets": <Dog size={20} weight="regular" />,
-    "pet-supplies": <Dog size={20} weight="regular" />,
-    "tools": <Wrench size={20} weight="regular" />,
-    "lighting": <Lightbulb size={20} weight="regular" />,
-    "phones": <DeviceMobile size={20} weight="regular" />,
-    "watches": <Watch size={20} weight="regular" />,
-    "audio": <Headphones size={20} weight="regular" />,
-    "cameras": <Camera size={20} weight="regular" />,
-    "tv": <Television size={20} weight="regular" />,
-    "music": <MusicNotes size={20} weight="regular" />,
-    "office": <Briefcase size={20} weight="regular" />,
-    "garden": <Leaf size={20} weight="regular" />,
-    "software-services": <Code size={20} weight="regular" />,
-    "grocery": <ShoppingCart size={20} weight="regular" />,
-    "jewelry-watches": <Diamond size={20} weight="regular" />,
-    "handmade": <Palette size={20} weight="regular" />,
-    "health-wellness": <Pill size={20} weight="regular" />,
-    "office-school": <GraduationCap size={20} weight="regular" />,
-    "musical-instruments": <Guitar size={20} weight="regular" />,
-    "movies-music": <FilmStrip size={20} weight="regular" />,
-    "industrial-scientific": <Flask size={20} weight="regular" />,
-    "collectibles": <Trophy size={20} weight="regular" />,
-    "baby-kids": <Baby size={20} weight="regular" />,
-    "tools-home": <Hammer size={20} weight="regular" />,
-    "garden-outdoor": <Flower size={20} weight="regular" />,
-}
-
-function getCategoryIcon(slug: string): React.ReactNode {
-    return categoryIconMap[slug] || <ShoppingBag size={20} weight="regular" />
-}
+import { useCategoriesCache, getCategoryName } from "@/hooks/use-categories-cache"
+import { getCategoryIcon } from "@/lib/category-icons"
 
 interface SidebarMenuProps {
     user?: SupabaseUser | null
+    triggerClassName?: string
 }
 
-export function SidebarMenu({ user }: SidebarMenuProps) {
+function HamburgerCategoryCircles({
+    open,
+    locale,
+    onNavigate,
+}: {
+    open: boolean
+    locale: string
+    onNavigate: () => void
+}) {
+    // Mount only when drawer is open to avoid eager fetch on every page.
+    if (!open) return null
+
+    const { categories, isLoading } = useCategoriesCache({ minCategories: 0 })
+    const displayCategories = categories.slice(0, 20)
+
+    return (
+        <section id="sidebar-categories" className="px-4 py-6">
+            {isLoading && categories.length === 0 ? (
+                <div className="grid grid-cols-4 gap-y-6 gap-x-2">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="flex flex-col items-center gap-2">
+                            <div className="size-12 rounded-full bg-muted animate-pulse" />
+                            <div className="h-2 w-10 rounded bg-muted animate-pulse" />
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="grid grid-cols-4 gap-y-6 gap-x-2">
+                    {displayCategories.map((cat) => {
+                        const name = getCategoryName(cat, locale)
+                        return (
+                            <Link
+                                key={cat.slug}
+                                href={`/categories/${cat.slug}`}
+                                onClick={onNavigate}
+                                aria-label={name}
+                                className="flex flex-col items-center gap-2 group touch-action-manipulation"
+                            >
+                                <div
+                                    className={cn(
+                                        "rounded-full flex items-center justify-center",
+                                        "size-12",
+                                        "bg-brand ring-1 ring-brand/10",
+                                        "transition-colors duration-200",
+                                        "group-hover:bg-brand-dark"
+                                    )}
+                                >
+                                    <span className="text-white transition-colors scale-110">
+                                        {getCategoryIcon(cat.slug, { size: 20, weight: "regular" })}
+                                    </span>
+                                </div>
+                                <span className="text-tiny font-semibold text-center text-foreground leading-tight line-clamp-2 max-w-[60px] group-hover:text-brand transition-colors duration-150">
+                                    {name}
+                                </span>
+                            </Link>
+                        )
+                    })}
+                </div>
+            )}
+        </section>
+    )
+}
+
+export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
     const [open, setOpen] = useState(false)
-    const [categories, setCategories] = useState<Category[]>([])
-    const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({})
-    const [isLoading, setIsLoading] = useState(true)
     const [isSigningOut, setIsSigningOut] = useState(false)
     const t = useTranslations('Sidebar')
     const locale = useLocale()
+
+    const scrollToCategories = (event?: React.MouseEvent) => {
+        const categoriesSection = document.getElementById("sidebar-categories")
+        if (!categoriesSection) return false
+
+        event?.preventDefault()
+        categoriesSection.scrollIntoView({ behavior: "smooth", block: "start" })
+        return true
+    }
 
     // Get display name from user metadata or email
     const getUserDisplayName = () => {
@@ -162,37 +148,6 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
     const displayName = getUserDisplayName()
     const isLoggedIn = !!user
 
-    // Fetch categories with children (like mega-menu)
-    useEffect(() => {
-        if (open && categories.length === 0) {
-            fetch('/api/categories?children=true')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.categories) {
-                        setCategories(data.categories)
-                    }
-                })
-                .catch(() => {
-                    // Avoid console.error noise; menu can render without categories.
-                })
-                .finally(() => setIsLoading(false))
-        }
-    }, [open, categories.length])
-
-    const getCategoryName = (cat: Category) => {
-        if (locale === 'bg' && cat.name_bg) {
-            return cat.name_bg
-        }
-        return cat.name
-    }
-
-    const toggleCategory = (categoryId: string) => {
-        setExpandedCategories(prev => ({
-            ...prev,
-            [categoryId]: !prev[categoryId]
-        }))
-    }
-
     const handleSignOut = async () => {
         setIsSigningOut(true)
         setOpen(false)
@@ -201,61 +156,59 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
             await supabase.auth.signOut()
             // Force hard navigation to clear all state
             window.location.href = '/'
-        } catch (error) {
+        } catch {
             setIsSigningOut(false)
         }
     }
 
-    const quickLinks = [
+    const guestQuickLinks = [
         {
-            icon: <Percent size={20} weight="fill" />,
-            label: locale === 'bg' ? 'Оферти' : 'Deals',
-            href: '/todays-deals',
-            highlight: true,
+            icon: <SquaresFour size={20} weight="fill" />,
+            label: locale === 'bg' ? 'Категории' : 'Categories',
+            href: '/categories',
         },
         {
-            icon: <FireSimple size={20} weight="fill" />,
-            label: locale === 'bg' ? 'Нови' : 'New',
-            href: '/search?sort=newest',
-            highlight: false,
+            icon: <MagnifyingGlass size={20} weight="regular" />,
+            label: locale === 'bg' ? 'Разгледай' : 'Browse',
+            href: '/search',
         },
         {
-            icon: <Gift size={20} weight="regular" />,
-            label: locale === 'bg' ? 'Подаръци' : 'Gifts',
-            href: '/gift-cards',
-            highlight: false,
-        },
-        {
-            icon: <Question size={20} weight="regular" />,
-            label: locale === 'bg' ? 'Помощ' : 'Help',
-            href: '/customer-service',
-            highlight: false,
+            icon: <PlusCircle size={20} weight="regular" />,
+            label: locale === 'bg' ? 'Продай' : 'Sell',
+            href: '/sell',
         },
     ]
 
     return (
         <Drawer open={open} onOpenChange={setOpen} direction="left">
             <DrawerTrigger asChild>
-                <button 
-                    className="flex items-center justify-center size-11 rounded-lg text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
-                    aria-label={t('all')}
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-xl"
+                    className={cn(
+                        "rounded-xl text-header-text hover:bg-header-hover active:bg-header-active transition-all touch-action-manipulation tap-transparent",
+                        triggerClassName
+                    )}
+                    aria-label={locale === "bg" ? "Меню" : "Menu"}
+                    data-testid="mobile-menu-trigger"
                 >
-                    <List size={24} weight="regular" />
-                </button>
+                    <List size={28} weight="bold" />
+                </Button>
             </DrawerTrigger>
-            <DrawerContent 
-                className="w-[85vw] sm:max-w-md p-0 border-r-0 bg-background text-foreground gap-0"
+            <DrawerContent
+                className="p-0 bg-background text-foreground gap-0 flex flex-col h-full w-[85vw] max-w-[320px] border-r border-border/50 rounded-none shadow-none"
             >
-                {/* Header - Account area with brand background */}
-                <DrawerHeader className="bg-brand text-white px-4 py-3 space-y-0">
-                    <div className="flex items-center justify-between">
+                {/* Header - Account area - Compact & Professional */}
+                <div className="relative bg-brand text-white px-4 py-4 shrink-0 overflow-hidden">
+                    <div className="relative flex items-center justify-between">
                         {/* Profile info */}
                         <div className="flex items-center gap-3 min-w-0">
-                            <div className="size-10 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
+                            <div className="size-11 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
                                 <UserCircle size={28} weight="fill" className="text-white" />
                             </div>
                             <div className="min-w-0">
-                                <DrawerTitle className="text-white text-base font-semibold truncate text-left">
+                                <DrawerTitle className="text-white text-base font-bold truncate text-left leading-tight tracking-tight">
                                     {isLoggedIn 
                                         ? displayName
                                         : (locale === 'bg' ? 'Здравей!' : 'Hello!')
@@ -268,48 +221,52 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                     <Link 
                                         href="/account"
                                         onClick={() => setOpen(false)}
-                                        className="text-xs text-white/80 hover:text-white flex items-center gap-0.5 transition-colors"
+                                        className="text-2xs font-medium text-white/90 hover:text-white flex items-center gap-0.5 transition-colors"
                                     >
                                         {locale === 'bg' ? 'Моят акаунт' : 'My account'}
-                                        <CaretRight size={12} weight="bold" />
+                                        <CaretRight size={10} weight="bold" />
                                     </Link>
                                 ) : (
-                                    <p className="text-xs text-white/80">
+                                    <p className="text-2xs font-medium text-white/80">
                                         {locale === 'bg' ? 'Влез или се регистрирай' : 'Sign in or register'}
                                     </p>
                                 )}
                             </div>
                         </div>
-                        {/* Language + Close */}
-                        <div className="flex items-center gap-1">
+                        {/* Actions: Language + Close */}
+                        <div className="flex items-center gap-1 -mr-1">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button
-                                        className="flex items-center gap-1 min-h-9 px-2 rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors touch-action-manipulation tap-transparent"
+                                        type="button"
+                                        aria-label={locale === 'bg' ? 'Език' : 'Language'}
+                                        className="flex items-center gap-1.5 px-2 h-9 rounded-lg hover:bg-white/10 active:bg-white/20 transition-colors"
                                     >
-                                        <img 
+                                        <img
                                             src={locale === 'bg' ? 'https://flagcdn.com/w40/bg.png' : 'https://flagcdn.com/w40/gb.png'}
                                             alt={locale === 'bg' ? 'BG' : 'EN'}
-                                            className="w-6 h-4 rounded-sm object-cover"
+                                            className="w-4 h-2.5 rounded-sm object-cover ring-1 ring-white/20"
                                         />
-                                        <CaretDown size={10} weight="bold" className="text-white/70" />
+                                        <span className="text-2xs font-bold uppercase tracking-wider text-white/90">
+                                            {locale}
+                                        </span>
                                     </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="min-w-[140px]">
+                                <DropdownMenuContent align="end" className="min-w-[140px] rounded-xl p-1 border border-border/50 shadow-none">
                                     <DropdownMenuItem asChild>
                                         <Link
                                             href="/"
                                             locale="en"
                                             onClick={() => setOpen(false)}
-                                            className="flex items-center gap-2 cursor-pointer"
+                                            className="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg"
                                         >
-                                            <img 
-                                                src="https://flagcdn.com/w40/gb.png" 
-                                                alt="EN" 
-                                                className="size-5 rounded-sm object-cover"
+                                            <img
+                                                src="https://flagcdn.com/w40/gb.png"
+                                                alt="EN"
+                                                className="w-5 h-3.5 rounded-sm object-cover"
                                             />
-                                            <span>English</span>
-                                            {locale === 'en' && <span className="ml-auto text-brand">✓</span>}
+                                            <span className="text-sm font-medium">English</span>
+                                            {locale === 'en' && <span className="ml-auto text-brand font-bold">✓</span>}
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
@@ -317,49 +274,66 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                                             href="/"
                                             locale="bg"
                                             onClick={() => setOpen(false)}
-                                            className="flex items-center gap-2 cursor-pointer"
+                                            className="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg"
                                         >
-                                            <img 
-                                                src="https://flagcdn.com/w40/bg.png" 
-                                                alt="BG" 
-                                                className="size-5 rounded-sm object-cover"
+                                            <img
+                                                src="https://flagcdn.com/w40/bg.png"
+                                                alt="BG"
+                                                className="w-5 h-3.5 rounded-sm object-cover"
                                             />
-                                            <span>Български</span>
-                                            {locale === 'bg' && <span className="ml-auto text-brand">✓</span>}
+                                            <span className="text-sm font-medium">Български</span>
+                                            {locale === 'bg' && <span className="ml-auto text-brand font-bold">✓</span>}
                                         </Link>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="size-9 text-white hover:bg-white/10 active:bg-white/20 rounded-full touch-action-manipulation tap-transparent"
-                                onClick={() => setOpen(false)}
-                            >
-                                <X size={20} weight="regular" />
-                                <span className="sr-only">{t('close')}</span>
-                            </Button>
+
+                            <DrawerClose asChild>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="size-9 text-white hover:bg-white/10 active:bg-white/20 rounded-full"
+                                >
+                                    <X size={20} weight="bold" />
+                                    <span className="sr-only">{t('close')}</span>
+                                </Button>
+                            </DrawerClose>
                         </div>
                     </div>
-                </DrawerHeader>
+                </div>
 
-                <ScrollArea className="h-[calc(100svh-76px)]">
-                    <div className="flex flex-col pb-6">
+                {/* Search Bar - Clean & Integrated */}
+                <div className="px-4 py-3 bg-muted/30 border-b border-border/50">
+                    <div className="relative">
+                        <MagnifyingGlass size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+                        <Input
+                            type="search"
+                            placeholder={locale === 'bg' ? 'Търси в категории...' : 'Search categories...'}
+                            aria-label={locale === 'bg' ? 'Търси в категории' : 'Search categories'}
+                            className="h-10 pl-10 pr-4 rounded-lg border-border/60 placeholder:text-muted-foreground/50"
+                        />
+                    </div>
+                </div>
+
+                {/* Main content - Native scrolling */}
+                <div className="flex-1 overflow-y-auto overscroll-contain no-scrollbar">
+                    <div className="flex flex-col pb-8">
                         {/* Auth Actions - Only when not logged in */}
                         {!isLoggedIn && (
-                            <div className="px-4 py-3 bg-muted/30 border-b border-border">
-                                <div className="flex gap-2">
+                            <div className="px-4 py-4 bg-muted/30 border-b border-border">
+                                <div className="flex gap-3">
                                     <Link
                                         href="/auth/login"
-                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand text-white rounded-lg text-sm font-semibold hover:bg-brand-dark active:scale-[0.98] transition-all"
+                                        className="flex-1 flex items-center justify-center gap-2 py-3 bg-brand text-white rounded-xl text-sm font-bold hover:bg-brand-dark transition-colors"
                                         onClick={() => setOpen(false)}
                                     >
-                                        <SignInIcon size={18} weight="bold" />
+                                        <SignInIcon size={20} weight="bold" />
                                         {locale === 'bg' ? 'Влез' : 'Sign In'}
                                     </Link>
                                     <Link
                                         href="/auth/sign-up"
-                                        className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-background border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted active:scale-[0.98] transition-all"
+                                        className="flex-1 flex items-center justify-center gap-2 py-3 bg-background border border-border rounded-xl text-sm font-semibold text-foreground hover:bg-muted transition-colors"
                                         onClick={() => setOpen(false)}
                                     >
                                         {locale === 'bg' ? 'Регистрация' : 'Register'}
@@ -369,71 +343,72 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                         )}
 
                         {/* Quick Actions - Action buttons for users */}
-                        <div className="px-3 py-3 border-b border-border">
+                        <div className="px-4 py-4 bg-muted/10 border-b border-border/40">
                             {isLoggedIn ? (
                                 <div className="grid grid-cols-4 gap-2">
                                     <Link
                                         href="/account/orders"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl border border-border bg-background hover:bg-muted active:scale-[0.98] transition-all touch-action-manipulation"
+                                        className="flex flex-col items-center justify-center gap-2 p-2 rounded-xl border border-border/50 bg-background hover:bg-muted transition-colors"
                                     >
-                                        <div className="size-9 rounded-full bg-muted flex items-center justify-center">
-                                            <Clock size={20} weight="regular" className="text-foreground" />
+                                        <div className="size-10 rounded-full bg-muted/50 flex items-center justify-center">
+                                            <Receipt size={20} weight="regular" className="text-foreground" />
                                         </div>
-                                        <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
+                                        <span className="text-tiny font-semibold text-foreground tracking-tight">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
                                     </Link>
                                     <Link
-                                        href="/sell"
+                                        href="/account/sales"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl border border-border bg-background hover:bg-muted active:scale-[0.98] transition-all touch-action-manipulation"
+                                        className="flex flex-col items-center justify-center gap-2 p-2 rounded-xl border border-border/50 bg-background hover:bg-muted transition-colors"
                                     >
-                                        <div className="size-9 rounded-full bg-muted flex items-center justify-center">
-                                            <Storefront size={20} weight="regular" className="text-foreground" />
+                                        <div className="size-10 rounded-full bg-muted/50 flex items-center justify-center">
+                                            <ChartLineUp size={20} weight="regular" className="text-foreground" />
                                         </div>
-                                        <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Продажби' : 'Selling'}</span>
+                                        <span className="text-tiny font-semibold text-foreground tracking-tight">{locale === 'bg' ? 'Продажби' : 'Sales'}</span>
                                     </Link>
                                     <Link
                                         href="/wishlist"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl border border-border bg-background hover:bg-muted active:scale-[0.98] transition-all touch-action-manipulation"
+                                        className="flex flex-col items-center justify-center gap-2 p-2 rounded-xl border border-border/50 bg-background hover:bg-muted transition-colors"
                                     >
-                                        <div className="size-9 rounded-full bg-muted flex items-center justify-center">
+                                        <div className="size-10 rounded-full bg-muted/50 flex items-center justify-center">
                                             <Heart size={20} weight="regular" className="text-foreground" />
                                         </div>
-                                        <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Любими' : 'Saved'}</span>
+                                        <span className="text-tiny font-semibold text-foreground tracking-tight">{locale === 'bg' ? 'Любими' : 'Saved'}</span>
                                     </Link>
                                     <Link
                                         href="/chat"
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl border border-border bg-background hover:bg-muted active:scale-[0.98] transition-all touch-action-manipulation"
+                                        className="flex flex-col items-center justify-center gap-2 p-2 rounded-xl border border-border/50 bg-background hover:bg-muted transition-colors"
                                     >
-                                        <div className="size-9 rounded-full bg-muted flex items-center justify-center">
-                                            <Chat size={20} weight="regular" className="text-foreground" />
+                                        <div className="size-10 rounded-full bg-muted/50 flex items-center justify-center">
+                                            <ChatCircleText size={20} weight="regular" className="text-foreground" />
                                         </div>
-                                        <span className="text-xs font-medium text-foreground">{locale === 'bg' ? 'Чат' : 'Chat'}</span>
+                                        <span className="text-tiny font-semibold text-foreground tracking-tight">{locale === 'bg' ? 'Чат' : 'Chat'}</span>
                                     </Link>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-4 gap-2">
-                                    {quickLinks.map((link, i) => (
+                                <div className="grid grid-cols-3 gap-2">
+                                    {guestQuickLinks.map((link, i) => (
                                         <Link
                                             key={i}
                                             href={link.href}
-                                            onClick={() => setOpen(false)}
+                                            onClick={(event) => {
+                                                if (link.href === "/categories") {
+                                                    const scrolled = scrollToCategories(event)
+                                                    if (scrolled) return
+                                                }
+                                                setOpen(false)
+                                            }}
                                             className={cn(
-                                                "flex flex-col items-center justify-center gap-1.5 min-h-[68px] p-2 rounded-xl transition-colors touch-action-manipulation",
-                                                link.highlight 
-                                                    ? "bg-deal/10 text-deal" 
-                                                    : "bg-muted hover:bg-muted/80 text-foreground"
+                                                "flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-colors border border-border/40",
+                                                "bg-background hover:bg-muted text-foreground"
                                             )}
                                         >
-                                            <div className={cn(
-                                                "size-9 rounded-full flex items-center justify-center",
-                                                link.highlight ? "bg-deal/15" : "bg-background"
-                                            )}>
+                                            <div className="size-10 rounded-full bg-muted/30 flex items-center justify-center ring-1 ring-black/5">
                                                 {link.icon}
                                             </div>
-                                            <span className="text-xs font-medium text-center leading-tight">
+                                            <span className="text-tiny font-bold text-center leading-tight tracking-tight">
                                                 {link.label}
                                             </span>
                                         </Link>
@@ -442,169 +417,82 @@ export function SidebarMenu({ user }: SidebarMenuProps) {
                             )}
                         </div>
 
-                        {/* Categories Section */}
-                        <div className="pt-3 pb-2">
-                            <div className="flex items-center justify-between px-4 py-2">
-                                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                    {locale === 'bg' ? 'Категории' : 'Categories'}
-                                </h3>
-                                <Link 
-                                    href="/categories" 
-                                    onClick={() => setOpen(false)}
-                                    className="text-xs text-brand font-medium hover:text-brand/80 transition-colors"
-                                >
-                                    {locale === 'bg' ? 'Виж всички' : 'View All'}
-                                </Link>
-                            </div>
-
-                            {isLoading ? (
-                                <div className="px-4 py-8 text-center">
-                                    <div className="size-5 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin mx-auto" />
-                                    <p className="mt-2 text-sm text-muted-foreground">
-                                        {locale === 'bg' ? 'Зареждане...' : 'Loading...'}
-                                    </p>
-                                </div>
-                            ) : (
-                                <div className="space-y-0.5">
-                                    {/* Featured Links - Same styling as categories */}
-                                    <div className="flex items-center">
-                                        <Link
-                                            href="/todays-deals"
-                                            onClick={() => setOpen(false)}
-                                            className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
-                                        >
-                                            <span className="text-deal">
-                                                <Lightning size={20} weight="fill" />
-                                            </span>
-                                            <span className="flex-1 font-medium">{locale === 'bg' ? 'Оферти на деня' : "Today's Deals"}</span>
-                                        </Link>
-                                        <div className="flex items-center justify-center size-11">
-                                            <CaretRight size={16} weight="regular" className="text-muted-foreground/50" />
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center">
-                                        <Link
-                                            href="/search?sort=newest"
-                                            onClick={() => setOpen(false)}
-                                            className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
-                                        >
-                                            <span className="text-brand">
-                                                <Tag size={20} weight="fill" />
-                                            </span>
-                                            <span className="flex-1 font-medium">{locale === 'bg' ? 'Нови обяви' : 'New Listings'}</span>
-                                        </Link>
-                                        <div className="flex items-center justify-center size-11">
-                                            <CaretRight size={16} weight="regular" className="text-muted-foreground/50" />
-                                        </div>
-                                    </div>
-
-                                    <Separator className="my-1" />
-
-                                    {categories.map((category) => {
-                                        const hasChildren = category.children && category.children.length > 0
-                                        const isExpanded = expandedCategories[category.id]
-                                        
-                                        return (
-                                            <div key={category.id}>
-                                                {/* Category Row */}
-                                                <div className="flex items-center">
-                                                    <Link
-                                                        href={`/categories/${category.slug}`}
-                                                        onClick={() => setOpen(false)}
-                                                        className="flex-1 flex items-center gap-3 px-4 min-h-11 text-md text-foreground hover:bg-muted active:bg-muted/80 transition-colors touch-action-manipulation tap-transparent"
-                                                    >
-                                                        <span className="text-muted-foreground">
-                                                            {getCategoryIcon(category.slug)}
-                                                        </span>
-                                                        <span className="flex-1 font-medium">{getCategoryName(category)}</span>
-                                                    </Link>
-                                                    {hasChildren && (
-                                                        <button
-                                                            onClick={() => toggleCategory(category.id)}
-                                                            className="flex items-center justify-center size-11 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors touch-action-manipulation tap-transparent"
-                                                            aria-label={isExpanded ? 'Collapse' : 'Expand'}
-                                                        >
-                                                            <CaretDown 
-                                                                size={18} 
-                                                                weight="regular" 
-                                                                className={cn(
-                                                                    "transition-transform duration-200",
-                                                                    isExpanded && "rotate-180"
-                                                                )}
-                                                            />
-                                                        </button>
-                                                    )}
-                                                    {!hasChildren && (
-                                                        <div className="flex items-center justify-center size-11">
-                                                            <CaretRight size={16} weight="regular" className="text-muted-foreground/50" />
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                {/* Subcategories */}
-                                                {hasChildren && isExpanded && (
-                                                    <div className="bg-muted/30">
-                                                        {category.children!.slice(0, 8).map((sub) => (
-                                                            <Link
-                                                                key={sub.id}
-                                                                href={`/search?category=${sub.slug}`}
-                                                                onClick={() => setOpen(false)}
-                                                                className="flex items-center gap-3 px-4 pl-12 min-h-11 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 active:bg-muted transition-colors touch-action-manipulation tap-transparent"
-                                                            >
-                                                                <span>{getCategoryName(sub)}</span>
-                                                            </Link>
-                                                        ))}
-                                                        {category.children!.length > 8 && (
-                                                            <Link
-                                                                href={`/categories/${category.slug}`}
-                                                                onClick={() => setOpen(false)}
-                                                                className="flex items-center gap-2 px-4 pl-12 min-h-11 text-sm text-brand font-medium hover:text-brand/80 active:text-brand-dark transition-colors touch-action-manipulation tap-transparent"
-                                                            >
-                                                                {locale === 'bg' 
-                                                                    ? `Виж всички ${category.children!.length}` 
-                                                                    : `View all ${category.children!.length}`
-                                                                }
-                                                                <CaretRight size={14} weight="regular" />
-                                                            </Link>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            )}
+                        {/* Browse - circles instead of accordions */}
+                        <div className="pt-2">
+                            <HamburgerCategoryCircles
+                                open={open}
+                                locale={locale}
+                                onNavigate={() => setOpen(false)}
+                            />
                         </div>
 
-                        {/* Help & Sign Out */}
-                        <Separator className="my-1" />
-                        <div className="px-4 py-2 space-y-1">
+                    </div>
+                </div>
+
+                {/* Footer actions (pinned) */}
+                <div className="shrink-0 border-t border-border/50 bg-background pb-safe">
+                    <div className="px-4 py-4">
+                        <div className="grid grid-cols-2 gap-3">
                             <Link
                                 href="/customer-service"
                                 onClick={() => setOpen(false)}
-                                className="w-full flex items-center justify-center gap-2 min-h-11 text-sm font-medium text-muted-foreground hover:bg-muted active:bg-muted/80 rounded-lg transition-colors touch-action-manipulation tap-transparent"
+                                className="flex items-center justify-center gap-2 h-11 rounded-lg bg-muted/50 border border-border/50 text-sm font-bold text-foreground hover:bg-muted transition-colors"
                             >
-                                <Question size={18} weight="regular" />
-                                {locale === 'bg' ? 'Помощ' : 'Help'}
+                                <Question size={20} weight="bold" className="text-muted-foreground" />
+                                <span>{locale === 'bg' ? 'Помощ' : 'Help'}</span>
                             </Link>
-                            {isLoggedIn && (
-                                <button
-                                    onClick={handleSignOut}
-                                    disabled={isSigningOut}
-                                    className="w-full flex items-center justify-center gap-2 min-h-11 text-sm font-medium text-destructive hover:bg-destructive/10 active:bg-destructive/15 rounded-lg transition-colors touch-action-manipulation tap-transparent disabled:opacity-70"
+
+                            {isLoggedIn ? (
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <button
+                                            type="button"
+                                            disabled={isSigningOut}
+                                            className="flex items-center justify-center gap-2 h-11 rounded-lg bg-destructive/5 text-destructive border border-destructive/10 text-sm font-bold hover:bg-destructive/10 transition-colors"
+                                        >
+                                            {isSigningOut ? (
+                                                <SpinnerGap size={20} className="animate-spin" />
+                                            ) : (
+                                                <SignOut size={20} weight="bold" />
+                                            )}
+                                            <span>{locale === 'bg' ? 'Изход' : 'Sign Out'}</span>
+                                        </button>
+                                    </AlertDialogTrigger>
+
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                {locale === "bg" ? "Сигурни ли сте?" : "Are you sure?"}
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                {locale === "bg"
+                                                    ? "Ще излезете от акаунта си на това устройство."
+                                                    : "You will be signed out on this device."}
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>
+                                                {locale === "bg" ? "Отказ" : "Cancel"}
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleSignOut}>
+                                                {locale === "bg" ? "Изход" : "Sign Out"}
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            ) : (
+                                <Link
+                                    href="/auth/login"
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center justify-center gap-2 h-11 rounded-lg bg-brand/5 text-brand border border-brand/10 text-sm font-bold hover:bg-brand/10 transition-colors"
                                 >
-                                    {isSigningOut ? (
-                                        <SpinnerGap size={18} className="animate-spin" />
-                                    ) : (
-                                        <SignOut size={18} weight="regular" />
-                                    )}
-                                    {isSigningOut ? (locale === 'bg' ? 'Излизане...' : 'Signing out...') : (locale === 'bg' ? 'Излез' : 'Sign Out')}
-                                </button>
+                                    <SignInIcon size={20} weight="bold" />
+                                    <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
+                                </Link>
                             )}
                         </div>
                     </div>
-                </ScrollArea>
+                </div>
             </DrawerContent>
         </Drawer>
     )

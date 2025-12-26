@@ -18,12 +18,18 @@ export async function generateMetadata({
   }
 }
 
-export default async function MessagesPage() {
+export default async function MessagesPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+
   await connection()
   const supabase = await createClient()
 
   if (!supabase) {
-    redirect("/auth/login?redirect=/chat")
+    redirect(`/${locale}/auth/login?next=/${locale}/chat`)
   }
 
   const {
@@ -31,7 +37,7 @@ export default async function MessagesPage() {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect("/auth/login?redirect=/chat")
+    redirect(`/${locale}/auth/login?next=/${locale}/chat`)
   }
 
   return <MessagesPageClient />

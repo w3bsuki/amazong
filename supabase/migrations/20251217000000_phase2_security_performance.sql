@@ -78,7 +78,6 @@ SELECT
     images,
     rating,
     review_count,
-    is_prime,
     search_vector,
     created_at,
     updated_at,

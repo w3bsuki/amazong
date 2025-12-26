@@ -167,8 +167,8 @@ export function WelcomeClient({ locale }: { locale: string }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-svh flex items-center justify-center bg-linear-to-b from-blue-50 to-white">
-        <SpinnerGap className="size-8 text-blue-500 animate-spin" weight="bold" />
+      <div className="min-h-svh flex items-center justify-center bg-background">
+        <SpinnerGap className="size-8 text-primary animate-spin" weight="bold" />
       </div>
     )
   }
@@ -176,7 +176,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
   const name = profile?.display_name || profile?.username || "there"
 
   return (
-    <div className="min-h-svh flex items-center justify-center bg-linear-to-b from-blue-50 via-white to-white p-4 py-8">
+    <div className="min-h-svh flex items-center justify-center bg-background p-4 py-8">
       <div className="w-full max-w-lg">
         <div className="flex items-center justify-center gap-2 mb-6">
           {[1, 2, 3, 4].map((s) => (
@@ -184,7 +184,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               key={s}
               className={cn(
                 "h-2 rounded-full transition-all duration-300",
-                s === step ? "w-8 bg-blue-500" : s < step ? "w-8 bg-blue-300" : "w-2 bg-gray-200"
+                s === step ? "w-8 bg-primary" : s < step ? "w-8 bg-primary/40" : "w-2 bg-muted"
               )}
             />
           ))}
@@ -197,14 +197,14 @@ export function WelcomeClient({ locale }: { locale: string }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden"
+              className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
             >
-              <div className="relative bg-linear-to-r from-blue-500 to-blue-600 px-6 py-10 text-center text-white overflow-hidden">
+              <div className="relative bg-primary px-6 py-10 text-center text-primary-foreground overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
-                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full" />
-                  <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-white/10 rounded-full" />
-                  <Confetti className="absolute top-4 right-4 size-8 text-yellow-300 opacity-80" weight="fill" />
-                  <Confetti className="absolute bottom-4 left-4 size-6 text-green-300 opacity-80" weight="fill" />
+                  <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary-foreground/10 rounded-full" />
+                  <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-primary-foreground/10 rounded-full" />
+                  <Confetti className="absolute top-4 right-4 size-8 text-primary-foreground/80 opacity-80" weight="fill" />
+                  <Confetti className="absolute bottom-4 left-4 size-6 text-primary-foreground/80 opacity-80" weight="fill" />
                 </div>
 
                 <div className="relative">
@@ -212,9 +212,9 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                    className="size-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                    className="size-20 bg-primary-foreground/20 rounded-full flex items-center justify-center mx-auto mb-4"
                   >
-                    <CheckCircle className="size-12 text-white" weight="fill" />
+                    <CheckCircle className="size-12 text-primary-foreground" weight="fill" />
                   </motion.div>
                   <motion.h1
                     initial={{ opacity: 0, y: 10 }}
@@ -228,7 +228,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
-                    className="text-blue-100"
+                    className="text-primary-foreground/80"
                   >
                     Your email has been verified
                   </motion.p>
@@ -236,20 +236,23 @@ export function WelcomeClient({ locale }: { locale: string }) {
               </div>
 
               <div className="p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-2 text-center">Let&apos;s set up your profile</h2>
-                <p className="text-sm text-gray-500 text-center mb-6">
+                <h2 className="text-lg font-semibold text-foreground mb-2 text-center">Let&apos;s set up your profile</h2>
+                <p className="text-sm text-muted-foreground text-center mb-6">
                   This will only take a minute. Choose an avatar and tell us about yourself!
                 </p>
 
                 <div className="space-y-3">
-                  <Button onClick={() => setStep(2)} className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white">
+                  <Button
+                    onClick={() => setStep(2)}
+                    className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
                     <Sparkle className="size-5 mr-2" weight="fill" />
                     Get Started
                   </Button>
                   <button
                     onClick={handleSkip}
                     disabled={isPending}
-                    className="w-full text-sm text-gray-500 hover:text-gray-700 py-2"
+                    className="w-full text-sm text-muted-foreground hover:text-foreground py-2"
                   >
                     {isPending ? "..." : "Skip for now"}
                   </button>
@@ -264,18 +267,18 @@ export function WelcomeClient({ locale }: { locale: string }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden"
+              className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
             >
-              <div className="p-6 border-b border-gray-100">
+              <div className="p-6 border-b border-border">
                 <button
                   onClick={() => setStep(1)}
-                  className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
+                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
                 >
                   <ArrowLeft className="size-4" />
                   Back
                 </button>
-                <h2 className="text-xl font-semibold text-gray-900">Choose your avatar</h2>
-                <p className="text-sm text-gray-500 mt-1">Pick a style or upload your own photo</p>
+                <h2 className="text-xl font-semibold text-foreground">Choose your avatar</h2>
+                <p className="text-sm text-muted-foreground mt-1">Pick a style or upload your own photo</p>
               </div>
 
               <div className="p-6 space-y-6">
@@ -287,7 +290,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                         alt="Avatar preview"
                         width={96}
                         height={96}
-                        className="size-24 rounded-full object-cover border-4 border-blue-100"
+                        className="size-24 rounded-full object-cover border-4 border-primary/20"
                       />
                     ) : (
                       <Avatar
@@ -297,15 +300,15 @@ export function WelcomeClient({ locale }: { locale: string }) {
                         colors={COLOR_PALETTES[selectedPalette]}
                       />
                     )}
-                    <label className="absolute bottom-0 right-0 size-8 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-colors">
-                      <Camera className="size-4 text-white" weight="bold" />
+                    <label className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-colors">
+                      <Camera className="size-4 text-primary-foreground" weight="bold" />
                       <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                     </label>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Or choose a style</h3>
+                  <h3 className="text-sm font-medium text-foreground mb-3">Or choose a style</h3>
                   <div className="grid grid-cols-6 gap-2">
                     {AVATAR_VARIANTS.map((variant) => (
                       <button
@@ -317,8 +320,8 @@ export function WelcomeClient({ locale }: { locale: string }) {
                         className={cn(
                           "p-2 rounded-xl border-2 transition-all hover:scale-105",
                           !useCustomAvatar && selectedVariant === variant
-                            ? "border-blue-500 bg-blue-50"
-                            : "border-gray-200 hover:border-gray-300"
+                            ? "border-primary bg-muted"
+                            : "border-border hover:border-border/80"
                         )}
                       >
                         <Avatar
@@ -334,7 +337,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
 
                 {!useCustomAvatar && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Color palette</h3>
+                    <h3 className="text-sm font-medium text-foreground mb-3">Color palette</h3>
                     <div className="grid grid-cols-6 gap-2">
                       {COLOR_PALETTES.map((palette, idx) => (
                         <button
@@ -342,7 +345,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                           onClick={() => setSelectedPalette(idx)}
                           className={cn(
                             "p-1.5 rounded-lg border-2 transition-all",
-                            selectedPalette === idx ? "border-blue-500" : "border-gray-200 hover:border-gray-300"
+                            selectedPalette === idx ? "border-primary" : "border-border hover:border-border/80"
                           )}
                         >
                           <div className="flex gap-0.5">
@@ -358,7 +361,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
 
                 {!useCustomAvatar && (
                   <div className="text-center">
-                    <label className="inline-flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 cursor-pointer rounded-lg hover:bg-gray-50 transition-colors">
+                    <label className="inline-flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground hover:text-foreground cursor-pointer rounded-lg hover:bg-muted transition-colors">
                       <ImageIcon className="size-4" />
                       Upload your own photo
                       <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
@@ -373,7 +376,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                   <Button
                     onClick={handleSaveAndContinue}
                     disabled={isPending}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600"
+                    className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     {isPending ? (
                       <SpinnerGap className="size-4 animate-spin" />
@@ -394,17 +397,17 @@ export function WelcomeClient({ locale }: { locale: string }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden"
+              className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
             >
-              <div className="p-6 border-b border-gray-100">
+              <div className="p-6 border-b border-border">
                 <button
                   onClick={() => setStep(2)}
-                  className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
+                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
                 >
                   <ArrowLeft className="size-4" />Back
                 </button>
-                <h2 className="text-xl font-semibold text-gray-900">Tell us about yourself</h2>
-                <p className="text-sm text-gray-500 mt-1">This helps other users know who you are</p>
+                <h2 className="text-xl font-semibold text-foreground">Tell us about yourself</h2>
+                <p className="text-sm text-muted-foreground mt-1">This helps other users know who you are</p>
               </div>
 
               <div className="p-6 space-y-5">
@@ -422,19 +425,19 @@ export function WelcomeClient({ locale }: { locale: string }) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Display Name</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Display Name</label>
                   <Input
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     placeholder={profile?.username || "Your name"}
                     className="h-11"
                   />
-                  <p className="text-xs text-gray-500 mt-1">This is how other users will see you</p>
+                  <p className="text-xs text-muted-foreground mt-1">This is how other users will see you</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Bio <span className="text-gray-400 font-normal">(optional)</span>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">
+                    Bio <span className="text-muted-foreground font-normal">(optional)</span>
                   </label>
                   <Textarea
                     value={bio}
@@ -444,7 +447,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     className="resize-none"
                     maxLength={200}
                   />
-                  <p className="text-xs text-gray-500 mt-1 text-right">{bio.length}/200</p>
+                  <p className="text-xs text-muted-foreground mt-1 text-right">{bio.length}/200</p>
                 </div>
 
                 <div className="flex gap-3 pt-4">
@@ -454,7 +457,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                   <Button
                     onClick={handleSaveAndContinue}
                     disabled={isPending}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600"
+                    className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     {isPending ? (
                       <SpinnerGap className="size-4 animate-spin" />
@@ -474,36 +477,36 @@ export function WelcomeClient({ locale }: { locale: string }) {
               key="complete"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden"
+              className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
             >
               <div className="p-8 text-center">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
-                  className="size-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                  className="size-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"
                 >
-                  <Check className="size-10 text-green-600" weight="bold" />
+                  <Check className="size-10 text-primary" weight="bold" />
                 </motion.div>
 
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">You&apos;re all set! 🎉</h2>
-                <p className="text-gray-500 mb-6">Your profile is ready. What would you like to do next?</p>
+                <h2 className="text-xl font-semibold text-foreground mb-2">You&apos;re all set! 🎉</h2>
+                <p className="text-muted-foreground mb-6">Your profile is ready. What would you like to do next?</p>
 
                 <div className="space-y-3 text-left">
                   <Link href="/" className="block">
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-xl border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
-                        <ShoppingBag className="size-6 text-blue-600" weight="duotone" />
+                      <div className="size-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                        <ShoppingBag className="size-6 text-primary" weight="duotone" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900">Browse Products</h3>
-                        <p className="text-sm text-gray-500">Discover amazing deals</p>
+                        <h3 className="font-medium text-foreground">Browse Products</h3>
+                        <p className="text-sm text-muted-foreground">Discover amazing deals</p>
                       </div>
-                      <ArrowRight className="size-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                      <ArrowRight className="size-5 text-muted-foreground group-hover:text-foreground transition-colors" />
                     </motion.div>
                   </Link>
 
@@ -511,16 +514,16 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-linear-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 rounded-xl border border-amber-200 transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-xl border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-linear-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shrink-0">
-                        <Storefront className="size-6 text-white" weight="fill" />
+                      <div className="size-12 bg-primary rounded-xl flex items-center justify-center shrink-0">
+                        <Storefront className="size-6 text-primary-foreground" weight="fill" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900">Start Selling</h3>
-                        <p className="text-sm text-gray-600">List your first product</p>
+                        <h3 className="font-medium text-foreground">Start Selling</h3>
+                        <p className="text-sm text-muted-foreground">List your first product</p>
                       </div>
-                      <ArrowRight className="size-5 text-amber-500 group-hover:text-amber-600 transition-colors" />
+                      <ArrowRight className="size-5 text-muted-foreground group-hover:text-foreground transition-colors" />
                     </motion.div>
                   </Link>
 
@@ -528,16 +531,16 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-xl border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-purple-100 rounded-xl flex items-center justify-center shrink-0">
-                        <UserCircle className="size-6 text-purple-600" weight="duotone" />
+                      <div className="size-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                        <UserCircle className="size-6 text-primary" weight="duotone" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900">View Your Profile</h3>
-                        <p className="text-sm text-gray-500">/{profile?.username}</p>
+                        <h3 className="font-medium text-foreground">View Your Profile</h3>
+                        <p className="text-sm text-muted-foreground">/{profile?.username}</p>
                       </div>
-                      <ArrowRight className="size-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                      <ArrowRight className="size-5 text-muted-foreground group-hover:text-foreground transition-colors" />
                     </motion.div>
                   </Link>
                 </div>

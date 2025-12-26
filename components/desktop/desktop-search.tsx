@@ -110,7 +110,7 @@ export function DesktopSearch() {
           <form 
             ref={formRef}
             onSubmit={handleSearch}
-            className="flex h-full w-full rounded-full overflow-hidden bg-background border border-white/20 focus-within:border-white/35 focus-within:bg-background"
+            className="flex h-full w-full rounded-full overflow-hidden bg-background border border-header-text/20 focus-within:border-header-text/35 focus-within:bg-background"
           >
             {/* Search Input */}
             <div className="relative flex-1 flex items-center">
@@ -146,7 +146,7 @@ export function DesktopSearch() {
             <Button
               type="submit"
               aria-label={t("searchPlaceholder")}
-              className="h-8 w-8 my-auto mr-1 bg-brand hover:bg-brand/90 text-white rounded-full p-0 border-none flex items-center justify-center shrink-0"
+              className="h-8 w-8 my-auto mr-1 bg-brand hover:bg-brand/90 text-primary-foreground rounded-full p-0 border-none flex items-center justify-center shrink-0"
             >
               <MagnifyingGlass size={14} weight="bold" />
             </Button>
@@ -336,7 +336,7 @@ export function DesktopSearch() {
                       onClick={() => handleSelectSearch(search)}
                       className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-md text-left group"
                     >
-                      <div className="w-5 h-5 rounded-full bg-brand flex items-center justify-center text-xs font-bold text-white">
+                      <div className="w-5 h-5 rounded-full bg-brand flex items-center justify-center text-xs font-bold text-primary-foreground">
                         {i + 1}
                       </div>
                       <span className="text-sm text-foreground group-hover:text-brand flex-1">

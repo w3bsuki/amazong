@@ -282,7 +282,7 @@ test.describe('Complete Buyer Journey @buyer', () => {
     
     const isOnAuth = page.url().includes('/login') || page.url().includes('/auth')
     const checkoutUi = page
-      .locator('text=/step\s*1\/3/i')
+      .locator('text=/step\\s*1\\/3/i')
       .or(page.getByRole('link', { name: /back to cart|back to home/i }))
       .first()
 
@@ -319,12 +319,29 @@ test.describe('Complete Seller Journey @seller', () => {
     
     await page.goto(ROUTES.sell)
     await page.waitForLoadState('domcontentloaded')
+
+    // Redirects can be slightly delayed in dev.
+    await page.waitForURL(/\/(auth|login)/i, { timeout: 5_000 }).catch(() => {})
     
     // Should redirect to auth or show the sell page form
     const isOnAuth = page.url().includes('/login') || page.url().includes('/auth')
-    const sellForm = page.locator('form, [data-testid="sell-form"], text=/list.*item|create.*listing/i')
+    const sellForm = page
+      .locator('form')
+      .first()
+      .or(page.locator('[data-testid="sell-form"]').first())
+      .or(page.getByText(/list.*item|create.*listing/i).first())
+
+    const loginCta = page
+      .getByRole('link', { name: /sign in|log in|login/i })
+      .first()
+      .or(page.getByRole('button', { name: /sign in|log in|login/i }).first())
+      .or(page.getByText(/sign in.*sell|log in.*sell|login.*sell|authentication required/i).first())
     
-    expect(isOnAuth || await sellForm.isVisible({ timeout: 5000 })).toBeTruthy()
+    expect(
+      isOnAuth ||
+        (await sellForm.isVisible({ timeout: 5000 })) ||
+        (await loginCta.isVisible({ timeout: 5000 })),
+    ).toBeTruthy()
   })
 
   test('should show selling dashboard structure', async ({ page }) => {
@@ -371,8 +388,9 @@ test.describe('Messaging Flow @messaging', () => {
   })
 
   test('should load chat page structure', async ({ page }) => {
-    await page.goto(ROUTES.chat)
-    await page.waitForLoadState('domcontentloaded')
+    await gotoWithRetries(page, ROUTES.chat, { timeout: 60_000, retries: 3 })
+
+    await page.waitForURL(/\/(auth|login)/i, { timeout: 5_000 }).catch(() => {})
     
     // Should redirect to auth or show chat interface
     const isOnAuth = page.url().includes('/login') || page.url().includes('/auth')
@@ -382,8 +400,9 @@ test.describe('Messaging Flow @messaging', () => {
   })
 
   test('should show empty state or conversations list', async ({ page }) => {
-    await page.goto(ROUTES.chat)
-    await page.waitForLoadState('domcontentloaded')
+    await gotoWithRetries(page, ROUTES.chat, { timeout: 60_000, retries: 3 })
+
+    await page.waitForURL(/\/(auth|login)/i, { timeout: 5_000 }).catch(() => {})
     
     // If authenticated, should show conversations or empty state
     const isOnAuth = page.url().includes('/login') || page.url().includes('/auth')
@@ -408,8 +427,7 @@ test.describe('Reviews Flow @reviews', () => {
 
   test('should display reviews section on product page', async ({ page }) => {
     // Navigate to search to find a product
-    await page.goto(`${ROUTES.search}?q=test`)
-    await page.waitForLoadState('domcontentloaded')
+    await gotoWithRetries(page, `${ROUTES.search}?q=test`, { timeout: 60_000, retries: 2 })
     
     // Try to find a product
     const productLink = page.locator('a[href*="/en/"][href*="/product"], a[href*="/products/"]').first()
@@ -437,16 +455,18 @@ test.describe('Business Account Flow @business', () => {
   })
 
   test('should show plans page with subscription options', async ({ page }) => {
-    await page.goto('/en/plans')
-    await page.waitForLoadState('domcontentloaded')
+    await gotoWithRetries(page, '/en/plans', { timeout: 60_000, retries: 3 })
     
     // Plans page should show pricing options
     const plansContent = page.locator('#main-content').or(page.locator('main'))
     await expect(plansContent).toBeVisible()
     
     // Should show plan cards or pricing
-    const planCards = page.locator('[data-testid="plan-card"], .plan-card, text=/free|plus|pro|power|unlimited/i')
-    await expect(planCards.first()).toBeVisible({ timeout: 5000 })
+    const planCards = page
+      .locator('[data-testid="plan-card"], .plan-card')
+      .first()
+      .or(page.getByText(/free|plus|pro|power|unlimited/i).first())
+    await expect(planCards).toBeVisible({ timeout: 5000 })
   })
 
   test('should show account plans page structure', async ({ page }) => {
@@ -542,15 +562,17 @@ test.describe('Notifications Flow @notifications', () => {
     
     // Look for notifications bell icon in header
     const notificationsBell = page
-      .locator('[data-testid="notifications-dropdown"], [aria-label*="notification" i], button:has(svg[data-icon="bell"])')
+      .locator('[data-testid="notifications-dropdown"] button, button[aria-label*="notification" i]')
       .first()
     
     // May or may not be visible depending on auth state
     // This test just verifies the element exists if user is authenticated
-    const headerNav = page.locator('header nav, header')
+    const headerNav = page.locator('header').first()
     await expect(headerNav).toBeVisible()
 
-    if (await notificationsBell.count()) {
+    // When authenticated, the control should be present and visible.
+    // In logged-out states it may not exist at all, so only assert when it exists.
+    if ((await notificationsBell.count()) > 0) {
       await expect(notificationsBell).toBeVisible()
     }
   })
@@ -579,8 +601,9 @@ test.describe('Security Checks @security', () => {
     ]
 
     for (const route of protectedRoutes) {
-      await page.goto(route)
-      await page.waitForLoadState('domcontentloaded')
+      await gotoWithRetries(page, route, { timeout: 60_000, retries: 3 })
+
+      await page.waitForURL(/\/(auth|login)/i, { timeout: 5_000 }).catch(() => {})
       
       // Should redirect to auth or show auth-required content
       const isOnAuth = page.url().includes('/login') || page.url().includes('/auth')
@@ -695,21 +718,47 @@ test.describe('Accessibility Checks @a11y', () => {
     await expect(header).toBeVisible({ timeout: 60_000 })
     
     // Main content should exist
-    const main = page.locator('main')
+    const main = page.locator('#main-content').first().or(page.getByRole('main').first())
     await expect(main).toBeVisible({ timeout: 60_000 })
   })
 
   test('should have keyboard navigable links', async ({ page }) => {
     test.setTimeout(90_000)
     await gotoWithRetries(page, ROUTES.homepage, { timeout: 60_000, retries: 3 })
+
+    // Use a desktop viewport to avoid mobile-nav focus quirks.
+    await page.setViewportSize({ width: 1280, height: 720 })
     
     // First focusable element should be reachable via Tab
+    await page.locator('body').click({ timeout: 10_000 })
     await page.keyboard.press('Tab')
-    
-    // Something should be focused (avoid visibility flake; focus may be on an offscreen skip link)
-    const focusedTag = await page.evaluate(() => document.activeElement?.tagName || null)
-    expect(focusedTag).not.toBeNull()
-    expect(focusedTag).not.toBe('BODY')
+
+    // Prefer a skip link (added in layout) as an early focus target.
+    // Some layouts render multiple skip links, so accept any of them.
+    const skipLinks = page.getByRole('link', { name: /skip to (content|main content|footer)|към съдържанието/i })
+    const skipLinksCount = await skipLinks.count()
+
+    if (skipLinksCount > 0) {
+      let focused = false
+
+      for (let tabPress = 0; tabPress < 5 && !focused; tabPress++) {
+        for (let i = 0; i < skipLinksCount; i++) {
+          const isFocused = await skipLinks.nth(i).evaluate((el) => el === document.activeElement)
+          if (isFocused) {
+            focused = true
+            break
+          }
+        }
+
+        if (!focused) await page.keyboard.press('Tab')
+      }
+
+      expect(focused).toBeTruthy()
+    } else {
+      const focusedTag = await page.evaluate(() => document.activeElement?.tagName || null)
+      expect(focusedTag).not.toBeNull()
+      expect(focusedTag).not.toBe('BODY')
+    }
   })
 })
 
@@ -745,17 +794,18 @@ test.describe('Localization @i18n', () => {
   test('should have language switcher', async ({ page }) => {
     test.setTimeout(90_000)
     await gotoWithRetries(page, '/en', { timeout: 60_000, retries: 3 })
+
+    // Ensure desktop layout so at least one switcher instance is visible.
+    await page.setViewportSize({ width: 1280, height: 720 })
     
     // Look for language switcher
-    const langSwitcher = page.locator('[data-testid="language-switcher"], [aria-label*="language" i], button:has-text("EN"), button:has-text("BG")').first()
+    const langSwitcher = page.locator('[data-testid="language-switcher"]:visible').first()
     
     // Language switcher should exist (may be in header or footer)
     const header = page.locator('header')
     await expect(header).toBeVisible({ timeout: 60_000 })
 
-    if (await langSwitcher.count()) {
-      await expect(langSwitcher).toBeVisible()
-    }
+    await expect(langSwitcher).toBeVisible()
   })
 })
 
@@ -765,7 +815,8 @@ test.describe('Localization @i18n', () => {
 
 test.describe('Error Handling @errors', () => {
   test('should show 404 page for non-existent routes', async ({ page }) => {
-    const response = await page.goto('/en/this-page-does-not-exist-12345')
+    test.setTimeout(90_000)
+    const response = await gotoWithRetries(page, '/en/this-page-does-not-exist-12345', { timeout: 60_000, retries: 3 })
     
     // Should get 404 status or show custom 404 page
     if (response) {
@@ -779,10 +830,7 @@ test.describe('Error Handling @errors', () => {
 
   test('should handle invalid product slugs gracefully', async ({ page }) => {
     test.setTimeout(90_000)
-    const response = await page.goto('/en/invalid-seller/invalid-product-slug-99999', {
-      waitUntil: 'domcontentloaded',
-      timeout: 60_000,
-    })
+    const response = await gotoWithRetries(page, '/en/invalid-seller/invalid-product-slug-99999', { timeout: 60_000, retries: 3 })
 
     expect(response, 'Expected navigation response').not.toBeNull()
     expect(response!.status()).toBeLessThan(500)

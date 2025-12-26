@@ -176,6 +176,7 @@ export async function completeSellerOnboarding(args: {
   username: string
   displayName: string
   bio: string
+  businessName?: string
 }) {
   const schema = z.object({
     userId: z.string().min(1),
@@ -183,14 +184,27 @@ export async function completeSellerOnboarding(args: {
     username: z.string().min(1),
     displayName: z.string().optional().default(""),
     bio: z.string().optional().default(""),
+    businessName: z.string().optional().default(""),
   })
 
-  const parsed = schema.safeParse(args)
+  const refined = schema.superRefine((data, ctx) => {
+    if (data.accountType === "business") {
+      if (!data.businessName || data.businessName.trim().length < 2) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["businessName"],
+          message: "Business name is required",
+        })
+      }
+    }
+  })
+
+  const parsed = refined.safeParse(args)
   if (!parsed.success) {
     return { error: "Invalid input" as const }
   }
 
-  const { userId, accountType, username, displayName, bio } = parsed.data
+  const { userId, accountType, username, displayName, bio, businessName } = parsed.data
 
   const supabase = await createClient()
   const {
@@ -206,7 +220,9 @@ export async function completeSellerOnboarding(args: {
       account_type: accountType,
       display_name: displayName.trim() || username,
       bio: bio.trim() || null,
+      business_name: accountType === "business" ? (businessName.trim() || null) : null,
       is_seller: true,
+      role: "seller",
       updated_at: new Date().toISOString(),
     })
     .eq("id", userId)

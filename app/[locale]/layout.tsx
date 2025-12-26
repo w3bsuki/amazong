@@ -5,7 +5,7 @@ import { routing } from '@/i18n/routing';
 import { Inter } from "next/font/google";
 import "../globals.css";
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import { Suspense, type ReactNode } from 'react';
 
 // Generate static params for all supported locales
 // Required in Next.js 16+ for dynamic route segments
@@ -75,7 +75,7 @@ export default async function LocaleLayout({
     children,
     params
 }: {
-    children: React.ReactNode;
+  children: ReactNode;
     params: Promise<{ locale: string }>;
 }) {
     // Ensure that the incoming `locale` is valid using proper type guard
@@ -92,17 +92,13 @@ export default async function LocaleLayout({
 
     return (
         <html lang={locale} className={inter.variable}>
-            <head>
-          <meta
-            name="description"
-            content={
-              locale === "bg"
-                ? "Открийте най-добрите продукти на достъпни цени. Бърза доставка в България."
-                : "Discover the best products at affordable prices. Fast delivery."
-            }
-          />
-            </head>
             <body className="bg-background min-h-screen">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:text-foreground focus:ring-1 focus:ring-border"
+          >
+            {locale === 'bg' ? 'Към съдържанието' : 'Skip to content'}
+          </a>
                 <NextIntlClientProvider messages={messages}>
                     <Suspense fallback={null}>
                         <AuthStateListener />

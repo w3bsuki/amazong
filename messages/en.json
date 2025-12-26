@@ -198,8 +198,6 @@
         "shipsFrom": "Ships from",
         "soldBy": "Sold by",
         "giftReceipt": "Add gift receipt for easy returns",
-        "prime": "prime",
-        "primeOneDay": "One-Day",
         "freeReturns": "Free Returns",
         "secureTransaction": "Secure Transaction",
         "aboutThisItem": "About this item",
@@ -292,14 +290,12 @@
         "trackOrders": "Track your recent orders:",
         "goToOrders": "Go to Your Orders",
         "delivery": "A delivery, order or return",
-        "prime": "Prime",
         "payment": "Payment, charges or gift cards",
         "address": "Address, security & privacy",
         "memberships": "Memberships, subscriptions or communications",
         "accessibility": "Accessibility",
         "somethingElse": "Something else",
         "loginPassword": "Login & password",
-        "ebooks": "eBooks, Prime Video or Music",
         "shipping": "Shipping & Delivery",
         "returns": "Returns & Refunds"
     },
@@ -546,6 +542,10 @@
         "emailNotConfirmed": "Please verify your email address before signing in.",
         "createAccountTitle": "Create account",
         "createAccountDescription": "Enter your details to create your Amazon account",
+        "accountTypeLabel": "Account type",
+        "accountTypePersonal": "Personal",
+        "accountTypeBusiness": "Business",
+        "accountTypeHint": "You can change this later.",
         "yourName": "Your name",
         "namePlaceholder": "First and last name",
         "createPasswordPlaceholder": "Create a strong password",
@@ -603,10 +603,6 @@
         "security": {
             "title": "Login & security",
             "desc": "Edit login, name, and mobile number"
-        },
-        "prime": {
-            "title": "Prime",
-            "desc": "View benefits and payment settings"
         },
         "addresses": {
             "title": "Your Addresses",
@@ -696,7 +692,6 @@
         "clearPrice": "Clear Price Filter",
         "loadingCategories": "Loading categories...",
         "deliveryDay": "Delivery Day",
-        "getPrimeDelivery": "Get It by Tomorrow",
         "freeShipping": "Free Shipping",
         "clearAllFilters": "Clear all filters",
         "brand": "Brand",
@@ -716,7 +711,6 @@
         "shopBySubcategory": "Shop by Subcategory",
         "allIn": "All in",
         "quickFilters": "Quick Filters",
-        "primeEligible": "Prime Eligible",
         "deals": "Deals",
         "fourStarsUp": "4â˜… & Up",
         "searchResults": "Search Results",
@@ -792,11 +786,28 @@
         "viewAllMessages": "View All Messages"
     },
     "NotificationsDropdown": {
-        "title": "Notifications",
+        "title": "Inbox",
+        "ariaNotificationsHint": "(notifications)",
         "loading": "Loading...",
-        "noNotifications": "No notifications yet",
+        "noNotifications": "No updates yet",
         "markAllRead": "Mark all read",
-        "viewAll": "View All Notifications"
+        "messagesSection": "Messages",
+        "unreadMessages": "{count, plural, one {# unread message} other {# unread messages}}",
+        "noUnreadMessages": "No unread messages",
+        "updatesSection": "Updates",
+        "openMessages": "Messages",
+        "viewAll": "All updates"
+    },
+    "WishlistDropdown": {
+        "title": "Wishlist",
+        "loading": "Loading...",
+        "empty": "Your wishlist is empty",
+        "startBrowsing": "Start browsing",
+        "item": "item",
+        "items": "items",
+        "remove": "Remove",
+        "moreItems": "more",
+        "viewAll": "View Wishlist"
     },
     "ReturnsDropdown": {
         "title": "Your Orders",
@@ -810,13 +821,15 @@
         "viewAllOrders": "View All Orders"
     },
     "SellingDropdown": {
-        "title": "Your Selling",
+        "title": "Your Listings",
         "createListing": "Create a Listing",
         "createListingDesc": "List an item for sale",
         "myListings": "My Listings",
         "myListingsDesc": "View and manage your active listings",
         "sellerOrders": "Seller Orders",
         "sellerOrdersDesc": "Orders from your buyers",
+        "sales": "Sales",
+        "salesDesc": "Payouts, invoices, and completed sales",
         "dashboard": "Seller Dashboard",
         "dashboardDesc": "Sales analytics and insights",
         "signInToSell": "Sign in to start selling",

@@ -102,20 +102,20 @@ export function AccountOrdersToolbar({
         }}
         className="w-full"
       >
-        <TabsList className="h-auto w-full sm:w-fit rounded-full border border-border bg-muted p-1 overflow-x-auto no-scrollbar whitespace-nowrap justify-start">
-          <TabsTrigger value="all" className="rounded-full text-xs flex-none">
+        <TabsList className="w-full sm:w-fit overflow-x-auto no-scrollbar whitespace-nowrap justify-start">
+          <TabsTrigger value="all" className="text-xs flex-none">
             {labels.all}
             <span className="ml-1 tabular-nums text-muted-foreground">{counts.all}</span>
           </TabsTrigger>
-          <TabsTrigger value="open" className="rounded-full text-xs flex-none">
+          <TabsTrigger value="open" className="text-xs flex-none">
             {labels.open}
             <span className="ml-1 tabular-nums text-muted-foreground">{counts.open}</span>
           </TabsTrigger>
-          <TabsTrigger value="delivered" className="rounded-full text-xs flex-none">
+          <TabsTrigger value="delivered" className="text-xs flex-none">
             {labels.delivered}
             <span className="ml-1 tabular-nums text-muted-foreground">{counts.delivered}</span>
           </TabsTrigger>
-          <TabsTrigger value="cancelled" className="rounded-full text-xs flex-none">
+          <TabsTrigger value="cancelled" className="text-xs flex-none">
             {labels.cancelled}
             <span className="ml-1 tabular-nums text-muted-foreground">{counts.cancelled}</span>
           </TabsTrigger>

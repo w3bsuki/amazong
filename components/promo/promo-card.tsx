@@ -44,22 +44,22 @@ export function PromoCard({
       />
       
       {/* Gradient overlay for text readability */}
-      <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-background/95 via-background/35 to-transparent" />
       
       {/* Badge */}
       {badge && (
-        <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md shadow-lg">
+        <span className="absolute top-3 left-3 rounded-md border border-border bg-background/75 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
           {badge}
         </span>
       )}
       
       {/* Deal Content */}
-      <div className="absolute bottom-3 left-3 right-3 text-white">
-        <p className="text-2xs font-semibold uppercase tracking-widest text-white/70 mb-0.5">{dealText}</p>
-        <p className="text-2xl lg:text-3xl font-black tracking-tighter leading-none">
+      <div className="absolute bottom-3 left-3 right-3 text-foreground">
+        <p className="mb-0.5 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">{dealText}</p>
+        <p className="text-2xl lg:text-3xl font-extrabold tracking-tight leading-none">
           {highlight}
         </p>
-        <p className="text-xs mt-0.5 font-medium text-white/90 line-clamp-1">{subtitle}</p>
+        <p className="mt-0.5 text-xs font-medium text-foreground/90 line-clamp-1">{subtitle}</p>
       </div>
       
       {/* Hover indicator - subtle border */}

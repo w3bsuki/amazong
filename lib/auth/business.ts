@@ -115,6 +115,12 @@ export async function requireBusinessSeller(redirectTo: string = "/account"): Pr
     // Personal account - redirect to regular account
     redirect(redirectTo)
   }
+
+  // Must be an activated seller (completed seller onboarding) before accessing business seller routes.
+  // This prevents non-sellers who selected a business intent at signup from entering dashboard flows.
+  if (!profile.is_seller) {
+    redirect("/sell")
+  }
   
   return {
     id: profile.id,

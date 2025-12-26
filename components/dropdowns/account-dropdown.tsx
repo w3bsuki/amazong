@@ -15,6 +15,8 @@ interface AccountDropdownProps {
 
 export function AccountDropdown({ user }: AccountDropdownProps) {
   const t = useTranslations("Header")
+  const tOrders = useTranslations("ReturnsDropdown")
+  const tSelling = useTranslations("SellingDropdown")
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   const handleSignOut = async () => {
@@ -35,7 +37,7 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
       <Link href="/auth/login">
         <Button
           variant="ghost"
-          className="h-11 px-3 text-sm font-medium border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover"
+            className="h-11 px-3 text-sm font-medium border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover"
         >
           {t("signIn")}
         </Button>
@@ -51,14 +53,14 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
           <Button
             variant="ghost"
             size="icon-xl"
-            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative"
+            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
           >
             <UserCircle weight="fill" />
           </Button>
         </Link>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-[500px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
+        className="w-[560px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
         align="end"
         sideOffset={8}
       >
@@ -83,43 +85,18 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
             </Button>
           </div>
         </div>
-        <div className="flex p-5">
-          <div className="flex-1 border-r border-border pr-5">
-            <h3 className="font-semibold text-base mb-2 text-foreground">{t("yourLists")}</h3>
+        <div className="grid grid-cols-2 gap-0 p-5">
+          <div className="pr-5 border-r border-border">
+            <h3 className="font-semibold text-base mb-2 text-foreground">{tOrders("title")}</h3>
             <ul className="space-y-1.5 text-sm text-muted-foreground">
-              <li>
-                <Link href="/account/wishlist" className="hover:text-link-hover hover:underline">
-                  {t("wishlist")}
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-link-hover hover:underline">
-                  {t("browsingHistory")}
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-link-hover hover:underline">
-                  {t("createList")}
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-link-hover hover:underline">
-                  {t("findList")}
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div className="flex-1 pl-5">
-            <h3 className="font-semibold text-base mb-2 text-foreground">{t("yourAccount")}</h3>
-            <ul className="space-y-1.5 text-sm text-muted-foreground">
-              <li>
-                <Link href="/account" className="hover:text-link-hover hover:underline">
-                  {t("account")}
-                </Link>
-              </li>
               <li>
                 <Link href="/account/orders" className="hover:text-link-hover hover:underline">
-                  {t("orders")}
+                  {tOrders("trackOrders")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/returns" className="hover:text-link-hover hover:underline">
+                  {tOrders("startReturn")}
                 </Link>
               </li>
               <li>
@@ -128,17 +105,51 @@ export function AccountDropdown({ user }: AccountDropdownProps) {
                 </Link>
               </li>
               <li>
-                <Link href="/account/selling" className="hover:text-link-hover hover:underline">
-                  {t("recommendations")}
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-link-hover hover:underline">
-                  {t("memberships")}
+                <Link href="/account" className="hover:text-link-hover hover:underline">
+                  {t("account")}
                 </Link>
               </li>
             </ul>
           </div>
+
+          <div className="pl-5">
+            <h3 className="font-semibold text-base mb-2 text-foreground">{tSelling("title")}</h3>
+            <ul className="space-y-1.5 text-sm text-muted-foreground">
+              <li>
+                <Link href="/sell" className="hover:text-link-hover hover:underline">
+                  {tSelling("createListing")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/sell/orders" className="hover:text-link-hover hover:underline">
+                  {tSelling("sellerOrders")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/account/sales" className="hover:text-link-hover hover:underline">
+                  {tSelling("sales")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/account/wishlist" className="hover:text-link-hover hover:underline">
+                  {t("wishlist")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 p-3 bg-muted border-t border-border">
+          <Link href="/account/orders" className="w-full">
+            <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+              {tOrders("viewAllOrders")}
+            </Button>
+          </Link>
+          <Link href="/sell" className="w-full">
+            <Button className="w-full h-9 text-sm bg-cta-secondary hover:bg-cta-secondary-hover text-cta-secondary-text">
+              {tSelling("createListing")}
+            </Button>
+          </Link>
         </div>
       </HoverCardContent>
     </HoverCard>

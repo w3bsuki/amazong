@@ -12,6 +12,18 @@ function isAccountPath(pathname: string): boolean {
   return pathname === '/account' || pathname.startsWith('/account/')
 }
 
+function isSellerOrdersPath(pathname: string): boolean {
+  const locale = getLocaleFromPath(pathname)
+  if (locale) return pathname === `/${locale}/sell/orders` || pathname.startsWith(`/${locale}/sell/orders/`)
+  return pathname === '/sell/orders' || pathname.startsWith('/sell/orders/')
+}
+
+function isChatPath(pathname: string): boolean {
+  const locale = getLocaleFromPath(pathname)
+  if (locale) return pathname === `/${locale}/chat` || pathname.startsWith(`/${locale}/chat/`)
+  return pathname === '/chat' || pathname.startsWith('/chat/')
+}
+
 function withAuthCookieDomain(options: unknown): unknown {
   if (!options || typeof options !== 'object') return options
   const domain = process.env.AUTH_COOKIE_DOMAIN
@@ -31,7 +43,7 @@ export async function updateSession(request: NextRequest, response?: NextRespons
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     // In E2E/local tests we still want account routes to be protected.
     // If Supabase isn't configured, treat user as unauthenticated.
-    if (isAccountPath(pathname) && !pathname.startsWith(authPrefix)) {
+    if ((isAccountPath(pathname) || isSellerOrdersPath(pathname) || isChatPath(pathname)) && !pathname.startsWith(authPrefix)) {
       const url = request.nextUrl.clone()
       url.pathname = loginPath
       url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)
@@ -74,7 +86,7 @@ export async function updateSession(request: NextRequest, response?: NextRespons
   } = await supabase.auth.getUser()
 
   // Protect /[locale]/account/* (and legacy /account/*) routes.
-  if (!user && isAccountPath(pathname) && !pathname.startsWith(authPrefix)) {
+  if (!user && (isAccountPath(pathname) || isSellerOrdersPath(pathname) || isChatPath(pathname)) && !pathname.startsWith(authPrefix)) {
     const url = request.nextUrl.clone()
     url.pathname = loginPath
     url.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)

@@ -18,6 +18,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { useCart, type CartItem } from "@/components/providers/cart-context"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { CountBadge } from "@/components/ui/count-badge"
 
 export function MobileCartDropdown() {
     const [open, setOpen] = useState(false)
@@ -59,18 +60,19 @@ export function MobileCartDropdown() {
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <button 
-                    className="flex items-center justify-center size-11 p-0 rounded-lg relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
+                    className="flex items-center justify-center h-touch w-touch p-0 rounded-lg relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
                     aria-label={tNav('cart')}
                 >
-                    <ShoppingCart size={24} weight="regular" className="text-header-text" aria-hidden="true" />
-                    {mounted && totalItems > 0 && (
-                        <span 
-                            className="absolute top-0.5 right-0 bg-badge-deal text-white text-xs font-bold min-w-4 h-4 flex items-center justify-center rounded-full px-0.5" 
-                            aria-hidden="true"
-                        >
-                            {totalItems}
-                        </span>
-                    )}
+                    <span className="relative" aria-hidden="true">
+                        <ShoppingCart size={24} weight="regular" className="text-header-text" />
+                        {mounted && totalItems > 0 && (
+                            <CountBadge
+                                count={totalItems}
+                                className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-[10px] shadow-sm"
+                                aria-hidden="true"
+                            />
+                        )}
+                    </span>
                 </button>
             </DrawerTrigger>
             <DrawerContent className="rounded-t-3xl">

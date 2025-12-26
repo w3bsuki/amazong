@@ -8,6 +8,7 @@ import { useCart, type CartItem } from "@/components/providers/cart-context"
 import { ShoppingCart, Package, Minus, Plus, Trash } from "@phosphor-icons/react"
 import Image from "next/image"
 import { useState, useEffect, useCallback } from "react"
+import { CountBadge } from "@/components/ui/count-badge"
 
 export function CartDropdown() {
   const { items, totalItems, subtotal, removeFromCart, updateQuantity } = useCart()
@@ -44,14 +45,18 @@ export function CartDropdown() {
           <Button
             variant="ghost"
             size="icon-xl"
-            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-brand hover:bg-header-hover relative [&_svg]:size-6"
+            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
           >
-            <ShoppingCart weight="regular" />
-            {mounted && displayItems > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-brand text-white text-2xs font-bold rounded-full flex items-center justify-center px-1">
-                {displayItems > 99 ? "99+" : displayItems}
-              </span>
-            )}
+            <span className="relative" aria-hidden="true">
+              <ShoppingCart weight="regular" />
+              {mounted && displayItems > 0 && (
+                <CountBadge
+                  count={displayItems}
+                  className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-[10px] shadow-sm"
+                  aria-hidden="true"
+                />
+              )}
+            </span>
           </Button>
         </Link>
       </HoverCardTrigger>

@@ -1,13 +1,24 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { CaretRight, TrendUp, GridFour, Fire, Percent } from "@phosphor-icons/react"
+import { CaretRight, TrendUp, GridFour, Fire, Percent, Star, Tag, MapPin, ChartLineUp, Eye } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { Link } from "@/i18n/routing"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-type FeedTab = "all" | "newest" | "promoted" | "deals"
+type FeedTab =
+  | "all"
+  | "newest"
+  | "promoted"
+  | "deals"
+  | "top_rated"
+  | "best_sellers"
+  | "most_viewed"
+  | "price_low"
+  | "nearby"
 
 interface Product {
   id: string
@@ -59,6 +70,25 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
   const [hasMore, setHasMore] = useState(true)
   const [pageSize, setPageSize] = useState(12)
 
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  // URL-driven category selection: /?category=slug
+  const urlCategory = searchParams.get("category")
+  useEffect(() => {
+    setActiveCategory(urlCategory && urlCategory.length > 0 ? urlCategory : null)
+  }, [urlCategory])
+
+  const updateUrlCategory = useCallback((category: string | null) => {
+    const next = new URLSearchParams(searchParams.toString())
+    if (category) next.set("category", category)
+    else next.delete("category")
+
+    const qs = next.toString()
+    router.replace(`${pathname}${qs ? `?${qs}` : ""}#listings`, { scroll: false })
+  }, [pathname, router, searchParams])
+
   // Keep the homepage module compact
   useEffect(() => {
     const computePageSize = () => {
@@ -89,24 +119,34 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
   const tabs: { id: FeedTab; label: string; icon: typeof GridFour; color?: string }[] = [
     { id: "all", label: locale === "bg" ? "Всички" : "All", icon: GridFour },
     { id: "newest", label: locale === "bg" ? "Най-нови" : "Newest", icon: TrendUp, color: "text-success" },
-    { id: "promoted", label: locale === "bg" ? "Топ" : "Featured", icon: Fire, color: "text-warning" },
+    { id: "best_sellers", label: locale === "bg" ? "Най-продавани" : "Best Sellers", icon: ChartLineUp, color: "text-primary" },
+    { id: "most_viewed", label: locale === "bg" ? "Най-разглеждани" : "Most Viewed", icon: Eye, color: "text-info" },
+    { id: "top_rated", label: locale === "bg" ? "Топ оценени" : "Top Rated", icon: Star, color: "text-warning" },
+    { id: "promoted", label: locale === "bg" ? "Промотирани" : "Promoted", icon: Fire, color: "text-warning" },
     { id: "deals", label: locale === "bg" ? "Оферти" : "Deals", icon: Percent, color: "text-destructive" },
+    { id: "price_low", label: locale === "bg" ? "Най-ниска цена" : "Lowest Price", icon: Tag, color: "text-info" },
+    { id: "nearby", label: locale === "bg" ? "Близо до мен" : "Near Me", icon: MapPin, color: "text-info" },
   ]
 
   const fetchProducts = useCallback(async (tab: FeedTab, pageNum: number, limit: number, append = false, categorySlug?: string | null) => {
     setIsLoading(true)
     try {
-      const endpoint = tab === "promoted"
-        ? "/api/products/promoted"
-        : tab === "deals"
-          ? "/api/products/deals"
-          : "/api/products/newest"
+      const params = new URLSearchParams({ 
+        type: tab,
+        page: String(pageNum), 
+        limit: String(limit) 
+      })
       
-      const params = new URLSearchParams({ page: String(pageNum), limit: String(limit) })
       if (categorySlug) {
         params.set("category", categorySlug)
       }
-      const url = `${endpoint}?${params.toString()}`
+
+      // For "Near Me", we'd ideally get the city from a cookie or profile
+      // For now, we'll let the API handle it or use a default if we had one
+      // const city = getCookie('user-city')
+      // if (city) params.set("city", city)
+
+      const url = `/api/products/feed?${params.toString()}`
 
       const res = await fetch(url)
       if (!res.ok) return
@@ -196,6 +236,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
   const handleCategoryChange = (slug: string | null) => {
     const newSlug = slug === "all" ? null : slug
     setActiveCategory(newSlug)
+    updateUrlCategory(newSlug)
     setPage(1)
     setProducts([])
   }
@@ -209,142 +250,134 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
   }
 
   return (
-    <section className="w-full" aria-label={locale === "bg" ? "Обяви" : "Listings"}>
-      {/* Section Header with Title + Tabs */}
-      <div className="flex flex-col gap-4 mb-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
-            {locale === "bg" ? "Обяви" : "Listings"}
-          </h2>
-          <Link
-            href={activeCategory ? `/categories/${activeCategory}` : "/search?sort=newest"}
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+    <section id="listings" className="w-full" aria-label={locale === "bg" ? "Обяви" : "Listings"}>
+      {/* Unified Navigation Row - Professional Nav Pills */}
+      <div className="flex flex-col gap-4 mb-8">
+        <div className="-mx-4 px-4 md:mx-0 md:px-0">
+          <Tabs
+            value={activeTab}
+            onValueChange={(next) => handleTabChange(next as FeedTab)}
+            className="w-full"
           >
-            {locale === "bg" ? "виж всички" : "see all"}
-            <CaretRight size={14} weight="bold" aria-hidden="true" />
-          </Link>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          {/* Feed Type Tabs */}
-          <div className="flex items-center gap-1.5" role="tablist">
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => handleTabChange(tab.id)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all border",
-                    isActive
-                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                      : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground hover:border-muted-foreground/30"
-                  )}
+            <div className="relative">
+              <div className="overflow-x-auto no-scrollbar pb-1">
+                <TabsList
+                  aria-label={locale === "bg" ? "Филтър на обявите" : "Listings filter"}
+                  className="h-auto w-max min-w-full justify-start gap-1 rounded-full border border-border bg-muted/30 p-1 md:w-full md:justify-center"
                 >
-                  <Icon size={14} weight={isActive ? "fill" : "regular"} className={cn(!isActive && tab.color)} />
-                  {tab.label}
-                </button>
-              )
-            })}
-          </div>
-
-          {/* Category Filter Pills */}
-          <div className="mb-2">
-            {/* Category filtering removed - use tab navigation instead */}
-          </div>
-        </div>
-      </div>
-
-      {/* Product Grid */}
-      <div role="list" aria-live="polite">
-        {products.length === 0 && isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4" aria-busy="true">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="space-y-3">
-                <Skeleton className="aspect-[3/4] w-full rounded-lg" />
-                <div className="space-y-1">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                </div>
+                  {tabs.map((tab) => {
+                    return (
+                      <TabsTrigger
+                        key={tab.id}
+                        value={tab.id}
+                        className={cn(
+                          "h-9 flex-none rounded-full border-none px-5 text-sm font-semibold transition-all",
+                          "text-muted-foreground hover:text-foreground hover:bg-background/50",
+                          "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm",
+                          "md:flex-1 md:justify-center"
+                        )}
+                      >
+                        <span className="whitespace-nowrap">{tab.label}</span>
+                      </TabsTrigger>
+                    )
+                  })}
+                </TabsList>
               </div>
-            ))}
-          </div>
-        ) : products.length === 0 ? (
-          <div className="text-center py-20 text-muted-foreground" role="status">
-            <div className="text-4xl mb-4" aria-hidden="true">📦</div>
-            <p className="text-lg">{locale === "bg" ? "Няма намерени обяви" : "No listings found"}</p>
-            {activeCategory && (
-              <button onClick={() => handleCategoryChange(null)} className="mt-4 text-sm text-primary hover:underline">
-                {locale === "bg" ? "Покажи всички категории" : "Show all categories"}
-              </button>
-            )}
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8">
-              {products.map((product, index) => (
-                <div key={product.id} role="listitem">
-                  <ProductCard
-                    id={product.id}
-                    title={product.title}
-                    price={product.price}
-                    originalPrice={product.listPrice}
-                    isOnSale={product.isOnSale}
-                    salePercent={product.salePercent}
-                    saleEndDate={product.saleEndDate}
-                    image={product.image}
-                    rating={product.rating}
-                    reviews={product.reviews}
-                    slug={product.slug}
-                    storeSlug={product.storeSlug}
-                    sellerId={product.sellerId || undefined}
-                    sellerName={(product.sellerName || product.storeSlug) || undefined}
-                    sellerAvatarUrl={product.sellerAvatarUrl || null}
-                    sellerTier={product.sellerTier}
-                    sellerVerified={product.sellerVerified}
-                    location={product.location}
-                    brand={product.brand}
-                    condition={product.condition}
-                    make={product.make}
-                    model={product.model}
-                    year={product.year}
-                    tags={product.tags}
-                    isBoosted={product.isBoosted}
-                    showPills={true}
-                    index={index}
-                  />
-                </div>
-              ))}
             </div>
 
-            {hasMore && (
-              <div className="mt-12 text-center">
-                <button
-                  onClick={loadMore}
-                  disabled={isLoading}
-                  className={cn(
-                    "px-8 py-3 rounded-full font-medium text-sm transition-all",
-                    "bg-primary text-primary-foreground hover:bg-primary/90",
-                    "disabled:opacity-50 disabled:cursor-not-allowed",
-                    "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  )}
-                >
-                  {isLoading ? (
-                    <span className="flex items-center gap-2">
-                      <span className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                      {locale === "bg" ? "Зареждане..." : "Loading..."}
-                    </span>
-                  ) : (
-                    locale === "bg" ? "Зареди още" : "Load more"
-                  )}
-                </button>
+            {/* Keep a real tabpanel in the DOM for a11y without duplicating content */}
+            <TabsContent value={activeTab} className="mt-0">
+              {/* Product Grid */}
+              <div role="list" aria-live="polite">
+                {products.length === 0 && isLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4" aria-busy="true">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                      <div key={i} className="space-y-3">
+                        <Skeleton className="aspect-3/4 w-full rounded-lg" />
+                        <div className="space-y-1">
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-2/3" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : products.length === 0 ? (
+                  <div className="text-center py-20 text-muted-foreground" role="status">
+                    <div className="text-4xl mb-4" aria-hidden="true">📦</div>
+                    <p className="text-lg">{locale === "bg" ? "Няма намерени обяви" : "No listings found"}</p>
+                    {activeCategory && (
+                      <button onClick={() => handleCategoryChange(null)} className="mt-4 text-sm text-primary hover:underline">
+                        {locale === "bg" ? "Покажи всички категории" : "Show all categories"}
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8">
+                      {products.map((product, index) => (
+                        <div key={product.id} role="listitem">
+                          <ProductCard
+                            id={product.id}
+                            title={product.title}
+                            price={product.price}
+                            originalPrice={product.listPrice}
+                            isOnSale={product.isOnSale}
+                            salePercent={product.salePercent}
+                            saleEndDate={product.saleEndDate}
+                            image={product.image}
+                            rating={product.rating}
+                            reviews={product.reviews}
+                            slug={product.slug}
+                            storeSlug={product.storeSlug}
+                            sellerId={product.sellerId || undefined}
+                            sellerName={(product.sellerName || product.storeSlug) || undefined}
+                            sellerAvatarUrl={product.sellerAvatarUrl || null}
+                            sellerTier={product.sellerTier}
+                            sellerVerified={product.sellerVerified}
+                            location={product.location}
+                            brand={product.brand}
+                            condition={product.condition}
+                            make={product.make}
+                            model={product.model}
+                            year={product.year}
+                            tags={product.tags}
+                            isBoosted={product.isBoosted}
+                            showPills={true}
+                            index={index}
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    {hasMore && (
+                      <div className="mt-12 text-center">
+                        <button
+                          onClick={loadMore}
+                          disabled={isLoading}
+                          className={cn(
+                            "px-8 py-3 rounded-full font-medium text-sm transition-all",
+                            "bg-primary text-primary-foreground hover:bg-primary/90",
+                            "disabled:opacity-50 disabled:cursor-not-allowed",
+                            "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                          )}
+                        >
+                          {isLoading ? (
+                            <span className="flex items-center gap-2">
+                              <span className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                              {locale === "bg" ? "Зареждане..." : "Loading..."}
+                            </span>
+                          ) : (
+                            locale === "bg" ? "Зареди още" : "Load more"
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
-            )}
-          </>
-        )}
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </section>
   )
@@ -353,26 +386,23 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 export function TabbedProductFeedSkeleton() {
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-4 mb-6">
+      <div className="flex flex-col gap-4 mb-8">
         <div className="flex items-center justify-between">
           <Skeleton className="h-6 w-24" />
           <Skeleton className="h-4 w-16" />
         </div>
-        <div className="flex items-center gap-1.5">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-8 w-20 rounded-full" />
-          ))}
-        </div>
-        <div className="flex items-center gap-2 overflow-hidden">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-7 w-24 rounded-full shrink-0" />
-          ))}
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex items-center gap-2 shrink-0">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-32 rounded-full" />
+            ))}
+          </div>
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="space-y-3">
-            <Skeleton className="aspect-[3/4] w-full rounded-lg" />
+            <Skeleton className="aspect-square w-full rounded-lg" />
             <div className="space-y-1">
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-2/3" />

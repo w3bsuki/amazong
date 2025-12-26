@@ -26,12 +26,13 @@ function PageContainer({
     <div
       data-slot="page-container"
       className={cn(
-        "mx-auto w-full px-4 sm:px-6 lg:px-8",
+        "w-full",
         {
-          "max-w-3xl": size === "narrow",
-          "max-w-6xl": size === "default",
-          "max-w-7xl": size === "wide",
-          "": size === "full",
+          // Intentionally uses the same width primitives as the rest of the app.
+          "container-narrow": size === "narrow",
+          "container": size === "default",
+          "container-wide": size === "wide",
+          "px-4 sm:px-6 lg:px-8": size === "full",
         },
         className
       )}

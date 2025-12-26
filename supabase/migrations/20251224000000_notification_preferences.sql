@@ -64,3 +64,6 @@ CREATE POLICY "Users can update own notification preferences"
   ON public.notification_preferences FOR UPDATE
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
+
+-- PostgREST access (RLS still applies)
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.notification_preferences TO authenticated;

@@ -14,7 +14,6 @@ interface FeaturedProduct {
   image: string
   rating?: number
   reviews?: number
-  isPrime?: boolean
   isBoosted?: boolean
   sellerTier?: 'basic' | 'premium' | 'business'
   slug?: string | null

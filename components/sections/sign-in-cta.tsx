@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { createClient } from '@/lib/supabase/server'
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
@@ -37,7 +39,7 @@ export async function SignInCTA() {
         </p>
       </div>
       <Link href="/auth/login" className="w-full sm:w-auto">
-        <Button className="w-full min-h-10 sm:min-h-11 px-8 bg-white hover:bg-white/90 text-cta-trust-blue text-sm font-bold rounded-full transition-transform active:scale-[0.98]">
+        <Button className="w-full min-h-touch px-8 bg-white hover:bg-white/90 text-cta-trust-blue text-sm font-bold rounded-full transition-transform active:scale-[0.98]">
           {t('sections.signInSecurely')}
         </Button>
       </Link>

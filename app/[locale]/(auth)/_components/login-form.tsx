@@ -13,16 +13,18 @@ import type { AuthActionState } from "../_actions/auth"
 function SubmitButton({
   label,
   pendingLabel,
+  disabled,
 }: {
   label: string
   pendingLabel: string
+  disabled?: boolean
 }) {
   const { pending } = useFormStatus()
   return (
     <button
       type="submit"
-      disabled={pending}
-      className="w-full h-10 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+      disabled={pending || disabled}
+      className="w-full h-10 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
     >
       {pending ? (
         <span className="inline-flex items-center gap-2">
@@ -55,6 +57,8 @@ export function LoginForm({
   )
   const [state, formAction] = useActionState(login.bind(null, locale, redirectPath), initialState)
 
+  const isSubmittable = email.trim().length > 0 && password.length > 0
+
   useEffect(() => {
     try {
       const savedRememberMe = localStorage.getItem("remember-me") === "true"
@@ -77,24 +81,24 @@ export function LoginForm({
   }
 
   return (
-    <div className="min-h-svh flex items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-sm bg-white rounded-xl border border-gray-200 relative">
+    <div className="min-h-svh flex items-center justify-center bg-muted/30 p-4">
+      <div className="w-full max-w-sm bg-card rounded-xl border border-border relative">
         <div className="p-6">
           <div className="flex flex-col items-center mb-6">
             <Link href="/" className="mb-4 hover:opacity-80 transition-opacity">
               <Image src="/icon.svg" width={40} height={40} alt="AMZN" priority />
             </Link>
-            <h1 className="text-xl font-semibold text-gray-900">{t("signIn")}</h1>
-            <p className="text-sm text-gray-500 mt-1 text-center">{t("signInDescription")}</p>
+            <h1 className="text-xl font-semibold text-foreground">{t("signIn")}</h1>
+            <p className="text-sm text-muted-foreground mt-1 text-center">{t("signInDescription")}</p>
           </div>
 
           <form action={formAction} onSubmit={onSubmit} className="space-y-4">
             {state?.error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">{state.error}</div>
+              <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">{state.error}</div>
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
                 {t("emailOrPhone")}
               </label>
               <input
@@ -107,17 +111,17 @@ export function LoginForm({
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t("emailPlaceholder")}
                 aria-invalid={!!state?.fieldErrors?.email}
-                className={`w-full h-10 px-3 text-sm text-gray-900 placeholder:text-gray-400 bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-colors ${state?.fieldErrors?.email ? "border-red-400 focus:ring-red-500/40 focus:border-red-500" : "border-gray-300"}`}
+                className={`w-full h-10 px-3 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.email ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
               />
-              {state?.fieldErrors?.email && <p className="text-xs text-red-500 mt-1">{state.fieldErrors.email}</p>}
+              {state?.fieldErrors?.email && <p className="text-xs text-destructive mt-1">{state.fieldErrors.email}</p>}
             </div>
 
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <label htmlFor="password" className="text-sm font-medium text-foreground">
                   {t("password")}
                 </label>
-                <Link href="/auth/forgot-password" className="text-xs text-blue-600 hover:underline">
+                <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
                   {t("forgotPassword")}
                 </Link>
               </div>
@@ -132,44 +136,48 @@ export function LoginForm({
                   placeholder={t("passwordPlaceholder")}
                   aria-invalid={!!state?.fieldErrors?.password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full h-10 px-3 pr-10 text-sm text-gray-900 placeholder:text-gray-400 bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-colors ${state?.fieldErrors?.password ? "border-red-400 focus:ring-red-500/40 focus:border-red-500" : "border-gray-300"}`}
+                  className={`w-full h-10 px-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.password ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                 >
                   {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
                 </button>
               </div>
-              {state?.fieldErrors?.password && <p className="text-xs text-red-500 mt-1">{state.fieldErrors.password}</p>}
+              {state?.fieldErrors?.password && <p className="text-xs text-destructive mt-1">{state.fieldErrors.password}</p>}
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm text-gray-600">
+              <label className="flex items-center gap-2 text-sm text-muted-foreground">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="size-4 rounded border-gray-300"
+                  className="size-4 rounded border-input accent-primary"
                 />
                 {t("rememberMe")}
               </label>
             </div>
 
             <div className="pt-1">
-              <SubmitButton label={t("signIn")} pendingLabel={t("signingIn")} />
+              <SubmitButton
+                label={t("signIn")}
+                pendingLabel={t("signingIn")}
+                disabled={!isSubmittable}
+              />
             </div>
           </form>
 
-          <p className="text-xs text-gray-600 mt-4 leading-relaxed">
+          <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
             {t("byContinuing")} {" "}
-            <Link href="/terms" className="text-blue-600 hover:underline">
+            <Link href="/terms" className="text-primary hover:underline">
               {t("conditionsOfUse")}
             </Link>{" "}
             {t("and")} {" "}
-            <Link href="/privacy" className="text-blue-600 hover:underline">
+            <Link href="/privacy" className="text-primary hover:underline">
               {t("privacyNotice")}
             </Link>
             .
@@ -177,15 +185,15 @@ export function LoginForm({
 
           <div className="mt-6">
             <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-gray-200" />
-              <p className="text-xs text-gray-500">{t("newToAmazon")}</p>
-              <div className="h-px flex-1 bg-gray-200" />
+              <div className="h-px flex-1 bg-border" />
+              <p className="text-xs text-muted-foreground">{t("newToAmazon")}</p>
+              <div className="h-px flex-1 bg-border" />
             </div>
 
             <Link href="/auth/sign-up" className="block mt-3">
               <button
                 type="button"
-                className="w-full h-10 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
+                className="w-full h-10 bg-background border border-input text-foreground text-sm font-medium rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center"
               >
                 {t("createAccount")}
               </button>
@@ -193,19 +201,19 @@ export function LoginForm({
           </div>
         </div>
 
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-xl">
-          <div className="flex justify-center gap-4 text-xs text-gray-500">
-            <Link href="/terms" className="hover:text-blue-600 transition-colors">
+        <div className="px-6 py-4 bg-muted/30 border-t border-border rounded-b-xl">
+          <div className="flex justify-center gap-4 text-xs text-muted-foreground">
+            <Link href="/terms" className="hover:text-primary transition-colors">
               {t("conditionsOfUse")}
             </Link>
-            <Link href="/privacy" className="hover:text-blue-600 transition-colors">
+            <Link href="/privacy" className="hover:text-primary transition-colors">
               {t("privacyNotice")}
             </Link>
-            <Link href="/help" className="hover:text-blue-600 transition-colors">
+            <Link href="/help" className="hover:text-primary transition-colors">
               {t("help")}
             </Link>
           </div>
-          <p className="text-xs text-center text-gray-400 mt-2">{t("copyright", { year: new Date().getFullYear() })}</p>
+          <p className="text-xs text-center text-muted-foreground/70 mt-2">{t("copyright", { year: new Date().getFullYear() })}</p>
         </div>
       </div>
     </div>

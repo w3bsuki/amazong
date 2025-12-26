@@ -35,14 +35,13 @@ export async function GET(request: NextRequest) {
         images, 
         product_images(image_url,thumbnail_url,display_order,is_primary),
         product_attributes(name,value),
-        is_prime, 
         is_boosted,
         boost_expires_at,
         created_at, 
         slug,
         attributes,
         seller:profiles(username),
-        categories!inner(slug)
+        categories!inner(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))
       `, { count: 'exact' })
 
     if (category) {
@@ -74,12 +73,12 @@ export async function GET(request: NextRequest) {
         images: p.images,
         product_images: p.product_images,
         product_attributes: p.product_attributes,
-        is_prime: p.is_prime,
         is_boosted: (p as any).is_boosted,
         boost_expires_at: (p as any).boost_expires_at,
         slug: p.slug,
         store_slug: p.seller?.username ?? null,
         category_slug: p.categories?.slug ?? null,
+        categories: (p as any).categories ?? null,
         attributes: p.attributes,
       }),
     }))

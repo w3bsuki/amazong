@@ -32,6 +32,10 @@ export interface UseGeoWelcomeReturn extends GeoWelcomeState {
   closeModal: () => void;
 }
 
+export interface UseGeoWelcomeOptions {
+  enabled?: boolean;
+}
+
 /**
  * Helper to get cookie value
  */
@@ -81,7 +85,8 @@ function setLocalStorage(key: string, value: string) {
  * Custom hook for managing geo-location welcome modal state
  * Handles first-visit detection, cookie management, and Supabase profile sync
  */
-export function useGeoWelcome(): UseGeoWelcomeReturn {
+export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcomeReturn {
+  const { enabled = true } = options;
   const [state, setState] = useState<GeoWelcomeState>({
     isOpen: false,
     detectedCountry: 'BG',
@@ -92,6 +97,11 @@ export function useGeoWelcome(): UseGeoWelcomeReturn {
 
   // Initialize state on mount
   useEffect(() => {
+    if (!enabled) {
+      setState(prev => ({ ...prev, isOpen: false, isLoading: false }));
+      return;
+    }
+
     const initializeGeoWelcome = async () => {
       // Check if already dismissed
       const dismissed = getLocalStorage(STORAGE_KEYS.DISMISSED);
@@ -143,7 +153,7 @@ export function useGeoWelcome(): UseGeoWelcomeReturn {
     };
 
     initializeGeoWelcome();
-  }, []);
+  }, [enabled]);
 
   /**
    * Update selected region in state

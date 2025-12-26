@@ -992,7 +992,6 @@ export type Database = {
           is_featured: boolean | null
           is_limited_stock: boolean | null
           is_on_sale: boolean | null
-          is_prime: boolean | null
           list_price: number | null
           listing_type: string | null
           meta_description: string | null
@@ -1042,7 +1041,6 @@ export type Database = {
           is_featured?: boolean | null
           is_limited_stock?: boolean | null
           is_on_sale?: boolean | null
-          is_prime?: boolean | null
           list_price?: number | null
           listing_type?: string | null
           meta_description?: string | null
@@ -1092,7 +1090,6 @@ export type Database = {
           is_featured?: boolean | null
           is_limited_stock?: boolean | null
           is_on_sale?: boolean | null
-          is_prime?: boolean | null
           list_price?: number | null
           listing_type?: string | null
           meta_description?: string | null

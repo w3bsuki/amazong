@@ -45,7 +45,6 @@ create table public.products (
   images text[] default '{}', -- Array of image URLs
   rating decimal(3, 2) default 0,
   review_count integer default 0,
-  is_prime boolean default false,
   search_vector tsvector, -- For Full Text Search
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null

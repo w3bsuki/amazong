@@ -6,17 +6,16 @@ import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 import { CategoryRail } from "@/components/shared/category-rail"
 import { DesktopCategoryRail } from "@/components/desktop/desktop-category-rail"
 
-import { DesktopFeaturedCategoryRail } from "@/components/desktop/desktop-featured-category-rail"
-
 // Desktop-only components
 import { DesktopHeroCTA } from "@/components/desktop/desktop-hero-cta"
 
 // Async sections using cached data
 import { 
-  SignInCTA, 
   NewestListings, 
   NewestListingsSectionSkeleton,
 } from "@/components/sections"
+
+import { SignInCTA } from "@/components/sections/sign-in-cta"
 
 // New components
 import { TabbedProductFeed, TabbedProductFeedSkeleton } from "@/components/sections/tabbed-product-feed"
@@ -53,9 +52,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params
   setRequestLocale(locale)
 
-  const isBg = locale === "bg"
-
-  // Fetch top categories for the quick pills
+  // Fetch top categories for mobile listings filters
   const supabase = createStaticClient()
   const { data: categories } = await supabase
     .from('categories')
@@ -97,22 +94,32 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
       {/* ================================================================
           DESKTOP: Clean Product-First Layout
-          - Simplified Hero
-          - No duplicate category rails
+          - Integrated Hero with Category Quick Entry
           - Main Product Feed
           ================================================================ */}
       <div className="hidden md:block w-full">
         
-        {/* Hero Section - Compact Banner */}
+        {/* Hero Section - Integrated Banner */}
         <div className="w-full bg-background pt-6 pb-8">
-          <div className="container px-4 lg:px-6">
-            <DesktopHeroCTA locale={locale} />
+          <div className="container">
+            <DesktopHeroCTA 
+              locale={locale} 
+              bottomSlot={
+                <div className="pt-1">
+                  <DesktopCategoryRail
+                    locale={locale}
+                    showTitle={false}
+                    className="max-w-full"
+                  />
+                </div>
+              }
+            />
           </div>
         </div>
 
         {/* Main Product Feed - High signal, no tabs */}
         <div className="w-full bg-background pb-12">
-          <div className="container px-4 lg:px-6">
+          <div className="container">
             <Suspense fallback={<TabbedProductFeedSkeleton />}>
               <TabbedProductFeed locale={locale} />
             </Suspense>
@@ -127,7 +134,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
         {/* Sign In CTA */}
         <div className="w-full bg-background pb-20">
-          <div className="container px-4 lg:px-6">
+          <div className="container">
             <Suspense fallback={<SignInCtaSkeleton />}>
               <SignInCTA />
             </Suspense>

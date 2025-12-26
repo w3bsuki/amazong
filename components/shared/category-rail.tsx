@@ -33,14 +33,14 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
       className="py-0.5"
     >
       <div 
-        className="flex overflow-x-auto no-scrollbar gap-2.5 px-3 py-0.5 snap-x snap-mandatory scroll-pl-3"
+        className="flex overflow-x-auto no-scrollbar gap-2 px-3 py-0.5 snap-x snap-mandatory scroll-pl-3"
         role="list"
       >
         {isLoading && fetchedCategories.length === 0 ? (
           // Skeleton state
           Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex flex-col items-center gap-1.5 shrink-0">
-              <div className="size-[72px] rounded-full bg-muted animate-pulse" />
+              <div className="size-14 rounded-full bg-muted animate-pulse" />
               <div className="h-2.5 w-10 bg-muted animate-pulse rounded" />
             </div>
           ))
@@ -64,19 +64,19 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
                 <div
                   className={cn(
                     "flex items-center justify-center",
-                    "size-[72px] rounded-full",
-                    "bg-brand-muted/50 ring-1 ring-border/35",
+                    "size-14 rounded-full",
+                    "bg-cta-trust-blue ring-1 ring-cta-trust-blue/35",
                     "transition-all duration-200 ease-out",
-                    "group-hover:bg-brand-muted/70 group-hover:ring-brand/15",
+                    "group-hover:bg-cta-trust-blue-hover group-hover:ring-cta-trust-blue/55",
                     "group-active:scale-[0.96]"
                   )}
                 >
-                  <span className="text-brand group-hover:text-brand-dark transition-colors scale-110">
+                  <span className="text-cta-trust-blue-text transition-colors scale-110">
                     {getCategoryIcon(cat.slug, { size: 24, weight: "regular" })}
                   </span>
                 </div>
                 {/* Label */}
-                <span className="mt-1.5 text-foreground font-semibold text-2xs text-center max-w-[72px] leading-tight line-clamp-1 group-hover:text-cta-trust-blue transition-colors duration-150">
+                <span className="mt-1.5 text-foreground font-semibold text-xs text-center max-w-16 leading-tight line-clamp-1">
                   {categoryName}
                 </span>
               </Link>

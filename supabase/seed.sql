@@ -55,7 +55,7 @@ ON CONFLICT (name) DO NOTHING;
 -- We need to fetch category IDs to insert products correctly. 
 -- Since we can't easily do variables in pure SQL seeds without PL/pgSQL blocks or subqueries, we'll use subqueries.
 
-INSERT INTO public.products (seller_id, category_id, title, description, price, list_price, stock, images, rating, review_count, is_prime)
+INSERT INTO public.products (seller_id, category_id, title, description, price, list_price, stock, images, rating, review_count)
 VALUES
   (
     '00000000-0000-0000-0000-000000000000',
@@ -67,8 +67,7 @@ VALUES
     50,
     ARRAY['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80'],
     4.5,
-    120,
-    true
+    120
   ),
   (
     '00000000-0000-0000-0000-000000000000',
@@ -80,8 +79,7 @@ VALUES
     25,
     ARRAY['https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&q=80'],
     4.8,
-    85,
-    true
+    85
   ),
   (
     '00000000-0000-0000-0000-000000000000',
@@ -93,8 +91,7 @@ VALUES
     100,
     ARRAY['https://images.unsplash.com/photo-1589492477829-5e65395b66cc?w=500&q=80'],
     4.2,
-    200,
-    false
+    200
   ),
   (
     '00000000-0000-0000-0000-000000000000',
@@ -106,8 +103,7 @@ VALUES
     10,
     ARRAY['https://images.unsplash.com/photo-1486401899868-0e435ed85128?w=500&q=80'],
     4.9,
-    500,
-    true
+    500
   ),
   (
     '00000000-0000-0000-0000-000000000000',
@@ -119,8 +115,7 @@ VALUES
     30,
     ARRAY['https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=80'],
     4.6,
-    45,
-    false
+    45
   )
 ON CONFLICT DO NOTHING; -- Products don't have a unique constraint on title, but this prevents errors if run multiple times if we had IDs. Since we don't specify IDs, it will just insert new ones if we run it again. 
 -- To make it idempotent without IDs, we'd need a unique constraint or check existence. 

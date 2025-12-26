@@ -11,16 +11,17 @@ const COOKIE_CONSENT_KEY = "cookie-consent"
 type ConsentValue = "accepted" | "declined" | null
 
 export function CookieConsent() {
-    // Never block E2E runs with consent UI.
-    if (process.env.NEXT_PUBLIC_E2E === "true") {
-        return null
-    }
-
+    const isE2E = process.env.NEXT_PUBLIC_E2E === "true"
     const t = useTranslations('Cookies')
     const [consent, setConsent] = useState<ConsentValue>(null)
     const [isVisible, setIsVisible] = useState(false)
 
     useEffect(() => {
+        // Never block E2E runs with consent UI.
+        if (isE2E) {
+            return
+        }
+
         // Check if consent was already given
         const storedConsent = localStorage.getItem(COOKIE_CONSENT_KEY)
         if (!storedConsent) {
@@ -30,7 +31,7 @@ export function CookieConsent() {
         } else {
             setConsent(storedConsent as ConsentValue)
         }
-    }, [])
+    }, [isE2E])
 
     const handleAccept = () => {
         localStorage.setItem(COOKIE_CONSENT_KEY, "accepted")
@@ -51,7 +52,7 @@ export function CookieConsent() {
         // For now, we'll just navigate to the cookie policy page
     }
 
-    if (!isVisible || consent) {
+    if (isE2E || !isVisible || consent) {
         return null
     }
 
@@ -110,7 +111,7 @@ export function CookieConsent() {
 
             {/* Desktop banner */}
             <div className="hidden md:block bg-primary text-primary-foreground border-t border-border/30">
-                <div className="max-w-7xl mx-auto px-6 py-4">
+                <div className="container py-4">
                     <div className="flex items-center justify-between gap-8">
                         <div className="flex-1 flex items-center gap-3">
                             <Cookie size={20} weight="regular" className="text-accent shrink-0" />

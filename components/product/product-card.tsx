@@ -22,8 +22,7 @@ import {
   Truck,
   Briefcase,
   Crown,
-  User,
-  Plus
+  User
 } from "@phosphor-icons/react"
 import { useMemo } from "react"
 
@@ -78,7 +77,6 @@ export interface ProductCardProps extends VariantProps<typeof cardVariants> {
   brand?: string
   categorySlug?: string
   tags?: string[]
-  isPrime?: boolean
   make?: string | null
   model?: string | null
   year?: string | number | null
@@ -222,7 +220,7 @@ export function ProductCard({
   categorySlug,
   sellerName,
   sellerVerified = false,
-  sellerRating,
+  sellerRating: _sellerRating,
   location,
   sellerId,
   sellerTier,

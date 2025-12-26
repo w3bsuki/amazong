@@ -24,7 +24,6 @@ export interface Product {
     display_order?: number | null
     is_primary?: boolean | null
   }> | null
-  is_prime?: boolean | null
   is_boosted?: boolean | null
   boost_expires_at?: string | null
   is_featured?: boolean | null
@@ -38,6 +37,15 @@ export interface Product {
   category_slug?: string | null
   slug?: string | null
   store_slug?: string | null
+  /** Embedded leaf category with parent chain (up to 4 levels) */
+  categories?: {
+    id?: string
+    slug?: string
+    name?: string
+    name_bg?: string | null
+    icon?: string | null
+    parent?: Product["categories"] | null
+  } | null
   seller_profile?: {
     id?: string | null
     username?: string | null
@@ -70,8 +78,11 @@ export interface UIProduct {
   image: string
   rating: number
   reviews: number
-  isPrime: boolean
   categorySlug?: string
+  /** Root (L0) category slug (e.g. fashion, electronics, automotive) */
+  categoryRootSlug?: string
+  /** Category path from L0 -> leaf, includes both EN and BG labels */
+  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }>
   slug?: string | null
   storeSlug?: string | null
   sellerId?: string | null
@@ -93,6 +104,67 @@ export interface UIProduct {
   year?: string
   /** Location (for real estate, services) */
   location?: string
+}
+
+function normalizeCategoryNode(
+  input: unknown
+): Product["categories"] | null | undefined {
+  if (!input || typeof input !== 'object') return input as null | undefined
+
+  // Supabase can return nested relations as arrays depending on FK metadata.
+  // Our UI expects a single parent chain, so we take the first item when arrays appear.
+  if (Array.isArray(input)) {
+    return normalizeCategoryNode(input[0])
+  }
+
+  const node = input as Record<string, unknown>
+  const normalized: NonNullable<Product["categories"]> = {
+    id: typeof node.id === 'string' ? node.id : undefined,
+    slug: typeof node.slug === 'string' ? node.slug : undefined,
+    name: typeof node.name === 'string' ? node.name : undefined,
+    name_bg:
+      typeof node.name_bg === 'string' || node.name_bg === null
+        ? (node.name_bg as string | null)
+        : undefined,
+    icon:
+      typeof node.icon === 'string' || node.icon === null
+        ? (node.icon as string | null)
+        : undefined,
+    parent: normalizeCategoryNode(node.parent) ?? null,
+  }
+
+  return normalized
+}
+
+function buildCategoryPath(
+  leaf: Product["categories"] | null | undefined
+): UIProduct["categoryPath"] {
+  if (!leaf) return undefined
+  const path: NonNullable<UIProduct["categoryPath"]> = []
+  const visited = new Set<string>()
+
+  let node: Product["categories"] | null | undefined = leaf
+  while (node && typeof node === "object") {
+    const slug = node.slug
+    const name = node.name
+    if (!slug || !name) break
+    if (visited.has(slug)) break
+    visited.add(slug)
+
+    const cleanName = name.replace(/^\s*\[HIDDEN\]\s*/i, "").trim()
+    const cleanNameBg = (node.name_bg || "").replace(/^\s*\[HIDDEN\]\s*/i, "").trim()
+
+    path.unshift({
+      slug,
+      name: cleanName,
+      nameBg: cleanNameBg || null,
+      icon: node.icon ?? null,
+    })
+
+    node = node.parent
+  }
+
+  return path.length ? path : undefined
 }
 
 function normalizeAttributeKey(input: string): string {
@@ -182,7 +254,7 @@ export async function getProductsByCategorySlug(
   let query = supabase
     .from('products')
     .select(
-      'id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories!inner(slug)'
+      'id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories!inner(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))'
     )
     .eq('categories.slug', categorySlug)
     .order('created_at', { ascending: false })
@@ -201,12 +273,19 @@ export async function getProductsByCategorySlug(
     return []
   }
 
-  return (data || []).map((p) => ({
-    ...p,
-    category_slug: p.categories?.slug ?? null,
-    store_slug: p.seller?.username ?? null,
-    seller_profile: p.seller ?? null,
-  }))
+  return (data || []).map((p) => {
+    const row = p as unknown as Record<string, unknown>
+    const categories = normalizeCategoryNode(row.categories)
+    const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
+
+    return {
+      ...(p as unknown as Product),
+      categories,
+      category_slug: categories?.slug ?? null,
+      store_slug: (typeof seller?.username === 'string') ? (seller.username as string) : null,
+      seller_profile: (row.seller as Product['seller_profile']) ?? null,
+    } as Product
+  })
 }
 
 /**
@@ -224,7 +303,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   // Join categories to get the slug for category-aware badge display
   let query = supabase
     .from('products')
-    .select('id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_prime, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories(slug)')
+    .select('id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))')
 
   // Apply shipping zone filter (WW = show all, so no filter)
   if (zone && zone !== 'WW') {
@@ -265,18 +344,22 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   }
 
   return (data || [])
-    .map((p) => ({
-      ...p,
-      // Extract category_slug from categories join
-      category_slug: p.categories?.slug ?? null,
-      // Extract store_slug from profiles join (username is the URL slug)
-      store_slug: p.seller?.username ?? null,
-      // Keep richer seller info around for UI mapping
-      seller_profile: p.seller ?? null
-    }))
-    .filter((p: Product) => 
-      type === 'deals' || type === 'promo' 
-        ? (p.list_price ?? 0) > p.price 
+    .map((p) => {
+      const row = p as unknown as Record<string, unknown>
+      const categories = normalizeCategoryNode(row.categories)
+      const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
+
+      return {
+        ...(p as unknown as Product),
+        categories,
+        category_slug: categories?.slug ?? null,
+        store_slug: (typeof seller?.username === 'string') ? (seller.username as string) : null,
+        seller_profile: (row.seller as Product['seller_profile']) ?? null,
+      } as Product
+    })
+    .filter((p) =>
+      type === 'deals' || type === 'promo'
+        ? (p.list_price ?? 0) > p.price
         : true
     )
 }
@@ -341,6 +424,9 @@ export function toUI(p: Product): UIProduct {
     'basic'
   const sellerVerified = Boolean(p.seller_profile?.is_verified_business)
 
+  const categoryPath = buildCategoryPath(p.categories)
+  const categoryRootSlug = categoryPath?.[0]?.slug
+
   return {
     id: p.id,
     title: p.title,
@@ -354,8 +440,9 @@ export function toUI(p: Product): UIProduct {
     image: pickPrimaryImage(p),
     rating: p.rating ?? 0,
     reviews: p.review_count ?? 0,
-    isPrime: p.is_prime ?? false,
     categorySlug: p.category_slug ?? undefined,
+    categoryRootSlug: categoryRootSlug || undefined,
+    categoryPath,
     slug: p.slug,
     storeSlug: p.store_slug,
     sellerId: p.seller_id ?? p.seller_profile?.id ?? null,
