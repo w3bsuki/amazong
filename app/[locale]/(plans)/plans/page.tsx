@@ -1,5 +1,4 @@
 ﻿import { createClient, createStaticClient } from "@/lib/supabase/server"
-import { connection } from "next/server"
 import PlansPageClient from "../_components/plans-page-client"
 
 // =============================================================================
@@ -11,7 +10,6 @@ interface PlansPageProps {
 }
 
 export default async function PlansPage({ params }: PlansPageProps) {
-  await connection()
   const { locale } = await params
 
   const staticClient = createStaticClient()

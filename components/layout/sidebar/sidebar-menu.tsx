@@ -45,6 +45,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link } from "@/i18n/routing"
+import Image from "next/image"
 import { useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { User as SupabaseUser } from "@supabase/supabase-js"
@@ -70,6 +71,16 @@ function HamburgerCategoryCircles({
     // Mount only when drawer is open to avoid eager fetch on every page.
     if (!open) return null
 
+    return <HamburgerCategoryCirclesInner locale={locale} onNavigate={onNavigate} />
+}
+
+function HamburgerCategoryCirclesInner({
+    locale,
+    onNavigate,
+}: {
+    locale: string
+    onNavigate: () => void
+}) {
     const { categories, isLoading } = useCategoriesCache({ minCategories: 0 })
     const displayCategories = categories.slice(0, 20)
 
@@ -100,7 +111,7 @@ function HamburgerCategoryCircles({
                                     className={cn(
                                         "rounded-full flex items-center justify-center",
                                         "size-12",
-                                        "bg-brand ring-1 ring-brand/10",
+                                        "bg-brand",
                                         "transition-colors duration-200",
                                         "group-hover:bg-brand-dark"
                                     )}
@@ -187,7 +198,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                     variant="ghost"
                     size="icon-xl"
                     className={cn(
-                        "rounded-xl text-header-text hover:bg-header-hover active:bg-header-active transition-all touch-action-manipulation tap-transparent",
+                        "rounded-xl text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent",
                         triggerClassName
                     )}
                     aria-label={locale === "bg" ? "Меню" : "Menu"}
@@ -204,7 +215,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                     <div className="relative flex items-center justify-between gap-2">
                         {/* Profile info */}
                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <div className="size-10 shrink-0 rounded-full bg-white/20 flex items-center justify-center ring-1 ring-white/10">
+                            <div className="size-10 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
                                 <UserCircle size={28} weight="fill" className="text-white" />
                             </div>
                             <div className="min-w-0 flex-1 flex flex-col">
@@ -221,12 +232,12 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                         <DropdownMenuTrigger asChild>
                                             <button 
                                                 type="button"
-                                                className="flex items-center justify-center size-5 rounded-full bg-white/10 hover:bg-white/20 transition-colors ring-1 ring-white/20"
+                                                className="flex items-center justify-center size-5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                                             >
                                                 <span className="text-[10px] font-bold uppercase text-white">{locale}</span>
                                             </button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="start" className="min-w-[140px] rounded-xl p-1 border border-border/50 shadow-lg">
+                                        <DropdownMenuContent align="start" className="min-w-[140px] rounded-xl p-1 border border-border/50">
                                             <DropdownMenuItem asChild>
                                                 <Link
                                                     href="/"
@@ -234,9 +245,12 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                                     onClick={() => setOpen(false)}
                                                     className="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg"
                                                 >
-                                                    <img
+                                                    <Image
                                                         src="https://flagcdn.com/w40/gb.png"
                                                         alt="EN"
+                                                        width={20}
+                                                        height={14}
+                                                        sizes="20px"
                                                         className="w-5 h-3.5 rounded-sm object-cover"
                                                     />
                                                     <span className="text-sm font-medium">English</span>
@@ -250,9 +264,12 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                                     onClick={() => setOpen(false)}
                                                     className="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg"
                                                 >
-                                                    <img
+                                                    <Image
                                                         src="https://flagcdn.com/w40/bg.png"
                                                         alt="BG"
+                                                        width={20}
+                                                        height={14}
+                                                        sizes="20px"
                                                         className="w-5 h-3.5 rounded-sm object-cover"
                                                     />
                                                     <span className="text-sm font-medium">Български</span>
@@ -306,7 +323,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                             type="search"
                             placeholder={locale === 'bg' ? 'Търси в категории...' : 'Search categories...'}
                             aria-label={locale === 'bg' ? 'Търси в категории' : 'Search categories'}
-                            className="h-10 pl-10 pr-4 rounded-xl border-border/60 bg-muted/30 focus:bg-background transition-all placeholder:text-muted-foreground/70"
+                            className="h-10 pl-10 pr-4 rounded-xl border-border/60 bg-muted/30 focus:bg-background transition-colors placeholder:text-muted-foreground/70"
                         />
                     </div>
                 </div>
@@ -323,7 +340,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                 <div className="grid grid-cols-2 gap-3">
                                     <Link
                                         href="/auth/login"
-                                        className="flex items-center justify-center gap-2 py-2.5 bg-brand text-white rounded-lg text-sm font-bold hover:bg-brand-dark transition-colors shadow-sm shadow-brand/20"
+                                        className="flex items-center justify-center gap-2 py-2.5 bg-brand text-white rounded-lg text-sm font-bold hover:bg-brand-dark transition-colors"
                                         onClick={() => setOpen(false)}
                                     >
                                         <SignInIcon size={18} weight="bold" />

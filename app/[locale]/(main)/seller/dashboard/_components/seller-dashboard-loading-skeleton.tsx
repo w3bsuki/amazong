@@ -2,7 +2,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function SellerDashboardLoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
+    <div className="min-h-screen bg-background pb-20 sm:pb-12" role="status" aria-live="polite" aria-busy="true">
+      <p className="sr-only">Loading seller dashboard…</p>
       <div className="border-b bg-card">
         <div className="container py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">

@@ -68,6 +68,7 @@ export default function SellerDashboardClient() {
           .select(
             `
             id,
+            slug,
             title,
             price,
             stock,
@@ -154,7 +155,7 @@ export default function SellerDashboardClient() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
               <Storefront weight="fill" className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -306,7 +307,7 @@ export default function SellerDashboardClient() {
 
                   <div className="flex items-center gap-2">
                     <Button asChild variant="ghost" size="sm">
-                      <Link href={`/product/${product.id}`}>
+                      <Link href={seller?.username ? `/${seller.username}/${(product as any).slug || product.id}` : "#"}>
                         <Eye className="w-4 h-4" />
                       </Link>
                     </Button>

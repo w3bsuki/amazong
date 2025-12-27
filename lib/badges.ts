@@ -32,13 +32,13 @@ export const BADGE_COLORS: Record<string, string> = {
   verified_seller: "bg-blue-500 text-white",
   verified_business: "bg-blue-600 text-white",
   verified_pro: "bg-emerald-600 text-white",
-  verified_enterprise: "bg-gradient-to-r from-amber-500 to-yellow-500 text-white",
+  verified_enterprise: "bg-amber-500 text-white",
   
   // Ratings
-  top_rated: "bg-gradient-to-r from-yellow-400 to-amber-500 text-black",
+  top_rated: "bg-yellow-400 text-black",
   highly_rated: "bg-amber-500 text-white",
   well_reviewed: "bg-yellow-500 text-black",
-  exceptional: "bg-gradient-to-r from-yellow-400 to-amber-500 text-black",
+  exceptional: "bg-yellow-400 text-black",
   
   // Milestones - Personal
   new_seller: "bg-gray-400 text-white",
@@ -61,20 +61,20 @@ export const BADGE_COLORS: Record<string, string> = {
   trusted_seller: "bg-emerald-500 text-white",
   established_seller: "bg-amber-600 text-white",
   elite_seller: "bg-amber-500 text-white",
-  legend: "bg-gradient-to-r from-cyan-400 to-blue-500 text-white",
+  legend: "bg-blue-500 text-white",
   
   // Business sales
   active_business: "bg-teal-500 text-white",
   thriving_business: "bg-emerald-500 text-white",
   top_business: "bg-amber-600 text-white",
   market_leader: "bg-amber-500 text-white",
-  industry_giant: "bg-gradient-to-r from-amber-400 to-yellow-500 text-white",
+  industry_giant: "bg-amber-500 text-white",
   
   // Business ratings
   trusted_business: "bg-yellow-500 text-black",
   preferred_business: "bg-amber-500 text-white",
   premium_business: "bg-amber-600 text-white",
-  excellence_award: "bg-gradient-to-r from-yellow-400 to-amber-500 text-black",
+  excellence_award: "bg-yellow-400 text-black",
   
   // Special
   fast_shipper: "bg-blue-500 text-white",
@@ -89,13 +89,13 @@ export const BADGE_COLORS: Record<string, string> = {
   active_shopper: "bg-blue-500 text-white",
   frequent_buyer: "bg-purple-500 text-white",
   vip_shopper: "bg-violet-500 text-white",
-  platinum_buyer: "bg-gradient-to-r from-gray-300 to-gray-400 text-black",
+  platinum_buyer: "bg-gray-300 text-black",
   
   // Buyer ratings
   good_buyer: "bg-yellow-500 text-black",
   great_buyer: "bg-amber-500 text-white",
   excellent_buyer: "bg-amber-600 text-white",
-  dream_customer: "bg-gradient-to-r from-pink-400 to-purple-500 text-white",
+  dream_customer: "bg-purple-500 text-white",
   
   // Buyer special
   helpful_reviewer: "bg-blue-500 text-white",
@@ -106,7 +106,7 @@ export const BADGE_COLORS: Record<string, string> = {
   // Subscription
   starter_plan: "bg-blue-500 text-white",
   professional_plan: "bg-purple-600 text-white",
-  enterprise_plan: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white",
+  enterprise_plan: "bg-indigo-600 text-white",
 }
 
 // =====================================================

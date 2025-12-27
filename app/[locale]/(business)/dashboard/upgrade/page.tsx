@@ -1,6 +1,5 @@
 import { requireBusinessSeller, getActiveSubscription, DASHBOARD_ALLOWED_TIERS } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
-import { connection } from "next/server"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import {
@@ -143,7 +142,6 @@ interface UpgradePageProps {
 }
 
 export default async function DashboardUpgradePage({ params }: UpgradePageProps) {
-  await connection()
   const { locale } = await params
   const t = translations[locale as keyof typeof translations] || translations.en
   
@@ -174,7 +172,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 mb-4">
-          <div className="p-3 rounded-full bg-gradient-to-br from-amber-400 to-orange-500">
+          <div className="p-3 rounded-full bg-amber-500">
             <IconCrown className="size-8 text-white" />
           </div>
         </div>

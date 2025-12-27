@@ -16,10 +16,10 @@ export default function SellersGrid({
     <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
       {sellers.map((seller) => (
         <Link href={`/search?seller=${seller.id}`} key={seller.id}>
-          <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer border-border rounded-lg overflow-hidden group">
+          <Card className="h-full cursor-pointer border-border rounded-lg overflow-hidden group">
             <CardContent className="p-4">
               <div className="flex items-start gap-3 mb-3">
-                <div className="size-14 rounded-full bg-linear-to-br from-brand to-brand/70 flex items-center justify-center text-white font-bold text-xl shrink-0 overflow-hidden">
+                <div className="size-14 rounded-full bg-brand flex items-center justify-center text-white font-bold text-xl shrink-0 overflow-hidden">
                   {seller.avatar_url ? (
                     <Image
                       src={seller.avatar_url}

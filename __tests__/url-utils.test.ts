@@ -14,8 +14,8 @@ describe('lib/url-utils', () => {
     )
   })
 
-  it('falls back to /product/{id} when missing username/slug', () => {
-    expect(getProductUrl({ id: '123' })).toBe('/product/123')
+  it('falls back to /{username}/{id} when slug is missing', () => {
+    expect(getProductUrl({ id: '123', username: 'john' })).toBe('/john/123')
   })
 
   it('handles deprecated storeSlug', () => {
@@ -24,18 +24,18 @@ describe('lib/url-utils', () => {
 
   it('returns safe default and warns when missing identifier', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    expect(getProductUrl({})).toBe('/product/unknown')
+    expect(getProductUrl({})).toBe('#')
     expect(warn).toHaveBeenCalled()
     warn.mockRestore()
   })
 
   it('adds locale prefix', () => {
-    expect(getProductUrlWithLocale({ id: '123' }, 'en')).toBe('/en/product/123')
+    expect(getProductUrlWithLocale({ id: '123', username: 'john' }, 'en')).toBe('/en/john/123')
   })
 
   it('builds absolute URL with baseUrl override', () => {
-    expect(getAbsoluteProductUrl({ id: '123' }, 'en', 'https://example.com')).toBe(
-      'https://example.com/en/product/123'
+    expect(getAbsoluteProductUrl({ id: '123', username: 'john' }, 'en', 'https://example.com')).toBe(
+      'https://example.com/en/john/123'
     )
   })
 

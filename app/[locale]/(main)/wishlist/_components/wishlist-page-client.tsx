@@ -3,7 +3,7 @@
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useCart } from "@/components/providers/cart-context"
 import { Button } from "@/components/ui/button"
-import { Heart, ShoppingCart, Trash, ArrowRight, Share, Check } from "@phosphor-icons/react"
+import { Heart, ShoppingCart, Trash, ArrowRight, Share, Check, SpinnerGap } from "@phosphor-icons/react"
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
@@ -24,13 +24,10 @@ export default function WishlistPageClient() {
     }).format(price)
   }
 
-  // Generate SEO-friendly product URL: /{username}/{slug} or fallback to /product/{id}
+  // Generate canonical product URL: /{username}/{slug-or-id}
   const getProductUrl = (item: (typeof items)[0]) => {
-    if (item.username && item.slug) {
-      return `/${item.username}/${item.slug}`
-    }
-    // Fallback for older items without username/slug
-    return `/product/${item.product_id}`
+    if (!item.username) return "#"
+    return `/${item.username}/${item.slug || item.product_id}`
   }
 
   const handleMoveToCart = (item: (typeof items)[0]) => {
@@ -87,6 +84,15 @@ export default function WishlistPageClient() {
     return (
       <div className="min-h-screen bg-secondary py-4 md:py-6">
         <div className="container px-3 md:px-4">
+          <div className="flex items-center justify-center py-8" role="status" aria-live="polite">
+            <div className="flex flex-col items-center gap-3">
+              <SpinnerGap className="size-8 animate-spin text-brand" />
+              <p className="text-sm text-muted-foreground">
+                {locale === "bg" ? "Зареждане на списъка с любими..." : "Loading wishlist..."}
+              </p>
+            </div>
+          </div>
+
           {/* Breadcrumb skeleton */}
           <div className="flex gap-2 items-center mb-4">
             <div className="h-4 w-16 bg-muted animate-pulse rounded" />
@@ -201,7 +207,7 @@ export default function WishlistPageClient() {
           {items.map((item) => (
             <div
               key={item.id}
-              className="group bg-card rounded-lg border border-border overflow-hidden hover:shadow-md transition-shadow"
+              className="group bg-card rounded-lg border border-border overflow-hidden"
             >
               {/* Image */}
               <Link href={getProductUrl(item)} className="block">
@@ -210,7 +216,7 @@ export default function WishlistPageClient() {
                     src={item.image}
                     alt={item.title}
                     fill
-                    className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                    className="object-contain p-2"
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                   />
                   {/* Remove button - Top right */}

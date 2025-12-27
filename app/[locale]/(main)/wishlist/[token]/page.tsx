@@ -38,6 +38,28 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
   const wishlistDescription = (wishlistItems as any)[0]?.wishlist_description || (wishlistItems as any)[0]?.description
   const ownerName = (wishlistItems as any)[0]?.owner_name || t("anonymousUser")
 
+  const productIds = (wishlistItems as SharedWishlistItem[]).map((i) => i.product_id)
+  const { data: productsForLinks } = await supabase
+    .from("products")
+    .select("id, slug, seller:profiles!products_seller_id_fkey(username)")
+    .in("id", productIds)
+
+  const canonicalById = new Map(
+    (productsForLinks || []).map((p: any) => [
+      p.id as string,
+      {
+        username: (p.seller as { username?: string | null } | null)?.username ?? null,
+        slug: (p.slug as string | null) ?? null,
+      },
+    ])
+  )
+
+  const getProductHref = (productId: string) => {
+    const info = canonicalById.get(productId)
+    if (!info?.username) return "#"
+    return `/${info.username}/${info.slug || productId}`
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container py-8">
@@ -67,7 +89,7 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {(wishlistItems as SharedWishlistItem[]).map((item) => (
             <Card key={item.product_id} className="overflow-hidden hover:shadow-md transition-shadow">
-              <Link href={`/product/${item.product_id}`}>
+              <Link href={getProductHref(item.product_id)}>
                 <div className="relative aspect-square bg-muted">
                   <Image
                     src={item.product_image || "/placeholder.svg"}
@@ -79,7 +101,7 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
               </Link>
               <CardContent className="p-3">
                 <Link
-                  href={`/product/${item.product_id}`}
+                  href={getProductHref(item.product_id)}
                   className="text-sm font-medium text-foreground hover:text-brand-blue line-clamp-2 min-h-[40px]"
                 >
                   {item.product_title}
@@ -88,7 +110,7 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
                   <span className="text-lg font-bold text-foreground">${item.product_price?.toFixed(2)}</span>
                 </div>
                 <Button size="sm" className="w-full mt-3 bg-brand-blue hover:bg-brand-blue-dark text-white" asChild>
-                  <Link href={`/product/${item.product_id}`}>
+                  <Link href={getProductHref(item.product_id)}>
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     {t("viewProduct")}
                   </Link>

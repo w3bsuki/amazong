@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { setRequestLocale } from "next-intl/server"
+import { validateLocale } from "@/i18n/routing"
 import { NotificationsContent } from "./notifications-content"
 
 export default async function NotificationsPage({
@@ -9,8 +9,8 @@ export default async function NotificationsPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  await connection()
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
 
   const supabase = await createClient()

@@ -2,8 +2,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function MembersLoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
-      <div className="bg-linear-to-br from-amber-500/10 to-yellow-500/10 py-10 sm:py-16">
+    <div className="min-h-screen bg-background pb-20 sm:pb-12" role="status" aria-live="polite" aria-busy="true">
+      <p className="sr-only">Loading members…</p>
+      <div className="bg-primary/5 py-10 sm:py-16">
         <div className="container">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="flex-1 space-y-4">

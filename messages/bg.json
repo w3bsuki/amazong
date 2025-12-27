@@ -97,7 +97,7 @@
         "customerService": "Обслужване",
         "registry": "Регистър",
         "giftCards": "Подаръчни карти",
-        "sell": "Продажби",
+        "sell": "Продай",
         "startSelling": "Моите",
         "home": "Начало",
         "menu": "Меню",
@@ -274,7 +274,11 @@
         "similarProduct": "Подобен продукт",
         "viewAllItems": "Виж всички артикули",
         "noFeedbackYet": "Все още няма обратна връзка",
-        "noRatingsYet": "Все още няма оценки"
+        "noRatingsYet": "Все още няма оценки",
+        "viewProfile": "Профил",
+        "makeOffer": "Направи оферта",
+        "moreFromSeller": "Още от този продавач",
+        "viewAll": "Виж всички"
     },
     "CustomerService": {
         "title": "Добре дошли в обслужването на клиенти на Amazon",
@@ -581,6 +585,8 @@
         "errorInvalidRequest": "Заявката беше невалидна. Моля, опитай отново.",
         "errorUnauthorized": "Нямаш права да извършиш това действие.",
         "errorServer": "Възникна сървърна грешка. Моля, опитай по-късно.",
+        "errorVerificationFailed": "Потвърждението на имейла се провали. Линкът може да е изтекъл.",
+        "errorInvalidCode": "Невалиден код за потвърждение. Моля, опитай да се регистрираш отново.",
         "errorGeneric": "Възникна неуточнена грешка. Моля, опитай отново.",
         "errorCode": "Код на грешка",
         "tryAgain": "Опитай отново",
@@ -1143,7 +1149,11 @@
         "replyFromSeller": "Отговор от продавача",
         "seeAllFeedback": "Виж цялата обратна връзка",
         "popularCategories": "Популярни категории от този магазин",
-        "seeAllCategories": "Виж всички категории"
+        "seeAllCategories": "Виж всички категории",
+        "responseLabel": "Отговор",
+        "shippedLabel": "Изпраща",
+        "sinceLabel": "От",
+        "chatLabel": "Чат"
     },
     "Messages": {
         "pageTitle": "Съобщения",

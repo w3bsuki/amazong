@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { connection } from "next/server";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Suspense } from "react";
@@ -59,7 +58,6 @@ export default async function AccountLayout({
     modal: React.ReactNode;
     params: Promise<{ locale: string }>;
 }) {
-    await connection();
     const { locale } = await params;
     
     // Enable static rendering

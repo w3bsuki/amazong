@@ -101,9 +101,20 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
     setRemovingId(productId)
     try {
       const supabase = createClient()
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) {
+        toast.error(locale === 'bg' ? 'Моля, влезте в профила си' : 'Please sign in')
+        return
+      }
+
       const { error } = await supabase
         .from('wishlists')
         .delete()
+        .eq('user_id', user.id)
         .eq('product_id', productId)
 
       if (error) throw error
@@ -145,7 +156,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
     price: locale === 'bg' ? 'Цена' : 'Price',
     availability: locale === 'bg' ? 'Наличност' : 'Availability',
     inStock: locale === 'bg' ? 'в наличност' : 'in stock',
-    outOfStock: locale === 'bg' ? 'Изчерпан' : 'Out of Stock',
+    outOfStock: locale === 'bg' ? 'Продадено' : 'Sold',
     moveToCart: locale === 'bg' ? 'В количката' : 'Add to Cart',
     viewProduct: locale === 'bg' ? 'Виж' : 'View',
     remove: locale === 'bg' ? 'Премахни' : 'Remove',
@@ -185,7 +196,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
           <Sheet key={item.id} open={selectedItem?.id === item.id} onOpenChange={(open) => !open && setSelectedItem(null)}>
             <button
               onClick={() => setSelectedItem(item)}
-              className="flex flex-col rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden transition-all active:scale-[0.98] text-left"
+              className="flex flex-col rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden transition-colors active:bg-account-card-hover text-left"
             >
               {/* Product Image */}
               <div className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">
@@ -194,25 +205,25 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                   alt={item.title} 
                   fill 
                   className={cn(
-                    "object-cover transition-all",
+                    "object-cover",
                     item.stock <= 0 && "opacity-60 grayscale-[30%]"
                   )}
                   sizes="(max-width: 768px) 50vw, 200px"
                 />
                 {/* Stock indicator badge */}
                 {item.stock > 0 ? (
-                  <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/25">
+                  <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-emerald-500">
                     <Package weight="fill" className="size-3.5 text-white" />
                   </div>
                 ) : (
-                  <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500 shadow-lg shadow-orange-500/25">
+                  <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500">
                     <XCircle weight="fill" className="size-3 text-white" />
                     <span className="text-2xs font-semibold text-white">{labels.outOfStock}</span>
                   </div>
                 )}
                 {/* Category badge */}
                 {item.category_name && (
-                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm">
+                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-black/60">
                     <span className="text-2xs font-medium text-white">{item.category_name}</span>
                   </div>
                 )}
@@ -223,7 +234,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                       e.stopPropagation()
                       handleMoveToCart(item)
                     }}
-                    className="absolute bottom-2 right-2 flex size-8 items-center justify-center rounded-full bg-foreground transition-transform hover:scale-110 active:scale-95"
+                    className="absolute bottom-2 right-2 flex size-8 items-center justify-center rounded-full bg-foreground"
                   >
                     <ShoppingCart weight="fill" className="size-4 text-white" />
                   </button>
@@ -353,7 +364,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
         {items.map((item) => (
           <div 
             key={item.id}
-            className="group relative flex flex-col rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden transition-all hover:shadow-md hover:border-account-accent"
+            className="group relative flex flex-col rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden transition-colors hover:border-account-accent"
           >
             {/* Product Image */}
             <Link href={getProductUrl({ id: item.product_id, slug: item.slug, username: item.username })} className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">
@@ -362,26 +373,26 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 alt={item.title} 
                 fill 
                 className={cn(
-                  "object-cover transition-all group-hover:scale-105",
+                  "object-cover",
                   item.stock <= 0 && "opacity-60 grayscale-[30%]"
                 )}
                 sizes="(max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               />
               {/* Stock indicator */}
               {item.stock > 0 ? (
-                <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/25">
+                <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500">
                   <Package weight="fill" className="size-3.5 text-white" />
                   <span className="text-xs font-semibold text-white">{item.stock}</span>
                 </div>
               ) : (
-                <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500 shadow-lg shadow-orange-500/25">
+                <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500">
                   <XCircle weight="fill" className="size-3.5 text-white" />
                   <span className="text-xs font-semibold text-white">{labels.outOfStock}</span>
                 </div>
               )}
               {/* Category badge */}
               {item.category_name && (
-                <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-sm">
+                <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full bg-black/60">
                   <span className="text-xs font-medium text-white">{item.category_name}</span>
                 </div>
               )}
@@ -390,7 +401,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 <div className="flex items-center gap-2">
                   <Button
                     size="sm"
-                    className="bg-white text-foreground hover:bg-gray-100 shadow-lg"
+                    className="bg-white text-foreground hover:bg-gray-100"
                     asChild
                   >
                     <Link href={getProductUrl({ id: item.product_id, slug: item.slug, username: item.username })}>
@@ -451,7 +462,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
             </div>
             
             {/* Wishlist heart indicator */}
-            <div className="absolute top-3 left-3 flex size-8 items-center justify-center rounded-full bg-white/90 dark:bg-gray-900/90 shadow-sm backdrop-blur-sm">
+            <div className="absolute top-3 left-3 flex size-8 items-center justify-center rounded-full bg-white/90 dark:bg-gray-900/90">
               <IconHeart className="size-4 text-destructive fill-destructive" />
             </div>
           </div>
@@ -477,7 +488,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
         <div className="fixed bottom-20 left-4 right-4 md:hidden z-40">
           <Button 
             onClick={handleAddAllToCart}
-            className="w-full h-12 rounded-full shadow-lg"
+            className="w-full h-12 rounded-full"
           >
             <ShoppingCart className="size-5 mr-2" />
             {labels.addAllToCart} ({items.filter(i => i.stock > 0).length})

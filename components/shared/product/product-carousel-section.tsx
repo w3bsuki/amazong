@@ -198,8 +198,8 @@ export function ProductCarouselSection({
               onClick={() => scroll("left")}
               disabled={!canScrollLeft}
               className={cn(
-                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
-                "hover:bg-muted active:scale-95",
+                "size-8 rounded-full border border-border flex items-center justify-center transition-colors",
+                "hover:bg-muted",
                 "disabled:opacity-30 disabled:cursor-not-allowed",
                 isClean && "bg-background"
               )}
@@ -211,8 +211,8 @@ export function ProductCarouselSection({
               onClick={() => scroll("right")}
               disabled={!canScrollRight}
               className={cn(
-                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
-                "hover:bg-muted active:scale-95",
+                "size-8 rounded-full border border-border flex items-center justify-center transition-colors",
+                "hover:bg-muted",
                 "disabled:opacity-30 disabled:cursor-not-allowed",
                 isClean && "bg-background"
               )}

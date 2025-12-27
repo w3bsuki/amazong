@@ -1,5 +1,4 @@
 import { requireDashboardAccess, getBusinessCustomers } from "@/lib/auth/business"
-import { connection } from "next/server"
 import Link from "next/link"
 import { format } from "date-fns"
 import {
@@ -31,8 +30,6 @@ import {
 } from "@tabler/icons-react"
 
 export default async function BusinessCustomersPage() {
-  await connection()
-  
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const { customers, total } = await getBusinessCustomers(businessSeller.id)

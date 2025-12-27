@@ -50,20 +50,22 @@ export default function CartPageClient() {
     }).format(price)
   }
 
-  // Generate SEO-friendly product URL: /{username}/{slug} or fallback to /product/{id}
+  // Generate canonical product URL: /{username}/{slug-or-id}
   const getProductUrl = (item: (typeof items)[0]) => {
-    if (item.username && item.slug) {
-      return `/${item.username}/${item.slug}`
-    }
-    // Fallback for older items without username/slug
-    return `/product/${item.id}`
+    if (!item.username) return "#"
+    return `/${item.username}/${item.slug || item.id}`
   }
 
   // Loading state
   if (!mounted) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <SpinnerGap className="size-8 animate-spin text-brand" />
+        <div className="flex flex-col items-center gap-3" role="status" aria-live="polite">
+          <SpinnerGap className="size-8 animate-spin text-brand" />
+          <p className="text-sm text-muted-foreground">
+            {locale === "bg" ? "Зареждане на количката..." : "Loading cart..."}
+          </p>
+        </div>
       </div>
     )
   }
@@ -75,7 +77,7 @@ export default function CartPageClient() {
         <div className="container py-6">
           <AppBreadcrumb items={breadcrumbPresets.cart} />
 
-          <Card className="mt-6 max-w-lg mx-auto border-0 shadow-md">
+          <Card className="mt-6 max-w-lg mx-auto">
             <CardContent className="p-8 text-center">
               <div className="size-24 bg-brand/5 rounded-full flex items-center justify-center mx-auto mb-6">
                 <ShoppingCart className="size-12 text-brand" weight="duotone" />
@@ -133,7 +135,7 @@ export default function CartPageClient() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item, index) => (
-              <Card key={item.id} className="border-0 shadow-sm overflow-hidden">
+              <Card key={item.id} className="border-0 overflow-hidden">
                 <CardContent className="p-0">
                   <div className="flex gap-4 p-4">
                     {/* Product Image */}
@@ -145,7 +147,7 @@ export default function CartPageClient() {
                         src={item.image || "/placeholder.svg"}
                         alt={item.title}
                         fill
-                        className="object-contain p-2 group-hover:scale-105 transition-transform"
+                        className="object-contain p-2"
                         sizes="(max-width: 640px) 96px, 128px"
                         priority={index === 0}
                       />
@@ -247,7 +249,7 @@ export default function CartPageClient() {
 
           {/* Order Summary - Desktop Sidebar */}
           <div className="hidden lg:block">
-            <Card className="border-0 shadow-sm sticky top-24">
+            <Card className="sticky top-24">
               <CardContent className="p-6">
                 <h2 className="font-semibold text-lg mb-4">
                   {locale === "bg" ? "Обобщение" : "Order Summary"}
@@ -315,7 +317,7 @@ export default function CartPageClient() {
       {/* Sticky Checkout Bar - Mobile */}
       <div
         className={cn(
-          "fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-40",
+          "fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40",
           "lg:hidden",
         )}
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
@@ -340,7 +342,7 @@ export default function CartPageClient() {
             <Button
               onClick={handleCheckout}
               size="lg"
-              className="h-12 px-8 font-semibold rounded-full bg-brand hover:bg-brand/90 text-white shadow-lg"
+              className="h-12 px-8 font-semibold rounded-full bg-brand hover:bg-brand/90 text-white"
             >
               {locale === "bg" ? "Плащане" : "Checkout"}
               <ArrowRight className="size-4 ml-1" />

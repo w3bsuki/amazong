@@ -38,10 +38,10 @@ async function openFirstProduct(page: Page, locale: "en" | "bg" = "en") {
   // Home page can be highly dynamic; search is typically a more reliable listing surface.
   await gotoWithRetries(page, `/${locale}/search?q=test`, { timeout: 60_000 })
 
+  const ariaPrefix = locale === "bg" ? "Отвори продукт:" : "Open product:"
+
   const productLink = page
-    .locator(
-      `a[href^="/${locale}/"][href*="/product"], a[href*="/${locale}/product"], a[href*="/product/"]`,
-    )
+    .locator(`a[aria-label^="${ariaPrefix}"]`)
     .first()
 
   const hasProductLink = await productLink.isVisible({ timeout: 10_000 }).catch(() => false)
@@ -187,7 +187,7 @@ test.describe("Review Performance", () => {
     await gotoWithRetries(page, "/en/search?q=test", { timeout: 60_000 })
 
     const productLink = page
-      .locator('a[href^="/en/"][href*="/product"], a[href*="/en/product"], a[href*="/product/"]')
+      .locator('a[aria-label^="Open product:"]')
       .first()
 
     const hasProductLink = await productLink.isVisible({ timeout: 10_000 }).catch(() => false)

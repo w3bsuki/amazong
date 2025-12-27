@@ -1,6 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
-import { connection } from "next/server"
 import {
   Card,
   CardContent,
@@ -85,7 +84,6 @@ async function getSellers(): Promise<Seller[]> {
 }
 
 export default async function AdminSellersPage() {
-  await connection()
   const sellers = await getSellers()
   
   const getTierBadge = (tier: string | null) => {

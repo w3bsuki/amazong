@@ -396,8 +396,8 @@ export function DesktopFilterModal({
           </div>
         </div>
 
-        {/* Footer - fixed at bottom with shadow */}
-        <div className="shrink-0 px-6 py-4 border-t bg-background shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] flex items-center justify-between">
+        {/* Footer */}
+        <div className="shrink-0 px-6 py-4 border-t bg-background flex items-center justify-between">
           <button
             type="button"
             onClick={clearAll}
@@ -414,7 +414,7 @@ export function DesktopFilterModal({
           <Button 
             onClick={applyFilters} 
             size="lg"
-            className="px-8 rounded-full shadow-md hover:shadow-lg transition-shadow"
+            className="px-8 rounded-full transition-colors"
           >
             {t('showResults')}
           </Button>

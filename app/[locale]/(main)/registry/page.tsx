@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Gift, UserPlus } from "@phosphor-icons/react/dist/ssr"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
-import { routing } from "@/i18n/routing"
+import { routing, validateLocale } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
 
 export function generateStaticParams() {
@@ -14,7 +14,8 @@ export default async function RegistryPage({
 }: {
     params: Promise<{ locale: string }>
 }) {
-        const { locale } = await params
+        const { locale: localeParam } = await params
+        const locale = validateLocale(localeParam)
         setRequestLocale(locale)
 
     return (

@@ -161,7 +161,7 @@ export default function MembersPageClient({
 
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-8">
-      <div className="bg-linear-to-r from-primary via-primary to-primary/80 text-white py-6 sm:py-10">
+      <div className="bg-primary text-white py-6 sm:py-10">
         <div className="container">
           <div className="[&_nav]:border-white/20 [&_nav]:mb-2 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
             <AppBreadcrumb

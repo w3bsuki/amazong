@@ -115,9 +115,9 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
         if (productId) {
           setCreatedProductId(productId);
           setCreatedProductHref(
-            sellerUsername && productSlug
-              ? `/${sellerUsername}/${productSlug}`
-              : `/product/${productId}`
+            sellerUsername
+              ? `/${sellerUsername}/${productSlug || productId}`
+              : null
           );
           setShowSuccess(true);
           window.scrollTo({ top: 0, behavior: "instant" });
@@ -198,7 +198,7 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
           <div className="w-full max-w-sm text-center space-y-8">
             {/* Success icon - clean, no animation */}
-            <div className="mx-auto w-20 h-20 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/20">
+            <div className="mx-auto w-20 h-20 bg-green-500 rounded-full flex items-center justify-center">
               <CheckCircle className="size-10 text-white" weight="fill" />
             </div>
 
@@ -221,7 +221,7 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
                   <img 
                     src={firstImageUrl} 
                     alt={productTitle}
-                    className="w-20 h-20 rounded-xl object-cover shadow-sm"
+                    className="w-20 h-20 rounded-xl object-cover"
                   />
                   <div className="flex-1 text-left min-w-0">
                     <p className="font-bold text-base truncate">{productTitle}</p>
@@ -235,8 +235,8 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
 
             {/* Action buttons - cleaner, more professional */}
             <div className="space-y-4 pt-4">
-              <Button asChild className="w-full h-12 gap-2 bg-primary hover:bg-primary/90 text-base font-semibold rounded-xl shadow-md">
-                <Link href={createdProductHref || (createdProductId ? `/product/${createdProductId}` : "/")}>
+              <Button asChild className="w-full h-12 gap-2 bg-primary hover:bg-primary/90 text-base font-semibold rounded-xl">
+                <Link href={createdProductHref || "/"}>
                   <Eye className="size-5" />
                   {isBg ? "Виж обявата" : "View Listing"}
                 </Link>

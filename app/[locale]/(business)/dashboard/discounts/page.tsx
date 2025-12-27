@@ -1,5 +1,4 @@
 import { requireDashboardAccess } from "@/lib/auth/business"
-import { connection } from "next/server"
 import Link from "next/link"
 import { format } from "date-fns"
 import {
@@ -53,8 +52,6 @@ async function getBusinessDiscounts(_sellerId: string) {
 }
 
 export default async function BusinessDiscountsPage() {
-  await connection()
-  
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const { discounts, total } = await getBusinessDiscounts(businessSeller.id)

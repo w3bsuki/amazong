@@ -254,7 +254,7 @@ export function ProductCard({
     : 0
 
   const resolvedState = state || (isBoosted ? "promoted" : hasDiscount && discountPercent >= 10 ? "sale" : "default")
-  const productUrl = resolvedUsername && slug ? `/${resolvedUsername}/${slug}` : `/product/${slug || id}`
+  const productUrl = resolvedUsername ? `/${resolvedUsername}/${slug || id}` : "#"
   const loadingStrategy = getImageLoadingStrategy(index, 4)
 
   // Generate Smart Meta String (e.g. "2015 • Diesel • 150k km")

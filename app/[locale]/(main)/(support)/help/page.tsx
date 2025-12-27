@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import { routing } from '@/i18n/routing'
+import { routing, validateLocale } from '@/i18n/routing'
 import { setRequestLocale } from 'next-intl/server'
 
 // Generate static params for all locales
@@ -8,7 +8,8 @@ export function generateStaticParams() {
 }
 
 export default async function HelpPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   // Redirect to customer-service page
   redirect(`/${locale}/customer-service`)

@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { setRequestLocale } from "next-intl/server"
 import { SecurityContent } from "./security-content"
 
@@ -9,7 +8,6 @@ export default async function SecurityPage({
 }: {
     params: Promise<{ locale: string }>
 }) {
-    await connection()
     const { locale } = await params
     setRequestLocale(locale)
     const supabase = await createClient()

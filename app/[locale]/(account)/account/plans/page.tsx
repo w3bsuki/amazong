@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { getTranslations } from "next-intl/server"
 import { PlansContent } from "./plans-content"
 
@@ -11,7 +10,6 @@ interface PlansPageProps {
 }
 
 export default async function PlansPage({ params }: PlansPageProps) {
-  await connection()
   const { locale } = await params
   const supabase = await createClient()
   const _t = await getTranslations({ locale, namespace: 'Account' })

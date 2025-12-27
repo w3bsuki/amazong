@@ -45,7 +45,7 @@ export function SignInPrompt() {
             <Button 
               size="lg" 
               onClick={() => router.push("/auth/login")}
-              className="h-12 px-6 sm:px-8 text-base font-semibold shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto"
+              className="h-12 px-6 sm:px-8 text-base font-semibold transition-colors w-full sm:w-auto"
             >
               Start Selling
               <ArrowRight className="ml-2 size-5" weight="bold" />
@@ -79,10 +79,10 @@ export function SignInPrompt() {
         <div className="order-1 lg:order-2 hidden sm:block">
           <div className="relative">
             {/* Decorative gradient blob */}
-            <div className="absolute -inset-4 bg-linear-to-r from-primary/20 via-primary/10 to-transparent rounded-3xl blur-2xl" />
+            <div className="hidden" />
             
             {/* Card */}
-            <div className="relative bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-xl">
+            <div className="relative bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-none">
               {/* Header */}
               <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                 <div className="flex items-center justify-center size-12 sm:size-14 rounded-xl bg-primary text-primary-foreground">

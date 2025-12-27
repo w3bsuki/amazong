@@ -1,11 +1,8 @@
 import { requireDashboardAccess, getBusinessProducts } from "@/lib/auth/business"
-import { connection } from "next/server"
 import { ProductsTable } from "../../_components/products-table"
 import { getBusinessDashboardCategories } from "../_lib/categories"
 
 export default async function BusinessProductsPage() {
-  await connection()
-  
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const { products, total } = await getBusinessProducts(businessSeller.id)

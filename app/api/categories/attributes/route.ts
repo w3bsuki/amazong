@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { NextResponse, connection } from "next/server"
+import { NextResponse } from "next/server"
 
 function normalizeAttrKey(value: unknown): string {
   return String(value ?? "")
@@ -38,7 +38,6 @@ async function getCategoryAncestorIds(supabase: Awaited<ReturnType<typeof create
 }
 
 export async function GET(request: Request) {
-  await connection()
   try {
     const { searchParams } = new URL(request.url)
     const categoryId = searchParams.get("categoryId")

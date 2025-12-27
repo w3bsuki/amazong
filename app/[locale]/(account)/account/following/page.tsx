@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { FollowingContent } from "./following-content"
 
 interface FollowingPageProps {
@@ -10,7 +9,6 @@ interface FollowingPageProps {
 }
 
 export default async function FollowingPage({ params }: FollowingPageProps) {
-  await connection()
   const { locale } = await params
   const supabase = await createClient()
 

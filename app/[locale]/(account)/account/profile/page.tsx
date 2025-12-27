@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { ProfileContent } from "./profile-content"
 
 interface ProfilePageProps {
@@ -10,7 +9,6 @@ interface ProfilePageProps {
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  await connection()
   const { locale } = await params
   const supabase = await createClient()
 

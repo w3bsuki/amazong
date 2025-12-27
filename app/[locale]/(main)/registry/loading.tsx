@@ -4,7 +4,7 @@ export default function RegistryLoading() {
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
       {/* Hero */}
-      <div className="bg-gradient-to-br from-primary/5 to-secondary/5 py-10 sm:py-16">
+      <div className="bg-primary/5 py-10 sm:py-16">
         <div className="container text-center">
           <Skeleton className="h-10 sm:h-14 w-64 mx-auto mb-4" />
           <Skeleton className="h-5 w-80 mx-auto mb-6" />

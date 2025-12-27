@@ -4,6 +4,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
+import Image from "next/image"
 import { Languages } from "lucide-react"
 import { MapPin, Check } from "@phosphor-icons/react"
 import { useState } from "react"
@@ -65,7 +66,7 @@ export function LocaleDeliveryDropdown({ pathname, country, onCountryChange, cla
               <MapPin weight="regular" className="size-4" />
             </div>
             <div className="flex flex-col items-start leading-none gap-0.5">
-              <span className="text-[10px] text-header-text/70 font-normal">
+              <span className="text-2xs text-header-text/70 font-normal">
                 {tNav("deliverTo")}
               </span>
               <span className="text-xs font-bold truncate max-w-[80px] lg:max-w-[120px]">
@@ -146,7 +147,14 @@ export function LocaleDeliveryDropdown({ pathname, country, onCountryChange, cla
                 }
               >
                 {loc.flag ? (
-                  <img src={loc.flag} alt={loc.name} width={24} height={16} className="rounded-sm border border-border" />
+                  <Image
+                    src={loc.flag}
+                    alt={loc.name}
+                    width={24}
+                    height={16}
+                    sizes="24px"
+                    className="rounded-sm border border-border"
+                  />
                 ) : (
                   <span className="text-lg w-6 text-center">{loc.icon}</span>
                 )}

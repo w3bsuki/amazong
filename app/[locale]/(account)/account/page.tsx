@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { AccountHeroCard } from "./_components/account-hero-card"
 import { AccountStatsCards } from "./_components/account-stats-cards"
 import { AccountChart } from "./_components/account-chart"
@@ -14,7 +13,6 @@ interface AccountPageProps {
 }
 
 export default async function AccountPage({ params }: AccountPageProps) {
-  await connection()
   const { locale } = await params
   const supabase = await createClient()
 

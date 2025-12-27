@@ -44,7 +44,7 @@ export function ContactSellerButton({
       const { data: userData } = await supabase.auth.getUser()
       if (!userData.user) {
         // Redirect to login with return URL
-        const returnUrl = `/product/${productId}`
+        const returnUrl = typeof window !== "undefined" ? window.location.pathname : "/"
         router.push(`/auth/login?redirect=${encodeURIComponent(returnUrl)}&action=contact`)
         return
       }

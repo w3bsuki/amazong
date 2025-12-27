@@ -33,9 +33,15 @@ import { User } from "@supabase/supabase-js"
 interface SiteHeaderProps {
   user: User | null
   hideSubheader?: boolean
+  /**
+   * Header rendering variant.
+   * - default: full header (search + menus)
+   * - product: product detail UX (back button, no search)
+   */
+  variant?: "default" | "product"
 }
 
-export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
+export function SiteHeader({ user, hideSubheader = false, variant = "default" }: SiteHeaderProps) {
   const [country, setCountry] = useState("Bulgaria")
   const [, setCountryCode] = useState("BG") // Used for shipping zone filtering
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
@@ -44,8 +50,18 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
   
-  // Product pages get special mobile UX: back button instead of hamburger, no search bar
-  const isProductPage = pathname.startsWith("/product/") || hideSubheader
+  const pathWithoutLocale = (() => {
+    const segments = pathname.split("/").filter(Boolean)
+    const maybeLocale = segments[0]
+    if (maybeLocale && /^[a-z]{2}(-[A-Z]{2})?$/i.test(maybeLocale)) {
+      segments.shift()
+    }
+    return "/" + segments.join("/")
+  })()
+
+  // Product pages get special UX: back button instead of hamburger, no search bar.
+  // Avoid heuristics (like segment counts) and rely on the route-group layout passing variant="product".
+  const isProductPage = variant === "product"
   
   const searchPlaceholder = locale === "bg" 
     ? "Търсене..." 
@@ -106,7 +122,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
           <button
             onClick={() => setIsMobileSearchOpen(true)}
             className={cn(
-              "w-full flex items-center gap-2 h-touch px-3.5 rounded-lg",
+              "w-full flex items-center gap-2 h-10 px-3.5 rounded-lg",
               "bg-background",
               "text-muted-foreground text-sm text-left",
               "active:bg-muted",
@@ -153,12 +169,14 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
             </div>
           </div>
 
-          {/* Search Bar - Fixed grid column, doesn't shift */}
-          <div className="flex justify-center px-2 lg:px-4">
-            <div className="w-full max-w-(--container-header-content)">
-              <DesktopSearch />
+          {/* Search Bar - Hidden on product pages */}
+          {!isProductPage && (
+            <div className="flex justify-center px-2 lg:px-4">
+              <div className="w-full max-w-(--container-header-content)">
+                <DesktopSearch />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Right Actions - Conditional based on auth state */}
           <div className="flex items-center justify-end gap-0.5">
@@ -181,7 +199,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
                   >
                     <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"} title={locale === "bg" ? "Продай" : "Sell"}>
                       <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
-                      <Camera weight="regular" className="scale-110" aria-hidden="true" />
+                      <Camera weight="regular" aria-hidden="true" />
                     </Link>
                   </Button>
                 </div>
@@ -208,7 +226,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
                   </Link>
                   <Link
                     href="/auth/sign-up"
-                    className="text-sm font-medium bg-cta-secondary text-cta-secondary-text hover:bg-cta-secondary-hover px-4 py-2 rounded-md transition-colors shadow-sm"
+                    className="text-sm font-medium bg-cta-secondary text-cta-secondary-text hover:bg-cta-secondary-hover px-4 py-2 rounded-md transition-colors"
                   >
                     {t('register')}
                   </Link>
@@ -220,7 +238,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
                   >
                     <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"} title={locale === "bg" ? "Продай" : "Sell"}>
                       <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
-                      <Camera weight="regular" className="scale-110" aria-hidden="true" />
+                      <Camera weight="regular" aria-hidden="true" />
                     </Link>
                   </Button>
                 </div>
@@ -236,7 +254,7 @@ export function SiteHeader({ user, hideSubheader = false }: SiteHeaderProps) {
       </div>
 
       {/* Category Subheader - Hide on category/product pages (eBay/Target pattern) */}
-      {!pathname.startsWith("/categories") && !pathname.startsWith("/product") && !hideSubheader && (
+      {!pathWithoutLocale.startsWith("/categories") && !isProductPage && !hideSubheader && (
         <nav className="hidden sm:block bg-header-bg text-sm border-t border-header-text/15 relative">
           <div className="container text-header-text">
             {/* Mobile/Tablet: Quick Links with Sidebar Menu */}

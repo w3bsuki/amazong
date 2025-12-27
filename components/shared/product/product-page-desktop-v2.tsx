@@ -93,7 +93,7 @@ export function ProductPageDesktopV2({
       <div className="container py-6">
         
         {/* Top Banner (Trust Blue) */}
-        <div className="mb-6 flex items-center justify-between rounded-lg border border-cta-trust-blue/20 bg-cta-trust-blue/5 p-3 text-sm shadow-sm">
+        <div className="mb-6 flex items-center justify-between rounded-lg border border-cta-trust-blue/20 bg-cta-trust-blue/5 p-3 text-sm">
           <div className="flex items-center gap-4">
             <span className="text-muted-foreground">Find similar items from</span>
             <div className="flex items-center gap-2">
@@ -104,7 +104,7 @@ export function ProductPageDesktopV2({
             </div>
             <div className="flex gap-1.5">
               {images.slice(0, 4).map((img, i) => (
-                <div key={i} className="h-10 w-8 rounded border border-border bg-muted overflow-hidden shadow-sm">
+                <div key={i} className="h-10 w-8 rounded border border-border bg-muted overflow-hidden">
                   <Image src={img} alt="" width={32} height={40} className="object-cover h-full w-full" />
                 </div>
               ))}
@@ -131,7 +131,7 @@ export function ProductPageDesktopV2({
                     className={cn(
                       "relative size-16 rounded-lg border overflow-hidden bg-muted/30 transition-none",
                       selectedImage === idx 
-                        ? "border-primary ring-1 ring-primary" 
+                        ? "border-primary" 
                         : "border-border hover:border-muted-foreground/50"
                     )}
                   >
@@ -150,7 +150,7 @@ export function ProductPageDesktopV2({
                 {/* Badges Overlay */}
                 <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
                   {product.is_boosted && (
-                    <Badge className="bg-destructive hover:bg-destructive/90 text-destructive-foreground border-none px-3 py-1 text-xs font-bold uppercase tracking-wide rounded-sm shadow-sm">
+                    <Badge className="bg-destructive hover:bg-destructive/90 text-destructive-foreground border-none px-3 py-1 text-xs font-bold uppercase tracking-wide rounded-sm">
                       13 Sold in last 24 hours
                     </Badge>
                   )}
@@ -158,10 +158,10 @@ export function ProductPageDesktopV2({
 
                 {/* Action Buttons Overlay */}
                 <div className="absolute top-4 right-4 z-10 flex gap-2">
-                  <Button variant="secondary" size="icon" className="rounded-full bg-background/90 hover:bg-background shadow-sm border border-border h-10 w-10 transition-none">
+                  <Button variant="secondary" size="icon" className="rounded-full bg-background/90 hover:bg-background border border-border h-10 w-10 transition-none">
                     <Share2 className="h-5 w-5 text-muted-foreground" />
                   </Button>
-                  <Button variant="secondary" size="icon" className="rounded-full bg-background/90 hover:bg-background shadow-sm border border-border h-10 w-10 transition-none">
+                  <Button variant="secondary" size="icon" className="rounded-full bg-background/90 hover:bg-background border border-border h-10 w-10 transition-none">
                     <Heart className="h-5 w-5 text-muted-foreground" />
                   </Button>
                 </div>
@@ -179,10 +179,10 @@ export function ProductPageDesktopV2({
 
                 {/* Navigation Arrows (Mobile/Tablet) */}
                 <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between lg:hidden">
-                  <Button variant="secondary" size="icon" className="rounded-full h-10 w-10 shadow-md bg-background/90" onClick={() => setSelectedImage(prev => Math.max(0, prev - 1))}>
+                  <Button variant="secondary" size="icon" className="rounded-full h-10 w-10 bg-background/90" onClick={() => setSelectedImage(prev => Math.max(0, prev - 1))}>
                     <ChevronLeft className="h-5 w-5" />
                   </Button>
-                  <Button variant="secondary" size="icon" className="rounded-full h-10 w-10 shadow-md bg-background/90" onClick={() => setSelectedImage(prev => Math.min(images.length - 1, prev + 1))}>
+                  <Button variant="secondary" size="icon" className="rounded-full h-10 w-10 bg-background/90" onClick={() => setSelectedImage(prev => Math.min(images.length - 1, prev + 1))}>
                     <ChevronRight className="h-5 w-5" />
                   </Button>
                 </div>
@@ -280,7 +280,7 @@ export function ProductPageDesktopV2({
 
             {/* 5. Action Buttons (eBay Style) */}
             <div className="space-y-2 pt-1">
-              <Button className="w-full h-12 rounded-full bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text font-bold text-lg shadow-sm transition-none">
+              <Button className="w-full h-12 rounded-full bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text font-bold text-lg transition-none">
                 Buy It Now
               </Button>
               <Button variant="outline" className="w-full h-12 rounded-full border-cta-trust-blue text-cta-trust-blue hover:bg-cta-trust-blue/5 font-bold text-lg border-2 transition-none">

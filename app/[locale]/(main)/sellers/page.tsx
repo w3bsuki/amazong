@@ -1,9 +1,8 @@
 import type { Metadata } from "next"
 
-import { routing } from "@/i18n/routing"
+import { routing, validateLocale } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { setRequestLocale } from "next-intl/server"
-import { connection } from "next/server"
 
 import { getTopSellers } from "./_lib/get-top-sellers"
 import SellersEmptyState from "./_components/sellers-empty-state"
@@ -24,8 +23,8 @@ export default async function SellersPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  await connection()
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const supabase = await createClient()
 

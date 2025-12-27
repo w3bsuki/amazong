@@ -1,0 +1,1497 @@
+{
+  "documentInfo": {
+    "url": "http://localhost:3000/bg",
+    "title": "Начало | AMZN",
+    "viewport": {
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "dpr": 2
+    },
+    "root": {
+      "fontSize": "16px",
+      "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+      "lineHeight": "24px",
+      "color": "rgb(0, 0, 0)",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/143.0.7499.4 Safari/537.36",
+    "doc": {
+      "scrollHeight": 1080,
+      "clientHeight": 844
+    }
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "sections": [
+    {
+      "label": "scrollY=0",
+      "viewport": {
+        "w": 390,
+        "h": 844,
+        "dpr": 2
+      },
+      "counts": {
+        "clickablesInViewport": 26,
+        "tapTargetsFailing44": 4,
+        "textElementsSampled": 56
+      },
+      "distributions": {
+        "fontFamilies": [
+          {
+            "value": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "count": 56
+          }
+        ],
+        "fontSizes": [
+          {
+            "value": "14px",
+            "count": 23
+          },
+          {
+            "value": "16px",
+            "count": 18
+          },
+          {
+            "value": "11px",
+            "count": 8
+          },
+          {
+            "value": "12px",
+            "count": 6
+          },
+          {
+            "value": "9px",
+            "count": 1
+          }
+        ],
+        "lineHeights": [
+          {
+            "value": "20px",
+            "count": 20
+          },
+          {
+            "value": "24px",
+            "count": 18
+          },
+          {
+            "value": "16px",
+            "count": 14
+          },
+          {
+            "value": "17.5px",
+            "count": 3
+          },
+          {
+            "value": "12px",
+            "count": 1
+          }
+        ]
+      },
+      "largestText": [
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: Айсифон",
+          "href": "/bg/shop4e/aysifon",
+          "text": "Айсифон",
+          "rect": {
+            "x": 12,
+            "y": 319,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "Айсифон",
+          "rect": {
+            "x": 11,
+            "y": 318,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 18,
+            "y": 325,
+            "w": 20,
+            "h": 20
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 19,
+            "y": 326,
+            "w": 18,
+            "h": 18
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "5 €",
+          "rect": {
+            "x": 18,
+            "y": 575,
+            "w": 24,
+            "h": 24
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "24px",
+            "letterSpacing": "-0.4px",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: 12322",
+          "href": "/bg/shop4e/12322",
+          "text": "12322",
+          "rect": {
+            "x": 199,
+            "y": 319,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "12322",
+          "rect": {
+            "x": 198,
+            "y": 318,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 205,
+            "y": 325,
+            "w": 20,
+            "h": 20
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 206,
+            "y": 326,
+            "w": 18,
+            "h": 18
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "5 €",
+          "rect": {
+            "x": 205,
+            "y": 575,
+            "w": 24,
+            "h": 24
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "24px",
+            "letterSpacing": "-0.4px",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: Айсифон 17",
+          "href": "/bg/shop4e/aysifon-17-f6d41cb1",
+          "text": "Айсифон 17",
+          "rect": {
+            "x": 12,
+            "y": 615,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "Айсифон 17",
+          "rect": {
+            "x": 11,
+            "y": 614,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 18,
+            "y": 621,
+            "w": 20,
+            "h": 20
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 19,
+            "y": 622,
+            "w": 18,
+            "h": 18
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: Айсифон 17",
+          "href": "/bg/shop4e/aysifon-17",
+          "text": "Айсифон 17",
+          "rect": {
+            "x": 199,
+            "y": 615,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "Айсифон 17",
+          "rect": {
+            "x": 198,
+            "y": 614,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 205,
+            "y": 621,
+            "w": 20,
+            "h": 20
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 206,
+            "y": 622,
+            "w": 18,
+            "h": 18
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": null,
+          "href": "/bg/sell",
+          "text": "Започни да продавашБезплатно • Милиони клиенти • Бърза продажба",
+          "rect": {
+            "x": 12,
+            "y": 194,
+            "w": 366,
+            "h": 52
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 14
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 20,
+            "y": 204,
+            "w": 32,
+            "h": 32
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 14
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "Започни да продавашБезплатно • Милиони клиенти • Бърза продажба",
+          "rect": {
+            "x": 60,
+            "y": 202,
+            "w": 274,
+            "h": 36
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 14
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "Започни да продаваш",
+          "rect": {
+            "x": 60,
+            "y": 202,
+            "w": 274,
+            "h": 18
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "14px",
+            "fontWeight": "600",
+            "lineHeight": "17.5px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 14
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 342,
+            "y": 206,
+            "w": 28,
+            "h": 28
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 14
+        },
+        {
+          "tag": "button",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "Add to wishlist",
+          "rect": {
+            "x": 141,
+            "y": 357,
+            "w": 44,
+            "h": 44
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 14
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "Add to wishlist",
+          "rect": {
+            "x": 163,
+            "y": 378,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "20px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 14
+        }
+      ],
+      "failingTapTargets44": [
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": null,
+          "href": "#main-content",
+          "text": "Към съдържанието",
+          "rect": {
+            "x": -1,
+            "y": -1,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "tap": {
+            "meets44": false,
+            "meets48": false
+          }
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": null,
+          "href": "#main-content",
+          "text": "Преминете към основното съдържание",
+          "rect": {
+            "x": -1,
+            "y": -1,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "tap": {
+            "meets44": false,
+            "meets48": false
+          }
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": null,
+          "href": "#footerHeader",
+          "text": "Преминете към футъра",
+          "rect": {
+            "x": -1,
+            "y": -1,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "tap": {
+            "meets44": false,
+            "meets48": false
+          }
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Switch language",
+          "href": "/en",
+          "text": "EN",
+          "rect": {
+            "x": 342,
+            "y": 4,
+            "w": 40,
+            "h": 44
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "12px",
+            "fontWeight": "500",
+            "lineHeight": "16px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "tap": {
+            "meets44": false,
+            "meets48": false
+          }
+        }
+      ]
+    },
+    {
+      "label": "scrollY=717",
+      "viewport": {
+        "w": 390,
+        "h": 844,
+        "dpr": 2
+      },
+      "counts": {
+        "clickablesInViewport": 30,
+        "tapTargetsFailing44": 1,
+        "textElementsSampled": 78
+      },
+      "distributions": {
+        "fontFamilies": [
+          {
+            "value": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "count": 78
+          }
+        ],
+        "fontSizes": [
+          {
+            "value": "16px",
+            "count": 32
+          },
+          {
+            "value": "14px",
+            "count": 28
+          },
+          {
+            "value": "11px",
+            "count": 12
+          },
+          {
+            "value": "12px",
+            "count": 5
+          },
+          {
+            "value": "9px",
+            "count": 1
+          }
+        ],
+        "lineHeights": [
+          {
+            "value": "24px",
+            "count": 32
+          },
+          {
+            "value": "20px",
+            "count": 22
+          },
+          {
+            "value": "16px",
+            "count": 17
+          },
+          {
+            "value": "17.5px",
+            "count": 6
+          },
+          {
+            "value": "12px",
+            "count": 1
+          }
+        ]
+      },
+      "largestText": [
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: Айсифон 17",
+          "href": "/bg/shop4e/aysifon-17-f6d41cb1",
+          "text": "Айсифон 17",
+          "rect": {
+            "x": 12,
+            "y": -102,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "67 €",
+          "rect": {
+            "x": 18,
+            "y": 155,
+            "w": 33,
+            "h": 24
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "24px",
+            "letterSpacing": "-0.4px",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: Айсифон 17",
+          "href": "/bg/shop4e/aysifon-17",
+          "text": "Айсифон 17",
+          "rect": {
+            "x": 199,
+            "y": -102,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "67 €",
+          "rect": {
+            "x": 205,
+            "y": 155,
+            "w": 33,
+            "h": 24
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "24px",
+            "letterSpacing": "-0.4px",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: 123123123123",
+          "href": "/bg/shop4e/123123123123",
+          "text": "123123123123",
+          "rect": {
+            "x": 12,
+            "y": 195,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "123123123123",
+          "rect": {
+            "x": 11,
+            "y": 194,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 18,
+            "y": 201,
+            "w": 20,
+            "h": 20
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 19,
+            "y": 202,
+            "w": 18,
+            "h": 18
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "5 €",
+          "rect": {
+            "x": 18,
+            "y": 451,
+            "w": 24,
+            "h": 24
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "24px",
+            "letterSpacing": "-0.4px",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: Заглавие",
+          "href": "/bg/shop4e/zaglavie",
+          "text": "Заглавие",
+          "rect": {
+            "x": 199,
+            "y": 195,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "Заглавие",
+          "rect": {
+            "x": 198,
+            "y": 194,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 205,
+            "y": 201,
+            "w": 20,
+            "h": 20
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 206,
+            "y": 202,
+            "w": 18,
+            "h": 18
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "5 €",
+          "rect": {
+            "x": 205,
+            "y": 451,
+            "w": 24,
+            "h": 24
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "24px",
+            "letterSpacing": "-0.4px",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: Грозни обувки",
+          "href": "/bg/shop4e/grozni-obuvki",
+          "text": "Грозни обувки",
+          "rect": {
+            "x": 12,
+            "y": 491,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "Грозни обувки",
+          "rect": {
+            "x": 11,
+            "y": 490,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 18,
+            "y": 497,
+            "w": 20,
+            "h": 20
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 19,
+            "y": 498,
+            "w": 18,
+            "h": 18
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "5 €",
+          "rect": {
+            "x": 18,
+            "y": 748,
+            "w": 24,
+            "h": 24
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "24px",
+            "letterSpacing": "-0.4px",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: БУБА ",
+          "href": "/bg/shop4e/buba",
+          "text": "БУБА",
+          "rect": {
+            "x": 199,
+            "y": 491,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "БУБА",
+          "rect": {
+            "x": 198,
+            "y": 490,
+            "w": 1,
+            "h": 1
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 205,
+            "y": 497,
+            "w": 20,
+            "h": 20
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "",
+          "rect": {
+            "x": 206,
+            "y": 498,
+            "w": 18,
+            "h": 18
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "span",
+          "role": null,
+          "ariaLabel": null,
+          "href": null,
+          "text": "5 €",
+          "rect": {
+            "x": 205,
+            "y": 748,
+            "w": 24,
+            "h": 24
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "700",
+            "lineHeight": "24px",
+            "letterSpacing": "-0.4px",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        },
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Отвори продукт: ЧРД АНТОНИЯ",
+          "href": "/bg/shop4e/chrd-antoniya",
+          "text": "ЧРД АНТОНИЯ",
+          "rect": {
+            "x": 12,
+            "y": 788,
+            "w": 179,
+            "h": 287
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "16px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "fontPx": 16
+        }
+      ],
+      "failingTapTargets44": [
+        {
+          "tag": "a",
+          "role": null,
+          "ariaLabel": "Switch language",
+          "href": "/en",
+          "text": "EN",
+          "rect": {
+            "x": 342,
+            "y": 4,
+            "w": 40,
+            "h": 44
+          },
+          "styles": {
+            "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+            "fontSize": "12px",
+            "fontWeight": "500",
+            "lineHeight": "16px",
+            "letterSpacing": "normal",
+            "textTransform": "none"
+          },
+          "tap": {
+            "meets44": false,
+            "meets48": false
+          }
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalFailingTapTargets44": 4,
+    "topFailingTapTargets44": [
+      {
+        "tag": "a",
+        "role": null,
+        "ariaLabel": null,
+        "href": "#main-content",
+        "text": "Към съдържанието",
+        "rect": {
+          "x": -1,
+          "y": -1,
+          "w": 1,
+          "h": 1
+        },
+        "styles": {
+          "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "textTransform": "none"
+        },
+        "tap": {
+          "meets44": false,
+          "meets48": false
+        }
+      },
+      {
+        "tag": "a",
+        "role": null,
+        "ariaLabel": null,
+        "href": "#main-content",
+        "text": "Преминете към основното съдържание",
+        "rect": {
+          "x": -1,
+          "y": -1,
+          "w": 1,
+          "h": 1
+        },
+        "styles": {
+          "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "textTransform": "none"
+        },
+        "tap": {
+          "meets44": false,
+          "meets48": false
+        }
+      },
+      {
+        "tag": "a",
+        "role": null,
+        "ariaLabel": null,
+        "href": "#footerHeader",
+        "text": "Преминете към футъра",
+        "rect": {
+          "x": -1,
+          "y": -1,
+          "w": 1,
+          "h": 1
+        },
+        "styles": {
+          "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "lineHeight": "24px",
+          "letterSpacing": "normal",
+          "textTransform": "none"
+        },
+        "tap": {
+          "meets44": false,
+          "meets48": false
+        }
+      },
+      {
+        "tag": "a",
+        "role": null,
+        "ariaLabel": "Switch language",
+        "href": "/en",
+        "text": "EN",
+        "rect": {
+          "x": 342,
+          "y": 4,
+          "w": 40,
+          "h": 44
+        },
+        "styles": {
+          "fontFamily": "Inter, \"Inter Fallback\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+          "fontSize": "12px",
+          "fontWeight": "500",
+          "lineHeight": "16px",
+          "letterSpacing": "normal",
+          "textTransform": "none"
+        },
+        "tap": {
+          "meets44": false,
+          "meets48": false
+        }
+      }
+    ]
+  }
+}

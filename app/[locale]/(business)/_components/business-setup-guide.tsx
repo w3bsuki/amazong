@@ -98,7 +98,7 @@ export function BusinessSetupGuide({
 
   return (
     <div className="px-4 lg:px-6">
-      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-background to-background">
+      <Card className="border-primary/20 bg-primary/5">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">

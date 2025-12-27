@@ -39,9 +39,7 @@ function CompactDealCard({ id, title, price, listPrice, image, rating = 4.5, rev
   const t = useTranslations('Product')
   
   // Use store slug + product slug for SEO-friendly URLs
-  const productUrl = storeSlug && slug 
-    ? `/product/${storeSlug}/${slug}` 
-    : `/product/${slug || id}`
+  const productUrl = storeSlug ? `/${storeSlug}/${slug || id}` : "#"
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale, {

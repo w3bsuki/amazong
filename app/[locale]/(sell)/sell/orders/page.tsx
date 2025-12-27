@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { setRequestLocale } from "next-intl/server"
+import { validateLocale } from "@/i18n/routing"
 import { SellerOrdersClient } from "./client"
 
 export const metadata = {
@@ -14,10 +14,8 @@ export default async function SellerOrdersPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  // Mark as dynamic - auth check required
-  await connection()
-
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
 
   const supabase = await createClient()

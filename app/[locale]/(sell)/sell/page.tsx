@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { connection } from "next/server";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { SellPageClient } from "./client";
@@ -46,9 +45,6 @@ export default async function SellPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  // Mark as dynamic - user auth check required
-  await connection();
-  
   const { locale } = await params;
   setRequestLocale(locale);
   

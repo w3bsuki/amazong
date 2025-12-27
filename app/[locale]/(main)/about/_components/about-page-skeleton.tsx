@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export function AboutPageSkeleton() {
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
-      <div className="bg-linear-to-b from-header-bg to-header-bg-secondary text-white relative">
+      <div className="bg-header-bg text-white relative">
         <div className="absolute inset-0 bg-black/20" />
         <div className="container py-12 md:py-20 relative z-10">
           <Skeleton className="h-8 w-48 mb-4 bg-white/20" />

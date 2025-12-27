@@ -15,11 +15,8 @@ import {
   calculatePerformanceScoreServer,
   transformToActivityItemsServer,
 } from "@/lib/auth/business"
-import { connection } from "next/server"
 
 export default async function BusinessDashboardPage() {
-  await connection()
-  
   // Get the authenticated business seller with subscription check
   // This will redirect to /dashboard/upgrade if they don't have a paid subscription
   const businessSeller = await requireDashboardAccess()

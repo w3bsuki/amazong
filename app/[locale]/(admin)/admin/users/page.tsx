@@ -1,6 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
-import { connection } from "next/server"
 import {
   Card,
   CardContent,
@@ -37,7 +36,6 @@ async function getUsers() {
 }
 
 export default async function AdminUsersPage() {
-  await connection()
   const users = await getUsers()
   
   const getRoleBadge = (role: string | null) => {

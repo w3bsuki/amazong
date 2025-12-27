@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import Link from "next/link"
 import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
 import { SalesChart } from "./_components/sales-chart"
@@ -31,7 +30,6 @@ interface SalesPageProps {
 }
 
 export default async function SalesPage({ params, searchParams }: SalesPageProps) {
-  await connection()
   const { locale } = await params
   const { period = "30d" } = await searchParams
   const supabase = await createClient()

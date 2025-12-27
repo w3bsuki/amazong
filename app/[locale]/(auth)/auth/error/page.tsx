@@ -17,8 +17,8 @@ export default async function AuthErrorPage({
       case 'invalid_request': return t('errorInvalidRequest')
       case 'unauthorized_client': return t('errorUnauthorized')
       case 'server_error': return t('errorServer')
-      case 'verification_failed': return t('errorVerificationFailed') || 'Email verification failed. The link may have expired.'
-      case 'invalid_code': return t('errorInvalidCode') || 'Invalid verification code. Please try signing up again.'
+      case 'verification_failed': return t('errorVerificationFailed')
+      case 'invalid_code': return t('errorInvalidCode')
       default: return t('errorGeneric')
     }
   }

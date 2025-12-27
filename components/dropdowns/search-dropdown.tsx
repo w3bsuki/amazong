@@ -12,6 +12,7 @@ interface SearchProduct {
   price: number
   images: string[]
   slug: string
+  username?: string
 }
 
 interface SearchDropdownProps {
@@ -89,7 +90,12 @@ export function SearchDropdown({
                 <button
                   key={product.id}
                   onClick={() => {
-                    window.location.href = `/${locale}/product/${product.slug}`
+                    // Best effort: if username is present, go canonical; otherwise fall back to search.
+                    if (product.username) {
+                      window.location.href = `/${locale}/${product.username}/${product.slug || product.id}`
+                      return
+                    }
+                    window.location.href = `/${locale}/search?q=${encodeURIComponent(product.title)}`
                   }}
                   className="w-full flex items-center gap-3 p-2 hover:bg-muted rounded-md text-left"
                 >

@@ -148,6 +148,51 @@ export function getCategoryName(category: Category, locale: string): string {
 }
 
 /**
+ * Short category names for compact mobile UI (pills, rails)
+ * Maps full names to abbreviated versions for space-constrained contexts
+ */
+const SHORT_NAMES_BG: Record<string, string> = {
+  // Long names that need shortening
+  "Електроника": "Техника",
+  "Автомобили": "Авто",
+  "Дом и кухня": "Дом",
+  "Бижута и часовници": "Бижута",
+  "Филми и музика": "Медия",
+  "Услуги и събития": "Услуги",
+  "Колекционерски": "Колекции",
+  "Електромобилност": "Е-мобилност",
+  "Здраве": "Здраве",
+  "Инструменти": "Инструменти",
+}
+
+const SHORT_NAMES_EN: Record<string, string> = {
+  "Electronics": "Tech",
+  "Automotive": "Auto",
+  "Home & Kitchen": "Home",
+  "Jewelry & Watches": "Jewelry",
+  "Movies & Music": "Media",
+  "Services & Events": "Services",
+  "Collectibles": "Collect",
+  "E-Mobility": "E-Mobility",
+  "Health & Wellness": "Health",
+  "Tools & Home": "Tools",
+  "Baby & Kids": "Kids",
+}
+
+/**
+ * Get shortened category name for compact mobile displays
+ * Falls back to full name if no short version available
+ */
+export function getCategoryShortName(category: Category, locale: string): string {
+  const fullName = getCategoryName(category, locale)
+  
+  if (locale === 'bg') {
+    return SHORT_NAMES_BG[fullName] ?? fullName
+  }
+  return SHORT_NAMES_EN[fullName] ?? fullName
+}
+
+/**
  * Clear the categories cache
  * Useful for testing or after data mutations
  */

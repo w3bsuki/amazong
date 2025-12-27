@@ -346,7 +346,8 @@ test.describe("Seller Orders Page", () => {
 
       if (await productLink.count() > 0) {
         const href = await productLink.getAttribute("href")
-        expect(href).toContain("/product/")
+        expect(href).not.toContain("/product/")
+        expect(href).toMatch(/^\/en\/[\w-]+\/[\w-]+/)
       }
     })
   })

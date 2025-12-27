@@ -4,6 +4,7 @@ import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { CaretLeft, CaretRight } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 import { useLocale } from "next-intl"
 import { useSearchParams } from "next/navigation"
 
@@ -191,7 +192,7 @@ export function SubcategoryCircles({
                 className={cn(
                   "rounded-full flex items-center justify-center overflow-hidden",
                   "size-[52px] sm:size-[90px] md:size-[100px]",
-                  "bg-linear-to-br from-primary to-primary/80",
+                  "bg-primary",
                   "border-2 border-primary"
                 )}
               >
@@ -224,16 +225,17 @@ export function SubcategoryCircles({
               {/* Circle with image */}
               <div
                 className={cn(
-                  "rounded-full flex items-center justify-center overflow-hidden",
+                  "rounded-full relative flex items-center justify-center overflow-hidden",
                   "size-[52px] sm:size-[90px] md:size-[100px]",
                   "bg-muted"
                 )}
               >
-                <img 
-                  src={getCategoryImage(subcat.slug, subcat.image_url)} 
+                <Image
+                  src={getCategoryImage(subcat.slug, subcat.image_url)}
                   alt={getCategoryName(subcat)}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
+                  fill
+                  sizes="(min-width: 768px) 100px, (min-width: 640px) 90px, 52px"
+                  className="object-cover"
                 />
               </div>
               
@@ -280,13 +282,6 @@ export function SubcategoryCircles({
           <CaretRight size={20} weight="regular" className="text-muted-foreground" />
         </button>
 
-        {/* Mobile scroll indicator - subtle fade */}
-        <div 
-          className={cn(
-            "absolute right-0 top-0 bottom-0 w-12 bg-linear-to-l from-background to-transparent pointer-events-none md:hidden transition-opacity",
-            !canScrollRight && "opacity-0"
-          )} 
-        />
       </div>
     </div>
   )

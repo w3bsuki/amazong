@@ -6,7 +6,7 @@ import { Link } from "@/i18n/routing"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import type { Metadata } from 'next'
-import { routing } from "@/i18n/routing"
+import { routing, validateLocale } from "@/i18n/routing"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export function generateStaticParams() {
@@ -14,8 +14,9 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  const { locale } = await params;
-    setRequestLocale(locale)
+  const { locale: localeParam } = await params;
+  const locale = validateLocale(localeParam)
+  setRequestLocale(locale)
   return {
     title: locale === 'bg' ? 'Обслужване на клиенти' : 'Customer Service',
     description: locale === 'bg' 
@@ -25,7 +26,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default async function CustomerServicePage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   
   // Enable static rendering for this locale
   setRequestLocale(locale)

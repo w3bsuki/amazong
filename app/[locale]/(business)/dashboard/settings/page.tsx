@@ -1,6 +1,5 @@
 import { requireDashboardAccess } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
-import { connection } from "next/server"
 import {
   Card,
   CardContent,
@@ -41,8 +40,6 @@ async function getSellerDetails(sellerId: string) {
 }
 
 export default async function BusinessSettingsPage() {
-  await connection()
-  
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const sellerDetails = await getSellerDetails(businessSeller.id)

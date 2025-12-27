@@ -25,6 +25,11 @@
     "test:unit:coverage": "vitest run --coverage",
     "test:all": "pnpm -s lint && pnpm -s typecheck && pnpm -s test:unit && pnpm -s test:e2e && pnpm -s test:a11y",
     "test:full": "pnpm -s lint && pnpm -s typecheck && pnpm -s test:unit && pnpm -s test:prod"
+    ,
+    "clean:artifacts": "node scripts/clean-artifacts.mjs",
+    "clean:artifacts:dry": "node scripts/clean-artifacts.mjs --dry-run",
+    "clean:next": "node -e \"require('node:fs').rmSync('.next',{recursive:true,force:true})\"",
+    "clean": "pnpm -s clean:artifacts"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.49",

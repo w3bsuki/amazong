@@ -59,6 +59,8 @@ export async function proxy(request: NextRequest) {
   return await updateSession(request, response);
 }
 
+export default proxy;
+
 export const config = {
   // Match all pathnames except:
   // - API routes (/api/*)

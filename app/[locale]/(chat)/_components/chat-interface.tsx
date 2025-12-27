@@ -350,7 +350,7 @@ export function ChatInterface({
                   className="size-11 rounded-full object-cover"
                 />
               ) : (
-                <div className="flex size-11 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-purple-600 text-sm font-semibold text-white">
+                <div className="flex size-11 items-center justify-center rounded-full bg-purple-600 text-sm font-semibold text-white">
                   {initials}
                 </div>
               )}
@@ -475,7 +475,7 @@ export function ChatInterface({
                   className="size-24 rounded-full object-cover"
                 />
               ) : (
-                <div className="flex size-24 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-purple-600 text-2xl font-bold text-white">
+                <div className="flex size-24 items-center justify-center rounded-full bg-purple-600 text-2xl font-bold text-white">
                   {initials}
                 </div>
               )}
@@ -667,7 +667,7 @@ export function ChatInterface({
                             className="size-7 rounded-full object-cover"
                           />
                         ) : (
-                          <div className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-pink-500 to-purple-600 text-2xs font-semibold text-white">
+                          <div className="flex size-7 items-center justify-center rounded-full bg-purple-600 text-2xs font-semibold text-white">
                             {initials}
                           </div>
                         ))}

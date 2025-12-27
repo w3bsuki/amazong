@@ -120,7 +120,7 @@ export function SellPageClient({
   // Not logged in - show sign in prompt
   if (!user) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <SellHeader />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto">
           <SignInPrompt />
@@ -171,7 +171,7 @@ export function SellPageClient({
   // New users get username at signup, so this shouldn't happen
   if (!seller) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-background to-muted/30 flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <SellHeader user={{ email: user.email }} />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <div className="container-narrow text-center space-y-4">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCategoriesCache, getCategoryName } from "@/hooks/use-categories-cache"
+import { useCategoriesCache, getCategoryName, getCategoryShortName } from "@/hooks/use-categories-cache"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { getCategoryIcon } from "@/lib/category-icons"
@@ -30,10 +30,10 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
   return (
     <nav 
       aria-label={sectionLabel}
-      className="py-0.5"
+      className=""
     >
       <div 
-        className="flex overflow-x-auto no-scrollbar gap-2 px-3 py-0.5 snap-x snap-mandatory scroll-pl-3"
+        className="flex overflow-x-auto no-scrollbar gap-1 px-2.5 py-0 snap-x snap-mandatory scroll-pl-2.5"
         role="list"
       >
         {isLoading && fetchedCategories.length === 0 ? (
@@ -46,12 +46,14 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
           ))
         ) : (
           displayCategories.map((cat) => {
-            const categoryName = getCategoryName(cat, locale)
+            // Use short name for display, full name for accessibility
+            const fullName = getCategoryName(cat, locale)
+            const shortName = getCategoryShortName(cat, locale)
             return (
               <Link
                 key={cat.slug}
                 href={`/categories/${cat.slug}`}
-                aria-label={categoryName}
+                aria-label={fullName}
                 className={cn(
                   "group snap-start shrink-0",
                   "flex flex-col items-center",
@@ -65,17 +67,17 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
                   className={cn(
                     "flex items-center justify-center",
                     "size-14 rounded-full",
-                    "bg-cta-trust-blue ring-1 ring-cta-trust-blue/35",
-                    "group-hover:bg-cta-trust-blue-hover group-hover:ring-cta-trust-blue/55"
+                    "bg-cta-trust-blue",
+                    "group-hover:bg-cta-trust-blue-hover"
                   )}
                 >
-                  <span className="text-cta-trust-blue-text scale-110">
+                  <span className="text-cta-trust-blue-text">
                     {getCategoryIcon(cat.slug, { size: 24, weight: "regular" })}
                   </span>
                 </div>
-                {/* Label */}
-                <span className="mt-1.5 text-foreground font-medium text-[10px] text-center w-14 leading-[1.1] line-clamp-2 break-words min-h-[22px]">
-                  {categoryName}
+                {/* Label - Use short name for compact display */}
+                <span className="mt-1 text-foreground font-medium text-tiny text-center w-14 leading-tight line-clamp-2 break-words min-h-[18px]">
+                  {shortName}
                 </span>
               </Link>
             )

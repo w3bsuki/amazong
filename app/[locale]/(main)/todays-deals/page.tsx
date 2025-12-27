@@ -1,5 +1,5 @@
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
-import { routing } from "@/i18n/routing"
+import { routing, validateLocale } from "@/i18n/routing"
 import { Lightning as Zap } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import TodaysDealsPageClient from "./_components/todays-deals-page-client"
@@ -13,7 +13,8 @@ export default async function TodaysDealsPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations("TodaysDeals")
   const title = t("title")
@@ -21,7 +22,7 @@ export default async function TodaysDealsPage({
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
       {/* Hero Banner */}
-      <div className="bg-linear-to-r from-brand-deal via-brand-deal to-brand-deal/90 text-white py-6 sm:py-10">
+      <div className="bg-brand-deal text-white py-6 sm:py-10">
         <div className="container">
           {/* Breadcrumb */}
           <div className="[&_nav]:border-white/20 [&_nav]:mb-2 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">

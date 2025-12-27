@@ -16,7 +16,7 @@ export function CountBadge({ count, max = 99, className, ...props }: CountBadgeP
     <span
       {...props}
       className={cn(
-        "inline-flex items-center justify-center rounded-full px-1 min-w-4 h-4 text-[10px] font-bold leading-none tabular-nums",
+        "inline-flex items-center justify-center rounded-full px-1 min-w-4 h-4 text-2xs font-bold leading-none tabular-nums",
         className
       )}
     >

@@ -2,7 +2,7 @@ import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
 
 export default function TopSellersHero({ locale }: { locale: string }) {
   return (
-    <div className="bg-linear-to-r from-amber-500 via-amber-500 to-amber-400 text-white py-6 sm:py-10">
+    <div className="bg-amber-500 text-white py-6 sm:py-10">
       <div className="container">
         <div className="[&_nav]:border-white/20 [&_nav]:mb-2 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
           <AppBreadcrumb

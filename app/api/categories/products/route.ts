@@ -1,9 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
-import { NextResponse, connection } from "next/server"
+import { NextResponse } from "next/server"
 
 // Get one featured product per subcategory for mega-menu
 export async function GET(request: Request) {
-  await connection()
   try {
     const { searchParams } = new URL(request.url)
     const parentId = searchParams.get("parentId")

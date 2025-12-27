@@ -157,7 +157,7 @@ export function SellerRateBuyerActions({
                     onClick={() => setRating(star)}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
-                    className="p-1 transition-transform hover:scale-110"
+                    className="p-1"
                   >
                     <Star
                       className={cn(

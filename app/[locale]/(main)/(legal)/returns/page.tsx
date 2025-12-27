@@ -15,7 +15,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr"
 import { Link } from "@/i18n/routing"
 import type { Metadata } from 'next'
-import { routing } from "@/i18n/routing"
+import { routing, validateLocale } from "@/i18n/routing"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export function generateStaticParams() {
@@ -23,7 +23,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   return {
     title: locale === 'bg' ? 'Връщания и възстановявания' : 'Returns & Refunds',
@@ -34,7 +35,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default async function ReturnsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations('Returns')
   

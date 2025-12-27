@@ -1,4 +1,4 @@
-import { routing } from "@/i18n/routing"
+import { routing, validateLocale } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
 
 import SellerDashboardClient from "./_components/seller-dashboard-client"
@@ -12,7 +12,8 @@ export default async function SellerDashboardPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   return <SellerDashboardClient />
 }

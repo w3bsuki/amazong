@@ -338,7 +338,7 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
 
         {/* Upgrade CTA */}
         <SidebarGroup className="px-2">
-          <div className="rounded-lg bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-3">
+          <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
             <div className="flex items-center gap-2 mb-2">
               <div className="size-8 rounded-md bg-primary/10 flex items-center justify-center">
                 <IconSparkles className="size-4 text-primary" />

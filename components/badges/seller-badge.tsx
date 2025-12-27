@@ -185,7 +185,7 @@ const verificationConfig = {
     },
     enterprise: {
       icon: "✓✓✓",
-      color: "bg-gradient-to-r from-amber-500 to-yellow-500 text-white",
+      color: "bg-amber-500 text-white",
       name: { en: "Premium Verified", bg: "Премиум Верифициран" },
       description: { en: "All verifications complete", bg: "Всички верификации завършени" },
     },
@@ -211,7 +211,7 @@ const verificationConfig = {
     },
     enterprise: {
       icon: "✓✓✓",
-      color: "bg-gradient-to-r from-amber-500 to-yellow-500 text-white",
+      color: "bg-amber-500 text-white",
       name: { en: "Verified Enterprise", bg: "Верифициран Ентърпрайз" },
       description: { en: "Premium verified business", bg: "Премиум верифициран бизнес" },
     },

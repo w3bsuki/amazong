@@ -24,6 +24,22 @@ pnpm dev
 pnpm build
 ```
 
+## Testing
+
+```bash
+# Unit tests
+pnpm test:unit
+
+# E2E tests (Playwright)
+pnpm test:e2e
+
+# Open the latest Playwright HTML report
+pnpm exec playwright show-report playwright-report
+
+# Clean generated artifacts (reports, test output, Next build output)
+pnpm clean
+```
+
 ## Project Structure
 
 See [STRUCTURE.md](./STRUCTURE.md) for the complete refactoring plan.
@@ -43,15 +59,11 @@ Use these rules before adding new files (see [STRUCTURE.md](./STRUCTURE.md) for 
 
 ## Documentation
 
-Planning and audit docs live in-repo (this workspace does not use a `/docs` tree):
+Docs are organized under `docs/`:
 
-- [STRUCTURE.md](STRUCTURE.md) — canonical phased refactor plan
-- [PRODUCT_IMPROVEMENTS_PLAN.md](PRODUCT_IMPROVEMENTS_PLAN.md) — post-refactor UI/UX + behavior improvements plan
-- [cleanup/FULL_CODEBASE_AUDIT.md](cleanup/FULL_CODEBASE_AUDIT.md) — dead code / duplicates / cycles
-- [cleanup/FILE_INVENTORY.md](cleanup/FILE_INVENTORY.md) — file inventory (used/unused flags)
-- [production/02-CLEANUP.md](production/02-CLEANUP.md) — cleanup execution checklist
-- [production/03-REFACTOR.md](production/03-REFACTOR.md) — refactor execution notes
-- [production/TECH-STACK.md](production/TECH-STACK.md) — tech stack audit
+- `docs/production/` — go-live, operations, env vars, production readiness
+- `docs/dev/` — testing and architecture notes
+- `docs/archive/` — older masterplans and superseded docs
 
 ## Environment Variables
 #### AI Search (optional)

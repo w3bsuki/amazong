@@ -39,7 +39,18 @@ tsconfig.tsbuildinfo
 /playwright-report/
 /playwright-report-*/
 /test-results/
+/test-results-*/
 /blob-report/
+
+# Local run outputs (generated logs)
+/e2e-output*.txt
+/e2e-smoke-output*.txt
+/lint-output.txt
+/typecheck-output.txt
+/unit-test-output.txt
+/devserver-crash.txt
+/knip-output.json
+/tsc-files.txt
 
 # Typecheck/task outputs
 tsc.task.out

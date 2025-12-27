@@ -137,7 +137,7 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
                     >
                       {/* Image */}
                       <Link 
-                        href={`/product/${item.product_id}`} 
+                        href={item.username ? `/${item.username}/${item.slug || item.product_id}` : "#"}
                         onClick={() => setOpen(false)}
                         className="shrink-0"
                       >
@@ -155,7 +155,7 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
                       {/* Content */}
                       <div className="flex-1 min-w-0 flex flex-col">
                         <Link 
-                          href={`/product/${item.product_id}`}
+                          href={item.username ? `/${item.username}/${item.slug || item.product_id}` : "#"}
                           onClick={() => setOpen(false)}
                           className="text-sm font-medium text-foreground line-clamp-2 hover:text-brand transition-colors"
                         >

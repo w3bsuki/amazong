@@ -49,16 +49,16 @@ export function ListingPreviewCard({
   const conditionLabel = conditionLabels[listing.condition]?.[isBg ? "bg" : "en"] || listing.condition
 
   return (
-    <Card className={cn("overflow-hidden border border-border/50 bg-background/50 shadow-sm rounded-2xl backdrop-blur-sm ring-1 ring-border/5", className)}>
+    <Card className={cn("overflow-hidden border border-border/50 bg-background/50 rounded-2xl", className)}>
       {/* Header */}
       <div className="flex items-center gap-2.5 border-b border-border/50 bg-muted/20 px-4 py-3">
-        <div className="flex size-8 items-center justify-center rounded-xl bg-background border border-border/50 shadow-inner">
+        <div className="flex size-8 items-center justify-center rounded-xl bg-background border border-border/50">
           <Package className="size-4 text-primary" />
         </div>
         <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
           {isBg ? "Преглед на обявата" : "Listing Preview"}
         </span>
-        <Badge variant="outline" className="ml-auto h-5 rounded-full border-primary/20 bg-primary/10 px-2.5 text-[9px] font-bold text-primary uppercase tracking-widest ring-1 ring-primary/10">
+        <Badge variant="outline" className="ml-auto h-5 rounded-full border-primary/20 bg-primary/10 px-2.5 text-[9px] font-bold text-primary uppercase tracking-widest">
           {isBg ? "Чернова" : "Draft"}
         </Badge>
       </div>
@@ -70,7 +70,7 @@ export function ListingPreviewCard({
             {listing.images.slice(0, 4).map((img, idx) => (
               <div
                 key={idx}
-                className="relative size-24 shrink-0 overflow-hidden rounded-xl border border-border/50 bg-muted/30 shadow-sm ring-1 ring-border/5 transition-transform hover:scale-105"
+                className="relative size-24 shrink-0 overflow-hidden rounded-xl border border-border/50 bg-muted/30"
               >
                 <Image
                   src={img.url}
@@ -80,14 +80,14 @@ export function ListingPreviewCard({
                   sizes="96px"
                 />
                 {idx === 0 && (
-                  <div className="absolute bottom-1.5 left-1.5 rounded-lg bg-black/60 px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-white backdrop-blur-md ring-1 ring-white/20">
+                  <div className="absolute bottom-1.5 left-1.5 rounded-lg bg-black/60 px-2 py-0.5 text-[8px] font-bold uppercase tracking-widest text-white">
                     {isBg ? "Основна" : "Main"}
                   </div>
                 )}
               </div>
             ))}
             {listing.images.length > 4 && (
-              <div className="flex size-24 shrink-0 items-center justify-center rounded-xl border border-border/50 bg-muted/30 text-xs font-bold text-muted-foreground shadow-sm ring-1 ring-border/5">
+              <div className="flex size-24 shrink-0 items-center justify-center rounded-xl border border-border/50 bg-muted/30 text-xs font-bold text-muted-foreground">
                 +{listing.images.length - 4}
               </div>
             )}
@@ -111,12 +111,12 @@ export function ListingPreviewCard({
 
         {/* Condition & Category */}
         <div className="mb-5 flex flex-wrap gap-2">
-          <Badge variant="secondary" className="rounded-xl bg-muted/50 text-foreground border border-border/50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-xs">
+          <Badge variant="secondary" className="rounded-xl bg-muted/50 text-foreground border border-border/50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
             <Tag className="mr-2 size-3.5 text-primary" />
             {conditionLabel}
           </Badge>
           {listing.categorySlug && (
-            <Badge variant="outline" className="rounded-xl border-border/50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground capitalize shadow-xs">
+            <Badge variant="outline" className="rounded-xl border-border/50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground capitalize">
               {listing.categorySlug.replace(/-/g, " ")}
             </Badge>
           )}
@@ -129,7 +129,7 @@ export function ListingPreviewCard({
 
         {/* Attributes */}
         {listing.attributes && listing.attributes.length > 0 && (
-          <div className="mb-6 grid grid-cols-2 gap-x-6 gap-y-4 rounded-2xl border border-border/50 bg-muted/10 p-5 shadow-inner ring-1 ring-border/5">
+          <div className="mb-6 grid grid-cols-2 gap-x-6 gap-y-4 rounded-2xl border border-border/50 bg-muted/10 p-5">
             {listing.attributes.slice(0, 4).map((attr, idx) => (
               <div key={idx} className="flex flex-col gap-1">
                 <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/70">
@@ -147,7 +147,7 @@ export function ListingPreviewCard({
             variant="outline"
             size="lg"
             onClick={onEdit}
-            className="flex-1 h-11 rounded-xl border-border/60 text-[11px] font-bold uppercase tracking-widest gap-2 shadow-sm hover:bg-muted/50 transition-all active:scale-95"
+            className="flex-1 h-11 rounded-xl border-border/60 text-[11px] font-bold uppercase tracking-widest gap-2 hover:bg-muted/50 transition-colors"
             disabled={isPublishing}
           >
             <Pencil className="size-4" />
@@ -156,7 +156,7 @@ export function ListingPreviewCard({
           <Button
             size="lg"
             onClick={onPublish}
-            className="flex-1 h-11 rounded-xl text-[11px] font-bold uppercase tracking-widest gap-2 shadow-md transition-all active:scale-95"
+            className="flex-1 h-11 rounded-xl text-[11px] font-bold uppercase tracking-widest gap-2 transition-colors"
             disabled={isPublishing}
           >
             {isPublishing ? (

@@ -1,3 +1,4 @@
+import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from "@/lib/supabase/server"
 
 export interface Category {
@@ -103,7 +104,15 @@ export function getCategoryImageUrl(category: Category) {
   return category.image_url || categoryImages[category.slug] || DEFAULT_CATEGORY_IMAGE
 }
 
+/**
+ * Fetch all root categories (no parent).
+ * CACHED for optimal performance - categories rarely change.
+ */
 export async function getRootCategories() {
+  'use cache'
+  cacheTag('categories', 'root-categories')
+  cacheLife('categories')
+
   const supabase = createStaticClient()
   if (!supabase) return []
 

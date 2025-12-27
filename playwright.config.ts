@@ -35,9 +35,13 @@ const basePort =
 // NOTE: /robots.txt can be affected by app metadata/route issues; /en is a
 // better readiness signal for this app.
 const webServerURL = `${base.origin}/en`
+const timestampedReport =
+  process.env.PW_TIMESTAMPED_REPORT === 'true' ||
+  process.env.PW_TIMESTAMPED_REPORT === '1'
+
 const htmlReportFolder =
   process.env.PW_HTML_REPORT_DIR ||
-  (isCI ? 'playwright-report' : `playwright-report-${Date.now()}`)
+  (timestampedReport ? `playwright-report-${Date.now()}` : 'playwright-report')
 
 export default defineConfig({
   // Warm key routes once before all tests so first-hit Next.js dev compilation

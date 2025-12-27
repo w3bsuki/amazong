@@ -1,16 +1,22 @@
-import { Link, routing } from "@/i18n/routing"
+import { Link, routing, validateLocale } from "@/i18n/routing"
 import Image from "next/image"
 import { setRequestLocale } from "next-intl/server"
 import { Card, CardContent } from "@/components/ui/card"
 import { CaretRight, GridFour } from "@phosphor-icons/react/dist/ssr"
 import type { Metadata } from 'next'
-import { connection } from "next/server"
 
 import {
   getCategoryImageUrl,
   getCategoryName,
   getRootCategories,
 } from "./_lib/categories-data"
+
+// =============================================================================
+// CATEGORIES INDEX PAGE - FULLY CACHED
+// 
+// This page displays all root categories.
+// All data comes from cached functions - NO connection() needed.
+// =============================================================================
 
 // SEO Metadata
 export const metadata: Metadata = {
@@ -27,10 +33,9 @@ export default async function CategoriesPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  // Mark as dynamic for uncached database access
-  await connection()
-  
-  const { locale } = await params
+  // NO connection() - uses cached getRootCategories function
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
 
   const categories = await getRootCategories()

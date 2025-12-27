@@ -338,6 +338,55 @@ export type Database = {
           },
         ]
       }
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "deal_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cart_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -2010,7 +2059,17 @@ export type Database = {
         Args: { p_reason?: string; p_user_to_block: string }
         Returns: boolean
       }
+      cart_add_item: {
+        Args: { p_product_id: string; p_quantity?: number }
+        Returns: undefined
+      }
+      cart_clear: { Args: never; Returns: undefined }
+      cart_set_quantity: {
+        Args: { p_product_id: string; p_quantity: number }
+        Returns: undefined
+      }
       check_subscription_expiry: { Args: never; Returns: undefined }
+      cleanup_sold_wishlist_items: { Args: never; Returns: number }
       disable_wishlist_sharing: {
         Args: { p_user_id?: string }
         Returns: undefined

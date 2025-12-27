@@ -10,7 +10,6 @@ import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { SearchFilters } from "@/components/shared/search/search-filters"
 import { Suspense } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
-import { connection } from "next/server"
 import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
@@ -24,6 +23,18 @@ import {
 import { searchProducts } from "./_lib/search-products"
 import type { Product } from "./_lib/types"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
+
+// =============================================================================
+// CATEGORY PAGE - HYBRID CACHING STRATEGY
+// 
+// Static/Cached data (via 'use cache' functions):
+// - Category hierarchy (getCategoryContext, getRootCategoriesWithChildren)
+// - Category metadata (getCategoryBySlug)
+// 
+// Dynamic data (user-specific, requires cookies):
+// - Shipping zone filter (from user cookie)
+// - Product search results (filtered by user preferences)
+// =============================================================================
 
 // Generate static params for all categories (for SSG)
 // Uses createStaticClient because this runs at build time outside request scope
@@ -91,7 +102,8 @@ export default async function CategoryPage({
     [key: string]: string | string[] | undefined  // Dynamic attr_* params
   }>
 }) {
-  await connection()
+  // NO connection() here - category data is CACHED via 'use cache' functions
+  // Only cookies() makes this dynamic (for shipping zone filter)
   const params = await paramsPromise
   const searchParams = await searchParamsPromise
   const { slug, locale } = params

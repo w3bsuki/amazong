@@ -70,9 +70,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         3. CTA Banner (seller/buyer actions)
         4. Най-нови обяви (infinite scroll - THE MAIN CONTENT)
       */}
-      <div className="w-full md:hidden space-y-1">
+      <div className="w-full md:hidden space-y-0.5">
         {/* Category Circles - First thing after header */}
-        <div className="pt-1">
+        <div className="pt-0.5">
           <CategoryRail locale={locale} />
         </div>
         

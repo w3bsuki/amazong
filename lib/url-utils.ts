@@ -16,7 +16,7 @@ export interface ProductUrlParams {
  * 
  * URL patterns (in order of preference):
  * 1. /{username}/{slug} - Best SEO (e.g., /john-store/blue-widget)
- * 2. /product/{id} - Fallback for products without username/slug
+ * 2. /{username}/{id} - Canonical fallback when slug is missing (page supports UUID as productSlug)
  * 
  * @param product - Product data containing id, slug, and username/storeSlug
  * @returns The optimal product URL path
@@ -27,26 +27,22 @@ export interface ProductUrlParams {
  * // Returns: '/john-store/blue-widget'
  * 
  * @example
- * // Fallback with ID only
- * getProductUrl({ id: '123' })
- * // Returns: '/product/123'
+ * // Fallback with ID when slug is missing (still canonical)
+ * getProductUrl({ id: 'uuid...', username: 'john-store' })
+ * // Returns: '/john-store/uuid...'
  */
 export function getProductUrl(product: ProductUrlParams): string {
   // Use username (prefer 'username' over deprecated 'storeSlug')
   const sellerUsername = product.username || product.storeSlug
   
-  if (sellerUsername && product.slug) {
-    return `/${sellerUsername}/${product.slug}`
+  if (sellerUsername) {
+    if (product.slug) return `/${sellerUsername}/${product.slug}`
+    if (product.id) return `/${sellerUsername}/${product.id}`
   }
-  
-  // Fallback to ID-based URL
-  if (product.id) {
-    return `/product/${product.id}`
-  }
-  
-  // Last resort - this shouldn't happen but provides a safe default
-  console.warn('getProductUrl: Missing product identifier', product)
-  return '/product/unknown'
+
+  // If we can't build a canonical URL, fail closed.
+  console.warn('getProductUrl: Missing seller username and/or product identifier', product)
+  return '#'
 }
 
 /**

@@ -1,19 +1,19 @@
 import { SiteHeader } from "@/components/layout/header/site-header";
 import { SiteFooter } from "@/components/layout/footer/site-footer";
-import { CookieConsent } from "@/components/layout/cookie-consent";
 import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { connection } from "next/server";
 import { setRequestLocale } from "next-intl/server";
+
+import { SkipLinks } from "@/components/shared/skip-links";
 
 /**
  * Username/Store Route Layout
- * 
- * Full e-commerce layout for store and product pages accessed via:
- * - /{username} - Store page
- * - /{username}/{productSlug} - Product page (short URL format)
- * 
+ *
+ * Full e-commerce layout for seller storefront routes:
+ * - /{username} (store)
+ * - /{username}/{productSlug} (product detail)
+ *
  * Includes header, footer, and all standard e-commerce elements.
  */
 export default async function UsernameLayout({
@@ -23,9 +23,6 @@ export default async function UsernameLayout({
     children: React.ReactNode;
     params: Promise<{ locale: string; username: string }>;
 }) {
-    // Mark as dynamic for Next.js 16+ cacheComponents (user auth access)
-    await connection();
-    
     const { locale } = await params;
     
     // Enable static rendering - required for Next.js 16+ with cacheComponents
@@ -41,18 +38,7 @@ export default async function UsernameLayout({
     return (
         <div className="bg-secondary min-h-screen flex flex-col">
             {/* Skip Links - Accessibility */}
-            <a 
-                href="#main-content" 
-                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:bg-white focus:text-foreground focus:px-4 focus:py-3 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-ring focus:font-semibold focus:outline-none transition-all"
-            >
-                {locale === 'bg' ? 'Преминете към основното съдържание' : 'Skip to main content'}
-            </a>
-            <a 
-                href="#footerHeader" 
-                className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-60 focus:z-100 focus:bg-white focus:text-foreground focus:px-4 focus:py-3 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-ring focus:font-semibold focus:outline-none transition-all"
-            >
-                {locale === 'bg' ? 'Преминете към футъра' : 'Skip to footer'}
-            </a>
+            <SkipLinks />
             
             <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
                 <SiteHeader user={user} hideSubheader />
@@ -64,7 +50,6 @@ export default async function UsernameLayout({
             
             <SiteFooter />
             <MobileTabBar />
-            <CookieConsent />
         </div>
     );
 }

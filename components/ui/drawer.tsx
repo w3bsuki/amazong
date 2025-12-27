@@ -38,8 +38,6 @@ function DrawerOverlay({
       data-slot="drawer-overlay"
       className={cn(
         "fixed inset-0 z-50 bg-black/50",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         className
       )}
       {...props}
@@ -59,9 +57,6 @@ function DrawerContent({
         data-slot="drawer-content"
         className={cn(
           "group/drawer-content bg-background fixed z-50 flex h-auto flex-col",
-          // Smooth transition for Vaul's transform-based animation
-          // Using cubic-bezier for a nice spring-like easing
-          "[transition:transform_0.4s_cubic-bezier(0.32,0.72,0,1)]",
           // Bottom drawer
           "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-2xl data-[vaul-drawer-direction=bottom]:border-t",
           // Top drawer

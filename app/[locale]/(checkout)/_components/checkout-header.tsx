@@ -32,7 +32,7 @@ export function CheckoutHeader({ currentStep: propStep }: CheckoutHeaderProps) {
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-card shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
       <div className="container">
         <div className="flex items-center justify-between h-14 md:h-16">
           {/* Logo with Checkout text */}
@@ -66,9 +66,9 @@ export function CheckoutHeader({ currentStep: propStep }: CheckoutHeaderProps) {
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors">
                     <div
                       className={cn(
-                        "flex items-center justify-center size-6 rounded-full text-xs font-semibold transition-all",
+                        "flex items-center justify-center size-6 rounded-full text-xs font-semibold transition-colors",
                         isStepComplete && "bg-brand-success text-white",
-                        isStepActive && "bg-brand text-white ring-2 ring-brand/20",
+                        isStepActive && "bg-brand text-white",
                         !isStepComplete && !isStepActive && "bg-muted text-muted-foreground"
                       )}
                       aria-current={isStepActive ? "step" : undefined}

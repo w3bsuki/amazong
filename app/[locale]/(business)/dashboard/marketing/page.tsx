@@ -1,5 +1,4 @@
 import { requireDashboardAccess } from "@/lib/auth/business"
-import { connection } from "next/server"
 import Link from "next/link"
 import {
   Card,
@@ -66,8 +65,6 @@ const quickCampaigns = [
 ]
 
 export default async function BusinessMarketingPage() {
-  await connection()
-  
   // Requires paid business subscription
   const _businessSeller = await requireDashboardAccess()
 

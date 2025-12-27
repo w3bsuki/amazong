@@ -1,7 +1,6 @@
 import { requireDashboardAccess, getBusinessInventory } from "@/lib/auth/business"
 import Image from "next/image"
 import Link from "next/link"
-import { connection } from "next/server"
 import {
   Card,
   CardContent,
@@ -24,8 +23,6 @@ import { InventoryHeader } from "./_components/inventory-header"
 import { formatCurrencyBGN } from "./_lib/format-currency"
 
 export default async function BusinessInventoryPage() {
-  await connection()
-  
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const { products, summary } = await getBusinessInventory(businessSeller.id)

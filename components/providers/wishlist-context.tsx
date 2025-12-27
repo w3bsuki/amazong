@@ -50,6 +50,14 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
       setUserId(user.id)
 
+      // Best-effort cleanup: if a product is sold/out_of_stock for > 1 day,
+      // remove it from the wishlist server-side.
+      try {
+        await supabase.rpc("cleanup_sold_wishlist_items")
+      } catch {
+        // Ignore if function isn't deployed yet or RPC fails.
+      }
+
       const { data, error } = await supabase
         .from("wishlists")
         .select(`
@@ -130,12 +138,14 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const supabase = createClient()
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("wishlists")
         .insert({
           user_id: userId,
           product_id: product.id,
         })
+        .select("id, created_at")
+        .single()
 
       if (error) {
         if (error.code === "23505") {
@@ -147,12 +157,12 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       } else {
         // Add optimistically
         setItems(prev => [{
-          id: crypto.randomUUID(),
+          id: data?.id ?? crypto.randomUUID(),
           product_id: product.id,
           title: product.title,
           price: product.price,
           image: product.image,
-          created_at: new Date().toISOString(),
+          created_at: data?.created_at ?? new Date().toISOString(),
         }, ...prev])
         toast.success("Added to wishlist")
       }

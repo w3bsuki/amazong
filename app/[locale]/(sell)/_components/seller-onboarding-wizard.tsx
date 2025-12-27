@@ -179,11 +179,11 @@ export function SellerOnboardingWizard({
 
   return (
     <div className="w-full max-w-lg mx-auto py-6 px-4">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
         {/* Progress indicator */}
         <div className="h-1 bg-gray-100">
           <motion.div
-            className="h-full bg-linear-to-r from-blue-500 to-blue-600"
+            className="h-full bg-blue-600"
             initial={{ width: "0%" }}
             animate={{ width: `${(step / totalSteps) * 100}%` }}
             transition={{ duration: 0.3 }}
@@ -203,7 +203,7 @@ export function SellerOnboardingWizard({
               >
                 {/* Header */}
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-linear-to-br from-amber-400 to-orange-500 mb-4">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-amber-500 mb-4">
                     <Storefront weight="bold" className="w-7 h-7 text-white" />
                   </div>
                   <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
@@ -221,7 +221,7 @@ export function SellerOnboardingWizard({
                     className={cn(
                       "relative w-full p-4 rounded-xl border-2 text-left transition-all",
                       accountType === "personal"
-                        ? "border-blue-500 bg-blue-50/50 ring-2 ring-blue-500/20"
+                        ? "border-blue-500 bg-blue-50/50"
                         : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                     )}
                   >
@@ -266,7 +266,7 @@ export function SellerOnboardingWizard({
                     className={cn(
                       "relative w-full p-4 rounded-xl border-2 text-left transition-all",
                       accountType === "business"
-                        ? "border-blue-500 bg-blue-50/50 ring-2 ring-blue-500/20"
+                        ? "border-blue-500 bg-blue-50/50"
                         : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                     )}
                   >
@@ -330,7 +330,7 @@ export function SellerOnboardingWizard({
               >
                 {/* Header */}
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-linear-to-br from-purple-400 to-purple-600 mb-4">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-purple-600 mb-4">
                     <Sparkle weight="bold" className="w-7 h-7 text-white" />
                   </div>
                   <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
@@ -448,7 +448,7 @@ export function SellerOnboardingWizard({
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", delay: 0.1 }}
-                    className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-linear-to-br from-green-400 to-emerald-500 mb-4"
+                    className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-500 mb-4"
                   >
                     <Check weight="bold" className="w-10 h-10 text-white" />
                   </motion.div>
@@ -472,7 +472,7 @@ export function SellerOnboardingWizard({
                 {/* Action */}
                 <Button
                   onClick={onComplete}
-                  className="w-full h-12 bg-linear-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium"
+                  className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-medium"
                 >
                   <Storefront className="mr-2 size-5" weight="fill" />
                   {t.startSelling}

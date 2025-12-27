@@ -228,8 +228,8 @@ function ConversationItem({
       type="button"
       onClick={onClick}
       className={cn(
-        "w-full text-left flex items-center gap-3 px-4 py-3 transition-all",
-        "hover:bg-muted/60 active:scale-[0.99]",
+        "w-full text-left flex items-center gap-3 px-4 py-3 transition-colors",
+        "hover:bg-muted/60",
         isSelected && "bg-muted/80"
       )}
     >
@@ -247,7 +247,7 @@ function ConversationItem({
           <div
             className={cn(
               "flex size-14 items-center justify-center rounded-full text-base font-semibold",
-              "bg-gradient-to-br from-pink-500 to-purple-600 text-white"
+              "bg-purple-600 text-white"
             )}
           >
             {initials}

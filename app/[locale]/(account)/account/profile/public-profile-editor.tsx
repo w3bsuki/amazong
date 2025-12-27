@@ -241,7 +241,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
     <div className="space-y-6">
       {/* Public Profile Preview Link */}
       {profile.username && (
-        <Card className="bg-linear-to-r from-primary/5 to-primary/10 border-primary/20">
+        <Card className="bg-primary/5 border-primary/20">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>

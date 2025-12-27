@@ -14,7 +14,7 @@ export function StartSellingBanner({ locale = "en", className }: StartSellingBan
   const isBg = locale === "bg"
   
   return (
-    <div className={cn("px-3 py-0.5", className)}>
+    <div className={cn("px-2.5", className)}>
       <Button
         asChild
         variant="default"

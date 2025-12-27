@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import "../globals.css";
 import type { Metadata } from 'next';
 import { Suspense, type ReactNode } from 'react';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 
 // Generate static params for all supported locales
 // Required in Next.js 16+ for dynamic route segments
@@ -14,12 +15,13 @@ export function generateStaticParams() {
 }
 
 // Optimized font loading with display: swap for better LCP
-// Subset limited to Latin for smaller bundle size
+// Support both Latin and Cyrillic for Bulgarian locale
 const inter = Inter({ 
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   display: "swap",
   variable: "--font-inter",
-  preload: true
+  preload: true,
+  adjustFontFallback: true,
 });
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -58,6 +60,7 @@ import { CartProvider } from "@/components/providers/cart-context";
 import { WishlistProvider } from "@/components/providers/wishlist-context";
 import { AuthStateListener } from "@/components/providers/auth-state-listener";
 import { GeoWelcomeModal } from "@/components/common/geo-welcome-modal";
+import { CookieConsent } from "@/components/layout/cookie-consent";
 
 /**
  * Root Locale Layout
@@ -91,25 +94,28 @@ export default async function LocaleLayout({
     const messages = await getMessages();
 
     return (
-        <html lang={locale} className={inter.variable}>
+      <html lang={locale} className={inter.variable} suppressHydrationWarning>
             <body className="bg-background min-h-screen">
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:text-foreground focus:ring-1 focus:ring-border"
-          >
-            {locale === 'bg' ? 'Към съдържанието' : 'Skip to content'}
-          </a>
                 <NextIntlClientProvider messages={messages}>
-                    <Suspense fallback={null}>
-                        <AuthStateListener />
-                    </Suspense>
-                    <CartProvider>
-                        <WishlistProvider>
-                            {children}
-                            <Toaster />
-                            <GeoWelcomeModal locale={locale} />
-                        </WishlistProvider>
-                    </CartProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem={false}
+              storageKey="amzn-theme"
+              disableTransitionOnChange
+            >
+              <Suspense fallback={null}>
+                <AuthStateListener />
+              </Suspense>
+              <CartProvider>
+                <WishlistProvider>
+                  {children}
+                  <Toaster />
+                  <GeoWelcomeModal locale={locale} />
+                <CookieConsent />
+                </WishlistProvider>
+              </CartProvider>
+            </ThemeProvider>
                 </NextIntlClientProvider>
             </body>
         </html>

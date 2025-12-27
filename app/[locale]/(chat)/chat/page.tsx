@@ -1,6 +1,5 @@
 import { getTranslations } from "next-intl/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { MessagesPageClient } from "../_components/messages-page-client"
 
@@ -24,8 +23,6 @@ export default async function MessagesPage({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-
-  await connection()
   const supabase = await createClient()
 
   if (!supabase) {

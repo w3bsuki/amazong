@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import PhotoSwipeLightbox, { PhotoSwipe } from "photoswipe/lightbox";
+import PhotoSwipeLightbox from "photoswipe/lightbox";
 import "photoswipe/style.css";
 import { ZoomIn } from "lucide-react";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import { Magnifier } from "./magnifier";
 
 interface ProductGalleryHybridProps {
   images: Array<{
@@ -63,31 +65,10 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-form w-full items-start">
-      {/* Thumbnails (Left side on desktop, bottom on mobile) */}
-      <div className="flex flex-row lg:flex-col gap-3 order-2 lg:order-1 overflow-x-auto lg:overflow-y-auto no-scrollbar py-2">
-        {images.map((img, index) => (
-          <button
-            key={index}
-            className={cn(
-              "cursor-pointer overflow-hidden rounded-lg border-2 transition-all bg-background shrink-0 size-16 lg:size-20 aspect-square",
-              current === index ? "border-primary shadow-sm" : "border-transparent hover:border-border"
-            )}
-            onClick={() => api?.scrollTo(index)}
-            onMouseEnter={() => api?.scrollTo(index)}
-          >
-            <img
-              src={img.src}
-              alt={img.alt}
-              className="size-full object-contain p-1"
-            />
-          </button>
-        ))}
-      </div>
-
+    <div className="flex flex-col gap-3 w-full max-w-[600px]">
       {/* Main Image Container */}
       <div 
-        className="order-1 lg:order-2 min-w-0 w-full overflow-hidden rounded-2xl bg-muted relative group aspect-square max-h-[80vh]" 
+        className="w-full overflow-hidden rounded-xl border border-border bg-white dark:bg-muted/10 relative group aspect-square max-h-[400px]" 
         id={galleryID}
       >
         {/* Carousel Area */}
@@ -96,7 +77,7 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
             <CarouselContent className="size-full">
               {images.map((img, index) => (
                 <CarouselItem key={index} className="size-full">
-                  <div className="size-full p-form flex items-center justify-center">
+                  <div className="size-full p-4 md:p-8 flex items-center justify-center">
                     <a
                       href={img.src}
                       data-pswp-width={img.width}
@@ -105,10 +86,12 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
                       rel="noreferrer"
                       className="size-full flex items-center justify-center"
                     >
-                      <img
+                      <Magnifier
                         src={img.src}
                         alt={img.alt}
-                        className="max-h-full max-w-full object-contain mix-blend-multiply"
+                        width={img.width}
+                        height={img.height}
+                        className="size-full"
                       />
                     </a>
                   </div>
@@ -118,12 +101,54 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
           </Carousel>
           
           {/* Zoom Button */}
-          <div className="absolute bottom-4 right-4 z-10">
-             <Button size="icon" variant="secondary" className="h-10 w-10 rounded-full bg-background shadow-md hover:bg-muted/50">
+          <div className="absolute bottom-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+             <Button
+               type="button"
+               aria-label="Open image zoom"
+               size="icon"
+               variant="secondary"
+               className="h-10 w-10 rounded-full bg-background/90 hover:bg-background border border-border"
+               onClick={() => lightboxRef.current?.loadAndOpen(current)}
+             >
                 <ZoomIn className="h-5 w-5 text-foreground" />
              </Button>
           </div>
         </div>
+      </div>
+
+      {/* Thumbnails Grid (Below main image - like reference design) */}
+      <div className="grid grid-cols-4 gap-2 h-20 sm:h-24 lg:h-28">
+        {images.slice(0, 4).map((img, index) => (
+          <button
+            key={index}
+            className={cn(
+              "cursor-pointer overflow-hidden rounded-lg border transition-all bg-card relative",
+              current === index 
+                ? "ring-2 ring-foreground border-transparent" 
+                : "border-border/50 hover:ring-2 hover:ring-foreground/50"
+            )}
+            onClick={() => api?.scrollTo(index)}
+            onMouseEnter={() => api?.scrollTo(index)}
+          >
+            <Image
+              src={img.src}
+              alt={img.alt}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 20vw, 112px"
+            />
+          </button>
+        ))}
+        {images.length > 4 && (
+          <button
+            className="rounded-lg border border-border/50 bg-muted/30 hover:ring-2 hover:ring-foreground/50 flex items-center justify-center transition-all group"
+            onClick={() => lightboxRef.current?.loadAndOpen(4)}
+          >
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground">
+              +{images.length - 4} more
+            </span>
+          </button>
+        )}
       </div>
     </div>
   );

@@ -183,7 +183,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
                   sizes="56px"
                 />
                 {idx === 0 && (
-                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent py-0.5 text-center">
+                  <div className="absolute bottom-0 inset-x-0 bg-black/50 py-0.5 text-center">
                     <span className="text-[9px] text-white font-bold uppercase tracking-wider">Cover</span>
                   </div>
                 )}

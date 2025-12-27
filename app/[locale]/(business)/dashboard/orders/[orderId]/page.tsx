@@ -1,6 +1,5 @@
 import { requireDashboardAccess } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
-import { connection } from "next/server"
 import { notFound } from "next/navigation"
 import { OrderDetailView } from "../../../_components/order-detail-view"
 
@@ -93,8 +92,6 @@ async function getOrderDetails(orderId: string, sellerId: string) {
 }
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
-  await connection()
-  
   const { orderId } = await params
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()

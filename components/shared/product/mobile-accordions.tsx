@@ -10,9 +10,11 @@ import {
 interface MobileAccordionsProps {
   description: string;
   details: Array<{ label: string; value: string }>;
+  shippingText?: string;
+  returnsText?: string;
 }
 
-export function MobileAccordions({ description, details }: MobileAccordionsProps) {
+export function MobileAccordions({ description, details, shippingText, returnsText }: MobileAccordionsProps) {
   return (
     <div className="mt-6 lg:hidden">
       <Accordion type="single" collapsible className="w-full">
@@ -43,11 +45,11 @@ export function MobileAccordions({ description, details }: MobileAccordionsProps
             <div className="space-y-3 text-sm">
               <div className="grid grid-cols-[90px_1fr] gap-2">
                 <div className="font-medium">Shipping:</div>
-                <div>Does not ship to Bulgaria</div>
+                <div>{shippingText ?? "Shipping calculated at checkout"}</div>
               </div>
               <div className="grid grid-cols-[90px_1fr] gap-2">
                 <div className="font-medium">Returns:</div>
-                <div>30 days returns. Buyer pays for return shipping.</div>
+                <div>{returnsText ?? "30 days returns. Buyer pays for return shipping."}</div>
               </div>
             </div>
           </AccordionContent>

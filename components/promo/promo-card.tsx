@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
@@ -29,7 +27,7 @@ export function PromoCard({
       className={cn(
         "group relative block rounded-xl overflow-hidden",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        "transition-all duration-300",
+        "",
         variant === "default" && "aspect-4/3",
         variant === "wide" && "aspect-video col-span-2"
       )}
@@ -39,12 +37,12 @@ export function PromoCard({
         src={bgImage} 
         alt={subtitle} 
         fill
-        className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105" 
+        className="absolute inset-0 size-full object-cover" 
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
       />
       
-      {/* Gradient overlay for text readability */}
-      <div className="absolute inset-0 bg-linear-to-t from-background/95 via-background/35 to-transparent" />
+      {/* Flat overlay for text readability (no gradients) */}
+      <div className="absolute inset-0 bg-background/55" />
       
       {/* Badge */}
       {badge && (
@@ -62,8 +60,6 @@ export function PromoCard({
         <p className="mt-0.5 text-xs font-medium text-foreground/90 line-clamp-1">{subtitle}</p>
       </div>
       
-      {/* Hover indicator - subtle border */}
-      <div className="absolute inset-0 border border-white/10 group-hover:border-white/20 rounded-xl transition-colors" />
     </Link>
   )
 }

@@ -12,8 +12,8 @@ import { useWishlist, type WishlistItem } from "@/components/providers/wishlist-
 import { CountBadge } from "@/components/ui/count-badge"
 
 function buildProductUrl(item: WishlistItem) {
-  if (item.username && item.slug) return `/product/${item.username}/${item.slug}`
-  return `/product/${item.slug || item.product_id}`
+  if (!item.username) return "#"
+  return `/${item.username}/${item.slug || item.product_id}`
 }
 
 export function WishlistDropdown() {

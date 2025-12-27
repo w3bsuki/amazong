@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect, notFound } from "next/navigation"
-import { connection } from "next/server"
 import { OrderDetailContent } from "./_components/order-detail-content"
 import type { OrderItemStatus } from "@/lib/order-status"
 
@@ -69,7 +68,6 @@ interface Order {
 }
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
-  await connection()
   const { locale, id } = await params
   const supabase = await createClient()
 

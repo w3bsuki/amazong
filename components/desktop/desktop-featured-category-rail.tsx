@@ -80,7 +80,7 @@ export function DesktopFeaturedCategoryRail({ locale }: DesktopFeaturedCategoryR
   }
 
   return (
-    <section className="rounded-xl border border-border/60 bg-card shadow-xs overflow-hidden">
+    <section className="rounded-xl border border-border/60 bg-card overflow-hidden">
       <div className="px-5 pt-5 pb-3 flex items-center justify-between border-b border-border/40 bg-muted/5">
         <h2 className="text-xl font-bold tracking-tight text-foreground/90 leading-tight">{sectionTitle}</h2>
 
@@ -98,8 +98,8 @@ export function DesktopFeaturedCategoryRail({ locale }: DesktopFeaturedCategoryR
               onClick={() => scroll("left")}
               disabled={!canScrollLeft}
               className={cn(
-                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
-                "hover:bg-muted active:scale-95",
+                "size-8 rounded-full border border-border flex items-center justify-center transition-colors",
+                "hover:bg-muted",
                 "disabled:opacity-30 disabled:cursor-not-allowed"
               )}
               aria-label="Scroll left"
@@ -110,8 +110,8 @@ export function DesktopFeaturedCategoryRail({ locale }: DesktopFeaturedCategoryR
               onClick={() => scroll("right")}
               disabled={!canScrollRight}
               className={cn(
-                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
-                "hover:bg-muted active:scale-95",
+                "size-8 rounded-full border border-border flex items-center justify-center transition-colors",
+                "hover:bg-muted",
                 "disabled:opacity-30 disabled:cursor-not-allowed"
               )}
               aria-label="Scroll right"
@@ -126,7 +126,7 @@ export function DesktopFeaturedCategoryRail({ locale }: DesktopFeaturedCategoryR
         <div ref={scrollRef} className="flex overflow-x-auto no-scrollbar gap-4 scroll-smooth px-5 py-5">
           {isLoading && fetchedCategories.length === 0 ? (
             Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="w-[164px] h-[140px] rounded-xl bg-muted animate-pulse shrink-0" />
+              <div key={i} className="w-[164px] h-[140px] rounded-xl bg-muted shrink-0" />
             ))
           ) : (
             displayCategories.map((cat) => {

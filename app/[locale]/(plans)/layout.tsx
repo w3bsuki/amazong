@@ -1,5 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { routing, validateLocale } from "@/i18n/routing";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -20,7 +20,8 @@ export default async function PlansLayout({
     children: React.ReactNode;
     params: Promise<{ locale: string }>;
 }) {
-    const { locale } = await params;
+    const { locale: localeParam } = await params;
+    const locale = validateLocale(localeParam)
     
     // Enable static rendering
     setRequestLocale(locale);

@@ -154,8 +154,8 @@ function NavItem({
 
 // Subscription tier badge colors
 const tierColors: Record<string, string> = {
-  professional: 'bg-gradient-to-r from-blue-500 to-blue-600 text-white',
-  enterprise: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white',
+  professional: 'bg-blue-600 text-white',
+  enterprise: 'bg-amber-500 text-white',
   free: 'bg-muted text-muted-foreground',
 }
 
@@ -206,7 +206,7 @@ export function BusinessSidebar({
               className="h-12 px-2"
             >
               <Link href="/dashboard" className="flex items-center gap-2">
-                <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+                <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <IconBuildingStore className="size-4" />
                 </div>
                 <div className="flex flex-col min-w-0 flex-1">

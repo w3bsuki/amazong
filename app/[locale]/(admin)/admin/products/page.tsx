@@ -1,7 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
 import Link from "next/link"
-import { connection } from "next/server"
 import {
   Card,
   CardContent,
@@ -63,7 +62,6 @@ async function getProducts(): Promise<AdminProduct[]> {
 }
 
 export default async function AdminProductsPage() {
-  await connection()
   const products = await getProducts()
   
   const formatCurrency = (value: number) => {

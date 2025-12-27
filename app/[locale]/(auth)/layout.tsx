@@ -1,6 +1,6 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
-import { routing } from '@/i18n/routing'
+import { routing, validateLocale } from '@/i18n/routing'
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -14,7 +14,8 @@ export default async function AuthLayout({
   children: React.ReactNode
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  const locale = validateLocale(localeParam)
   
   // Enable static rendering - CRITICAL for Next.js 16+
   setRequestLocale(locale);

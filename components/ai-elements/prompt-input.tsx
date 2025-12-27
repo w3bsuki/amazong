@@ -102,14 +102,14 @@ export function PromptInputAttachment({
       <HoverCardTrigger asChild>
         <div
           className={cn(
-            "group relative flex h-9 cursor-pointer select-none items-center gap-2 rounded-xl border border-border/50 bg-background/50 px-2 font-bold text-xs transition-all hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 shadow-xs ring-1 ring-border/5 backdrop-blur-sm",
+            "group relative flex h-9 cursor-pointer select-none items-center gap-2 rounded-xl border border-border/50 bg-background/50 px-2 font-bold text-xs transition-colors hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
             className
           )}
           key={data.id}
           {...props}
         >
           <div className="relative size-6 shrink-0">
-            <div className="absolute inset-0 flex size-6 items-center justify-center overflow-hidden rounded-lg bg-muted/50 transition-opacity group-hover:opacity-0 ring-1 ring-border/20">
+            <div className="absolute inset-0 flex size-6 items-center justify-center overflow-hidden rounded-lg bg-muted/50 transition-opacity group-hover:opacity-0">
               {isImage ? (
                 <img
                   alt={filename || "attachment"}
@@ -772,7 +772,7 @@ export const PromptInputButton = ({
   return (
     <InputGroupButton
       className={cn(
-        "size-10 rounded-xl font-bold transition-all duration-200 active:scale-90",
+        "size-10 rounded-xl font-bold transition-colors duration-200",
         variant === "ghost" && "hover:bg-accent/50 hover:text-accent-foreground",
         className
       )}
@@ -852,7 +852,7 @@ export const PromptInputSubmit = ({
     <InputGroupButton
       aria-label="Submit"
       className={cn(
-        "size-10 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg active:scale-90",
+        "size-10 rounded-xl transition-colors duration-200",
         status === "streaming" && "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         className
       )}

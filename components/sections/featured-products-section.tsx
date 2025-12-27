@@ -102,8 +102,8 @@ export function FeaturedProductsSection({
               onClick={() => scroll("left")}
               disabled={!scrollState.left}
               className={cn(
-                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
-                "hover:bg-muted active:scale-95",
+                "size-8 rounded-full border border-border flex items-center justify-center transition-colors",
+                "hover:bg-muted",
                 "disabled:opacity-30 disabled:cursor-not-allowed"
               )}
               aria-label="Scroll left"
@@ -114,8 +114,8 @@ export function FeaturedProductsSection({
               onClick={() => scroll("right")}
               disabled={!scrollState.right}
               className={cn(
-                "size-8 rounded-full border border-border flex items-center justify-center transition-all",
-                "hover:bg-muted active:scale-95",
+                "size-8 rounded-full border border-border flex items-center justify-center transition-colors",
+                "hover:bg-muted",
                 "disabled:opacity-30 disabled:cursor-not-allowed"
               )}
               aria-label="Scroll right"

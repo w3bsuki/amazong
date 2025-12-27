@@ -1,6 +1,5 @@
 import { requireDashboardAccess, getBusinessDashboardStats } from "@/lib/auth/business"
 import { ChartAreaInteractive } from "@/components/charts/chart-area-interactive"
-import { connection } from "next/server"
 import {
   Card,
   CardContent,
@@ -12,8 +11,6 @@ import { Badge } from "@/components/ui/badge"
 import { IconChartBar, IconTrendingUp, IconCurrencyDollar, IconEye, IconShoppingCart } from "@tabler/icons-react"
 
 export default async function BusinessAnalyticsPage() {
-  await connection()
-  
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const stats = await getBusinessDashboardStats(businessSeller.id)

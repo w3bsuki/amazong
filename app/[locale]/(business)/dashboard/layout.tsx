@@ -6,7 +6,6 @@ import {
   getActiveSubscription,
   hasDashboardAccess,
 } from "@/lib/auth/business"
-import { connection } from "next/server"
 import {
   SidebarInset,
   SidebarProvider,
@@ -17,9 +16,6 @@ export default async function BusinessDashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Ensure dynamic rendering
-  await connection()
-  
   // This will redirect non-business sellers to account page
   const businessSeller = await requireBusinessSeller("/account")
   

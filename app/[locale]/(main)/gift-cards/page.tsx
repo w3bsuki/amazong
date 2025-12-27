@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
-import { routing } from "@/i18n/routing"
+import { routing, validateLocale } from "@/i18n/routing"
 
 import GiftCardsFeaturedDesigns from "./_components/gift-cards-featured-designs"
 import GiftCardsHero from "./_components/gift-cards-hero"
@@ -12,7 +12,8 @@ export function generateStaticParams() {
 }
 
 export default async function GiftCardsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const t = await getTranslations("GiftCards")
 

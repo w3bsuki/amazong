@@ -25,7 +25,7 @@ export async function AboutPageContent() {
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
       {/* Hero Section */}
-      <div className="bg-linear-to-b from-header-bg to-header-bg-secondary text-white relative">
+      <div className="bg-header-bg text-white relative">
         {/* Overlay for better text contrast */}
         <div className="absolute inset-0 bg-black/20" aria-hidden="true" />
         <div className="container py-12 md:py-20 relative z-10">
@@ -33,10 +33,10 @@ export async function AboutPageContent() {
             <AppBreadcrumb items={breadcrumbPresets.about} />
           </div>
           <div className="max-w-3xl">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4 drop-shadow-lg [text-shadow:0_2px_10px_rgba(0,0,0,0.5)]">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">
               {t("heroTitle")}
             </h1>
-            <p className="text-lg md:text-xl text-white/90 leading-relaxed drop-shadow-md [text-shadow:0_1px_5px_rgba(0,0,0,0.4)]">
+            <p className="text-lg md:text-xl text-white/90 leading-relaxed">
               {t("heroSubtitle")}
             </p>
           </div>
@@ -74,24 +74,24 @@ export async function AboutPageContent() {
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-video bg-linear-to-br from-brand/20 to-brand/5 flex items-center justify-center">
+              <div className="aspect-video bg-brand/10 flex items-center justify-center">
                 <div className="grid grid-cols-2 gap-4 p-8">
-                  <div className="bg-white shadow-lg p-6 text-center">
+                  <div className="bg-white p-6 text-center">
                     <TrendUp className="size-8 text-brand mx-auto mb-2" />
                     <div className="text-2xl font-bold text-brand">15+</div>
                     <div className="text-xs text-muted-foreground">{t("yearsExperience")}</div>
                   </div>
-                  <div className="bg-white shadow-lg p-6 text-center">
+                  <div className="bg-white p-6 text-center">
                     <Package className="size-8 text-brand mx-auto mb-2" />
                     <div className="text-2xl font-bold text-brand">50M+</div>
                     <div className="text-xs text-muted-foreground">{t("productsDelivered")}</div>
                   </div>
-                  <div className="bg-white shadow-lg p-6 text-center">
+                  <div className="bg-white p-6 text-center">
                     <Users className="size-8 text-brand mx-auto mb-2" />
                     <div className="text-2xl font-bold text-brand">10M+</div>
                     <div className="text-xs text-muted-foreground">{t("happyCustomers")}</div>
                   </div>
-                  <div className="bg-white shadow-lg p-6 text-center">
+                  <div className="bg-white p-6 text-center">
                     <Globe className="size-8 text-brand mx-auto mb-2" />
                     <div className="text-2xl font-bold text-brand">50+</div>
                     <div className="text-xs text-muted-foreground">{t("countriesServed")}</div>

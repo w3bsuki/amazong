@@ -49,7 +49,7 @@ export function DesktopCategoryRail({
   // Bulgarian labels are often 2+ words; give them enough width to wrap.
   const itemWidthClass = isCompact ? "w-20" : "w-24"
   const circleSizeClass = isCompact ? "size-16" : "size-20"
-  const labelClass = isCompact ? "text-tiny" : "text-sm"
+  const labelClass = isCompact ? "text-xs" : "text-sm"
 
   return (
     <section

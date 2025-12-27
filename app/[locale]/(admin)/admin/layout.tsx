@@ -1,7 +1,6 @@
 import { AdminSidebar } from "../_components/admin-sidebar"
 import { DashboardHeader } from "@/components/layout/header/dashboard-header"
 import { requireAdmin } from "@/lib/auth/admin"
-import { connection } from "next/server"
 import {
   SidebarInset,
   SidebarProvider,
@@ -12,9 +11,6 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Ensure dynamic rendering
-  await connection()
-  
   // This will redirect non-admins to home page
   const adminUser = await requireAdmin("/")
 

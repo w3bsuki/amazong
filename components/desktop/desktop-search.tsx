@@ -61,10 +61,8 @@ export function DesktopSearch() {
 
   // Build SEO-friendly product URL
   const buildProductUrl = useCallback((product: { slug?: string; storeSlug?: string | null; id: string }) => {
-    if (product.storeSlug && product.slug) {
-      return `/product/${product.storeSlug}/${product.slug}`
-    }
-    return `/product/${product.slug || product.id}`
+    if (!product.storeSlug) return "#"
+    return `/${product.storeSlug}/${product.slug || product.id}`
   }, [])
 
   const handleSelectProduct = useCallback((product: { id: string; slug?: string; storeSlug?: string | null; title: string; price: number; images: string[] }) => {

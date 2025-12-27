@@ -4,6 +4,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
+import Image from "next/image"
 import { MapPin } from "@phosphor-icons/react"
 import { useState } from "react"
 interface LocationDropdownProps {
@@ -68,7 +69,14 @@ export function LocationDropdown({ country, onCountryChange }: LocationDropdownP
                 className={`w-full flex items-center gap-3 p-3 rounded-md hover:bg-muted text-left ${isSelected ? "bg-brand/10" : ""}`}
               >
                 {loc.flag ? (
-                  <img src={loc.flag} alt={loc.name} width={32} height={22} className="rounded-sm border border-border" />
+                  <Image
+                    src={loc.flag}
+                    alt={loc.name}
+                    width={32}
+                    height={22}
+                    sizes="32px"
+                    className="rounded-sm border border-border"
+                  />
                 ) : (
                   <span className="text-2xl w-8 text-center">{loc.icon}</span>
                 )}

@@ -1,7 +1,11 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ProductCard } from "@/components/product/product-card";
+import { Link } from "@/i18n/routing";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SellerProductItem {
   id: string;
@@ -18,43 +22,147 @@ interface SellerProductItem {
   freeShipping: boolean;
   categorySlug: string;
   attributes: Record<string, string>;
+  storeSlug?: string | null;
+  slug?: string | null;
 }
 
 interface SellerProductsGridProps {
   products: SellerProductItem[];
   totalCount?: number;
+  sellerUsername?: string;
 }
 
-export function SellerProductsGrid({ products, totalCount = 519 }: SellerProductsGridProps) {
+export function SellerProductsGrid({ products, totalCount, sellerUsername }: SellerProductsGridProps) {
+  const t = useTranslations("Product");
+  const locale = useLocale();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const getProductHref = (product: SellerProductItem) => {
+    const resolvedSellerSlug = product.storeSlug || sellerUsername;
+    const resolvedProductSlug = product.slug || product.id;
+
+    // Canonical product URL format: /{username}/{productSlug}
+    // If slug is missing, fall back to /{username}/{id} and let the server resolve by id.
+    return resolvedSellerSlug ? `/${resolvedSellerSlug}/${resolvedProductSlug}` : "#";
+  };
+
+  const hasProducts = Array.isArray(products) && products.length > 0;
+
+  const displayCount = totalCount ?? products.length;
+  const viewAllHref = sellerUsername ? `/${sellerUsername}` : undefined;
+
+  const checkScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
+  };
+
+  useEffect(() => {
+    if (!hasProducts) return;
+    checkScroll();
+    const el = scrollRef.current;
+    if (el) {
+      el.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
+      return () => {
+        el.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      };
+    }
+  }, [hasProducts, products]);
+
+  const scroll = (dir: "left" | "right") => {
+    if (!scrollRef.current) return;
+    const cardWidth = scrollRef.current.firstElementChild?.clientWidth || 200;
+    const gap = 16;
+    const scrollAmount = (cardWidth + gap) * 2;
+    scrollRef.current.scrollBy({
+      left: dir === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  if (!hasProducts) return null;
+
   return (
-    <div className="mt-6 rounded-xl bg-muted/40 p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-bold text-foreground">More from this seller</h3>
-        <Button variant="link" className="text-primary font-medium hover:underline h-auto p-0">See all ({totalCount})</Button>
+    <div className="mt-6 pt-6 border-t border-border">
+      {/* Header with chevrons */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-semibold text-foreground">
+          {t("moreFromSeller") || `More from ${products[0]?.sellerName || "this seller"}`}
+        </h2>
+        <div className="flex items-center gap-2">
+          {viewAllHref && displayCount > products.length && (
+            <Link 
+              href={viewAllHref}
+              className="text-xs font-medium text-primary hover:underline mr-2"
+            >
+              {t("viewAll") || "View all"} ({displayCount})
+            </Link>
+          )}
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-7 rounded-full"
+            onClick={() => scroll("left")}
+            disabled={!canScrollLeft}
+          >
+            <ChevronLeft className="size-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-7 rounded-full"
+            onClick={() => scroll("right")}
+            disabled={!canScrollRight}
+          >
+            <ChevronRight className="size-4" />
+          </Button>
+        </div>
       </div>
-      <div className="flex overflow-x-auto gap-3 pb-4 -mx-4 px-4 snap-x lg:grid lg:grid-cols-5 lg:gap-4 lg:pb-0 lg:mx-0 lg:px-0 no-scrollbar">
-        {products.map((product) => (
-          <div key={product.id} className="min-w-[160px] lg:min-w-0 h-full bg-background rounded-lg overflow-hidden snap-start border border-border lg:border-none">
-            <ProductCard
-              id={product.id}
-              title={product.title}
-              price={product.price}
-              image={product.image}
-              originalPrice={product.originalPrice}
-              rating={product.rating}
-              reviews={product.reviews}
-              sellerName={product.sellerName}
-              sellerVerified={product.sellerVerified}
-              sellerAvatarUrl={product.sellerAvatarUrl}
-              condition="New"
-              freeShipping={product.freeShipping}
-              categorySlug={product.categorySlug}
-              attributes={product.attributes}
-              variant="ultimate"
-              showQuickAdd={false}
-              showSeller={false}
-            />
-          </div>
+      
+      {/* Horizontal scrolling cards */}
+      <div 
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory pb-2 -mx-1 px-1"
+      >
+        {products.slice(0, 10).map((product) => (
+          <Link
+            key={product.id}
+            href={getProductHref(product)}
+            className="group flex-none w-[140px] sm:w-40 snap-start"
+          >
+            <div className="aspect-square bg-muted/50 rounded-xl overflow-hidden border border-border relative">
+              {product.image && (
+                <Image
+                  src={product.image}
+                  alt={product.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 140px, 160px"
+                />
+              )}
+              {/* Condition badge */}
+              {product.condition && (
+                <div className="absolute top-1.5 right-1.5 bg-card/95 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-semibold text-foreground shadow-sm border border-border/50">
+                  {product.condition.toUpperCase().replace(/-/g, " ")}
+                </div>
+              )}
+            </div>
+            <h3 className="text-xs font-medium text-foreground leading-tight mt-2 group-hover:underline line-clamp-2">
+              {product.title}
+            </h3>
+            <p className="text-sm font-semibold text-foreground mt-1">
+              {new Intl.NumberFormat(locale, { 
+                style: "currency", 
+                currency: "BGN", 
+                minimumFractionDigits: 2 
+              }).format(product.price)}
+            </p>
+          </Link>
         ))}
       </div>
     </div>

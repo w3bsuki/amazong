@@ -119,7 +119,7 @@ export function PublicProfileClient({
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-8">
       {/* Banner */}
-      <div className="relative h-32 sm:h-48 md:h-56 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20">
+      <div className="relative h-32 sm:h-48 md:h-56 bg-primary/10">
         {profile.banner_url && (
           <Image
             src={profile.banner_url}
@@ -129,7 +129,7 @@ export function PublicProfileClient({
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-background/40" />
       </div>
       
       {/* Profile Header */}
@@ -137,7 +137,7 @@ export function PublicProfileClient({
         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
           {/* Avatar */}
           <div className="relative">
-            <Avatar className="size-28 sm:size-36 border-4 border-background shadow-lg">
+            <Avatar className="size-28 sm:size-36 border-4 border-background shadow-none">
               <AvatarImage src={profile.avatar_url || undefined} alt={displayName} />
               <AvatarFallback className="text-3xl bg-primary text-primary-foreground">
                 {initials}

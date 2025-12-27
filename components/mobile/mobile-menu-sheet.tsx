@@ -123,7 +123,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
                         })}
                       </div>
                       {/* Category name */}
-                      <span className="text-[10px] font-medium text-center text-foreground leading-[1.1] line-clamp-2 max-w-[72px]">
+                      <span className="text-2xs font-medium text-center text-foreground leading-[1.1] line-clamp-2 max-w-[72px]">
                         {getShortName(cat)}
                       </span>
                     </Link>

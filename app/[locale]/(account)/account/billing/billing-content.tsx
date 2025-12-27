@@ -308,11 +308,11 @@ export function BillingContent({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="grid gap-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{t.title}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>
           <p className="text-muted-foreground text-sm mt-1">{t.subtitle}</p>
         </div>
         {seller && (
@@ -358,7 +358,7 @@ export function BillingContent({
       {seller && (
         <Card>
           <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
+            <div className="grid grid-cols-[1fr_auto] items-center gap-4">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Crown className="size-5 text-primary" weight="fill" />
                 {t.currentPlan}
@@ -378,9 +378,9 @@ export function BillingContent({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] items-center gap-4">
               {/* Plan Info */}
-              <div className="flex-1 space-y-3">
+              <div className="grid gap-3">
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "p-2.5 rounded-lg",
@@ -408,7 +408,7 @@ export function BillingContent({
 
                 {/* Subscription Details */}
                 {subscription && (
-                  <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <CalendarBlank className="size-4" />
                       <span>{t.nextBilling}:</span>
@@ -439,7 +439,7 @@ export function BillingContent({
               </div>
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2">
                 {subscription?.stripe_subscription_id && (
                   <Button 
                     variant="outline" 
@@ -457,7 +457,7 @@ export function BillingContent({
                 )}
                 {seller.tier !== 'business' && (
                   <Link href="/account/plans">
-                    <Button className="gap-1.5 w-full sm:w-auto">
+                    <Button className="gap-1.5 w-full">
                       <ArrowUpRight className="size-4" weight="bold" />
                       {t.upgradePlan}
                     </Button>
@@ -471,7 +471,7 @@ export function BillingContent({
 
       {/* Billing History Tabs */}
       {seller && (
-        <Tabs defaultValue="invoices" className="space-y-4">
+        <Tabs defaultValue="invoices" className="grid gap-4">
           <TabsList>
             <TabsTrigger value="invoices" className="gap-1.5">
               <Receipt className="size-4" />
@@ -496,11 +496,11 @@ export function BillingContent({
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  <div className="space-y-3">
+                  <div className="grid gap-3">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="flex items-center gap-4">
+                      <div key={i} className="grid grid-cols-[40px_1fr_auto] items-center gap-4">
                         <Skeleton className="h-10 w-10 rounded" />
-                        <div className="space-y-2 flex-1">
+                        <div className="grid gap-2">
                           <Skeleton className="h-4 w-48" />
                           <Skeleton className="h-3 w-32" />
                         </div>
@@ -642,7 +642,7 @@ export function BillingContent({
           {/* Boosts Tab */}
           <TabsContent value="boosts">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="grid grid-cols-[1fr_auto] items-center gap-4">
                 <div>
                   <CardTitle className="text-base">{t.boostPurchases}</CardTitle>
                   <CardDescription>
@@ -755,15 +755,15 @@ export function BillingContent({
       {/* Quick Info */}
       {seller && hasStripeCustomer && (
         <Card className="bg-muted/30 border-dashed">
-          <CardContent className="flex items-start gap-3 pt-4">
-            <Info className="size-5 text-muted-foreground shrink-0 mt-0.5" />
-            <div className="text-sm text-muted-foreground">
+          <CardContent className="grid grid-cols-[auto_1fr] items-start gap-3 pt-4">
+            <Info className="size-5 text-muted-foreground mt-0.5" />
+            <div className="text-sm text-muted-foreground grid gap-1">
               <p>
                 {locale === 'bg' 
                   ? 'Плащанията се обработват сигурно чрез Stripe. Фактурите се генерират автоматично след всяко плащане.'
                   : 'Payments are processed securely through Stripe. Invoices are automatically generated after each payment.'}
               </p>
-              <p className="mt-1">
+              <p>
                 {locale === 'bg' 
                   ? `Имейл за фактури: ${userEmail}`
                   : `Billing email: ${userEmail}`}

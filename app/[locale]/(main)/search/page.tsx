@@ -13,7 +13,6 @@ import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { Suspense } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
-import { connection } from "next/server"
 import { cookies } from "next/headers"
 import type { Metadata } from 'next'
 import { getShippingFilter, parseShippingRegion } from '@/lib/shipping'
@@ -72,7 +71,6 @@ export default async function SearchPage({
     [key: string]: string | string[] | undefined  // Dynamic attr_* params
   }>
 }) {
-  await connection()
   const { locale } = await params
   setRequestLocale(locale)
   const searchParams = await searchParamsPromise
@@ -197,8 +195,8 @@ export default async function SearchPage({
   const t = await getTranslations('SearchFilters')
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container">
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      <div className="container overflow-x-hidden">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar Filters - Hidden on mobile */}
           <aside className="w-64 hidden lg:block shrink-0 border-r border-border">
@@ -216,7 +214,7 @@ export default async function SearchPage({
         </aside>
 
         {/* Main Results */}
-        <div className="flex-1 py-4 sm:py-6">
+        <div className="flex-1 min-w-0 py-4 sm:py-6">
           {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
           {currentCategory ? (
             <Suspense>

@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function GiftCardsLoadingSkeleton() {
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-12">
-      <div className="bg-linear-to-br from-primary/10 to-secondary/10 py-8 sm:py-12">
+      <div className="bg-primary/5 py-8 sm:py-12">
         <div className="container">
           <div className="flex gap-2 items-center mb-4">
             <Skeleton className="h-4 w-16" />

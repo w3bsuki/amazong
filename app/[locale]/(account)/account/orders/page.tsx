@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { AccountOrdersToolbar } from "./_components/account-orders-toolbar"
 import { AccountOrdersStats } from "./_components/account-orders-stats"
 import { AccountOrdersGrid } from "./_components/account-orders-grid"
@@ -43,7 +42,6 @@ interface OrdersPageProps {
 }
 
 export default async function OrdersPage({ params, searchParams }: OrdersPageProps) {
-  await connection()
   const { locale } = await params
   const sp = (await searchParams) || {}
   const query = (sp.q || "").trim()

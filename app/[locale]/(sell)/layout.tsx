@@ -1,6 +1,8 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
+import Script from 'next/script'
 import { routing } from '@/i18n/routing'
+import { PerformanceMeasureGuard } from './PerformanceMeasureGuard'
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -29,6 +31,32 @@ export default async function SellLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
+      <Script
+        id="perf-measure-guard"
+        strategy="beforeInteractive"
+      >
+        {`(() => {
+  try {
+    const perf = globalThis.performance;
+    if (!perf || typeof perf.measure !== 'function') return;
+    const original = perf.measure.bind(perf);
+    perf.measure = function(name, ...args) {
+      try {
+        return original(name, ...args);
+      } catch (e) {
+        const message = String(e && e.message ? e.message : e);
+        if (message.includes("Failed to execute 'measure' on 'Performance'") && message.includes('negative time stamp')) {
+          return;
+        }
+        throw e;
+      }
+    };
+  } catch {
+    // noop
+  }
+})();`}
+      </Script>
+      <PerformanceMeasureGuard />
       <div className="min-h-svh bg-background flex flex-col">
         {/* Main content - header is rendered by client component for user state */}
         <main className="flex-1 flex flex-col">

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
 import { setRequestLocale } from "next-intl/server"
-import { routing } from "@/i18n/routing"
+import { routing, validateLocale } from "@/i18n/routing"
 import { AboutPageContent } from "./_components/about-page-content"
 import { AboutPageSkeleton } from "./_components/about-page-skeleton"
 
@@ -11,7 +11,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   return {
     title: locale === 'bg' ? 'За нас' : 'About Us',
@@ -26,7 +27,8 @@ export default async function AboutPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
   setRequestLocale(locale)
 
   return (

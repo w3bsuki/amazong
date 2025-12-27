@@ -30,10 +30,8 @@ export function MobileCartDropdown() {
 
     // Build SEO-friendly product URL
     const buildProductUrl = useCallback((item: CartItem) => {
-        if (item.storeSlug && item.slug) {
-            return `/product/${item.storeSlug}/${item.slug}`
-        }
-        return `/product/${item.slug || item.id}`
+        if (!item.storeSlug) return "#"
+        return `/${item.storeSlug}/${item.slug || item.id}`
     }, [])
 
     // Prevent hydration mismatch by only rendering cart count after mount

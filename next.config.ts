@@ -78,6 +78,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'placehold.co',
         pathname: '/**',
       },
@@ -123,14 +128,6 @@ const nextConfig: NextConfig = {
         destination: '/:locale/:username',
         permanent: true,
       },
-      // Redirect old /product/{username}/{slug} to /{username}/{slug}
-      {
-        source: '/:locale/product/:username/:slug',
-        destination: '/:locale/:username/:slug',
-        permanent: true,
-      },
-      // Redirect old /product/{id} (UUID) to lookup endpoint
-      // This will be handled by middleware for dynamic lookup
     ]
   },
 } satisfies NextConfig;

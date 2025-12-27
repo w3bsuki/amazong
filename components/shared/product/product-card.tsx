@@ -438,8 +438,9 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
           : "default")
 
     // URLs
-    const productUrl =
-      resolvedUsername && slug ? `/${resolvedUsername}/${slug}` : `/product/${slug || id}`
+    const productUrl = resolvedUsername
+      ? `/${resolvedUsername}/${slug || id}`
+      : "#"
     const displayName = sellerName || resolvedUsername || "Seller"
 
     const inWishlist = isInWishlist(id)
@@ -740,16 +741,15 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                   size="icon"
                   className={cn(
                     "h-touch w-touch rounded-full p-0",
-                    "bg-transparent hover:bg-transparent",
-                    "transition-transform duration-150 active:scale-[0.98]"
+                    "bg-transparent hover:bg-transparent"
                   )}
                   onClick={handleWishlist}
                 >
                   <span
                     className={cn(
                       "flex size-8 items-center justify-center rounded-full",
-                      "bg-background/80 backdrop-blur-sm ring-1 ring-border/50",
-                      "transition-colors duration-150",
+                      "bg-background/90 border border-border/50",
+                      "transition-colors",
                       inWishlist ? "bg-cta-trust-blue/10" : "hover:bg-background"
                     )}
                   >
@@ -779,7 +779,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                     "h-touch w-touch rounded-full p-0",
                     "bg-transparent hover:bg-transparent",
                     "border-0",
-                    "transition-transform duration-150 active:scale-[0.98]"
+                    ""
                   )}
                   onClick={handleAddToCart}
                   disabled={isOwnProduct || !inStock}
@@ -787,9 +787,9 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                   <span
                     className={cn(
                       "flex size-8 items-center justify-center rounded-full",
-                      "transition-colors duration-150",
+                      "transition-colors",
                       !inCart && [
-                        "bg-background/90 backdrop-blur-sm ring-1 ring-border/50",
+                        "bg-background/90 border border-border/50",
                         "group-hover:bg-cta-trust-blue group-hover:text-cta-trust-blue-text"
                       ],
                       inCart && "bg-cta-trust-blue text-cta-trust-blue-text"

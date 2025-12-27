@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { WishlistContent } from "./wishlist-content"
 
 interface WishlistPageProps {
@@ -15,7 +14,6 @@ interface WishlistPageProps {
 }
 
 export default async function WishlistPage({ params, searchParams }: WishlistPageProps) {
-  await connection()
   const { locale } = await params
   const { category: categoryFilter, q: searchQuery, stock: stockFilter } = await searchParams
   const supabase = await createClient()
@@ -30,6 +28,14 @@ export default async function WishlistPage({ params, searchParams }: WishlistPag
 
   if (!user) {
     redirect("/auth/login")
+  }
+
+  // Best-effort cleanup of sold/out_of_stock items older than 1 day.
+  // (Requires the DB migration that defines cleanup_sold_wishlist_items().)
+  try {
+    await supabase.rpc("cleanup_sold_wishlist_items")
+  } catch {
+    // Ignore if not deployed yet.
   }
 
   // Fetch wishlist items

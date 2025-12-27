@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -47,7 +46,6 @@ interface Product {
 }
 
 export default async function SellingPage({ params }: SellingPageProps) {
-  await connection()
   const { locale } = await params
   const supabase = await createClient()
 

@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { connection } from "next/server"
 import { BillingContent } from "./billing-content"
 
 interface BillingPageProps {
@@ -10,7 +9,6 @@ interface BillingPageProps {
 }
 
 export default async function BillingPage({ params }: BillingPageProps) {
-  await connection()
   const { locale } = await params
   const supabase = await createClient()
 

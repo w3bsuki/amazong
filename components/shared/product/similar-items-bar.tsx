@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Link } from "@/i18n/routing"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 interface SimilarItemsBarProps {
@@ -38,25 +39,25 @@ export function SimilarItemsBar({
   return (
     <div
       className={cn(
-        "rounded-lg border border-cta-trust-blue/20 bg-cta-trust-blue/5 p-1.5 shadow-sm",
+        "rounded-2xl border border-border/50 bg-muted/30 p-4 transition-colors hover:bg-muted/40",
         className
       )}
     >
-      <div className="flex flex-wrap items-center justify-between gap-form-sm">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xs sm:text-sm font-medium text-muted-foreground shrink-0">
-            {labels?.findSimilarFrom ?? "Find similar items from"}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="text-xs sm:text-sm font-bold text-muted-foreground shrink-0 uppercase tracking-wider">
+            {labels?.findSimilarFrom ?? "More from"}
           </span>
-          <Avatar className="h-6 w-6 border border-border shrink-0">
-            <AvatarImage src={seller.avatar_url ?? undefined} alt={seller.display_name} />
-            <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">
-              {(seller.display_name || "S").slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex items-baseline gap-1 min-w-0">
+          <div className="flex items-center gap-2 bg-background px-3 py-1.5 rounded-full border border-border">
+            <Avatar className="h-6 w-6 border border-border shrink-0">
+              <AvatarImage src={seller.avatar_url ?? undefined} alt={seller.display_name} />
+              <AvatarFallback className="bg-muted text-muted-foreground text-[10px] font-bold">
+                {(seller.display_name || "S").slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
             <Link
               href={storeHref}
-              className="text-xs sm:text-sm font-bold text-foreground underline decoration-1 underline-offset-2 truncate hover:text-cta-trust-blue"
+              className="text-xs sm:text-sm font-bold text-foreground hover:text-primary truncate transition-colors"
             >
               {seller.display_name}
             </Link>
@@ -65,11 +66,11 @@ export function SimilarItemsBar({
 
         {/* Desktop Thumbnails - Inline */}
         {safeThumbnails.length > 0 && (
-          <div className="hidden md:flex items-center gap-2 mx-form flex-1 overflow-hidden">
+          <div className="hidden lg:flex items-center gap-2 flex-1 justify-center overflow-hidden px-4">
             {safeThumbnails.slice(0, 4).map((t, idx) => (
               <div
                 key={`${t.src}-${idx}`}
-                className="relative h-10 w-8 shrink-0 rounded border border-border bg-muted overflow-hidden shadow-sm"
+                className="relative h-10 w-10 shrink-0 rounded-lg border border-border bg-background overflow-hidden"
               >
                 <Image
                   src={t.src}
@@ -84,28 +85,26 @@ export function SimilarItemsBar({
         )}
 
         <div className="shrink-0 ml-auto">
-          <Link
-            href={storeHref}
-            className="text-xs sm:text-sm font-bold text-cta-trust-blue hover:underline whitespace-nowrap flex items-center gap-1"
-          >
-            {labels?.shopStore ?? "Shop store"}
-          </Link>
+          <Button asChild variant="link" className="h-auto p-0 text-xs sm:text-sm font-bold text-primary hover:no-underline group">
+            <Link href={storeHref} className="flex items-center gap-1">
+              {labels?.shopStore ?? "Shop store"}
+              <span aria-hidden="true">→</span>
+            </Link>
+          </Button>
         </div>
       </div>
 
       {/* Mobile-only horizontal scroll images */}
-      <div className="mt-form-sm flex md:hidden gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
+      <div className="mt-4 flex md:hidden gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
         {safeThumbnails.map((t, idx) => (
-          <div key={`${t.src}-${idx}`} className="h-12 w-12 shrink-0 rounded border border-border bg-background p-0.5">
-            <div className="relative h-full w-full">
-              <Image
-                src={t.src}
-                alt={t.alt}
-                fill
-                sizes="48px"
-                className="object-contain"
-              />
-            </div>
+          <div key={`${t.src}-${idx}`} className="h-14 w-14 shrink-0 rounded-xl border border-border bg-background p-1 relative overflow-hidden">
+            <Image
+              src={t.src}
+              alt={t.alt}
+              fill
+              sizes="56px"
+              className="object-cover rounded-lg"
+            />
           </div>
         ))}
       </div>
