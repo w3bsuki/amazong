@@ -150,7 +150,7 @@ export function getCategoryIconForSlug(slug: string): PhosphorIcon {
   return categoryIconComponents.default
 }
 
-export type IconSize = 16 | 20 | 24
+export type IconSize = 16 | 20 | 24 | 26 | 28 | 32
 
 interface CategoryIconOptions {
   size?: IconSize

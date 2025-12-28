@@ -70,14 +70,14 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         3. CTA Banner (seller/buyer actions)
         4. Най-нови обяви (infinite scroll - THE MAIN CONTENT)
       */}
-      <div className="w-full md:hidden space-y-0.5">
+      <div className="w-full md:hidden space-y-1">
         {/* Category Circles - First thing after header */}
-        <div className="pt-0.5">
+        <div className="pt-1">
           <CategoryRail locale={locale} />
         </div>
         
         {/* Start Selling CTA - Promote seller signup */}
-        <StartSellingBanner locale={locale} />
+        <StartSellingBanner locale={locale} className="px-4" />
         
         {/* Newest Listings with Infinite Scroll */}
         <Suspense fallback={<NewestListingsSectionSkeleton />}>
@@ -85,7 +85,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </Suspense>
         
         {/* Sign In CTA - At the end on mobile */}
-        <div className="px-3 pb-4">
+        <div className="px-4 pb-6">
           <Suspense fallback={<SignInCtaSkeleton />}>
             <SignInCTA />
           </Suspense>

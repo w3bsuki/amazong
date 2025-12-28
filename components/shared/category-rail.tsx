@@ -30,18 +30,18 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
   return (
     <nav 
       aria-label={sectionLabel}
-      className=""
+      className="w-full"
     >
       <div 
-        className="flex overflow-x-auto no-scrollbar gap-1 px-2.5 py-0 snap-x snap-mandatory scroll-pl-2.5"
+        className="flex overflow-x-auto no-scrollbar gap-3 px-4 py-1 snap-x snap-mandatory scroll-pl-4"
         role="list"
       >
         {isLoading && fetchedCategories.length === 0 ? (
           // Skeleton state
           Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex flex-col items-center gap-1.5 shrink-0">
-              <div className="size-14 rounded-full bg-muted" />
-              <div className="h-2.5 w-10 bg-muted rounded" />
+              <div className="size-14 rounded-full bg-muted animate-pulse" />
+              <div className="h-2.5 w-10 bg-muted rounded animate-pulse" />
             </div>
           ))
         ) : (
@@ -56,27 +56,27 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
                 aria-label={fullName}
                 className={cn(
                   "group snap-start shrink-0",
-                  "flex flex-col items-center",
+                  "flex flex-col items-center gap-1.5",
                   "touch-action-manipulation",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-full",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl",
                 )}
                 role="listitem"
               >
-                {/* Icon Tile - Consistent, curated look (no random images) */}
+                {/* Icon Tile - Neutral background, Brand icon, No shadow */}
                 <div
                   className={cn(
                     "flex items-center justify-center",
                     "size-14 rounded-full",
-                    "bg-cta-trust-blue",
-                    "group-hover:bg-cta-trust-blue-hover"
+                    "bg-secondary border border-border/40",
+                    "group-hover:bg-secondary/80 transition-colors"
                   )}
                 >
-                  <span className="text-cta-trust-blue-text">
-                    {getCategoryIcon(cat.slug, { size: 24, weight: "regular" })}
+                  <span className="text-primary">
+                    {getCategoryIcon(cat.slug, { size: 26, weight: "duotone" })}
                   </span>
                 </div>
-                {/* Label - Use short name for compact display */}
-                <span className="mt-1 text-foreground font-medium text-tiny text-center w-14 leading-tight line-clamp-2 break-words min-h-[18px]">
+                {/* Label - Tight leading, slightly larger than tiny */}
+                <span className="text-foreground font-medium text-tiny text-center w-16 leading-tight line-clamp-2 break-words">
                   {shortName}
                 </span>
               </Link>

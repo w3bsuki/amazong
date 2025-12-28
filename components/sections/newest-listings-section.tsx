@@ -27,7 +27,7 @@ interface NewestListingsSectionProps {
 // Loading skeleton for the product grid
 function ProductGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 gap-x-2 gap-y-2 px-2.5">
+    <div className="grid grid-cols-2 gap-x-2 gap-y-2 px-4">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="flex flex-col h-full">
           <Skeleton className="aspect-square w-full rounded-md mb-1" />
@@ -285,10 +285,10 @@ export function NewestListingsSection({
   return (
     <section>
       {/* Mobile feed tabs - Quick Pills style like reference image */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md px-2.5 py-1.5 border-b border-border/40">
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md px-4 py-1.5 border-b border-border/40">
         <div className="flex items-center justify-between gap-2">
           <div 
-            className="flex-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar"
+            className="flex-1 flex items-center gap-2 overflow-x-auto no-scrollbar"
             role="tablist"
           >
             {tabs.map((tab) => (
@@ -298,7 +298,7 @@ export function NewestListingsSection({
                 role="tab"
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "shrink-0 px-3 h-8 rounded-full text-xs font-semibold transition-all duration-200",
+                  "shrink-0 px-4 h-8 rounded-full text-xs font-medium transition-all duration-200",
                   "flex items-center justify-center",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                   activeTab === tab.id
@@ -363,7 +363,7 @@ export function NewestListingsSection({
 
       {/* Product Grid - 2 columns on mobile, consistent gap */}
       {active.products.length === 0 && activeTab === "near_me" && !isLoading && !nearMeCity ? (
-        <div className="px-3 py-4">
+        <div className="px-4 py-4">
           <div className="rounded-xl border border-border bg-card px-4 py-6 text-center">
             <p className="text-sm font-semibold text-foreground">
               {locale === "bg" ? "Изберете град" : "Select a city"}
@@ -374,7 +374,7 @@ export function NewestListingsSection({
           </div>
         </div>
       ) : active.products.length === 0 && activeTab === "promoted" && !isLoading ? (
-        <div className="px-3 py-4">
+        <div className="px-4 py-4">
           <div className="rounded-xl border border-border bg-card px-4 py-6 text-center">
             <p className="text-sm font-semibold text-foreground">
               {locale === "bg" ? "Няма промотирани обяви" : "No promoted listings"}
@@ -385,7 +385,7 @@ export function NewestListingsSection({
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-x-2 gap-y-2 px-2.5 py-1">
+        <div className="grid grid-cols-2 gap-x-2 gap-y-2 px-4 py-2">
           {active.products.map((product, index) => (
             <ProductCard
               key={product.id}
@@ -435,7 +435,7 @@ export function NewestListingsSection({
 export function NewestListingsSectionSkeleton() {
   return (
     <section className="mt-3">
-      <div className="flex items-center justify-between px-3 mb-2">
+      <div className="flex items-center justify-between px-4 mb-2">
         <Skeleton className="h-5 w-32" />
       </div>
       <ProductGridSkeleton count={6} />
