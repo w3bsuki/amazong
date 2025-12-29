@@ -5,11 +5,12 @@ import { getLocale } from "next-intl/server"
 import { UpgradeContent } from "@/app/[locale]/(account)/account/plans/upgrade/upgrade-content"
 import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
-
-// Force dynamic rendering - this page requires auth and should not be statically generated
-export const dynamic = 'force-dynamic'
+import { connection } from "next/server"
 
 async function UpgradeModalContent() {
+  // Ensure this runs dynamically, not during static generation
+  await connection()
+  
   const locale = await getLocale()
   const supabase = await createClient()
   

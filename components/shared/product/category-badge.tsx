@@ -1,4 +1,4 @@
-import { Tag } from "lucide-react"
+import { Tag, Folder } from "lucide-react"
 
 import { Badge } from "../../ui/badge"
 import { cn } from "@/lib/utils"
@@ -37,27 +37,27 @@ export function CategoryBadge(props: {
   const icon = category.icon?.trim()
 
   const sizeClass =
-    size === "lg" ? "text-sm px-3 py-1.5" : size === "md" ? "text-xs px-2.5 py-1" : "text-[10px] px-2 py-0.5"
+    size === "lg" ? "text-sm px-3.5 py-2" : size === "md" ? "text-xs px-3 py-1.5" : "text-[11px] px-2.5 py-1"
 
   return (
     <Badge
       variant="outline"
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border-category-badge-border bg-category-badge-bg text-category-badge-text",
+        "inline-flex items-center gap-2 rounded-xl border-border/60 bg-muted/50 text-foreground hover:bg-muted transition-colors cursor-pointer",
         sizeClass,
         className
       )}
     >
       {icon && isEmojiLike(icon) ? (
-        <span aria-hidden className="text-category-badge-icon">
+        <span aria-hidden className="text-base">
           {icon}
         </span>
       ) : (
-        <Tag className={cn("text-category-badge-icon", size === "lg" ? "h-4 w-4" : "h-3.5 w-3.5")} />
+        <Folder className={cn("text-muted-foreground", size === "lg" ? "h-4 w-4" : "h-3.5 w-3.5")} />
       )}
-      <span className="font-medium">
+      <span className="font-semibold">
         {label}
-        {subLabel ? <span className="text-muted-foreground"> · {subLabel}</span> : null}
+        {subLabel ? <span className="text-muted-foreground font-normal"> · {subLabel}</span> : null}
       </span>
     </Badge>
   )

@@ -88,17 +88,17 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
   if (!hasProducts) return null;
 
   return (
-    <div className="mt-6 pt-6 border-t border-border">
+    <div className="mt-6 pt-6 border-t border-border/50">
       {/* Header with chevrons */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-foreground">
+        <h2 className="text-base font-bold text-foreground">
           {t("moreFromSeller") || `More from ${products[0]?.sellerName || "this seller"}`}
         </h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {viewAllHref && displayCount > products.length && (
             <Link 
               href={viewAllHref}
-              className="text-xs font-medium text-primary hover:underline mr-2"
+              className="text-xs font-bold text-[var(--color-link)] hover:underline mr-2"
             >
               {t("viewAll") || "View all"} ({displayCount})
             </Link>
@@ -106,7 +106,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
           <Button
             variant="outline"
             size="icon"
-            className="size-7 rounded-full"
+            className="size-8 rounded-full border-border/60 hover:bg-muted active:bg-muted/80"
             onClick={() => scroll("left")}
             disabled={!canScrollLeft}
           >
@@ -115,7 +115,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
           <Button
             variant="outline"
             size="icon"
-            className="size-7 rounded-full"
+            className="size-8 rounded-full border-border/60 hover:bg-muted active:bg-muted/80"
             onClick={() => scroll("right")}
             disabled={!canScrollRight}
           >
@@ -127,35 +127,35 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
       {/* Horizontal scrolling cards */}
       <div 
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory pb-2 -mx-1 px-1"
+        className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory pb-2 -mx-1 px-1"
       >
         {products.slice(0, 10).map((product) => (
           <Link
             key={product.id}
             href={getProductHref(product)}
-            className="group flex-none w-[140px] sm:w-40 snap-start"
+            className="group flex-none w-[130px] sm:w-[150px] snap-start"
           >
-            <div className="aspect-square bg-muted/50 rounded-xl overflow-hidden border border-border relative">
+            <div className="aspect-square bg-muted/30 rounded-xl overflow-hidden border border-border/50 relative shadow-sm group-hover:shadow-md transition-shadow">
               {product.image && (
                 <Image
                   src={product.image}
                   alt={product.title}
                   fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 140px, 160px"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 640px) 130px, 150px"
                 />
               )}
               {/* Condition badge */}
               {product.condition && (
-                <div className="absolute top-1.5 right-1.5 bg-card/95 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-semibold text-foreground shadow-sm border border-border/50">
-                  {product.condition.toUpperCase().replaceAll('-', " ")}
+                <div className="absolute top-2 left-2 bg-background/95 backdrop-blur-sm px-2 py-0.5 rounded-lg text-[9px] font-bold text-foreground shadow-sm border border-border/30 uppercase tracking-wide">
+                  {product.condition.replaceAll('-', " ")}
                 </div>
               )}
             </div>
-            <h3 className="text-xs font-medium text-foreground leading-tight mt-2 group-hover:underline line-clamp-2">
+            <h3 className="text-xs font-semibold text-foreground leading-tight mt-2.5 group-hover:text-[var(--color-link)] line-clamp-2 transition-colors">
               {product.title}
             </h3>
-            <p className="text-sm font-semibold text-foreground mt-1">
+            <p className="text-sm font-bold text-foreground mt-1">
               {new Intl.NumberFormat(locale, { 
                 style: "currency", 
                 currency: "BGN", 
