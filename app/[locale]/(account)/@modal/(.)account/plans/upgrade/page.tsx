@@ -3,14 +3,10 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { getLocale } from "next-intl/server"
 import { UpgradeContent } from "@/app/[locale]/(account)/account/plans/upgrade/upgrade-content"
+import { Suspense } from "react"
+import { Loader2 } from "lucide-react"
 
-/**
- * Intercepted Upgrade Route
- * 
- * This page is shown as a modal overlay when navigating from within the app.
- * When accessed directly (or on refresh), the user sees the full page version.
- */
-export default async function InterceptedUpgradePage() {
+async function UpgradeModalContent() {
   const locale = await getLocale()
   const supabase = await createClient()
   
@@ -48,6 +44,33 @@ export default async function InterceptedUpgradePage() {
   }))
 
   return (
+    <UpgradeContent 
+      locale={locale}
+      plans={transformedPlans}
+      currentTier={currentTier}
+      seller={profile}
+    />
+  )
+}
+
+function UpgradeLoadingFallback() {
+  return (
+    <div className="flex items-center justify-center py-12">
+      <Loader2 className="size-8 animate-spin text-muted-foreground" />
+    </div>
+  )
+}
+
+/**
+ * Intercepted Upgrade Route
+ * 
+ * This page is shown as a modal overlay when navigating from within the app.
+ * When accessed directly (or on refresh), the user sees the full page version.
+ */
+export default async function InterceptedUpgradePage() {
+  const locale = await getLocale()
+
+  return (
     <Modal 
       title={locale === 'bg' ? 'Надгради плана си' : 'Upgrade Your Plan'}
       description={locale === 'bg' 
@@ -55,12 +78,9 @@ export default async function InterceptedUpgradePage() {
         : 'Choose a plan with lower commissions and more features'
       }
     >
-      <UpgradeContent 
-        locale={locale}
-        plans={transformedPlans}
-        currentTier={currentTier}
-        seller={profile}
-      />
+      <Suspense fallback={<UpgradeLoadingFallback />}>
+        <UpgradeModalContent />
+      </Suspense>
     </Modal>
   )
 }
