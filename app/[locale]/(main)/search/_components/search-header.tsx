@@ -22,7 +22,7 @@ export function SearchHeader({ query, totalResults }: SearchHeaderProps) {
               href="/" 
               className="text-foreground hover:underline underline-offset-2"
             >
-              Amazong
+              Treido
             </Link>
           </li>
           <li className="flex items-center gap-1.5">

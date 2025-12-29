@@ -10,8 +10,8 @@ import SellersGrid from "./_components/sellers-grid"
 import TopSellersHero from "./_components/top-sellers-hero"
 
 export const metadata: Metadata = {
-  title: 'Top Sellers | Amazong',
-  description: 'Discover top-rated sellers on Amazong. Shop from verified merchants with great reviews.',
+  title: 'Top Sellers | Treido',
+  description: 'Discover top-rated sellers on Treido. Shop from verified merchants with great reviews.',
 }
 
 export function generateStaticParams() {

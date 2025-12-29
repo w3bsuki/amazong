@@ -33,7 +33,7 @@ const translations = {
   en: {
     // Step 1
     step1Title: "Set Up Your Seller Profile",
-    step1Subtitle: "Choose how you want to sell on Amazong",
+    step1Subtitle: "Choose how you want to sell on Treido",
     personal: "Personal Account",
     personalDesc: "Sell personal items, handmade goods, or occasional sales",
     personalFeatures: ["Free to start", "10 free listings/month", "Perfect for beginners"],
@@ -55,7 +55,7 @@ const translations = {
     // Step 3 (ready)
     step3Title: "You're All Set! 🎉",
     step3Subtitle: "Your seller profile is ready",
-    readyMessage: "You can now start listing items and selling on Amazong",
+    readyMessage: "You can now start listing items and selling on Treido",
     profileUrl: "Your seller profile",
     // Actions
     continue: "Continue",
@@ -76,7 +76,7 @@ const translations = {
   bg: {
     // Step 1
     step1Title: "Настройте вашия профил на продавач",
-    step1Subtitle: "Изберете как искате да продавате в Amazong",
+    step1Subtitle: "Изберете как искате да продавате в Treido",
     personal: "Личен акаунт",
     personalDesc: "Продавайте лични вещи, ръчна изработка или случайни продажби",
     personalFeatures: ["Безплатно начало", "10 безплатни обяви/месец", "Перфектно за начинаещи"],
@@ -98,7 +98,7 @@ const translations = {
     // Step 3 (ready)
     step3Title: "Готови сте! 🎉",
     step3Subtitle: "Вашият профил на продавач е готов",
-    readyMessage: "Вече можете да добавяте артикули и да продавате в Amazong",
+    readyMessage: "Вече можете да добавяте артикули и да продавате в Treido",
     profileUrl: "Вашият профил на продавач",
     // Actions
     continue: "Продължи",
@@ -461,7 +461,7 @@ export function SellerOnboardingWizard({
                 {/* Profile URL */}
                 <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                   <p className="text-sm text-gray-500 mb-1">{t.profileUrl}</p>
-                  <p className="font-medium text-gray-900">amazong.com/u/{username}</p>
+                  <p className="font-medium text-gray-900">treido.eu/u/{username}</p>
                 </div>
 
                 {/* What's next */}

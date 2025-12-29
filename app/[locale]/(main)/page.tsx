@@ -39,8 +39,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: locale === 'bg' ? 'Начало' : 'Home',
     description: locale === 'bg' 
-      ? 'Добре дошли в AMZN - вашият онлайн магазин за електроника, мода, дом и много други.'
-      : 'Welcome to AMZN - your online store for electronics, fashion, home and much more.',
+      ? 'Добре дошли в Treido - вашият онлайн магазин за електроника, мода, дом и много други.'
+      : 'Welcome to Treido - your online store for electronics, fashion, home and much more.',
   };
 }
 

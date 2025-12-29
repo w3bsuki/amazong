@@ -22,7 +22,7 @@ export function DesktopHeroCTA({ locale = "en", bottomSlot }: DesktopHeroCTAProp
   return (
     <section 
       className="w-full"
-      aria-label={isBg ? "Добре дошли в AMZN" : "Welcome to AMZN"}
+      aria-label={isBg ? "Добре дошли в Treido" : "Welcome to Treido"}
     >
       {/* Compact CTA Banner - Clean trust-blue solid color */}
       <div className="relative overflow-hidden rounded-xl bg-cta-trust-blue">

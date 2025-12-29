@@ -81,16 +81,16 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
 
   const { profile, sellerStats } = data
   const displayName = profile.display_name || profile.username
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://amazong.com"
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://treido.eu"
   const canonicalUrl = `${siteUrl}/${locale}/${username}`
   
-  const title = `${displayName} (@${profile.username}) | Amazong`
+  const title = `${displayName} (@${profile.username}) | Treido`
   const totalSales = sellerStats?.total_sales ?? 0
   const avgRating = sellerStats?.average_rating ?? 0
   const description = profile.bio
     || (locale === "bg"
-      ? `Вижте профила на ${displayName} в Amazong. ${profile.is_seller ? `${totalSales} продажби, ⭐ ${avgRating.toFixed(1)}` : "Член на Amazong"}`
-      : `View ${displayName}'s profile on Amazong. ${profile.is_seller ? `${totalSales} sales, ⭐ ${avgRating.toFixed(1)}` : "Amazong member"}`)
+      ? `Вижте профила на ${displayName} в Treido. ${profile.is_seller ? `${totalSales} продажби, ⭐ ${avgRating.toFixed(1)}` : "Член на Treido"}`
+      : `View ${displayName}'s profile on Treido. ${profile.is_seller ? `${totalSales} sales, ⭐ ${avgRating.toFixed(1)}` : "Treido member"}`)
 
   return {
     title,

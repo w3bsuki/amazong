@@ -740,7 +740,7 @@ export default function PlansPageClient(props: {
 
       <footer className="border-t">
         <div className="container flex flex-col items-center justify-between gap-4 py-8 sm:flex-row">
-          <span className="text-sm text-muted-foreground">© 2025 Amazong</span>
+          <span className="text-sm text-muted-foreground">© 2025 Treido</span>
           <div className="flex gap-6 text-sm">
             <Link href={`/${locale}/terms`} className="text-muted-foreground hover:text-foreground">
               {locale === "bg" ? "Условия" : "Terms"}

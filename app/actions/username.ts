@@ -21,7 +21,7 @@ const usernameSchema = z
 // Reserved usernames that cannot be used
 const RESERVED_USERNAMES = [
   "admin", "administrator", "support", "help", "info", "contact",
-  "amazong", "store", "shop", "seller", "buyer", "user", "users",
+  "treido", "store", "shop", "seller", "buyer", "user", "users",
   "account", "settings", "profile", "members", "member", "api",
   "auth", "login", "signup", "register", "logout", "signout",
   "home", "index", "about", "terms", "privacy", "legal",

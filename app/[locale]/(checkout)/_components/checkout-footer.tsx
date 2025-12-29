@@ -14,7 +14,7 @@ export function CheckoutFooter() {
     <footer className="border-t border-border bg-card py-4">
       <div className="container">
         <p className="text-xs text-center text-muted-foreground">
-          © {currentYear} AMZN. {t("allRightsReserved")}
+          © {currentYear} Treido. {t("allRightsReserved")}
         </p>
       </div>
     </footer>

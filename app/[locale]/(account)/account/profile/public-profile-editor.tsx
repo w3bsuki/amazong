@@ -249,7 +249,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                   {locale === "bg" ? "Твоят публичен профил" : "Your Public Profile"}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  amazong.com/{profile.username}
+                  treido.eu/{profile.username}
                 </p>
               </div>
               <Link href={`/${locale}/${profile.username}`}>
@@ -289,7 +289,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
               </div>
               {profile.username && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  amazong.com/u/{profile.username}
+                  treido.eu/u/{profile.username}
                 </p>
               )}
             </div>
@@ -348,7 +348,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                     )}
                     {newUsername && newUsername.length >= 3 && usernameAvailable === true && (
                       <p className="text-xs text-muted-foreground">
-                        amazong.com/u/{newUsername}
+                        treido.eu/u/{newUsername}
                       </p>
                     )}
                   </div>

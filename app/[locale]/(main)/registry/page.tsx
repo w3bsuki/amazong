@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Gift, UserPlus } from "@phosphor-icons/react/dist/ssr"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import { routing, validateLocale } from "@/i18n/routing"
-import { setRequestLocale } from "next-intl/server"
+import { setRequestLocale, getTranslations } from "next-intl/server"
 
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }))
@@ -17,6 +17,7 @@ export default async function RegistryPage({
         const { locale: localeParam } = await params
         const locale = validateLocale(localeParam)
         setRequestLocale(locale)
+        const t = await getTranslations("RegistryPage")
 
     return (
         <div className="min-h-screen bg-background">
@@ -29,17 +30,17 @@ export default async function RegistryPage({
                 <div className="container flex flex-col md:flex-row items-center justify-between">
                     <div className="space-y-6 max-w-xl">
                         <h1 className="text-4xl md:text-5xl font-bold">
-                            Celebrate every milestone with Amazon Registry
+                            {t("heroTitle")}
                         </h1>
                         <p className="text-lg text-header-text/80">
-                            From weddings and babies to birthdays and new homes, create a registry for any occasion.
+                            {t("heroSubtitle")}
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <Button className="bg-brand hover:bg-brand/90 text-foreground font-bold h-12 px-8 rounded-sm">
-                                Create a Registry
+                                {t("createRegistry")}
                             </Button>
                             <Button variant="outline" className="bg-transparent border-header-text text-header-text hover:bg-header-text/10 font-bold h-12 px-8 rounded-sm">
-                                Find a Registry
+                                {t("findRegistry")}
                             </Button>
                         </div>
                     </div>
@@ -51,17 +52,17 @@ export default async function RegistryPage({
 
             {/* Registry Types */}
             <div className="container py-12">
-                <h2 className="text-3xl font-bold text-center mb-12">Whatever you're celebrating, we've got you covered</h2>
+                <h2 className="text-3xl font-bold text-center mb-12">{t("typesTitle")}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <Card className="hover:border-brand transition-colors cursor-pointer border border-border">
                         <CardHeader className="text-center">
                             <div className="mx-auto bg-brand/10 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                                 <Gift className="w-8 h-8 text-brand" />
                             </div>
-                            <CardTitle>Wedding Registry</CardTitle>
+                            <CardTitle>{t("weddingTitle")}</CardTitle>
                         </CardHeader>
                         <CardContent className="text-center text-muted-foreground">
-                            Start your new life together with gifts you'll love.
+                            {t("weddingDesc")}
                         </CardContent>
                     </Card>
 
@@ -70,10 +71,10 @@ export default async function RegistryPage({
                             <div className="mx-auto bg-brand/15 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                                 <UserPlus className="w-8 h-8 text-brand" />
                             </div>
-                            <CardTitle>Baby Registry</CardTitle>
+                            <CardTitle>{t("babyTitle")}</CardTitle>
                         </CardHeader>
                         <CardContent className="text-center text-muted-foreground">
-                            Everything you need for your new arrival.
+                            {t("babyDesc")}
                         </CardContent>
                     </Card>
 
@@ -82,10 +83,10 @@ export default async function RegistryPage({
                             <div className="mx-auto bg-brand/20 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                                 <Gift className="w-8 h-8 text-brand" />
                             </div>
-                            <CardTitle>Birthday Gift List</CardTitle>
+                            <CardTitle>{t("birthdayTitle")}</CardTitle>
                         </CardHeader>
                         <CardContent className="text-center text-muted-foreground">
-                            Make their birthday wishes come true.
+                            {t("birthdayDesc")}
                         </CardContent>
                     </Card>
                 </div>
@@ -94,23 +95,23 @@ export default async function RegistryPage({
             {/* Benefits Section */}
             <div className="bg-muted py-16 px-4">
                 <div className="container">
-                    <h2 className="text-3xl font-bold text-center mb-12">Why create a registry on Amazon?</h2>
+                    <h2 className="text-3xl font-bold text-center mb-12">{t("benefitsTitle")}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         <div className="text-center space-y-2">
-                            <h3 className="font-bold text-lg">Earth's Biggest Selection</h3>
-                            <p className="text-sm text-muted-foreground">Add items from Amazon's massive inventory.</p>
+                            <h3 className="font-bold text-lg">{t("benefit1Title")}</h3>
+                            <p className="text-sm text-muted-foreground">{t("benefit1Desc")}</p>
                         </div>
                         <div className="text-center space-y-2">
-                            <h3 className="font-bold text-lg">Easy Returns</h3>
-                            <p className="text-sm text-muted-foreground">90-day returns on most items.</p>
+                            <h3 className="font-bold text-lg">{t("benefit2Title")}</h3>
+                            <p className="text-sm text-muted-foreground">{t("benefit2Desc")}</p>
                         </div>
                         <div className="text-center space-y-2">
-                            <h3 className="font-bold text-lg">Universal Registry</h3>
-                            <p className="text-sm text-muted-foreground">Add items from other websites.</p>
+                            <h3 className="font-bold text-lg">{t("benefit3Title")}</h3>
+                            <p className="text-sm text-muted-foreground">{t("benefit3Desc")}</p>
                         </div>
                         <div className="text-center space-y-2">
-                            <h3 className="font-bold text-lg">Group Gifting</h3>
-                            <p className="text-sm text-muted-foreground">Allow friends to chip in on big gifts.</p>
+                            <h3 className="font-bold text-lg">{t("benefit4Title")}</h3>
+                            <p className="text-sm text-muted-foreground">{t("benefit4Desc")}</p>
                         </div>
                     </div>
                 </div>

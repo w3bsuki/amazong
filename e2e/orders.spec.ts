@@ -10,7 +10,7 @@ import { test as authTest } from "./fixtures/authenticated"
  * NOTE: Authenticated tests require a test user to be configured.
  * Set TEST_USER_EMAIL and TEST_USER_PASSWORD environment variables,
  * or create a user in Supabase with these credentials:
- *   Email: e2e-test@amazong.test
+ *   Email: e2e-test@treido.test
  *   Password: E2ETestPassword123!
  */
 

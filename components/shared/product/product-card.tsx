@@ -272,10 +272,34 @@ function formatPillValue(key: string, value: string): string {
     case "area_sqm":
       return `${value} m²`
     case "condition":
-      return value.replaceAll(/[-_]+/g, " ")
+      // Return raw value - will be translated at render time
+      return value
     default:
       return value.length > 14 ? `${value.slice(0, 14)}…` : value
   }
+}
+
+// Translate condition value using next-intl
+function translateCondition(value: string, t: (key: string) => string): string {
+  const raw = value?.trim()
+  if (!raw) return "—"
+  const lowered = raw.toLowerCase().replace(/[_\s]+/g, "-")
+  
+  const conditionMap: Record<string, string> = {
+    "new": "conditionNew",
+    "new-with-tags": "conditionNewWithTags",
+    "used": "conditionUsed",
+    "used-excellent": "conditionUsedExcellent",
+    "used-good": "conditionUsedGood",
+    "used-fair": "conditionUsedFair",
+    "refurbished": "conditionRefurbished",
+  }
+  
+  const translationKey = conditionMap[lowered]
+  if (translationKey) return t(translationKey)
+  
+  // Fallback: capitalize words for unknown conditions
+  return raw.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 function getSmartPills(
@@ -841,7 +865,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                   variant="secondary"
                   className="w-fit px-2 py-0.5 text-[10px] font-semibold tracking-normal normal-case"
                 >
-                  {conditionPill!.label}
+                  {translateCondition(conditionPill!.label, t)}
                 </Badge>
               )}
             </div>

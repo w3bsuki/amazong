@@ -6,8 +6,8 @@ import type { MembersSearchParams } from "./_lib/members-types"
 import { getMembersPageData } from "./_lib/get-members-page-data"
 
 export const metadata: Metadata = {
-  title: "Members | Amazong Community",
-  description: "Discover members of the Amazong community. Browse sellers and buyers, filter by ratings and activity.",
+  title: "Members | Treido Community",
+  description: "Discover members of the Treido community. Browse sellers and buyers, filter by ratings and activity.",
 }
 
 interface MembersPageProps {

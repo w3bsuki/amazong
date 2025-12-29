@@ -34,16 +34,16 @@ export function MobileAccordions({ description, details, shippingText, returnsTe
       <Accordion type="single" collapsible className="w-full">
         {/* Description */}
         <AccordionItem value="description" className="border-b border-border/50">
-          <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-muted/30 transition-colors [&[data-state=open]]:bg-muted/20">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[var(--color-info)]/10 flex items-center justify-center">
-                <FileText className="w-4 h-4 text-[var(--color-info)]" />
+          <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-accent/50 [&[data-state=open]]:bg-accent/30">
+            <div className="flex items-center gap-2.5">
+              <div className="size-8 rounded-md bg-[var(--color-info)]/10 flex items-center justify-center">
+                <FileText className="size-4 text-[var(--color-info)]" />
               </div>
-              <span className="font-bold text-foreground text-sm">{t.description}</span>
+              <span className="font-semibold text-foreground text-sm">{t.description}</span>
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
-            <div className="bg-muted/30 rounded-xl p-4 text-sm text-muted-foreground leading-relaxed">
+            <div className="bg-muted/30 rounded-lg p-3 text-sm text-muted-foreground leading-relaxed">
               <p>{description || (locale === "bg" ? "Няма описание" : "No description provided")}</p>
             </div>
           </AccordionContent>
@@ -51,25 +51,25 @@ export function MobileAccordions({ description, details, shippingText, returnsTe
 
         {/* Product Details */}
         <AccordionItem value="details" className="border-b border-border/50">
-          <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-muted/30 transition-colors [&[data-state=open]]:bg-muted/20">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[var(--color-verified)]/10 flex items-center justify-center">
-                <List className="w-4 h-4 text-[var(--color-verified)]" />
+          <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-accent/50 [&[data-state=open]]:bg-accent/30">
+            <div className="flex items-center gap-2.5">
+              <div className="size-8 rounded-md bg-[var(--color-verified)]/10 flex items-center justify-center">
+                <List className="size-4 text-[var(--color-verified)]" />
               </div>
-              <span className="font-bold text-foreground text-sm">{t.productDetails}</span>
+              <span className="font-semibold text-foreground text-sm">{t.productDetails}</span>
               {details.length > 0 && (
-                <span className="ml-auto mr-2 text-xs font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                <span className="ml-auto mr-2 text-xs font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                   {details.length}
                 </span>
               )}
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
-            <div className="bg-muted/30 rounded-xl p-4 space-y-2.5">
+            <div className="bg-muted/30 rounded-lg p-3 space-y-2">
               {details.length > 0 ? details.map((detail, idx) => (
-                <div key={idx} className="flex justify-between items-baseline gap-4 text-sm">
-                  <span className="text-muted-foreground font-medium shrink-0">{detail.label}</span>
-                  <span className="font-bold text-foreground text-right truncate">{detail.value}</span>
+                <div key={idx} className="flex justify-between items-baseline gap-3 text-sm">
+                  <span className="text-muted-foreground shrink-0">{detail.label}</span>
+                  <span className="font-medium text-foreground text-right truncate">{detail.value}</span>
                 </div>
               )) : (
                 <p className="text-sm text-muted-foreground">{locale === "bg" ? "Няма детайли" : "No details available"}</p>
@@ -80,22 +80,22 @@ export function MobileAccordions({ description, details, shippingText, returnsTe
 
         {/* Shipping & Returns */}
         <AccordionItem value="shipping" className="border-b border-border/50">
-          <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-muted/30 transition-colors [&[data-state=open]]:bg-muted/20">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[var(--color-shipping-free)]/10 flex items-center justify-center">
-                <Truck className="w-4 h-4 text-[var(--color-shipping-free)]" />
+          <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-accent/50 [&[data-state=open]]:bg-accent/30">
+            <div className="flex items-center gap-2.5">
+              <div className="size-8 rounded-md bg-[var(--color-shipping-free)]/10 flex items-center justify-center">
+                <Truck className="size-4 text-[var(--color-shipping-free)]" />
               </div>
-              <span className="font-bold text-foreground text-sm">{t.shippingReturns}</span>
+              <span className="font-semibold text-foreground text-sm">{t.shippingReturns}</span>
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
-            <div className="bg-muted/30 rounded-xl p-4 space-y-4">
+            <div className="bg-muted/30 rounded-lg p-3 space-y-3">
               <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t.shipping}</div>
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">{t.shipping}</div>
                 <div className="text-sm text-foreground">{shippingText ?? t.defaultShipping}</div>
               </div>
-              <div className="border-t border-border/50 pt-4">
-                <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t.returns}</div>
+              <div className="border-t border-border/50 pt-3">
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">{t.returns}</div>
                 <div className="text-sm text-foreground">{returnsText ?? t.defaultReturns}</div>
               </div>
             </div>

@@ -91,22 +91,22 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
     <div className="mt-6 pt-6 border-t border-border/50">
       {/* Header with chevrons */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-bold text-foreground">
+        <h2 className="text-sm font-semibold text-foreground">
           {t("moreFromSeller") || `More from ${products[0]?.sellerName || "this seller"}`}
         </h2>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {viewAllHref && displayCount > products.length && (
             <Link 
               href={viewAllHref}
-              className="text-xs font-bold text-[var(--color-link)] hover:underline mr-2"
+              className="text-xs font-medium text-primary hover:underline mr-2"
             >
               {t("viewAll") || "View all"} ({displayCount})
             </Link>
           )}
           <Button
             variant="outline"
-            size="icon"
-            className="size-8 rounded-full border-border/60 hover:bg-muted active:bg-muted/80"
+            size="icon-sm"
+            className="rounded-full"
             onClick={() => scroll("left")}
             disabled={!canScrollLeft}
           >
@@ -114,8 +114,8 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
           </Button>
           <Button
             variant="outline"
-            size="icon"
-            className="size-8 rounded-full border-border/60 hover:bg-muted active:bg-muted/80"
+            size="icon-sm"
+            className="rounded-full"
             onClick={() => scroll("right")}
             disabled={!canScrollRight}
           >

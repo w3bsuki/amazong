@@ -1,15 +1,18 @@
 /**
  * Currency formatting utilities for locale-aware price display
- * Supports Bulgarian (EUR) and English (USD) locales
+ * EUR is the standard currency for Treido EU marketplace
+ * - Bulgarian locale: 29,99 € (symbol after, comma decimal)
+ * - English locale: €29.99 (symbol before, dot decimal)
  */
 
 export type SupportedLocale = 'en' | 'bg'
 
 /**
- * Currency configuration per locale
+ * Currency configuration - EUR for all locales
+ * Only display formatting differs by locale
  */
 const currencyConfig: Record<SupportedLocale, { currency: string; symbol: string }> = {
-  en: { currency: 'USD', symbol: '$' },
+  en: { currency: 'EUR', symbol: '€' },
   bg: { currency: 'EUR', symbol: '€' }
 }
 
@@ -29,13 +32,14 @@ export function getCurrencyCode(locale: string): string {
 
 /**
  * Format a price according to locale conventions
- * - en: $299.99
- * - bg: 299,99 €
+ * - en: €299.99 (Irish English format for EUR)
+ * - bg: 299,99 € (Bulgarian format for EUR)
  */
 export function formatPrice(amount: number, locale: string): string {
   const currency = getCurrencyCode(locale)
   
-  return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US', {
+  // Use en-IE (Irish English) for English locale to get proper EUR formatting
+  return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,
@@ -44,7 +48,7 @@ export function formatPrice(amount: number, locale: string): string {
 }
 
 /**
- * Format price parts for Amazon-style display (split dollars/cents)
+ * Format price parts for split display (e.g., €29⁹⁹ or 29⁹⁹ €)
  */
 export interface PriceParts {
   symbol: string
@@ -54,17 +58,17 @@ export interface PriceParts {
 }
 
 export function formatPriceParts(amount: number, locale: string): PriceParts {
-  const symbol = getCurrencySymbol(locale)
-  const isEuro = locale === 'bg'
+  const symbol = '€' // Always EUR
+  const isBulgarian = locale === 'bg'
   
   const wholePart = Math.floor(amount).toString()
   const decimalPart = (amount % 1).toFixed(2).slice(2) // Get .XX part without leading dot
   
   return {
     symbol,
-    wholePart: isEuro ? wholePart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, ' ') : wholePart,
+    wholePart: isBulgarian ? wholePart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, ' ') : wholePart,
     decimalPart,
-    symbolPosition: isEuro ? 'after' : 'before'
+    symbolPosition: isBulgarian ? 'after' : 'before'
   }
 }
 

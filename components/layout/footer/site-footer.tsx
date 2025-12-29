@@ -47,16 +47,6 @@ const PinterestIcon = () => (
     </svg>
 )
 
-// Privacy toggle icon (CCPA/GDPR compliant icon)
-const PrivacyIcon = () => (
-    <svg viewBox="0 0 30 14" className="w-7 h-4 inline-block mr-1" aria-hidden="true">
-        <path d="M7.4 12.8h6.8l3.1-11.6H7.4C4.2 1.2 1.6 3.8 1.6 7s2.6 5.8 5.8 5.8z" fill="transparent" stroke="currentColor" strokeWidth="1"/>
-        <path d="M22.6 1.2h-6.8l-3.1 11.6h6.8c3.2 0 5.8-2.6 5.8-5.8s-2.6-5.8-5.8-5.8z" fill="currentColor"/>
-        <circle cx="7.4" cy="7" r="2.3" fill="currentColor"/>
-        <circle cx="22.6" cy="7" r="2.3" fill="transparent" stroke="currentColor" strokeWidth="1"/>
-    </svg>
-)
-
 export function SiteFooter() {
     const t = useTranslations('Footer')
 
@@ -68,18 +58,13 @@ export function SiteFooter() {
 
     const footerSections = [
         {
-            id: "about",
-            title: t('aboutUs'),
+            id: "company",
+            title: t('company'),
             links: [
                 { label: t('aboutUsLink'), href: "/about" },
                 { label: t('careers'), href: "/careers" },
                 { label: t('newsAndBlog'), href: "/blog" },
-                { label: t('sustainability'), href: "/sustainability" },
-                { label: t('pressCenter'), href: "/press" },
                 { label: t('investors'), href: "/investors" },
-                { label: t('affiliatesPartners'), href: "/affiliates" },
-                { label: t('advertise'), href: "/advertise" },
-                { label: t('suppliers'), href: "/suppliers" },
             ]
         },
         {
@@ -89,35 +74,31 @@ export function SiteFooter() {
                 { label: t('helpCenter'), href: "/customer-service" },
                 { label: t('returns'), href: "/returns" },
                 { label: t('trackOrders'), href: "/account/orders" },
-                { label: t('recalls'), href: "/recalls" },
                 { label: t('contactUs'), href: "/contact" },
-                { label: t('feedback'), href: "/feedback" },
-                { label: t('accessibility'), href: "/accessibility" },
                 { label: t('securityFraud'), href: "/security" },
+                { label: t('feedback'), href: "/feedback" },
             ]
         },
         {
-            id: "stores",
-            title: t('storesServices'),
+            id: "business",
+            title: t('sellAndBusiness'),
             links: [
+                { label: t('sellWithUs'), href: "/sell" },
                 { label: t('findStore'), href: "/store-locator" },
-                { label: t('pharmacy'), href: "/pharmacy" },
-                { label: t('optical'), href: "/optical" },
-                { label: t('clinic'), href: "/clinic" },
-                { label: t('moreServices'), href: "/services" },
+                { label: t('affiliatesPartners'), href: "/affiliates" },
+                { label: t('advertise'), href: "/advertise" },
+                { label: t('suppliers'), href: "/suppliers" },
             ]
         },
         {
             id: "services",
             title: t('services'),
             links: [
-                { label: t('membershipProgram'), href: "/membership" },
+                { label: t('membershipProgram'), href: "/plans" },
                 { label: t('giftCards'), href: "/gift-cards" },
                 { label: t('giftRegistry'), href: "/registry" },
-                { label: t('sameDayDelivery'), href: "/same-day-delivery" },
-                { label: t('orderPickup'), href: "/order-pickup" },
                 { label: t('freeShipping'), href: "/free-shipping" },
-                { label: t('sellWithUs'), href: "/sell" },
+                { label: t('accessibility'), href: "/accessibility" },
             ]
         },
     ]
@@ -135,9 +116,6 @@ export function SiteFooter() {
         { label: t('terms'), href: "/terms" },
         { label: t('privacyPolicy'), href: "/privacy" },
         { label: t('cookiePolicy'), href: "/cookies" },
-        { label: t('caPrivacyRights'), href: "/privacy#ca-rights" },
-        { label: t('yourPrivacyChoices'), href: "/privacy-choices", hasIcon: true },
-        { label: t('interestBasedAds'), href: "/interest-based-ads" },
     ]
 
     return (
@@ -250,9 +228,8 @@ export function SiteFooter() {
                         <Link 
                             key={index}
                             href={link.href} 
-                            className="hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap flex items-center"
+                            className="hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
                         >
-                            {link.hasIcon && <PrivacyIcon />}
                             {link.label}
                         </Link>
                     ))}

@@ -43,7 +43,7 @@ export async function generateMetadata({ params, searchParams }: {
   return {
     title,
     description: query 
-      ? `Find the best deals on "${query}" at AMZN. Fast shipping and great prices.`
+      ? `Find the best deals on "${query}" at Treido. Fast shipping and great prices.`
       : 'Browse our wide selection of products. Find electronics, fashion, home goods and more.',
   };
 }

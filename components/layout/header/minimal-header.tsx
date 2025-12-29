@@ -71,7 +71,7 @@ export function MinimalHeader({
               aria-label={locale === "bg" ? "Към началната страница" : "Go to homepage"}
             >
               <ShoppingCart className="size-6 text-brand" weight="duotone" />
-              <span className="text-xl font-bold tracking-tight">AMZN</span>
+              <span className="text-xl font-bold tracking-tight">Treido</span>
             </Link>
           </div>
 

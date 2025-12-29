@@ -28,7 +28,7 @@ interface AppBreadcrumbProps {
   className?: string
   /** Whether to show home icon as first item. Defaults to true */
   showHome?: boolean
-  /** Custom home label. Defaults to "Amazong" */
+  /** Custom home label. Defaults to "Treido" */
   homeLabel?: string
 }
 
@@ -46,7 +46,7 @@ export function AppBreadcrumb({
   items = [], 
   className,
   showHome = true,
-  homeLabel = "Amazong"
+  homeLabel = "Treido"
 }: AppBreadcrumbProps) {
   const safeItems = items || []
   

@@ -242,8 +242,6 @@ export function MobileProductPage(props: MobileProductPageProps) {
       <MobileStickyBarEnhanced
         product={cartProduct}
         price={Number(product.price ?? 0)}
-        currency="BGN"
-        isFreeShipping={Boolean(product.free_shipping)}
         isOutOfStock={stockStatus === "out_of_stock"}
       />
     </div>

@@ -104,7 +104,7 @@ async function clearAuthSession(page: Page) {
 async function clearCart(page: Page) {
   await page.addInitScript(() => {
     try {
-      localStorage.removeItem('amazong-cart')
+      localStorage.removeItem('treido-cart')
     } catch {
       // ignore
     }
@@ -157,7 +157,7 @@ test.describe('Complete Buyer Journey @buyer', () => {
     
     // Verify homepage loads (brand + landmarks)
     await expect(page.locator('header')).toBeVisible()
-    await expect(page.getByRole('link', { name: /^AMZN$/ })).toBeVisible()
+    await expect(page.getByRole('link', { name: /^Treido$/ })).toBeVisible()
     await expect(page.getByRole('main').first()).toBeVisible()
     
     // Check for category navigation

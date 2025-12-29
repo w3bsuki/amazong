@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: locale === 'bg' ? 'За нас' : 'About Us',
     description: locale === 'bg' 
-      ? 'Научете повече за AMZN - вашият доверен партньор за онлайн пазаруване в България.'
-      : 'Learn more about AMZN - your trusted partner for online shopping in Bulgaria.',
+      ? 'Научете повече за Treido - вашият доверен партньор за онлайн пазаруване в България.'
+      : 'Learn more about Treido - your trusted partner for online shopping in Bulgaria.',
   };
 }
 

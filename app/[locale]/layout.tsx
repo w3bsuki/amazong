@@ -29,8 +29,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   
   return {
     title: {
-      template: '%s | AMZN',
-      default: locale === 'bg' ? 'AMZN - Онлайн магазин' : 'AMZN - Online Shopping'
+      template: '%s | Treido',
+      default: locale === 'bg' ? 'Treido - Онлайн магазин' : 'Treido - Online Shopping'
     },
     description: locale === 'bg' 
       ? 'Открийте най-добрите продукти на достъпни цени. Бърза доставка в България.'
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       apple: '/apple-icon.png',
     },
     openGraph: {
-      title: locale === 'bg' ? 'AMZN - Онлайн магазин' : 'AMZN - Online Shopping',
+      title: locale === 'bg' ? 'Treido - Онлайн магазин' : 'Treido - Online Shopping',
       description: locale === 'bg' 
         ? 'Открийте най-добрите продукти на достъпни цени.'
         : 'Discover the best products at affordable prices.',
@@ -95,7 +95,7 @@ export default async function LocaleLayout({
               attribute="class"
               defaultTheme="light"
               enableSystem={false}
-              storageKey="amzn-theme"
+              storageKey="treido-theme"
               disableTransitionOnChange
             >
               {children}

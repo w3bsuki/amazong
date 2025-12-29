@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { X, Cookie } from "@phosphor-icons/react"
 
 const COOKIE_CONSENT_KEY = "cookie-consent"
-const COOKIE_CONSENT_EVENT = "amzn:cookie-consent"
+const COOKIE_CONSENT_EVENT = "treido:cookie-consent"
 
 type ConsentValue = "accepted" | "declined" | null
 

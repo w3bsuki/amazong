@@ -128,8 +128,8 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
     readDecision();
 
     const onConsent = () => readDecision();
-    window.addEventListener('amzn:cookie-consent', onConsent);
-    return () => window.removeEventListener('amzn:cookie-consent', onConsent);
+    window.addEventListener('treido:cookie-consent', onConsent);
+    return () => window.removeEventListener('treido:cookie-consent', onConsent);
   }, [isE2E]);
 
   const {

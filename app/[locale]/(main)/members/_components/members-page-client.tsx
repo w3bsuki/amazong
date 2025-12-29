@@ -169,7 +169,7 @@ export default function MembersPageClient({
                 { label: locale === "bg" ? "Начало" : "Home", href: "/" },
                 { label: locale === "bg" ? "Общност" : "Community" },
               ]}
-              homeLabel={locale === "bg" ? "Начало" : "Amazong"}
+              homeLabel={locale === "bg" ? "Начало" : "Treido"}
             />
           </div>
 

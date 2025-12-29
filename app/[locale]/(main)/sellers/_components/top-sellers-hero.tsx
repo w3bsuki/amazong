@@ -10,7 +10,7 @@ export default function TopSellersHero({ locale }: { locale: string }) {
               { label: locale === "bg" ? "Начало" : "Home", href: "/" },
               { label: locale === "bg" ? "Топ продавачи" : "Top Sellers" },
             ]}
-            homeLabel={locale === "bg" ? "Начало" : "Amazong"}
+            homeLabel={locale === "bg" ? "Начало" : "Treido"}
           />
         </div>
 

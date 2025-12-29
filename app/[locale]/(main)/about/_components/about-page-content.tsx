@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import {
   Users,
-  Globe,
   Heart,
   Shield,
   Truck,
@@ -12,8 +11,6 @@ import {
   Leaf,
   Headphones,
   CheckCircle,
-  Star,
-  TrendUp,
   Lightning,
   Package,
 } from "@phosphor-icons/react/dist/ssr"
@@ -74,27 +71,27 @@ export async function AboutPageContent() {
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-video bg-brand/10 flex items-center justify-center">
+              <div className="aspect-video bg-gradient-to-br from-brand/10 to-brand/5 flex items-center justify-center">
                 <div className="grid grid-cols-2 gap-4 p-8">
-                  <div className="bg-white p-6 text-center">
-                    <TrendUp className="size-8 text-brand mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-brand">15+</div>
-                    <div className="text-xs text-muted-foreground">{t("yearsExperience")}</div>
+                  <div className="bg-white p-6 text-center shadow-sm">
+                    <Lightning className="size-8 text-brand mx-auto mb-2" />
+                    <div className="text-lg font-bold text-brand">{t("statGrowing")}</div>
+                    <div className="text-xs text-muted-foreground">{t("statGrowingDesc")}</div>
                   </div>
-                  <div className="bg-white p-6 text-center">
-                    <Package className="size-8 text-brand mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-brand">50M+</div>
-                    <div className="text-xs text-muted-foreground">{t("productsDelivered")}</div>
+                  <div className="bg-white p-6 text-center shadow-sm">
+                    <Shield className="size-8 text-brand mx-auto mb-2" />
+                    <div className="text-lg font-bold text-brand">{t("statSecure")}</div>
+                    <div className="text-xs text-muted-foreground">{t("statSecureDesc")}</div>
                   </div>
-                  <div className="bg-white p-6 text-center">
+                  <div className="bg-white p-6 text-center shadow-sm">
                     <Users className="size-8 text-brand mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-brand">10M+</div>
-                    <div className="text-xs text-muted-foreground">{t("happyCustomers")}</div>
+                    <div className="text-lg font-bold text-brand">{t("statLocal")}</div>
+                    <div className="text-xs text-muted-foreground">{t("statLocalDesc")}</div>
                   </div>
-                  <div className="bg-white p-6 text-center">
-                    <Globe className="size-8 text-brand mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-brand">50+</div>
-                    <div className="text-xs text-muted-foreground">{t("countriesServed")}</div>
+                  <div className="bg-white p-6 text-center shadow-sm">
+                    <Heart className="size-8 text-brand mx-auto mb-2" />
+                    <div className="text-lg font-bold text-brand">{t("statPassion")}</div>
+                    <div className="text-xs text-muted-foreground">{t("statPassionDesc")}</div>
                   </div>
                 </div>
               </div>
@@ -186,33 +183,41 @@ export async function AboutPageContent() {
           </div>
         </section>
 
-        {/* Trust Indicators */}
+        {/* Our Promises Section */}
         <section className="py-12 md:py-16 border-t border-border">
           <div className="bg-muted p-8 md:p-12">
+            <h3 className="text-xl font-bold text-center mb-8">{t("ourPromises")}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div>
-                <div className="flex items-center justify-center gap-1 mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="size-5 fill-rating text-rating" />
-                  ))}
+                <div className="size-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Shield className="size-6 text-brand" />
                 </div>
-                <div className="text-2xl font-bold">4.8/5</div>
-                <div className="text-sm text-muted-foreground">{t("customerRating")}</div>
+                <div className="text-lg font-bold">100%</div>
+                <div className="text-sm text-muted-foreground">{t("promiseSecure")}</div>
               </div>
 
               <div>
-                <div className="text-3xl font-bold text-brand mb-2">98%</div>
-                <div className="text-sm text-muted-foreground">{t("satisfactionRate")}</div>
-              </div>
-
-              <div>
-                <div className="text-3xl font-bold text-brand mb-2">24/7</div>
+                <div className="size-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Headphones className="size-6 text-brand" />
+                </div>
+                <div className="text-lg font-bold">24/7</div>
                 <div className="text-sm text-muted-foreground">{t("customerSupport")}</div>
               </div>
 
               <div>
-                <div className="text-3xl font-bold text-brand mb-2">30</div>
+                <div className="size-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Package className="size-6 text-brand" />
+                </div>
+                <div className="text-lg font-bold">30</div>
                 <div className="text-sm text-muted-foreground">{t("dayReturns")}</div>
+              </div>
+
+              <div>
+                <div className="size-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle className="size-6 text-brand" />
+                </div>
+                <div className="text-lg font-bold">{t("promiseVerified")}</div>
+                <div className="text-sm text-muted-foreground">{t("promiseVerifiedDesc")}</div>
               </div>
             </div>
           </div>

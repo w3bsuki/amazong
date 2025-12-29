@@ -51,12 +51,12 @@ export function MobileUrgencyBanner({
   // Priority: Low stock > Sale timer > Viewers > Sold count
   if (showLowStock) {
     return (
-      <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-[var(--color-stock-urgent-bg)] to-[var(--color-stock-urgent-bg)]/80 rounded-xl mx-4 my-3 border border-[var(--color-stock-urgent-text)]/20 shadow-sm">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--color-stock-urgent-text)]/15 animate-pulse">
-          <AlertTriangle className="w-5 h-5 text-[var(--color-stock-urgent-text)]" />
+      <div className="flex items-center gap-2.5 px-3 py-2.5 bg-[var(--color-stock-urgent-bg)] rounded-lg mx-4 my-2 border border-[var(--color-stock-urgent-text)]/20">
+        <div className="flex items-center justify-center size-9 rounded-lg bg-[var(--color-stock-urgent-text)]/15 animate-pulse">
+          <AlertTriangle className="size-4 text-[var(--color-stock-urgent-text)]" />
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-bold text-[var(--color-stock-urgent-text)]">
+          <span className="text-sm font-semibold text-[var(--color-stock-urgent-text)]">
             {t.onlyLeft} {stockQuantity} {t.leftSuffix}
           </span>
           <span className="text-xs text-[var(--color-stock-urgent-text)]/70">
@@ -71,12 +71,12 @@ export function MobileUrgencyBanner({
     const timeRemaining = getTimeRemaining();
     if (timeRemaining) {
       return (
-        <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-[var(--color-urgency-bg)] to-[var(--color-urgency-bg)]/80 rounded-xl mx-4 my-3 border border-[var(--color-urgency-icon)]/20 shadow-sm">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--color-urgency-icon)]/15">
-            <Clock className="w-5 h-5 text-[var(--color-urgency-icon)]" />
+        <div className="flex items-center gap-2.5 px-3 py-2.5 bg-[var(--color-urgency-bg)] rounded-lg mx-4 my-2 border border-[var(--color-urgency-icon)]/20">
+          <div className="flex items-center justify-center size-9 rounded-lg bg-[var(--color-urgency-icon)]/15">
+            <Clock className="size-4 text-[var(--color-urgency-icon)]" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-bold text-[var(--color-urgency-text)]">
+            <span className="text-sm font-semibold text-[var(--color-urgency-text)]">
               {t.saleEnds} {timeRemaining}
             </span>
             <span className="text-xs text-[var(--color-urgency-text)]/70">
@@ -90,16 +90,16 @@ export function MobileUrgencyBanner({
 
   if (showViewers) {
     return (
-      <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-[var(--color-urgency-bg)] to-[var(--color-urgency-bg)]/80 rounded-xl mx-4 my-3 border border-[var(--color-live-dot)]/20 shadow-sm">
-        <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-[var(--color-live-dot)]/15">
-          <Users className="w-5 h-5 text-[var(--color-live-dot)]" />
+      <div className="flex items-center gap-2.5 px-3 py-2.5 bg-[var(--color-urgency-bg)] rounded-lg mx-4 my-2 border border-[var(--color-live-dot)]/20">
+        <div className="relative flex items-center justify-center size-9 rounded-lg bg-[var(--color-live-dot)]/15">
+          <Users className="size-4 text-[var(--color-live-dot)]" />
           {/* Pulsing dot */}
-          <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-[var(--color-live-dot)] rounded-full animate-ping" />
-          <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-[var(--color-live-dot)] rounded-full" />
+          <span className="absolute -top-0.5 -right-0.5 size-2.5 bg-[var(--color-live-dot)] rounded-full animate-ping" />
+          <span className="absolute -top-0.5 -right-0.5 size-2.5 bg-[var(--color-live-dot)] rounded-full" />
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-bold text-[var(--color-urgency-text)]">
-            <span className="text-[var(--color-live-dot)] font-extrabold">{viewersCount}</span> {t.viewing}
+          <span className="text-sm font-semibold text-[var(--color-urgency-text)]">
+            <span className="text-[var(--color-live-dot)] font-bold">{viewersCount}</span> {t.viewing}
           </span>
           <span className="text-xs text-[var(--color-urgency-text)]/70">
             {locale === "bg" ? "Популярен продукт" : "Popular item"}
@@ -111,13 +111,13 @@ export function MobileUrgencyBanner({
 
   if (showSoldCount) {
     return (
-      <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-[var(--color-urgency-bg)] to-[var(--color-urgency-bg)]/80 rounded-xl mx-4 my-3 border border-[var(--color-urgency-icon)]/20 shadow-sm">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--color-urgency-icon)]/15">
-          <Flame className="w-5 h-5 text-[var(--color-urgency-icon)]" />
+      <div className="flex items-center gap-2.5 px-3 py-2.5 bg-[var(--color-urgency-bg)] rounded-lg mx-4 my-2 border border-[var(--color-urgency-icon)]/20">
+        <div className="flex items-center justify-center size-9 rounded-lg bg-[var(--color-urgency-icon)]/15">
+          <Flame className="size-4 text-[var(--color-urgency-icon)]" />
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-bold text-[var(--color-urgency-text)]">
-            <span className="text-[var(--color-urgency-icon)] font-extrabold">{soldCount}+</span> {t.soldRecently}
+          <span className="text-sm font-semibold text-[var(--color-urgency-text)]">
+            <span className="text-[var(--color-urgency-icon)] font-bold">{soldCount}+</span> {t.soldRecently}
           </span>
           <span className="text-xs text-[var(--color-urgency-text)]/70">
             {locale === "bg" ? "Горещ продукт" : "Hot item"}

@@ -119,7 +119,7 @@ export const imageSizes = {
 
 /**
  * Placeholder SVG for missing images
- * Returns a branded placeholder with the AMZN logo style
+ * Returns a branded placeholder with the Treido logo style
  */
 export const placeholderSvg = (): string => {
   const svg = `

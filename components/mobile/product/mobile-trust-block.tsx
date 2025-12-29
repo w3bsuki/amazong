@@ -60,20 +60,20 @@ export function MobileTrustBlock({
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-2 py-4 px-3 bg-gradient-to-b from-muted/50 to-muted/20 rounded-xl mx-4 my-3 border border-border/40">
+    <div className="grid grid-cols-4 gap-2 py-3 px-3 bg-muted/30 rounded-lg mx-4 my-2 border border-border/50">
       {trustItems.map((item, index) => (
         <div
           key={index}
-          className="flex flex-col items-center text-center gap-1.5"
+          className="flex flex-col items-center text-center gap-1"
         >
-          <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", item.bgColor)}>
-            <item.icon className={cn("w-5 h-5", item.color)} />
+          <div className={cn("size-9 rounded-lg flex items-center justify-center", item.bgColor)}>
+            <item.icon className={cn("size-4", item.color)} />
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold text-foreground leading-tight">
+            <span className="text-[10px] font-semibold text-foreground leading-tight">
               {item.label}
             </span>
-            <span className="text-[9px] text-muted-foreground leading-tight font-medium">
+            <span className="text-[9px] text-muted-foreground leading-tight">
               {item.desc}
             </span>
           </div>

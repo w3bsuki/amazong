@@ -167,7 +167,7 @@ export function buildProductPageViewModel(args: {
     } satisfies SellerProductsGridItem;
   });
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://amazong.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://treido.eu";
 
   // IMPORTANT: Keep key order/structure identical to the original page.tsx JSON-LD.
   const productAttributes = product.attributes as Record<string, unknown> | null | undefined;
@@ -262,7 +262,7 @@ export function buildProductPageMetadata(args: {
 
   const displayName = seller?.display_name || seller?.username || username;
   const canonicalUrl = `/${locale}/${username}/${productSlug}`;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://amazong.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://treido.eu";
   const fullCanonicalUrl = `${siteUrl}${canonicalUrl}`;
 
   const description = product.meta_description
@@ -287,7 +287,7 @@ export function buildProductPageMetadata(args: {
       title: product.title,
       type: "website",
       url: fullCanonicalUrl,
-      siteName: "Amazong",
+      siteName: "Treido",
       description,
       images: ogImage
         ? [{

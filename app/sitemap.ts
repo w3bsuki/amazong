@@ -6,7 +6,7 @@ import { createStaticClient } from '@/lib/supabase/server'
 // Generates sitemap.xml with all products, categories, and profiles
 // =============================================================================
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://amazong.com'
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://treido.eu'
 const LOCALES = ['en', 'bg']
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

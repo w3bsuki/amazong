@@ -65,15 +65,15 @@ export function getProductUrlWithLocale(product: ProductUrlParams, locale: strin
  * 
  * @param product - Product data
  * @param locale - Locale code
- * @param baseUrl - Base URL (defaults to NEXT_PUBLIC_SITE_URL or 'https://amazong.com')
- * @returns Absolute URL (e.g., 'https://amazong.com/en/john-store/blue-widget')
+ * @param baseUrl - Base URL (defaults to NEXT_PUBLIC_SITE_URL or 'https://treido.eu')
+ * @returns Absolute URL (e.g., 'https://treido.eu/en/john-store/blue-widget')
  */
 export function getAbsoluteProductUrl(
   product: ProductUrlParams, 
   locale: string,
   baseUrl?: string
 ): string {
-  const base = baseUrl || process.env.NEXT_PUBLIC_SITE_URL || 'https://amazong.com'
+  const base = baseUrl || process.env.NEXT_PUBLIC_SITE_URL || 'https://treido.eu'
   return `${base}${getProductUrlWithLocale(product, locale)}`
 }
 

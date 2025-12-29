@@ -37,36 +37,36 @@ export function MobilePriceBlock({
   };
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-0.5">
       {/* Price Row */}
-      <div className="flex items-baseline gap-2.5 flex-wrap">
-        {/* Sale Price - Extra Large & Bold with brand color accent */}
-        <span className="text-[32px] font-extrabold tracking-tighter text-foreground">
+      <div className="flex items-baseline gap-2 flex-wrap">
+        {/* Sale Price */}
+        <span className="text-2xl font-bold tracking-tight text-foreground">
           {formatPrice(salePrice)}
         </span>
 
         {/* Original Price - Strikethrough */}
         {hasDiscount && (
-          <span className="text-base text-muted-foreground line-through decoration-muted-foreground/60 decoration-2">
+          <span className="text-sm text-muted-foreground line-through">
             {formatPrice(regularPrice)}
           </span>
         )}
 
-        {/* Discount Badge - More prominent */}
+        {/* Discount Badge */}
         {hasDiscount && discountPercent > 0 && (
           <Badge 
-            className="bg-[var(--color-discount-badge-bg)] text-[var(--color-discount-badge-text)] text-xs font-extrabold px-2 py-0.5 h-6 rounded-md border-none hover:bg-[var(--color-discount-badge-bg)] animate-pulse"
+            className="bg-[var(--color-discount-badge-bg)] text-[var(--color-discount-badge-text)] text-xs font-semibold px-1.5 py-0.5 h-5 rounded border-none hover:bg-[var(--color-discount-badge-bg)]"
           >
             -{discountPercent}%
           </Badge>
         )}
       </div>
 
-      {/* Savings Text - More eye-catching */}
+      {/* Savings Text */}
       {showSavings && hasDiscount && savingsAmount > 0 && (
-        <div className="flex items-center gap-1.5 mt-0.5">
-          <Sparkles className="w-3.5 h-3.5 text-[var(--color-price-savings)]" />
-          <span className="text-sm font-semibold text-[var(--color-price-savings)]">
+        <div className="flex items-center gap-1">
+          <Sparkles className="size-3.5 text-[var(--color-price-savings)]" />
+          <span className="text-xs font-medium text-[var(--color-price-savings)]">
             {t.youSave} {formatPrice(savingsAmount)}
           </span>
         </div>

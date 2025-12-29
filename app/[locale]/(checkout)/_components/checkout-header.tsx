@@ -43,7 +43,7 @@ export function CheckoutHeader({ currentStep: propStep }: CheckoutHeaderProps) {
           >
             <ShoppingCart className="size-6 text-brand" weight="duotone" />
             <div className="flex items-baseline gap-1.5">
-              <span className="text-xl font-bold tracking-tight text-foreground">AMZN</span>
+              <span className="text-xl font-bold tracking-tight text-foreground">Treido</span>
               <span className="text-sm font-medium text-muted-foreground hidden sm:inline">
                 {t("checkout")}
               </span>

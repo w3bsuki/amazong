@@ -9,8 +9,7 @@ import { useCart } from "@/components/providers/cart-context"
 
 export function MobileProductHeader() {
   const locale = useLocale()
-  const { items } = useCart()
-  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  const { totalItems } = useCart()
   
   const labels = {
     back: locale === "bg" ? "Назад" : "Go back",
@@ -38,56 +37,56 @@ export function MobileProductHeader() {
       {/* Back button */}
       <Link 
         href="/" 
-        className="flex items-center justify-center w-11 h-11 rounded-full text-foreground hover:bg-muted active:bg-muted/80 transition-colors -ml-1" 
+        className="flex items-center justify-center size-10 rounded-full text-foreground hover:bg-accent active:bg-accent/80 transition-colors" 
         aria-label={labels.back} 
         title={labels.back}
       >
-        <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+        <ArrowLeft className="size-5" aria-hidden="true" />
       </Link>
       
       {/* Action buttons */}
-      <div className="flex items-center gap-0.5">
+      <div className="flex items-center">
         <Button
           variant="ghost"
-          size="icon"
-          className="w-11 h-11 rounded-full text-foreground hover:bg-muted active:bg-muted/80"
+          size="icon-touch"
+          className="rounded-full"
           aria-label={labels.search}
           title={labels.search}
         >
-          <Search className="h-5 w-5" aria-hidden="true" />
+          <Search className="size-5" aria-hidden="true" />
         </Button>
         <Button
           variant="ghost"
-          size="icon"
-          className="w-11 h-11 rounded-full text-foreground hover:bg-muted active:bg-muted/80"
+          size="icon-touch"
+          className="rounded-full"
           aria-label={labels.share}
           title={labels.share}
           onClick={handleShare}
         >
-          <Share2 className="h-5 w-5" aria-hidden="true" />
+          <Share2 className="size-5" aria-hidden="true" />
         </Button>
         <Button
           variant="ghost"
-          size="icon"
-          className="w-11 h-11 rounded-full text-foreground hover:bg-muted active:bg-muted/80"
+          size="icon-touch"
+          className="rounded-full"
           aria-label={labels.wishlist}
           title={labels.wishlist}
         >
-          <Heart className="h-5 w-5" aria-hidden="true" />
+          <Heart className="size-5" aria-hidden="true" />
         </Button>
         <Link
           href="/cart"
-          className="relative flex items-center justify-center w-11 h-11 rounded-full text-foreground hover:bg-muted active:bg-muted/80 transition-colors"
+          className="relative flex items-center justify-center size-10 rounded-full text-foreground hover:bg-accent active:bg-accent/80 transition-colors"
           aria-label={labels.cart}
           title={labels.cart}
         >
-          <ShoppingCart className="h-5 w-5" aria-hidden="true" />
-          {cartCount > 0 && (
+          <ShoppingCart className="size-5" aria-hidden="true" />
+          {totalItems > 0 && (
             <Badge 
               aria-hidden="true" 
-              className="absolute -top-0.5 -right-0.5 bg-[var(--color-cart-badge)] text-white text-[10px] font-bold px-1.5 min-w-[1.25rem] h-5 flex items-center justify-center rounded-full border-2 border-background shadow-sm"
+              className="absolute -top-0.5 -right-0.5 bg-[var(--color-cart-badge)] text-white text-[10px] font-bold px-1.5 min-w-5 h-5 flex items-center justify-center rounded-full border-2 border-background"
             >
-              {cartCount > 99 ? "99+" : cartCount}
+              {totalItems > 99 ? "99+" : totalItems}
             </Badge>
           )}
         </Link>

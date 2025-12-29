@@ -100,7 +100,7 @@ export function LoginForm({
         <div className="p-6">
           <div className="flex flex-col items-center mb-6">
             <Link href="/" className="mb-4 hover:opacity-80 transition-opacity">
-              <Image src="/icon.svg" width={40} height={40} alt="AMZN" priority />
+              <Image src="/icon.svg" width={40} height={40} alt="Treido" priority />
             </Link>
             <h1 className="text-xl font-semibold text-foreground">{t("signIn")}</h1>
             <p className="text-sm text-muted-foreground mt-1 text-center">{t("signInDescription")}</p>

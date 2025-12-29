@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: locale === 'bg' ? 'Условия за ползване' : 'Terms of Service',
     description: locale === 'bg' 
-      ? 'Условия за ползване на услугите на AMZN.'
-      : 'Terms of Service for using AMZN services.',
+      ? 'Условия за ползване на услугите на Treido.'
+      : 'Terms of Service for using Treido services.',
   }
 }
 

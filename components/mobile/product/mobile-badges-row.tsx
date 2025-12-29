@@ -61,9 +61,9 @@ export function MobileBadgesRow({
       <Badge
         key="sale"
         variant="secondary"
-        className="bg-[var(--color-deal)] text-white text-[11px] font-black px-2.5 py-0 h-7 rounded-md border-transparent gap-1.5 shrink-0 uppercase tracking-wide animate-pulse"
+        className="bg-[var(--color-deal)] text-white text-[10px] font-semibold px-2 h-6 rounded border-transparent gap-1 shrink-0"
       >
-        <Flame className="w-3.5 h-3.5" />
+        <Flame className="size-3" />
         {t.onSale}
       </Badge>
     );
@@ -75,9 +75,9 @@ export function MobileBadgesRow({
       <Badge
         key="shipping"
         variant="secondary"
-        className="bg-[var(--color-shipping-free)] text-white text-[11px] font-bold px-2.5 py-0 h-7 rounded-md border-transparent gap-1.5 shrink-0 uppercase tracking-wide"
+        className="bg-[var(--color-shipping-free)] text-white text-[10px] font-semibold px-2 h-6 rounded border-transparent gap-1 shrink-0"
       >
-        <Truck className="w-3.5 h-3.5" />
+        <Truck className="size-3" />
         {t.freeShipping}
       </Badge>
     );
@@ -89,9 +89,9 @@ export function MobileBadgesRow({
       <Badge
         key="condition"
         variant="secondary"
-        className="bg-muted text-foreground text-[11px] font-semibold px-2.5 py-0 h-7 rounded-md border border-border/60 hover:bg-muted gap-1.5 shrink-0"
+        className="bg-muted text-foreground text-[10px] font-medium px-2 h-6 rounded border border-border/50 hover:bg-muted gap-1 shrink-0"
       >
-        <Package className="w-3.5 h-3.5" />
+        <Package className="size-3" />
         {normalizeCondition(condition)}
       </Badge>
     );
@@ -103,9 +103,9 @@ export function MobileBadgesRow({
       <Badge
         key="express"
         variant="secondary"
-        className="bg-[var(--color-shipping-express)] text-white text-[11px] font-bold px-2.5 py-0 h-7 rounded-md border-transparent gap-1.5 shrink-0 uppercase tracking-wide"
+        className="bg-[var(--color-shipping-express)] text-white text-[10px] font-semibold px-2 h-6 rounded border-transparent gap-1 shrink-0"
       >
-        <Zap className="w-3.5 h-3.5" />
+        <Zap className="size-3" />
         {t.expressDelivery}
       </Badge>
     );
@@ -117,9 +117,9 @@ export function MobileBadgesRow({
       <Badge
         key="stock"
         variant="secondary"
-        className="bg-[var(--color-stock-out)] text-white text-[11px] font-bold px-2.5 py-0 h-7 rounded-md border-transparent gap-1.5 shrink-0"
+        className="bg-[var(--color-stock-out)] text-white text-[10px] font-semibold px-2 h-6 rounded border-transparent gap-1 shrink-0"
       >
-        <AlertCircle className="w-3.5 h-3.5" />
+        <AlertCircle className="size-3" />
         {t.outOfStock}
       </Badge>
     );
@@ -128,9 +128,9 @@ export function MobileBadgesRow({
       <Badge
         key="stock"
         variant="secondary"
-        className="bg-[var(--color-stock-urgent-bg)] text-[var(--color-stock-urgent-text)] text-[11px] font-bold px-2.5 py-0 h-7 rounded-md border border-[var(--color-stock-urgent-text)]/30 gap-1.5 shrink-0 animate-pulse"
+        className="bg-[var(--color-stock-urgent-bg)] text-[var(--color-stock-urgent-text)] text-[10px] font-medium px-2 h-6 rounded border border-[var(--color-stock-urgent-text)]/30 gap-1 shrink-0"
       >
-        <AlertCircle className="w-3.5 h-3.5" />
+        <AlertCircle className="size-3" />
         {t.lowStock} {stockQuantity} {t.left}
       </Badge>
     );
@@ -139,9 +139,9 @@ export function MobileBadgesRow({
       <Badge
         key="stock"
         variant="secondary"
-        className="bg-[var(--color-stock-available)]/15 text-[var(--color-stock-available)] text-[11px] font-semibold px-2.5 py-0 h-7 rounded-md border border-[var(--color-stock-available)]/30 gap-1.5 shrink-0"
+        className="bg-[var(--color-stock-available)]/15 text-[var(--color-stock-available)] text-[10px] font-medium px-2 h-6 rounded border border-[var(--color-stock-available)]/30 gap-1 shrink-0"
       >
-        <CheckCircle2 className="w-3.5 h-3.5" />
+        <CheckCircle2 className="size-3" />
         {t.inStock}
       </Badge>
     );
@@ -150,7 +150,7 @@ export function MobileBadgesRow({
   if (badges.length === 0) return null;
 
   return (
-    <div className="flex gap-2 overflow-x-auto scrollbar-hide scroll-pl-4 -mx-4 px-4 py-2 snap-x snap-mandatory">
+    <div className="flex gap-1.5 overflow-x-auto scrollbar-hide scroll-pl-4 -mx-4 px-4 py-2 snap-x">
       {badges.map((badge, i) => (
         <div key={i} className="snap-start">
           {badge}

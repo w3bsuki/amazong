@@ -106,7 +106,7 @@ export function SiteHeader({ user, hideSubheader = false, variant = "default" }:
             "flex items-center shrink-0 min-h-touch px-0",
             isProductPage ? "ml-1" : "ml-0"
           )}>
-            <span className="text-xl font-bold tracking-tight text-header-text">AMZN</span>
+            <span className="text-xl font-bold tracking-tight text-header-text">Treido</span>
           </Link>
           <div className="flex-1" />
           <div className="flex items-center gap-0.5">
@@ -155,7 +155,7 @@ export function SiteHeader({ user, hideSubheader = false, variant = "default" }:
           {/* Left Section - Logo + Location */}
           <div className="flex items-center gap-1">
             <Link href="/" prefetch={true} className="flex items-center shrink-0 outline-none">
-              <span className="text-xl font-bold tracking-tight text-header-text">AMZN</span>
+              <span className="text-xl font-bold tracking-tight text-header-text">Treido</span>
             </Link>
             <div className="hidden lg:block">
               <LocaleDeliveryDropdown

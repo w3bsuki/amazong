@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: locale === 'bg' ? 'Свържете се с нас' : 'Contact Us',
     description: locale === 'bg' 
-      ? 'Свържете се с екипа на AMZN. Ние сме тук да ви помогнем 24/7.'
-      : 'Get in touch with the AMZN team. We are here to help you 24/7.',
+      ? 'Свържете се с екипа на Treido. Ние сме тук да ви помогнем 24/7.'
+      : 'Get in touch with the Treido team. We are here to help you 24/7.',
   };
 }
 
