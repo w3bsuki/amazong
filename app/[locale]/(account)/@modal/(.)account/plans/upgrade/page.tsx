@@ -6,6 +6,9 @@ import { UpgradeContent } from "@/app/[locale]/(account)/account/plans/upgrade/u
 import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 
+// Force dynamic rendering - this page requires auth and should not be statically generated
+export const dynamic = 'force-dynamic'
+
 async function UpgradeModalContent() {
   const locale = await getLocale()
   const supabase = await createClient()
@@ -44,20 +47,33 @@ async function UpgradeModalContent() {
   }))
 
   return (
-    <UpgradeContent 
-      locale={locale}
-      plans={transformedPlans}
-      currentTier={currentTier}
-      seller={profile}
-    />
+    <Modal 
+      title={locale === 'bg' ? 'Надгради плана си' : 'Upgrade Your Plan'}
+      description={locale === 'bg' 
+        ? 'Изберете план с по-ниски комисиони и повече функции'
+        : 'Choose a plan with lower commissions and more features'
+      }
+    >
+      <UpgradeContent 
+        locale={locale}
+        plans={transformedPlans}
+        currentTier={currentTier}
+        seller={profile}
+      />
+    </Modal>
   )
 }
 
 function UpgradeLoadingFallback() {
   return (
-    <div className="flex items-center justify-center py-12">
-      <Loader2 className="size-8 animate-spin text-muted-foreground" />
-    </div>
+    <Modal 
+      title="Upgrade Your Plan"
+      description="Choose a plan with lower commissions and more features"
+    >
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    </Modal>
   )
 }
 
@@ -67,20 +83,10 @@ function UpgradeLoadingFallback() {
  * This page is shown as a modal overlay when navigating from within the app.
  * When accessed directly (or on refresh), the user sees the full page version.
  */
-export default async function InterceptedUpgradePage() {
-  const locale = await getLocale()
-
+export default function InterceptedUpgradePage() {
   return (
-    <Modal 
-      title={locale === 'bg' ? 'Надгради плана си' : 'Upgrade Your Plan'}
-      description={locale === 'bg' 
-        ? 'Изберете план с по-ниски комисиони и повече функции'
-        : 'Choose a plan with lower commissions and more features'
-      }
-    >
-      <Suspense fallback={<UpgradeLoadingFallback />}>
-        <UpgradeModalContent />
-      </Suspense>
-    </Modal>
+    <Suspense fallback={<UpgradeLoadingFallback />}>
+      <UpgradeModalContent />
+    </Suspense>
   )
 }
