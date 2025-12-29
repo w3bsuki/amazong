@@ -1,6 +1,5 @@
 import { cookies } from "next/headers"
-import { type CarouselProduct } from "@/components/shared/product/product-carousel-section"
-import { getProductsByCategorySlug, toUI, type Product, type ShippingZone } from "@/lib/data/products"
+import { getProductsByCategorySlug, toCarouselProducts, type ShippingZone } from "@/lib/data/products"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { MEGA_MENU_CONFIG } from "@/config/mega-menu-config"
 import { getChildCategories, getCategoryBySlug } from "@/lib/data/categories"
@@ -49,29 +48,12 @@ export async function CategoryCarousel({ locale, categorySlug, title, variant = 
     ]
   }
 
-  const transformForUI = (items: Product[]): CarouselProduct[] =>
-    items.map((p) => {
-      const ui = toUI(p)
-      return {
-        id: ui.id,
-        title: ui.title,
-        price: ui.price,
-        listPrice: ui.listPrice,
-        image: ui.image,
-        rating: ui.rating,
-        reviews: ui.reviews,
-        slug: ui.slug,
-        storeSlug: ui.storeSlug,
-        location: ui.location,
-      }
-    })
-
   return (
     <CategoryCarouselClient
       locale={locale}
       categorySlug={categorySlug}
       title={title}
-      initialProducts={transformForUI(products)}
+      initialProducts={toCarouselProducts(products)}
       tabs={tabs}
       icon={getCategoryIcon(categorySlug, { size: 20, weight: "duotone" })}
       variant={variant}

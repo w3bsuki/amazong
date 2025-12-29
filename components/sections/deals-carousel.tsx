@@ -1,5 +1,5 @@
-import { getGlobalDeals, toUI, type Product, type ShippingZone } from '@/lib/data/products'
-import { ProductCarouselSection, type CarouselProduct } from '@/components/shared/product/product-carousel-section'
+import { getGlobalDeals, toCarouselProducts, type ShippingZone } from '@/lib/data/products'
+import { ProductCarouselSection } from '@/components/shared/product/product-carousel-section'
 import { getLocale } from 'next-intl/server'
 import { cookies } from 'next/headers'
 import { Tag } from '@phosphor-icons/react/dist/ssr'
@@ -15,27 +15,10 @@ export async function DealsCarousel() {
 
   const products = await getGlobalDeals(18, userZone)
 
-  const transformForUI = (products: Product[]): CarouselProduct[] =>
-    products.map((p) => {
-      const ui = toUI(p)
-      return {
-        id: ui.id,
-        title: ui.title,
-        price: ui.price,
-        listPrice: ui.listPrice,
-        image: ui.image,
-        rating: ui.rating,
-        reviews: ui.reviews,
-        slug: ui.slug,
-        storeSlug: ui.storeSlug,
-        location: ui.location,
-      }
-    })
-
   return (
     <ProductCarouselSection
       title={locale === 'bg' ? 'Оферти на деня' : 'Deals of the Day'}
-      products={transformForUI(products)}
+      products={toCarouselProducts(products)}
       ctaText={locale === 'bg' ? 'Виж всички' : 'See all'}
       ctaHref="/todays-deals"
       emptyMessage={locale === 'bg' ? 'Няма налични оферти' : 'No deals available'}

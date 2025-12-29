@@ -460,6 +460,38 @@ export function toUI(p: Product): UIProduct {
   }
 }
 
+/** Transform Product array to CarouselProduct format for carousel sections */
+export function toCarouselProducts(products: Product[], options?: { isBoosted?: boolean }): {
+  id: string
+  title: string
+  price: number
+  listPrice?: number
+  isBoosted?: boolean
+  image: string
+  rating?: number
+  reviews?: number
+  slug?: string | null
+  storeSlug?: string | null
+  location?: string
+}[] {
+  return products.map((p) => {
+    const ui = toUI(p)
+    return {
+      id: ui.id,
+      title: ui.title,
+      price: ui.price,
+      listPrice: ui.listPrice,
+      isBoosted: options?.isBoosted ?? ui.isBoosted,
+      image: ui.image,
+      rating: ui.rating,
+      reviews: ui.reviews,
+      slug: ui.slug,
+      storeSlug: ui.storeSlug,
+      location: ui.location,
+    }
+  })
+}
+
 // =============================================================================
 // Legacy Exports - For backward compatibility (remove after migration)
 // =============================================================================
@@ -469,9 +501,3 @@ export const getNewestProducts = (limit = 36, zone?: ShippingRegion) => getProdu
 export const getPromoProducts = (limit = 36, zone?: ShippingRegion) => getProducts('promo', limit, zone)
 export const getBestSellers = (limit = 36, zone?: ShippingRegion) => getProducts('bestsellers', limit, zone)
 export const getFeaturedProducts = (limit = 36, zone?: ShippingRegion) => getProducts('featured', limit, zone)
-export const getTopRatedProducts = (limit = 36, zone?: ShippingRegion) => getProducts('bestsellers', limit, zone)
-
-// Alias for backward compatibility
-export const filterByShippingZone = filterByZone
-export type TransformedProduct = UIProduct
-export type Deal = UIProduct

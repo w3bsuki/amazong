@@ -1,5 +1,5 @@
-import { getFeaturedProducts, toUI, type Product, type ShippingZone } from '@/lib/data/products'
-import { ProductCarouselSection, type CarouselProduct } from '@/components/shared/product/product-carousel-section'
+import { getFeaturedProducts, toCarouselProducts, type ShippingZone } from '@/lib/data/products'
+import { ProductCarouselSection } from '@/components/shared/product/product-carousel-section'
 import { getLocale } from 'next-intl/server'
 import { cookies } from 'next/headers'
 import { Sparkle } from '@phosphor-icons/react/dist/ssr'
@@ -16,28 +16,10 @@ export async function PromotedCarousel() {
   // Featured = boosted products
   const products = await getFeaturedProducts(18, userZone)
 
-  const transformForUI = (products: Product[]): CarouselProduct[] =>
-    products.map((p) => {
-      const ui = toUI(p)
-      return {
-        id: ui.id,
-        title: ui.title,
-        price: ui.price,
-        listPrice: ui.listPrice,
-        isBoosted: true,
-        image: ui.image,
-        rating: ui.rating,
-        reviews: ui.reviews,
-        slug: ui.slug,
-        storeSlug: ui.storeSlug,
-        location: ui.location,
-      }
-    })
-
   return (
     <ProductCarouselSection
       title={locale === 'bg' ? 'Промотирани' : 'Promoted'}
-      products={transformForUI(products)}
+      products={toCarouselProducts(products, { isBoosted: true })}
       ctaText={locale === 'bg' ? 'Виж всички' : 'See all'}
       ctaHref="/search?promoted=true"
       emptyMessage={locale === 'bg' ? 'Няма промотирани обяви' : 'No promoted listings'}

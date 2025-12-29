@@ -1,5 +1,5 @@
-import { getNewestProducts, toUI, type Product, type ShippingZone } from '@/lib/data/products'
-import { ProductCarouselSection, type CarouselProduct } from '@/components/shared/product/product-carousel-section'
+import { getNewestProducts, toCarouselProducts, type ShippingZone } from '@/lib/data/products'
+import { ProductCarouselSection } from '@/components/shared/product/product-carousel-section'
 import { getLocale } from 'next-intl/server'
 import { cookies } from 'next/headers'
 import { TrendUp } from '@phosphor-icons/react/dist/ssr'
@@ -15,27 +15,10 @@ export async function NewestCarousel() {
 
   const products = await getNewestProducts(18, userZone)
 
-  const transformForUI = (products: Product[]): CarouselProduct[] =>
-    products.map((p) => {
-      const ui = toUI(p)
-      return {
-        id: ui.id,
-        title: ui.title,
-        price: ui.price,
-        listPrice: ui.listPrice,
-        image: ui.image,
-        rating: ui.rating,
-        reviews: ui.reviews,
-        slug: ui.slug,
-        storeSlug: ui.storeSlug,
-        location: ui.location,
-      }
-    })
-
   return (
     <ProductCarouselSection
       title={locale === 'bg' ? 'Най-нови обяви' : 'Newest Listings'}
-      products={transformForUI(products)}
+      products={toCarouselProducts(products)}
       ctaText={locale === 'bg' ? 'Виж всички' : 'See all'}
       ctaHref="/search?sort=newest"
       emptyMessage={locale === 'bg' ? 'Няма нови обяви' : 'No new listings'}
