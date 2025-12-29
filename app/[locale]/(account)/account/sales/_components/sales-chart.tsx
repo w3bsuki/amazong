@@ -11,7 +11,6 @@ import {
 interface SalesChartProps {
   data: { date: string; revenue: number; orders: number }[]
   locale: string
-  formatCurrency: (value: number) => string
 }
 
 const chartConfig = {
@@ -25,13 +24,20 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function SalesChart({ data, locale, formatCurrency }: SalesChartProps) {
+export function SalesChart({ data, locale }: SalesChartProps) {
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-[300px] text-muted-foreground">
         {locale === "bg" ? "Няма данни за показване" : "No data to display"}
       </div>
     )
+  }
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "EUR",
+    }).format(value)
   }
 
   // Format dates for display

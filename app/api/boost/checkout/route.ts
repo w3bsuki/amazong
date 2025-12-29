@@ -136,7 +136,7 @@ export async function POST(req: Request) {
 export async function GET() {
   return NextResponse.json({
     options: Object.entries(BOOST_PRICING).map(([days, { price, label }]) => ({
-      days: parseInt(days),
+      days: Number.parseInt(days),
       price,
       label,
       currency: 'BGN'

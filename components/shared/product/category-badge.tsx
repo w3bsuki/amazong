@@ -1,6 +1,6 @@
 import { Tag } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "../../ui/badge"
 import { cn } from "@/lib/utils"
 
 type Category = {

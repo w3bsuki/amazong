@@ -325,7 +325,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
 
             {/* Add/Edit Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="max-w-lg">
+                <DialogContent className="max-w-lg max-h-(--dialog-max-h) overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>
                             {editingAddress 

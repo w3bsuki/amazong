@@ -372,7 +372,7 @@ export function PlansGridSkeleton({ count = 3, variant = "full" }: { count?: num
         <div
           key={i}
           className={cn(
-            "shrink-0 snap-center md:w-auto md:shrink md:snap-none rounded-xl border bg-card p-4 animate-pulse",
+            "shrink-0 snap-center md:w-auto md:shrink md:snap-none rounded-xl border bg-card p-4",
             variant === "compact" ? "w-[calc(100vw-4rem)] max-w-[280px]" : "w-[calc(100vw-3rem)]"
           )}
         >

@@ -27,6 +27,8 @@ let categoriesCallbacks: Array<(cats: Category[]) => void> = []
 let cacheTimestamp: number = 0
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes TTL
 
+let hasLoggedCategoriesFetchError = false
+
 interface UseCategoriesCacheOptions {
   /** Fetch depth for children (1 = L0->L1, 2 = L0->L1->L2) */
   depth?: number
@@ -90,33 +92,61 @@ export function useCategoriesCache(
     setIsLoading(true)
     setError(null)
 
-    try {
-      const url = depth > 1 
-        ? `/api/categories?children=true&depth=${depth}`
-        : "/api/categories?children=true"
-      
-      const response = await fetch(url)
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch categories: ${response.status}`)
+    const url = depth > 1
+      ? `/api/categories?children=true&depth=${depth}`
+      : "/api/categories?children=true"
+
+    const attemptFetch = async (attempt: number): Promise<void> => {
+      try {
+        const response = await fetch(url)
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch categories: ${response.status}`)
+        }
+
+        const data = await response.json()
+        const cats = data.categories || []
+
+        // Update cache
+        categoriesCache = cats
+        cacheTimestamp = Date.now()
+
+        setCategories(cats)
+
+        // Notify waiting callbacks
+        categoriesCallbacks.forEach((cb) => cb(cats))
+        categoriesCallbacks = []
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error("Unknown error")
+
+        // If the user navigated away mid-request, don't treat it as a real error.
+        if (error.name === "AbortError") {
+          return
+        }
+
+        // Retry once for transient network failures.
+        const isNetworkFailure =
+          error.name === "TypeError" ||
+          /failed to fetch/i.test(error.message)
+
+        if (isNetworkFailure && attempt < 1) {
+          await new Promise((resolve) => setTimeout(resolve, 300))
+          return attemptFetch(attempt + 1)
+        }
+
+        setError(error)
+
+        // Avoid polluting the console with noisy errors for transient failures.
+        // Keep a single breadcrumb in dev.
+        if (!hasLoggedCategoriesFetchError && process.env.NODE_ENV !== "production") {
+          hasLoggedCategoriesFetchError = true
+          console.warn("[useCategoriesCache] Failed to fetch categories:", error)
+        }
       }
-      
-      const data = await response.json()
-      const cats = data.categories || []
-      
-      // Update cache
-      categoriesCache = cats
-      cacheTimestamp = Date.now()
-      
-      setCategories(cats)
-      
-      // Notify waiting callbacks
-      categoriesCallbacks.forEach(cb => cb(cats))
-      categoriesCallbacks = []
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error("Unknown error")
-      setError(error)
-      console.error("[useCategoriesCache] Failed to fetch categories:", error)
+    }
+
+    try {
+      await attemptFetch(0)
     } finally {
       categoriesFetching = false
       setIsLoading(false)

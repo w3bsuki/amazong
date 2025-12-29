@@ -192,7 +192,7 @@ function ConversationItem({
   if (lastMessage?.content) {
     lastMessagePreview =
       lastMessage.content.length > 35
-        ? lastMessage.content.substring(0, 35) + "..."
+        ? lastMessage.content.slice(0, 35) + "..."
         : lastMessage.content
   } else {
     lastMessagePreview = t("noMessages")

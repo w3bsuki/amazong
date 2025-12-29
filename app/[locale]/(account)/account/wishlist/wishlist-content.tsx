@@ -61,7 +61,7 @@ export function WishlistContent({
         }
       }
     })
-    return Array.from(categoriesMap.values()).sort((a, b) => b.count - a.count)
+    return [...categoriesMap.values()].sort((a, b) => b.count - a.count)
   }, [items])
 
   // Filter items based on current filters

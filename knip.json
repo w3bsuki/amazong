@@ -1,0 +1,45 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "app/**/page.tsx",
+    "app/**/layout.tsx",
+    "app/**/route.ts",
+    "app/api/**/*.ts",
+    "middleware.entry.ts"
+  ],
+  "project": ["**/*.{ts,tsx}"],
+  "ignore": [
+    "**/*.test.{ts,tsx}",
+    "**/*.spec.ts",
+    "e2e/**",
+    "cleanup/**",
+    "scripts/**",
+    "__tests__/**",
+    "test/**"
+  ],
+  "ignoreDependencies": [
+    "tailwindcss",
+    "tailwindcss-animate"
+  ],
+  "ignoreExportsUsedInFile": true,
+  "rules": {
+    "files": "warn",
+    "dependencies": "error",
+    "devDependencies": "warn",
+    "exports": "warn",
+    "types": "warn",
+    "duplicates": "warn"
+  },
+  "next": {
+    "entry": [
+      "next.config.{js,ts,mjs}",
+      "app/**/page.{js,jsx,ts,tsx}",
+      "app/**/layout.{js,jsx,ts,tsx}",
+      "app/**/route.{js,ts}",
+      "app/**/error.{js,jsx,ts,tsx}",
+      "app/**/loading.{js,jsx,ts,tsx}",
+      "app/**/not-found.{js,jsx,ts,tsx}",
+      "middleware.{js,ts}"
+    ]
+  }
+}

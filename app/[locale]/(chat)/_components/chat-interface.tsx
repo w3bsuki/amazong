@@ -635,7 +635,7 @@ export function ChatInterface({
                   <div key={message.id} className="flex justify-center my-3">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/70 border border-border/50">
                       <span className="text-xs text-muted-foreground">
-                        {message.content.replace(/\*\*/g, "").replace(/_/g, "").split("\n")[0]}
+                        {message.content.replaceAll('**', "").replaceAll('_', "").split("\n")[0]}
                       </span>
                       <span className="text-2xs text-muted-foreground/70">
                         {format(new Date(message.created_at), "HH:mm")}

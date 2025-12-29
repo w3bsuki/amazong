@@ -197,7 +197,7 @@ export function OrderDetailView({
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-xl font-bold tracking-tight">
-                Order #{order.id.substring(0, 8)}
+                Order #{order.id.slice(0, 8)}
               </h1>
               <Button 
                 variant="ghost" 

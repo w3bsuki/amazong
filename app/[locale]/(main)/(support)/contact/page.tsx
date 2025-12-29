@@ -201,8 +201,8 @@ export default async function ContactPage({
                   </div>
                   <div>
                     <h3 className="font-bold">{t('emailUs')}</h3>
-                    <a href="mailto:support@amzn.bg" className="text-sm text-brand-blue hover:underline">
-                      support@amzn.bg
+                    <a href="mailto:help@treido.com" className="text-sm text-brand-blue hover:underline">
+                      help@treido.com
                     </a>
                     <p className="text-xs text-muted-foreground mt-1">{t('emailResponse')}</p>
                   </div>
@@ -238,7 +238,7 @@ export default async function ContactPage({
                   <div>
                     <h3 className="font-bold">{t('headquarters')}</h3>
                     <p className="text-sm text-muted-foreground">
-                      AMZN Bulgaria EOOD<br />
+                      Treido Ltd.<br />
                       bul. Vitosha 100<br />
                       1463 Sofia, Bulgaria
                     </p>

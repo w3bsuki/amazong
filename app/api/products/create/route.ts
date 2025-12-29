@@ -10,7 +10,7 @@ const imageSchema = z.union([
     url: z.string().url("Invalid image URL in object"),
     thumbnailUrl: z.string().optional().transform(val => {
       // Handle empty string as undefined
-      if (!val || val.trim() === '') return undefined
+      if (!val || val.trim() === '') return
       // Don't validate as URL - just pass through
       return val
     }),
@@ -35,12 +35,10 @@ const attributeSchema = z.object({
 }).transform(attr => {
   // Handle attributeId - can be UUID, empty string, null, or undefined
   let attrId = attr.attribute_id || attr.attributeId || null
-  if (attrId && typeof attrId === 'string') {
-    // Validate it's a proper UUID, otherwise set to null
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(attrId)) {
+  if (attrId && typeof attrId === 'string' && // Validate it's a proper UUID, otherwise set to null
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(attrId)) {
       attrId = null
     }
-  }
   return {
     attribute_id: attrId,
     name: attr.name,
@@ -66,17 +64,17 @@ const productSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(200),
   description: z.string().max(5000).optional().default(""),
   price: z.union([z.string(), z.number()]).transform(val => 
-    typeof val === 'string' ? parseFloat(val) : val
+    typeof val === 'string' ? Number.parseFloat(val) : val
   ).refine(val => val > 0, "Price must be greater than 0"),
   // Accept both listPrice (API) and compareAtPrice (form V4)
   listPrice: z.union([z.string(), z.number(), z.null()]).optional().transform(val => {
     if (val === null || val === undefined || val === '') return null
-    const num = typeof val === 'string' ? parseFloat(val) : val
+    const num = typeof val === 'string' ? Number.parseFloat(val) : val
     return isNaN(num) ? null : num
   }),
   compareAtPrice: z.union([z.string(), z.number(), z.null()]).optional().transform(val => {
     if (val === null || val === undefined || val === '') return null
-    const num = typeof val === 'string' ? parseFloat(val) : val
+    const num = typeof val === 'string' ? Number.parseFloat(val) : val
     return isNaN(num) ? null : num
   }),
   // categoryId - accept empty string and transform to null
@@ -85,11 +83,11 @@ const productSchema = z.object({
   // Accept both stock (API) and quantity (form V4)
   stock: z.union([z.string(), z.number()]).optional().transform(val => {
     if (val === undefined || val === null || val === '') return 1
-    return typeof val === 'string' ? parseInt(val, 10) : val
+    return typeof val === 'string' ? Number.parseInt(val, 10) : val
   }).default(1),
   quantity: z.union([z.string(), z.number()]).optional().transform(val => {
-    if (val === undefined || val === null || val === '') return undefined
-    return typeof val === 'string' ? parseInt(val, 10) : val
+    if (val === undefined || val === null || val === '') return
+    return typeof val === 'string' ? Number.parseInt(val, 10) : val
   }),
   tags: z.array(z.string()).default([]),
   images: z.array(imageSchema).min(1, "At least one image is required"),
@@ -177,7 +175,7 @@ export async function POST(request: NextRequest) {
     
     // 3. Parse and validate request body
     console.log("[Products Create] Request body received:", {
-      title: body?.title?.substring(0, 50),
+      title: body?.title?.slice(0, 50),
       categoryId: body?.categoryId,
       price: body?.price,
       quantity: body?.quantity,
@@ -223,7 +221,7 @@ export async function POST(request: NextRequest) {
     // Add any custom attributes
     if (data.attributes) {
       for (const attr of data.attributes) {
-        attributesJson[attr.name.toLowerCase().replace(/\s+/g, '_')] = attr.value
+        attributesJson[attr.name.toLowerCase().replaceAll(/\s+/g, '_')] = attr.value
       }
     }
 

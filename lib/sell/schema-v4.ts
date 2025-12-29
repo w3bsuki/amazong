@@ -107,15 +107,15 @@ export const sellFormSchemaV4 = z.object({
 	price: z
 		.string()
 		.min(1, "Enter a price")
-		.refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Enter a valid price greater than 0")
-		.refine((val) => parseFloat(val) <= 999999.99, "Price can't exceed 999,999.99"),
+		.refine((val) => !isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0, "Enter a valid price greater than 0")
+		.refine((val) => Number.parseFloat(val) <= 999999.99, "Price can't exceed 999,999.99"),
 
 	currency: z.enum(["BGN", "EUR", "USD"]).default("BGN"),
 
 	compareAtPrice: z
 		.string()
 		.optional()
-		.refine((val) => !val || (!isNaN(parseFloat(val)) && parseFloat(val) > 0), "Invalid compare price"),
+		.refine((val) => !val || (!isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0), "Invalid compare price"),
 
 	quantity: z.coerce
 		.number()
@@ -141,7 +141,7 @@ export const sellFormSchemaV4 = z.object({
 	shippingPrice: z
 		.string()
 		.optional()
-		.refine((val) => !val || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0), "Invalid shipping price"),
+		.refine((val) => !val || (!isNaN(Number.parseFloat(val)) && Number.parseFloat(val) >= 0), "Invalid shipping price"),
 
 	freeShipping: z.boolean().default(false),
 
@@ -241,7 +241,7 @@ export function calculateFormProgress(data: Partial<SellFormDataV4>): {
 			key: "price",
 			label: "Set price",
 			labelBg: "Задай цена",
-			completed: !!data.price && parseFloat(data.price) > 0,
+			completed: !!data.price && Number.parseFloat(data.price) > 0,
 			required: true,
 		},
 		{

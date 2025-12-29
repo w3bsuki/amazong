@@ -4,12 +4,12 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
-import { Heart, Package, Trash } from "@phosphor-icons/react"
-import Image from "next/image"
+import { Heart } from "@phosphor-icons/react"
 import { useEffect, useMemo, useState } from "react"
 
 import { useWishlist, type WishlistItem } from "@/components/providers/wishlist-context"
 import { CountBadge } from "@/components/ui/count-badge"
+import { DropdownProductItem } from "@/components/shared/dropdown-product-item"
 
 function buildProductUrl(item: WishlistItem) {
   if (!item.username) return "#"
@@ -92,46 +92,19 @@ export function WishlistDropdown() {
           <>
             <div className="max-h-[300px] overflow-y-auto">
               {topItems.map((item) => (
-                <div key={item.id} className="flex gap-3 p-3 border-b border-border hover:bg-muted">
-                  <Link href={buildProductUrl(item)} className="shrink-0">
-                    <div className="w-16 h-16 bg-muted rounded overflow-hidden">
-                      {item.image ? (
-                        <Image
-                          src={item.image}
-                          alt={item.title}
-                          width={64}
-                          height={64}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                          <Package size={24} weight="regular" />
-                        </div>
-                      )}
-                    </div>
-                  </Link>
-                  <div className="flex-1 min-w-0">
-                    <Link
-                      href={buildProductUrl(item)}
-                      className="text-sm font-normal text-foreground hover:text-brand line-clamp-2"
-                    >
-                      {item.title}
-                    </Link>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-sm font-medium text-foreground">{formatPrice(item.price)}</span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault()
-                      removeFromWishlist(item.product_id)
-                    }}
-                    className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
-                    aria-label={t("remove")}
-                  >
-                    <Trash size={16} weight="regular" />
-                  </button>
-                </div>
+                <DropdownProductItem
+                  key={item.id}
+                  item={{
+                    id: item.id,
+                    title: item.title,
+                    price: item.price,
+                    image: item.image,
+                    href: buildProductUrl(item),
+                  }}
+                  formatPrice={formatPrice}
+                  onRemove={() => removeFromWishlist(item.product_id)}
+                  removeLabel={t("remove")}
+                />
               ))}
               {items.length > 4 && (
                 <div className="p-3 text-center text-sm text-muted-foreground bg-muted">

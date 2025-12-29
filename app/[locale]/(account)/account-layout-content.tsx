@@ -13,33 +13,36 @@ import {
 interface AccountLayoutContentProps {
   children: React.ReactNode
   modal: React.ReactNode
+  initialUser?: {
+    email?: string
+    fullName?: string
+  }
 }
 
-export function AccountLayoutContent({ children, modal }: AccountLayoutContentProps) {
-  const [email, setEmail] = useState<string>("")
-  const [fullName, setFullName] = useState<string>("")
-  const [isLoading, setIsLoading] = useState(true)
+export function AccountLayoutContent({ children, modal, initialUser }: AccountLayoutContentProps) {
+  const [email, setEmail] = useState<string>(initialUser?.email ?? "")
+  const [fullName, setFullName] = useState<string>(initialUser?.fullName ?? "")
 
   useEffect(() => {
     async function getUser() {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user?.email) {
-        setEmail(user.email)
-        setFullName(user.user_metadata?.full_name || "")
+      try {
+        const supabase = createClient()
+        const result = await Promise.race([
+          supabase.auth.getUser(),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 1500)),
+        ])
+
+        const user = result && "data" in result ? result.data.user : null
+        if (user?.email) {
+          setEmail(user.email)
+          setFullName(user.user_metadata?.full_name || "")
+        }
+      } catch {
+        // Best-effort only; server layout already validated auth.
       }
-      setIsLoading(false)
     }
     getUser()
   }, [])
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-svh items-center justify-center bg-account-section-bg">
-        <div className="size-8 animate-spin rounded-full border-4 border-brand border-t-transparent" />
-      </div>
-    )
-  }
 
   return (
     <SidebarProvider

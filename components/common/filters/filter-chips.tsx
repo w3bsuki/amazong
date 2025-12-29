@@ -77,7 +77,7 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
       key: 'minPrice',
       key2: 'maxPrice',
       label: priceLabel,
-      color: 'bg-muted text-foreground border-border'
+      color: 'bg-secondary text-foreground border-border'
     })
   }
 
@@ -119,7 +119,7 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
             "inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-sm whitespace-nowrap",
             "border group",
             "hover:bg-destructive/10 hover:border-destructive/20 hover:text-destructive",
-            chip.color || "bg-primary/10 text-primary border-primary/20"
+            chip.color || "bg-secondary text-foreground border-border hover:bg-secondary/80"
           )}
         >
           {chip.icon}

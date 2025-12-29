@@ -268,11 +268,11 @@ function formatPillValue(key: string, value: string): string {
   if (!value) return ""
   switch (key) {
     case "mileage_km":
-      return `${parseInt(value).toLocaleString()} km`
+      return `${Number.parseInt(value).toLocaleString()} km`
     case "area_sqm":
       return `${value} m²`
     case "condition":
-      return value.replace(/[-_]+/g, " ")
+      return value.replaceAll(/[-_]+/g, " ")
     default:
       return value.length > 14 ? `${value.slice(0, 14)}…` : value
   }
@@ -497,9 +497,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
       e.stopPropagation()
 
       if (isOwnProduct) {
-        toast.error(
-          locale === "bg" ? "Не можете да купите собствен продукт" : "Cannot buy your own product"
-        )
+        toast.error(t("cannotBuyOwnProduct"))
         return
       }
       if (!inStock) {
@@ -540,16 +538,10 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
     // Tier label for featured variant
     const tierLabel =
       sellerTier === "business"
-        ? locale === "bg"
-          ? "Бизнес продавач"
-          : "Pro Seller"
+        ? t("businessSeller")
         : sellerTier === "premium"
-          ? locale === "bg"
-            ? "Топ продавач"
-            : "Top Rated"
-          : locale === "bg"
-            ? "Продавач"
-            : "Seller"
+          ? t("topRated")
+          : t("seller")
 
     return (
       <div
@@ -561,8 +553,8 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
             IMPORTANT: Do not nest interactive controls inside an anchor. */}
         <Link
           href={productUrl}
-          className="absolute inset-0 z-0"
-          aria-label={locale === "bg" ? `Отвори продукт: ${title}` : `Open product: ${title}`}
+          className="absolute inset-0 z-1"
+          aria-label={t("openProduct", { title })}
         >
           <span className="sr-only">{title}</span>
         </Link>
@@ -683,7 +675,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                     className="mt-2 inline-flex text-xs font-medium text-primary hover:underline"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {locale === "bg" ? "Виж профил" : "View profile"}
+                    {t("viewProfile")}
                   </Link>
                 )}
               </HoverCardContent>
@@ -764,7 +756,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                     )}
                   </span>
                   <span className="sr-only">
-                    {inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                    {inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
                   </span>
                 </Button>
               ) : (
@@ -801,7 +793,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                       <Plus size={14} weight="bold" />
                     )}
                   </span>
-                  <span className="sr-only">{inCart ? "In cart" : "Add to cart"}</span>
+                  <span className="sr-only">{inCart ? t("inCart") : t("addToCart")}</span>
                 </Button>
               )}
             </div>
@@ -812,7 +804,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
             {resolvedState === "promoted" && (
               <Badge className="inline-flex items-center gap-0.5 rounded-md bg-cta-trust-blue px-1.5 py-0.5 text-tiny font-semibold text-cta-trust-blue-text">
                 <Sparkle size={10} weight="fill" />
-                {locale === "bg" ? "Промотирано" : "Promoted"}
+                {t("promoted")}
               </Badge>
             )}
             {(saleByTruthSemantics || (isOnSale == null && hasDiscount && priceDerivedDiscountPercent >= 5)) && (
@@ -923,7 +915,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
           {freeShipping && (
             <p className="inline-flex items-center gap-1 pt-0.5 text-2xs font-medium text-success">
               <Truck size={12} weight="bold" />
-              {locale === "bg" ? "Безплатна доставка" : "Free shipping"}
+              {t("freeShipping")}
             </p>
           )}
 

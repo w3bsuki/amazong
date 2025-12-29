@@ -68,7 +68,7 @@ function PriceSuggestionCard({
 }) {
   if (!suggestion || suggestion.count < 3) return null;
 
-  const priceNum = parseFloat(currentPrice) || 0;
+  const priceNum = Number.parseFloat(currentPrice) || 0;
   const symbol = CURRENCY_SYMBOLS[suggestion.currency] || suggestion.currency;
 
   const getPricePosition = () => {
@@ -175,7 +175,7 @@ function QuantityStepper({
         type="number"
         value={value}
         onChange={(e) => {
-          const num = parseInt(e.target.value, 10);
+          const num = Number.parseInt(e.target.value, 10);
           if (!isNaN(num)) {
             onChange(Math.max(min, Math.min(max, num)));
           }

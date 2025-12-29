@@ -7,11 +7,11 @@ import { getCategoryIcon } from "@/lib/category-icons"
 
 // Fallback categories if fetch fails
 const fallbackCategories = [
-  { id: "1", name: "Electronics", name_bg: "Техника", slug: "electronics", image_url: "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=500&auto=format&fit=crop" },
-  { id: "2", name: "Fashion", name_bg: "Мода", slug: "fashion", image_url: "https://images.unsplash.com/photo-1445205170230-053b830c6039?q=80&w=500&auto=format&fit=crop" },
-  { id: "3", name: "Home", name_bg: "Дом", slug: "home", image_url: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=500&auto=format&fit=crop" },
-  { id: "4", name: "Beauty", name_bg: "Красота", slug: "beauty", image_url: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=500&auto=format&fit=crop" },
-  { id: "5", name: "Gaming", name_bg: "Гейминг", slug: "gaming", image_url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=500&auto=format&fit=crop" },
+  { id: "1", name: "Electronics", name_bg: "Техника", slug: "electronics", image_url: "/placeholder.svg" },
+  { id: "2", name: "Fashion", name_bg: "Мода", slug: "fashion", image_url: "/placeholder.svg" },
+  { id: "3", name: "Home", name_bg: "Дом", slug: "home", image_url: "/placeholder.svg" },
+  { id: "4", name: "Beauty", name_bg: "Красота", slug: "beauty", image_url: "/placeholder.svg" },
+  { id: "5", name: "Gaming", name_bg: "Гейминг", slug: "gaming", image_url: "/placeholder.svg" },
 ] as any[]
 
 interface MobileCategoryRailProps {
@@ -33,15 +33,15 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
       className="w-full"
     >
       <div 
-        className="flex overflow-x-auto no-scrollbar gap-3 px-4 py-1 snap-x snap-mandatory scroll-pl-4"
+        className="flex overflow-x-auto no-scrollbar gap-2 px-4 py-1 snap-x snap-mandatory scroll-pl-4"
         role="list"
       >
         {isLoading && fetchedCategories.length === 0 ? (
           // Skeleton state
           Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex flex-col items-center gap-1.5 shrink-0">
-              <div className="size-14 rounded-full bg-muted animate-pulse" />
-              <div className="h-2.5 w-10 bg-muted rounded animate-pulse" />
+              <div className="size-14 rounded-full bg-muted" />
+              <div className="h-2.5 w-10 bg-muted rounded" />
             </div>
           ))
         ) : (
@@ -53,6 +53,7 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
               <Link
                 key={cat.slug}
                 href={`/categories/${cat.slug}`}
+                prefetch={true}
                 aria-label={fullName}
                 className={cn(
                   "group snap-start shrink-0",
@@ -76,7 +77,7 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
                   </span>
                 </div>
                 {/* Label - Tight leading, slightly larger than tiny */}
-                <span className="text-foreground font-medium text-tiny text-center w-16 leading-tight line-clamp-2 break-words">
+                <span className="text-foreground font-medium text-tiny text-center w-14 leading-tight line-clamp-2 break-words">
                   {shortName}
                 </span>
               </Link>
@@ -87,6 +88,3 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
     </nav>
   )
 }
-
-// Alias for backward compatibility - used by tabbed-product-feed
-export const CategoryRail = MobileCategoryRail

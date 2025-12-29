@@ -37,7 +37,7 @@ export function PriceSuggestionCard({
 }: PriceSuggestionCardProps) {
   if (!suggestion || suggestion.count < 3) return null;
 
-  const priceNum = parseFloat(currentPrice) || 0;
+  const priceNum = Number.parseFloat(currentPrice) || 0;
   const symbol = CURRENCY_SYMBOLS[suggestion.currency] || suggestion.currency;
 
   const getPricePosition = () => {

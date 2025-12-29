@@ -319,21 +319,3 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
     </>
   );
 }
-
-// ============================================================================
-// LEGACY EXPORTS - For backward compatibility during transition
-// ============================================================================
-
-/**
- * SellForm - Legacy export name
- * @deprecated Use UnifiedSellForm instead
- */
-export const SellForm = UnifiedSellForm;
-
-/**
- * SellFormStepper - Legacy export for mobile stepper
- * @deprecated Use UnifiedSellForm instead - it handles both layouts
- */
-export function SellFormStepper(props: UnifiedSellFormProps) {
-  return <UnifiedSellForm {...props} />;
-}

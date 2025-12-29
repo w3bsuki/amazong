@@ -61,6 +61,8 @@ tsc.err
 # Lighthouse CI output
 /.lighthouseci/
 
-# Cleanup/audit report output
-/cleanup/jscpd-report.json
-/cleanup/knip-report.json
+# Cleanup/audit report output (regenerate with pnpm jscpd/knip when needed)
+/cleanup/*.json
+/cleanup/*.log
+/cleanup/*.txt
+/cleanup/archive/

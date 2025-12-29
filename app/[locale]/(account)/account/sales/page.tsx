@@ -258,7 +258,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
       <div className="container py-4 sm:py-6">
         {/* Breadcrumb */}
         <AppBreadcrumb items={[
-          { label: locale === 'bg' ? 'Акаунт' : 'Account', href: '/account' },
+          { label: locale === 'bg' ? 'Акаунт' : 'Account', href: "/account" },
           { label: locale === 'bg' ? 'Продажби' : 'Sales' }
         ]} />
         
@@ -362,7 +362,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
             </div>
           </CardHeader>
           <CardContent>
-            <SalesChart data={chartData} locale={locale} formatCurrency={formatCurrency} />
+            <SalesChart data={chartData} locale={locale} />
           </CardContent>
         </Card>
 
@@ -389,7 +389,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
             </div>
           </CardHeader>
           <CardContent>
-            <SalesTable sales={sales} locale={locale} formatCurrency={formatCurrency} />
+            <SalesTable sales={sales} locale={locale} />
           </CardContent>
         </Card>
 

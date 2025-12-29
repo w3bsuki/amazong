@@ -109,7 +109,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
   const hasTitle = Boolean(title && title.length >= 5);
   const hasCategory = Boolean(categoryId);
   const hasCondition = Boolean(condition);
-  const hasPrice = Boolean(price && parseFloat(price) > 0);
+  const hasPrice = Boolean(price && Number.parseFloat(price) > 0);
 
   const isValid = hasPhotos && hasTitle && hasCategory && hasCondition && hasPrice;
 
@@ -292,7 +292,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">{isBg ? "Цена" : "Price"}</span>
             <span className="text-xl font-bold">
-              {currencySymbol} {parseFloat(price || "0").toFixed(2)}
+              {currencySymbol} {Number.parseFloat(price || "0").toFixed(2)}
             </span>
           </div>
 
@@ -327,8 +327,8 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
               <div className="space-y-1 text-sm">
                 <p>
                   <span className="text-muted-foreground">{isBg ? "Цена:" : "Price:"}</span>{" "}
-                  {shippingPrice && parseFloat(shippingPrice) > 0
-                    ? `${currencySymbol} ${parseFloat(shippingPrice).toFixed(2)}`
+                  {shippingPrice && Number.parseFloat(shippingPrice) > 0
+                    ? `${currencySymbol} ${Number.parseFloat(shippingPrice).toFixed(2)}`
                     : isBg ? "Безплатна" : "Free"}
                 </p>
                 <p className="text-muted-foreground">

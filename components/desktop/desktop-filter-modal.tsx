@@ -99,7 +99,7 @@ export function DesktopFilterModal({
       })
       setPendingFilters(initial)
       setPendingPrice({ min: currentMinPrice || '', max: currentMaxPrice || '' })
-      setPendingRating(currentRating ? parseInt(currentRating) : null)
+      setPendingRating(currentRating ? Number.parseInt(currentRating) : null)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen])
@@ -172,10 +172,10 @@ export function DesktopFilterModal({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="outline"
+          variant="ghost"
           className={cn(
-            'h-[38px] px-4 rounded-full gap-2',
-            activeFilterCount > 0 && 'border-primary bg-primary/5',
+            'h-9 px-4 rounded-full gap-2 bg-secondary/50 hover:bg-secondary',
+            activeFilterCount > 0 && 'bg-primary/10 text-primary hover:bg-primary/20',
             className
           )}
         >
@@ -196,7 +196,7 @@ export function DesktopFilterModal({
         <DialogDescription className="sr-only">Filter products by attributes</DialogDescription>
         
         {/* Header - fixed at top with subtle shadow */}
-        <div className="flex shrink-0 items-center justify-between px-6 py-5 border-b bg-background shadow-xs">
+        <div className="flex shrink-0 items-center justify-between px-6 py-5 border-b bg-background">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-primary/10">
               <Sliders size={22} className="text-primary" weight="duotone" />
@@ -227,7 +227,7 @@ export function DesktopFilterModal({
             {/* Row 1: Price & Rating - 2 columns 50/50 */}
             <div className="grid grid-cols-2 gap-4">
               {/* Price Card - Compact */}
-              <div className="p-4 rounded-xl border border-border bg-card">
+              <div className="p-4 rounded-xl border border-border/50 bg-secondary/20">
                 <h4 className="text-sm font-semibold flex items-center gap-2 mb-3">
                   <Tag size={15} className="text-primary" weight="duotone" />
                   {t('price')}
@@ -241,10 +241,10 @@ export function DesktopFilterModal({
                         type="button"
                         onClick={() => setPendingPrice(isActive ? { min: '', max: '' } : { min, max })}
                         className={cn(
-                          "px-2.5 py-1 rounded-full text-xs font-medium transition-all border",
+                          "px-2.5 py-1 rounded-full text-xs font-medium transition-all",
                           isActive 
-                            ? "bg-primary text-primary-foreground border-primary shadow-sm" 
-                            : "bg-background border-border hover:border-primary/50 hover:bg-primary/5"
+                            ? "bg-primary text-primary-foreground" 
+                            : "bg-background hover:bg-muted text-muted-foreground"
                         )}
                       >
                         {label}
@@ -260,7 +260,7 @@ export function DesktopFilterModal({
                       placeholder={t('min')}
                       value={pendingPrice.min}
                       onChange={(e) => setPendingPrice(p => ({ ...p, min: e.target.value }))}
-                      className="pl-6 h-8 text-sm bg-background"
+                      className="pl-6 h-8 text-sm bg-background border-border/50"
                     />
                   </div>
                   <span className="text-muted-foreground text-sm">–</span>
@@ -271,14 +271,14 @@ export function DesktopFilterModal({
                       placeholder={t('max')}
                       value={pendingPrice.max}
                       onChange={(e) => setPendingPrice(p => ({ ...p, max: e.target.value }))}
-                      className="pl-6 h-8 text-sm bg-background"
+                      className="pl-6 h-8 text-sm bg-background border-border/50"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Rating Card - Compact */}
-              <div className="p-4 rounded-xl border border-border bg-card">
+              <div className="p-4 rounded-xl border border-border/50 bg-secondary/20">
                 <h4 className="text-sm font-semibold flex items-center gap-2 mb-3">
                   <Star size={15} className="text-rating" weight="fill" />
                   {t('customerReviews')}
@@ -292,10 +292,10 @@ export function DesktopFilterModal({
                         type="button"
                         onClick={() => setPendingRating(isActive ? null : stars)}
                         className={cn(
-                          "flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg transition-all border",
+                          "flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg transition-all",
                           isActive 
-                            ? "bg-accent border-ring shadow-sm" 
-                            : "bg-muted/50 border-border hover:border-ring/50 hover:bg-accent/70"
+                            ? "bg-accent" 
+                            : "bg-background hover:bg-muted text-muted-foreground"
                         )}
                       >
                         <div className="flex">
@@ -328,7 +328,7 @@ export function DesktopFilterModal({
                 if (attr.attribute_type === 'boolean') {
                   const isChecked = currentValues.includes('true')
                   return (
-                    <div key={attr.id} className="p-4 rounded-xl border border-border bg-card">
+                    <div key={attr.id} className="p-4 rounded-xl border border-border/50 bg-secondary/20">
                       <div className="flex items-center justify-between">
                         <h5 className="text-sm font-semibold">{attrName}</h5>
                         <Switch
@@ -344,9 +344,9 @@ export function DesktopFilterModal({
                 if (attr.attribute_type === 'number') {
                   const min = attr.min_value ?? 0
                   const max = attr.max_value ?? 100
-                  const value = currentValues[0] ? parseInt(currentValues[0]) : min
+                  const value = currentValues[0] ? Number.parseInt(currentValues[0]) : min
                   return (
-                    <div key={attr.id} className="p-4 rounded-xl border border-border bg-card space-y-3">
+                    <div key={attr.id} className="p-4 rounded-xl border border-border/50 bg-secondary/20 space-y-3">
                       <div className="flex items-center justify-between">
                         <h5 className="text-sm font-semibold">{attrName}</h5>
                         <span className="text-sm font-bold text-primary">{value}</span>
@@ -370,7 +370,7 @@ export function DesktopFilterModal({
                   const isSingleSelect = attr.attribute_type === 'select'
 
                   return (
-                    <div key={attr.id} className="p-4 rounded-xl border border-border bg-card space-y-3">
+                    <div key={attr.id} className="p-4 rounded-xl border border-border/50 bg-secondary/20 space-y-3">
                       <div className="flex items-center justify-between">
                         <h5 className="text-sm font-semibold">{attrName}</h5>
                         {selectedCount > 0 && (

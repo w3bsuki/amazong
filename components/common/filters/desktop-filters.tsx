@@ -95,19 +95,18 @@ export function DesktopFilters({ attributes = [], categorySlug }: DesktopFilters
         <PopoverTrigger asChild>
           <button
             className={cn(
-              "inline-flex items-center gap-2 h-[38px] px-4 rounded-full",
-              "border text-sm font-medium",
-              "hover:bg-muted hover:border-ring transition-colors",
+              "inline-flex items-center gap-2 h-9 px-4 rounded-full",
+              "text-sm font-medium transition-colors border border-border/50",
               hasPriceFilter
-                ? "bg-primary/10 border-primary text-primary"
-                : "bg-card border-border text-foreground"
+                ? "bg-primary/10 text-primary border-primary/20"
+                : "bg-secondary hover:bg-secondary/80 text-foreground"
             )}
           >
             <span>{getPriceLabel()}</span>
             <CaretDown size={16} weight="regular" className={cn("transition-transform", priceOpen && "rotate-180")} />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-48 p-1 rounded-lg" align="start">
+        <PopoverContent className="w-48 p-1 rounded-lg shadow-dropdown border-border/50" align="start">
           {priceRanges.map(({ label, min, max }) => {
             const isActive = currentMinPrice === min && currentMaxPrice === max
             return (
@@ -145,12 +144,11 @@ export function DesktopFilters({ attributes = [], categorySlug }: DesktopFilters
         <PopoverTrigger asChild>
           <button
             className={cn(
-              "inline-flex items-center gap-2 h-[38px] px-4 rounded-full",
-              "border text-sm font-medium",
-              "hover:bg-muted hover:border-ring transition-colors",
+              "inline-flex items-center gap-2 h-9 px-4 rounded-full",
+              "text-sm font-medium transition-colors border border-border/50",
               hasRatingFilter
-                ? "bg-primary/10 border-primary text-primary"
-                : "bg-card border-border text-foreground"
+                ? "bg-primary/10 text-primary border-primary/20"
+                : "bg-secondary hover:bg-secondary/80 text-foreground"
             )}
           >
             <Star size={16} weight={hasRatingFilter ? "fill" : "regular"} className={hasRatingFilter ? "text-current" : ""} />
@@ -158,7 +156,7 @@ export function DesktopFilters({ attributes = [], categorySlug }: DesktopFilters
             <CaretDown size={16} weight="regular" className={cn("transition-transform", ratingOpen && "rotate-180")} />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-52 p-1 rounded-lg" align="start">
+        <PopoverContent className="w-52 p-1 rounded-lg shadow-dropdown border-border/50" align="start">
           {[4, 3, 2, 1].map((stars) => {
             const isActive = currentRating === stars.toString()
             return (

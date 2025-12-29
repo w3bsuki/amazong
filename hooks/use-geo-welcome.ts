@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { getShippingRegion, type ShippingRegion } from '@/lib/shipping';
+import type { Locale } from '@/i18n/routing';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -15,7 +16,45 @@ const STORAGE_KEYS = {
 const COOKIE_NAMES = {
   COUNTRY: 'user-country',
   ZONE: 'user-zone',
+  LOCALE: 'NEXT_LOCALE',
 } as const;
+
+const SUPPORTED_LOCALES: readonly Locale[] = ['en', 'bg'] as const;
+
+function isSupportedLocale(value: string): value is Locale {
+  return (SUPPORTED_LOCALES as readonly string[]).includes(value);
+}
+
+function getCurrentLocaleFromPathname(pathname: string): Locale {
+  const firstSegment = pathname.split('/').filter(Boolean)[0] || 'en';
+  return isSupportedLocale(firstSegment) ? firstSegment : 'en';
+}
+
+function getPathWithLocale(targetLocale: Locale): string {
+  const { pathname, search, hash } = window.location;
+  const segments = pathname.split('/').filter(Boolean);
+  const currentLocale = getCurrentLocaleFromPathname(pathname);
+
+  if (segments.length === 0) {
+    return `/${targetLocale}${search}${hash}`;
+  }
+
+  if (segments[0] === currentLocale) {
+    segments[0] = targetLocale;
+  } else {
+    segments.unshift(targetLocale);
+  }
+
+  return `/${segments.join('/')}${search}${hash}`;
+}
+
+function getLocaleForRegion(region: ShippingRegion): Locale {
+  // App supports only 'en' and 'bg'. Product requirement:
+  // - Selecting BG region should switch to /bg
+  // - "Show all products" should stay on /en
+  if (region === 'BG') return 'bg';
+  return 'en';
+}
 
 export interface GeoWelcomeState {
   isOpen: boolean;
@@ -181,6 +220,11 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
     setCookie(COOKIE_NAMES.ZONE, selectedRegion);
     setCookie(COOKIE_NAMES.COUNTRY, countryCode);
 
+    // Keep locale cookie in sync with region selection.
+    // (Locale routing is URL-based, but this preserves preference for future visits.)
+    const targetLocale = getLocaleForRegion(selectedRegion);
+    setCookie(COOKIE_NAMES.LOCALE, targetLocale);
+
     // Mark as dismissed
     setLocalStorage(STORAGE_KEYS.DISMISSED, 'true');
     setLocalStorage(STORAGE_KEYS.CONFIRMED, 'true');
@@ -204,8 +248,9 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
     // Close modal
     setState(prev => ({ ...prev, isOpen: false }));
 
-    // Refresh page to apply new region filter
-    window.location.reload();
+    // Navigate to the correct locale route (BUG-001 fix).
+    // This also refreshes server components with the updated cookies.
+    window.location.assign(getPathWithLocale(targetLocale));
   }, [state]);
 
   /**
@@ -215,14 +260,17 @@ export function useGeoWelcome(options: UseGeoWelcomeOptions = {}): UseGeoWelcome
     // Set to worldwide (no filtering)
     setCookie(COOKIE_NAMES.ZONE, 'WW');
 
+    // Match product expectation: "Show all" keeps English locale.
+    setCookie(COOKIE_NAMES.LOCALE, 'en');
+
     // Mark as dismissed
     setLocalStorage(STORAGE_KEYS.DISMISSED, 'true');
 
     // Close modal
     setState(prev => ({ ...prev, isOpen: false }));
 
-    // Refresh page
-    window.location.reload();
+    // Navigate to /en to reflect "show all" behavior.
+    window.location.assign(getPathWithLocale('en'));
   }, []);
 
   /**

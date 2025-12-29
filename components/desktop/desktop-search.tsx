@@ -49,15 +49,17 @@ export function DesktopSearch() {
     
     saveSearch(query)
     setIsOpen(false)
-    router.push(`/search?q=${encodeURIComponent(query)}`)
-  }, [query, saveSearch, router])
+    // Use an explicit locale-prefixed URL to ensure the query string is preserved
+    // across locale-aware routing.
+    router.push(`/${locale}/search?q=${encodeURIComponent(query)}`)
+  }, [query, saveSearch, router, locale])
 
   const handleSelectSearch = useCallback((search: string) => {
     setQuery(search)
     saveSearch(search)
     setIsOpen(false)
-    router.push(`/search?q=${encodeURIComponent(search)}`)
-  }, [setQuery, saveSearch, router])
+    router.push(`/${locale}/search?q=${encodeURIComponent(search)}`)
+  }, [setQuery, saveSearch, router, locale])
 
   // Build SEO-friendly product URL
   const buildProductUrl = useCallback((product: { slug?: string; storeSlug?: string | null; id: string }) => {

@@ -19,7 +19,7 @@ export function ItemSpecifics({ attributes, condition, categoryName, parentCateg
     }));
   } else if (attributes && typeof attributes === 'object') {
     dynamicSpecs = Object.entries(attributes).map(([key, value]) => ({
-      label: key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
+      label: key.replaceAll('_', " ").replaceAll(/\b\w/g, l => l.toUpperCase()),
       value: String(value)
     }));
   }

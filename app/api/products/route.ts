@@ -54,10 +54,10 @@ export async function POST(request: NextRequest) {
         const parseResult = productSchema.safeParse({
             title: body.title,
             description: body.description,
-            price: typeof body.price === 'string' ? parseFloat(body.price) : body.price,
-            listPrice: body.listPrice ? (typeof body.listPrice === 'string' ? parseFloat(body.listPrice) : body.listPrice) : null,
+            price: typeof body.price === 'string' ? Number.parseFloat(body.price) : body.price,
+            listPrice: body.listPrice ? (typeof body.listPrice === 'string' ? Number.parseFloat(body.listPrice) : body.listPrice) : null,
             categoryId: body.categoryId || null,
-            stock: typeof body.stock === 'string' ? parseInt(body.stock, 10) : (body.stock ?? 1),
+            stock: typeof body.stock === 'string' ? Number.parseInt(body.stock, 10) : (body.stock ?? 1),
             tags: Array.isArray(body.tags) ? body.tags : [],
             listingType: body.listingType || "normal",
             images: body.images,

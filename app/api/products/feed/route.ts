@@ -5,8 +5,8 @@ import { toUI } from "@/lib/data/products"
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const type = searchParams.get("type") || "all"
-  const page = parseInt(searchParams.get("page") || "1", 10)
-  const limit = parseInt(searchParams.get("limit") || "12", 10)
+  const page = Number.parseInt(searchParams.get("page") || "1", 10)
+  const limit = Number.parseInt(searchParams.get("limit") || "12", 10)
   const category = searchParams.get("category")
   const city = searchParams.get("city")
   

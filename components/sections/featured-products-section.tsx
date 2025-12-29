@@ -62,11 +62,10 @@ export function FeaturedProductsSection({
   }
 
   return (
-    <div className="overflow-hidden md:bg-card md:border md:border-border md:rounded-md shadow-xs">
+    <div className="overflow-hidden">
       {/* Header Section */}
       <div className={cn(
-        "flex items-center justify-between px-3 pt-1.5 pb-1 md:pt-5 md:pb-3 md:px-5",
-        "md:bg-cta-trust-blue/5 md:border-b md:border-border/40"
+        "flex items-center justify-between px-3 pt-1.5 pb-1 md:pt-5 md:pb-3 md:px-5"
       )}>
         <div className="flex items-center gap-3">
           {icon && (
@@ -137,10 +136,10 @@ export function FeaturedProductsSection({
           {products.map((product, index) => (
             <div
               key={product.id}
-              className="w-[43%] min-w-[43%] shrink-0 snap-start sm:w-[32%] sm:min-w-[32%] md:w-48 md:min-w-48"
+              className="w-[38%] min-w-[38%] shrink-0 snap-start sm:w-[32%] sm:min-w-[32%] md:w-48 md:min-w-48"
             >
               <ProductCard
-                variant="featured"
+                variant="default"
                 index={index}
                 {...product}
               />

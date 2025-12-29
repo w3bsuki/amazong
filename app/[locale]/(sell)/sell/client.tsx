@@ -184,7 +184,7 @@ export function SellPageClient({
                 : "You need a username before you can start selling. Visit your account settings to set one up."}
             </p>
             <Link 
-              href="/account/profile" 
+              href={`/${locale}/account/profile`}
               className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             >
               {isBg ? "Настройки" : "Go to Settings"}
@@ -208,7 +208,7 @@ export function SellPageClient({
           <div className="container-content flex items-center justify-between py-3">
             <div className="flex items-center gap-3">
               <Link 
-                href="/" 
+                href={`/${locale}`}
                 className="flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-all active:scale-95"
               >
                 <ArrowLeft className="size-5" />

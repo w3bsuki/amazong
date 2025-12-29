@@ -17,7 +17,7 @@ interface NotificationRow {
   type: NotificationType
   title: string
   body: string | null
-  data: Record<string, unknown>
+  data: Record<string, unknown> | null
   order_id: string | null
   product_id: string | null
   conversation_id: string | null
@@ -138,12 +138,18 @@ const NotificationToggleRow = ({
   )
 }
 
-export function NotificationsContent({ locale }: { locale: string }) {
+export function NotificationsContent({
+  locale,
+  initialNotifications,
+}: {
+  locale: string
+  initialNotifications?: NotificationRow[]
+}) {
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [notifications, setNotifications] = useState<NotificationRow[]>([])
+  const [isLoading, setIsLoading] = useState(() => initialNotifications === undefined)
+  const [notifications, setNotifications] = useState<NotificationRow[]>(() => initialNotifications ?? [])
   const [prefs, setPrefs] = useState<NotificationPreferences>(DEFAULT_PREFS)
   const initializedRef = useRef(false)
 
@@ -155,8 +161,11 @@ export function NotificationsContent({ locale }: { locale: string }) {
     return visibleNotifications.filter((n) => !n.is_read).length
   }, [visibleNotifications])
 
-  const fetchAll = useCallback(async () => {
-    setIsLoading(true)
+  const fetchAll = useCallback(
+    async ({ showSpinner }: { showSpinner: boolean } = { showSpinner: true }) => {
+      if (showSpinner) {
+        setIsLoading(true)
+      }
     try {
       const { data: userData } = await supabase.auth.getUser()
       const user = userData.user
@@ -210,11 +219,19 @@ export function NotificationsContent({ locale }: { locale: string }) {
       setIsLoading(false)
       initializedRef.current = true
     }
-  }, [locale, supabase])
+    },
+    [locale, supabase]
+  )
 
   useEffect(() => {
-    fetchAll()
-  }, [fetchAll])
+    // If we have SSR-provided notifications, render immediately and refresh quietly.
+    if (initialNotifications !== undefined) {
+      void fetchAll({ showSpinner: false })
+      return
+    }
+
+    void fetchAll({ showSpinner: true })
+  }, [fetchAll, initialNotifications])
 
   const markAsRead = async (notificationId: string) => {
     try {

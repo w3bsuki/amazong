@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { X, Cookie } from "@phosphor-icons/react"
 
 const COOKIE_CONSENT_KEY = "cookie-consent"
+const COOKIE_CONSENT_EVENT = "amzn:cookie-consent"
 
 type ConsentValue = "accepted" | "declined" | null
 
@@ -37,6 +38,7 @@ export function CookieConsent() {
         localStorage.setItem(COOKIE_CONSENT_KEY, "accepted")
         setConsent("accepted")
         setIsVisible(false)
+        window.dispatchEvent(new CustomEvent(COOKIE_CONSENT_EVENT))
         // Here you would initialize analytics/tracking cookies
     }
 
@@ -44,6 +46,7 @@ export function CookieConsent() {
         localStorage.setItem(COOKIE_CONSENT_KEY, "declined")
         setConsent("declined")
         setIsVisible(false)
+        window.dispatchEvent(new CustomEvent(COOKIE_CONSENT_EVENT))
         // Here you would disable non-essential cookies
     }
 

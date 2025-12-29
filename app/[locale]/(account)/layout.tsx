@@ -5,6 +5,8 @@ import { routing } from "@/i18n/routing";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AccountLayoutContent } from "./account-layout-content";
+import { CartProvider } from "@/components/providers/cart-context";
+import { headers } from "next/headers";
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -62,6 +64,8 @@ export default async function AccountLayout({
     
     // Enable static rendering
     setRequestLocale(locale);
+
+    const pathname = (await headers()).get("x-pathname") || `/${locale}/account`;
     
     // Check auth on server side
     let user: unknown = null;
@@ -79,15 +83,20 @@ export default async function AccountLayout({
     }
 
     if (!user) {
-        redirect(`/${locale}/auth/login`);
+        redirect(`/${locale}/auth/login?next=${encodeURIComponent(pathname)}`);
     }
 
+    const userEmail = (user as { email?: string } | null)?.email ?? "";
+    const userFullName = (user as { user_metadata?: { full_name?: string } } | null)?.user_metadata?.full_name ?? "";
+
     return (
-        <Suspense fallback={<AccountLayoutSkeleton>{children}</AccountLayoutSkeleton>}>
-            <AccountLayoutContent modal={modal}>
-                {children}
-            </AccountLayoutContent>
-        </Suspense>
+        <CartProvider>
+            <Suspense fallback={<AccountLayoutSkeleton>{children}</AccountLayoutSkeleton>}>
+                <AccountLayoutContent modal={modal} initialUser={{ email: userEmail, fullName: userFullName }}>
+                    {children}
+                </AccountLayoutContent>
+            </Suspense>
+        </CartProvider>
     );
 }
 

@@ -494,7 +494,7 @@ export function OrdersTable({
                         href={`/dashboard/orders/${order?.id}`}
                         className="font-mono text-sm font-medium text-primary hover:underline"
                       >
-                        #{order?.id?.substring(0, 8)}
+                        #{order?.id?.slice(0, 8)}
                       </Link>
                     </TableCell>
                     <TableCell>

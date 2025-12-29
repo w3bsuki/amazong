@@ -95,8 +95,8 @@ export function DesktopCategoryRail({
               Array.from({ length: 15 }).map((_, i) => (
                 <CarouselItem key={i} className="pl-3 basis-auto shrink-0">
                   <div className="flex flex-col items-center gap-3 shrink-0 w-20">
-                    <div className={cn("rounded-full bg-muted animate-pulse", circleSizeClass)} />
-                    <div className="h-4 w-16 bg-muted animate-pulse rounded" />
+                    <div className={cn("rounded-full bg-muted", circleSizeClass)} />
+                    <div className="h-4 w-16 bg-muted rounded" />
                   </div>
                 </CarouselItem>
               ))

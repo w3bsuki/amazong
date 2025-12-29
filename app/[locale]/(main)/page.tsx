@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { StartSellingBanner } from "@/components/sections/start-selling-banner"
-import { CategoryRail } from "@/components/shared/category-rail"
+import { MobileCategoryRail } from "@/components/shared/category-rail"
 import { DesktopCategoryRail } from "@/components/desktop/desktop-category-rail"
 
 // Desktop-only components
@@ -73,7 +73,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <div className="w-full md:hidden space-y-1">
         {/* Category Circles - First thing after header */}
         <div className="pt-1">
-          <CategoryRail locale={locale} />
+          <MobileCategoryRail locale={locale} />
         </div>
         
         {/* Start Selling CTA - Promote seller signup */}

@@ -88,7 +88,7 @@ export function BusinessRecentActivity({ products, orders }: BusinessRecentActiv
                         />
                       ) : (
                         <div className="flex size-full items-center justify-center text-xs font-medium text-muted-foreground">
-                          {product.title.substring(0, 2).toUpperCase()}
+                          {product.title.slice(0, 2).toUpperCase()}
                         </div>
                       )}
                     </div>

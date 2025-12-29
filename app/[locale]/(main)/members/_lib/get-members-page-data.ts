@@ -9,7 +9,7 @@ export async function getMembersPageData(searchParams: MembersSearchParams) {
 
   const supabase = await createClient()
 
-  const currentPage = parseInt(page) || 1
+  const currentPage = Number.parseInt(page) || 1
   const offset = (currentPage - 1) * PAGE_SIZE
 
   let query = supabase

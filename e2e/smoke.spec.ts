@@ -105,7 +105,7 @@ function setupConsoleCapture(page: Page): ConsoleErrorCapture {
  * Asserts that no severe console errors occurred
  */
 function assertNoConsoleErrors(capture: ConsoleErrorCapture, routeName: string) {
-  const notFoundUrls = Array.from(new Set(capture.notFoundResponses))
+  const notFoundUrls = [...new Set(capture.notFoundResponses)]
   const onlyBenignAsset404s =
     notFoundUrls.length > 0 &&
     notFoundUrls.every((u) =>
@@ -250,7 +250,9 @@ test.describe('Smoke Tests - Core Routes', () => {
 // ============================================================================
 
 test.describe('Smoke Tests - Auth-Gated Routes', () => {
-  test.setTimeout(60_000)
+  // Auth-gated pages can trigger first-hit dev compilation + redirects.
+  // Give them a little more runway to stay stable on cold starts.
+  test.setTimeout(120_000)
 
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
@@ -263,14 +265,17 @@ test.describe('Smoke Tests - Auth-Gated Routes', () => {
     })
   })
 
-  test('account page redirects or shows login CTA when logged out @smoke @auth', async ({ page }) => {
+  test('account page redirects or shows login CTA when logged out @smoke @auth', async ({ page, app }) => {
     const capture = setupConsoleCapture(page)
 
-    await page.goto(CRITICAL_ROUTES.account, { waitUntil: 'domcontentloaded', timeout: 45_000 })
+    await app.clearAuthSession()
+
+    await app.gotoWithRetries(CRITICAL_ROUTES.account, { timeout: 60_000, retries: 3 })
+    await app.waitForDevCompilingOverlayToHide(60_000)
 
     // If auth redirects, wait for it to complete.
     const redirectedToLogin = await page
-      .waitForURL(/\/auth\/login/i, { timeout: 45_000 })
+      .waitForURL(/\/auth\/login/i, { timeout: 30_000 })
       .then(() => true)
       .catch(() => false)
 
@@ -298,13 +303,17 @@ test.describe('Smoke Tests - Auth-Gated Routes', () => {
     assertNoConsoleErrors(capture, 'account')
   })
 
-  test('sell page redirects or shows login CTA when logged out @smoke @auth', async ({ page }) => {
+  test('sell page redirects or shows login CTA when logged out @smoke @auth', async ({ page, app }) => {
+    test.setTimeout(150_000)
     const capture = setupConsoleCapture(page)
 
-    await page.goto(CRITICAL_ROUTES.sell, { waitUntil: 'domcontentloaded', timeout: 45_000 })
+    await app.clearAuthSession()
+
+    await app.gotoWithRetries(CRITICAL_ROUTES.sell, { timeout: 60_000, retries: 3 })
+    await app.waitForDevCompilingOverlayToHide(60_000)
 
     const redirectedToLogin = await page
-      .waitForURL(/\/auth\/login/i, { timeout: 45_000 })
+      .waitForURL(/\/auth\/login/i, { timeout: 30_000 })
       .then(() => true)
       .catch(() => false)
 

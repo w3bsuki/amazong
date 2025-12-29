@@ -7,6 +7,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import type { Metadata } from 'next'
 import { routing, validateLocale } from "@/i18n/routing"
+import { CustomerServiceChat } from "@/components/support/customer-service-chat"
 
 // Generate static params for all locales - required for Next.js 16 Cache Components
 export function generateStaticParams() {
@@ -45,22 +46,22 @@ export default async function CustomerServicePage({ params }: { params: Promise<
     ]
 
     return (
-        <div className="min-h-screen bg-background pb-12">
-            <div className="container py-8">
+        <div className="min-h-screen bg-background pb-12 overflow-x-hidden">
+            <div className="container py-8 px-4 sm:px-6">
                 <AppBreadcrumb items={breadcrumbPresets.customerService} />
                 
                 <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
 
                 <div className="mb-12">
                     <h2 className="text-xl font-bold mb-4">{t('helpTitle')}</h2>
-                    <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-4 md:grid-cols-3">
                         {helpTopics.map((topic, i) => (
-                            <Card key={i} className="hover:bg-muted cursor-pointer transition-colors">
-                                <CardContent className="flex items-center p-4 gap-4">
-                                    <div className="bg-secondary p-2 rounded-full">
-                                        <topic.icon className="w-8 h-8 text-muted-foreground" />
+                            <Card key={i} className="hover:bg-muted cursor-pointer transition-colors overflow-hidden">
+                                <CardContent className="flex items-center p-3 sm:p-4 gap-2 sm:gap-4">
+                                    <div className="bg-secondary p-2 rounded-full shrink-0">
+                                        <topic.icon className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
                                     </div>
-                                    <span className="font-medium text-foreground">{topic.title}</span>
+                                    <span className="font-medium text-foreground text-sm sm:text-base line-clamp-2 break-words">{topic.title}</span>
                                 </CardContent>
                             </Card>
                         ))}
@@ -118,9 +119,7 @@ export default async function CustomerServicePage({ params }: { params: Promise<
                             <p className="text-sm text-muted-foreground mb-4">
                                 {t('needMoreHelp')}
                             </p>
-                            <Button className="w-full bg-brand hover:bg-brand/90 text-foreground border border-brand-dark">
-                                {t('startChatting')}
-                            </Button>
+                            <CustomerServiceChat />
                         </div>
                     </div>
                 </div>

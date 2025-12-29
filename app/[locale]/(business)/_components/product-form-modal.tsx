@@ -356,7 +356,7 @@ export function ProductFormModal({
     setUploadingImages(true)
     const newImages: string[] = []
 
-    for (const file of Array.from(files)) {
+    for (const file of files) {
       const url = URL.createObjectURL(file)
       newImages.push(url)
     }

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useRef, useTransition } from "react"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -98,6 +97,20 @@ const PRESET_AVATARS = [
   "https://api.dicebear.com/7.x/avataaars/svg?seed=Aria",
   "https://api.dicebear.com/7.x/avataaars/svg?seed=Theo",
 ]
+
+function AvatarImg({ src, alt, size, className }: { src: string; alt: string; size: number; className?: string }) {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      width={size}
+      height={size}
+      loading="lazy"
+      decoding="async"
+      className={className}
+    />
+  )
+}
 
 export function ProfileContent({ locale, profile }: ProfileContentProps) {
   const [isPending, startTransition] = useTransition()
@@ -344,13 +357,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
             <div className="relative">
               <div className="size-24 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-muted">
                 {avatarPreview ? (
-                  <Image 
-                    src={avatarPreview} 
-                    alt="Avatar" 
-                    width={96} 
-                    height={96} 
-                    className="object-cover size-full"
-                  />
+                  <AvatarImg src={avatarPreview} alt="Avatar" size={96} className="object-cover size-full" />
                 ) : (
                   <User className="size-12 text-muted-foreground" />
                 )}
@@ -411,7 +418,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
                   className="size-10 rounded-full overflow-hidden border bg-muted hover:bg-muted/80 transition-colors disabled:opacity-50"
                   aria-label={locale === "bg" ? "Избери този аватар" : "Choose this avatar"}
                 >
-                  <Image src={url} alt="" width={40} height={40} className="size-full object-cover" />
+                  <AvatarImg src={url} alt="" size={40} className="size-full object-cover" />
                 </button>
               ))}
             </div>

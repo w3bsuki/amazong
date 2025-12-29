@@ -5,7 +5,7 @@ import { routing } from '@/i18n/routing';
 import { Inter } from "next/font/google";
 import "../globals.css";
 import type { Metadata } from 'next';
-import { Suspense, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 
 // Generate static params for all supported locales
@@ -55,12 +55,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     },
   };
 }
-import { Toaster } from "@/components/providers/sonner";
-import { CartProvider } from "@/components/providers/cart-context";
-import { WishlistProvider } from "@/components/providers/wishlist-context";
-import { AuthStateListener } from "@/components/providers/auth-state-listener";
-import { GeoWelcomeModal } from "@/components/common/geo-welcome-modal";
-import { CookieConsent } from "@/components/layout/cookie-consent";
 
 /**
  * Root Locale Layout
@@ -104,17 +98,7 @@ export default async function LocaleLayout({
               storageKey="amzn-theme"
               disableTransitionOnChange
             >
-              <Suspense fallback={null}>
-                <AuthStateListener />
-              </Suspense>
-              <CartProvider>
-                <WishlistProvider>
-                  {children}
-                  <Toaster />
-                  <GeoWelcomeModal locale={locale} />
-                <CookieConsent />
-                </WishlistProvider>
-              </CartProvider>
+              {children}
             </ThemeProvider>
                 </NextIntlClientProvider>
             </body>

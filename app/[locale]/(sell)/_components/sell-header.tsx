@@ -248,7 +248,3 @@ export function SellHeader({
  * Use this when the header is rendered frequently (e.g., in form context).
  */
 export const MemoizedSellHeader = memo(SellHeader);
-
-// Legacy alias for backward compatibility
-/** @deprecated Use SellHeader instead */
-export const SellHeaderV3 = SellHeader;

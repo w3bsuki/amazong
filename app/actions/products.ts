@@ -79,8 +79,8 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
     // Generate slug from title
     const baseSlug = data.title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
+      .replaceAll(/[^a-z0-9]+/g, "-")
+      .replaceAll(/^-|-$/g, "")
     
     // Make slug unique by adding timestamp
     const slug = `${baseSlug}-${Date.now().toString(36)}`
@@ -551,8 +551,8 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
     // Generate unique slug for duplicate
     const baseSlug = `${original.title}-copy`
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
+      .replaceAll(/[^a-z0-9]+/g, "-")
+      .replaceAll(/^-|-$/g, "")
     const newSlug = `${baseSlug}-${Date.now().toString(36)}`
     
     // Create duplicate with all business fields

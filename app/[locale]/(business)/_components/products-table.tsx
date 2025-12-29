@@ -285,7 +285,7 @@ export function ProductsTable({
     if (!confirm(`Delete ${selectedIds.size} product(s)?`)) return
     setIsLoading(true)
     try {
-      const result = await bulkDeleteProducts(Array.from(selectedIds))
+      const result = await bulkDeleteProducts([...selectedIds])
       if (result.success) {
         toast.success(`${selectedIds.size} deleted`)
         setProducts((prev) => prev.filter((p) => !selectedIds.has(p.id)))
@@ -301,7 +301,7 @@ export function ProductsTable({
   const handleBulkStatusUpdate = async (newStatus: "active" | "draft" | "archived" | "out_of_stock") => {
     setIsLoading(true)
     try {
-      const result = await bulkUpdateProductStatus(Array.from(selectedIds), newStatus)
+      const result = await bulkUpdateProductStatus([...selectedIds], newStatus)
       if (result.success) {
         toast.success(`${selectedIds.size} product(s) set to ${newStatus}`)
         setProducts((prev) => prev.map((p) => 

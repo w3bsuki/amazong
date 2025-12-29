@@ -618,7 +618,7 @@ export function AIChatbot({
               <ConversationEmptyState className="py-12">
                 <div className="text-center">
                   <div className="mx-auto mb-6 flex size-24 items-center justify-center rounded-3xl bg-primary/10">
-                    <Sparkles className="size-10 text-primary animate-pulse" />
+                    <Sparkles className="size-10 text-primary" />
                   </div>
                   <div className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
                     {greetingTitle}
@@ -780,7 +780,7 @@ export function AIChatbot({
                               >
                                 <div className="relative flex size-4 items-center justify-center">
                                   <Loader2 className="absolute size-4 animate-spin text-primary/40" />
-                                  <div className="size-1.5 rounded-full bg-primary animate-pulse" />
+                                  <div className="size-1.5 rounded-full bg-primary" />
                                 </div>
                                 {getToolStatusLabel(toolName, locale)}
                               </div>

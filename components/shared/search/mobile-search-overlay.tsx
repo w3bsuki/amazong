@@ -232,7 +232,6 @@ export function MobileSearchOverlay({
             "fixed inset-0 z-100",
             "flex flex-col",
             "bg-background",
-            "animate-in fade-in slide-in-from-top-2 duration-200",
             "md:hidden"
           )}
         >
@@ -244,64 +243,58 @@ export function MobileSearchOverlay({
             {strings.searchProducts}
           </p>
 
-          {/* Search Header */}
-          <header className="shrink-0 bg-background border-b border-border">
-            {/* Close Button Row */}
-            <div className="flex items-center justify-end gap-2 px-3 pt-3">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-xl"
-                onClick={handleClose}
-                className="rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
-                aria-label={strings.close}
-              >
-                <X size={22} weight="regular" aria-hidden="true" />
-              </Button>
-            </div>
-
+          {/* Search Header - Single Row Compact */}
+          <header className="shrink-0 bg-background border-b border-border flex items-center gap-2 p-2">
             {/* Search Input */}
             <form
               onSubmit={handleSubmit}
-              className="px-4 pb-4"
+              className="flex-1 relative"
               role="search"
               aria-label={strings.search}
             >
-              <div className="relative">
-                <MagnifyingGlass
-                  size={20}
-                  weight="regular"
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none"
-                  aria-hidden="true"
-                />
-                <Input
-                  ref={inputRef}
-                  id={searchInputId}
-                  type="search"
-                  inputMode="search"
-                  enterKeyHint="search"
-                  placeholder={strings.searchProducts}
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="h-touch w-full pl-11 pr-11 text-base bg-muted/50 border-0 rounded-xl focus-visible:ring-0 focus-visible:bg-muted/80"
-                  autoComplete="off"
-                  autoCapitalize="off"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  aria-label={strings.searchProducts}
-                />
-                {query && (
-                  <button
-                    type="button"
-                    onClick={handleClearInput}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 size-6 rounded-full flex items-center justify-center bg-muted-foreground/20 text-muted-foreground hover:bg-muted-foreground/30 hover:text-foreground"
-                    aria-label={strings.clear}
-                  >
-                    <X size={14} weight="bold" aria-hidden="true" />
-                  </button>
-                )}
-              </div>
+              <MagnifyingGlass
+                size={18}
+                weight="regular"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none"
+                aria-hidden="true"
+              />
+              <Input
+                ref={inputRef}
+                id={searchInputId}
+                type="search"
+                inputMode="search"
+                enterKeyHint="search"
+                placeholder={strings.searchProducts}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="h-10 w-full pl-9 pr-9 text-base bg-muted/50 border-0 rounded-lg focus-visible:ring-0 focus-visible:bg-muted/80"
+                autoComplete="off"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+                aria-label={strings.searchProducts}
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={handleClearInput}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 size-5 rounded-full flex items-center justify-center bg-muted-foreground/20 text-muted-foreground hover:bg-muted-foreground/30 hover:text-foreground"
+                  aria-label={strings.clear}
+                >
+                  <X size={12} weight="bold" aria-hidden="true" />
+                </button>
+              )}
             </form>
+
+            {/* Cancel Button */}
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleClose}
+              className="px-2 text-primary font-medium hover:bg-transparent hover:text-primary/80"
+            >
+              {strings.close}
+            </Button>
           </header>
 
           {/* Search Content */}

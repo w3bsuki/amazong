@@ -24,7 +24,6 @@ import type { SaleItem } from "../types"
 interface SalesTableProps {
   sales: SaleItem[]
   locale: string
-  formatCurrency: (value: number) => string
 }
 
 const statusColors: Record<string, string> = {
@@ -45,9 +44,16 @@ const statusLabels: Record<string, { en: string; bg: string }> = {
   cancelled: { en: "Cancelled", bg: "Отказано" },
 }
 
-export function SalesTable({ sales, locale, formatCurrency }: SalesTableProps) {
+export function SalesTable({ sales, locale }: SalesTableProps) {
   if (sales.length === 0) {
     return null
+  }
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "EUR",
+    }).format(value)
   }
 
   return (

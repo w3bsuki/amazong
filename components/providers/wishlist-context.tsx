@@ -5,6 +5,33 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 
+// Detect locale from cookie (same pattern as Next-intl)
+function getLocale(): "en" | "bg" {
+  if (typeof document === "undefined") return "en"
+  const match = document.cookie.match(/NEXT_LOCALE=([^;]+)/)
+  return (match?.[1] === "bg" ? "bg" : "en")
+}
+
+// Wishlist toast messages (i18n)
+const messages = {
+  en: {
+    signInRequired: "Please sign in to add items to your wishlist",
+    alreadyInWishlist: "Already in your wishlist",
+    added: "Added to wishlist",
+    addFailed: "Failed to add to wishlist",
+    removed: "Removed from wishlist",
+    removeFailed: "Failed to remove from wishlist",
+  },
+  bg: {
+    signInRequired: "Влезте, за да добавите в списъка с желания",
+    alreadyInWishlist: "Вече е в списъка с желания",
+    added: "Добавено в списъка с желания",
+    addFailed: "Неуспешно добавяне в списъка",
+    removed: "Премахнато от списъка с желания",
+    removeFailed: "Неуспешно премахване от списъка",
+  },
+}
+
 export interface WishlistItem {
   id: string
   product_id: string
@@ -131,8 +158,10 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }, [items])
 
   const addToWishlist = async (product: { id: string; title: string; price: number; image: string }) => {
+    const t = messages[getLocale()]
+    
     if (!userId) {
-      toast.error("Please sign in to add items to your wishlist")
+      toast.error(t.signInRequired)
       return
     }
 
@@ -150,7 +179,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         if (error.code === "23505") {
           // Unique constraint violation - already in wishlist
-          toast.info("Already in your wishlist")
+          toast.info(t.alreadyInWishlist)
         } else {
           throw error
         }
@@ -164,15 +193,17 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           image: product.image,
           created_at: data?.created_at ?? new Date().toISOString(),
         }, ...prev])
-        toast.success("Added to wishlist")
+        toast.success(t.added)
       }
     } catch (error) {
       console.error("Error adding to wishlist:", error)
-      toast.error("Failed to add to wishlist")
+      toast.error(t.addFailed)
     }
   }
 
   const removeFromWishlist = async (productId: string) => {
+    const t = messages[getLocale()]
+    
     if (!userId) return
 
     try {
@@ -189,10 +220,10 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
       // Remove optimistically
       setItems(prev => prev.filter(item => item.product_id !== productId))
-      toast.success("Removed from wishlist")
+      toast.success(t.removed)
     } catch (error) {
       console.error("Error removing from wishlist:", error)
-      toast.error("Failed to remove from wishlist")
+      toast.error(t.removeFailed)
     }
   }
 

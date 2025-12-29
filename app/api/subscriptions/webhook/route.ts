@@ -43,7 +43,7 @@ export async function POST(req: Request) {
         if (session.metadata?.type === 'listing_boost' && session.mode === 'payment') {
           const sellerId = session.metadata.seller_id
           const productId = session.metadata.product_id
-          const durationDays = parseInt(session.metadata.duration_days || '7')
+          const durationDays = Number.parseInt(session.metadata.duration_days || '7')
           const amountPaid = (session.amount_total || 0) / 100 // Convert from stotinki
 
           if (sellerId && productId) {

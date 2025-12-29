@@ -56,7 +56,7 @@ export interface MembersPageClientProps {
 
 function MemberCard({ member, locale }: { member: Member; locale: string }) {
   const displayName = member.display_name || member.username || "Unknown"
-  const initials = displayName.substring(0, 2).toUpperCase()
+  const initials = displayName.slice(0, 2).toUpperCase()
 
   return (
     <Link href={`/${member.username || "unknown"}`}>

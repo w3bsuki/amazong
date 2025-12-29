@@ -223,7 +223,7 @@ export function SiteFooter() {
                 <div className="flex justify-center mb-8">
                     <Link href="/" className="inline-block group" aria-label={t('homePage')}>
                         <span className="text-3xl font-semibold text-primary-foreground tracking-tight group-hover:text-accent transition-colors">
-                            AMZN
+                            Treido
                         </span>
                     </Link>
                 </div>

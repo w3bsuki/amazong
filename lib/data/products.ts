@@ -171,9 +171,9 @@ function normalizeAttributeKey(input: string): string {
   return input
     .trim()
     .toLowerCase()
-    .replace(/\([^)]*\)/g, '')
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
+    .replaceAll(/\([^)]*\)/g, '')
+    .replaceAll(/[^a-z0-9]+/g, '_')
+    .replaceAll(/^_+|_+$/g, '')
 }
 
 function buildAttributesMap(p: Product): Record<string, string> {
@@ -214,7 +214,6 @@ function buildAttributesMap(p: Product): Record<string, string> {
 function pickPrimaryImage(p: Product): string {
   const fromTable = (p.product_images ?? [])
     .filter((img) => !!img?.image_url)
-    .slice()
     .sort((a, b) => {
       const ap = a.is_primary ? 1 : 0
       const bp = b.is_primary ? 1 : 0

@@ -327,7 +327,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                       <Input
                         value={newUsername}
                         onChange={(e) => {
-                          const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "")
+                          const val = e.target.value.toLowerCase().replaceAll(/[^a-z0-9_]/g, "")
                           setNewUsername(val)
                           handleUsernameCheck(val)
                         }}

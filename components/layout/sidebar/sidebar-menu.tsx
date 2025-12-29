@@ -90,8 +90,8 @@ function HamburgerCategoryCirclesInner({
                 <div className="grid grid-cols-4 gap-y-6 gap-x-2">
                     {Array.from({ length: 8 }).map((_, i) => (
                         <div key={i} className="flex flex-col items-center gap-2">
-                            <div className="size-12 rounded-full bg-muted animate-pulse" />
-                            <div className="h-2 w-10 rounded bg-muted animate-pulse" />
+                            <div className="size-12 rounded-full bg-muted" />
+                            <div className="h-2 w-10 rounded bg-muted" />
                         </div>
                     ))}
                 </div>

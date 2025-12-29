@@ -134,7 +134,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
     params.delete('minRating')
     params.delete('availability')
     params.delete('page')
-    for (const key of Array.from(params.keys())) {
+    for (const key of params.keys()) {
       if (key.startsWith('attr_')) params.delete(key)
     }
 
@@ -228,19 +228,19 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
     <>
       {/* Filter Trigger Button */}
       <Button
-        variant="outline"
+        variant="ghost"
         onClick={() => setIsOpen(true)}
         className={cn(
-          "w-full h-touch-sm rounded-full px-4",
-          filterCount > 0 && "border-primary bg-primary/5"
+          "w-full h-9 rounded-full px-4 bg-secondary hover:bg-secondary/80 hover:text-foreground transition-colors border border-border/50",
+          filterCount > 0 && "bg-primary/10 text-primary border-primary/20"
         )}
       >
         <Sliders size={16} weight="regular" className={cn(
           filterCount > 0 ? "text-primary" : "text-muted-foreground"
         )} />
-        <span>{t('filters')}</span>
+        <span className={cn(filterCount > 0 ? "text-primary" : "text-foreground")}>{t('filters')}</span>
         {filterCount > 0 && (
-          <span className="bg-primary text-primary-foreground text-xs font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center">
+          <span className="bg-primary text-primary-foreground text-xs font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center ml-1">
             {filterCount}
           </span>
         )}
@@ -324,7 +324,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
                         className={cn(
                           "w-full flex items-center gap-3 px-3 h-touch rounded-md transition-colors",
                           pendingRating === stars.toString()
-                            ? "bg-primary/5 text-primary"
+                            ? "bg-secondary text-primary font-medium"
                             : "active:bg-muted"
                         )}
                         aria-pressed={pendingRating === stars.toString()}
@@ -359,7 +359,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
                           className={cn(
                             "w-full flex items-center justify-between px-3 h-touch rounded-md transition-colors",
                             isActive
-                              ? "bg-primary/5 text-primary font-medium"
+                              ? "bg-secondary text-primary font-medium"
                               : "active:bg-muted"
                           )}
                           aria-pressed={isActive}
@@ -378,7 +378,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
                     onClick={() => setPendingAvailability(pendingAvailability === 'instock' ? null : 'instock')}
                     className={cn(
                       "w-full flex items-center gap-3 px-3 h-touch rounded-md transition-colors",
-                      pendingAvailability === "instock" ? "bg-primary/5 text-primary" : "active:bg-muted"
+                      pendingAvailability === "instock" ? "bg-secondary text-primary font-medium" : "active:bg-muted"
                     )}
                     aria-pressed={pendingAvailability === 'instock'}
                   >
@@ -406,7 +406,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
                             onClick={() => setPendingAttrValues(attr.name, isChecked ? [] : ['true'])}
                             className={cn(
                               "w-full flex items-center gap-3 px-3 h-touch rounded-md transition-colors",
-                              isChecked ? "bg-primary/5 text-primary" : "active:bg-muted"
+                              isChecked ? "bg-secondary text-primary font-medium" : "active:bg-muted"
                             )}
                             aria-pressed={isChecked}
                           >
@@ -441,7 +441,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
                               }}
                               className={cn(
                                 "w-full flex items-center justify-between px-3 h-touch rounded-md transition-colors",
-                                isActive ? "bg-primary/5 text-primary font-medium" : "active:bg-muted"
+                                isActive ? "bg-secondary text-primary font-medium" : "active:bg-muted"
                               )}
                               aria-pressed={isActive}
                             >
@@ -463,7 +463,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
           <div className="p-4 pb-6 border-t border-border/50 bg-background">
             <DrawerClose asChild>
               <Button
-                className="w-full h-touch rounded-md text-sm font-bold shadow-sm"
+                className="w-full h-touch rounded-full text-sm font-bold"
                 onClick={() => {
                   applyPendingFilters()
                 }}

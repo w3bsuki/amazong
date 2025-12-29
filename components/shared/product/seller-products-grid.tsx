@@ -148,7 +148,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
               {/* Condition badge */}
               {product.condition && (
                 <div className="absolute top-1.5 right-1.5 bg-card/95 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-semibold text-foreground shadow-sm border border-border/50">
-                  {product.condition.toUpperCase().replace(/-/g, " ")}
+                  {product.condition.toUpperCase().replaceAll('-', " ")}
                 </div>
               )}
             </div>

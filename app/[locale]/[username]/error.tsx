@@ -1,8 +1,6 @@
-"use client"
+'use client'
 
-import { useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { AlertCircle } from "lucide-react"
+import { ErrorBoundaryUI } from '@/components/shared/error-boundary-ui'
 
 export default function ProfileError({
   error,
@@ -11,23 +9,16 @@ export default function ProfileError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
-  useEffect(() => {
-    console.error("Profile page error:", error)
-  }, [error])
-
   return (
-    <div className="min-h-[50vh] flex flex-col items-center justify-center px-4">
-      <AlertCircle className="h-12 w-12 text-destructive mb-4" />
-      <h2 className="text-xl font-semibold mb-2">Something went wrong</h2>
-      <p className="text-muted-foreground text-center mb-6 max-w-md">
-        We couldn&apos;t load this profile. This might be a temporary issue.
-      </p>
-      <div className="flex gap-3">
-        <Button onClick={() => reset()}>Try again</Button>
-        <Button variant="outline" onClick={() => window.history.back()}>
-          Go back
-        </Button>
-      </div>
-    </div>
+    <ErrorBoundaryUI
+      error={error}
+      reset={reset}
+      title="Profile unavailable"
+      description="We couldn't load this profile. This might be a temporary issue."
+      ctaIcon="user"
+      ctaLabel="Go to homepage"
+      ctaHref="/"
+      logPrefix="Profile page"
+    />
   )
 }

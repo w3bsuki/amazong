@@ -287,9 +287,9 @@ test.describe('Accessibility - Semantic HTML @accessibility', () => {
     // Get all headings
     const headings = await page.evaluate(() => {
       const allHeadings = document.querySelectorAll('h1, h2, h3, h4, h5, h6')
-      return Array.from(allHeadings).map((h) => ({
-        level: parseInt(h.tagName.substring(1)),
-        text: h.textContent?.trim().substring(0, 50),
+      return [...allHeadings].map((h) => ({
+        level: Number.parseInt(h.tagName.slice(1)),
+        text: h.textContent?.trim().slice(0, 50),
       }))
     })
 
@@ -364,12 +364,10 @@ test.describe('Accessibility - Mobile @accessibility @mobile', () => {
       interactiveElements.forEach((el) => {
         const rect = el.getBoundingClientRect()
         // WCAG 2.2 recommends 44x44 minimum, but 24x24 is acceptable
-        if (rect.width < 24 || rect.height < 24) {
-          // Ignore hidden elements
-          if (rect.width > 0 && rect.height > 0) {
+        if ((rect.width < 24 || rect.height < 24) && // Ignore hidden elements
+          rect.width > 0 && rect.height > 0) {
             tooSmall.push(`${el.tagName}: ${rect.width.toFixed(0)}x${rect.height.toFixed(0)}px`)
           }
-        }
       })
 
       return tooSmall.slice(0, 5) // Return first 5

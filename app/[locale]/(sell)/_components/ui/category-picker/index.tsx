@@ -223,9 +223,7 @@ export function CategoryPicker({
                 className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-72 overflow-y-auto overscroll-contain"
                 onKeyDown={(e) => {
                   const focusedElement = document.activeElement as HTMLButtonElement;
-                  const buttons = Array.from(
-                    e.currentTarget.querySelectorAll('button[role="option"]')
-                  ) as HTMLButtonElement[];
+                  const buttons = [...e.currentTarget.querySelectorAll('button[role="option"]')] as HTMLButtonElement[];
                   const currentIndex = buttons.indexOf(focusedElement);
 
                   // Arrow key navigation

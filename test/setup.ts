@@ -9,8 +9,7 @@ dotenv.config({ path: '.env.test', override: true })
 dotenv.config({ path: '.env.test.local', override: true })
 
 // Minimal DOM polyfills for common browser APIs used by UI components.
-if (typeof window !== 'undefined') {
-  if (!('matchMedia' in window)) {
+if (typeof window !== 'undefined' && !('matchMedia' in window)) {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: (query: string) => ({
@@ -25,7 +24,6 @@ if (typeof window !== 'undefined') {
       }),
     })
   }
-}
 
 if (!('ResizeObserver' in globalThis)) {
   class ResizeObserver {

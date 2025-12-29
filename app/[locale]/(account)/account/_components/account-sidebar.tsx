@@ -154,12 +154,12 @@ function AccountNavUser({
 }) {
   const { isMobile } = useSidebar()
   const locale = useLocale()
-  const initials = user.email ? user.email.substring(0, 2).toUpperCase() : "??"
+  const initials = user.email ? user.email.slice(0, 2).toUpperCase() : "??"
 
   const handleSignOut = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
-    window.location.href = "/"
+    window.location.href = `/${locale}`
   }
 
   return (
@@ -210,7 +210,7 @@ function AccountNavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/account/security">
+              <Link href={`/${locale}/account/settings`}>
                 <IconSettings className="mr-2 size-4" />
                 {locale === 'bg' ? 'Настройки' : 'Settings'}
               </Link>
@@ -242,6 +242,8 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
     return pathname === fullPath || pathname.startsWith(fullPath + '/')
   }
 
+  const withLocale = (url: string) => `/${locale}${url}`
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -251,7 +253,7 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
-              <Link href="/account">
+              <Link href={withLocale("/account")}>
                 <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
                   A
                 </div>
@@ -275,7 +277,7 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
                     tooltip={item.title}
                     isActive={isActive(item.url, item.exact)}
                   >
-                    <Link href={item.url}>
+                    <Link href={withLocale(item.url)}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -300,7 +302,7 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
                     tooltip={item.title}
                     isActive={isActive(item.url)}
                   >
-                    <Link href={item.url}>
+                    <Link href={withLocale(item.url)}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -325,7 +327,7 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
                     tooltip={item.title}
                     isActive={isActive(item.url)}
                   >
-                    <Link href={item.url}>
+                    <Link href={withLocale(item.url)}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -371,7 +373,7 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
               {secondaryNav.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link href={item.url}>
+                    <Link href={withLocale(item.url)}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

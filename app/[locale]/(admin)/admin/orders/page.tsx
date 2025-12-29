@@ -130,7 +130,7 @@ export default async function AdminOrdersPage() {
               {orders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell className="font-mono text-sm">
-                    #{order.id.substring(0, 8)}
+                    #{order.id.slice(0, 8)}
                   </TableCell>
                   <TableCell>
                     <div>

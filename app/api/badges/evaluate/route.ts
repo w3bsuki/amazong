@@ -235,14 +235,10 @@ function evaluateCriteria(
   }
   
   // Minimum listings
-  if (criteria.min_listings !== undefined) {
-    if ((stats?.total_listings || 0) < criteria.min_listings) return false
-  }
+  if (criteria.min_listings !== undefined && (stats?.total_listings || 0) < criteria.min_listings) return false
   
   // Minimum rating
-  if (criteria.min_rating !== undefined) {
-    if ((stats?.average_rating || 0) < criteria.min_rating) return false
-  }
+  if (criteria.min_rating !== undefined && (stats?.average_rating || 0) < criteria.min_rating) return false
   
   // Minimum reviews
   if (criteria.min_reviews !== undefined) {
@@ -251,24 +247,16 @@ function evaluateCriteria(
   }
   
   // Minimum positive feedback percentage
-  if (criteria.min_positive_feedback_pct !== undefined) {
-    if ((stats?.positive_feedback_pct || 0) < criteria.min_positive_feedback_pct) return false
-  }
+  if (criteria.min_positive_feedback_pct !== undefined && (stats?.positive_feedback_pct || 0) < criteria.min_positive_feedback_pct) return false
   
   // Email verification
-  if (criteria.email_verified) {
-    if (!verification?.email_verified) return false
-  }
+  if (criteria.email_verified && !verification?.email_verified) return false
   
   // Phone verification
-  if (criteria.phone_verified) {
-    if (!verification?.phone_verified) return false
-  }
+  if (criteria.phone_verified && !verification?.phone_verified) return false
   
   // ID verification
-  if (criteria.id_verified) {
-    if (!verification?.id_verified) return false
-  }
+  if (criteria.id_verified && !verification?.id_verified) return false
   
   // Minimum months as member
   if (criteria.min_months !== undefined) {
@@ -284,19 +272,13 @@ function evaluateCriteria(
   }
   
   // Minimum follower count
-  if (criteria.min_followers !== undefined) {
-    if ((stats?.follower_count || 0) < criteria.min_followers) return false
-  }
+  if (criteria.min_followers !== undefined && (stats?.follower_count || 0) < criteria.min_followers) return false
   
   // Minimum response rate
-  if (criteria.min_response_rate !== undefined) {
-    if ((stats?.response_rate_pct || 0) < criteria.min_response_rate) return false
-  }
+  if (criteria.min_response_rate !== undefined && (stats?.response_rate_pct || 0) < criteria.min_response_rate) return false
   
   // Minimum repeat customers percentage
-  if (criteria.min_repeat_customers_pct !== undefined) {
-    if ((stats?.repeat_customer_pct || 0) < criteria.min_repeat_customers_pct) return false
-  }
+  if (criteria.min_repeat_customers_pct !== undefined && (stats?.repeat_customer_pct || 0) < criteria.min_repeat_customers_pct) return false
   
   // All criteria passed
   return true

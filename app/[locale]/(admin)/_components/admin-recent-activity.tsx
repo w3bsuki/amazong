@@ -98,7 +98,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
                   <div key={user.id} className="flex items-center gap-3 p-4">
                     <Avatar className="size-8">
                       <AvatarFallback className="text-xs">
-                        {(user.email || "??").substring(0, 2).toUpperCase()}
+                        {(user.email || "??").slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
@@ -132,7 +132,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
                 products.map((product) => (
                   <div key={product.id} className="flex items-center gap-3 p-4">
                     <div className="flex size-8 items-center justify-center rounded-md bg-muted text-xs font-medium">
-                      {product.title.substring(0, 2).toUpperCase()}
+                      {product.title.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{product.title}</p>
@@ -163,7 +163,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
                 orders.map((order) => (
                   <div key={order.id} className="flex items-center gap-3 p-4">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium font-mono">#{order.id.substring(0, 8)}</p>
+                      <p className="text-sm font-medium font-mono">#{order.id.slice(0, 8)}</p>
                       <p className="text-xs text-muted-foreground">
                         {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
                       </p>

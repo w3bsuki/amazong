@@ -1,39 +1,47 @@
 "use client";
 
-import { Store } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, ShieldCheck } from "lucide-react";
+import { Link } from "@/i18n/routing";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface MobileSellerCardProps {
   store: {
     name: string;
-    rating: string;
-    verified: boolean;
+    rating?: string;
+    verified?: boolean;
     avatarUrl?: string;
   };
+  ctaHref?: string;
 }
 
-export function MobileSellerCard({ store }: MobileSellerCardProps) {
+export function MobileSellerCard({ store, ctaHref }: MobileSellerCardProps) {
   return (
-    <div className="lg:hidden mb-4">
-      <div className="flex items-center gap-3 bg-background border border-border p-3 rounded-xl shadow-sm">
-        <Avatar className="h-10 w-10 border border-border shrink-0">
+    <div className="lg:hidden">
+      <div className="flex items-center gap-2 rounded-lg border border-border/70 bg-card px-3 py-2.5">
+        <Avatar className="h-9 w-9 border border-border/60 shrink-0">
           <AvatarImage src={store.avatarUrl} />
-          <AvatarFallback>{store.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+          <AvatarFallback className="text-[11px] font-semibold">
+            {store.name.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
-        <div className="flex-1 min-w-0">
-          <div className="font-bold text-foreground text-sm hover:underline cursor-pointer truncate">
-            {store.name}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="truncate text-sm font-semibold text-foreground">{store.name}</span>
+            {store.verified ? <ShieldCheck className="h-4 w-4 text-verified" /> : null}
           </div>
-          <div className="text-xs text-muted-foreground truncate">
-            {store.rating} positive feedback
-          </div>
+          {store.rating ? (
+            <div className="text-[11px] font-medium text-muted-foreground">{store.rating}</div>
+          ) : null}
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <Button variant="outline" size="sm" className="h-8 px-3 text-xs border-border text-muted-foreground hover:bg-background hover:text-foreground rounded-full bg-background">
-            <Store className="mr-1.5 h-3.5 w-3.5" /> Visit
-          </Button>
-        </div>
+        {ctaHref ? (
+          <Link
+            href={ctaHref}
+            className="flex items-center gap-1 rounded-full border border-border/60 bg-background px-2.5 py-1 text-[11px] font-semibold text-foreground hover:bg-muted"
+          >
+            View profile
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        ) : null}
       </div>
     </div>
   );

@@ -72,7 +72,7 @@ export async function createListing(args: { sellerId: string; data: unknown }) {
   const attributesJson: Record<string, string> = {}
   if (form.condition) attributesJson.condition = form.condition
   for (const attr of form.attributes || []) {
-    attributesJson[attr.name.toLowerCase().replace(/\s+/g, "_")] = attr.value
+    attributesJson[attr.name.toLowerCase().replaceAll(/\s+/g, "_")] = attr.value
   }
 
   const listPrice = form.compareAtPrice ? Number(form.compareAtPrice) : null
@@ -188,15 +188,13 @@ export async function completeSellerOnboarding(args: {
   })
 
   const refined = schema.superRefine((data, ctx) => {
-    if (data.accountType === "business") {
-      if (!data.businessName || data.businessName.trim().length < 2) {
+    if (data.accountType === "business" && (!data.businessName || data.businessName.trim().length < 2)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["businessName"],
           message: "Business name is required",
         })
       }
-    }
   })
 
   const parsed = refined.safeParse(args)

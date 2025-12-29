@@ -82,6 +82,7 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
             name="email"
             type="email"
             autoComplete="email"
+            required
             placeholder="you@example.com"
             aria-invalid={!!state?.fieldErrors?.email}
             className={`w-full px-3 py-2 border rounded-md shadow-sm bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${state?.fieldErrors?.email ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}

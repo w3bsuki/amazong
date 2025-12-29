@@ -105,7 +105,7 @@ export function PublicProfileClient({
   const [activeTab, setActiveTab] = useState(profile.is_seller ? "listings" : "reviews")
   
   const displayName = profile.display_name || profile.username || 'User'
-  const initials = displayName.substring(0, 2).toUpperCase()
+  const initials = displayName.slice(0, 2).toUpperCase()
   const memberSince = new Date(profile.created_at)
   
   const socialIcons: Record<string, React.ReactNode> = {
@@ -401,7 +401,7 @@ export function PublicProfileClient({
                           <Avatar className="size-10">
                             <AvatarImage src={review.buyer?.avatar_url} />
                             <AvatarFallback>
-                              {(review.buyer?.display_name || review.buyer?.username || "?").substring(0, 2).toUpperCase()}
+                              {(review.buyer?.display_name || review.buyer?.username || "?").slice(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
@@ -466,7 +466,7 @@ export function PublicProfileClient({
                           <Avatar className="size-10">
                             <AvatarImage src={review.seller?.avatar_url} />
                             <AvatarFallback>
-                              {(review.seller?.display_name || review.seller?.username || "?").substring(0, 2).toUpperCase()}
+                              {(review.seller?.display_name || review.seller?.username || "?").slice(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">

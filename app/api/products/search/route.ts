@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const query = searchParams.get("q")?.trim()
-    const limit = parseInt(searchParams.get("limit") || "10")
+    const limit = Number.parseInt(searchParams.get("limit") || "10")
 
     if (!query || query.length < 2) {
       return NextResponse.json({ products: [] })
@@ -50,7 +50,6 @@ export async function GET(request: Request) {
         ? p.images
         : (productImages || [])
             .filter((img) => !!img?.image_url)
-            .slice()
             .sort((a, b) => {
               const ap = a.is_primary ? 1 : 0
               const bp = b.is_primary ? 1 : 0

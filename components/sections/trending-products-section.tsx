@@ -4,7 +4,8 @@ import { useRef, useState, useCallback } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { CaretLeft, CaretRight, TrendUp, Tag, CurrencyCircleDollar } from "@phosphor-icons/react"
+import { CaretRight, TrendUp, Tag, CurrencyCircleDollar } from "@phosphor-icons/react"
+import { CarouselScrollButton } from "@/components/ui/carousel-scroll-button"
 import { useLocale } from "next-intl"
 import { ProductCard } from "@/components/shared/product/product-card"
 
@@ -137,28 +138,16 @@ export function TrendingProductsSection({
           >
             <div className="relative overflow-hidden">
               {/* Scroll Buttons */}
-              <button
+              <CarouselScrollButton
+                direction="left"
                 onClick={() => scroll(tab.id, "left")}
-                className={cn(
-                  "absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
-                  scrollStates[tab.id]?.left ? "opacity-100" : "opacity-0 pointer-events-none"
-                )}
-                aria-label="Scroll left"
-              >
-                <CaretLeft size={20} weight="regular" className="text-foreground" />
-              </button>
-              <button
+                visible={scrollStates[tab.id]?.left}
+              />
+              <CarouselScrollButton
+                direction="right"
                 onClick={() => scroll(tab.id, "right")}
-                className={cn(
-                  "absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
-                  scrollStates[tab.id]?.right ? "opacity-100" : "opacity-0 pointer-events-none"
-                )}
-                aria-label="Scroll right"
-              >
-                <CaretRight size={20} weight="regular" className="text-foreground" />
-              </button>
+                visible={scrollStates[tab.id]?.right}
+              />
 
               {/* Products Container */}
               <div

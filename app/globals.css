@@ -87,20 +87,22 @@
   --container-gallery: 36rem;   /* 576px - Professional product image size */
   --container-header-content: 72rem; /* 1152px - Header search/nav content max-width */
 
-  /* === TOUCH TARGETS (WCAG 2.1 AA) === */
-  /* --size-* tokens for reference */
-  --size-touch-xs: 2.25rem;
-  --size-touch-sm: 2.5rem;
-  --size-touch-md: 2.75rem;
-  --size-touch-lg: 3rem;
-  --size-touch-xl: 3.5rem;
+  /* === DIALOG/MODAL MAX HEIGHTS === */
+  --dialog-max-h: 90dvh;         /* Default dialog max height */
+  --dialog-max-h-sm: 75dvh;      /* Compact dialogs */
+  --dialog-max-h-lg: 95dvh;      /* Full-screen dialogs */
 
-  /* --spacing-touch-* tokens generate utility classes like h-touch, min-h-touch-lg, etc. */
-  --spacing-touch-xs: 2.25rem;   /* 36px */
-  --spacing-touch-sm: 2.5rem;    /* 40px */
-  --spacing-touch: 2.75rem;      /* 44px - WCAG AA minimum */
-  --spacing-touch-lg: 3rem;      /* 48px */
-  --spacing-touch-xl: 3.5rem;    /* 56px */
+  /* === TOUCH TARGETS (Modern Dense) === */
+  /* 
+     We use a "Modern Dense" scale. 
+     - 40px (touch) is the MAX standard for primary inputs/nav.
+     - 36px (touch-sm) is the standard for buttons in dense UIs.
+  */
+  --spacing-touch-xs: 2rem;      /* 32px - Dense buttons */
+  --spacing-touch-sm: 2.25rem;   /* 36px - Standard Buttons */
+  --spacing-touch: 2.5rem;       /* 40px - Max Standard (Inputs, Main Nav) */
+  --spacing-touch-lg: 2.5rem;    /* 40px - Large CTAs (capped at 40px) */
+  --spacing-touch-xl: 3rem;      /* 48px - Hero buttons (exception) */
 
   /* Form-specific spacing tokens - generates gap-form, p-section, etc. */
   --spacing-form-sm: 0.75rem;    /* 12px */
@@ -150,15 +152,16 @@
   --color-subheader-hover: oklch(0.96 0 0);
 
   /* === SHADOWS (eBay-style: minimal/flat) === */
-  --shadow-2xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
-  --shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow-md: 0 1px 3px 0 hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
-  --shadow-lg: 0 1px 3px 0 hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
-  --shadow-xl: 0 1px 3px 0 hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
-  --shadow-2xl: 0 1px 3px 0 hsl(0 0% 0% / 0.25);
-  --shadow-dropdown: 0 2px 8px 0 hsl(0 0% 0% / 0.08);
-  --shadow-modal: 0 4px 12px 0 hsl(0 0% 0% / 0.10);
+  /* We intentionally flatten shadows to avoid "glow" effects. */
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+  --shadow-md: 0 2px 4px 0 hsl(0 0% 0% / 0.05);
+  --shadow-lg: 0 2px 4px 0 hsl(0 0% 0% / 0.05); /* Flattened */
+  --shadow-xl: 0 4px 6px 0 hsl(0 0% 0% / 0.05); /* Flattened */
+  --shadow-2xl: 0 4px 6px 0 hsl(0 0% 0% / 0.10); /* Flattened */
+  --shadow-dropdown: 0 2px 4px 0 hsl(0 0% 0% / 0.10);
+  --shadow-modal: 0 4px 12px 0 hsl(0 0% 0% / 0.15);
   --shadow-product: none;
   --shadow-product-hover: none;
 
@@ -356,6 +359,34 @@
   --color-account-info: oklch(0.55 0.12 240);
   --color-account-info-soft: oklch(0.95 0.02 240);
   --color-account-section-bg: oklch(0.98 0 0);
+
+  /* === MOBILE PRODUCT PAGE TOKENS === */
+  /* Promo/Urgency - Temu-inspired warm tones */
+  --color-urgency-bg: oklch(0.97 0.03 27);
+  --color-urgency-text: oklch(0.45 0.20 27);
+  --color-urgency-icon: oklch(0.55 0.22 27);
+
+  /* Live/Activity indicators */
+  --color-live-dot: oklch(0.55 0.25 27);
+  --color-viewers-text: oklch(0.45 0.15 27);
+
+  /* Quick spec pills */
+  --color-spec-pill-bg: oklch(0.96 0 0);
+  --color-spec-pill-text: oklch(0.35 0 0);
+  --color-spec-pill-border: oklch(0.90 0 0);
+
+  /* Discount badge */
+  --color-discount-badge-bg: oklch(0.55 0.22 27);
+  --color-discount-badge-text: oklch(1 0 0);
+
+  /* Stock urgency */
+  --color-stock-urgent-bg: oklch(0.96 0.04 27);
+  --color-stock-urgent-text: oklch(0.50 0.20 27);
+
+  /* Mobile product page spacing */
+  --spacing-mobile-section: 1rem;
+  --spacing-mobile-card: 0.75rem;
+  --spacing-mobile-tight: 0.5rem;
 }
 
 /* ===== DARK MODE OVERRIDES ===== */
@@ -474,10 +505,10 @@
   --color-product-container-bg: oklch(0.18 0.01 250);
   --color-product-container-border: oklch(0.30 0.02 250);
 
-  --shadow-dropdown: 0 4px 16px 0 hsl(0 0% 0% / 0.25);
-  --shadow-modal: 0 16px 48px 0 hsl(0 0% 0% / 0.35);
-  --shadow-product: 0 2px 8px 0 hsl(0 0% 0% / 0.15);
-  --shadow-product-hover: 0 8px 24px 0 hsl(0 0% 0% / 0.25);
+  --shadow-dropdown: 0 2px 4px 0 hsl(0 0% 0% / 0.20);
+  --shadow-modal: 0 4px 12px 0 hsl(0 0% 0% / 0.30);
+  --shadow-product: none;
+  --shadow-product-hover: none;
 
   /* Form section tokens (dark mode) */
   --color-form-section-bg: oklch(0.22 0.02 250);
@@ -505,6 +536,21 @@
   --color-account-info: oklch(0.65 0.10 240);
   --color-account-info-soft: oklch(0.28 0.03 240);
   --color-account-section-bg: oklch(0.18 0 0);
+
+  /* Mobile product page tokens (dark mode) */
+  --color-urgency-bg: oklch(0.25 0.04 27);
+  --color-urgency-text: oklch(0.70 0.18 27);
+  --color-urgency-icon: oklch(0.65 0.20 27);
+  --color-live-dot: oklch(0.65 0.22 27);
+  --color-viewers-text: oklch(0.65 0.12 27);
+  --color-spec-pill-bg: oklch(0.28 0.02 250);
+  --color-spec-pill-text: oklch(0.85 0 0);
+  --color-spec-pill-border: oklch(0.35 0.02 250);
+  --color-discount-badge-bg: oklch(0.55 0.20 27);
+  --color-discount-badge-text: oklch(1 0 0);
+  --color-stock-urgent-bg: oklch(0.25 0.06 27);
+  --color-stock-urgent-text: oklch(0.65 0.18 27);
+
   --sidebar: hsl(240 5.9% 10%);
   --sidebar-foreground: hsl(240 4.8% 95.9%);
   --sidebar-primary: hsl(224.3 76.3% 48%);
@@ -557,6 +603,11 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+
+  /* Remove 300ms tap delay on mobile */
+  a, button, input, select, textarea, [role="button"] {
+    touch-action: manipulation;
   }
 }
 
@@ -683,8 +734,10 @@
 ::-webkit-scrollbar-thumb:hover { background: oklch(0.65 0 0); }
 
 /* ===== UTILITY CLASSES ===== */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.no-scrollbar,
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* Custom text-2xs utility (10px) for badges & tiny labels - Amazon/eBay style */
 .text-2xs { 
@@ -703,7 +756,7 @@
 .pr-safe { padding-right: env(safe-area-inset-right); }
 
 /* Touch optimization */
-.touch-target { min-width: 44px; min-height: 44px; }
+.touch-target { min-width: 40px; min-height: 40px; }
 .touch-action-manipulation { touch-action: manipulation; }
 .tap-transparent { -webkit-tap-highlight-color: transparent; }
 

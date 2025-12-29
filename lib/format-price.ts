@@ -72,11 +72,11 @@ export function formatPriceParts(amount: number, locale: string = 'en'): PricePa
   const symbol = '€'
   
   const wholePart = Math.floor(amount).toString()
-  const decimalPart = (amount % 1).toFixed(2).substring(2)
+  const decimalPart = (amount % 1).toFixed(2).slice(2)
   
   return {
     symbol,
-    wholePart: isEuro ? wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : wholePart,
+    wholePart: isEuro ? wholePart.replaceAll(/\B(?=(\d{3})+(?!\d))/g, ' ') : wholePart,
     decimalPart,
     symbolPosition: isEuro ? 'after' : 'before'
   }

@@ -24,6 +24,8 @@ import { searchProducts } from "./_lib/search-products"
 import type { Product } from "./_lib/types"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
 
+import { AttributeQuickFilters } from "@/components/category/attribute-quick-filters"
+
 // =============================================================================
 // CATEGORY PAGE - HYBRID CACHING STRATEGY
 // 
@@ -108,7 +110,7 @@ export default async function CategoryPage({
   const searchParams = await searchParamsPromise
   const { slug, locale } = params
   setRequestLocale(locale)
-  const currentPage = Math.max(1, parseInt(searchParams.page || "1", 10))
+  const currentPage = Math.max(1, Number.parseInt(searchParams.page || "1", 10))
   
   const supabase = createStaticClient()
   
@@ -183,7 +185,7 @@ export default async function CategoryPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container py-4">
+      <div className="container px-2 sm:px-4 py-1">
         {/* No breadcrumb needed - sidebar provides all navigation context:
             - Category title at top
             - Back link to parent/all categories  
@@ -211,68 +213,69 @@ export default async function CategoryPage({
           
           {/* Main Content */}
           <div className="flex-1 min-w-0 lg:pl-5">
+            
             {/* Subcategory Circles - only show if subcategories exist */}
-            <Suspense>
-              <SubcategoryTabs
-                currentCategory={currentCategory}
-                subcategories={subcategories}
-                parentCategory={parentCategory}
-                basePath="/categories"
-              />
-            </Suspense>
+            {subcategories.length > 0 ? (
+              <Suspense>
+                <SubcategoryTabs
+                  currentCategory={currentCategory}
+                  subcategories={subcategories}
+                  parentCategory={parentCategory}
+                  basePath="/categories"
+                />
+              </Suspense>
+            ) : (
+              /* Show Attribute Quick Filters for leaf categories */
+              <Suspense>
+                <AttributeQuickFilters 
+                  attributes={filterableAttributes}
+                  locale={locale}
+                />
+              </Suspense>
+            )}
 
-            {/* Active Filter Pills */}
-            <div className="mb-2">
+            {/* Filter & Sort Row - Consolidated toolbar with all filters */}
+            <div className="mb-2 sm:mb-4 grid grid-cols-2 lg:flex lg:flex-wrap items-center gap-2">
+              {/* Mobile Filters (Sheet) */}
+              <div className="lg:hidden">
+                <Suspense>
+                  <MobileFilters 
+                    locale={locale}
+                    resultsCount={totalProducts}
+                    attributes={filterableAttributes}
+                  />
+                </Suspense>
+              </div>
+              
+              {/* Sort Dropdown */}
+              <div className="lg:contents">
+                <SortSelect />
+              </div>
+              
+              {/* Desktop Filters - Now includes attribute filters */}
+              <div className="hidden lg:flex items-center gap-2 flex-wrap">
+                <Suspense>
+                  <DesktopFilters 
+                    attributes={filterableAttributes}
+                    categorySlug={slug}
+                  />
+                </Suspense>
+              </div>
+              
+              {/* Results Count */}
+              <p className="hidden sm:block text-sm text-muted-foreground ml-auto whitespace-nowrap">
+                <span className="font-semibold text-foreground">{totalProducts}</span>
+                <span> {t('results')}</span>
+                <span className="hidden lg:inline"> {t('in')} <span className="font-medium">{categoryName}</span></span>
+              </p>
+            </div>
+
+            {/* Active Filter Pills - Moved below toolbar */}
+            <div className="mb-4">
               <Suspense>
                 <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} />
               </Suspense>
             </div>
-
-          {/* Filter & Sort Row - Consolidated toolbar with all filters */}
-          <div className="mb-3 sm:mb-5 grid grid-cols-2 lg:flex lg:flex-wrap items-center gap-2 sm:gap-2.5">
-            {/* Mobile Filters (Sheet) */}
-            <div className="lg:hidden">
-              <Suspense>
-                <MobileFilters 
-                  locale={locale}
-                  resultsCount={totalProducts}
-                  attributes={filterableAttributes}
-                />
-              </Suspense>
-            </div>
-            
-            {/* Sort Dropdown */}
-            <div className="lg:contents">
-              <SortSelect />
-            </div>
-            
-            {/* Desktop Filters - Now includes attribute filters */}
-            <div className="hidden lg:flex items-center gap-2 flex-wrap">
-              <Suspense>
-                <DesktopFilters 
-                  attributes={filterableAttributes}
-                  categorySlug={slug}
-                />
-              </Suspense>
-            </div>
-            
-            {/* Results Count */}
-            <p className="hidden sm:block text-sm text-muted-foreground ml-auto whitespace-nowrap">
-              <span className="font-semibold text-foreground">{totalProducts}</span>
-              <span> {t('results')}</span>
-              <span className="hidden lg:inline"> {t('in')} <span className="font-medium">{categoryName}</span></span>
-            </p>
-          </div>
-          
-          {/* Mobile Results Info Strip */}
-          <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2.5">
-            <span>
-              <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? t('product') : t('products')}
-            </span>
-            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-              {categoryName}
-            </span>
-          </div>
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">

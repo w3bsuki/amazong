@@ -108,7 +108,7 @@ export const breadcrumbPresets = {
   customerService: [{ label: "Customer Service" }],
   giftCards: [{ label: "Gift Cards" }],
   registry: [{ label: "Registry & Gift Lists" }],
-  sell: [{ label: "Sell on Amazong" }],
+  sell: [{ label: "Sell on Treido" }],
   account: [{ label: "Your Account" }],
   cart: [{ label: "Shopping Cart" }],
   checkout: [{ label: "Checkout" }],
@@ -117,5 +117,6 @@ export const breadcrumbPresets = {
   contact: [{ label: "Contact Us" }],
   privacy: [{ label: "Privacy Policy" }],
   terms: [{ label: "Terms of Service" }],
+  cookies: [{ label: "Cookie Policy" }],
   returns: [{ label: "Returns & Refunds" }],
 } as const

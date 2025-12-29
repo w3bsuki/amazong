@@ -672,7 +672,7 @@ export function SmartCategoryPicker({
         </button>
         
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent className="h-[90vh] max-h-[90vh] flex flex-col p-0 gap-0">
+          <DialogContent className="h-(--dialog-max-h) max-h-(--dialog-max-h) flex flex-col p-0 gap-0">
             {MobileWizardContent}
           </DialogContent>
         </Dialog>

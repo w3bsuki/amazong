@@ -1,15 +1,11 @@
 import { Link, routing, validateLocale } from "@/i18n/routing"
-import Image from "next/image"
 import { setRequestLocale } from "next-intl/server"
-import { Card, CardContent } from "@/components/ui/card"
 import { CaretRight, GridFour } from "@phosphor-icons/react/dist/ssr"
 import type { Metadata } from 'next'
 
-import {
-  getCategoryImageUrl,
-  getCategoryName,
-  getRootCategories,
-} from "./_lib/categories-data"
+import { getRootCategories } from "./_lib/categories-data"
+import { SubcategoryCircles } from "@/components/category/subcategory-circles"
+import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 
 // =============================================================================
 // CATEGORIES INDEX PAGE - FULLY CACHED
@@ -74,50 +70,23 @@ export default async function CategoriesPage({
         </div>
       </div>
 
-      <div className="container -mt-4 sm:-mt-6">
-        {/* Category List */}
-        <section>
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
+      <div className="container -mt-4 sm:-mt-6 space-y-2">
+        {/* Category Circles (Standardized) */}
+        <section className="bg-background rounded-xl border border-border p-2 shadow-sm">
+          <h2 className="text-lg font-bold mb-2 px-2">
             {locale === "bg" ? "Преглед по категории" : "Browse by Department"}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {categories.map((category) => {
-              const categoryName = getCategoryName(locale, category)
-              const imageUrl = getCategoryImageUrl(category)
-              
-              return (
-                <Link
-                  key={category.slug}
-                  href={`/categories/${category.slug}`}
-                  className="group"
-                >
-                  <Card className="border-border hover:border-primary transition-colors">
-                    <CardContent className="p-4 flex items-center gap-4">
-                      <div className="size-14 sm:size-16 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0">
-                        <Image 
-                          src={imageUrl} 
-                          alt={categoryName}
-                          width={64}
-                          height={64}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                          {categoryName}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {locale === "bg" ? "Разгледай продукти" : "Browse products"}
-                        </p>
-                      </div>
-                      <CaretRight className="size-5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
-                    </CardContent>
-                  </Card>
-                </Link>
-              )
-            })}
-          </div>
+          {/* Use SubcategoryCircles but we need to adapt it to show ALL categories without "All" button */}
+          <SubcategoryCircles 
+            subcategories={categories} 
+            currentCategory={null}
+            basePath="/categories"
+            className="w-full"
+          />
         </section>
+
+        {/* CTA Banner (Standardized) */}
+        <StartSellingBanner locale={locale} />
       </div>
     </div>
   )

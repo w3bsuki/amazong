@@ -302,7 +302,7 @@ export function NewestListingsSection({
                   "flex items-center justify-center",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                   activeTab === tab.id
-                    ? "bg-cta-trust-blue text-cta-trust-blue-text shadow-sm"
+                    ? "bg-cta-trust-blue text-cta-trust-blue-text"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 )}
                 aria-selected={activeTab === tab.id}

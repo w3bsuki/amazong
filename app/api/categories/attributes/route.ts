@@ -5,7 +5,7 @@ function normalizeAttrKey(value: unknown): string {
   return String(value ?? "")
     .trim()
     .toLowerCase()
-    .replace(/\s+/g, " ")
+    .replaceAll(/\s+/g, " ")
 }
 
 // Helper to get all ancestor category IDs (for attribute inheritance)

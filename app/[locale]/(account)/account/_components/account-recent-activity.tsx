@@ -61,6 +61,8 @@ interface AccountRecentActivityProps {
 
 export function AccountRecentActivity({ orders, products, sales, locale }: AccountRecentActivityProps) {
   const dateLocale = locale === 'bg' ? bg : enUS
+
+  const withLocale = (path: string) => `/${locale}${path}`
   
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {
@@ -120,7 +122,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
     <div className="space-y-6">
       {/* Recent Orders Section - Horizontal scroll on mobile */}
       <div>
-        <SectionHeader title={t.recentOrders} href="/account/orders" viewAllText={t.viewAll} />
+        <SectionHeader title={t.recentOrders} href={withLocale("/account/orders")} viewAllText={t.viewAll} />
         {orders.length === 0 ? (
           <div className="rounded-2xl bg-account-stat-bg border border-account-stat-border p-8 text-center">
             <div className="flex size-14 mx-auto items-center justify-center rounded-2xl bg-account-stat-icon-bg border border-account-stat-border mb-3">
@@ -146,7 +148,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                   return (
                     <Link 
                       key={order.id} 
-                      href={`/account/orders/${order.id}`}
+                      href={withLocale(`/account/orders/${order.id}`)}
                       className="flex flex-col w-[140px] rounded-2xl bg-account-stat-bg border border-account-stat-border p-3 active:scale-[0.98] transition-all"
                     >
                       {/* Order Image */}
@@ -204,7 +206,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                   return (
                     <Link 
                       key={order.id} 
-                      href={`/account/orders/${order.id}`}
+                      href={withLocale(`/account/orders/${order.id}`)}
                       className="flex items-center gap-3 p-4 hover:bg-account-card-hover transition-colors"
                     >
                       <div className="relative size-11 rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
@@ -252,7 +254,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       {/* My Products Section - Only show if has products */}
       {products.length > 0 && (
         <div>
-          <SectionHeader title={t.myProducts} href="/account/selling" viewAllText={t.viewAll} />
+          <SectionHeader title={t.myProducts} href={withLocale("/account/selling")} viewAllText={t.viewAll} />
           
           {/* Mobile: Horizontal scroll cards */}
           <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
@@ -260,7 +262,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
               {products.slice(0, 5).map((product) => (
                 <Link 
                   key={product.id} 
-                  href={`/product/${product.id}`}
+                  href={withLocale(`/product/${product.id}`)}
                   className="flex flex-col w-[140px] rounded-2xl bg-account-stat-bg border border-account-stat-border p-3 active:scale-[0.98] transition-all"
                 >
                   {/* Product Image */}
@@ -301,7 +303,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
               {products.slice(0, 3).map((product) => (
                 <Link 
                   key={product.id} 
-                  href={`/product/${product.id}`}
+                  href={withLocale(`/product/${product.id}`)}
                   className="flex items-center gap-3 p-4 hover:bg-account-card-hover transition-colors"
                 >
                   <div className="relative size-11 rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
@@ -340,7 +342,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       {/* Recent Sales Section - Only show if has sales */}
       {sales.length > 0 && (
         <div>
-          <SectionHeader title={t.recentSales} href="/account/sales" viewAllText={t.viewAll} />
+          <SectionHeader title={t.recentSales} href={withLocale("/account/sales")} viewAllText={t.viewAll} />
           <div className="rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden">
             <div className="divide-y divide-account-stat-border/50">
             {sales.slice(0, 3).map((sale, index) => (

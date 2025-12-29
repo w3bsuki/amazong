@@ -76,7 +76,7 @@ export default async function SearchPage({
   const searchParams = await searchParamsPromise
   const supabase = createStaticClient()
   const query = searchParams.q || ""
-  const currentPage = Math.max(1, parseInt(searchParams.page || "1", 10))
+  const currentPage = Math.max(1, Number.parseInt(searchParams.page || "1", 10))
   
   // Read shipping zone from cookie (set by header "Доставка до" dropdown)
   // Only filter if user has selected a specific zone (not WW = worldwide = show all)

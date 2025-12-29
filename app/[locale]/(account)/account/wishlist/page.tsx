@@ -118,7 +118,7 @@ export default async function WishlistPage({ params, searchParams }: WishlistPag
       }
     }
   })
-  const categories = Array.from(categoriesMap.values()).sort((a, b) => b.count - a.count)
+  const categories = [...categoriesMap.values()].sort((a, b) => b.count - a.count)
 
   // Calculate stats (before filtering)
   const stats = {

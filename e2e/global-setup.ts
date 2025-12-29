@@ -48,14 +48,13 @@ export default async function globalSetup(config: FullConfig) {
     '/en/cart',
     '/en/categories',
     '/en/account',
-    '/en/sell',
     '/en/plans',
     '/en/chat',
   ]
 
   const urls = warmPaths.map((p) => new URL(p, baseURL).toString())
 
-  // eslint-disable-next-line no-console
+   
   console.log(`[e2e] Warming Next.js routes (${urls.length}) via ${baseURL}`)
 
   const browser = await chromium.launch()
@@ -64,7 +63,7 @@ export default async function globalSetup(config: FullConfig) {
   try {
     // Warm sequentially to avoid overloading the dev compiler.
     for (const url of urls) {
-      // eslint-disable-next-line no-console
+       
       console.log(`[e2e] warm: ${url}`)
       await warmUrl(page, url, { attempts: 6, timeoutMs: 60_000 })
     }

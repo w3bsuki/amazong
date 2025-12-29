@@ -2,6 +2,7 @@ import { CheckoutHeader } from "./_components/checkout-header"
 import { CheckoutFooter } from "./_components/checkout-footer"
 import { setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
+import { CartProvider } from "@/components/providers/cart-context"
 
 // Generate static params for all supported locales
 export function generateStaticParams() {
@@ -32,12 +33,14 @@ export default async function CheckoutLayout({
   setRequestLocale(locale)
 
   return (
-    <div className="min-h-screen flex flex-col bg-muted">
-      <CheckoutHeader />
-      <main className="flex-1">
-        {children}
-      </main>
-      <CheckoutFooter />
-    </div>
+    <CartProvider>
+      <div className="min-h-screen flex flex-col bg-muted">
+        <CheckoutHeader />
+        <main className="flex-1">
+          {children}
+        </main>
+        <CheckoutFooter />
+      </div>
+    </CartProvider>
   )
 }

@@ -48,21 +48,31 @@ export default function ResetPasswordPage() {
 
   // Check if user has a valid recovery session
   useEffect(() => {
-    const checkSession = async () => {
-      const supabase = createClient()
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
+    let isActive = true
 
-      // User should have a session from clicking the recovery link
-      if (session) {
-        setIsValidSession(true)
-      } else {
+    const supabase = createClient()
+    const timeoutId = setTimeout(() => {
+      // If session check is slow or fails silently, don't trap users on a spinner.
+      if (isActive) setIsValidSession(false)
+    }, 5000)
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!isActive) return
+        clearTimeout(timeoutId)
+        setIsValidSession(!!data.session)
+      })
+      .catch(() => {
+        if (!isActive) return
+        clearTimeout(timeoutId)
         setIsValidSession(false)
-      }
-    }
+      })
 
-    checkSession()
+    return () => {
+      isActive = false
+      clearTimeout(timeoutId)
+    }
   }, [])
 
   const onSubmit = async (data: ResetPasswordFormData) => {
@@ -190,6 +200,7 @@ export default function ResetPasswordPage() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showPassword ? (locale === "bg" ? "Скрий паролата" : "Hide password") : (locale === "bg" ? "Покажи паролата" : "Show password")}
                     >
                       {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
                     </button>
@@ -222,6 +233,7 @@ export default function ResetPasswordPage() {
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={showConfirmPassword ? (locale === "bg" ? "Скрий паролата" : "Hide password") : (locale === "bg" ? "Покажи паролата" : "Show password")}
                     >
                       {showConfirmPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
                     </button>

@@ -43,13 +43,12 @@ export function SortSelect() {
     <Select value={currentSort} onValueChange={handleSortChange}>
       <SelectTrigger 
         className={cn(
-          "w-full lg:w-auto h-touch-sm px-4 rounded-full gap-2",
-          "border border-input bg-background",
-          "hover:bg-accent hover:text-accent-foreground",
-          "active:bg-accent/80",
-          isSorted && "border-primary bg-primary/5",
+          "w-full lg:w-auto h-9 px-4 rounded-full gap-2",
+          "bg-secondary hover:bg-secondary/80 hover:text-foreground border border-border/50",
+          "active:bg-secondary/80",
+          isSorted && "bg-primary/10 text-primary border-primary/20",
           "text-sm font-medium text-foreground",
-          "focus:ring-2 focus:ring-offset-1 focus:ring-ring focus:border-input",
+          "focus:ring-2 focus:ring-offset-1 focus:ring-ring",
           "[&>svg:last-child]:hidden"
         )}
         aria-label={t('sortBy')}

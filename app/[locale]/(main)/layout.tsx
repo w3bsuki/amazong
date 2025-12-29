@@ -7,6 +7,13 @@ import { createClient } from "@/lib/supabase/server";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 
+import { AuthStateListener } from "@/components/providers/auth-state-listener";
+import { CartProvider } from "@/components/providers/cart-context";
+import { Toaster } from "@/components/providers/sonner";
+import { WishlistProvider } from "@/components/providers/wishlist-context";
+import { GeoWelcomeModal } from "@/components/common/geo-welcome-modal";
+import { CookieConsent } from "@/components/layout/cookie-consent";
+
 import { SkipLinks } from "@/components/shared/skip-links";
 
 // Generate static params for all supported locales
@@ -44,20 +51,31 @@ export default async function MainLayout({
     }
 
     return (
-        <div className="bg-secondary min-h-screen flex flex-col">
-            {/* Skip Links - Accessibility */}
-            <SkipLinks />
-            
-            <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
-                <SiteHeader user={user} />
-            </Suspense>
-            
-            <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
-                {children}
-            </main>
-            
-            <SiteFooter />
-            <MobileTabBar />
-        </div>
+        <CartProvider>
+            <WishlistProvider>
+                <div className="bg-secondary min-h-screen flex flex-col">
+                    {/* Skip Links - Accessibility */}
+                    <SkipLinks />
+
+                    <Suspense fallback={null}>
+                        <AuthStateListener />
+                    </Suspense>
+                    
+                    <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
+                        <SiteHeader user={user} />
+                    </Suspense>
+                    
+                    <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
+                        {children}
+                    </main>
+                    
+                    <SiteFooter />
+                    <MobileTabBar />
+                    <Toaster />
+                    <CookieConsent />
+                    <GeoWelcomeModal locale={locale} />
+                </div>
+            </WishlistProvider>
+        </CartProvider>
     );
 }

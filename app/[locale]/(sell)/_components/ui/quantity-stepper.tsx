@@ -36,7 +36,7 @@ export function QuantityStepper({
         type="number"
         value={value}
         onChange={(e) => {
-          const num = parseInt(e.target.value, 10);
+          const num = Number.parseInt(e.target.value, 10);
           if (!isNaN(num)) {
             onChange(Math.max(min, Math.min(max, num)));
           }

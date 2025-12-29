@@ -101,7 +101,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const parentSlug = searchParams.get("parent")
     const includeChildren = searchParams.get("children") === "true"
-    const depth = parseInt(searchParams.get("depth") || "1")
+    const depth = Number.parseInt(searchParams.get("depth") || "1")
 
     let supabase
     try {

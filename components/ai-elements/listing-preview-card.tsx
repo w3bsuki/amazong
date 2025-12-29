@@ -117,7 +117,7 @@ export function ListingPreviewCard({
           </Badge>
           {listing.categorySlug && (
             <Badge variant="outline" className="rounded-xl border-border/50 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground capitalize">
-              {listing.categorySlug.replace(/-/g, " ")}
+              {listing.categorySlug.replaceAll('-', " ")}
             </Badge>
           )}
         </div>

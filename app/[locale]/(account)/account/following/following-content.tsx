@@ -17,6 +17,13 @@ import {
 import { toast } from "sonner"
 import { unfollowSeller } from "@/app/actions/seller-follows"
 
+function shouldBypassNextImage(src: string) {
+  // Next/Image will 400 on remote SVGs (e.g. Dicebear) unless dangerouslyAllowSVG is enabled.
+  // For avatars, use plain <img> for SVGs to keep the page console-clean.
+  const normalized = src.toLowerCase()
+  return normalized.includes("api.dicebear.com") || normalized.includes("/svg") || normalized.endsWith(".svg")
+}
+
 // Type matches what page.tsx fetches with joined query
 interface FollowedSeller {
   seller_id: string
@@ -81,11 +88,11 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
               ? "Когато последвате магазин, ще виждате техните нови продукти и оферти тук" 
               : "When you follow a store, you'll see their new products and offers here"}
           </p>
-          <Link href={`/${locale}`}>
-            <Button>
+          <Button asChild>
+            <Link href={`/${locale}`}>
               {locale === "bg" ? "Разгледай магазини" : "Browse stores"}
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </CardContent>
       </Card>
     )
@@ -120,12 +127,21 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
                   {/* Avatar */}
                   <div className="relative size-14 rounded-full overflow-hidden bg-muted shrink-0">
                     {seller.profile?.avatar_url ? (
-                      <Image
-                        src={seller.profile.avatar_url}
-                        alt={seller.store_name}
-                        fill
-                        className="object-cover"
-                      />
+                      shouldBypassNextImage(seller.profile.avatar_url) ? (
+                        <img
+                          src={seller.profile.avatar_url}
+                          alt={seller.store_name}
+                          className="size-full object-cover"
+                        />
+                      ) : (
+                        <Image
+                          src={seller.profile.avatar_url}
+                          alt={seller.store_name}
+                          fill
+                          sizes="56px"
+                          className="object-cover"
+                        />
+                      )
                     ) : (
                       <div className="size-full flex items-center justify-center">
                         <Storefront className="size-6 text-muted-foreground" />
@@ -182,12 +198,12 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
 
                 {/* Actions */}
                 <div className="flex gap-2 mt-4">
-                  <Link href={`/${locale}/seller/${seller.store_slug || seller.id}`} className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full">
+                  <Button asChild variant="outline" size="sm" className="flex-1">
+                    <Link href={`/${locale}/seller/${seller.store_slug || seller.id}`}>
                       <Storefront className="size-4 mr-1.5" />
                       {locale === "bg" ? "Виж магазина" : "View Store"}
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"

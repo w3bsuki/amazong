@@ -60,11 +60,10 @@ export function useRecentlyViewed() {
         // Remove if already exists
         const filtered = prev.filter((p) => p.id !== product.id)
         // Add to front with current timestamp
-        const updated = [
+        return [
           { ...product, viewedAt: Date.now() },
           ...filtered,
         ].slice(0, MAX_ITEMS)
-        return updated
       })
     },
     []

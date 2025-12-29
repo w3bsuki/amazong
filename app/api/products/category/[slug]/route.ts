@@ -10,7 +10,7 @@ export async function GET(
   try {
     const { slug } = await params
     const { searchParams } = new URL(request.url)
-    const limit = parseInt(searchParams.get("limit") || "18")
+    const limit = Number.parseInt(searchParams.get("limit") || "18")
     
     const cookieStore = await cookies()
     const userZone = (cookieStore.get("user-zone")?.value || "WW") as ShippingRegion

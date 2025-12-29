@@ -875,7 +875,7 @@ export async function getBusinessCustomers(
     }
   }
   
-  let customers = Array.from(customerMap.values())
+  let customers = [...customerMap.values()]
   
   // Apply search filter
   if (search) {

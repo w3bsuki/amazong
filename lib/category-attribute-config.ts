@@ -451,7 +451,7 @@ export function getCategoryConfig(categoryPath: string[]): CategoryAttributeConf
   
   // Find the most specific matching config
   return CATEGORY_CONFIGS.find(config => {
-    const pattern = config.categoryPattern.replace(/\*/g, ".*");
+    const pattern = config.categoryPattern.replaceAll('*', ".*");
     const regex = new RegExp(`^${pattern}`, "i");
     return regex.test(fullPath);
   });

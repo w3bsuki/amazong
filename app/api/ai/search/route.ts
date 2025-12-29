@@ -17,11 +17,11 @@ export const maxDuration = 30
 
 const nonNegativeNumberFromString = z.preprocess(
   (v) => {
-    if (v === undefined || v === null) return undefined
+    if (v === undefined || v === null) return
     if (typeof v === "number") return v
     if (typeof v === "string") {
       const trimmed = v.trim()
-      if (!trimmed) return undefined
+      if (!trimmed) return
       const n = Number(trimmed)
       return Number.isFinite(n) ? n : v
     }

@@ -43,16 +43,13 @@ export {
 export { DesktopLayout, MobileLayout, StepperWrapper } from "./layouts";
 
 // Main Form Component - handles both desktop and mobile
-export { UnifiedSellForm, SellForm, SellFormStepper } from "./sell-form-unified";
+export { UnifiedSellForm } from "./sell-form-unified";
 
 // Header (renamed from sell-header-v3.tsx)
-export { SellHeader, SellHeaderV3, MemoizedSellHeader } from "./sell-header";
+export { SellHeader, MemoizedSellHeader } from "./sell-header";
 
-// AI Assistant (with memoized and lazy versions)
-export { 
-  AiListingAssistant,
-  MemoizedAiListingAssistant,
-} from "./ai/ai-listing-assistant";
+// AI Assistant
+export { AiListingAssistant } from "./ai/ai-listing-assistant";
 
 // UI Components
 export { SmartCategoryPicker } from "./ui/smart-category-picker";

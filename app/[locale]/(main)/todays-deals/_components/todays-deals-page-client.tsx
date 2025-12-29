@@ -18,6 +18,7 @@ import {
     type Icon,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
+import { normalizeImageUrl } from "@/lib/normalize-image-url"
 
 type TodaysDealsTabLabels = {
     allDeals: string
@@ -241,27 +242,34 @@ export default function TodaysDealsPageClient({
 
             {/* Deals Grid */}
             <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
-                {filteredDeals.map((deal) => (
-                    <Card
-                        key={deal.id}
-                        className="h-full hover:shadow-product-hover transition-shadow cursor-pointer border-border rounded-lg overflow-hidden group"
-                    >
-                        <CardContent className="p-2 sm:p-3 md:p-4">
-                            {/* Image with discount badge */}
-                            <div className="aspect-square relative mb-2 sm:mb-3 bg-secondary rounded-lg overflow-hidden">
-                                <Image
-                                    src={deal.image}
-                                    alt={deal.title}
-                                    fill
-                                    className="object-contain w-full h-full mix-blend-multiply"
-                                />
-                                {/* Discount badge */}
-                                <div className="absolute top-1.5 left-1.5">
-                                    <Badge className="bg-brand-deal hover:bg-brand-deal text-white rounded-md px-1.5 py-0.5 text-xs font-bold">
-                                        -{deal.discount}%
-                                    </Badge>
+                {filteredDeals.map((deal) => {
+                    const imageUrl = normalizeImageUrl(deal.image)
+                    const isUnsplash = imageUrl.startsWith("https://images.unsplash.com/")
+                    const sizes = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+
+                    return (
+                        <Card
+                            key={deal.id}
+                            className="h-full hover:shadow-product-hover transition-shadow cursor-pointer border-border rounded-lg overflow-hidden group"
+                        >
+                            <CardContent className="p-2 sm:p-3 md:p-4">
+                                {/* Image with discount badge */}
+                                <div className="aspect-square relative mb-2 sm:mb-3 bg-secondary rounded-lg overflow-hidden">
+                                    <Image
+                                        src={imageUrl}
+                                        alt={deal.title}
+                                        fill
+                                        sizes={sizes}
+                                        unoptimized={isUnsplash}
+                                        className="object-contain w-full h-full mix-blend-multiply"
+                                    />
+                                    {/* Discount badge */}
+                                    <div className="absolute top-1.5 left-1.5">
+                                        <Badge className="bg-brand-deal hover:bg-brand-deal text-white rounded-md px-1.5 py-0.5 text-xs font-bold">
+                                            -{deal.discount}%
+                                        </Badge>
+                                    </div>
                                 </div>
-                            </div>
 
                             {/* Time remaining */}
                             <div className="flex items-center gap-1 text-brand-deal text-xs font-medium mb-2">
@@ -304,8 +312,9 @@ export default function TodaysDealsPageClient({
                                 <span className="text-xs text-link font-medium">{deal.reviews.toLocaleString()}</span>
                             </div>
                         </CardContent>
-                    </Card>
-                ))}
+                        </Card>
+                    )
+                })}
             </div>
 
             {/* Empty state */}

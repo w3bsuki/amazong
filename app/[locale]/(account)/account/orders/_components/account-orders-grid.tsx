@@ -332,6 +332,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                       src={image}
                                       alt={title}
                                       fill
+                                      sizes="64px"
                                       className="object-contain"
                                     />
                                   </div>
@@ -434,6 +435,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                 src={image}
                                 alt=""
                                 fill
+                                sizes="40px"
                                 className="object-contain"
                               />
                             </div>
@@ -552,6 +554,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                       src={image}
                                       alt={title}
                                       fill
+                                      sizes="80px"
                                       className="object-contain"
                                     />
                                   </div>

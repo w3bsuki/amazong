@@ -40,8 +40,11 @@ export function getProductUrl(product: ProductUrlParams): string {
     if (product.id) return `/${sellerUsername}/${product.id}`
   }
 
-  // If we can't build a canonical URL, fail closed.
-  console.warn('getProductUrl: Missing seller username and/or product identifier', product)
+  // Fallback: if we have an ID but no seller username, route via /product/{id}.
+  // This avoids broken links and keeps the console clean when partial product data is rendered.
+  if (product.id) return `/product/${product.id}`
+
+  // If we can't build any safe URL, fail closed.
   return '#'
 }
 

@@ -194,8 +194,16 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                 </button>
 
                 {/* Password Row */}
-                <button
+                <div
                     onClick={() => setIsChangePasswordOpen(true)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault()
+                            setIsChangePasswordOpen(true)
+                        }
+                    }}
+                    role="button"
+                    tabIndex={0}
                     className="w-full flex items-center gap-3 p-3 text-left active:bg-muted/50 transition-colors"
                 >
                     <div className="flex size-10 items-center justify-center rounded-full bg-muted">
@@ -216,7 +224,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                     >
                         {locale === 'bg' ? 'Промени' : 'Change'}
                     </Button>
-                </button>
+                </div>
 
                 {/* 2FA Row */}
                 <div className="flex items-center gap-3 p-3">

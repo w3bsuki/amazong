@@ -118,11 +118,11 @@ export function SiteHeader({ user, hideSubheader = false, variant = "default" }:
         
         {/* Search bar row - integrated into header, hidden on product pages */}
         {!isProductPage && (
-        <div className="px-3 pb-1.5">
+        <div className="px-3 pb-1">
           <button
             onClick={() => setIsMobileSearchOpen(true)}
             className={cn(
-              "w-full flex items-center gap-2 h-10 px-3.5 rounded-lg",
+              "w-full flex items-center gap-2 h-10 px-3 rounded-lg", /* h-10 (40px) - Compact */
               "bg-background",
               "text-muted-foreground text-sm text-left",
               "active:bg-muted",

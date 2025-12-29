@@ -87,7 +87,7 @@ export default async function AdminUsersPage() {
                     <div className="flex items-center gap-3">
                       <Avatar className="size-8">
                         <AvatarFallback className="text-xs">
-                          {(user.email || '??').substring(0, 2).toUpperCase()}
+                          {(user.email || '??').slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>

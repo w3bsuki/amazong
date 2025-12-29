@@ -19,13 +19,13 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Loader2, Package, Star, CheckCircle, MessageSquare, XCircle, AlertTriangle } from "lucide-react"
+import { Loader2, Package, CheckCircle, MessageSquare, XCircle, AlertTriangle, Star } from "lucide-react"
 import { buyerConfirmDelivery, canBuyerRateSeller, requestOrderCancellation, reportOrderIssue, type IssueType } from "@/app/actions/orders"
 import { submitSellerFeedback } from "@/app/actions/seller-feedback"
 import { type OrderItemStatus } from "@/lib/order-status"
 import { toast } from "sonner"
 import { Link, useRouter } from "@/i18n/routing"
-import { cn } from "@/lib/utils"
+import { StarRatingDialog } from "@/components/shared/star-rating-dialog"
 
 interface BuyerOrderActionsProps {
   orderItemId: string
@@ -49,9 +49,6 @@ export function BuyerOrderActions({
   const [showRatingDialog, setShowRatingDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [showIssueDialog, setShowIssueDialog] = useState(false)
-  const [rating, setRating] = useState(0)
-  const [hoverRating, setHoverRating] = useState(0)
-  const [comment, setComment] = useState("")
   const [cancelReason, setCancelReason] = useState("")
   const [issueType, setIssueType] = useState<IssueType | "">("")
   const [issueDescription, setIssueDescription] = useState("")
@@ -100,12 +97,7 @@ export function BuyerOrderActions({
     }
   }
 
-  async function handleSubmitRating() {
-    if (rating === 0) {
-      toast.error(locale === 'bg' ? 'Моля, изберете оценка' : 'Please select a rating')
-      return
-    }
-
+  async function handleSubmitRating(rating: number, comment: string) {
     setIsLoading(true)
     try {
       const result = await submitSellerFeedback({
@@ -221,8 +213,6 @@ export function BuyerOrderActions({
       ? 'Опишете проблема подробно (минимум 10 символа)...'
       : 'Describe the issue in detail (minimum 10 characters)...',
     submitIssue: locale === 'bg' ? 'Изпрати доклад' : 'Submit Report',
-    stars: ['Много лошо', 'Лошо', 'Добре', 'Много добре', 'Отлично'],
-    starsEn: ['Very Poor', 'Poor', 'Good', 'Very Good', 'Excellent'],
     issueTypes: {
       not_received: locale === 'bg' ? 'Не е получено' : 'Item Not Received',
       wrong_item: locale === 'bg' ? 'Грешен артикул' : 'Wrong Item Received',
@@ -433,84 +423,19 @@ export function BuyerOrderActions({
       </Dialog>
 
       {/* Rating Dialog */}
-      <Dialog open={showRatingDialog} onOpenChange={setShowRatingDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t.ratingTitle}</DialogTitle>
-            <DialogDescription>{t.ratingDescription}</DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            {/* Star Rating */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setRating(star)}
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(0)}
-                    className="p-1"
-                  >
-                    <Star
-                      className={cn(
-                        "h-8 w-8 transition-colors",
-                        (hoverRating || rating) >= star
-                          ? "fill-rating text-rating"
-                          : "text-rating-empty"
-                      )}
-                    />
-                  </button>
-                ))}
-              </div>
-              {(hoverRating || rating) > 0 && (
-                <p className="text-sm text-muted-foreground">
-                  {locale === 'bg' 
-                    ? t.stars[(hoverRating || rating) - 1]
-                    : t.starsEn[(hoverRating || rating) - 1]
-                  }
-                </p>
-              )}
-            </div>
-
-            {/* Comment */}
-            <div className="space-y-2">
-              <Label htmlFor="comment">{t.commentLabel}</Label>
-              <Textarea
-                id="comment"
-                placeholder={t.commentPlaceholder}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                rows={3}
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowRatingDialog(false)}
-              disabled={isLoading}
-            >
-              {t.cancel}
-            </Button>
-            <Button onClick={handleSubmitRating} disabled={isLoading || rating === 0}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                  ...
-                </>
-              ) : (
-                <>
-                  <Star className="h-4 w-4 mr-1.5" />
-                  {t.submitRating}
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <StarRatingDialog
+        open={showRatingDialog}
+        onOpenChange={setShowRatingDialog}
+        onSubmit={handleSubmitRating}
+        title={t.ratingTitle}
+        description={t.ratingDescription}
+        commentLabel={t.commentLabel}
+        commentPlaceholder={t.commentPlaceholder}
+        submitLabel={t.submitRating}
+        cancelLabel={t.cancel}
+        locale={locale}
+        isLoading={isLoading}
+      />
     </div>
   )
 }

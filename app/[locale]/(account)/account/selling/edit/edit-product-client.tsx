@@ -162,8 +162,8 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
 
   const calculateDiscount = () => {
     if (!isOnSale || !originalPrice || !price) return 0
-    const orig = parseFloat(originalPrice)
-    const current = parseFloat(price)
+    const orig = Number.parseFloat(originalPrice)
+    const current = Number.parseFloat(price)
     if (orig <= 0 || current >= orig) return 0
     return Math.round(((orig - current) / orig) * 100)
   }
@@ -184,8 +184,8 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
     const updateData: Record<string, unknown> = {
       title,
       description: description || null,
-      price: parseFloat(price),
-      stock: parseInt(stock),
+      price: Number.parseFloat(price),
+      stock: Number.parseInt(stock),
       is_boosted: isBoosted,
       ships_to_bulgaria: shipsBulgaria,
       ships_to_europe: shipsEurope,
@@ -196,7 +196,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
 
     // Handle discount pricing
     if (isOnSale && originalPrice) {
-      updateData.list_price = parseFloat(originalPrice)
+      updateData.list_price = Number.parseFloat(originalPrice)
       updateData.is_on_sale = true
       updateData.sale_percent = calculateDiscount()
       updateData.sale_end_date = getSaleEndDateIso()
@@ -513,11 +513,11 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                 <div className="mt-2">
                   {isOnSale && originalPrice ? (
                     <div className="flex items-baseline gap-2">
-                      <span className="text-lg font-bold text-deal">{parseFloat(price || "0").toFixed(2)} лв</span>
-                      <span className="text-sm text-muted-foreground line-through">{parseFloat(originalPrice).toFixed(2)} лв</span>
+                      <span className="text-lg font-bold text-deal">{Number.parseFloat(price || "0").toFixed(2)} лв</span>
+                      <span className="text-sm text-muted-foreground line-through">{Number.parseFloat(originalPrice).toFixed(2)} лв</span>
                     </div>
                   ) : (
-                    <span className="text-lg font-bold">{parseFloat(price || "0").toFixed(2)} лв</span>
+                    <span className="text-lg font-bold">{Number.parseFloat(price || "0").toFixed(2)} лв</span>
                   )}
                 </div>
               </CardContent>

@@ -26,10 +26,12 @@ const buttonVariants = cva(
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+        touch: "h-10 px-8 rounded-md text-base", /* 40px Max Standard */
         icon: "size-9",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
-        "icon-xl": "size-11 [&_svg]:size-6!",
+        "icon-touch": "size-10", /* 40px Max Standard */
+        "icon-xl": "size-10 [&_svg]:size-6!", /* Capped at 40px */
         "icon-2xl": "size-12 [&_svg]:size-7!",
       },
     },

@@ -4,7 +4,9 @@ import { useRef, useState, useCallback } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { CaretLeft, CaretRight, Star, Clock, Lightning } from "@phosphor-icons/react"
+import { Star, Clock, Lightning } from "@phosphor-icons/react"
+import { CaretRight } from "@phosphor-icons/react"
+import { CarouselScrollButton } from "@/components/ui/carousel-scroll-button"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 
@@ -217,28 +219,16 @@ export function DealsSection({
           >
             <div className="relative overflow-hidden">
               {/* Scroll Buttons */}
-              <button
+              <CarouselScrollButton
+                direction="left"
                 onClick={() => scroll(tab.id, "left")}
-                className={cn(
-                  "absolute left-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
-                  scrollStates[tab.id]?.left ? "opacity-100" : "opacity-0 pointer-events-none"
-                )}
-                aria-label="Scroll left"
-              >
-                <CaretLeft size={20} weight="regular" className="text-foreground" />
-              </button>
-              <button
+                visible={scrollStates[tab.id]?.left}
+              />
+              <CarouselScrollButton
+                direction="right"
                 onClick={() => scroll(tab.id, "right")}
-                className={cn(
-                  "absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden md:flex",
-                  "items-center justify-center size-10 bg-white hover:bg-secondary rounded-full border border-border",
-                  scrollStates[tab.id]?.right ? "opacity-100" : "opacity-0 pointer-events-none"
-                )}
-                aria-label="Scroll right"
-              >
-                <CaretRight size={20} weight="regular" className="text-foreground" />
-              </button>
+                visible={scrollStates[tab.id]?.right}
+              />
 
               {/* Deals Container - Horizontal scroll with exactly 2 visible on mobile */}
               <div

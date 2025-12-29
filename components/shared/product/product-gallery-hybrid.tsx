@@ -65,10 +65,10 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-3 w-full max-w-[600px]">
+    <div className="flex flex-col gap-3 w-full lg:max-w-[600px]">
       {/* Main Image Container */}
       <div 
-        className="w-full overflow-hidden rounded-xl border border-border bg-white dark:bg-muted/10 relative group aspect-square max-h-[400px]" 
+        className="w-full overflow-hidden lg:rounded-xl lg:border lg:border-border bg-white dark:bg-muted/10 relative group aspect-square lg:max-h-[400px]" 
         id={galleryID}
       >
         {/* Carousel Area */}
@@ -77,7 +77,7 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
             <CarouselContent className="size-full">
               {images.map((img, index) => (
                 <CarouselItem key={index} className="size-full">
-                  <div className="size-full p-4 md:p-8 flex items-center justify-center">
+                  <div className="size-full flex items-center justify-center lg:p-8">
                     <a
                       href={img.src}
                       data-pswp-width={img.width}
@@ -91,7 +91,7 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
                         alt={img.alt}
                         width={img.width}
                         height={img.height}
-                        className="size-full"
+                        className="size-full object-contain"
                       />
                     </a>
                   </div>
@@ -101,7 +101,7 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
           </Carousel>
           
           {/* Zoom Button */}
-          <div className="absolute bottom-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute bottom-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:flex">
              <Button
                type="button"
                aria-label="Open image zoom"
@@ -113,11 +113,24 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
                 <ZoomIn className="h-5 w-5 text-foreground" />
              </Button>
           </div>
+
+          {/* Mobile Dots Indicator */}
+          <div className="absolute bottom-3 left-0 right-0 z-10 lg:hidden flex justify-center gap-1.5">
+            {images.map((_, index) => (
+              <div 
+                key={index}
+                className={cn(
+                  "h-1.5 rounded-full transition-all duration-300",
+                  current === index ? "w-4 bg-primary" : "w-1.5 bg-primary/20"
+                )}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Thumbnails Grid (Below main image - like reference design) */}
-      <div className="grid grid-cols-4 gap-2 h-20 sm:h-24 lg:h-28">
+      <div className="hidden lg:grid grid-cols-4 gap-2 h-20 sm:h-24 lg:h-28">
         {images.slice(0, 4).map((img, index) => (
           <button
             key={index}

@@ -168,17 +168,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [loadServerCart, syncLocalCartToServer])
 
-  // Save cart to local storage whenever it changes (guest only)
+  // Save cart to local storage whenever it changes.
+  // This keeps the cart resilient across route-group layout boundaries and
+  // provides an immediate UX even if server sync is delayed.
   useEffect(() => {
-    if (userId) return
-    localStorage.setItem("cart", JSON.stringify(items))
-  }, [items, userId])
+    try {
+      localStorage.setItem("cart", JSON.stringify(items))
+    } catch {
+      // Ignore storage access errors
+    }
+  }, [items])
 
   const addToCart = (newItem: CartItem) => {
     // Ensure price is a valid number
     const itemWithValidPrice = {
       ...newItem,
-      price: typeof newItem.price === 'string' ? parseFloat(newItem.price) : newItem.price,
+      price: typeof newItem.price === 'string' ? Number.parseFloat(newItem.price) : newItem.price,
       quantity: newItem.quantity || 1
     }
     
@@ -271,8 +276,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const totalItems = items.reduce((total, item) => total + item.quantity, 0)
   const subtotal = items.reduce((total, item) => {
-    const price = typeof item.price === 'number' ? item.price : parseFloat(String(item.price)) || 0
-    const quantity = typeof item.quantity === 'number' ? item.quantity : parseInt(String(item.quantity)) || 0
+    const price = typeof item.price === 'number' ? item.price : Number.parseFloat(String(item.price)) || 0
+    const quantity = typeof item.quantity === 'number' ? item.quantity : Number.parseInt(String(item.quantity)) || 0
     return total + price * quantity
   }, 0)
 

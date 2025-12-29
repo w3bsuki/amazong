@@ -21,13 +21,12 @@ export function StartSellingBanner({ locale = "en", className }: StartSellingBan
         className={cn(
           "w-full justify-start gap-2 rounded-xl p-2 h-auto",
           "bg-cta-trust-blue text-cta-trust-blue-text hover:bg-cta-trust-blue-hover",
-          "shadow-xs",
           "group"
         )}
       >
         <Link href="/sell" className="relative overflow-hidden flex items-center gap-2">
           {/* Left Icon Circle */}
-          <span className="size-8 shrink-0 rounded-full bg-white/20 flex items-center justify-center shadow-inner" aria-hidden="true">
+          <span className="size-8 shrink-0 rounded-full bg-white/20 flex items-center justify-center" aria-hidden="true">
             <Storefront size={16} weight="fill" className="text-white" />
           </span>
 

@@ -191,6 +191,7 @@ export function SignUpForm({ locale }: { locale: string }) {
                 name="name"
                 type="text"
                 autoComplete="name"
+                required
                 placeholder={t("namePlaceholder")}
                 onChange={(e) => setName(e.target.value)}
                 className={`w-full h-10 px-3 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.name ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
@@ -211,6 +212,7 @@ export function SignUpForm({ locale }: { locale: string }) {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   autoComplete="username"
+                  required
                   placeholder={t("usernamePlaceholder")}
                     className={`w-full h-10 px-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.username ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
                   aria-invalid={!!state?.fieldErrors?.username}
@@ -229,6 +231,7 @@ export function SignUpForm({ locale }: { locale: string }) {
                 name="email"
                 type="email"
                 autoComplete="email"
+                required
                 placeholder={t("emailPlaceholder")}
                 onChange={(e) => setEmail(e.target.value)}
                 className={`w-full h-10 px-3 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.email ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
@@ -247,6 +250,7 @@ export function SignUpForm({ locale }: { locale: string }) {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
+                  required
                   placeholder={t("createPasswordPlaceholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -298,6 +302,7 @@ export function SignUpForm({ locale }: { locale: string }) {
                   name="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   autoComplete="new-password"
+                  required
                   placeholder={t("confirmPasswordPlaceholder")}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className={`w-full h-10 px-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.confirmPassword ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}

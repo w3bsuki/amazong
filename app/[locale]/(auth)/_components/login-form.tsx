@@ -10,6 +10,13 @@ import { Link } from "@/i18n/routing"
 import { login } from "../_actions/auth"
 import type { AuthActionState } from "../_actions/auth"
 
+function isProbablyValidEmail(value: string) {
+  const v = value.trim()
+  if (!v) return false
+  // Lightweight client-side sanity check; server remains source of truth.
+  return /\S+@\S+\.[\S]+/.test(v)
+}
+
 function SubmitButton({
   label,
   pendingLabel,
@@ -57,7 +64,14 @@ export function LoginForm({
   )
   const [state, formAction] = useActionState(login.bind(null, locale, redirectPath), initialState)
 
-  const isSubmittable = email.trim().length > 0 && password.length > 0
+  const emailHasValue = email.trim().length > 0
+  const passwordHasValue = password.length > 0
+  const emailLooksValid = !emailHasValue ? false : isProbablyValidEmail(email)
+  const showClientEmailError = emailHasValue && !emailLooksValid
+  const isSubmittable = emailHasValue && passwordHasValue && !showClientEmailError
+
+  const clientInvalidEmailMessage =
+    locale === "bg" ? "Моля, въведете валиден имейл адрес." : "Please enter a valid email address."
 
   useEffect(() => {
     try {
@@ -110,10 +124,15 @@ export function LoginForm({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t("emailPlaceholder")}
-                aria-invalid={!!state?.fieldErrors?.email}
-                className={`w-full h-10 px-3 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.email ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
+                aria-invalid={showClientEmailError || !!state?.fieldErrors?.email}
+                aria-describedby={showClientEmailError || state?.fieldErrors?.email ? "email-error" : undefined}
+                className={`w-full h-10 px-3 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${showClientEmailError || state?.fieldErrors?.email ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
               />
-              {state?.fieldErrors?.email && <p className="text-xs text-destructive mt-1">{state.fieldErrors.email}</p>}
+              {(showClientEmailError || state?.fieldErrors?.email) && (
+                <p id="email-error" className="text-xs text-destructive mt-1" role="alert">
+                  {state?.fieldErrors?.email ?? clientInvalidEmailMessage}
+                </p>
+              )}
             </div>
 
             <div>

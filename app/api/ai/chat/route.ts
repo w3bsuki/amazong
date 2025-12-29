@@ -47,11 +47,11 @@ type CategoryInfo = {
 
 const nonNegativeNumberFromString = z.preprocess(
   (v) => {
-    if (v === undefined || v === null) return undefined
+    if (v === undefined || v === null) return
     if (typeof v === "number") return v
     if (typeof v === "string") {
       const trimmed = v.trim()
-      if (!trimmed) return undefined
+      if (!trimmed) return
       const n = Number(trimmed)
       return Number.isFinite(n) ? n : v
     }
@@ -339,8 +339,8 @@ async function createListing(input: z.infer<typeof createListingInput>): Promise
     // Generate slug
     const baseSlug = input.title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
+      .replaceAll(/[^a-z0-9]+/g, "-")
+      .replaceAll(/^-|-$/g, "")
     const slug = `${baseSlug}-${Date.now().toString(36)}`
 
     // Use static client with service role for insert

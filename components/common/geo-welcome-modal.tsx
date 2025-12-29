@@ -73,6 +73,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
   const isE2E = process.env.NEXT_PUBLIC_E2E === 'true';
   const t = useTranslations('GeoWelcome');
   const [safeToOpen, setSafeToOpen] = useState(false);
+  const [hasCookieDecision, setHasCookieDecision] = useState(false);
 
   useEffect(() => {
     // Never block E2E runs with region/cookie modals.
@@ -112,6 +113,25 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
     };
   }, [isE2E]);
 
+  useEffect(() => {
+    if (isE2E) return;
+
+    const readDecision = () => {
+      try {
+        const consent = localStorage.getItem('cookie-consent');
+        setHasCookieDecision(Boolean(consent));
+      } catch {
+        setHasCookieDecision(false);
+      }
+    };
+
+    readDecision();
+
+    const onConsent = () => readDecision();
+    window.addEventListener('amzn:cookie-consent', onConsent);
+    return () => window.removeEventListener('amzn:cookie-consent', onConsent);
+  }, [isE2E]);
+
   const {
     isOpen,
     isLoading,
@@ -124,7 +144,8 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
   } = useGeoWelcome({ enabled: !isE2E });
 
   // Avoid SSR/client mismatches by only rendering after the app is safe to open dialogs.
-  if (isE2E || !safeToOpen || isLoading || !isOpen) {
+  // Also require that the cookie consent banner has been acted on first to avoid overlapping dialogs.
+  if (isE2E || !safeToOpen || !hasCookieDecision || isLoading || !isOpen) {
     return null;
   }
 
@@ -146,14 +167,11 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
 
         <div className="p-6">
           {/* Header */}
-          <div className="flex flex-col items-center mb-5">
-            <div className="mb-3 w-10 h-10 bg-cta-trust-blue rounded-lg flex items-center justify-center">
-              <Globe className="w-5 h-5 text-cta-trust-blue-text" weight="fill" />
-            </div>
-            <h1 className="text-xl font-semibold text-foreground">
+          <div className="flex flex-col gap-2 mb-6 text-center">
+            <h1 className="text-lg font-semibold text-foreground">
               {locale === 'bg' ? 'Добре дошли!' : 'Welcome!'}
             </h1>
-            <p className="text-sm text-muted-foreground mt-1 text-center">
+            <p className="text-sm text-muted-foreground">
               {t('title', { country: countryName })}
             </p>
           </div>
@@ -170,7 +188,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
                 onValueChange={(value) => setSelectedRegion(value as ShippingRegion)}
               >
                 <SelectTrigger
-                  className="w-full h-10 bg-background border border-input rounded-lg focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 transition-colors"
+                  className="w-full h-10"
                   aria-label={t('selectRegion')}
                 >
                   <SelectValue>
@@ -200,7 +218,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
             {/* Confirm Button */}
             <button
               onClick={confirmRegion}
-              className="w-full h-10 bg-cta-trust-blue text-cta-trust-blue-text text-sm font-medium rounded-lg transition-colors hover:bg-cta-trust-blue/90 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-offset-2"
+              className="w-full h-10 bg-cta-trust-blue text-cta-trust-blue-text text-sm font-medium rounded-lg transition-colors hover:bg-cta-trust-blue/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               {t('confirmButton', { region: t(`regions.${selectedRegion}`) })}
             </button>
@@ -223,5 +241,3 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
     </Dialog>
   );
 }
-
-export default GeoWelcomeModal;

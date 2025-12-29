@@ -27,7 +27,7 @@ export function SubcategoryTabs({ currentCategory, subcategories, basePath }: Su
 
   // Title is now shown in sidebar, so we only show subcategory circles here
   return (
-    <div className="mb-4">
+    <div className="mb-4 pb-2 border-b border-border">
       {/* Subcategory Circles - horizontal scroll */}
       {subcategories.length > 0 && (
         <SubcategoryCircles
