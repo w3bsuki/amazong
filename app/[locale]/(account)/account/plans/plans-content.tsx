@@ -21,11 +21,12 @@ import { Lightning, User, Buildings, X, ArrowsClockwise, CalendarBlank, Warning 
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { PlansGrid, type Plan } from "@/components/pricing/plan-card"
-import { cancelSubscription, reactivateSubscription } from "@/app/actions/subscriptions"
 import {
+  cancelSubscription,
+  reactivateSubscription,
   createBillingPortalSession,
   createSubscriptionCheckoutSession,
-} from "@/app/[locale]/(account)/_actions/subscriptions"
+} from "@/app/actions/subscriptions"
 
 interface SubscriptionPlan {
   id: string

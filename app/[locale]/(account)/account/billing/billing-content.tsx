@@ -37,7 +37,7 @@ import {
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { createBillingPortalSession } from "@/app/[locale]/(account)/_actions/subscriptions"
+import { createBillingPortalSession } from "@/app/actions/subscriptions"
 import { format, formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
 
@@ -138,6 +138,7 @@ export function BillingContent({
   const [isPortalLoading, setIsPortalLoading] = useState(false)
 
   const dateLocale = locale === 'bg' ? bg : enUS
+  const withLocale = (path: string) => `/${locale}${path}`
 
   // Translations
   const t = {
@@ -317,13 +318,13 @@ export function BillingContent({
         </div>
         {seller && (
           <div className="flex items-center gap-2">
-            <Link href="/account/payments">
+            <Link href={withLocale("/account/payments")}>
               <Button variant="outline" size="sm" className="gap-1.5">
                 <CreditCard className="size-4" />
                 {locale === 'bg' ? 'Плащания' : 'Payment Methods'}
               </Button>
             </Link>
-            <Link href="/account/plans">
+            <Link href={withLocale("/account/plans")}>
               <Button size="sm" className="gap-1.5">
                 <Crown className="size-4" weight="fill" />
                 {t.viewPlans}
@@ -344,7 +345,7 @@ export function BillingContent({
             <p className="text-muted-foreground text-sm max-w-md mb-4">
               {t.becomeSeller}
             </p>
-            <Link href="/sell">
+            <Link href={withLocale("/sell")}>
               <Button className="gap-1.5">
                 {t.startSelling}
                 <ArrowRight className="size-4" />
@@ -456,7 +457,7 @@ export function BillingContent({
                   </Button>
                 )}
                 {seller.tier !== 'business' && (
-                  <Link href="/account/plans">
+                  <Link href={withLocale("/account/plans")}>
                     <Button className="gap-1.5 w-full">
                       <ArrowUpRight className="size-4" weight="bold" />
                       {t.upgradePlan}
@@ -651,7 +652,7 @@ export function BillingContent({
                       : 'Boosted products history'}
                   </CardDescription>
                 </div>
-                <Link href="/account/selling">
+                <Link href={withLocale("/account/selling")}>
                   <Button size="sm" className="gap-1.5">
                     <Lightning className="size-4" weight="fill" />
                     {t.boostProduct}
@@ -668,7 +669,7 @@ export function BillingContent({
                         ? 'Промотирайте продуктите си за повече видимост'
                         : 'Boost your products for more visibility'}
                     </p>
-                    <Link href="/account/selling" className="mt-4 inline-block">
+                    <Link href={withLocale("/account/selling")} className="mt-4 inline-block">
                       <Button variant="outline" size="sm" className="gap-1.5">
                         <Lightning className="size-4" />
                         {t.boostProduct}

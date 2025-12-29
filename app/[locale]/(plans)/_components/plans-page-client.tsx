@@ -40,7 +40,7 @@ import { toast } from "sonner"
 import {
   createSubscriptionCheckoutSession,
   downgradeToFreeTier,
-} from "../_actions/subscriptions"
+} from "@/app/actions/subscriptions"
 
 interface SubscriptionPlanRow {
   id: string
@@ -427,13 +427,13 @@ export default function PlansPageClient(props: {
                 {Array.from({ length: 5 }).map((_, i) => (
                   <div key={i} className="rounded-xl border p-1.5">
                     <div className="rounded-xl bg-muted/50 p-4">
-                      <div className="mb-6 h-5 w-20 animate-pulse rounded bg-muted" />
-                      <div className="mb-3 h-8 w-16 animate-pulse rounded bg-muted" />
-                      <div className="h-9 w-full animate-pulse rounded bg-muted" />
+                      <div className="mb-6 h-5 w-20 rounded bg-muted" />
+                      <div className="mb-3 h-8 w-16 rounded bg-muted" />
+                      <div className="h-9 w-full rounded bg-muted" />
                     </div>
                     <div className="space-y-2 p-3">
                       {Array.from({ length: 4 }).map((_, j) => (
-                        <div key={j} className="h-4 w-full animate-pulse rounded bg-muted" />
+                        <div key={j} className="h-4 w-full rounded bg-muted" />
                       ))}
                     </div>
                   </div>

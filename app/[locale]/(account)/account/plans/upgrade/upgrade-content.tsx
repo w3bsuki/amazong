@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Check, Crown, Buildings, User, SpinnerGap } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { createSubscriptionCheckoutSession } from "@/app/[locale]/(account)/_actions/subscriptions"
+import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
 
 type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
