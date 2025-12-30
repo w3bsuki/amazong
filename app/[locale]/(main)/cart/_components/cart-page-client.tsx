@@ -101,7 +101,7 @@ export default function CartPageClient() {
               </div>
               <Separator className="my-8" />
               <p className="text-sm text-muted-foreground mb-2">{t("signInPrompt")}</p>
-              <Link href="/auth/login" className="text-sm font-medium text-brand hover:underline">
+              <Link href="/auth/login" className="text-sm font-medium text-brand hover:underline inline-flex items-center min-h-[28px]">
                 {t("signInLink")}
               </Link>
             </CardContent>

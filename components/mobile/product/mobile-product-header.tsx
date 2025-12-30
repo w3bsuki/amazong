@@ -48,7 +48,7 @@ export function MobileProductHeader() {
       <div className="flex items-center">
         <Button
           variant="ghost"
-          size="icon-touch"
+          size="icon-lg"
           className="rounded-full"
           aria-label={labels.search}
           title={labels.search}
@@ -57,7 +57,7 @@ export function MobileProductHeader() {
         </Button>
         <Button
           variant="ghost"
-          size="icon-touch"
+          size="icon-lg"
           className="rounded-full"
           aria-label={labels.share}
           title={labels.share}
@@ -67,7 +67,7 @@ export function MobileProductHeader() {
         </Button>
         <Button
           variant="ghost"
-          size="icon-touch"
+          size="icon-lg"
           className="rounded-full"
           aria-label={labels.wishlist}
           title={labels.wishlist}
@@ -84,7 +84,7 @@ export function MobileProductHeader() {
           {totalItems > 0 && (
             <Badge 
               aria-hidden="true" 
-              className="absolute -top-0.5 -right-0.5 bg-[var(--color-cart-badge)] text-white text-[10px] font-bold px-1.5 min-w-5 h-5 flex items-center justify-center rounded-full border-2 border-background"
+              className="absolute -top-0.5 -right-0.5 bg-cart-badge text-white text-2xs font-bold px-1.5 min-w-5 h-5 flex items-center justify-center rounded-full border-2 border-background"
             >
               {totalItems > 99 ? "99+" : totalItems}
             </Badge>

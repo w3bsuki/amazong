@@ -50,7 +50,7 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
   return (
     <LegalPageLayout
       heroIcon={Cookie}
-      title={t('title')}
+      title={t('pageTitle')}
       lastUpdated={`${t('lastUpdated')}: ${t('lastUpdatedDate')}`}
       breadcrumbItems={breadcrumbPresets.cookies}
       tocLabel={t('tableOfContents')}

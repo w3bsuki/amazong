@@ -154,8 +154,11 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
   const categoryMap = new Map<string, CategoryWithChildren>()
   const rootCategories: CategoryWithChildren[] = []
   
+  // Filter out deprecated/hidden categories (display_order >= 9000)
+  const activeRows = rows.filter(row => (row.display_order ?? 0) < 9000)
+  
   // First pass: create all category objects
-  for (const row of rows) {
+  for (const row of activeRows) {
     categoryMap.set(row.id, {
       id: row.id,
       name: row.name,
@@ -170,7 +173,7 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
   }
   
   // Second pass: build tree structure
-  for (const row of rows) {
+  for (const row of activeRows) {
     const category = categoryMap.get(row.id)!
     
     if (row.parent_id && categoryMap.has(row.parent_id)) {
@@ -229,17 +232,89 @@ export async function getCategoryHierarchy(
     return []
   }
   
-  const { data, error } = await supabase.rpc('get_category_hierarchy', {
-    p_slug: slug ?? undefined,
-    p_depth: depth
-  })
+  // NOTE: Supabase RPC has a hardcoded 1000 row limit in PostgREST that cannot
+  // be overridden from the client (.limit() and .range() don't work on RPCs).
+  // For large datasets like categories (3000+ rows), we use direct queries instead.
   
-  if (error) {
-    console.error('getCategoryHierarchy error:', error)
+  // Fetch L0 categories (root)
+  const { data: rootCats, error: rootError } = await supabase
+    .from("categories")
+    .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+    .is("parent_id", null)
+    .lt("display_order", 9000)
+    .order("display_order", { ascending: true })
+
+  if (rootError) {
+    console.error("getCategoryHierarchy root error:", rootError)
     return []
   }
+
+  if (depth === 0) {
+    return (rootCats || []).map(cat => ({
+      ...cat,
+      children: []
+    }))
+  }
+
+  // Fetch L1 categories
+  const rootIds = (rootCats || []).map(c => c.id)
+  const { data: l1Cats, error: l1Error } = await supabase
+    .from("categories")
+    .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+    .in("parent_id", rootIds)
+    .lt("display_order", 9000)
+    .order("display_order", { ascending: true })
+
+  if (l1Error) {
+    console.error("getCategoryHierarchy L1 error:", l1Error)
+  }
+
+  // Fetch L2 categories if depth >= 2 (batched to avoid large IN clauses)
+  let l2Cats: typeof l1Cats = []
+  if (depth >= 2 && l1Cats && l1Cats.length > 0) {
+    const l1Ids = l1Cats.map(c => c.id)
+    const BATCH_SIZE = 50
+    
+    // Use Promise.all for parallel fetching
+    const batches = []
+    for (let i = 0; i < l1Ids.length; i += BATCH_SIZE) {
+      batches.push(l1Ids.slice(i, i + BATCH_SIZE))
+    }
+    
+    const results = await Promise.all(
+      batches.map(batchIds => 
+        supabase
+          .from("categories")
+          .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+          .in("parent_id", batchIds)
+          .lt("display_order", 9000)
+          .order("display_order", { ascending: true })
+      )
+    )
+    
+    for (const result of results) {
+      if (result.data) {
+        l2Cats.push(...result.data)
+      }
+    }
+  }
+
+  // Combine and build tree
+  const allCats = [...(rootCats || []), ...(l1Cats || []), ...l2Cats]
   
-  const rows = (data || []) as CategoryHierarchyRow[]
+  const rows: CategoryHierarchyRow[] = allCats.map(cat => ({
+    id: cat.id,
+    name: cat.name,
+    name_bg: cat.name_bg,
+    slug: cat.slug,
+    parent_id: cat.parent_id,
+    icon: cat.icon,
+    image_url: cat.image_url,
+    display_order: cat.display_order,
+    depth: cat.parent_id === null ? 0 : (rootIds.includes(cat.parent_id) ? 1 : 2),
+    path: []
+  }))
+  
   return buildCategoryTree(rows)
 }
 

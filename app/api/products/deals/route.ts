@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         slug,
         attributes,
         seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),
-        categories(slug)
+        categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))
       `,
         { count: "exact" }
       )
@@ -83,6 +83,7 @@ export async function GET(request: NextRequest) {
         slug: p.slug,
         store_slug: p.seller?.username ?? null,
         category_slug: p.categories?.slug ?? null,
+        categories: (p as any).categories ?? null,
         attributes: p.attributes,
         seller_profile: p.seller ?? null,
       }),

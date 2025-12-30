@@ -1,10 +1,15 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 import { normalizeImageUrl } from "@/lib/normalize-image-url"
+import { unstable_cache } from "next/cache"
 
 // NOTE: This endpoint serves public data (no user cookies required).
 // In Cache Components mode, avoid Dynamic APIs like `connection()` and avoid
 // cookie-backed clients in route handlers to keep responses stable.
+
+// Cache TTL: 5 minutes for categories (static data)
+const CACHE_TTL_SECONDS = 300
+const CACHE_STALE_WHILE_REVALIDATE = 600
 
 // Type for the RPC return
 interface CategoryHierarchyRow {
@@ -96,6 +101,17 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
   return sortChildren(rootCategories)
 }
 
+// Helper to create cached JSON response with proper headers
+function cachedJsonResponse(data: unknown) {
+  return NextResponse.json(data, {
+    headers: {
+      'Cache-Control': `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`,
+      'CDN-Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
+      'Vercel-CDN-Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
+    }
+  })
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -135,7 +151,7 @@ export async function GET(request: Request) {
       } : null
 
       // Return children of the parent
-      return NextResponse.json({
+      return cachedJsonResponse({
         categories: tree.length > 0 ? tree[0].children || [] : [],
         parent
       })
@@ -276,8 +292,8 @@ export async function GET(request: Request) {
       }
       sortChildren(rootCategories)
 
-      // Return debug info
-      return NextResponse.json({ 
+      // Return with caching headers
+      return cachedJsonResponse({ 
         categories: rootCategories, 
         _debug: {
           totalCount: cats.length,
@@ -301,7 +317,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({
+    return cachedJsonResponse({
       categories: (categories || []).map(cat => ({
         ...cat,
         image_url: normalizeImageUrl(cat.image_url)

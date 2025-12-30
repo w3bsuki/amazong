@@ -26,7 +26,7 @@ export function OrdersDropdown({ user }: OrdersDropdownProps) {
         <Link href="/account/orders" aria-label={tNav("ordersLabel")}>
           <Button
             variant="ghost"
-            size="icon-xl"
+            size="icon-lg"
             className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
           >
             <Package weight="regular" />

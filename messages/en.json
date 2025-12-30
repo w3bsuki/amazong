@@ -946,16 +946,6 @@
         "noResultsInCategory": "We couldn't find any products in this category. Try adjusting your filters or browse other categories.",
         "browseAllCategories": "Browse All Categories"
     },
-    "Cookies": {
-        "title": "We use cookies",
-        "description": "We use cookies and similar technologies to help personalize content, tailor and measure ads, and provide a better experience. By clicking 'Accept All', you agree to this.",
-        "descriptionShort": "We use cookies to personalize content, tailor ads, and provide a better experience.",
-        "learnMore": "Learn more about cookies",
-        "acceptAll": "Accept All Cookies",
-        "declineOptional": "Decline Optional",
-        "managePreferences": "Manage Preferences",
-        "close": "Close"
-    },
     "CartDropdown": {
         "title": "Shopping Cart",
         "empty": "Your cart is empty",
@@ -1118,7 +1108,15 @@
         "helpLinkDesc": "Get answers to common questions"
     },
     "Cookies": {
-        "title": "Cookie Policy",
+        "title": "We use cookies",
+        "description": "We use cookies and similar technologies to help personalize content, tailor and measure ads, and provide a better experience. By clicking 'Accept All', you agree to this.",
+        "descriptionShort": "We use cookies to personalize content, tailor ads, and provide a better experience.",
+        "learnMore": "Learn more about cookies",
+        "acceptAll": "Accept All Cookies",
+        "declineOptional": "Decline Optional",
+        "managePreferences": "Manage Preferences",
+        "close": "Close",
+        "pageTitle": "Cookie Policy",
         "lastUpdated": "Last Updated",
         "lastUpdatedDate": "December 2025",
         "tableOfContents": "Contents",

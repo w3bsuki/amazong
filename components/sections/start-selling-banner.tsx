@@ -14,19 +14,19 @@ export function StartSellingBanner({ locale = "en", className }: StartSellingBan
   const isBg = locale === "bg"
   
   return (
-    <div className={cn("px-2.5", className)}>
+    <div className={cn(className)}>
       <Button
         asChild
         variant="default"
         className={cn(
-          "w-full justify-start gap-2 rounded-xl p-2 h-auto",
+          "w-full justify-start gap-3 rounded-none px-3 py-2.5 h-auto",
           "bg-cta-trust-blue text-cta-trust-blue-text hover:bg-cta-trust-blue-hover",
           "group"
         )}
       >
-        <Link href="/sell" className="relative overflow-hidden flex items-center gap-2">
+        <Link href="/sell" className="relative overflow-hidden flex items-center gap-3">
           {/* Left Icon Circle */}
-          <span className="size-8 shrink-0 rounded-full bg-white/20 flex items-center justify-center" aria-hidden="true">
+          <span className="size-8 shrink-0 rounded bg-white/20 flex items-center justify-center" aria-hidden="true">
             <Storefront size={16} weight="fill" className="text-white" />
           </span>
 
@@ -43,7 +43,7 @@ export function StartSellingBanner({ locale = "en", className }: StartSellingBan
           </span>
 
           {/* Right Arrow Circle */}
-          <span className="size-7 shrink-0 rounded-full bg-white/20 flex items-center justify-center transition-transform group-hover:translate-x-0.5" aria-hidden="true">
+          <span className="size-7 shrink-0 rounded bg-white/20 flex items-center justify-center" aria-hidden="true">
             <ArrowRight size={14} weight="bold" className="text-white" />
           </span>
         </Link>

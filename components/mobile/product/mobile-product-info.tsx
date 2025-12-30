@@ -48,7 +48,7 @@ export function MobileProductInfo({ product, store, locale }: MobileProductInfoP
       {/* Price & Badges (High Signal First) */}
       <div className="flex flex-col gap-1">
         <div className="flex items-baseline gap-2">
-          <span className="text-[length:var(--text-price)] font-bold text-[var(--color-price-regular)] tracking-tight text-2xl">
+          <span className="text-price font-bold text-price-regular tracking-tight text-2xl">
             {formattedPrice}
           </span>
           {formattedRegularPrice && (
@@ -60,12 +60,12 @@ export function MobileProductInfo({ product, store, locale }: MobileProductInfoP
         
         <div className="flex flex-wrap gap-2">
           {product.condition && (
-            <Badge variant="secondary" className="font-medium text-[10px] px-1.5 py-0 h-5 bg-muted text-muted-foreground hover:bg-muted rounded-sm">
+            <Badge variant="secondary" className="font-medium text-2xs px-1.5 py-0 h-5 bg-muted text-muted-foreground hover:bg-muted rounded-sm">
               {product.condition}
             </Badge>
           )}
           {product.shipping?.free && (
-            <Badge variant="secondary" className="font-bold text-[10px] px-1.5 py-0 h-5 bg-[var(--color-shipping-free)]/10 text-[var(--color-shipping-free)] hover:bg-[var(--color-shipping-free)]/20 border-transparent rounded-sm">
+            <Badge variant="secondary" className="font-bold text-2xs px-1.5 py-0 h-5 bg-shipping-free/10 text-shipping-free hover:bg-shipping-free/20 border-transparent rounded-sm">
               Free Shipping
             </Badge>
           )}
@@ -73,7 +73,7 @@ export function MobileProductInfo({ product, store, locale }: MobileProductInfoP
       </div>
 
       {/* Title (Dense) */}
-      <h1 className="text-[length:var(--text-body)] font-normal leading-snug text-foreground line-clamp-3">
+      <h1 className="text-body font-normal leading-snug text-foreground line-clamp-3">
         {product.title}
       </h1>
 
@@ -85,15 +85,15 @@ export function MobileProductInfo({ product, store, locale }: MobileProductInfoP
         >
           <div className="flex items-center gap-1.5">
             <div className="flex items-center gap-0.5">
-              <Star className="w-3.5 h-3.5 fill-[var(--color-rating)] text-[var(--color-rating)]" />
+              <Star className="w-3.5 h-3.5 fill-rating text-rating" />
               <span className="text-sm font-bold text-foreground">{store.rating}</span>
             </div>
             <span className="text-xs text-muted-foreground">•</span>
-            <span className="text-sm text-[var(--color-link)] group-hover:underline truncate max-w-[150px]">
+            <span className="text-sm text-link group-hover:underline truncate max-w-[150px]">
               {store.name}
             </span>
             {store.verified && (
-              <CheckCircle2 className="w-3.5 h-3.5 text-[var(--color-verified)]" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-verified" />
             )}
           </div>
         </Link>

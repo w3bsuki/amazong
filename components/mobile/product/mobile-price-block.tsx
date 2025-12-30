@@ -40,33 +40,33 @@ export function MobilePriceBlock({
     <div className="flex flex-col gap-0.5">
       {/* Price Row */}
       <div className="flex items-baseline gap-2 flex-wrap">
-        {/* Sale Price */}
-        <span className="text-2xl font-bold tracking-tight text-foreground">
+        {/* Sale Price - LARGEST element per design system: 18px (text-lg) bold */}
+        <span className={`text-lg font-bold tracking-tight ${hasDiscount ? "text-price-sale" : "text-foreground"}`}>
           {formatPrice(salePrice)}
         </span>
 
-        {/* Original Price - Strikethrough */}
+        {/* Original Price - text-tiny (11px) struck through */}
         {hasDiscount && (
-          <span className="text-sm text-muted-foreground line-through">
+          <span className="text-tiny text-muted-foreground line-through">
             {formatPrice(regularPrice)}
           </span>
         )}
 
-        {/* Discount Badge */}
+        {/* Discount Badge - text-2xs (10px) */}
         {hasDiscount && discountPercent > 0 && (
           <Badge 
-            className="bg-[var(--color-discount-badge-bg)] text-[var(--color-discount-badge-text)] text-xs font-semibold px-1.5 py-0.5 h-5 rounded border-none hover:bg-[var(--color-discount-badge-bg)]"
+            className="bg-discount-badge-bg text-discount-badge-text text-2xs font-semibold px-1.5 py-0.5 h-5 rounded border-none hover:bg-discount-badge-bg"
           >
             -{discountPercent}%
           </Badge>
         )}
       </div>
 
-      {/* Savings Text */}
+      {/* Savings Text - text-tiny (11px) */}
       {showSavings && hasDiscount && savingsAmount > 0 && (
         <div className="flex items-center gap-1">
-          <Sparkles className="size-3.5 text-[var(--color-price-savings)]" />
-          <span className="text-xs font-medium text-[var(--color-price-savings)]">
+          <Sparkles className="size-3 text-price-savings" />
+          <span className="text-tiny font-medium text-price-savings">
             {t.youSave} {formatPrice(savingsAmount)}
           </span>
         </div>

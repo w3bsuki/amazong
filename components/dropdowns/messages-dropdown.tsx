@@ -28,7 +28,7 @@ export function MessagesDropdown({ user, unreadCount = 0 }: MessagesDropdownProp
         <Link href="/chat" aria-label={`${tNav("messagesLabel")}${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}>
           <Button
             variant="ghost"
-            size="icon-xl"
+            size="icon-lg"
             className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
           >
             <span className="relative" aria-hidden="true">

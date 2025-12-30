@@ -4,12 +4,9 @@ import * as React from "react"
 import Image from "next/image"
 import { Link, useRouter } from "@/i18n/routing"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
-import BoringAvatar from "boring-avatars"
 import { useCart } from "@/components/providers/cart-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { toast } from "sonner"
@@ -17,97 +14,36 @@ import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { productBlurDataURL, getImageLoadingStrategy } from "@/lib/image-utils"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
-import { Badge } from "@/components/ui/badge"
-import { FollowSellerButton } from "@/components/seller/follow-seller-button"
 import { cva, type VariantProps } from "class-variance-authority"
-import {
-  Heart,
-  ShoppingCart,
-  Plus,
-  ShieldCheck,
-  Star,
-  Sparkle,
-  Truck,
-  DotsThree,
-} from "@phosphor-icons/react"
+import { Heart, ShoppingCart, Plus, Star, Truck } from "@phosphor-icons/react"
 
 // =============================================================================
-// CONSTANTS
+// DESIGN SYSTEM COMPLIANCE (_MASTER.md)
+// =============================================================================
+// Typography: Price 18px (mobile) / 20px (desktop), Title 13px, Meta 11px
+// Spacing: gap-1.5 (6px) grid, p-1.5 content
+// Touch targets: 24px min, 28px wishlist, 32px quick-add
+// Aspect ratio: 4:5 for grid cards (taller = more product visible)
+// No hover scale, no shimmer, no gradients
+
+// =============================================================================
+// CVA VARIANTS - Clean, Flat, Professional (eBay aesthetic)
 // =============================================================================
 
-const AVATAR_COLORS = ["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]
-
-// =============================================================================
-// CVA VARIANTS - Modern Minimal (Swiss Design Principles)
-// =============================================================================
-
-/**
- * ProductCard Variants
- * ---------------------
- * Modern Minimal aesthetic - flat surfaces, subtle borders, no gradients.
- * Uses Tailwind v4 semantic tokens (bg-card, text-foreground, etc.)
- */
 const productCardVariants = cva(
-  // Base: cursor, block, relative, full height, overflow hidden for clean edges
-  // Removed all transitions for "super fast" UI
   "group relative block h-full min-w-0 cursor-pointer overflow-hidden",
   {
     variants: {
-      /**
-       * Visual variant:
-       * - default: Clean flat card with subtle border, no background
-       * - featured: Card surface with seller header (promoted/business)
-       */
       variant: {
         default: "",
         featured: "",
       },
-      /**
-       * State modifiers:
-       * - default: Standard appearance
-       * - promoted: Primary accent (Ad/Promoted)
-       * - sale: Sale highlight
-       */
       state: {
         default: "",
         promoted: "",
         sale: "",
       },
     },
-    compoundVariants: [
-      // Default variant states - flat, NO SHADOW on hover as requested
-      {
-        variant: "default",
-        state: "default",
-        className: "",
-      },
-      {
-        variant: "default",
-        state: "promoted",
-        className: "",
-      },
-      {
-        variant: "default",
-        state: "sale",
-        className: "",
-      },
-      // Featured variant states - card surface, NO SHADOW on hover as requested
-      {
-        variant: "featured",
-        state: "default",
-        className: "",
-      },
-      {
-        variant: "featured",
-        state: "promoted",
-        className: "",
-      },
-      {
-        variant: "featured",
-        state: "sale",
-        className: "border-destructive/10",
-      },
-    ],
     defaultVariants: {
       variant: "default",
       state: "default",
@@ -116,7 +52,7 @@ const productCardVariants = cva(
 )
 
 // =============================================================================
-// TYPES
+// TYPES - Essential props with backwards compatibility
 // =============================================================================
 
 interface ProductCardProps extends VariantProps<typeof productCardVariants> {
@@ -130,8 +66,6 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   originalPrice?: number | null
   /** @deprecated Use originalPrice */
   listPrice?: number | null
-
-  // Sale semantics (truth)
   isOnSale?: boolean
   salePercent?: number
   saleEndDate?: string | null
@@ -141,12 +75,12 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   reviews?: number
   condition?: string
   brand?: string
-  categorySlug?: string
-  /** Root (L0) category slug (e.g. fashion, electronics, automotive) */
-  categoryRootSlug?: string
-  /** Category path from L0 -> leaf (includes BG label when available) */
-  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }>
   tags?: string[]
+  location?: string
+  categorySlug?: string
+  categoryRootSlug?: string
+  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }>
+  attributes?: Record<string, string>
   make?: string | null
   model?: string | null
   year?: string | number | null
@@ -160,9 +94,6 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   sellerVerified?: boolean
   sellerRating?: number
   sellerTier?: "basic" | "premium" | "business"
-  location?: string
-
-  // Social
   initialIsFollowingSeller?: boolean
 
   // Shipping
@@ -178,12 +109,18 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   showQuickAdd?: boolean
   showWishlist?: boolean
   showRating?: boolean
+  /** @deprecated No longer used */
   showPills?: boolean
+  /** @deprecated No longer used */
+  showMetaPills?: boolean
+  /** @deprecated No longer used */
+  showExtraPills?: boolean
+  /** @deprecated No longer used */
+  showSellerRow?: boolean
+  /** @deprecated No longer used */
+  cardStyle?: "default" | "marketplace"
   /** @deprecated Use state="promoted" */
   isBoosted?: boolean
-
-  // Smart pills data
-  attributes?: Record<string, string>
 
   // Context
   index?: number
@@ -195,221 +132,61 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
 function getProductCardImageSrc(src: string): string {
   if (!src) return PLACEHOLDER_IMAGE_PATH
   const isRemote = /^https?:\/\//i.test(src)
-
   const normalized = normalizeImageUrl(src)
   if (!normalized) return PLACEHOLDER_IMAGE_PATH
   if (normalized === PLACEHOLDER_IMAGE_PATH) return normalized
-
-  // In Playwright E2E runs we avoid remote network requests entirely.
   if (process.env.NEXT_PUBLIC_E2E === "true" && isRemote) {
     return PLACEHOLDER_IMAGE_PATH
   }
-
   return normalized
 }
 
-// =============================================================================
-// SMART PILLS HELPERS
-// =============================================================================
-
-const CATEGORY_PILL_PRIORITY: Record<string, string[]> = {
-  automotive: ["year", "mileage_km", "fuel_type", "make", "model"],
-  electronics: ["brand", "model", "storage", "condition"],
-  fashion: ["size", "brand", "condition"],
-  // Back-compat / optional granular slugs
-  cars: ["year", "mileage_km", "fuel_type"],
-  motorcycles: ["year", "mileage_km", "engine_cc"],
-  phones: ["brand", "storage", "condition"],
-  default: ["condition", "brand"],
-}
-
-function pickCategoryBadgeNode(
-  path: NonNullable<ProductCardProps["categoryPath"]> | undefined
-): { slug: string; name: string; nameBg?: string | null; icon?: string | null } | undefined {
-  if (!path || path.length === 0) return undefined
-  if (path.length === 1) return path[0]
-
-  const l0 = path[0]
-  const l1 = path[1]
-  const l2 = path[2]
-
-  // Fashion: L1 is usually just gender (Men's/Women's), so L2 is more useful.
-  if (l0.slug === "fashion") {
-    const genderL1 = new Set(["fashion-mens", "fashion-womens", "fashion-kids", "fashion-unisex"])
-    if (l1 && genderL1.has(l1.slug) && l2) return l2
-    return l1 || l0
-  }
-
-  // Automotive: if L1 is a very broad grouping (Vehicles / Electric Vehicles), L2 is usually the useful type.
-  if (l0.slug === "automotive") {
-    const broadL1 = new Set(["vehicles", "electric-vehicles"])
-    if (l1 && broadL1.has(l1.slug) && l2) return l2
-    return l1 || l0
-  }
-
-  // Default: show L1 when available.
-  return l1 || l0
-}
-
-function getCategoryBadgeLabel(
+// Helper to get category label from path
+function getCategoryLabel(
   path: ProductCardProps["categoryPath"],
   locale: string
 ): string | null {
-  const node = pickCategoryBadgeNode(path)
-  if (!node) return null
-
+  if (!path || path.length === 0) return null
+  // Prefer L1 (second level) if available, otherwise L0
+  const node = path.length > 1 ? path[1] : path[0]
   const raw = locale === "bg" ? (node.nameBg || node.name) : node.name
   const clean = raw.replace(/^\s*\[HIDDEN\]\s*/i, "").trim()
   if (!clean) return null
-  return clean.length > 18 ? `${clean.slice(0, 18)}…` : clean
-}
-
-function formatPillValue(key: string, value: string): string {
-  if (!value) return ""
-  switch (key) {
-    case "mileage_km":
-      return `${Number.parseInt(value).toLocaleString()} km`
-    case "area_sqm":
-      return `${value} m²`
-    case "condition":
-      // Return raw value - will be translated at render time
-      return value
-    default:
-      return value.length > 14 ? `${value.slice(0, 14)}…` : value
-  }
-}
-
-// Translate condition value using next-intl
-function translateCondition(value: string, t: (key: string) => string): string {
-  const raw = value?.trim()
-  if (!raw) return "—"
-  const lowered = raw.toLowerCase().replace(/[_\s]+/g, "-")
-  
-  const conditionMap: Record<string, string> = {
-    "new": "conditionNew",
-    "new-with-tags": "conditionNewWithTags",
-    "used": "conditionUsed",
-    "used-excellent": "conditionUsedExcellent",
-    "used-good": "conditionUsedGood",
-    "used-fair": "conditionUsedFair",
-    "refurbished": "conditionRefurbished",
-  }
-  
-  const translationKey = conditionMap[lowered]
-  if (translationKey) return t(translationKey)
-  
-  // Fallback: capitalize words for unknown conditions
-  return raw.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-}
-
-function getSmartPills(
-  categorySlug: string | undefined,
-  attributes: Record<string, string> | undefined,
-  condition: string | undefined,
-  brand: string | undefined,
-  maxPills: number = 2
-): Array<{ key: string; label: string }> {
-  const pills: Array<{ key: string; label: string }> = []
-  const attrs = attributes || {}
-  const priorityKeys =
-    CATEGORY_PILL_PRIORITY[categorySlug || ""] || CATEGORY_PILL_PRIORITY.default
-
-  const merged: Record<string, string> = {
-    ...attrs,
-    condition: condition || attrs.condition || "",
-    brand: brand || attrs.brand || "",
-  }
-
-  for (const key of priorityKeys) {
-    if (pills.length >= maxPills) break
-    const value = merged[key]?.trim()
-    if (
-      value &&
-      !pills.some((p) => p.label.toLowerCase() === value.toLowerCase())
-    ) {
-      pills.push({ key, label: formatPillValue(key, value) })
-    }
-  }
-
-  // Ensure we still show useful pills across all categories.
-  // Some categories prioritize attributes (e.g. year/mileage) and might omit condition/brand.
-  const addFallback = (key: "condition" | "brand") => {
-    if (pills.length >= maxPills) return
-    const value = merged[key]?.trim()
-    if (!value) return
-    const label = formatPillValue(key, value)
-    if (!label) return
-    if (pills.some((p) => p.label.toLowerCase() === label.toLowerCase())) return
-    pills.push({ key, label })
-  }
-
-  addFallback("condition")
-  addFallback("brand")
-
-  return pills
+  return clean.length > 16 ? `${clean.slice(0, 16)}…` : clean
 }
 
 // =============================================================================
-// PRODUCT CARD COMPONENT
+// PRODUCT CARD COMPONENT - Clean, Professional, Dense
 // =============================================================================
 
 const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
   (
     {
-      // Required
       id,
       title,
       price,
       image,
-
-      // Pricing
       originalPrice,
-      listPrice,
+      listPrice, // deprecated
       isOnSale,
       salePercent,
-      saleEndDate,
-
-      // Product info
       rating = 0,
       reviews = 0,
-      brand,
-      condition,
-      categorySlug,
-      categoryRootSlug,
       categoryPath,
-      location,
       sellerId,
-
-      // Seller
       sellerName,
       sellerAvatarUrl,
-      sellerVerified = false,
-      sellerTier = "basic",
-      initialIsFollowingSeller = false,
-
-      // Shipping
+      location,
       freeShipping = false,
-
-      // URLs
       slug,
       username,
-      storeSlug,
-
-      // CVA variants
+      storeSlug, // deprecated
       variant = "default",
       state,
-      isBoosted,
-
-      // Feature toggles
+      isBoosted, // deprecated
       showQuickAdd = true,
       showWishlist = true,
       showRating = true,
-      showPills = true,
-
-      // Smart pills
-      attributes,
-
-      // Context
       index = 0,
       currentUserId,
       inStock = true,
@@ -432,40 +209,16 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
 
     // Derived values
     const hasDiscount = resolvedOriginalPrice && resolvedOriginalPrice > price
-    const priceDerivedDiscountPercent = hasDiscount
-      ? Math.round(
-          ((resolvedOriginalPrice - price) / resolvedOriginalPrice) * 100
-        )
-      : 0
+    const discountPercent = hasDiscount
+      ? Math.round(((resolvedOriginalPrice - price) / resolvedOriginalPrice) * 100)
+      : (salePercent ?? 0)
 
-    const resolvedSalePercent =
-      typeof salePercent === "number" && Number.isFinite(salePercent)
-        ? salePercent
-        : priceDerivedDiscountPercent
-
-    const saleEndOk = (() => {
-      if (!saleEndDate) return true
-      const d = new Date(saleEndDate)
-      if (Number.isNaN(d.getTime())) return true
-      return d.getTime() > Date.now()
-    })()
-
-    const saleByTruthSemantics = isOnSale === true && resolvedSalePercent > 0 && saleEndOk
-
-    // Auto-detect state
-    const resolvedState =
-      state ||
-      (isBoosted
-        ? "promoted"
-        : saleByTruthSemantics || (isOnSale == null && hasDiscount && priceDerivedDiscountPercent >= 10)
-          ? "sale"
-          : "default")
+    // Resolve state (handle deprecated isBoosted)
+    const resolvedState = state ?? (isBoosted ? "promoted" : (isOnSale || hasDiscount ? "sale" : "default"))
 
     // URLs
-    const productUrl = resolvedUsername
-      ? `/${resolvedUsername}/${slug || id}`
-      : "#"
-    const displayName = sellerName || resolvedUsername || "Seller"
+    const productUrl = resolvedUsername ? `/${resolvedUsername}/${slug || id}` : "#"
+    const categoryLabel = React.useMemo(() => getCategoryLabel(categoryPath, locale), [categoryPath, locale])
 
     const inWishlist = isInWishlist(id)
     const inCart = React.useMemo(() => cartItems.some((item) => item.id === id), [cartItems, id])
@@ -476,37 +229,12 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
 
     // Loading strategy
     const loadingStrategy = getImageLoadingStrategy(index, 4)
-
     const imageSrc = React.useMemo(() => getProductCardImageSrc(image), [image])
-
-    // Smart pills
-    const smartPills = React.useMemo(
-      () =>
-        showPills
-          ? getSmartPills(categoryRootSlug || categorySlug, attributes, condition, brand)
-          : [],
-      [showPills, categoryRootSlug, categorySlug, attributes, condition, brand]
-    )
-
-    const conditionPill = smartPills.find((p) => p.key === "condition")
-    const nonConditionPills = smartPills.filter((p) => p.key !== "condition")
-
-    const categoryBadge = React.useMemo(
-      () => getCategoryBadgeLabel(categoryPath, locale),
-      [categoryPath, locale]
-    )
-
-    const showConditionBadge = !!(
-      conditionPill &&
-      conditionPill.label.trim().toLowerCase() !== "new"
-    )
-
-    const displayNonConditionPills = categoryBadge ? nonConditionPills.slice(0, 1) : nonConditionPills
 
     // Check if own product
     const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
 
-    // Price formatting - EUR is base currency (Bulgaria joined Eurozone)
+    // Price formatting
     const formatPrice = (p: number) =>
       new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
         style: "currency",
@@ -519,7 +247,6 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
     const handleAddToCart = (e: React.MouseEvent) => {
       e.preventDefault()
       e.stopPropagation()
-
       if (isOwnProduct) {
         toast.error(t("cannotBuyOwnProduct"))
         return
@@ -528,7 +255,6 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
         toast.error(t("outOfStock"))
         return
       }
-
       addToCart({
         id,
         title,
@@ -545,27 +271,13 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
       e.preventDefault()
       e.stopPropagation()
       if (isWishlistPending) return
-
       setIsWishlistPending(true)
       try {
-        await toggleWishlist({
-          id,
-          title,
-          price,
-          image,
-        })
+        await toggleWishlist({ id, title, price, image })
       } finally {
         setIsWishlistPending(false)
       }
     }
-
-    // Tier label for featured variant
-    const tierLabel =
-      sellerTier === "business"
-        ? t("businessSeller")
-        : sellerTier === "premium"
-          ? t("topRated")
-          : t("seller")
 
     return (
       <div
@@ -573,160 +285,23 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
         className={cn(productCardVariants({ variant, state: resolvedState }), className)}
         onClick={handleOpenProduct}
       >
-        {/* Overlay link for full-card navigation.
-            IMPORTANT: Do not nest interactive controls inside an anchor. */}
+        {/* Full-card link for accessibility */}
         <Link
           href={productUrl}
-          className="absolute inset-0 z-1"
+          className="absolute inset-0 z-[1]"
           aria-label={t("openProduct", { title })}
         >
           <span className="sr-only">{title}</span>
         </Link>
 
-        {/* ═══════════════════════════════════════════════════════════════════
-            SELLER HEADER - Featured variant only (promoted/business sellers)
-            Swiss Design: Clean horizontal layout, minimal visual weight
-        ═══════════════════════════════════════════════════════════════════ */}
-        {variant === "featured" && (
-          <div className="relative z-10 flex items-center justify-between gap-2 border-b border-border bg-muted/30 px-3 py-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <Avatar className="size-7 shrink-0 border border-border">
-                <AvatarImage src={sellerAvatarUrl || undefined} alt={displayName} />
-                <AvatarFallback className="bg-transparent p-0">
-                  <BoringAvatar
-                    size={28}
-                    name={sellerId || displayName}
-                    variant="beam"
-                    colors={AVATAR_COLORS}
-                  />
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <div className="flex min-w-0 items-center gap-1">
-                  <span className="max-w-[100px] truncate text-xs font-medium text-foreground">
-                    {displayName}
-                  </span>
-                  {sellerVerified && (
-                    <ShieldCheck size={12} weight="fill" className="shrink-0 text-cta-trust-blue" />
-                  )}
-                </div>
-                <span className="text-tiny text-muted-foreground">{tierLabel}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              {!!sellerId && !isOwnProduct && (
-                <div
-                  className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                  }}
-                >
-                  <FollowSellerButton
-                    sellerId={sellerId}
-                    initialIsFollowing={initialIsFollowingSeller}
-                    locale={locale}
-                    showLabel={false}
-                    size="icon"
-                    variant="ghost"
-                    className="size-7 rounded-full"
-                  />
-                </div>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-7 shrink-0 rounded-full"
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                }}
-              >
-                <DotsThree size={16} weight="bold" />
-                <span className="sr-only">More options</span>
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Compact Seller Info for C2C feel - Default variant */}
-        {variant === "default" && (sellerName || resolvedUsername) && (
-          <div className="relative z-10 flex items-center gap-1.5 px-1.5 py-1.5">
-            <Avatar className="size-7 shrink-0 border border-border/50">
-              <AvatarImage src={sellerAvatarUrl || undefined} alt={displayName} />
-              <AvatarFallback className="bg-transparent p-0">
-                <BoringAvatar
-                  size={28}
-                  name={sellerId || displayName}
-                  variant="beam"
-                  colors={AVATAR_COLORS}
-                />
-              </AvatarFallback>
-            </Avatar>
-            <HoverCard openDelay={200} closeDelay={100}>
-              <HoverCardTrigger asChild>
-                <span className="truncate text-sm font-medium text-foreground/80 group-hover:text-foreground transition-colors">
-                  {displayName}
-                </span>
-              </HoverCardTrigger>
-              <HoverCardContent align="start" side="top" className="w-64 p-3">
-                <div className="flex items-center gap-2">
-                  <Avatar className="size-9 shrink-0 border border-border">
-                    <AvatarImage src={sellerAvatarUrl || undefined} alt={displayName} />
-                    <AvatarFallback className="bg-transparent p-0">
-                      <BoringAvatar
-                        size={36}
-                        name={sellerId || displayName}
-                        variant="beam"
-                        colors={AVATAR_COLORS}
-                      />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0">
-                    <div className="flex min-w-0 items-center gap-1">
-                      <span className="truncate text-sm font-medium text-foreground">{displayName}</span>
-                      {sellerVerified && (
-                        <ShieldCheck size={12} weight="fill" className="shrink-0 text-cta-trust-blue" />
-                      )}
-                    </div>
-                    <div className="text-xs text-muted-foreground">{tierLabel}</div>
-                  </div>
-                </div>
-
-                {resolvedUsername && (
-                  <Link
-                    href={`/${resolvedUsername}`}
-                    className="mt-2 inline-flex text-xs font-medium text-primary hover:underline"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {t("viewProfile")}
-                  </Link>
-                )}
-              </HoverCardContent>
-            </HoverCard>
-            {sellerVerified && (
-              <ShieldCheck size={10} weight="fill" className="shrink-0 text-cta-trust-blue" />
-            )}
-          </div>
-        )}
-
-        {/* ═══════════════════════════════════════════════════════════════════
-            IMAGE SECTION - Square aspect ratio for maximum image visibility
-            Standardized: 1:1 ratio like eBay/Vinted for consistent grid alignment
-        ═══════════════════════════════════════════════════════════════════ */}
-        <div
-          className={cn(
-            "relative overflow-hidden bg-muted",
-            variant === "default" && "rounded-2xl"
-          )}
-        >
-          {/* Square aspect ratio - industry standard for product grids */}
-          <AspectRatio ratio={1}>
+        {/* IMAGE SECTION - 4:5 aspect ratio per _MASTER.md */}
+        <div className="relative overflow-hidden rounded bg-muted">
+          <AspectRatio ratio={4 / 5}>
             <Image
               src={imageSrc}
               alt={title}
               fill
-              className="size-full object-cover transition-opacity duration-200 group-hover:opacity-90"
+              className="object-cover"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               placeholder="blur"
               blurDataURL={productBlurDataURL()}
@@ -735,42 +310,32 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
             />
           </AspectRatio>
 
-          {/* Action Buttons - Bottom Row (prevents badge crowding) */}
+          {/* Discount badge - 11px font-semibold per _MASTER.md */}
+          {hasDiscount && discountPercent >= 5 && (
+            <span className="absolute left-1.5 top-1.5 z-10 rounded bg-destructive px-2 py-0.5 text-tiny font-semibold text-destructive-foreground">
+              -{discountPercent}%
+            </span>
+          )}
+
+          {/* Action buttons - bottom row */}
           {(showWishlist || showQuickAdd) && (
-            <div
-              className={cn(
-                "absolute inset-x-1.5 bottom-1.5 z-10 flex items-end justify-between gap-2",
-                // Mobile: always visible.
-                // Desktop: only hide when *not* in a saved/added state.
-                "opacity-100",
-                !(inWishlist || inCart) &&
-                  "md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100",
-                "transition-opacity duration-150",
-                // Prevent invisible buttons from stealing clicks on desktop.
-                !(inWishlist || inCart) &&
-                  "md:pointer-events-none md:group-hover:pointer-events-auto md:group-focus-within:pointer-events-auto"
-              )}
-            >
+            <div className="absolute inset-x-1.5 bottom-1.5 z-10 flex items-end justify-between">
+              {/* Wishlist - 28px visual, 32px hit area */}
               {showWishlist ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "h-touch w-touch rounded-full p-0",
-                    "bg-transparent hover:bg-transparent"
-                  )}
+                <button
+                  type="button"
+                  className="relative z-10 flex h-8 w-8 items-center justify-center"
                   onClick={handleWishlist}
+                  aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
                 >
                   <span
                     className={cn(
-                      "flex size-8 items-center justify-center rounded-full",
-                      "bg-background/90 border border-border/50",
-                      "transition-colors",
-                      inWishlist ? "bg-cta-trust-blue/10" : "hover:bg-background"
+                      "flex h-7 w-7 items-center justify-center rounded-full border border-border/50 bg-background/90",
+                      inWishlist && "bg-cta-trust-blue/10"
                     )}
                   >
                     {isWishlistPending ? (
-                      <Spinner className="size-4" />
+                      <Spinner className="h-4 w-4" />
                     ) : (
                       <Heart
                         size={16}
@@ -779,173 +344,100 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                       />
                     )}
                   </span>
-                  <span className="sr-only">
-                    {inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
-                  </span>
-                </Button>
+                </button>
               ) : (
-                <div className="h-touch w-touch" />
+                <span />
               )}
 
+              {/* Quick add - 32px */}
               {showQuickAdd && (
-                <Button
-                  variant={inCart ? "default" : "outline"}
-                  size="icon"
-                  className={cn(
-                    "h-touch w-touch rounded-full p-0",
-                    "bg-transparent hover:bg-transparent",
-                    "border-0",
-                    ""
-                  )}
+                <button
+                  type="button"
+                  className="relative z-10 flex h-8 w-8 items-center justify-center"
                   onClick={handleAddToCart}
                   disabled={isOwnProduct || !inStock}
+                  aria-label={inCart ? t("inCart") : t("addToCart")}
                 >
                   <span
                     className={cn(
-                      "flex size-8 items-center justify-center rounded-full",
-                      "transition-colors",
-                      !inCart && [
-                        "bg-background/90 border border-border/50",
-                        "group-hover:bg-cta-trust-blue group-hover:text-cta-trust-blue-text"
-                      ],
-                      inCart && "bg-cta-trust-blue text-cta-trust-blue-text"
+                      "flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-background/90",
+                      inCart && "border-0 bg-cta-trust-blue text-cta-trust-blue-text"
                     )}
                   >
                     {inCart ? (
                       <ShoppingCart size={14} weight="fill" />
                     ) : (
-                      <Plus size={14} weight="bold" />
+                      <Plus size={16} weight="bold" />
                     )}
                   </span>
-                  <span className="sr-only">{inCart ? t("inCart") : t("addToCart")}</span>
-                </Button>
+                </button>
               )}
             </div>
           )}
-
-          {/* Badges - Top Left (Flat, no shadows per Swiss design) */}
-          <div className="absolute left-2 top-2 z-10 flex flex-col gap-1">
-            {resolvedState === "promoted" && (
-              <Badge className="inline-flex items-center gap-0.5 rounded-md bg-cta-trust-blue px-1.5 py-0.5 text-tiny font-semibold text-cta-trust-blue-text">
-                <Sparkle size={10} weight="fill" />
-                {t("promoted")}
-              </Badge>
-            )}
-            {(saleByTruthSemantics || (isOnSale == null && hasDiscount && priceDerivedDiscountPercent >= 5)) && (
-              <span className="rounded-md bg-destructive px-1.5 py-0.5 text-tiny font-bold text-destructive-foreground">
-                -{Math.max(0, Math.round(resolvedSalePercent))}%
-              </span>
-            )}
-          </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════════════
-            CONTENT SECTION - Ultra-tight spacing & Refined Typography
-            Swiss Design: Clear hierarchy, optimized for desktop scanning
-        ═══════════════════════════════════════════════════════════════════ */}
-        <div
-          className={cn(
-            "relative z-10 flex flex-col gap-0.5",
-            variant === "featured" ? "p-2" : "p-1.5"
-          )}
-        >
-          {/* Compact meta badges: Category (smart level) + Condition (only if not 'new') */}
-          {(categoryBadge || showConditionBadge) && (
-            <div className="flex flex-wrap items-center gap-1">
-              {categoryBadge && (
-                <Badge
-                  variant="secondary"
-                  className="w-fit max-w-full truncate px-2 py-0.5 text-[10px] font-semibold tracking-normal normal-case"
-                >
-                  {categoryBadge}
-                </Badge>
-              )}
-              {showConditionBadge && (
-                <Badge
-                  variant="secondary"
-                  className="w-fit px-2 py-0.5 text-[10px] font-semibold tracking-normal normal-case"
-                >
-                  {translateCondition(conditionPill!.label, t)}
-                </Badge>
-              )}
-            </div>
+        {/* CONTENT SECTION - Dense spacing per _MASTER.md */}
+        <div className="relative z-10 flex flex-col gap-0.5 px-0.5 py-1.5">
+          {/* Category badge - text-tiny (11px) font-semibold per _MASTER.md */}
+          {categoryLabel && (
+            <Badge
+              variant="secondary"
+              className="h-5 w-fit max-w-full truncate px-2 py-0.5 text-tiny font-semibold"
+            >
+              {categoryLabel}
+            </Badge>
           )}
 
-          {/* Title */}
-          <h3
-            className={cn(
-              "text-sm font-medium leading-tight text-foreground/90",
-              variant === "featured" ? "line-clamp-2" : "line-clamp-1"
-            )}
-          >
+          {/* Title - 13px mobile / text-sm (14px) desktop per _MASTER.md */}
+          {/* Mobile: single line truncate | Desktop: up to 2 lines */}
+          <h3 className="truncate text-[13px] font-normal leading-snug text-foreground md:line-clamp-2 md:whitespace-normal md:text-sm">
             {title}
           </h3>
 
-          {/* Quick pills (excluding condition) */}
-          {displayNonConditionPills.length > 0 && (
-            <div className="flex flex-wrap gap-1 pt-0.5">
-              {displayNonConditionPills.map((pill) => (
-                <span
-                  key={pill.key}
-                  className="rounded-full border border-border/60 bg-muted/50 px-2 py-0.5 text-tiny font-medium leading-none text-muted-foreground"
-                >
-                  {pill.label}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Price Row - Bold, prominent */}
-          <div className="flex items-baseline gap-1 pt-0.5">
+          {/* Price - text-lg (18px) / text-xl (20px) desktop - LARGEST ELEMENT */}
+          <div className="flex items-baseline gap-1.5 pt-0.5">
             <span
               className={cn(
-                "text-base font-bold tracking-tight",
-                (saleByTruthSemantics || hasDiscount) ? "text-destructive" : "text-foreground"
+                "text-lg font-bold leading-none tracking-tight md:text-xl",
+                hasDiscount ? "text-price-sale" : "text-foreground"
               )}
             >
               {formatPrice(price)}
             </span>
             {hasDiscount && resolvedOriginalPrice && (
-              <span className="text-2xs text-muted-foreground line-through decoration-muted-foreground/30">
+              <span className="text-xs text-muted-foreground line-through">
                 {formatPrice(resolvedOriginalPrice)}
               </span>
             )}
           </div>
 
-          {/* Rating Row - Compact stars */}
+          {/* Rating - text-tiny (11px) per _MASTER.md */}
           {showRating && rating > 0 && (
             <div className="flex items-center gap-1">
-              <div className="flex">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Star
-                    key={i}
-                    size={10}
-                    weight="fill"
-                    className={cn(
-                      i <= Math.floor(rating)
-                        ? "text-rating"
-                        : "text-rating-empty"
-                    )}
-                  />
-                ))}
-              </div>
+              <Star size={12} weight="fill" className="text-rating" />
+              <span className="text-tiny font-medium text-foreground">
+                {rating.toFixed(1)}
+              </span>
               {reviews > 0 && (
-                <span className="text-2xs text-muted-foreground">({reviews.toLocaleString()})</span>
+                <span className="text-tiny text-muted-foreground">
+                  · {reviews.toLocaleString()} sold
+                </span>
               )}
             </div>
           )}
 
-          {/* Free Shipping - Trust signal */}
-          {freeShipping && (
-            <p className="inline-flex items-center gap-1 pt-0.5 text-2xs font-medium text-success">
-              <Truck size={12} weight="bold" />
-              {t("freeShipping")}
-            </p>
-          )}
-
-          {/* Location - Marketplace essential */}
-          {location && (
-            <p className="truncate text-2xs text-muted-foreground pt-0.5">{location}</p>
+          {/* Free shipping + location - text-2xs (10px) per _MASTER.md */}
+          {(freeShipping || location) && (
+            <div className="flex items-center gap-1.5 text-2xs text-muted-foreground">
+              {freeShipping && (
+                <span className="inline-flex items-center gap-0.5 font-medium text-success">
+                  <Truck size={10} weight="bold" />
+                  {t("freeShipping")}
+                </span>
+              )}
+              {freeShipping && location && <span>·</span>}
+              {location && <span className="truncate">{location}</span>}
+            </div>
           )}
         </div>
       </div>
@@ -956,58 +448,37 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
 ProductCard.displayName = "ProductCard"
 
 // =============================================================================
-// PRODUCT GRID - Standardized CSS Grid (eBay/Amazon reference)
+// PRODUCT GRID - Dense Marketplace Style (_MASTER.md compliant)
 // =============================================================================
 
 interface ProductGridProps {
   children: React.ReactNode
-  /**
-   * Grid density preset
-   * - compact: More items visible (mobile-first marketplaces like Vinted)
-   * - default: Balanced (like eBay)
-   * - comfortable: Larger cards (like Airbnb)
-   */
+  /** Grid density: compact (Temu), default (eBay), comfortable (Airbnb) */
   density?: "compact" | "default" | "comfortable"
-  /** Gap between items */
-  gap?: "sm" | "md" | "lg"
   className?: string
 }
 
 /**
- * ProductGrid Component
- * ----------------------
- * Standardized CSS Grid for product catalogs.
- *
- * STANDARDIZED BREAKPOINTS (based on eBay/Amazon):
- * - Mobile (< 640px):   2 columns - essential for thumb reach
- * - Tablet (640-1024):  3 columns - balanced density
- * - Desktop (1024+):    4 columns - optimal for scanning
- * - Wide (1280+):       4-5 columns max - prevents images from getting too small
- *
- * Gap Strategy:
- * - sm: gap-2 sm:gap-3 (8-12px) - Compact
- * - md: gap-3 sm:gap-4 (12-16px) - Default
- * - lg: gap-4 sm:gap-6 (16-24px) - Comfortable
+ * ProductGrid - Responsive CSS Grid
+ * Mobile: 2 cols, gap-1.5 (6px), px-2 (8px)
+ * Tablet: 3 cols, gap-2 (8px)
+ * Desktop: 4-5 cols, gap-3 (12px)
  */
-function ProductGrid({ children, density = "default", gap = "md", className }: ProductGridProps) {
-  const gapClasses = {
-    sm: "gap-2 sm:gap-3",
-    md: "gap-3 sm:gap-4 lg:gap-5",
-    lg: "gap-4 sm:gap-6",
-  }
-
-  // Standardized column configurations
+function ProductGrid({ children, density = "default", className }: ProductGridProps) {
   const densityClasses = {
-    // Compact: 2 → 3 → 4 → 5 (Vinted-style, more items)
-    compact: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
-    // Default: 2 → 3 → 4 → 4 (eBay-style, balanced)
-    default: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5",
-    // Comfortable: 2 → 2 → 3 → 4 (Airbnb-style, larger cards)
-    comfortable: "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
+    compact: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+    default: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+    comfortable: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
   }
 
   return (
-    <div className={cn("grid", densityClasses[density], gapClasses[gap], className)}>
+    <div
+      className={cn(
+        "grid gap-1.5 px-2 sm:gap-2 sm:px-3 lg:gap-3 lg:px-4",
+        densityClasses[density],
+        className
+      )}
+    >
       {children}
     </div>
   )
@@ -1016,58 +487,28 @@ function ProductGrid({ children, density = "default", gap = "md", className }: P
 ProductGrid.displayName = "ProductGrid"
 
 // =============================================================================
-// SKELETON - Matches Modern Minimal card design
+// SKELETON - Clean, no shimmer per _MASTER.md
 // =============================================================================
 
 interface ProductCardSkeletonProps {
-  variant?: "default" | "featured"
   className?: string
 }
 
-/**
- * ProductCardSkeleton
- * -------------------
- * Skeleton loader matching the ProductCard layout.
- * Uses same aspect ratio (4:3 for default, 1:1 for featured) and spacing.
- */
-function ProductCardSkeleton({ variant = "default", className }: ProductCardSkeletonProps) {
+function ProductCardSkeleton({ className }: ProductCardSkeletonProps) {
   return (
-    <div
-      className={cn(
-        "h-full overflow-hidden",
-        variant === "featured" && "rounded-xl",
-        variant === "default" && "rounded-lg",
-        className
-      )}
-    >
-      {/* Seller Header Skeleton - Featured only */}
-      {variant === "featured" && (
-        <div className="flex items-center gap-2 border-b border-border bg-muted/30 px-3 py-2">
-          <Skeleton className="size-7 rounded-full" />
-          <div className="space-y-1">
-            <Skeleton className="h-3 w-20" />
-            <Skeleton className="h-2 w-14" />
-          </div>
-        </div>
-      )}
-
-      {/* Image Skeleton - Square aspect ratio */}
-      <div className={cn("bg-muted", variant === "default" && "rounded-lg")}>
-        <AspectRatio ratio={1}>
-          <Skeleton className="size-full" />
+    <div className={cn("h-full overflow-hidden", className)}>
+      {/* Image skeleton - 4:5 aspect */}
+      <div className="rounded bg-muted">
+        <AspectRatio ratio={4 / 5}>
+          <Skeleton className="h-full w-full rounded-none" />
         </AspectRatio>
       </div>
-
-      {/* Content Skeleton - Matches card padding */}
-      <div className={cn("flex flex-col gap-1.5", variant === "featured" ? "p-2" : "p-1.5")}>
-        {/* Brand */}
+      {/* Content skeleton */}
+      <div className="flex flex-col gap-1.5 px-0.5 py-1.5">
         <Skeleton className="h-3 w-16" />
-        {/* Title */}
         <Skeleton className="h-4 w-full" />
-        {variant === "featured" && <Skeleton className="h-4 w-3/4" />}
-        {/* Price */}
+        <Skeleton className="h-4 w-3/4" />
         <Skeleton className="h-5 w-20" />
-        {/* Rating */}
         <Skeleton className="h-3 w-24" />
       </div>
     </div>
@@ -1077,48 +518,26 @@ function ProductCardSkeleton({ variant = "default", className }: ProductCardSkel
 ProductCardSkeleton.displayName = "ProductCardSkeleton"
 
 // =============================================================================
-// SKELETON GRID - Uses ProductGrid for consistent layout
+// SKELETON GRID
 // =============================================================================
 
 interface ProductCardSkeletonGridProps {
   count?: number
-  variant?: "default" | "featured"
   density?: "compact" | "default" | "comfortable"
-  gap?: "sm" | "md" | "lg"
   className?: string
 }
 
-/**
- * ProductCardSkeletonGrid
- * -----------------------
- * Grid of skeleton cards for loading states.
- * Uses CSS Grid with same responsive breakpoints as ProductGrid.
- */
 function ProductCardSkeletonGrid({
   count = 8,
-  variant = "default",
   density = "default",
-  gap = "md",
   className,
 }: ProductCardSkeletonGridProps) {
-  const gapClasses = {
-    sm: "gap-2 sm:gap-3",
-    md: "gap-3 sm:gap-4 lg:gap-5",
-    lg: "gap-4 sm:gap-6",
-  }
-
-  const densityClasses = {
-    compact: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
-    default: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5",
-    comfortable: "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
-  }
-
   return (
-    <div className={cn("grid", densityClasses[density], gapClasses[gap], className)}>
+    <ProductGrid density={density} className={className}>
       {Array.from({ length: count }).map((_, i) => (
-        <ProductCardSkeleton key={i} variant={variant} />
+        <ProductCardSkeleton key={i} />
       ))}
-    </div>
+    </ProductGrid>
   )
 }
 

@@ -22,6 +22,7 @@ export interface Category {
 
 // Global cache state (outside React to persist across component instances)
 let categoriesCache: Category[] | null = null
+let cachedDepth: number = 0
 let categoriesFetching = false
 let categoriesCallbacks: Array<(cats: Category[]) => void> = []
 let cacheTimestamp: number = 0
@@ -72,8 +73,8 @@ export function useCategoriesCache(
     const now = Date.now()
     const cacheExpired = now - cacheTimestamp > CACHE_TTL
     
-    // Check if cache is valid
-    if (!forceFresh && !cacheExpired && categoriesCache && categoriesCache.length >= minCategories) {
+    // Check if cache is valid AND has sufficient depth
+    if (!forceFresh && !cacheExpired && categoriesCache && categoriesCache.length >= minCategories && cachedDepth >= depth) {
       setCategories(categoriesCache)
       setIsLoading(false)
       return
@@ -109,6 +110,7 @@ export function useCategoriesCache(
 
         // Update cache
         categoriesCache = cats
+        cachedDepth = depth
         cacheTimestamp = Date.now()
 
         setCategories(cats)
@@ -160,6 +162,7 @@ export function useCategoriesCache(
   const refetch = useCallback(() => {
     // Clear cache to force refetch
     categoriesCache = null
+    cachedDepth = 0
     cacheTimestamp = 0
     fetchCategories()
   }, [fetchCategories])

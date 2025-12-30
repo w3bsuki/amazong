@@ -76,35 +76,35 @@ export function MobileStickyBarEnhanced({
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background lg:hidden">
       <div className="flex items-center gap-2 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        {/* Wishlist */}
+        {/* Wishlist - 32px (h-8) compact touch target */}
         <Button
           type="button"
           variant="outline"
           size="icon"
           onClick={handleWishlist}
-          className="shrink-0"
+          className="shrink-0 h-8 w-8"
         >
-          <Heart weight={inWishlist ? "fill" : "regular"} className={inWishlist ? "text-red-500" : ""} />
+          <Heart weight={inWishlist ? "fill" : "regular"} className={`size-4 ${inWishlist ? "text-red-500" : ""}`} />
         </Button>
 
-        {/* Add to Cart */}
+        {/* Add to Cart - 40px (h-10) primary CTA max */}
         <Button
           type="button"
           variant="outline"
           onClick={handleAddToCart}
           disabled={isOutOfStock}
-          className="flex-1"
+          className="flex-1 h-10 text-sm font-medium gap-1.5"
         >
           <ShoppingCart className="size-4" />
           <span className="truncate">{t("addToCart")}</span>
         </Button>
 
-        {/* Buy Now */}
+        {/* Buy Now - 40px (h-10) primary CTA max */}
         <Button
           type="button"
           onClick={handleBuyNow}
           disabled={isOutOfStock}
-          className="flex-1 bg-primary text-primary-foreground"
+          className="flex-1 h-10 text-sm font-semibold bg-primary text-primary-foreground"
         >
           {isOutOfStock
             ? locale === "bg"

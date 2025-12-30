@@ -140,7 +140,7 @@ export function LoginForm({
                 <label htmlFor="password" className="text-sm font-medium text-foreground">
                   {t("password")}
                 </label>
-                <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
+                <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline min-h-[28px] flex items-center">
                   {t("forgotPassword")}
                 </Link>
               </div>
@@ -160,7 +160,7 @@ export function LoginForm({
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 size-9 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors"
                   aria-label={showPassword ? t("hidePassword") : t("showPassword")}
                 >
                   {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
@@ -170,12 +170,12 @@ export function LoginForm({
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm text-muted-foreground">
+              <label className="flex items-center gap-2 text-sm text-muted-foreground min-h-[36px] cursor-pointer">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="size-4 rounded border-input accent-primary"
+                  className="size-5 rounded border-input accent-primary cursor-pointer"
                 />
                 {t("rememberMe")}
               </label>
@@ -221,14 +221,14 @@ export function LoginForm({
         </div>
 
         <div className="px-6 py-4 bg-muted/30 border-t border-border rounded-b-xl">
-          <div className="flex justify-center gap-4 text-xs text-muted-foreground">
-            <Link href="/terms" className="hover:text-primary transition-colors">
+          <div className="flex justify-center gap-2 text-xs text-muted-foreground">
+            <Link href="/terms" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
               {t("conditionsOfUse")}
             </Link>
-            <Link href="/privacy" className="hover:text-primary transition-colors">
+            <Link href="/privacy" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
               {t("privacyNotice")}
             </Link>
-            <Link href="/help" className="hover:text-primary transition-colors">
+            <Link href="/help" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
               {t("help")}
             </Link>
           </div>

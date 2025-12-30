@@ -47,7 +47,7 @@ export function MobileFooter({
           <Button
             type="button"
             variant="outline"
-            size="icon-2xl"
+            size="icon-lg"
             onClick={onBack}
             className="rounded-xl shrink-0"
             aria-label={isBg ? "Назад" : "Back"}

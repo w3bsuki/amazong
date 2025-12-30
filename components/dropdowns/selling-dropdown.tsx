@@ -26,7 +26,7 @@ export function SellingDropdown({ user }: SellingDropdownProps) {
         <Link href="/sell" aria-label={tNav("sell")}>
           <Button
             variant="ghost"
-            size="icon-xl"
+            size="icon-lg"
             className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
           >
             <Storefront weight="regular" />

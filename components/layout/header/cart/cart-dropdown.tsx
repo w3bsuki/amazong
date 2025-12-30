@@ -39,11 +39,9 @@ export function CartDropdown() {
   return (
     <HoverCard openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <Link href="/cart" aria-label={`${tNav("cart")}${mounted && displayItems > 0 ? ` (${displayItems} items)` : ""}`}>
-          <Button
-            variant="ghost"
-            size="icon-xl"
-            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
+        <Link href="/cart" className="block" aria-label={`${tNav("cart")}${mounted && displayItems > 0 ? ` (${displayItems} items)` : ""}`}>
+          <div
+            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer"
           >
             <span className="relative" aria-hidden="true">
               <ShoppingCart weight="regular" />
@@ -55,13 +53,14 @@ export function CartDropdown() {
                 />
               )}
             </span>
-          </Button>
+          </div>
         </Link>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-[380px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
+        className="w-[380px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-lg"
         align="end"
         sideOffset={8}
+        collisionPadding={10}
       >
         <div className="flex items-center justify-between p-4 bg-muted border-b border-border">
           <div className="flex items-center gap-2">

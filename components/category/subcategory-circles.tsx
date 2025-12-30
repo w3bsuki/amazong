@@ -80,9 +80,9 @@ export function SubcategoryCircles({
       {/* Title removed as requested */}
       
       {/* Container with circles - horizontal scroll on mobile, wrap on larger screens */}
-      <div className="relative [--circle-size:50px] sm:[--circle-size:90px] md:[--circle-size:100px] [--circle-top-pad:6px]">
+      <div className="relative [--circle-size:56px] sm:[--circle-size:90px] md:[--circle-size:100px] [--circle-top-pad:6px]">
         <div
-          className="flex gap-3 sm:gap-4 py-1 pb-2 overflow-x-auto sm:flex-wrap sm:overflow-x-visible scrollbar-hide"
+          className="flex gap-2 sm:gap-4 py-1 pb-2 overflow-x-auto sm:flex-wrap sm:overflow-x-visible scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {/* "All in Category" circle - first item */}
@@ -90,7 +90,7 @@ export function SubcategoryCircles({
             <Link
               href={buildUrl(currentCategory.slug)}
               className={cn(
-                "flex flex-col items-center gap-1 min-w-[52px] sm:min-w-[100px] group shrink-0",
+                "flex flex-col items-center gap-1 min-w-[56px] sm:min-w-[100px] group shrink-0",
                 "touch-action-manipulation"
               )}
             >
@@ -98,7 +98,7 @@ export function SubcategoryCircles({
               <div
                 className={cn(
                   "rounded-full flex items-center justify-center overflow-hidden",
-                  "size-[50px] sm:size-[90px] md:size-[100px]",
+                  "size-14 sm:size-[90px] md:size-[100px]",
                   "bg-primary",
                   "border-2 border-primary"
                 )}
@@ -111,7 +111,7 @@ export function SubcategoryCircles({
               {/* Label */}
               <span className={cn(
                 "text-[10px] sm:text-sm font-medium text-center text-primary",
-                "max-w-[52px] sm:max-w-[100px] line-clamp-2 leading-tight"
+                "max-w-[56px] sm:max-w-[100px] line-clamp-2 leading-tight"
               )}>
                 {locale === "bg" ? "Всички продукти" : "All Products"}
               </span>
@@ -128,7 +128,7 @@ export function SubcategoryCircles({
                 key={subcat.id}
                 href={buildUrl(subcat.slug)}
                 className={cn(
-                  "flex flex-col items-center gap-1 min-w-[52px] sm:min-w-[100px] group shrink-0",
+                  "flex flex-col items-center gap-1 min-w-[56px] sm:min-w-[100px] group shrink-0",
                   "touch-action-manipulation",
                   index === validSubcategories.length - 1 && "mr-4"
                 )}
@@ -137,7 +137,7 @@ export function SubcategoryCircles({
               <div
                 className={cn(
                   "rounded-full relative flex items-center justify-center overflow-hidden",
-                  "size-[50px] sm:size-[90px] md:size-[100px]",
+                  "size-14 sm:size-[90px] md:size-[100px]",
                   "bg-muted border border-border/50"
                 )}
               >
@@ -146,13 +146,13 @@ export function SubcategoryCircles({
                     src={normalizedImageUrl}
                     alt={getCategoryName(subcat)}
                     fill
-                    sizes="(min-width: 768px) 100px, (min-width: 640px) 90px, 50px"
+                    sizes="(min-width: 768px) 100px, (min-width: 640px) 90px, 56px"
                     className="object-cover"
                   />
                 ) : (
                   <>
                     <span className="text-primary sm:hidden">
-                      {getCategoryIcon(subcat.slug, { size: 24, weight: "duotone" })}
+                      {getCategoryIcon(subcat.slug, { size: 26, weight: "duotone" })}
                     </span>
                     <span className="text-primary hidden sm:block">
                       {getCategoryIcon(subcat.slug, { size: 32, weight: "duotone" })}
@@ -166,7 +166,7 @@ export function SubcategoryCircles({
                 "text-[10px] sm:text-sm font-medium text-center text-foreground",
                 "group-hover:text-primary group-hover:underline",
                 "line-clamp-2 leading-tight",
-                "max-w-[52px] sm:max-w-[100px]"
+                "max-w-[56px] sm:max-w-[100px]"
               )}>
                 {getCategoryName(subcat)}
               </span>

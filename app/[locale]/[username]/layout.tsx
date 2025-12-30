@@ -54,7 +54,7 @@ export default async function UsernameLayout({
                     </Suspense>
                     
                     <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
-                        <SiteHeader user={user} hideSubheader />
+                        <SiteHeader user={user} hideSubheader hideOnMobile />
                     </Suspense>
                     
                     <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">

@@ -33,29 +33,29 @@ export function MobileTrustBlock({
       icon: ShieldCheck,
       label: t.buyerProtection,
       desc: t.buyerProtectionDesc,
-      color: "text-[var(--color-verified)]",
-      bgColor: "bg-[var(--color-verified)]/10",
+      color: "text-verified",
+      bgColor: "bg-verified/10",
     },
     {
       icon: RotateCcw,
       label: t.returns,
       desc: freeReturns ? (locale === "bg" ? "Безплатно" : "Free") : t.returnsDesc,
-      color: "text-[var(--color-success)]",
-      bgColor: "bg-[var(--color-success)]/10",
+      color: "text-success",
+      bgColor: "bg-success/10",
     },
     {
       icon: Truck,
       label: t.shipping,
       desc: freeShipping ? t.shippingDescFree : t.shippingDescStd,
-      color: freeShipping ? "text-[var(--color-shipping-free)]" : "text-muted-foreground",
-      bgColor: freeShipping ? "bg-[var(--color-shipping-free)]/10" : "bg-muted",
+      color: freeShipping ? "text-shipping-free" : "text-muted-foreground",
+      bgColor: freeShipping ? "bg-shipping-free/10" : "bg-muted",
     },
     {
       icon: Lock,
       label: t.securePayment,
       desc: t.securePaymentDesc,
-      color: "text-[var(--color-info)]",
-      bgColor: "bg-[var(--color-info)]/10",
+      color: "text-info",
+      bgColor: "bg-info/10",
     },
   ];
 
@@ -66,14 +66,15 @@ export function MobileTrustBlock({
           key={index}
           className="flex flex-col items-center text-center gap-1"
         >
-          <div className={cn("size-9 rounded-lg flex items-center justify-center", item.bgColor)}>
+          {/* Icon container: 32px (h-8) secondary touch target */}
+          <div className={cn("size-8 rounded-lg flex items-center justify-center", item.bgColor)}>
             <item.icon className={cn("size-4", item.color)} />
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] font-semibold text-foreground leading-tight">
+            <span className="text-2xs font-semibold text-foreground leading-tight">
               {item.label}
             </span>
-            <span className="text-[9px] text-muted-foreground leading-tight">
+            <span className="text-2xs text-muted-foreground leading-tight">
               {item.desc}
             </span>
           </div>

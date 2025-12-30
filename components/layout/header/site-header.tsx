@@ -19,7 +19,7 @@ import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-
 import { MobileWishlistButton } from "@/components/common/wishlist/mobile-wishlist-button"
 import { DesktopSearch } from "@/components/desktop/desktop-search"
 import { Button } from "@/components/ui/button"
-import { MagnifyingGlass, Camera, CaretLeft } from "@phosphor-icons/react"
+import { MagnifyingGlass, Camera, CaretLeft, Scan } from "@phosphor-icons/react"
 
 // Utilities
 import { getCountryName } from "@/lib/geolocation"
@@ -33,6 +33,8 @@ import { User } from "@supabase/supabase-js"
 interface SiteHeaderProps {
   user: User | null
   hideSubheader?: boolean
+  /** Hide entire header on mobile (< lg breakpoint) */
+  hideOnMobile?: boolean
   /**
    * Header rendering variant.
    * - default: full header (search + menus)
@@ -41,7 +43,7 @@ interface SiteHeaderProps {
   variant?: "default" | "product"
 }
 
-export function SiteHeader({ user, hideSubheader = false, variant = "default" }: SiteHeaderProps) {
+export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, variant = "default" }: SiteHeaderProps) {
   const [country, setCountry] = useState("Bulgaria")
   const [, setCountryCode] = useState("BG") // Used for shipping zone filtering
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
@@ -82,12 +84,15 @@ export function SiteHeader({ user, hideSubheader = false, variant = "default" }:
   }, [locale])
 
   return (
-    <header className="sticky top-0 z-50 w-full flex flex-col bg-header-bg">
+    <header className={cn(
+      "sticky top-0 z-50 w-full flex flex-col bg-header-bg",
+      hideOnMobile && "hidden lg:flex"
+    )}>
       {/* Mobile Header + Search - Unified container like Target */}
       <div className="md:hidden bg-header-bg text-header-text">
-        {/* Top row - Logo & Actions */}
+        {/* Top row - Logo & Actions - compact */}
         <div className={cn(
-          "px-1.5 py-1 flex items-center",
+          "h-10 px-2 flex items-center gap-1",
           isProductPage && "border-b border-header-border/50"
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
@@ -100,16 +105,16 @@ export function SiteHeader({ user, hideSubheader = false, variant = "default" }:
               <CaretLeft size={20} weight="bold" />
             </button>
           ) : (
-            <SidebarMenu user={user} triggerClassName="justify-start pl-2 pr-3" />
+            <SidebarMenu user={user} triggerClassName="justify-start px-2" />
           )}
           <Link href="/" className={cn(
-            "flex items-center shrink-0 min-h-touch px-0",
+            "flex items-center shrink-0 min-h-touch",
             isProductPage ? "ml-1" : "ml-0"
           )}>
             <span className="text-xl font-bold tracking-tight text-header-text">Treido</span>
           </Link>
           <div className="flex-1" />
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center">
             {user && <NotificationsDropdown user={user} />}
             <MobileWishlistButton />
             <MobileCartDropdown />
@@ -118,24 +123,24 @@ export function SiteHeader({ user, hideSubheader = false, variant = "default" }:
         
         {/* Search bar row - integrated into header, hidden on product pages */}
         {!isProductPage && (
-        <div className="px-3 pb-1">
+        <div className="px-2 pb-2">
           <button
             onClick={() => setIsMobileSearchOpen(true)}
             className={cn(
-              "w-full flex items-center gap-2 h-10 px-3 rounded-lg", /* h-10 (40px) - Compact */
+              "w-full flex items-center gap-2 h-9 px-3 rounded-lg",
               "bg-background",
               "text-muted-foreground text-sm text-left",
-              "active:bg-muted",
+              "active:bg-muted/50",
               "touch-action-manipulation tap-transparent"
             )}
             aria-label={searchPlaceholder}
             aria-haspopup="dialog"
             aria-expanded={isMobileSearchOpen}
           >
-            <MagnifyingGlass size={18} weight="regular" className="text-muted-foreground/60 shrink-0" />
+            <MagnifyingGlass size={18} weight="regular" className="text-muted-foreground shrink-0" />
             <span className="flex-1 truncate font-normal">{searchPlaceholder}</span>
-            <div className="flex items-center gap-2 shrink-0">
-              <Camera size={18} weight="regular" className="text-muted-foreground/40" />
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Scan size={18} weight="regular" className="text-muted-foreground/60" />
             </div>
           </button>
         </div>
@@ -158,14 +163,7 @@ export function SiteHeader({ user, hideSubheader = false, variant = "default" }:
               <span className="text-xl font-bold tracking-tight text-header-text">Treido</span>
             </Link>
             <div className="hidden lg:block">
-              <LocaleDeliveryDropdown
-                pathname={pathname || "/"}
-                country={country}
-                onCountryChange={(code, name) => {
-                  setCountryCode(code)
-                  setCountry(name)
-                }}
-              />
+              <AccountDropdown user={user} variant="full" />
             </div>
           </div>
 
@@ -191,21 +189,20 @@ export function SiteHeader({ user, hideSubheader = false, variant = "default" }:
                 </div>
 
                 <div className="hidden md:block">
-                  <Button
-                    asChild
-                    variant="ghost"
-                    size="icon-xl"
-                    className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
-                  >
-                    <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"} title={locale === "bg" ? "Продай" : "Sell"}>
+                  <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"} title={locale === "bg" ? "Продай" : "Sell"}>
+                    <Button
+                      variant="ghost"
+                      size="icon-lg"
+                      className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
+                    >
                       <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
                       <Camera weight="regular" aria-hidden="true" />
-                    </Link>
-                  </Button>
+                    </Button>
+                  </Link>
                 </div>
 
                 {/* Account - With Dropdown */}
-                <div className="hidden md:block">
+                <div className="hidden md:block lg:hidden">
                   <AccountDropdown user={user} />
                 </div>
 
@@ -230,17 +227,16 @@ export function SiteHeader({ user, hideSubheader = false, variant = "default" }:
                   >
                     {t('register')}
                   </Link>
-                  <Button
-                    asChild
-                    variant="ghost"
-                    size="icon-xl"
-                    className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
-                  >
-                    <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"} title={locale === "bg" ? "Продай" : "Sell"}>
+                  <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"} title={locale === "bg" ? "Продай" : "Sell"}>
+                    <Button
+                      variant="ghost"
+                      size="icon-lg"
+                      className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
+                    >
                       <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
                       <Camera weight="regular" aria-hidden="true" />
-                    </Link>
-                  </Button>
+                    </Button>
+                  </Link>
                 </div>
 
                 {/* Cart - Always visible even when logged out */}

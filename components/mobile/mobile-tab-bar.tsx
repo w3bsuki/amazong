@@ -57,7 +57,7 @@ export function MobileTabBar() {
         aria-label="Mobile navigation"
         data-testid="mobile-tab-bar"
       >
-        <div className="flex items-center justify-around h-[50px] px-1 relative">
+        <div className="flex items-center justify-around h-12 px-1 relative">
           {/* Home */}
           <Link
             href="/"
@@ -71,8 +71,8 @@ export function MobileTabBar() {
             aria-label={t("home")}
             aria-current={pathname === "/" ? "page" : undefined}
           >
-            <House size={22} weight={pathname === "/" ? "fill" : "regular"} />
-            <span className="text-2xs font-medium">{t("home")}</span>
+            <House size={24} weight={pathname === "/" ? "fill" : "regular"} />
+            <span className="text-2xs font-medium leading-none">{t("home")}</span>
           </Link>
 
           {/* Categories - Opens drawer with category circles */}
@@ -86,8 +86,8 @@ export function MobileTabBar() {
             )}
             aria-label={t("categories")}
           >
-            <SquaresFour size={22} weight={isActive("/categories") ? "fill" : "regular"} />
-            <span className="text-2xs font-medium">{t("categories")}</span>
+            <SquaresFour size={24} weight={isActive("/categories") ? "fill" : "regular"} />
+            <span className="text-2xs font-medium leading-none">{t("categories")}</span>
           </button>
 
           {/* Sell */}
@@ -103,8 +103,8 @@ export function MobileTabBar() {
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
-            <PlusCircle size={22} weight={isActive("/sell") ? "fill" : "regular"} />
-            <span className="text-2xs font-medium">{t("sell")}</span>
+            <PlusCircle size={24} weight={isActive("/sell") ? "fill" : "regular"} />
+            <span className="text-2xs font-medium leading-none">{t("sell")}</span>
           </Link>
 
         {/* Chat */}
@@ -121,7 +121,7 @@ export function MobileTabBar() {
           aria-current={isActive("/chat") ? "page" : undefined}
         >
           <div className="relative">
-            <ChatCircle size={22} weight={isActive("/chat") ? "fill" : "regular"} />
+            <ChatCircle size={24} weight={isActive("/chat") ? "fill" : "regular"} />
             {unreadCount > 0 && (
               <CountBadge
                 count={unreadCount}
@@ -130,7 +130,7 @@ export function MobileTabBar() {
               />
             )}
           </div>
-          <span className="text-2xs font-medium">{t("chat")}</span>
+          <span className="text-2xs font-medium leading-none">{t("chat")}</span>
         </Link>
 
         {/* Account */}
@@ -146,8 +146,8 @@ export function MobileTabBar() {
           aria-label={t("account")}
           aria-current={isActive("/account") ? "page" : undefined}
         >
-          <User size={22} weight={isActive("/account") ? "fill" : "regular"} />
-          <span className="text-2xs font-medium">{t("account")}</span>
+          <User size={24} weight={isActive("/account") ? "fill" : "regular"} />
+          <span className="text-2xs font-medium leading-none">{t("account")}</span>
         </Link>
       </div>
     </nav>

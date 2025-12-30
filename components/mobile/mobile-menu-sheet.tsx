@@ -74,19 +74,19 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
             </DrawerDescription>
           </DrawerHeader>
 
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-6 max-h-[calc(90dvh-70px)]">
+          {/* Scrollable Content with safe area */}
+          <div className="flex-1 overflow-y-auto overscroll-contain px-4 max-h-[calc(90dvh-70px)] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
             
             {/* Categories Section - Hero-style circles grid */}
             <section className="pt-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[13px] font-semibold text-foreground">
+                <h3 className="text-sm font-semibold text-foreground">
                   {locale === 'bg' ? 'Пазарувай по категория' : 'Shop by Category'}
                 </h3>
                 <Link 
                   href="/categories" 
                   onClick={() => setOpen(false)}
-                  className="text-[11px] text-cta-trust-blue font-medium hover:underline underline-offset-2 flex items-center gap-1"
+                  className="text-xs text-cta-trust-blue font-medium hover:underline underline-offset-2 flex items-center gap-1 min-h-touch-xs"
                 >
                   {locale === 'bg' ? 'Виж всички' : 'See all'}
                   <CaretRight size={10} weight="bold" />
@@ -109,7 +109,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
                       <div
                         className={cn(
                           "rounded-full flex items-center justify-center",
-                          "size-[54px]",
+                          "size-14",
                           "bg-cta-trust-blue ring-1 ring-cta-trust-blue/40",
                           "group-hover:bg-cta-trust-blue-hover group-hover:ring-cta-trust-blue/60"
                         )}
@@ -123,7 +123,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
                         })}
                       </div>
                       {/* Category name */}
-                      <span className="text-2xs font-medium text-center text-foreground leading-[1.1] line-clamp-2 max-w-[72px]">
+                      <span className="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 max-w-[72px]">
                         {getShortName(cat)}
                       </span>
                     </Link>

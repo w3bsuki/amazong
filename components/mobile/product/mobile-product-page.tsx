@@ -95,15 +95,6 @@ export function MobileProductPage(props: MobileProductPageProps) {
       {/* Mobile Product Header */}
       <MobileProductHeader />
 
-      {/* Hide main site header on mobile */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @media (max-width: 1024px) {
-          header.sticky {
-            display: none !important;
-          }
-        }
-      `}} />
-
       {/* JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"
@@ -152,9 +143,9 @@ export function MobileProductPage(props: MobileProductPageProps) {
         locale={locale}
       />
 
-      {/* Title */}
+      {/* Title - text-sm (14px) per design system, price must be larger */}
       <div className="px-4 pt-2">
-        <h1 className="text-lg font-bold leading-snug text-foreground line-clamp-3">
+        <h1 className="text-sm font-medium leading-snug text-foreground line-clamp-3">
           {product.title}
         </h1>
       </div>

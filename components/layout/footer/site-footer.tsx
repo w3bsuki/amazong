@@ -223,12 +223,12 @@ export function SiteFooter() {
                 </nav>
 
                 {/* Legal Links */}
-                <nav aria-label={t('legalLinks')} className="flex flex-wrap justify-center gap-x-5 gap-y-2.5 text-xs text-primary-foreground/90 mb-6">
+                <nav aria-label={t('legalLinks')} className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-primary-foreground/90 mb-6">
                     {legalLinks.map((link, index) => (
                         <Link 
                             key={index}
                             href={link.href} 
-                            className="hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
+                            className="min-h-[36px] flex items-center px-2 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
                         >
                             {link.label}
                         </Link>

@@ -47,7 +47,7 @@ export function MobileQuickSpecs({
             key={index}
             className="flex flex-col px-3 py-1.5 bg-muted/50 border border-border/50 rounded-lg shrink-0 snap-start min-w-[90px] max-w-[130px]"
           >
-            <span className="text-[10px] text-muted-foreground leading-tight">
+            <span className="text-2xs text-muted-foreground leading-tight">
               {attr.label}
             </span>
             <span className="text-xs text-foreground font-medium truncate mt-0.5 leading-tight">
@@ -61,10 +61,10 @@ export function MobileQuickSpecs({
           <button
             type="button"
             onClick={onSeeAll}
-            className="flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-lg shrink-0 snap-start hover:bg-primary/15 active:bg-primary/20 min-w-[70px]"
+            className="flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-lg shrink-0 snap-start hover:bg-primary/15 active:bg-primary/20 min-w-[70px] min-h-touch"
           >
             <ChevronRight className="size-4 text-primary" />
-            <span className="text-[10px] text-primary font-medium">
+            <span className="text-2xs text-primary font-medium">
               {t.seeAll}
             </span>
           </button>

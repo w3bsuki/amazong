@@ -58,7 +58,7 @@ export function AppBreadcrumb({
           <>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/" className="flex items-center gap-1">
+                <Link href="/" className="flex items-center gap-1 min-h-6 min-w-6 p-1 -m-1">
                   <House size={16} weight="regular" aria-hidden="true" />
                   <span className="hidden sm:inline">{homeLabel}</span>
                 </Link>

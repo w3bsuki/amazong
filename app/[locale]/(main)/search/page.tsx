@@ -97,45 +97,85 @@ export default async function SearchPage({
   let brands: string[] = []
 
   if (supabase) {
-    // Fetch ALL categories (both top-level and subcategories) in one query
-    const { data: allCats } = await supabase
+    // Fetch L0 categories first (with subcategories fetched separately)
+    const { data: rootCats, error: rootError } = await supabase
       .from("categories")
       .select("id, name, name_bg, slug, parent_id, image_url")
+      .is("parent_id", null)
       .order("name")
     
-    if (allCats) {
-      // Separate top-level and subcategories
-      allCategories = allCats.filter(c => c.parent_id === null)
+    if (rootError) {
+      console.error("[SearchPage] Root categories fetch error:", rootError)
+    }
+    
+    if (rootCats && rootCats.length > 0) {
+      allCategories = rootCats
+      
+      // Fetch L1 subcategories for all root categories
+      const rootIds = rootCats.map(c => c.id)
+      const { data: subCats } = await supabase
+        .from("categories")
+        .select("id, name, name_bg, slug, parent_id, image_url")
+        .in("parent_id", rootIds)
+        .order("name")
       
       // Build the hierarchical structure for the sidebar
-      allCategoriesWithSubs = allCategories.map(cat => ({
+      allCategoriesWithSubs = rootCats.map(cat => ({
         category: cat,
-        subs: allCats.filter(c => c.parent_id === cat.id)
+        subs: (subCats || []).filter(c => c.parent_id === cat.id)
       }))
-    }
+      
+      // Also store subCats for category lookup
+      const allCats = [...rootCats, ...(subCats || [])]
 
-    // If a category is specified, get its details and subcategories
-    if (searchParams.category) {
-      // Find the category from our already fetched data
-      const categoryData = allCats?.find(c => c.slug === searchParams.category) || null
+      // If a category is specified, get its details and subcategories
+      if (searchParams.category) {
+        // Find the category from our already fetched data
+        const categoryData = allCats.find(c => c.slug === searchParams.category) || null
 
-      if (categoryData) {
-        currentCategory = categoryData
+        if (categoryData) {
+          currentCategory = categoryData
 
-        // Check if this is a subcategory (has parent_id)
-        if (categoryData.parent_id) {
-          parentCategory = allCats?.find(c => c.id === categoryData.parent_id) || null
-          // No subcategories for a subcategory
-          subcategories = []
-        } else {
-          // This is a main category - get its subcategories
-          subcategories = allCats?.filter(c => c.parent_id === categoryData.id) || []
+          // Check if this is a subcategory (has parent_id)
+          if (categoryData.parent_id) {
+            parentCategory = allCats.find(c => c.id === categoryData.parent_id) || null
+            // No subcategories for a subcategory
+            subcategories = []
+          } else {
+            // This is a main category - get its subcategories
+            subcategories = allCats.filter(c => c.parent_id === categoryData.id)
+          }
+
+          // Build product query with category filter
+          // Get products from this category AND all its subcategories
+          const categoryIds = [categoryData.id, ...subcategories.map(s => s.id)]
+
+          // Extract attr_* params for attribute filtering
+          const attributeFilters: Record<string, string | string[]> = {}
+          for (const [key, value] of Object.entries(searchParams)) {
+            if (key.startsWith('attr_') && value) {
+              const attrName = key.replace('attr_', '')
+              attributeFilters[attrName] = value
+            }
+          }
+
+          // Use the helper function with pagination and shipping filter
+          const result = await searchProducts(supabase, query, categoryIds, {
+            minPrice: searchParams.minPrice,
+            maxPrice: searchParams.maxPrice,
+            tag: searchParams.tag,
+            minRating: searchParams.minRating,
+            deals: searchParams.deals,
+            verified: searchParams.verified,
+            availability: searchParams.availability,
+            sort: searchParams.sort,
+            attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
+          }, currentPage, ITEMS_PER_PAGE, shippingFilter)
+          products = result.products
+          totalProducts = result.total
         }
-
-        // Build product query with category filter
-        // Get products from this category AND all its subcategories
-        const categoryIds = [categoryData.id, ...subcategories.map(s => s.id)]
-
+      } else {
+        // No category filter - get all products filtered by shipping zone
         // Extract attr_* params for attribute filtering
         const attributeFilters: Record<string, string | string[]> = {}
         for (const [key, value] of Object.entries(searchParams)) {
@@ -145,8 +185,7 @@ export default async function SearchPage({
           }
         }
 
-        // Use the helper function with pagination and shipping filter
-        const result = await searchProducts(supabase, query, categoryIds, {
+        const result = await searchProducts(supabase, query, null, {
           minPrice: searchParams.minPrice,
           maxPrice: searchParams.maxPrice,
           tag: searchParams.tag,
@@ -160,30 +199,6 @@ export default async function SearchPage({
         products = result.products
         totalProducts = result.total
       }
-    } else {
-      // No category filter - get all products filtered by shipping zone
-      // Extract attr_* params for attribute filtering
-      const attributeFilters: Record<string, string | string[]> = {}
-      for (const [key, value] of Object.entries(searchParams)) {
-        if (key.startsWith('attr_') && value) {
-          const attrName = key.replace('attr_', '')
-          attributeFilters[attrName] = value
-        }
-      }
-
-      const result = await searchProducts(supabase, query, null, {
-        minPrice: searchParams.minPrice,
-        maxPrice: searchParams.maxPrice,
-        tag: searchParams.tag,
-        minRating: searchParams.minRating,
-        deals: searchParams.deals,
-        verified: searchParams.verified,
-        availability: searchParams.availability,
-        sort: searchParams.sort,
-        attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
-      }, currentPage, ITEMS_PER_PAGE, shippingFilter)
-      products = result.products
-      totalProducts = result.total
     }
 
     // Extract unique brands from products for the filter
@@ -291,7 +306,7 @@ export default async function SearchPage({
             )}
           </div>
 
-          {/* Product Grid - Optimized for search results */}
+          {/* Product Grid */}
           <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {products.map((product) => (
               <ProductCard

@@ -430,30 +430,28 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
   return (
     <HoverCard open={isOpen} onOpenChange={setIsOpen} openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <div data-testid="notifications-dropdown">
-          <Button
-            variant="ghost"
-            size="icon-xl"
-            className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative [&_svg]:size-6"
-            aria-label={`${t("title")} ${t("ariaNotificationsHint")}${totalUnread > 0 ? ` (${totalUnread} unread)` : ""}`}
-          >
-            <span className="relative" aria-hidden="true">
-              <ChatCircle weight="regular" />
-              {totalUnread > 0 && (
-                <CountBadge
-                  count={totalUnread}
-                  className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-[10px] shadow-sm"
-                  aria-hidden="true"
-                />
-              )}
-            </span>
-          </Button>
+        <div
+          data-testid="notifications-dropdown"
+          className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer"
+          aria-label={`${t("title")} ${t("ariaNotificationsHint")}${totalUnread > 0 ? ` (${totalUnread} unread)` : ""}`}
+        >
+          <span className="relative" aria-hidden="true">
+            <ChatCircle weight="regular" />
+            {totalUnread > 0 && (
+              <CountBadge
+                count={totalUnread}
+                className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-[10px] shadow-sm"
+                aria-hidden="true"
+              />
+            )}
+          </span>
         </div>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-80 sm:w-96 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
+        className="w-80 sm:w-96 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-lg"
         align="end"
         sideOffset={8}
+        collisionPadding={10}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 bg-muted border-b border-border">

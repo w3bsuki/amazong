@@ -100,8 +100,8 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
             </CarouselContent>
           </Carousel>
           
-          {/* Zoom Button */}
-          <div className="absolute bottom-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:flex">
+          {/* Zoom Button - Desktop only, no hover animation per design system */}
+          <div className="absolute bottom-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-150 hidden lg:flex">
              <Button
                type="button"
                aria-label="Open image zoom"
@@ -114,14 +114,50 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
              </Button>
           </div>
 
-          {/* Mobile Dots Indicator */}
-          <div className="absolute bottom-3 left-0 right-0 z-10 lg:hidden flex justify-center gap-1.5">
+          {/* Mobile Navigation Arrows (WCAG 2.5.7 - alternative to swipe) */}
+          {images.length > 1 && (
+            <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 z-10 flex justify-between pointer-events-none lg:hidden">
+              <Button
+                type="button"
+                aria-label="Previous image"
+                size="icon"
+                variant="secondary"
+                className="size-8 rounded-full bg-background/80 hover:bg-background border border-border/50 pointer-events-auto disabled:opacity-30"
+                onClick={() => api?.scrollPrev()}
+                disabled={current === 0}
+              >
+                <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </Button>
+              <Button
+                type="button"
+                aria-label="Next image"
+                size="icon"
+                variant="secondary"
+                className="size-8 rounded-full bg-background/80 hover:bg-background border border-border/50 pointer-events-auto disabled:opacity-30"
+                onClick={() => api?.scrollNext()}
+                disabled={current === images.length - 1}
+              >
+                <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Button>
+            </div>
+          )}
+
+          {/* Mobile Dots Indicator - WCAG 2.2 AA compliant with 24px touch area */}
+          <div className="absolute bottom-3 left-0 right-0 z-10 lg:hidden flex justify-center gap-2">
             {images.map((_, index) => (
-              <div 
+              <button 
                 key={index}
+                type="button"
+                aria-label={`Go to image ${index + 1}`}
+                onClick={() => api?.scrollTo(index)}
                 className={cn(
-                  "h-1.5 rounded-full transition-all duration-300",
-                  current === index ? "w-4 bg-primary" : "w-1.5 bg-primary/20"
+                  "min-w-[24px] min-h-[24px] flex items-center justify-center",
+                  "before:h-2 before:rounded-full before:transition-all before:duration-300",
+                  current === index ? "before:w-4 before:bg-primary" : "before:w-2 before:bg-primary/30 hover:before:bg-primary/50"
                 )}
               />
             ))}

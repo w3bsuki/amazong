@@ -459,11 +459,11 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
             )}
           </div>
 
-          {/* Footer with Show Results button */}
-          <div className="p-4 pb-6 border-t border-border/50 bg-background">
+          {/* Footer with Show Results button - includes safe area */}
+          <div className="p-4 border-t border-border/50 bg-background pb-[max(1rem,env(safe-area-inset-bottom))]">
             <DrawerClose asChild>
               <Button
-                className="w-full h-touch rounded-full text-sm font-bold"
+                className="w-full h-10 rounded-full text-sm font-bold"
                 onClick={() => {
                   applyPendingFilters()
                 }}

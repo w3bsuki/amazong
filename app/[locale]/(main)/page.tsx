@@ -8,6 +8,7 @@ import { DesktopCategoryRail } from "@/components/desktop/desktop-category-rail"
 
 // Desktop-only components
 import { DesktopHeroCTA } from "@/components/desktop/desktop-hero-cta"
+import { MarketplaceHero } from "@/components/desktop/marketplace-hero"
 
 // Async sections using cached data
 import { 
@@ -19,6 +20,7 @@ import { SignInCTA } from "@/components/sections/sign-in-cta"
 
 // New components
 import { TabbedProductFeed, TabbedProductFeedSkeleton } from "@/components/sections/tabbed-product-feed"
+import { MobileHomeTabs } from "@/components/mobile/mobile-home-tabs"
 
 // Local sections
 import { PromoCards } from "./_components/promo-cards"
@@ -28,6 +30,8 @@ import { MoreWaysToShop } from "./_components/more-ways-to-shop"
 import { SignInCtaSkeleton } from "./_components/sign-in-cta-skeleton"
 
 import { createStaticClient } from "@/lib/supabase/server"
+import { getNewestProducts, toUI } from "@/lib/data/products"
+import { getCategoryHierarchy } from "@/lib/data/categories"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -52,44 +56,36 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params
   setRequestLocale(locale)
 
-  // Fetch top categories for mobile listings filters
-  const supabase = createStaticClient()
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('id, name, name_bg, slug')
-    .is('parent_id', null)
-    .order('display_order', { ascending: true })
-    .limit(8)
+  // Fetch categories with L1 children using server-side cache
+  // This prevents the client from making additional /api/categories calls
+  const [categoriesWithChildren, newestProducts] = await Promise.all([
+    getCategoryHierarchy(null, 2), // depth=2 for L0+L1+L2
+    getNewestProducts(12)
+  ])
+  
+  // Shallow categories for desktop hero (just need slugs/names)
+  const categories = categoriesWithChildren.map(c => ({
+    id: c.id,
+    name: c.name,
+    name_bg: c.name_bg,
+    slug: c.slug
+  }))
+
+  const initialProducts = newestProducts.map(p => toUI(p))
 
   return (
     <main className="flex min-h-screen flex-col bg-background pb-20">
       {/* 
-        MOBILE LAYOUT (optimized for conversion - Vinted/OLX pattern):
-        1. Header (compact)
-        2. Category Circles (quick navigation)
-        3. CTA Banner (seller/buyer actions)
-        4. Най-нови обяви (infinite scroll - THE MAIN CONTENT)
+        MOBILE LAYOUT (Temu-style Tabs):
+        1. Sticky Tabs (Categories)
+        2. Subcategory Circles (when category selected)
+        3. Product Feed (Infinite Scroll)
       */}
-      <div className="w-full md:hidden space-y-1">
-        {/* Category Circles - First thing after header */}
-        <div className="pt-1">
-          <MobileCategoryRail locale={locale} />
-        </div>
-        
-        {/* Start Selling CTA - Promote seller signup */}
-        <StartSellingBanner locale={locale} className="px-4" />
-        
-        {/* Newest Listings with Infinite Scroll */}
-        <Suspense fallback={<NewestListingsSectionSkeleton />}>
-          <NewestListings categories={categories || []} />
-        </Suspense>
-        
-        {/* Sign In CTA - At the end on mobile */}
-        <div className="px-4 pb-6">
-          <Suspense fallback={<SignInCtaSkeleton />}>
-            <SignInCTA />
-          </Suspense>
-        </div>
+      <div className="w-full md:hidden">
+        <MobileHomeTabs 
+          initialProducts={initialProducts} 
+          initialCategories={categoriesWithChildren} 
+        />
       </div>
 
       {/* ================================================================
@@ -102,18 +98,19 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         {/* Hero Section - Integrated Banner */}
         <div className="w-full bg-background pt-6 pb-8">
           <div className="container">
-            <DesktopHeroCTA 
+            <MarketplaceHero 
               locale={locale} 
-              bottomSlot={
-                <div className="pt-1">
-                  <DesktopCategoryRail
-                    locale={locale}
-                    showTitle={false}
-                    className="max-w-full"
-                  />
-                </div>
-              }
+              categories={categories || []}
             />
+            
+            {/* Category Rail - Clean & Aligned */}
+            <div className="mt-8">
+              <DesktopCategoryRail
+                locale={locale}
+                showTitle={false}
+                className="max-w-full"
+              />
+            </div>
           </div>
         </div>
 

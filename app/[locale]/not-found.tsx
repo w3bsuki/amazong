@@ -41,16 +41,16 @@ export default function NotFound() {
           <p className="text-sm text-muted-foreground mb-3">
             Looking for something specific?
           </p>
-          <div className="flex flex-wrap justify-center gap-2 text-sm">
-            <Link href="/todays-deals" className="text-link hover:underline">
+          <div className="flex flex-wrap justify-center items-center gap-2 text-sm">
+            <Link href="/todays-deals" className="text-link hover:underline min-h-[28px] inline-flex items-center px-1">
               Today's Deals
             </Link>
             <span className="text-muted-foreground">•</span>
-            <Link href="/customer-service" className="text-link hover:underline">
+            <Link href="/customer-service" className="text-link hover:underline min-h-[28px] inline-flex items-center px-1">
               Customer Service
             </Link>
             <span className="text-muted-foreground">•</span>
-            <Link href="/contact" className="text-link hover:underline">
+            <Link href="/contact" className="text-link hover:underline min-h-[28px] inline-flex items-center px-1">
               Contact Us
             </Link>
           </div>

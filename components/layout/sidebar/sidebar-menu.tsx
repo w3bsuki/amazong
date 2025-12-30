@@ -196,7 +196,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                 <Button
                     type="button"
                     variant="ghost"
-                    size="icon-xl"
+                    size="icon-lg"
                     className={cn(
                         "rounded-xl text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent",
                         triggerClassName
