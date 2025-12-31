@@ -99,13 +99,13 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
           {isProductPage ? (
             <button 
               onClick={() => router.back()}
-              className="flex items-center justify-center h-touch w-touch -ml-1 rounded-full text-header-text hover:bg-header-hover active:bg-header-active"
+              className="flex items-center justify-center h-touch w-touch -ml-2 rounded-full text-header-text hover:bg-header-hover active:bg-header-active"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
               <CaretLeft size={20} weight="bold" />
             </button>
           ) : (
-            <SidebarMenu user={user} triggerClassName="justify-start px-2" />
+            <SidebarMenu user={user} triggerClassName="justify-start -ml-2" />
           )}
           <Link href="/" className={cn(
             "flex items-center shrink-0 min-h-touch",
@@ -114,7 +114,7 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
             <span className="text-xl font-bold tracking-tight text-header-text">Treido</span>
           </Link>
           <div className="flex-1" />
-          <div className="flex items-center">
+          <div className="flex items-center -mr-2">
             {user && <NotificationsDropdown user={user} />}
             <MobileWishlistButton />
             <MobileCartDropdown />
