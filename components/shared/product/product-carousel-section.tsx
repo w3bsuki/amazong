@@ -108,7 +108,7 @@ export function ProductCarouselSection({
     
     return (
       <section className={cn(
-        "rounded-xl border border-border overflow-hidden",
+        "rounded-md border border-border overflow-hidden",
         variant === "highlighted" ? "bg-card" : "bg-card"
       )}>
         <div className="px-5 pt-4 pb-2">
@@ -126,7 +126,7 @@ export function ProductCarouselSection({
   return (
     <section 
       className={cn(
-        isClean ? "" : "rounded-xl border border-border/60 overflow-hidden shadow-xs",
+        isClean ? "" : "rounded-md border border-border/60 overflow-hidden shadow-xs",
         !isClean && (variant === "highlighted" ? "bg-card" : "bg-card")
       )}
     >
@@ -140,7 +140,7 @@ export function ProductCarouselSection({
           {icon && (
             <div className={cn(
               "flex items-center justify-center text-cta-trust-blue",
-              isClean ? "size-8" : "size-9 rounded-xl bg-background border border-border/60 shadow-xs"
+              isClean ? "size-8" : "size-9 rounded-md bg-background border border-border/60 shadow-xs"
             )}>
               {icon}
             </div>
@@ -238,7 +238,7 @@ export function ProductCarouselSection({
             {isLoading ? (
               Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="shrink-0 w-[180px] space-y-2">
-                  <Skeleton className="aspect-square w-full rounded-xl" />
+                  <Skeleton className="aspect-square w-full rounded-md" />
                   <div className="space-y-1.5">
                     <Skeleton className="h-3.5 w-full" />
                     <Skeleton className="h-3.5 w-2/3" />

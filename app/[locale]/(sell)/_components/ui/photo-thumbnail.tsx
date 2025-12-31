@@ -98,7 +98,7 @@ export function PhotoThumbnail({
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onPreview(); }}
-            className="p-2 rounded-full bg-white/95 text-foreground shadow-lg"
+            className="p-2 rounded-full bg-white/95 text-foreground shadow-sm"
           >
             <MagnifyingGlassPlus className="size-4" />
           </button>

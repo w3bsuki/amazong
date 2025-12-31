@@ -808,7 +808,7 @@ function BannerCTA({ banner, columns, onClose, locale }: BannerCTAProps) {
     <Link
       href={banner.href}
       onClick={onClose}
-      className={cn("relative rounded-xl overflow-hidden group", columns === 3 ? "w-2/5" : "w-1/2")}
+      className={cn("relative rounded-md overflow-hidden group", columns === 3 ? "w-2/5" : "w-1/2")}
     >
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${banner.image})` }} />
       <div className="absolute inset-0 bg-foreground/40" />

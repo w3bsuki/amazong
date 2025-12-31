@@ -332,7 +332,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                 )}
                 {boosted && (
                   <div className="absolute top-1.5 left-1.5">
-                    <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 gap-0.5 shadow-lg">
+                    <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 gap-0.5 shadow-sm">
                       <Lightning className="size-2.5" weight="fill" />
                     </Badge>
                   </div>

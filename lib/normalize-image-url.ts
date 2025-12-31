@@ -24,6 +24,24 @@ export function normalizeImageUrl(url: string | null | undefined): string {
 	return url;
 }
 
+/**
+ * Category-safe variant: keep `null` as `null`.
+ *
+ * Category UIs usually have better fallbacks (emoji/icon) than a generic
+ * placeholder image, so returning a placeholder here degrades the UI.
+ */
+export function normalizeOptionalImageUrl(url: string | null | undefined): string | null {
+	if (!url) return null;
+	if (url === PLACEHOLDER_IMAGE_PATH) return null;
+	if (url.startsWith("https://placehold.co/")) return null;
+
+	for (const badSubstring of KNOWN_BAD_REMOTE_IMAGE_SUBSTRINGS) {
+		if (url.includes(badSubstring)) return null;
+	}
+
+	return url;
+}
+
 export function normalizeImageUrls(urls: Array<string | null | undefined>): string[] {
 	return urls.map(normalizeImageUrl).filter(Boolean);
 }

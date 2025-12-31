@@ -23,7 +23,7 @@ export default function Loading() {
         <div className="px-3">
           <div className="space-y-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-xl border border-border bg-card p-3">
+              <div key={i} className="rounded-md border border-border bg-card p-3">
                 <div className="flex gap-3">
                   <Skeleton className="size-20 rounded-lg" />
                   <div className="flex-1 space-y-2">
@@ -45,13 +45,13 @@ export default function Loading() {
       {/* Desktop skeleton */}
       <div className="hidden md:block">
         <div className="container px-4 lg:px-6 pt-4 pb-6">
-          <Skeleton className="w-full h-28 rounded-xl" />
+          <Skeleton className="w-full h-28 rounded-md" />
         </div>
 
         <div className="container px-4 lg:px-6 space-y-8 pb-20">
-          <Skeleton className="w-full h-44 rounded-xl" />
+          <Skeleton className="w-full h-44 rounded-md" />
 
-          <div className="bg-card border border-border rounded-xl p-5">
+          <div className="bg-card border border-border rounded-md p-5">
             <div className="flex items-center justify-between mb-4">
               <Skeleton className="h-6 w-52" />
               <Skeleton className="h-8 w-44 rounded-full" />
@@ -64,7 +64,7 @@ export default function Loading() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {Array.from({ length: 10 }).map((_, i) => (
                 <div key={i} className="space-y-2">
-                  <Skeleton className="aspect-square rounded-xl" />
+                  <Skeleton className="aspect-square rounded-md" />
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-1/3" />
                 </div>
@@ -76,7 +76,7 @@ export default function Loading() {
             <Skeleton className="h-6 w-56 mb-3" />
             <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
               {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="w-[260px] min-w-[260px] h-32 rounded-xl" />
+                <Skeleton key={i} className="w-[260px] min-w-[260px] h-32 rounded-md" />
               ))}
             </div>
           </div>

@@ -10,6 +10,7 @@ interface ProductPriceProps {
   size?: 'sm' | 'md' | 'lg'
   className?: string
   showAccessibleLabel?: boolean
+  showVat?: boolean
 }
 
 const sizeClasses = {
@@ -39,7 +40,8 @@ export function ProductPrice({
   locale,
   size = 'md',
   className,
-  showAccessibleLabel = true
+  showAccessibleLabel = true,
+  showVat = true
 }: ProductPriceProps) {
   const hasDiscount = originalPrice && originalPrice > price
   const priceParts = formatPriceParts(price, locale)
@@ -48,6 +50,8 @@ export function ProductPrice({
   // Accessible label for screen readers
   const accessiblePrice = formatPrice(price, locale)
   const accessibleOriginal = originalPrice ? formatPrice(originalPrice, locale) : null
+  
+  const vatLabel = locale === 'bg' ? 'с ДДС' : 'incl. VAT'
   
   return (
     <div 
@@ -84,6 +88,11 @@ export function ProductPrice({
             aria-hidden="true"
           >
             {priceParts.symbol}
+          </span>
+        )}
+        {showVat && (
+          <span className="text-xs text-muted-foreground font-normal ml-1">
+            {vatLabel}
           </span>
         )}
       </span>

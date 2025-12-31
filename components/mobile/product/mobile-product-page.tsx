@@ -226,6 +226,9 @@ export function MobileProductPage(props: MobileProductPageProps) {
           rating={Number(product.rating ?? 0)}
           reviewCount={Number(product.review_count ?? 0)}
           reviews={reviews}
+          productId={product.id}
+          productTitle={product.title}
+          locale={locale}
         />
       </div>
 

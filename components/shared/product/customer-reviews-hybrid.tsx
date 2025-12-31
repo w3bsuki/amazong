@@ -1,11 +1,12 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { Star, PencilLine } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
+import { WriteReviewDialog } from "./write-review-dialog";
 
 export interface CustomerReview {
   id: string;
@@ -23,6 +24,9 @@ interface CustomerReviewsHybridProps {
   rating: number;
   reviewCount: number;
   reviews: CustomerReview[];
+  productId?: string;
+  productTitle?: string;
+  locale?: string;
 }
 
 function formatDate(value: string) {
@@ -36,18 +40,49 @@ function initials(name: string) {
   return parts.map((p) => p.slice(0, 1).toUpperCase()).join("");
 }
 
-export function CustomerReviewsHybrid({ rating, reviewCount, reviews }: CustomerReviewsHybridProps) {
+export function CustomerReviewsHybrid({ 
+  rating, 
+  reviewCount, 
+  reviews,
+  productId,
+  productTitle,
+  locale = "en"
+}: CustomerReviewsHybridProps) {
   const safeRating = Number.isFinite(rating) ? rating : 0;
   const safeCount = Number.isFinite(reviewCount) ? reviewCount : 0;
 
   const distribution = [1, 2, 3, 4, 5].map((s) => reviews.filter((r) => r.rating === s).length);
 
+  const t = {
+    title: locale === "bg" ? "Отзиви от клиенти" : "Customer Reviews",
+    total: locale === "bg" ? "общо" : "total",
+    basedOn: locale === "bg" ? "Базирано на" : "Based on",
+    reviews: locale === "bg" ? "отзива" : "reviews",
+    noReviews: locale === "bg" ? "Все още няма отзиви." : "No reviews yet.",
+    beFirst: locale === "bg" ? "Бъдете първият, който ще напише отзив!" : "Be the first to write a review!",
+  };
+
   return (
-    <section className="mt-12 rounded-xl bg-muted/20 p-6 lg:p-10 border border-border/50">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-xl lg:text-2xl font-bold text-foreground tracking-tight">Customer Reviews</h2>
-        <div className="text-xs text-muted-foreground font-semibold uppercase tracking-widest">
-          {safeCount} total
+    <section className="mt-12 rounded-md bg-muted/20 p-6 lg:p-10 border border-border/50">
+      <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
+        <h2 className="text-xl lg:text-2xl font-bold text-foreground tracking-tight">{t.title}</h2>
+        <div className="flex items-center gap-3">
+          {productId && (
+            <WriteReviewDialog
+              productId={productId}
+              productTitle={productTitle}
+              locale={locale}
+              trigger={
+                <Button variant="default" size="sm" className="gap-2">
+                  <PencilLine className="h-4 w-4" />
+                  {locale === "bg" ? "Напиши отзив" : "Write a Review"}
+                </Button>
+              }
+            />
+          )}
+          <div className="text-xs text-muted-foreground font-semibold uppercase tracking-widest">
+            {safeCount} {t.total}
+          </div>
         </div>
       </div>
 
@@ -65,12 +100,12 @@ export function CustomerReviewsHybrid({ rating, reviewCount, reviews }: Customer
                 ))}
               </div>
               <div className="text-xs text-muted-foreground font-semibold uppercase tracking-widest">
-                Based on {safeCount} reviews
+                {t.basedOn} {safeCount} {t.reviews}
               </div>
             </div>
           </div>
 
-          <div className="space-y-3 bg-background/50 p-4 rounded-xl border border-border/30">
+          <div className="space-y-3 bg-background/50 p-4 rounded-md border border-border/30">
             {[5, 4, 3, 2, 1].map((star) => {
               const count = distribution[star - 1] ?? 0;
               const pct = safeCount > 0 ? (count / safeCount) * 100 : 0;
@@ -91,15 +126,27 @@ export function CustomerReviewsHybrid({ rating, reviewCount, reviews }: Customer
         {/* Reviews */}
         <div>
           {reviews.length === 0 ? (
-            <div className="rounded-xl border border-border/50 bg-background p-6 text-sm text-muted-foreground">
-              No reviews yet.
+            <div className="rounded-md border border-border/50 bg-background p-6 text-center">
+              <p className="text-sm text-muted-foreground mb-3">{t.noReviews}</p>
+              {productId && (
+                <WriteReviewDialog
+                  productId={productId}
+                  productTitle={productTitle}
+                  locale={locale}
+                  trigger={
+                    <Button variant="outline" size="sm">
+                      {t.beFirst}
+                    </Button>
+                  }
+                />
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {reviews.map((review) => {
                 const author = review.user?.display_name || review.user?.username || "User";
                 return (
-                  <Card key={review.id} className="border border-border/50 bg-background rounded-xl overflow-hidden">
+                  <Card key={review.id} className="border border-border/50 bg-background rounded-md overflow-hidden">
                     <CardContent className="p-5">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex text-rating gap-0.5" aria-label={`${review.rating} out of 5`}>

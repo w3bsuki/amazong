@@ -92,7 +92,7 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
       <div className="md:hidden bg-header-bg text-header-text">
         {/* Top row - Logo & Actions - compact */}
         <div className={cn(
-          "h-10 px-2 flex items-center gap-1",
+          "h-10 px-(--page-inset) flex items-center gap-1",
           isProductPage && "border-b border-header-border/50"
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
@@ -123,7 +123,7 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
         
         {/* Search bar row - integrated into header, hidden on product pages */}
         {!isProductPage && (
-        <div className="px-2 pb-2">
+        <div className="px-(--page-inset) pb-2">
           <button
             onClick={() => setIsMobileSearchOpen(true)}
             className={cn(

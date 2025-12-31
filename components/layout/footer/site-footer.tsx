@@ -116,6 +116,7 @@ export function SiteFooter() {
         { label: t('terms'), href: "/terms" },
         { label: t('privacyPolicy'), href: "/privacy" },
         { label: t('cookiePolicy'), href: "/cookies" },
+        { label: t('odr'), href: "https://ec.europa.eu/consumers/odr", external: true },
     ]
 
     return (
@@ -224,16 +225,33 @@ export function SiteFooter() {
 
                 {/* Legal Links */}
                 <nav aria-label={t('legalLinks')} className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-primary-foreground/90 mb-6">
-                    {legalLinks.map((link, index) => (
-                        <Link 
-                            key={index}
-                            href={link.href} 
-                            className="min-h-[36px] flex items-center px-2 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
-                        >
-                            {link.label}
-                        </Link>
-                    ))}
+                    {legalLinks.map((link, index) => 
+                        'external' in link && link.external ? (
+                            <a 
+                                key={index}
+                                href={link.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="min-h-[36px] flex items-center px-2 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
+                            >
+                                {link.label}
+                            </a>
+                        ) : (
+                            <Link 
+                                key={index}
+                                href={link.href} 
+                                className="min-h-[36px] flex items-center px-2 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
+                            >
+                                {link.label}
+                            </Link>
+                        )
+                    )}
                 </nav>
+
+                {/* Company Info - EU Requirement */}
+                <p className="text-xs text-primary-foreground/60 text-center mb-4">
+                    {t('companyInfo')}
+                </p>
 
                 {/* Copyright */}
                 <p className="text-xs text-primary-foreground/80 text-center">

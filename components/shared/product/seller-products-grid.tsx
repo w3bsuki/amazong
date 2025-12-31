@@ -135,7 +135,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
             href={getProductHref(product)}
             className="group flex-none w-[130px] sm:w-[150px] snap-start"
           >
-            <div className="aspect-square bg-muted/30 rounded-xl overflow-hidden border border-border/50 relative shadow-sm group-hover:shadow-md transition-shadow">
+            <div className="aspect-square bg-muted/30 rounded-md overflow-hidden border border-border/50 relative shadow-sm group-hover:shadow-md transition-shadow">
               {product.image && (
                 <Image
                   src={product.image}
@@ -158,7 +158,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
             <p className="text-sm font-bold text-foreground mt-1">
               {new Intl.NumberFormat(locale, { 
                 style: "currency", 
-                currency: "BGN", 
+                currency: locale === "bg" ? "BGN" : "EUR", 
                 minimumFractionDigits: 2 
               }).format(product.price)}
             </p>

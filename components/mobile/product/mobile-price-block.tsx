@@ -9,18 +9,20 @@ interface MobilePriceBlockProps {
   regularPrice?: number | null;
   currency?: string;
   showSavings?: boolean;
+  showVat?: boolean;
 }
 
 export function MobilePriceBlock({
   salePrice,
   regularPrice,
-  currency = "BGN",
+  currency = "EUR",
   showSavings = true,
+  showVat = true,
 }: MobilePriceBlockProps) {
   const locale = useLocale();
 
   const formatPrice = (price: number) =>
-    new Intl.NumberFormat(locale, {
+    new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
       style: "currency",
       currency,
       minimumFractionDigits: 2,
@@ -34,6 +36,7 @@ export function MobilePriceBlock({
 
   const t = {
     youSave: locale === "bg" ? "Спестяваш" : "You save",
+    inclVat: locale === "bg" ? "с ДДС" : "incl. VAT",
   };
 
   return (
@@ -43,6 +46,7 @@ export function MobilePriceBlock({
         {/* Sale Price - LARGEST element per design system: 18px (text-lg) bold */}
         <span className={`text-lg font-bold tracking-tight ${hasDiscount ? "text-price-sale" : "text-foreground"}`}>
           {formatPrice(salePrice)}
+          {showVat && <span className="text-xs font-normal text-muted-foreground ml-1">{t.inclVat}</span>}
         </span>
 
         {/* Original Price - text-tiny (11px) struck through */}

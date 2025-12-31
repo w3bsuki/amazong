@@ -26,17 +26,23 @@ export function MobileSellerTrustLine({
 }: MobileSellerTrustLineProps) {
   const t = {
     positive: locale === "bg" ? "положителни" : "positive",
+    newSeller: locale === "bg" ? "Нов продавач" : "New Seller",
   };
 
-  // Format rating display
-  const displayRating = rating != null 
+  // Check if seller has any ratings
+  const numericRating = rating != null ? Number(rating) : 0;
+  const hasRating = numericRating > 0;
+  const isNewSeller = !hasRating;
+
+  // Format rating display (only if has rating)
+  const displayRating = hasRating
     ? typeof rating === "number" 
       ? rating.toFixed(1) 
       : rating 
     : null;
 
-  // Format positive feedback
-  const displayPositive = positivePercent != null
+  // Format positive feedback (only show if has rating)
+  const displayPositive = hasRating && positivePercent != null
     ? typeof positivePercent === "number"
       ? `${Math.round(positivePercent)}%`
       : positivePercent
@@ -69,16 +75,24 @@ export function MobileSellerTrustLine({
         </div>
 
         <div className="flex items-center gap-2">
-          {displayRating && (
-            <div className="flex items-center gap-0.5 shrink-0">
-              <Star className="size-3 fill-rating text-rating" />
-              <span className="text-tiny font-medium text-foreground">{displayRating}</span>
-            </div>
-          )}
-          {displayPositive && (
-            <span className="text-tiny text-muted-foreground">
-              {displayPositive} {t.positive}
+          {isNewSeller ? (
+            <span className="text-tiny font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+              {t.newSeller}
             </span>
+          ) : (
+            <>
+              {displayRating && (
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <Star className="size-3 fill-rating text-rating" />
+                  <span className="text-tiny font-medium text-foreground">{displayRating}</span>
+                </div>
+              )}
+              {displayPositive && (
+                <span className="text-tiny text-muted-foreground">
+                  {displayPositive} {t.positive}
+                </span>
+              )}
+            </>
           )}
         </div>
       </div>

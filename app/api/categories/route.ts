@@ -1,6 +1,6 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
-import { normalizeImageUrl } from "@/lib/normalize-image-url"
+import { normalizeOptionalImageUrl } from "@/lib/normalize-image-url"
 import { unstable_cache } from "next/cache"
 
 // NOTE: This endpoint serves public data (no user cookies required).
@@ -42,16 +42,17 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
   const categoryMap = new Map<string, CategoryWithChildren>()
   const rootCategories: CategoryWithChildren[] = []
 
-  console.log(`[buildCategoryTree] Input rows: ${rows.length}`)
+  const isDev = process.env.NODE_ENV !== "production"
+  if (isDev) console.log(`[buildCategoryTree] Input rows: ${rows.length}`)
   
   // Filter out deprecated categories (display_order >= 9000)
   const activeRows = rows.filter(row => (row.display_order ?? 0) < 9000)
   
-  console.log(`[buildCategoryTree] Active rows after filter: ${activeRows.length}`)
+  if (isDev) console.log(`[buildCategoryTree] Active rows after filter: ${activeRows.length}`)
   
   // Log root categories before building tree
   const rootRowsBefore = activeRows.filter(r => r.depth === 0)
-  console.log(`[buildCategoryTree] Root rows (depth=0): ${rootRowsBefore.length}`)
+  if (isDev) console.log(`[buildCategoryTree] Root rows (depth=0): ${rootRowsBefore.length}`)
 
   // First pass: create all category objects
   for (const row of activeRows) {
@@ -61,7 +62,7 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
       name_bg: row.name_bg,
       slug: row.slug,
       icon: row.icon,
-      image_url: normalizeImageUrl(row.image_url),
+      image_url: normalizeOptionalImageUrl(row.image_url),
       display_order: row.display_order,
       children: []
     })
@@ -171,7 +172,7 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: rootError.message }, { status: 500 })
       }
 
-      console.log(`[API] Found ${rootCats?.length || 0} root categories`)
+      if (process.env.NODE_ENV !== "production") console.log(`[API] Found ${rootCats?.length || 0} root categories`)
 
       // Fetch L1 categories (children of root)
       const rootIds = (rootCats || []).map(c => c.id)
@@ -187,7 +188,7 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: l1Error.message }, { status: 500 })
       }
 
-      console.log(`[API] Found ${l1Cats?.length || 0} L1 categories`)
+      if (process.env.NODE_ENV !== "production") console.log(`[API] Found ${l1Cats?.length || 0} L1 categories`)
 
       // Fetch L2 categories (grandchildren) if depth >= 2
       // Batch in chunks of 50 to avoid header overflow with large IN clauses
@@ -238,7 +239,9 @@ export async function GET(request: Request) {
         }
 
         l2Cats = results
-        console.log(`[API] Found ${l2Cats.length} L2 categories (from ${batches.length} batches, concurrency=${CONCURRENCY})`)
+        if (process.env.NODE_ENV !== "production") {
+          console.log(`[API] Found ${l2Cats.length} L2 categories (from ${batches.length} batches, concurrency=${CONCURRENCY})`)
+        }
       }
 
       // Combine all categories
@@ -258,7 +261,7 @@ export async function GET(request: Request) {
           name_bg: cat.name_bg,
           slug: cat.slug,
           icon: cat.icon,
-          image_url: normalizeImageUrl(cat.image_url),
+          image_url: normalizeOptionalImageUrl(cat.image_url),
           display_order: cat.display_order,
           children: []
         })
@@ -320,7 +323,7 @@ export async function GET(request: Request) {
     return cachedJsonResponse({
       categories: (categories || []).map(cat => ({
         ...cat,
-        image_url: normalizeImageUrl(cat.image_url)
+        image_url: normalizeOptionalImageUrl(cat.image_url)
       }))
     })
   } catch (error) {

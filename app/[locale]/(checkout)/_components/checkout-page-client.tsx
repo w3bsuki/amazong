@@ -151,7 +151,7 @@ export default function CheckoutPageClient() {
   if (items.length === 0) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center p-4">
-        <Card className="max-w-md w-full border-0 shadow-lg">
+        <Card className="max-w-md w-full border-0 shadow-sm">
           <CardContent className="p-8 text-center">
             <div className="size-20 bg-brand/5 rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingCart className="size-10 text-brand" weight="duotone" />
@@ -385,7 +385,7 @@ export default function CheckoutPageClient() {
               onClick={handleCheckout}
               disabled={isProcessing}
               size="lg"
-              className="h-12 px-6 font-semibold rounded-full bg-brand hover:bg-brand/90 text-white shadow-lg"
+              className="h-12 px-6 font-semibold rounded-full bg-brand hover:bg-brand/90 text-white shadow-sm"
             >
               {isProcessing ? (
                 <SpinnerGap className="size-5 animate-spin" />

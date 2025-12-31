@@ -25,7 +25,7 @@ export function DesktopHeroCTA({ locale = "en", bottomSlot }: DesktopHeroCTAProp
       aria-label={isBg ? "Добре дошли в Treido" : "Welcome to Treido"}
     >
       {/* Compact CTA Banner - Clean trust-blue solid color */}
-      <div className="relative overflow-hidden rounded-xl bg-cta-trust-blue">
+      <div className="relative overflow-hidden rounded-md bg-cta-trust-blue">
 
         <div className="relative px-6 py-5 lg:px-8 lg:py-7">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8">
@@ -91,7 +91,7 @@ export function DesktopHeroCTA({ locale = "en", bottomSlot }: DesktopHeroCTAProp
 
       {/* Optional bottom slot (e.g., categories) - outside the blue hero, like the reference */}
       {typeof bottomSlot !== "undefined" && bottomSlot !== null ? (
-        <div className="mt-4 rounded-xl border border-border bg-card px-4 py-3 shadow-xs">
+        <div className="mt-4 rounded-md border border-border bg-card px-4 py-3 shadow-xs">
           {bottomSlot}
         </div>
       ) : null}

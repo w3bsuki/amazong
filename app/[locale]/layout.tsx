@@ -27,17 +27,35 @@ const inter = Inter({
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   
+  const title = locale === 'bg' ? 'Treido - Онлайн магазин' : 'Treido - Online Shopping';
+  const description = locale === 'bg' 
+    ? 'Открийте най-добрите продукти на достъпни цени. Бърза доставка в България.'
+    : 'Discover the best products at affordable prices. Fast delivery across EU.';
+  
   return {
+    metadataBase: new URL('https://treido.eu'),
     title: {
       template: '%s | Treido',
-      default: locale === 'bg' ? 'Treido - Онлайн магазин' : 'Treido - Online Shopping'
+      default: title
     },
-    description: locale === 'bg' 
-      ? 'Открийте най-добрите продукти на достъпни цени. Бърза доставка в България.'
-      : 'Discover the best products at affordable prices. Fast delivery.',
+    description,
     keywords: locale === 'bg' 
-      ? ['онлайн магазин', 'пазаруване', 'електроника', 'мода', 'дом']
-      : ['online shopping', 'e-commerce', 'electronics', 'fashion', 'home'],
+      ? ['онлайн магазин', 'пазаруване', 'електроника', 'мода', 'дом', 'България']
+      : ['online shopping', 'e-commerce', 'electronics', 'fashion', 'home', 'EU', 'Europe'],
+    authors: [{ name: 'Treido', url: 'https://treido.eu' }],
+    creator: 'Treido',
+    publisher: 'Treido',
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     icons: {
       icon: [
         { url: '/icon.svg', type: 'image/svg+xml' },
@@ -46,12 +64,34 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       apple: '/apple-icon.png',
     },
     openGraph: {
-      title: locale === 'bg' ? 'Treido - Онлайн магазин' : 'Treido - Online Shopping',
-      description: locale === 'bg' 
-        ? 'Открийте най-добрите продукти на достъпни цени.'
-        : 'Discover the best products at affordable prices.',
+      title,
+      description,
       type: 'website',
-      locale: locale === 'bg' ? 'bg_BG' : 'en_US',
+      locale: locale === 'bg' ? 'bg_BG' : 'en_IE',
+      alternateLocale: locale === 'bg' ? 'en_IE' : 'bg_BG',
+      siteName: 'Treido',
+      url: `https://treido.eu/${locale}`,
+      images: [
+        {
+          url: '/og-image.svg',
+          width: 1200,
+          height: 630,
+          alt: 'Treido - Online Shopping in Europe',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/og-image.svg'],
+    },
+    alternates: {
+      canonical: `https://treido.eu/${locale}`,
+      languages: {
+        'en-IE': 'https://treido.eu/en',
+        'bg-BG': 'https://treido.eu/bg',
+      },
     },
   };
 }

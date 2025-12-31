@@ -69,7 +69,7 @@ export function FeaturedProductsSection({
       )}>
         <div className="flex items-center gap-3">
           {icon && (
-            <div className="hidden md:flex size-10 rounded-xl bg-background border border-border/60 items-center justify-center text-cta-trust-blue shadow-xs">
+            <div className="hidden md:flex size-10 rounded-md bg-background border border-border/60 items-center justify-center text-cta-trust-blue shadow-xs">
               {icon}
             </div>
           )}

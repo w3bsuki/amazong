@@ -65,7 +65,7 @@ export default function CheckoutSuccessPageClient() {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center p-4">
-      <Card className="max-w-lg w-full border-0 shadow-lg">
+      <Card className="max-w-lg w-full border-0 shadow-sm">
         <CardContent className="p-8">
           {state.status === "loading" && (
             <div className="text-center">

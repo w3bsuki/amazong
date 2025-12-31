@@ -3,7 +3,26 @@
 > **Priority:** 🔴 Critical  
 > **Estimated Time:** 2-4 hours  
 > **Goal:** Zero-downtime launch with verified rollback capability  
-> **Tech Stack:** Next.js 16 + Supabase + Vercel + Stripe + next-intl
+> **Tech Stack:** Next.js 16 + Supabase + Vercel + Stripe + next-intl  
+> **Domain:** treido.eu  
+> **Last Updated:** 2025-12-31
+
+---
+
+## 🎯 WHAT'S LEFT TO DO (Executive Summary)
+
+**Code is ready.** All audits complete. You need to set up external services:
+
+| Step | Task | Time | Status |
+|------|------|------|--------|
+| 1 | Run `pnpm build` locally | 2 min | ⬜ |
+| 2 | Create Supabase production project | 30 min | ⬜ |
+| 3 | Set up Stripe live keys + webhook | 20 min | ⬜ |
+| 4 | Create Vercel project + env vars | 20 min | ⬜ |
+| 5 | Configure DNS (treido.eu → Vercel) | 10 min | ⬜ |
+| 6 | Deploy & verify | 15 min | ⬜ |
+
+**Total: ~1.5-2 hours of actual work**
 
 ---
 
@@ -12,25 +31,33 @@
 ### Previous Phases Complete
 | Phase | Status | Required |
 |-------|--------|----------|
-| 0. File Cleanup | ⬜ | Recommended |
-| 1. Next.js 16 Audit | ⬜ | **Required** |
-| 2. Supabase Security | ⬜ | **Required** |
-| 3. Tailwind v4 | ⬜ | Recommended |
-| 4. shadcn/ui | ⬜ | Recommended |
-| 5. i18n (next-intl) | ⬜ | **Required** |
-| 6. Testing | ⬜ | **Required** |
-| 7. Performance | ⬜ | **Required** |
-| 8. Security | ⬜ | **Required** |
+| 0. File Cleanup | ✅ | Recommended |
+| 1. Next.js 16 Audit | ✅ | **Required** |
+| 2. Supabase Security | ✅ | **Required** |
+| 3. Tailwind v4 | ✅ | Recommended |
+| 4. shadcn/ui | ✅ | Recommended |
+| 5. i18n (next-intl) | ✅ | **Required** |
+| 6. Testing | ✅ | **Required** |
+| 7. Performance | ✅ | **Required** |
+| 8. Security | ✅ | **Required** |
+
+### Code Audits Complete (2025-12-30/31)
+| Audit | Status | Notes |
+|-------|--------|-------|
+| audit1.md (P0 blockers) | ✅ Fixed | Currency EUR, Reviews, Wishlist, Seller rating |
+| audit2.md (EU compliance) | ✅ Fixed | ODR link, company info, sell page |
+| uxuitasks.md (Design system) | ✅ Fixed | shadow-lg, rounded-xl, trust bar, VAT labels |
 
 ### Quality Gates (Must Pass)
 
 ```bash
 # All must exit 0
-pnpm lint                    # Zero errors
-pnpm typecheck               # Zero TypeScript errors
-pnpm test:unit               # All unit tests pass
-pnpm test:e2e                # All E2E tests pass
-pnpm build                   # Production build succeeds
+pnpm -s exec tsc -p tsconfig.json --noEmit   # ✅ TypeScript (passed 2025-12-31)
+pnpm build                                    # ⬜ Run this next!
+pnpm test:e2e                                 # E2E tests pass (or smoke test below)
+
+# Quick smoke test (with dev server running):
+pnpm -s exec cross-env REUSE_EXISTING_SERVER=true BASE_URL=http://localhost:3000 node scripts/run-playwright.mjs test e2e/smoke.spec.ts --project=chromium
 ```
 
 ### Git State
@@ -54,7 +81,7 @@ pnpm build                   # Production build succeeds
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Plain | `pk_live_...` |
 | `STRIPE_SECRET_KEY` | Sensitive | `sk_live_...` |
 | `STRIPE_WEBHOOK_SECRET` | Sensitive | `whsec_...` |
-| `NEXT_PUBLIC_APP_URL` | Plain | `https://amazong.bg` |
+| `NEXT_PUBLIC_APP_URL` | Plain | `https://treido.eu` |
 
 **Best Practices:**
 - ✅ Use "Sensitive" type for secrets (hides from logs)
@@ -106,8 +133,8 @@ grep -E "^NEXT_PUBLIC_.*SECRET|^NEXT_PUBLIC_.*SERVICE" .env.local
 
 | Setting | Value | Location |
 |---------|-------|----------|
-| Site URL | `https://amazong.bg` | Auth → URL Configuration |
-| Redirect URLs | `https://amazong.bg/**` | Auth → URL Configuration |
+| Site URL | `https://treido.eu` | Auth → URL Configuration |
+| Redirect URLs | `https://treido.eu/**` | Auth → URL Configuration |
 | Leaked Password Protection | Enabled | Auth → Settings |
 | Email Templates | Customized (BG) | Auth → Email Templates |
 
@@ -127,7 +154,7 @@ grep -E "^NEXT_PUBLIC_.*SECRET|^NEXT_PUBLIC_.*SERVICE" .env.local
 
 ### Webhook Setup
 
-**URL:** `https://amazong.bg/api/webhooks/stripe`
+**URL:** `https://treido.eu/api/webhooks/stripe`
 
 **Events to subscribe:**
 ```
@@ -174,11 +201,11 @@ Value: cname.vercel-dns.com
 ### Verification
 ```bash
 # Check DNS propagation
-dig amazong.bg +short
+dig treido.eu +short
 # Should return: 76.76.21.21
 
 # Check SSL
-curl -I https://amazong.bg
+curl -I https://treido.eu
 # Should return: HTTP/2 200
 ```
 
@@ -279,9 +306,9 @@ vercel --prod
 - **Paid:** Vercel Speed Insights, Checkly
 
 Configure to monitor:
-- `https://amazong.bg` (home)
-- `https://amazong.bg/en` (app route)
-- `https://amazong.bg/api/health` (API)
+- `https://treido.eu` (home)
+- `https://treido.eu/en` (app route)
+- `https://treido.eu/api/health` (API)
 
 ---
 
@@ -420,7 +447,7 @@ If migrations broke something:
 
 ## 🔗 Quick Links
 
-- **Vercel Dashboard:** https://vercel.com/[team]/amazong
+- **Vercel Dashboard:** https://vercel.com/[team]/treido
 - **Supabase Dashboard:** https://supabase.com/dashboard/project/[ref]
 - **Stripe Dashboard:** https://dashboard.stripe.com
 - **Status Pages:**

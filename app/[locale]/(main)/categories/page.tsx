@@ -1,17 +1,18 @@
-import { Link, routing, validateLocale } from "@/i18n/routing"
+import { routing, validateLocale } from "@/i18n/routing"
 import { setRequestLocale } from "next-intl/server"
-import { CaretRight, GridFour } from "@phosphor-icons/react/dist/ssr"
 import type { Metadata } from 'next'
+import { Suspense } from "react"
 
-import { getRootCategories } from "./_lib/categories-data"
-import { SubcategoryCircles } from "@/components/category/subcategory-circles"
-import { StartSellingBanner } from "@/components/sections/start-selling-banner"
+import { getCategoryHierarchy } from "@/lib/data/categories"
+import { MobileHomeTabs } from "@/components/mobile/mobile-home-tabs"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // =============================================================================
-// CATEGORIES INDEX PAGE - FULLY CACHED
+// CATEGORIES INDEX PAGE - Full Interactive UX
 // 
-// This page displays all root categories.
-// All data comes from cached functions - NO connection() needed.
+// This page provides the same category browsing experience as the homepage.
+// Uses MobileHomeTabs for consistent tabs + circles + pills + infinite scroll.
+// URL params (?tab=electronics&sub=smartphones) enable deep linking.
 // =============================================================================
 
 // SEO Metadata
@@ -24,70 +25,95 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
 
+// Loading skeleton for the tabs
+function CategoriesPageSkeleton() {
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Tab skeleton */}
+      <div className="sticky top-0 z-30 bg-background border-b border-border/40 py-3 px-4">
+        <div className="flex gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-4 w-16 rounded" />
+          ))}
+        </div>
+      </div>
+      {/* Circle skeleton */}
+      <div className="py-4 px-4">
+        <div className="flex gap-3 overflow-hidden">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex flex-col items-center gap-1.5">
+              <Skeleton className="size-14 rounded-full" />
+              <Skeleton className="h-2.5 w-12 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Product grid skeleton */}
+      <div className="grid grid-cols-2 gap-1.5 px-4 pt-2">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="flex flex-col">
+            <Skeleton className="aspect-square w-full rounded-md mb-1" />
+            <Skeleton className="h-2.5 w-full rounded-sm mb-1" />
+            <Skeleton className="h-2.5 w-2/3 rounded-sm" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default async function CategoriesPage({
-  params
+  params,
+  searchParams: searchParamsPromise,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ tab?: string; sub?: string }>
 }) {
-  // NO connection() - uses cached getRootCategories function
   const { locale: localeParam } = await params
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
+  
+  const searchParams = await searchParamsPromise
+  const defaultTab = searchParams.tab || null
+  const defaultSubTab = searchParams.sub || null
 
-  const categories = await getRootCategories()
+  // Fetch categories WITH children for tabs + circles (L0 + L1 + L2)
+  const categoriesWithChildren = await getCategoryHierarchy(null, 2)
+
+  // Page title based on locale
+  const pageTitle = locale === "bg" ? "Всички категории" : "All Categories"
 
   return (
-    <div className="min-h-screen bg-background pb-20 sm:pb-12">
-      {/* Hero Banner */}
-      <div className="bg-primary text-primary-foreground py-6 sm:py-10">
-        <div className="container">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-sm text-primary-foreground/70 mb-4">
-            <Link href="/" className="text-primary-foreground/90 hover:text-primary-foreground transition-colors">
-              {locale === "bg" ? "Начало" : "Home"}
-            </Link>
-            <CaretRight className="size-3.5" />
-            <span className="text-primary-foreground">
-              {locale === "bg" ? "Категории" : "Categories"}
-            </span>
-          </nav>
-          
-          <div className="flex items-center gap-3 mb-2">
-            <div className="size-12 sm:size-14 bg-primary-foreground/10 rounded-full flex items-center justify-center">
-              <GridFour className="size-6 sm:size-7 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-2xl sm:text-4xl font-bold">
-                {locale === "bg" ? "Всички категории" : "Shop All Categories"}
-              </h1>
-              <p className="text-primary-foreground/80 text-sm sm:text-base mt-1">
-                {locale === "bg" 
-                  ? "Открийте хиляди продукти в над 16 категории" 
-                  : "Discover thousands of products across 16+ categories"}
-              </p>
-            </div>
-          </div>
+    <main className="flex min-h-screen flex-col bg-background pb-20">
+      {/* Mobile: Full interactive tabs UX (same as homepage) */}
+      <div className="w-full md:hidden">
+        <Suspense fallback={<CategoriesPageSkeleton />}>
+          <MobileHomeTabs 
+            initialProducts={[]} 
+            initialCategories={categoriesWithChildren}
+            defaultTab={defaultTab}
+            defaultSubTab={defaultSubTab}
+            showBanner={false}
+            pageTitle={pageTitle}
+          />
+        </Suspense>
+      </div>
+
+      {/* Desktop: Same pattern but with desktop layout considerations */}
+      <div className="hidden md:block w-full">
+        <div className="container py-6">
+          <h1 className="text-2xl font-bold mb-6">{pageTitle}</h1>
+          <Suspense fallback={<CategoriesPageSkeleton />}>
+            <MobileHomeTabs 
+              initialProducts={[]} 
+              initialCategories={categoriesWithChildren}
+              defaultTab={defaultTab}
+              defaultSubTab={defaultSubTab}
+              showBanner={false}
+            />
+          </Suspense>
         </div>
       </div>
-
-      <div className="container -mt-4 sm:-mt-6 space-y-2">
-        {/* Category Circles (Standardized) */}
-        <section className="bg-background rounded-xl border border-border p-2 shadow-sm">
-          <h2 className="text-lg font-bold mb-2 px-2">
-            {locale === "bg" ? "Преглед по категории" : "Browse by Department"}
-          </h2>
-          {/* Use SubcategoryCircles but we need to adapt it to show ALL categories without "All" button */}
-          <SubcategoryCircles 
-            subcategories={categories} 
-            currentCategory={null}
-            basePath="/categories"
-            className="w-full"
-          />
-        </section>
-
-        {/* CTA Banner (Standardized) */}
-        <StartSellingBanner locale={locale} />
-      </div>
-    </div>
+    </main>
   )
 }

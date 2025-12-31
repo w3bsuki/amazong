@@ -31,7 +31,7 @@ export function MarketplaceHero({ locale, categories }: MarketplaceHeroProps) {
   return (
     <div className="w-full">
       {/* Main Hero Banner - Full Width */}
-      <div className="relative w-full overflow-hidden rounded-xl bg-cta-trust-blue shadow-sm">
+      <div className="relative w-full overflow-hidden rounded-md bg-cta-trust-blue shadow-sm">
         {/* Background Pattern/Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-cta-trust-blue via-cta-trust-blue to-cta-trust-blue/80 z-0" />
         <div className="absolute right-0 top-0 h-full w-1/2 bg-[url('https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay" />
@@ -64,7 +64,7 @@ export function MarketplaceHero({ locale, categories }: MarketplaceHeroProps) {
               <Button
                 asChild
                 size="lg"
-                className="bg-white text-cta-trust-blue hover:bg-blue-50 shadow-lg border-0 font-bold h-10 px-6 text-sm"
+                className="bg-white text-cta-trust-blue hover:bg-blue-50 shadow-sm border-0 font-bold h-10 px-6 text-sm"
               >
                 <Link href="/sell">
                   <Storefront weight="fill" className="size-4 mr-2" />

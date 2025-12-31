@@ -16,9 +16,8 @@ import {
   SquaresFour
 } from "@phosphor-icons/react"
 import { useLocale } from "next-intl"
-import { cn } from "@/lib/utils"
 import { useCategoriesCache, getCategoryName } from "@/hooks/use-categories-cache"
-import { getCategoryIcon } from "@/lib/category-icons"
+import { CategoryCircle } from "@/components/shared/category/category-circle"
 
 export interface MobileMenuSheetHandle {
   open: () => void
@@ -77,7 +76,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
           {/* Scrollable Content with safe area */}
           <div className="flex-1 overflow-y-auto overscroll-contain px-4 max-h-[calc(90dvh-70px)] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
             
-            {/* Categories Section - Hero-style circles grid */}
+            {/* Categories Section - circles grid */}
             <section className="pt-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-semibold text-foreground">
@@ -99,34 +98,18 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
               <div className="grid grid-cols-4 gap-y-5 gap-x-1.5">
                 {categories.slice(0, 16).map((cat) => {
                   return (
-                    <Link
+                    <CategoryCircle
                       key={cat.slug}
+                      category={cat}
                       href={`/categories/${cat.slug}`}
                       onClick={() => setOpen(false)}
-                      className="flex flex-col items-center gap-1.5 group"
-                    >
-                      {/* Circle with icon - Hero style: White + Blue with ring */}
-                      <div
-                        className={cn(
-                          "rounded-full flex items-center justify-center",
-                          "size-14",
-                          "bg-cta-trust-blue ring-1 ring-cta-trust-blue/40",
-                          "group-hover:bg-cta-trust-blue-hover group-hover:ring-cta-trust-blue/60"
-                        )}
-                      >
-                        {getCategoryIcon(cat.slug, {
-                          size: 24,
-                          weight: "regular",
-                          className: cn(
-                            "text-cta-trust-blue-text"
-                          ),
-                        })}
-                      </div>
-                      {/* Category name */}
-                      <span className="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 max-w-[72px]">
-                        {getShortName(cat)}
-                      </span>
-                    </Link>
+                      circleClassName="size-12"
+                      fallbackIconSize={24}
+                      fallbackIconWeight="regular"
+                      variant="menu"
+                      label={getShortName(cat)}
+                      labelClassName="text-2xs font-medium text-center text-muted-foreground leading-tight line-clamp-2 max-w-[72px]"
+                    />
                   )
                 })}
               </div>

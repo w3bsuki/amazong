@@ -448,7 +448,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
         </div>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-80 sm:w-96 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-lg"
+        className="w-80 sm:w-96 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-md"
         align="end"
         sideOffset={8}
         collisionPadding={10}

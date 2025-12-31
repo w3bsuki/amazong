@@ -197,7 +197,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
+              className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
             >
               <div className="relative bg-primary px-6 py-10 text-center text-primary-foreground overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">
@@ -267,7 +267,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
+              className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
             >
               <div className="p-6 border-b border-border">
                 <button
@@ -300,7 +300,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                         colors={COLOR_PALETTES[selectedPalette]}
                       />
                     )}
-                    <label className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-colors">
+                    <label className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full flex items-center justify-center cursor-pointer shadow-sm transition-colors">
                       <Camera className="size-4 text-primary-foreground" weight="bold" />
                       <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                     </label>
@@ -397,7 +397,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
+              className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
             >
               <div className="p-6 border-b border-border">
                 <button
@@ -477,7 +477,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               key="complete"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
+              className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
             >
               <div className="p-8 text-center">
                 <motion.div

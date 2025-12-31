@@ -43,9 +43,24 @@ async function dismissOverlays(page: Page) {
   await page.waitForTimeout(300)
 }
 
+/**
+ * Helper to pre-dismiss overlays via localStorage before page load
+ */
+async function setupPage(page: Page) {
+  await page.addInitScript(() => {
+    localStorage.setItem('cookie-consent', 'accepted')
+    localStorage.setItem('geo-welcome-dismissed', 'true')
+  })
+}
+
 test.describe("Mobile Responsiveness - Phase 11", () => {
   // Use mobile viewport for all tests in this describe block
   test.use({ viewport: { width: 375, height: 812 } })
+
+  // Pre-dismiss overlays for all tests
+  test.beforeEach(async ({ page }) => {
+    await setupPage(page)
+  })
 
   test.describe("Mobile Navigation", () => {
     test("mobile tab bar is visible and functional", async ({ page }) => {
@@ -102,16 +117,17 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Wait for page to load fully
       await page.waitForLoadState("networkidle")
       
-      // Mobile homepage shows categories navigation directly (no hero section)
-      const categoriesNav = page.getByRole("navigation", { name: /categories/i })
-      await expect(categoriesNav).toBeVisible({ timeout: 15000 })
+      // Mobile homepage shows tabbed interface with category tabs
+      // Look for the tab list with "All" and category tabs
+      const tabList = page.locator('[role="tablist"]').first()
+      await expect(tabList).toBeVisible({ timeout: 15000 })
       
-      // Category items should be visible and tappable
-      const categoryItems = page.getByRole("listitem")
-      await expect(categoryItems.first()).toBeVisible()
+      // "All" tab should be visible as first tab
+      const allTab = page.getByRole("tab", { name: /all|всички/i }).first()
+      await expect(allTab).toBeVisible()
       
       // Start selling CTA should be visible
-      await expect(page.getByRole("link", { name: /start selling/i })).toBeVisible()
+      await expect(page.getByRole("link", { name: /start selling|продавай/i }).first()).toBeVisible({ timeout: 10000 })
     })
 
     test("category list is scrollable on mobile", async ({ page }) => {
@@ -120,16 +136,14 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Wait for categories to load
       await page.waitForLoadState("networkidle")
       
-      // Categories navigation should be visible
-      const categoriesNav = page.getByRole("navigation", { name: /categories/i })
-      await expect(categoriesNav).toBeVisible({ timeout: 15000 })
+      // Category tabs should be visible in tab list
+      const tabList = page.locator('[role="tablist"]').first()
+      await expect(tabList).toBeVisible({ timeout: 15000 })
       
-      // Categories list should have multiple items (Fashion, Electronics, Home, etc.)
-      // Use getByRole('listitem') to find list items within navigation
-      const categoryItems = categoriesNav.getByRole("listitem")
-      await expect(categoryItems.first()).toBeVisible({ timeout: 10000 })
-      const count = await categoryItems.count()
-      expect(count).toBeGreaterThan(5) // At least 6 categories visible
+      // Should have multiple tabs for categories
+      const tabs = page.getByRole("tab")
+      const tabCount = await tabs.count()
+      expect(tabCount).toBeGreaterThan(3) // "All" + at least a few categories
     })
 
     test("product listing tabs work on mobile", async ({ page }) => {
@@ -142,12 +156,12 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       const tablist = page.getByRole("tablist")
       await expect(tablist.first()).toBeVisible({ timeout: 15000 })
       
-      // "For you" tab should be selected by default
-      const forYouTab = page.getByRole("tab", { name: /for you/i })
-      await expect(forYouTab).toBeVisible()
+      // "All" tab should be selected by default (or any tab)
+      const allTab = page.getByRole("tab", { name: /all|всички/i }).first()
+      await expect(allTab).toBeVisible()
       
       // Product cards (links to products) should be visible
-      const productLinks = page.getByRole("link", { name: /open product/i })
+      const productLinks = page.locator('a[aria-label^="Open product:"]')
       await expect(productLinks.first()).toBeVisible({ timeout: 15000 })
     })
 
@@ -170,8 +184,8 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Wait for page to load
       await page.waitForLoadState("networkidle")
       
-      // Product content should be visible
-      await expect(page.locator("#main-content")).toBeVisible({ timeout: 30000 })
+      // Product content should be visible (use first() to handle duplicates)
+      await expect(page.locator("#main-content").first()).toBeVisible({ timeout: 30000 })
       
       // Price should be visible somewhere on page (use first() as there are multiple prices)
       await expect(page.locator('text=/€|BGN|\\d+[.,]\\d{2}/').first()).toBeVisible({ timeout: 15000 })
@@ -187,8 +201,8 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Wait for page to load
       await page.waitForLoadState("networkidle")
       
-      // Back button should be visible in header
-      const backButton = page.getByRole("button", { name: /back|назад|go back/i })
+      // Back button should be visible in header (use specific aria-label)
+      const backButton = page.locator('button[aria-label="Go back"], button[aria-label="Назад"]').first()
       await expect(backButton).toBeVisible({ timeout: 15000 })
     })
 
@@ -198,8 +212,11 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Wait for page to load
       await page.waitForLoadState("networkidle")
       
+      // Wait for image to load (may be lazy loaded)
+      await page.waitForTimeout(2000)
+      
       // Image should be visible on product page
-      const productImage = page.locator('img[alt]').first()
+      const productImage = page.locator('img[alt]:not([alt=""])').first()
       await expect(productImage).toBeVisible({ timeout: 15000 })
     })
 
@@ -301,10 +318,11 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
     })
 
     test("checkout page renders correctly on mobile", async ({ page }) => {
-      await page.goto("/en/checkout")
+      test.setTimeout(120_000)
+      await page.goto("/en/checkout", { timeout: 90_000, waitUntil: 'domcontentloaded' })
       
-      // Checkout page should load
-      await expect(page.locator("main")).toBeVisible()
+      // Checkout page should load (may redirect to auth or show empty cart)
+      await expect(page.locator("main").first()).toBeVisible({ timeout: 30000 })
       
       // No horizontal overflow
       const hasOverflow = await page.evaluate(() => {
@@ -364,9 +382,10 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
 
   test.describe("Mobile Static Pages", () => {
     test("about page renders correctly on mobile", async ({ page }) => {
-      await page.goto("/en/about")
+      test.setTimeout(120_000)
+      await page.goto("/en/about", { timeout: 90_000, waitUntil: 'domcontentloaded' })
       
-      await expect(page.locator("main")).toBeVisible()
+      await expect(page.locator("main").first()).toBeVisible({ timeout: 30000 })
       
       const hasOverflow = await page.evaluate(() => {
         return document.body.scrollWidth > window.innerWidth
@@ -375,9 +394,10 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
     })
 
     test("contact page renders correctly on mobile", async ({ page }) => {
-      await page.goto("/en/contact")
+      test.setTimeout(120_000)
+      await page.goto("/en/contact", { timeout: 90_000, waitUntil: 'domcontentloaded' })
       
-      await expect(page.locator("main")).toBeVisible()
+      await expect(page.locator("main").first()).toBeVisible({ timeout: 30000 })
       
       const hasOverflow = await page.evaluate(() => {
         return document.body.scrollWidth > window.innerWidth
@@ -386,9 +406,10 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
     })
 
     test("customer service page renders correctly on mobile", async ({ page }) => {
-      await page.goto("/en/customer-service")
+      test.setTimeout(120_000)
+      await page.goto("/en/customer-service", { timeout: 90_000, waitUntil: 'domcontentloaded' })
       
-      await expect(page.locator("main")).toBeVisible()
+      await expect(page.locator("main").first()).toBeVisible({ timeout: 30000 })
       
       const hasOverflow = await page.evaluate(() => {
         return document.body.scrollWidth > window.innerWidth

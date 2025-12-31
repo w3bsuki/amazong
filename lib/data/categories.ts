@@ -1,5 +1,6 @@
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
+import { normalizeOptionalImageUrl } from '@/lib/normalize-image-url'
 
 // =============================================================================
 // Type Definitions
@@ -252,6 +253,7 @@ export async function getCategoryHierarchy(
   if (depth === 0) {
     return (rootCats || []).map(cat => ({
       ...cat,
+      image_url: normalizeOptionalImageUrl(cat.image_url),
       children: []
     }))
   }
@@ -309,7 +311,7 @@ export async function getCategoryHierarchy(
     slug: cat.slug,
     parent_id: cat.parent_id,
     icon: cat.icon,
-    image_url: cat.image_url,
+    image_url: normalizeOptionalImageUrl(cat.image_url),
     display_order: cat.display_order,
     depth: cat.parent_id === null ? 0 : (rootIds.includes(cat.parent_id) ? 1 : 2),
     path: []

@@ -158,10 +158,19 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }, [items])
 
   const addToWishlist = async (product: { id: string; title: string; price: number; image: string }) => {
-    const t = messages[getLocale()]
+    const locale = getLocale()
+    const t = messages[locale]
     
     if (!userId) {
-      toast.error(t.signInRequired)
+      toast.error(t.signInRequired, {
+        action: {
+          label: locale === "bg" ? "Вход" : "Sign In",
+          onClick: () => {
+            window.location.href = `/${locale}/auth/login`
+          }
+        },
+        duration: 5000,
+      })
       return
     }
 

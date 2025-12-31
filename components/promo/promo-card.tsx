@@ -25,7 +25,7 @@ export function PromoCard({
     <Link 
       href={href} 
       className={cn(
-        "group relative block rounded-xl overflow-hidden",
+        "group relative block rounded-md overflow-hidden",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         "",
         variant === "default" && "aspect-4/3",

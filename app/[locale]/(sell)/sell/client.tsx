@@ -112,13 +112,13 @@ export function SellPageClient({
     };
   }, [initialUser, seller]);
 
-  // Loading state while checking auth
-  if (isAuthChecking) {
+  // Loading state while checking auth - but show SignInPrompt immediately for guests
+  if (isAuthChecking && initialUser) {
     return <SellFormSkeleton />;
   }
 
-  // Not logged in - show sign in prompt
-  if (!user) {
+  // Not logged in - show sign in prompt (render immediately for guests)
+  if (!user || (!initialUser && isAuthChecking)) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <SellHeader />
@@ -257,7 +257,7 @@ export function SellPageClient({
       <div className="fixed bottom-4 right-4 z-50 hidden lg:block lg:bottom-6 lg:right-6">
         <Button
           onClick={() => setUseAiAssistant(true)}
-          className="gap-2 shadow-lg"
+          className="gap-2 shadow-sm"
           size="lg"
         >
           <Sparkles className="size-4" />

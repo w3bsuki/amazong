@@ -14,6 +14,7 @@ interface FormatPriceOptions {
   locale?: string
   currency?: SupportedCurrency
   showSymbol?: boolean
+  showVat?: boolean
 }
 
 /**
@@ -46,15 +47,23 @@ export function formatPrice(
   const {
     locale = 'en',
     currency = BASE_CURRENCY,
-    showSymbol = true
+    showSymbol = true,
+    showVat = false
   } = options
 
-  return new Intl.NumberFormat(localeMap[locale] || 'en-IE', {
+  const formatted = new Intl.NumberFormat(localeMap[locale] || 'en-IE', {
     style: showSymbol ? 'currency' : 'decimal',
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(priceInEUR)
+
+  if (showVat) {
+    const vatLabel = locale === 'bg' ? 'с ДДС' : 'incl. VAT'
+    return `${formatted} ${vatLabel}`
+  }
+
+  return formatted
 }
 
 /**

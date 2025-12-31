@@ -139,7 +139,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                     price: {
                       sale: Number(product.price ?? 0),
                       regular: product.list_price != null ? Number(product.list_price) : undefined,
-                      currency: "BGN",
+                      currency: locale === "bg" ? "BGN" : "EUR",
                     },
                     store: storeForBuyBox,
                     images: viewModel.galleryImages.map((img) => ({ src: img.src, alt: img.alt })),
@@ -177,6 +177,9 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
               rating={Number(product.rating ?? 0)}
               reviewCount={Number(product.review_count ?? 0)}
               reviews={reviews}
+              productId={product.id}
+              productTitle={product.title}
+              locale={locale}
             />
           </div>
         </div>

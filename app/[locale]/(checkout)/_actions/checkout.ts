@@ -42,7 +42,7 @@ export async function createCheckoutSession(items: CartItem[]) {
       payment_method_types: ["card"],
       line_items: items.map((item) => ({
         price_data: {
-          currency: "usd",
+          currency: "eur",
           product_data: {
             name: item.title,
             images: [

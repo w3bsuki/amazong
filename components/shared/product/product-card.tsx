@@ -155,6 +155,15 @@ function getCategoryLabel(
   return clean.length > 16 ? `${clean.slice(0, 16)}…` : clean
 }
 
+// Helper to format sold count (e.g., 567 → "567", 2300 → "2.3K")
+function formatSoldCount(n: number): string {
+  if (n >= 1000) {
+    const k = n / 1000
+    return k >= 10 ? `${Math.round(k)}K` : `${k.toFixed(1)}K`
+  }
+  return n.toString()
+}
+
 // =============================================================================
 // PRODUCT CARD COMPONENT - Clean, Professional, Dense
 // =============================================================================
@@ -411,16 +420,20 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
             )}
           </div>
 
-          {/* Rating - text-tiny (11px) per _MASTER.md */}
-          {showRating && rating > 0 && (
+          {/* Rating + Sold count - text-tiny (11px) per _MASTER.md */}
+          {(showRating && (rating > 0 || reviews > 0)) && (
             <div className="flex items-center gap-1">
-              <Star size={12} weight="fill" className="text-rating" />
-              <span className="text-tiny font-medium text-foreground">
-                {rating.toFixed(1)}
-              </span>
+              {rating > 0 && (
+                <>
+                  <Star size={12} weight="fill" className="text-rating" />
+                  <span className="text-tiny font-medium text-foreground">
+                    {rating.toFixed(1)}
+                  </span>
+                </>
+              )}
               {reviews > 0 && (
                 <span className="text-tiny text-muted-foreground">
-                  · {reviews.toLocaleString()} sold
+                  {rating > 0 && "· "}{formatSoldCount(reviews)} sold
                 </span>
               )}
             </div>

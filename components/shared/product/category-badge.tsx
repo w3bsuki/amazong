@@ -43,7 +43,7 @@ export function CategoryBadge(props: {
     <Badge
       variant="outline"
       className={cn(
-        "inline-flex items-center gap-2 rounded-xl border-border/60 bg-muted/50 text-foreground hover:bg-muted transition-colors cursor-pointer",
+        "inline-flex items-center gap-2 rounded-md border-border/60 bg-muted/50 text-foreground hover:bg-muted transition-colors cursor-pointer",
         sizeClass,
         className
       )}

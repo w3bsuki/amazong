@@ -144,7 +144,7 @@ export function PlanCard({
   return (
     <div
       className={cn(
-        "relative flex flex-col rounded-xl border bg-card transition-all",
+        "relative flex flex-col rounded-md border bg-card transition-all",
         // Mobile: large cards for horizontal scroll (shows ~10-15% peek of next card)
         // Using calc to account for container padding (1rem each side) and gap (1rem)
         // Compact: smaller cards for modals, Full: larger cards for pages
@@ -372,7 +372,7 @@ export function PlansGridSkeleton({ count = 3, variant = "full" }: { count?: num
         <div
           key={i}
           className={cn(
-            "shrink-0 snap-center md:w-auto md:shrink md:snap-none rounded-xl border bg-card p-4",
+            "shrink-0 snap-center md:w-auto md:shrink md:snap-none rounded-md border bg-card p-4",
             variant === "compact" ? "w-[calc(100vw-4rem)] max-w-[280px]" : "w-[calc(100vw-3rem)]"
           )}
         >

@@ -378,7 +378,7 @@ export function NewestListingsSection({
       {/* Product Grid - 2 columns on mobile, consistent gap */}
       {active.products.length === 0 && activeTab === "near_me" && !isLoading && !nearMeCity ? (
         <div className="px-2 py-4">
-          <div className="rounded-xl border border-border bg-card px-4 py-6 text-center">
+          <div className="rounded-md border border-border bg-card px-4 py-6 text-center">
             <p className="text-sm font-semibold text-foreground">
               {locale === "bg" ? "Изберете град" : "Select a city"}
             </p>
@@ -389,7 +389,7 @@ export function NewestListingsSection({
         </div>
       ) : active.products.length === 0 && activeTab === "promoted" && !isLoading ? (
         <div className="px-2 py-4">
-          <div className="rounded-xl border border-border bg-card px-4 py-6 text-center">
+          <div className="rounded-md border border-border bg-card px-4 py-6 text-center">
             <p className="text-sm font-semibold text-foreground">
               {locale === "bg" ? "Няма промотирани обяви" : "No promoted listings"}
             </p>

@@ -29,7 +29,7 @@ export async function SignInCTA() {
   }
   
   return (
-    <div className="bg-cta-trust-blue rounded-xl p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div className="bg-cta-trust-blue rounded-md p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div className="text-center sm:text-left">
         <h3 className="text-base sm:text-xl font-bold text-cta-trust-blue-text mb-1 tracking-tight">
           {locale === "bg" ? "Влез в акаунта си" : "Sign in for the best experience"}

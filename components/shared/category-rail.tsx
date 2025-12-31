@@ -1,9 +1,7 @@
 "use client"
 
 import { useCategoriesCache, getCategoryName, getCategoryShortName } from "@/hooks/use-categories-cache"
-import { Link } from "@/i18n/routing"
-import { cn } from "@/lib/utils"
-import { getCategoryIcon } from "@/lib/category-icons"
+import { CategoryCircle } from "@/components/shared/category/category-circle"
 
 // Fallback categories if fetch fails
 const fallbackCategories = [
@@ -55,37 +53,21 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
               const fullName = getCategoryName(cat, locale)
               const shortName = getCategoryShortName(cat, locale)
               return (
-                <Link
+                <CategoryCircle
                   key={cat.slug}
+                  category={cat}
                   href={`/categories/${cat.slug}`}
                   prefetch={true}
-                  aria-label={fullName}
-                  className={cn(
-                    "group snap-start shrink-0",
-                    "flex flex-col items-center gap-1.5",
-                    "touch-action-manipulation",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl",
-                  )}
-                  role="listitem"
-                >
-                  {/* Icon Tile - Neutral background, Brand icon, No shadow */}
-                  <div
-                    className={cn(
-                      "flex items-center justify-center",
-                      "size-12 rounded-full",
-                      "bg-secondary border border-border/40",
-                      "group-hover:bg-secondary/80 transition-colors"
-                    )}
-                  >
-                    <span className="text-primary">
-                      {getCategoryIcon(cat.slug, { size: 24, weight: "duotone" })}
-                    </span>
-                  </div>
-                  {/* Label - single line, truncate if needed */}
-                  <span className="text-foreground font-medium text-tiny text-center w-12 leading-tight truncate">
-                    {shortName}
-                  </span>
-                </Link>
+                  ariaLabel={fullName}
+                  circleClassName="size-12"
+                  fallbackIconSize={24}
+                  fallbackIconWeight="duotone"
+                  variant="rail"
+                  label={shortName}
+                  labelClassName="text-foreground font-medium text-tiny text-center w-12 leading-tight truncate"
+                  className="rounded-md"
+                  role={"listitem" as any}
+                />
               )
             })
           )}

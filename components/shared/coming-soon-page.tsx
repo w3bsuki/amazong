@@ -73,7 +73,7 @@ export function ComingSoonPage({
         <div className="max-w-xl w-full text-center">
           {/* Icon */}
           <div className="flex justify-center mb-6">
-            <div className="size-20 bg-brand/10 rounded-2xl flex items-center justify-center text-brand">
+            <div className="size-20 bg-brand/10 rounded-md flex items-center justify-center text-brand">
               {icon}
             </div>
           </div>

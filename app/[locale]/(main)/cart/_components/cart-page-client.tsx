@@ -32,8 +32,16 @@ export default function CartPageClient() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    // Immediate mount - no async dependencies
     setMounted(true)
   }, [])
+
+  // Safety timeout - if somehow still not mounted after 3s, force it
+  useEffect(() => {
+    if (mounted) return
+    const timeout = setTimeout(() => setMounted(true), 3000)
+    return () => clearTimeout(timeout)
+  }, [mounted])
 
   const handleCheckout = () => {
     if (items.length === 0) return

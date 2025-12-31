@@ -37,4 +37,4 @@ Disallow: /checkout/
 Disallow: /*/checkout/
 Disallow: /api/
 
-Sitemap: https://amazong.com/sitemap.xml
+Sitemap: https://treido.eu/sitemap.xml

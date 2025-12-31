@@ -203,7 +203,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
       {/* Plans Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Business Pro Plan */}
-        <Card className="relative border-2 border-primary shadow-lg">
+        <Card className="relative border-2 border-primary shadow-sm">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2">
             <Badge className="bg-primary text-primary-foreground px-3 py-1">
               <IconSparkles className="size-3 mr-1" />

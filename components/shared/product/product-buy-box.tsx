@@ -116,7 +116,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
           {product.name}
         </h1>
 
-        <div className="hidden lg:flex items-center gap-form-sm bg-background border border-border p-form-sm rounded-xl shadow-sm">
+        <div className="hidden lg:flex items-center gap-form-sm bg-background border border-border p-form-sm rounded-md shadow-sm">
           <Avatar className="h-9 w-9 border border-border shrink-0">
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback className="bg-muted text-muted-foreground">BD</AvatarFallback>
@@ -147,6 +147,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
           <div className="flex items-baseline gap-2 flex-wrap">
             <span className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight">
               {new Intl.NumberFormat(locale, { style: "currency", currency: product.price.currency || "USD", minimumFractionDigits: 2 }).format(product.price.sale || 0)}
+              <span className="text-xs font-normal text-muted-foreground ml-1">{locale === "bg" ? "с ДДС" : "incl. VAT"}</span>
             </span>
             {product.price.regular && (
               <span className="text-sm text-muted-foreground">
@@ -268,7 +269,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
       </div>
 
       {/* Shipping, Returns, Payments - Styled like Urgency Box */}
-      <div className="hidden lg:block bg-muted/30 p-form rounded-xl space-y-form-sm border border-border/50 mt-auto">
+      <div className="hidden lg:block bg-muted/30 p-form rounded-md space-y-form-sm border border-border/50 mt-auto">
         {/* Shipping */}
         <div className="grid grid-cols-[90px_1fr] gap-2 text-sm">
           <div className="text-muted-foreground font-medium">Shipping:</div>

@@ -66,18 +66,21 @@ cleanup/
 
 From [cleanup/onboarding-refactor-plan.md](../../cleanup/onboarding-refactor-plan.md):
 
-1. **Flag Inconsistency**: `seller_type` is set to 'personal' or 'business', but `is_business_seller` boolean remains `false`
+1. ~~**Flag Inconsistency**: `seller_type` is set but not business flag~~ ✅ FIXED - Code correctly sets `account_type` and business gating uses `account_type === 'business'`
 2. **No Separate Paths**: Personal sellers and business sellers see identical onboarding
 3. **Missing Business Dashboard Onboarding**: Business accounts should get dashboard-specific setup
 4. **Upgrade Path**: No way to upgrade personal → business account
 
-### Proposed Fix
+### ✅ Actual Implementation (Verified 2025-12-30)
 ```typescript
-// When user selects business account:
+// In completeSellerOnboarding() - app/[locale]/(sell)/_actions/sell.ts
 await supabase.from('profiles').update({
-  seller_type: 'business',
-  is_business_seller: true,  // ← This is missing!
-  has_completed_seller_onboarding: true
+  account_type: accountType,  // 'personal' or 'business'
+  is_seller: true,
+  role: 'seller',
+  display_name: displayName,
+  bio: bio,
+  business_name: accountType === 'business' ? businessName : null,
 })
 ```
 
@@ -87,7 +90,7 @@ await supabase.from('profiles').update({
 
 - [ ] Personal signup → Personal onboarding → `/account`
 - [ ] Business signup → Business onboarding → `/dashboard`
-- [ ] `is_business_seller` correctly set for business accounts
+- [x] `account_type` correctly set for business accounts ✅
 - [ ] Seller onboarding completes without errors
 - [ ] Mobile-friendly wizard UI
 - [ ] Can skip and return to onboarding later
