@@ -92,29 +92,29 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
       <div className="md:hidden bg-header-bg text-header-text">
         {/* Top row - Logo & Actions - compact */}
         <div className={cn(
-          "h-10 px-(--page-inset) flex items-center gap-1",
+          "h-10 px-(--page-inset) flex items-center gap-0",
           isProductPage && "border-b border-header-border/50"
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
           {isProductPage ? (
             <button 
               onClick={() => router.back()}
-              className="flex items-center justify-center h-touch w-touch -ml-2 rounded-full text-header-text hover:bg-header-hover active:bg-header-active"
+              className="flex items-center justify-center h-touch w-touch rounded-full text-header-text hover:bg-header-hover active:bg-header-active"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
               <CaretLeft size={20} weight="bold" />
             </button>
           ) : (
-            <SidebarMenu user={user} triggerClassName="justify-start -ml-2" />
+            <SidebarMenu user={user} triggerClassName="justify-start" />
           )}
           <Link href="/" className={cn(
-            "flex items-center shrink-0 min-h-touch",
-            isProductPage ? "ml-1" : "ml-0"
+            "flex items-center shrink-0 min-h-touch -ml-2",
+            isProductPage && "ml-0"
           )}>
             <span className="text-xl font-bold tracking-tight text-header-text">Treido</span>
           </Link>
           <div className="flex-1" />
-          <div className="flex items-center -mr-2">
+          <div className="flex items-center">
             {user && <NotificationsDropdown user={user} />}
             <MobileWishlistButton />
             <MobileCartDropdown />

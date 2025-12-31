@@ -48,47 +48,41 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
     )
   }
 
-  const TriggerContent = () => {
-    if (variant === "full") {
-      return (
-        <div
-          className={cn(
-            "h-11 px-3 text-xs font-semibold border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover transition-all flex items-center cursor-pointer",
-            className
-          )}
-        >
-          <div className="flex items-center gap-1.5" aria-hidden="true">
-            <div className="flex items-center justify-center text-header-text/90">
-              <UserCircle weight="fill" className="size-5" />
-            </div>
-            <div className="flex flex-col items-start leading-none gap-0.5">
-              <span className="text-2xs text-header-text/70 font-normal">
-                {t("hello")}
-              </span>
-              <span className="text-xs font-bold truncate max-w-[80px] lg:max-w-[120px]">
-                {user ? (user.user_metadata?.full_name || user.email?.split("@")[0] || "User") : t("signIn")}
-              </span>
-            </div>
-          </div>
+  const triggerContent = variant === "full" ? (
+    <div
+      className={cn(
+        "h-11 px-3 text-xs font-semibold border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover transition-all flex items-center cursor-pointer",
+        className
+      )}
+    >
+      <div className="flex items-center gap-1.5" aria-hidden="true">
+        <div className="flex items-center justify-center text-header-text/90">
+          <UserCircle weight="fill" className="size-5" />
         </div>
-      )
-    }
-
-    return (
-      <div
-        className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer", className)}
-      >
-        <UserCircle weight="fill" />
+        <div className="flex flex-col items-start leading-none gap-0.5">
+          <span className="text-2xs text-header-text/70 font-normal">
+            {t("hello")}
+          </span>
+          <span className="text-xs font-bold truncate max-w-[80px] lg:max-w-[120px]">
+            {user ? (user.user_metadata?.full_name || user.email?.split("@")[0] || "User") : t("signIn")}
+          </span>
+        </div>
       </div>
-    )
-  }
+    </div>
+  ) : (
+    <div
+      className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer", className)}
+    >
+      <UserCircle weight="fill" />
+    </div>
+  )
 
   // For authenticated users OR full variant, show the dropdown
   return (
     <HoverCard openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
         <Link href={user ? "/account" : "/auth/login"} className="block" aria-label={`${t("hello")}, ${user?.email?.split("@")[0] || t("signIn")}. ${t("accountAndLists")}`}>
-          <TriggerContent />
+          {triggerContent}
         </Link>
       </HoverCardTrigger>
       <HoverCardContent

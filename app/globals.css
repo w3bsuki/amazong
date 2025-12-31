@@ -103,6 +103,7 @@
   --page-inset: 0.5rem;          /* 8px - Mobile edge padding (matches px-2) */
   --page-inset-md: 0.75rem;      /* 12px - Tablet */
   --page-inset-lg: 1rem;         /* 16px - Desktop */
+  --icon-edge-offset: 0.25rem;   /* 4px - Negative margin for header icons to align with content */
 
   /* Form-specific spacing */
   --spacing-form: 1rem;
