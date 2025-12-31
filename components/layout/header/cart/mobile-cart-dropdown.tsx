@@ -73,12 +73,12 @@ export function MobileCartDropdown() {
                     </span>
                 </button>
             </DrawerTrigger>
-            <DrawerContent className="rounded-t-3xl">
+            <DrawerContent className="rounded-t-2xl">
                 <DrawerHeader className="pb-2 pt-0 border-b border-border text-left">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <ShoppingCart size={20} weight="regular" className="text-muted-foreground" />
-                            <DrawerTitle className="text-lg">{t('title')}</DrawerTitle>
+                            <ShoppingCart size={18} weight="regular" className="text-muted-foreground" />
+                            <DrawerTitle className="text-base">{t('title')}</DrawerTitle>
                             <span className="text-sm text-muted-foreground font-normal" suppressHydrationWarning>
                                 ({mounted ? totalItems : 0} {(mounted ? totalItems : 0) === 1 ? t('item') : t('items')})
                             </span>
@@ -98,24 +98,24 @@ export function MobileCartDropdown() {
                 </DrawerHeader>
 
                 {items.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center px-4 py-8">
-                        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-3">
-                            <ShoppingCart size={32} weight="regular" className="text-muted-foreground/50" />
+                    <div className="flex flex-col items-center justify-center px-(--page-inset) py-6">
+                        <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center mb-2">
+                            <ShoppingCart size={28} weight="regular" className="text-muted-foreground/50" />
                         </div>
-                        <p className="text-muted-foreground text-base mb-1">{t('empty')}</p>
-                        <p className="text-muted-foreground/70 text-sm">
+                        <p className="text-muted-foreground text-sm mb-1">{t('empty')}</p>
+                        <p className="text-muted-foreground/70 text-xs">
                             {locale === 'bg' ? 'Добавете продукти, за да започнете' : 'Add items to get started'}
                         </p>
                     </div>
                 ) : (
                     <>
                         {/* Cart Items - Scrollable area */}
-                        <div className={cn("flex-1 overflow-y-auto px-4 overscroll-contain", contentMaxHeight)}>
+                        <div className={cn("flex-1 overflow-y-auto px-(--page-inset) overscroll-contain", contentMaxHeight)}>
                             {items.map((item, index) => (
                                 <div 
                                     key={item.id} 
                                     className={cn(
-                                        "flex gap-3 py-3",
+                                        "flex gap-2 py-2",
                                         index !== items.length - 1 && "border-b border-border"
                                     )}
                                 >
@@ -124,7 +124,7 @@ export function MobileCartDropdown() {
                                         onClick={() => setOpen(false)}
                                         className="shrink-0"
                                     >
-                                        <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden">
+                                        <div className="w-14 h-14 bg-muted rounded-lg overflow-hidden">
                                             {item.image ? (
                                                 <Image
                                                     src={item.image}
@@ -207,7 +207,7 @@ export function MobileCartDropdown() {
                 <DrawerFooter className="border-t border-border">
                     {items.length === 0 ? (
                         <Link href="/search" onClick={() => setOpen(false)} className="w-full">
-                            <Button className="w-full h-12 text-base font-semibold bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+                            <Button className="w-full h-touch-lg text-sm font-semibold bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
                                 {t('startShopping')}
                             </Button>
                         </Link>
@@ -218,12 +218,12 @@ export function MobileCartDropdown() {
                                 <span className="text-lg font-bold text-foreground">{formatPrice(subtotal)}</span>
                             </div>
                             <Link href="/checkout" onClick={() => setOpen(false)} className="block">
-                                <Button className="w-full h-12 text-base font-semibold bg-cta-buy-now hover:bg-cta-buy-now/90 text-foreground">
+                                <Button className="w-full h-touch-lg text-sm font-semibold bg-cta-buy-now hover:bg-cta-buy-now/90 text-foreground">
                                     {t('checkout')}
                                 </Button>
                             </Link>
                             <Link href="/cart" onClick={() => setOpen(false)} className="block">
-                                <Button variant="outline" className="w-full h-11 text-sm font-medium">
+                                <Button variant="outline" className="w-full h-touch text-sm font-medium">
                                     {t('viewCart')} →
                                 </Button>
                             </Link>

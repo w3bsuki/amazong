@@ -47,15 +47,16 @@ export function CategoryCircleVisual({
   const imageUrl = hasMeaningfulImageUrl(category.image_url) ? category.image_url : null
   const icon = hasMeaningfulIcon(category.icon) ? category.icon : null
 
+  // Unified styling: brand-tinted backgrounds for visibility
   const base =
     variant === "menu"
-      ? "bg-card border border-border text-cta-trust-blue"
+      ? "bg-brand/10 border border-brand/20 text-brand"
       : variant === "rail"
-        ? "bg-secondary border border-border/40 text-primary"
-        : "bg-muted/60 text-foreground"
+        ? "bg-brand/10 border border-brand/20 text-brand"
+        : "bg-brand/10 border border-brand/20 text-brand" // muted now uses brand tint
 
   const activeStyles = active
-    ? "bg-brand text-white ring-2 ring-brand ring-offset-2 ring-offset-background border-transparent"
+    ? "bg-brand text-white border-brand shadow-sm"
     : ""
 
   return (
@@ -66,7 +67,7 @@ export function CategoryCircleVisual({
         base,
         activeStyles,
         // hover states (avoid when active)
-        !active && (variant === "menu" ? "hover:border-cta-trust-blue" : "hover:bg-muted"),
+        !active && "hover:bg-brand/20 hover:border-brand/30",
         className
       )}
     >
@@ -79,7 +80,7 @@ export function CategoryCircleVisual({
           className="h-full w-full object-cover"
         />
       ) : icon ? (
-        <span className="text-[22px] leading-none" aria-hidden="true">
+        <span className="text-lg leading-none" aria-hidden="true">
           {icon}
         </span>
       ) : (
@@ -87,7 +88,7 @@ export function CategoryCircleVisual({
           {getCategoryIcon(category.slug, {
             size: fallbackIconSize,
             weight: fallbackIconWeight,
-            className: cn(active ? "text-white" : undefined),
+            className: cn(active ? "text-white" : "text-brand"),
           })}
         </span>
       )}

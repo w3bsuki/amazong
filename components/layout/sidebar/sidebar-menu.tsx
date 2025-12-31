@@ -85,7 +85,7 @@ function HamburgerCategoryCirclesInner({
     const displayCategories = categories.slice(0, 20)
 
     return (
-        <section id="sidebar-categories" className="px-4 py-4">
+        <section id="sidebar-categories" className="px-(--page-inset) py-3">
             {isLoading && categories.length === 0 ? (
                 <div className="grid grid-cols-4 gap-y-6 gap-x-2">
                     {Array.from({ length: 8 }).map((_, i) => (
@@ -211,7 +211,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                 className="p-0 bg-background text-foreground gap-0 flex flex-col h-full w-[85vw] max-w-[300px] border-r border-border/50 rounded-none shadow-none"
             >
                 {/* Header - Account area */}
-                <div className="relative bg-brand px-4 py-4 shrink-0 overflow-hidden">
+                <div className="relative bg-brand px-(--page-inset) py-3 shrink-0 overflow-hidden">
                     <div className="relative flex items-center justify-between gap-2">
                         {/* Profile info */}
                         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -316,7 +316,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                 </div>
 
                 {/* Search Bar */}
-                <div className="px-4 py-3 bg-background border-b border-border/40">
+                <div className="px-(--page-inset) py-2 bg-background border-b border-border/40">
                     <div className="relative group">
                         <MagnifyingGlass size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-brand transition-colors" />
                         <Input
@@ -336,7 +336,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                     <div className="flex flex-col pb-8">
                         {/* Auth Actions - Only when not logged in */}
                         {!isLoggedIn && (
-                            <div className="px-4 py-4 border-b border-border/40">
+                            <div className="px-(--page-inset) py-3 border-b border-border/40">
                                 <div className="grid grid-cols-2 gap-3">
                                     <Link
                                         href="/auth/login"
@@ -358,7 +358,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                         )}
 
                         {/* Quick Actions */}
-                        <div className="px-4 py-4 border-b border-border/40">
+                        <div className="px-(--page-inset) py-3 border-b border-border/40">
                             {isLoggedIn ? (
                                 <div className="grid grid-cols-4 gap-3">
                                     <Link
@@ -443,7 +443,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
 
                 {/* Footer actions */}
                 <div className="shrink-0 border-t border-border/50 bg-muted/10 pb-safe">
-                    <div className="px-4 py-3">
+                    <div className="px-(--page-inset) py-2">
                         <div className="grid grid-cols-2 gap-3">
                             <Link
                                 href="/customer-service"

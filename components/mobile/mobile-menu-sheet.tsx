@@ -74,11 +74,11 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
           </DrawerHeader>
 
           {/* Scrollable Content with safe area */}
-          <div className="flex-1 overflow-y-auto overscroll-contain px-4 max-h-[calc(90dvh-70px)] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+          <div className="flex-1 overflow-y-auto overscroll-contain px-(--page-inset) max-h-[calc(90dvh-70px)] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
             
             {/* Categories Section - circles grid */}
-            <section className="pt-4">
-              <div className="flex items-center justify-between mb-4">
+            <section className="pt-3">
+              <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-foreground">
                   {locale === 'bg' ? 'Пазарувай по категория' : 'Shop by Category'}
                 </h3>

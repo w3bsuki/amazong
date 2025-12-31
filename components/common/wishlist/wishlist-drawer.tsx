@@ -77,13 +77,13 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
 
     return (
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="rounded-t-3xl">
+        <DrawerContent className="rounded-t-2xl">
           {/* Header */}
           <DrawerHeader className="pb-2 pt-0 border-b border-border text-left">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Heart size={20} weight="fill" className="text-deal" />
-                <DrawerTitle className="text-lg">{t("title")}</DrawerTitle>
+                <Heart size={18} weight="fill" className="text-deal" />
+                <DrawerTitle className="text-base">{t("title")}</DrawerTitle>
                 <span className="text-sm text-muted-foreground font-normal" suppressHydrationWarning>
                   ({mounted ? totalItems : 0})
                 </span>
@@ -108,17 +108,17 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
               <div className="size-8 border-2 border-muted border-t-brand rounded-full animate-spin" />
             </div>
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
-              <div className="size-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                <Heart size={32} weight="duotone" className="text-muted-foreground" />
+            <div className="flex flex-col items-center justify-center py-8 px-(--page-inset) text-center">
+              <div className="size-14 bg-muted rounded-full flex items-center justify-center mb-3">
+                <Heart size={28} weight="duotone" className="text-muted-foreground" />
               </div>
-              <h3 className="text-base font-semibold text-foreground mb-1">
+              <h3 className="text-sm font-semibold text-foreground mb-1">
                 {t("empty")}
               </h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-xs text-muted-foreground mb-3">
                 {t("emptyDescription")}
               </p>
-              <Button asChild size="sm" className="gap-2" onClick={() => setOpen(false)}>
+              <Button asChild size="sm" className="gap-2 h-touch" onClick={() => setOpen(false)}>
                 <Link href="/search">
                   {t("startShopping")}
                   <ArrowRight size={16} />
@@ -128,12 +128,12 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
           ) : (
             <>
               {/* Scrollable Items */}
-              <div className={cn("overflow-y-auto overscroll-contain px-4 py-3", contentMaxHeight)}>
+              <div className={cn("overflow-y-auto overscroll-contain px-(--page-inset) py-2", contentMaxHeight)}>
                 <div className="space-y-3">
                   {items.map((item) => (
                     <div 
                       key={item.id}
-                      className="flex gap-3 p-2 bg-secondary/50 rounded-xl"
+                      className="flex gap-2 p-1.5 bg-secondary/50 rounded-lg"
                     >
                       {/* Image */}
                       <Link 
@@ -141,7 +141,7 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
                         onClick={() => setOpen(false)}
                         className="shrink-0"
                       >
-                        <div className="relative size-20 bg-background rounded-lg overflow-hidden border border-border">
+                        <div className="relative size-16 bg-background rounded-lg overflow-hidden border border-border">
                           <Image
                             src={item.image}
                             alt={item.title}

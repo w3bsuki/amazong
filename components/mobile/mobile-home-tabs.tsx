@@ -527,13 +527,13 @@ export function MobileHomeTabs({
           >
             {/* Back Button (when showing L2) */}
             {showL2Circles && (
-              <div className="flex flex-col items-center gap-1.5 shrink-0 snap-start w-[72px]">
+              <div className="flex flex-col items-center gap-1 shrink-0 snap-start w-14">
                 <button
                   type="button"
                   onClick={handleBackToL1}
-                  className="size-14 rounded-full bg-muted/60 flex items-center justify-center hover:bg-muted transition-colors duration-100"
+                  className="size-10 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center hover:bg-brand/20 transition-colors duration-100"
                 >
-                  <CaretLeft size={24} weight="bold" className="text-foreground" aria-hidden="true" />
+                  <CaretLeft size={20} weight="bold" className="text-brand" aria-hidden="true" />
                   <span className="sr-only">{locale === "bg" ? "Назад" : "Back"}</span>
                 </button>
                 <span className="text-2xs text-center leading-tight text-muted-foreground w-full font-medium">
@@ -557,12 +557,12 @@ export function MobileHomeTabs({
                   onClick={() => handleCircleClick(sub)}
                   active={isActive}
                   dimmed={dimmed}
-                  circleClassName="size-14"
-                  fallbackIconSize={26}
+                  circleClassName="size-10"
+                  fallbackIconSize={20}
                   fallbackIconWeight={isActive ? "fill" : "regular"}
                   variant="muted"
                   label={getCategoryShortName(sub, locale)}
-                  className={cn("w-[72px]", "transition-opacity duration-100")}
+                  className={cn("w-14", "transition-opacity duration-100")}
                   labelClassName={cn(
                     "text-2xs text-center leading-tight line-clamp-2 w-full font-medium",
                     isActive ? "text-brand" : "text-muted-foreground"
