@@ -1,15 +1,7 @@
-import { NextResponse } from "next/server"
 import { getProductsByCategorySlug, toUI } from "@/lib/data/products"
+import { noStoreJson } from "@/lib/api/response-helpers"
 import { cookies } from "next/headers"
 import type { ShippingRegion } from "@/lib/shipping"
-
-function noStoreJson(data: unknown, init?: ResponseInit) {
-  const res = NextResponse.json(data, init)
-  res.headers.set("Cache-Control", "private, no-store")
-  res.headers.set("CDN-Cache-Control", "private, no-store")
-  res.headers.set("Vercel-CDN-Cache-Control", "private, no-store")
-  return res
-}
 
 export async function GET(
   request: Request,

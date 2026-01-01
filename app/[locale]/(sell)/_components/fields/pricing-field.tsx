@@ -228,8 +228,8 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
 
   // Fetch price suggestions (stub - would connect to API)
   useEffect(() => {
-    // TODO: Fetch actual price suggestions based on category
-    // For now, this is disabled
+    // Stub: Price suggestion API not implemented yet
+    // Would query historical prices by category/condition to suggest pricing
   }, [categoryId]);
 
   const handleApplyPrice = useCallback((priceValue: number) => {

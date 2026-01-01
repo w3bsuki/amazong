@@ -4,7 +4,7 @@ import { createServerClient } from "@supabase/ssr"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
 import type { NextRequest, NextResponse } from "next/server"
-import type { Database } from "@/types/database.types"
+import type { Database } from "@/lib/supabase/database.types"
 
 // =============================================================================
 // Supabase Clients - Use the right one for your context

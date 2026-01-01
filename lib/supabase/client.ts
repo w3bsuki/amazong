@@ -1,7 +1,7 @@
 import 'client-only'
 
 import { createBrowserClient } from "@supabase/ssr"
-import type { Database } from "@/types/database.types"
+import type { Database } from "@/lib/supabase/database.types"
 
 let supabaseInstance: ReturnType<typeof createBrowserClient<Database>> | null = null
 

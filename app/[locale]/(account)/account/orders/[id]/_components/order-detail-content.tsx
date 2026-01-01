@@ -192,7 +192,8 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
     }
 
     setIsSubmitting(true)
-    // TODO: Implement return request server action
+    // Stub: Return request feature needs backend API endpoint and RLS policies
+    // When implemented, call: await requestReturn(selectedItem.id, returnReason)
     await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
     setIsSubmitting(false)
     
@@ -211,7 +212,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
     (sum, item) => sum + (item.price_at_purchase * item.quantity),
     0
   )
-  const shipping = 0 // TODO: Get from order
+  const shipping = 0 // Stub: Shipping cost stored in order.shipping_cost when checkout flow includes shipping calculator
   const total = Number(order.total_amount)
 
   const shippingAddress = order.shipping_address?.address

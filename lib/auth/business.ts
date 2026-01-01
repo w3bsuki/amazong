@@ -722,7 +722,11 @@ export async function getPendingTasksCount(sellerId: string) {
   
   const supabase = await createClient()
   
-  const [unfulfilledResult, lowStockResult] = await Promise.all([
+  // Get date 7 days ago for "recent" reviews
+  const sevenDaysAgo = new Date()
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+  
+  const [unfulfilledResult, lowStockResult, recentReviewsResult] = await Promise.all([
     // Count unfulfilled orders (pending status)
     supabase
       .from('order_items')
@@ -737,12 +741,19 @@ export async function getPendingTasksCount(sellerId: string) {
       .eq('seller_id', sellerId)
       .gt('stock', 0)
       .lte('stock', 10),
+    
+    // Count recent reviews on seller's products (last 7 days)
+    supabase
+      .from('reviews')
+      .select('id, products!inner(seller_id)', { count: 'exact', head: true })
+      .eq('products.seller_id', sellerId)
+      .gte('created_at', sevenDaysAgo.toISOString()),
   ])
   
   return {
     unfulfilled: unfulfilledResult.count || 0,
     lowStock: lowStockResult.count || 0,
-    pendingReviews: 0, // TODO: Add when reviews table is set up
+    recentReviews: recentReviewsResult.count || 0,
   }
 }
 
@@ -778,8 +789,8 @@ export async function getSetupProgress(sellerId: string) {
     hasDescription: Boolean(profile?.bio && profile.bio.length > 10),
     hasLogo: Boolean(profile?.avatar_url),
     hasUsername: Boolean(profile?.username),
-    hasShippingSetup: true, // TODO: Add shipping settings
-    hasPaymentSetup: true, // TODO: Add payout settings
+    hasShippingSetup: true, // Stub: No shipping_settings table yet - will check seller_shipping_profiles when added
+    hasPaymentSetup: true, // Stub: No payout_settings table yet - will check stripe_connect_accounts when added
   }
 }
 

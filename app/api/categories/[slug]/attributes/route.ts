@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
-import type { Database } from "@/types/database.types";
+import type { Database } from "@/lib/supabase/database.types";
 
 // Use service role for this public endpoint to bypass RLS
 const supabase = createAdminClient();

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 
-import type { Database } from "@/types/database.types"
+import type { Database } from "@/lib/supabase/database.types"
 
 import type { Seller, SellerQueryResult } from "./top-sellers-types"
 

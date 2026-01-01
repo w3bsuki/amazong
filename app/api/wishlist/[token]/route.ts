@@ -1,16 +1,8 @@
-import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { noStoreJson } from "@/lib/api/response-helpers"
 import type { Database } from "@/lib/supabase/database.types"
 
 type SharedWishlistRow = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
-
-function noStoreJson(data: unknown, init?: ResponseInit) {
-  const res = NextResponse.json(data, init)
-  res.headers.set("Cache-Control", "private, no-store")
-  res.headers.set("CDN-Cache-Control", "private, no-store")
-  res.headers.set("Vercel-CDN-Cache-Control", "private, no-store")
-  return res
-}
 
 export async function GET(
   _req: Request,

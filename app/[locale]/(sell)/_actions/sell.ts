@@ -22,17 +22,6 @@ export type CreateListingResult =
       upgradeRequired?: boolean
     }
 
-const listingInfoRowsSchema = z
-  .array(
-    z
-      .object({
-        max_listings: z.number(),
-        current_listings: z.number(),
-      })
-      .passthrough(),
-  )
-  .min(1)
-
 export async function createListing(args: { sellerId: string; data: unknown }): Promise<CreateListingResult> {
   const schema = z.object({ sellerId: z.string().min(1), data: z.unknown() })
   const parsedArgs = schema.safeParse(args)
@@ -75,27 +64,32 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     return { success: false, error: "You must set up a username to sell items" }
   }
 
-  // Enforce listing limit (same RPC used by route handler)
-  const { data: limitInfo } = await supabase.rpc("get_seller_listing_info", {
-    seller_uuid: user.id,
-  })
+  // Enforce listing limit using direct queries (no RPC needed)
+  const [{ count: currentListings }, { data: subscription }] = await Promise.all([
+    supabase
+      .from("products")
+      .select("*", { count: "exact", head: true })
+      .eq("seller_id", user.id)
+      .eq("status", "active"),
+    supabase
+      .from("subscriptions")
+      .select("plan_type, subscription_plans!inner(max_listings)")
+      .eq("seller_id", user.id)
+      .eq("status", "active")
+      .single(),
+  ])
 
-  const parsedListingInfo = listingInfoRowsSchema.safeParse(limitInfo)
-  if (parsedListingInfo.success) {
-    const info = parsedListingInfo.data[0]
-    if (info) {
-    const isUnlimited = info.max_listings === -1
-    const remaining = isUnlimited
-      ? Number.POSITIVE_INFINITY
-      : Math.max(info.max_listings - info.current_listings, 0)
-    if (!isUnlimited && remaining <= 0) {
-      return {
-        success: false,
-        error: "LISTING_LIMIT_REACHED",
-        message: `You have reached your listing limit (${info.current_listings} of ${info.max_listings}). Please upgrade your plan to add more listings.`,
-        upgradeRequired: true,
-      }
-    }
+  const subPlan = subscription?.subscription_plans as unknown as { max_listings: number } | null
+  const maxListings = subPlan?.max_listings ?? 10
+  const isUnlimited = maxListings === -1
+  const remaining = isUnlimited ? Number.POSITIVE_INFINITY : Math.max(maxListings - (currentListings ?? 0), 0)
+
+  if (!isUnlimited && remaining <= 0) {
+    return {
+      success: false,
+      error: "LISTING_LIMIT_REACHED",
+      message: `You have reached your listing limit (${currentListings} of ${maxListings}). Please upgrade your plan to add more listings.`,
+      upgradeRequired: true,
     }
   }
 

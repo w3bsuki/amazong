@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 interface TasksCount {
   unfulfilled: number
   lowStock: number
-  pendingReviews: number
+  recentReviews: number
 }
 
 interface BusinessTaskCardsProps {
@@ -39,8 +39,8 @@ const taskConfig = [
     iconColor: "text-orange-600 dark:text-orange-400",
   },
   {
-    key: "pendingReviews" as const,
-    label: "reviews",
+    key: "recentReviews" as const,
+    label: "new reviews",
     href: "/dashboard/reviews",
     icon: IconStar,
     bgColor: "bg-blue-50 dark:bg-blue-950/30",

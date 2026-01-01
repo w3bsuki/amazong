@@ -41,7 +41,7 @@ export function MobileQuickSpecs({
         </span>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 snap-x pb-1">
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-3 px-3 snap-x pb-1">
         {visibleSpecs.map((attr, index) => (
           <div
             key={index}

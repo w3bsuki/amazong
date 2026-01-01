@@ -11,7 +11,7 @@ import { SellersNote } from "@/components/shared/product/sellers-note";
 import { TrustBadges } from "@/components/shared/product/trust-badges";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
-import type { Database } from "@/types/database.types";
+import type { Database } from "@/lib/supabase/database.types";
 import type { CustomerReview } from "@/components/shared/product/customer-reviews-hybrid";
 import type { SubmitReviewFn } from "@/components/shared/product/write-review-dialog";
 
@@ -163,6 +163,9 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                 />
 
                 <ProductBuyBox
+                  productId={product.id}
+                  productSlug={productSlug}
+                  sellerUsername={username}
                   product={{
                     name: product.title,
                     price: {
@@ -175,7 +178,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                     store: storeForBuyBox,
                     images: viewModel.galleryImages.map((img) => ({ src: img.src, alt: img.alt })),
                     shipping: {
-                      text: product.free_shipping ? "Free shipping" : "Shipping calculated at checkout",
+                      text: !product.pickup_only ? "Free shipping" : "Shipping calculated at checkout",
                       canShip: true,
                     },
                     returns: "30 days returns. Buyer pays for return shipping.",

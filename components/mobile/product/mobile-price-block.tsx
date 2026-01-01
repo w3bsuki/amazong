@@ -42,24 +42,25 @@ export function MobilePriceBlock({
   return (
     <div className="flex flex-col gap-0.5">
       {/* Price Row */}
-      <div className="flex items-baseline gap-2 flex-wrap">
-        {/* Sale Price - LARGEST element per design system: 18px (text-lg) bold */}
-        <span className={`text-lg font-bold tracking-tight ${hasDiscount ? "text-price-sale" : "text-foreground"}`}>
+      <div className="flex items-baseline gap-1.5 flex-wrap">
+        {/* Sale Price - text-xl (20px) bold - balanced for mobile */}
+        <span className={`text-xl font-bold ${hasDiscount ? "text-red-600 dark:text-red-500" : "text-foreground"}`}>
           {formatPrice(salePrice)}
           {showVat && <span className="text-xs font-normal text-muted-foreground ml-1">{t.inclVat}</span>}
         </span>
 
-        {/* Original Price - text-tiny (11px) struck through */}
+        {/* Original Price - text-xs (12px) struck through */}
         {hasDiscount && (
-          <span className="text-tiny text-muted-foreground line-through">
+          <span className="text-xs text-muted-foreground line-through decoration-muted-foreground/60">
             {formatPrice(regularPrice)}
           </span>
         )}
 
-        {/* Discount Badge - text-2xs (10px) */}
+        {/* Discount Badge - text-[10px] */}
         {hasDiscount && discountPercent > 0 && (
           <Badge 
-            className="bg-discount-badge-bg text-discount-badge-text text-2xs font-semibold px-1.5 py-0.5 h-5 rounded border-none hover:bg-discount-badge-bg"
+            variant="secondary"
+            className="h-5 px-1.5 text-[10px] font-bold rounded-sm bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-100 border-none shadow-none"
           >
             -{discountPercent}%
           </Badge>

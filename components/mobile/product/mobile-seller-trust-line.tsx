@@ -53,7 +53,7 @@ export function MobileSellerTrustLine({
   return (
     <Link
       href={href}
-      className="flex items-center gap-2.5 py-2.5 px-4 bg-seller-banner active:bg-seller-banner/90 transition-colors duration-100 group my-2"
+      className="flex items-center gap-2.5 py-2.5 px-4 bg-seller-banner active:bg-seller-banner/90 group my-2"
     >
       {/* Avatar */}
       <Avatar className="size-9 border-2 border-white/30 shrink-0">

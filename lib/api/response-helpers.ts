@@ -106,3 +106,32 @@ export function paginatedResponse<T>(
     page,
   }, profile)
 }
+
+/**
+ * Create a JSON response with no-store cache headers.
+ * Use for private/user-specific data that should never be cached.
+ */
+export function noStoreJson(data: unknown, init?: ResponseInit): NextResponse {
+  const res = NextResponse.json(data, init)
+  res.headers.set("Cache-Control", "private, no-store")
+  res.headers.set("CDN-Cache-Control", "private, no-store")
+  res.headers.set("Vercel-CDN-Cache-Control", "private, no-store")
+  return res
+}
+
+/**
+ * Require authenticated user from Supabase.
+ * Returns [null, errorResponse] if unauthenticated, [user, null] otherwise.
+ */
+export async function requireAuth(
+  supabase: { auth: { getUser: () => Promise<{ data: { user: { id: string; email?: string | undefined } | null }; error: unknown }> } } | null
+): Promise<[{ id: string; email?: string | undefined } | null, NextResponse | null]> {
+  if (!supabase) {
+    return [null, NextResponse.json({ error: "Not authenticated" }, { status: 401 })]
+  }
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return [null, NextResponse.json({ error: "Not authenticated" }, { status: 401 })]
+  }
+  return [user, null]
+}

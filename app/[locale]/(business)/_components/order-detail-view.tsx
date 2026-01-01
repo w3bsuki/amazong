@@ -161,7 +161,8 @@ export function OrderDetailView({
 
   const handleStatusUpdate = async (newStatus: string) => {
     setIsLoading(true)
-    // TODO: Implement status update action
+    // Stub: Use updateOrderItemStatus action when order_item_id is available in this component
+    // Currently the order-status-actions component handles this for individual items
     toast.success(`Order marked as ${newStatus}`)
     setIsLoading(false)
     router.refresh()

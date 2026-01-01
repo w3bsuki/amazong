@@ -1,21 +1,7 @@
 import { createStaticClient } from "@/lib/supabase/server"
 import { normalizeImageUrls } from "@/lib/normalize-image-url"
 import { NextResponse } from "next/server"
-
-// Public, query-string keyed endpoint. Align caching with next.config.ts cacheLife.products
-const CACHE_TTL_SECONDS = 300
-const CACHE_STALE_WHILE_REVALIDATE = 60
-
-function cachedJsonResponse(data: unknown, init?: ResponseInit) {
-  const res = NextResponse.json(data, init)
-  res.headers.set(
-    "Cache-Control",
-    `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`
-  )
-  res.headers.set("CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
-  res.headers.set("Vercel-CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
-  return res
-}
+import { cachedJsonResponse } from "@/lib/api/response-helpers"
 
 export async function GET(request: Request) {
   try {

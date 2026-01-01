@@ -2,7 +2,7 @@ import 'server-only'
 
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from "@/lib/supabase/server"
-import type { Database } from "@/types/database.types"
+import type { Database } from "@/lib/supabase/database.types"
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"]
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"]

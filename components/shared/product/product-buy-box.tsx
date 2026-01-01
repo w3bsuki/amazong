@@ -23,6 +23,8 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useCart } from "@/components/providers/cart-context";
+import { useToast } from "@/hooks/use-toast";
 
 // --- Types ---
 
@@ -64,6 +66,12 @@ const formSchema = z.object({
 type FormType = z.infer<typeof formSchema>;
 
 interface ProductBuyBoxProps {
+  /** Product ID for cart operations */
+  productId: string;
+  /** Product slug for URLs */
+  productSlug?: string;
+  /** Seller username for URLs */
+  sellerUsername?: string;
   product: {
     name: string;
     price: price;
@@ -85,8 +93,11 @@ interface ProductBuyBoxProps {
   };
 }
 
-export function ProductBuyBox({ product }: ProductBuyBoxProps) {
+export function ProductBuyBox({ productId, productSlug, sellerUsername, product }: ProductBuyBoxProps) {
   const locale = useLocale();
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+  
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -104,8 +115,24 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
 
   const stockInfo = selectedItem?.stockInfo;
 
-  const onSubmit = (_data: FormType) => {
-    // TODO: Implement add to cart functionality
+  const onSubmit = (data: FormType) => {
+    const currentPrice = product.price.sale ?? product.price.regular ?? 0;
+    const primaryImage = product.images[0]?.src ?? "";
+    
+    addToCart({
+      id: productId,
+      title: product.name,
+      price: currentPrice,
+      image: primaryImage,
+      quantity: data.quantity,
+      ...(productSlug ? { slug: productSlug } : {}),
+      ...(sellerUsername ? { username: sellerUsername } : {}),
+    });
+    
+    toast({
+      title: "Added to cart",
+      description: `${data.quantity}x ${product.name}`,
+    });
   };
 
   return (

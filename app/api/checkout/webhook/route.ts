@@ -175,11 +175,11 @@ export async function POST(req: Request) {
         }
       }
 
-      // Send buyer confirmation email (placeholder - integrate with email service)
+      // Send buyer confirmation email
+      // Future: Integrate with Resend or SendGrid when email service is set up
+      // await sendOrderConfirmationEmail(session.customer_details.email, order);
       if (session.customer_details?.email) {
-        console.log('Would send confirmation email to:', session.customer_details.email);
-        // TODO: Integrate with email service (Resend, SendGrid, etc.)
-        // await sendOrderConfirmationEmail(session.customer_details.email, order);
+        console.log('Order confirmation pending email setup:', session.customer_details.email);
       }
 
     } catch (error) {

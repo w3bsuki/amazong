@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
     // 2. Check if user has a username (required to sell)
     const { data: profile } = await supabaseUser
       .from("profiles")
-      .select("id, username, display_name, business_name")
+      .select("id, username, display_name, business_name, tier")
       .eq("id", user.id)
       .single()
 
@@ -145,28 +145,37 @@ export async function POST(request: NextRequest) {
     }
 
     // 2.5. Check listing limit before proceeding
-    const { data: limitInfo } = await supabaseUser.rpc('get_seller_listing_info', {
-      seller_uuid: user.id
-    })
+    // Get listing count and profile tier, then look up plan limits
+    const [productCountResult, planResult] = await Promise.all([
+      supabaseUser
+        .from("products")
+        .select("*", { count: "exact", head: true })
+        .eq("seller_id", user.id)
+        .eq("status", "active"),
+      // Get plan limits based on profile tier (free/premium/business)
+      supabaseUser
+        .from("subscription_plans")
+        .select("max_listings")
+        .eq("tier", profile.tier || "free")
+        .maybeSingle()
+    ])
     
-    if (limitInfo && limitInfo.length > 0) {
-      const info = limitInfo.at(0)
-      if (!info) {
-        // Continue without limit enforcement if response is unexpectedly empty
-      } else {
-      // max_listings=-1 means unlimited
-      const isUnlimited = info.max_listings === -1
-      const remaining = isUnlimited ? 999 : Math.max(info.max_listings - info.current_listings, 0)
-      if (!isUnlimited && remaining <= 0) {
-        return applyCookies(NextResponse.json({ 
-          error: "LISTING_LIMIT_REACHED",
-          message: `You have reached your listing limit (${info.current_listings} of ${info.max_listings}). Please upgrade your plan to add more listings.`,
-          currentCount: info.current_listings,
-          maxAllowed: info.max_listings,
-          upgradeRequired: true
-        }, { status: 403 }))
-      }
-      }
+    const currentListings = productCountResult.count ?? 0
+    // Default to free tier limits (5 listings) if no plan found
+    const maxListings = planResult.data?.max_listings ?? 5
+    
+    // max_listings=-1 means unlimited
+    const isUnlimited = maxListings === -1
+    const remaining = isUnlimited ? 999 : Math.max(maxListings - currentListings, 0)
+    
+    if (!isUnlimited && remaining <= 0) {
+      return applyCookies(NextResponse.json({ 
+        error: "LISTING_LIMIT_REACHED",
+        message: `You have reached your listing limit (${currentListings} of ${maxListings}). Please upgrade your plan to add more listings.`,
+        currentCount: currentListings,
+        maxAllowed: maxListings,
+        upgradeRequired: true
+      }, { status: 403 }))
     }
 
     let body;
@@ -177,16 +186,6 @@ export async function POST(request: NextRequest) {
     }
     
     // 3. Parse and validate request body
-    console.log("[Products Create] Request body received:", {
-      title: body?.title?.slice(0, 50),
-      categoryId: body?.categoryId,
-      price: body?.price,
-      quantity: body?.quantity,
-      stock: body?.stock,
-      imagesCount: body?.images?.length,
-      attributesCount: body?.attributes?.length,
-    })
-    
     const parseResult = productSchema.safeParse(body)
 
     if (!parseResult.success) {
@@ -254,11 +253,6 @@ export async function POST(request: NextRequest) {
       free_shipping: data.freeShipping ?? false,
       attributes: attributesJson,
     }
-    
-    console.log("[Products Create] Inserting product:", {
-      ...productData,
-      images: `[${imageUrls.length} images]`,
-    })
     
     const { data: product, error } = await supabaseAdmin
       .from("products")

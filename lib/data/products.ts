@@ -430,6 +430,83 @@ function filterByZone<T extends {
   return limit ? filtered.slice(0, limit) : filtered
 }
 
+/**
+ * Normalize raw Supabase query row to Product type.
+ * This helper reduces duplication across API routes by handling the
+ * common field mapping (seller -> seller_profile, categories.slug -> category_slug, etc.)
+ */
+export function normalizeProductRow(p: {
+  id: string
+  title: string
+  price: number
+  seller_id?: string | null
+  list_price?: number | null
+  is_on_sale?: boolean | null
+  sale_percent?: number | null
+  sale_end_date?: string | null
+  rating?: number | null
+  review_count?: number | null
+  images?: string[] | null
+  product_images?: Array<{
+    image_url: string
+    thumbnail_url?: string | null
+    display_order?: number | null
+    is_primary?: boolean | null
+  }> | null
+  product_attributes?: Array<{ name: string; value: string }> | null
+  is_boosted?: boolean | null
+  boost_expires_at?: string | null
+  slug?: string | null
+  attributes?: unknown
+  seller?: {
+    id?: string | null
+    username?: string | null
+    display_name?: string | null
+    business_name?: string | null
+    avatar_url?: string | null
+    tier?: string | null
+    account_type?: string | null
+    is_verified_business?: boolean | null
+  } | null
+  categories?: {
+    id?: string
+    slug?: string
+    name?: string
+    name_bg?: string | null
+    icon?: string | null
+    parent?: unknown
+  } | null
+}): Product {
+  const result: Product = {
+    id: p.id,
+    title: p.title,
+    price: p.price,
+    seller_id: p.seller_id ?? null,
+    list_price: p.list_price ?? null,
+    is_on_sale: p.is_on_sale ?? null,
+    sale_percent: p.sale_percent ?? null,
+    sale_end_date: p.sale_end_date ?? null,
+    rating: p.rating ?? null,
+    review_count: p.review_count ?? null,
+    images: p.images ?? null,
+    product_images: p.product_images ?? null,
+    product_attributes: p.product_attributes ?? null,
+    is_boosted: p.is_boosted ?? null,
+    boost_expires_at: p.boost_expires_at ?? null,
+    slug: p.slug ?? null,
+    store_slug: p.seller?.username ?? null,
+    category_slug: p.categories?.slug ?? null,
+    categories: p.categories ?? null,
+    seller_profile: p.seller ?? null,
+  }
+  // Handle optional attributes separately to satisfy exactOptionalPropertyTypes
+  const attrs = p.attributes
+  if (attrs != null) {
+    (result as { attributes: typeof attrs }).attributes = attrs
+  }
+  return result
+}
+
 /** Transform to UI format */
 export function toUI(p: Product): UIProduct {
   const attrs = buildAttributesMap(p)

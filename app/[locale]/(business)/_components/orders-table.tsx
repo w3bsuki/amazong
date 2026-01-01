@@ -276,7 +276,8 @@ export function OrdersTable({
 
   const handleBulkStatusUpdate = async (newStatus: string) => {
     _setIsLoading(true)
-    // TODO: Implement bulk status update action
+    // Stub: Need bulkUpdateOrderItemsStatus action in app/actions/orders.ts
+    // Would iterate selectedIds and call updateOrderItemStatus for each
     toast.success(`${selectedIds.size} order(s) updated to ${newStatus}`)
     setSelectedIds(new Set())
     setIsAllSelected(false)

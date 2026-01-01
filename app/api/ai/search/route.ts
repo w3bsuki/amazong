@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server"
-import { z } from "zod"
 import {
   convertToModelMessages,
   stepCountIs,
@@ -7,156 +6,16 @@ import {
   tool,
   type UIMessage,
 } from "ai"
-import { createStaticClient } from "@/lib/supabase/server"
-import { getProductUrl } from "@/lib/url-utils"
 import { AI_CONFIG } from "@/lib/ai/config"
 import { getAiModel } from "@/lib/ai/providers"
 import { compactUIMessages } from "@/lib/ai/ui-messages"
-import type { PostgrestError } from "@supabase/supabase-js"
+import {
+  searchProductsInput,
+  searchProducts,
+  TOP_CATEGORIES,
+} from "@/lib/ai/search-utils"
 
 export const maxDuration = 30
-
-// Type for raw product data from DB query
-interface ProductQueryRow {
-  id: string
-  title: string | null
-  price: number
-  images: string[] | null
-  slug: string | null
-  seller: { username: string | null } | null
-}
-
-const nonNegativeNumberFromString = z.preprocess(
-  (v) => {
-    if (v === undefined || v === null) return
-    if (typeof v === "number") return v
-    if (typeof v === "string") {
-      const trimmed = v.trim()
-      if (!trimmed) return
-      const n = Number(trimmed)
-      return Number.isFinite(n) ? n : v
-    }
-    return v
-  },
-  z.number().nonnegative().optional(),
-)
-
-const searchProductsInput = z.object({
-  query: z
-    .string()
-    .min(1)
-    .describe("What the user is searching for, e.g. 'used car' or 'honda civic'")
-    .optional(),
-  categorySlug: z
-    .string()
-    .describe("Category slug to filter by, e.g. 'electronics', 'fashion', 'automotive'. Use getCategories tool first to see available options.")
-    .optional(),
-  // Accept numeric strings too (some providers emit numbers as strings)
-  minPrice: nonNegativeNumberFromString,
-  maxPrice: nonNegativeNumberFromString,
-  limit: z.coerce.number().int().min(1).max(20).default(8),
-})
-
-type SearchProductsInput = z.infer<typeof searchProductsInput>
-
-type UiProduct = {
-  id: string
-  title: string
-  price: number
-  images: string[]
-  slug: string | null
-  storeSlug: string | null
-  url: string
-}
-
-// TOP-LEVEL CATEGORY SLUGS (embedded to avoid token-burning DB fetch)
-// Keep this list small—just the main marketplace verticals.
-const TOP_CATEGORIES = [
-  { slug: "electronics", name: "Electronics" },
-  { slug: "fashion", name: "Fashion & Clothing" },
-  { slug: "automotive", name: "Automotive & Vehicles" },
-  { slug: "home-garden", name: "Home & Garden" },
-  { slug: "sports", name: "Sports & Outdoors" },
-  { slug: "beauty", name: "Beauty & Personal Care" },
-  { slug: "toys-games", name: "Toys & Games" },
-  { slug: "books-media", name: "Books & Media" },
-  { slug: "collectibles", name: "Collectibles & Art" },
-  { slug: "other", name: "Other" },
-] as const
-
-// TOKEN-OPTIMIZED product search: minimal fields, capped output.
-async function searchProducts({ query, categorySlug, minPrice, maxPrice, limit }: SearchProductsInput) {
-  const supabase = createStaticClient()
-  const effectiveLimit = Math.min(limit, 6) // cap to avoid bloat
-
-  // If categorySlug provided, resolve to category ID
-  let categoryId: string | null = null
-  if (categorySlug) {
-    const { data: catData } = await supabase
-      .from("categories")
-      .select("id")
-      .eq("slug", categorySlug)
-      .single()
-    categoryId = catData?.id ?? null
-  }
-
-  // MINIMAL select: only what the UI card needs
-  const buildBaseQuery = () => {
-    let dbQuery = supabase
-      .from("products")
-      .select(`id, title, price, images, slug, seller:profiles(username)`)
-      .order("created_at", { ascending: false })
-      .limit(effectiveLimit)
-
-    if (categoryId) dbQuery = dbQuery.eq("category_id", categoryId)
-    if (typeof minPrice === "number") dbQuery = dbQuery.gte("price", minPrice)
-    if (typeof maxPrice === "number") dbQuery = dbQuery.lte("price", maxPrice)
-    return dbQuery
-  }
-
-  const trimmedQuery = (query ?? "").trim()
-  let data: ProductQueryRow[] | null = null
-  let error: PostgrestError | null = null
-
-  if (trimmedQuery) {
-    const ftsResult = await buildBaseQuery().textSearch("search_vector", trimmedQuery, { type: "websearch" })
-    data = ftsResult.data
-    error = ftsResult.error
-
-    if (error || !data?.length) {
-      const searchPattern = `%${trimmedQuery}%`
-      const fallback = await buildBaseQuery().or(`title.ilike.${searchPattern},description.ilike.${searchPattern}`)
-      data = fallback.data
-      error = fallback.error
-    }
-  } else {
-    const base = await buildBaseQuery()
-    data = base.data
-    error = base.error
-  }
-
-  if (error) {
-    console.error("AI searchProducts error:", error)
-    return { products: [] as UiProduct[] }
-  }
-
-  // Build minimal product objects for the model (~150 tokens max total)
-  const products: UiProduct[] = (data ?? []).map((p) => {
-    const storeSlug = p?.seller?.username ?? null
-    const images = Array.isArray(p?.images) ? p.images.slice(0, 1) : []
-    return {
-      id: p.id,
-      title: (p.title ?? "").slice(0, 80),
-      price: p.price,
-      images,
-      slug: p?.slug ?? null,
-      storeSlug,
-      url: getProductUrl({ id: p.id, slug: p?.slug, storeSlug, username: storeSlug }),
-    }
-  })
-
-  return { products }
-}
 
 export async function POST(req: Request) {
   try {

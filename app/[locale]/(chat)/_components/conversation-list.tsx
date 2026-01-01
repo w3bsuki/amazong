@@ -185,7 +185,8 @@ function ConversationItem({
   const hasUnread = unreadCount > 0
 
   const lastMessage = conversation.last_message
-  const isOwnMessage = false // TODO: Check if last message was sent by current user
+  // Stub: Need to expose currentUserId from message-context to compare with last_message.sender_id
+  const isOwnMessage = false
 
   // Format last message preview
   let lastMessagePreview = ""

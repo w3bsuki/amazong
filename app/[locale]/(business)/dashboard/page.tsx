@@ -51,7 +51,7 @@ export default async function BusinessDashboardPage() {
       <BusinessQuickActions />
       
       {/* Compact Activity & Task Badges Row */}
-      {(stats.liveActivity?.currentVisitors > 0 || stats.liveActivity?.cartAdds > 0 || tasks.unfulfilled > 0 || tasks.lowStock > 0 || tasks.pendingReviews > 0) && (
+      {(stats.liveActivity?.currentVisitors > 0 || stats.liveActivity?.cartAdds > 0 || tasks.unfulfilled > 0 || tasks.lowStock > 0 || tasks.recentReviews > 0) && (
         <div className="flex items-center gap-3 px-4 lg:px-6 flex-wrap">
           <BusinessLiveActivity
             currentVisitors={stats.liveActivity?.currentVisitors || 0}

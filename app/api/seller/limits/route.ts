@@ -34,50 +34,34 @@ export async function GET(request: NextRequest) {
       store_name: profile.display_name || profile.business_name || profile.username,
     }
 
-    // Get listing info using the helper function
-    const { data: limitInfo, error: limitError } = await supabase.rpc(
-      "get_seller_listing_info",
-      { seller_uuid: user.id }
-    )
-
-    if (limitError) {
-      console.error("Error fetching limit info:", limitError)
-      // Fallback to manual count
-      const { count } = await supabase
+    // Get listing info using direct queries (no RPC needed)
+    const [{ count: currentListings }, { data: subscription }] = await Promise.all([
+      supabase
         .from("products")
         .select("*", { count: "exact", head: true })
         .eq("seller_id", user.id)
+        .eq("status", "active"),
+      supabase
+        .from("subscriptions")
+        .select("plan_type, subscription_plans!inner(max_listings, tier)")
+        .eq("seller_id", user.id)
+        .eq("status", "active")
+        .single(),
+    ])
 
-      return json({
-        sellerId: seller.id,
-        storeName: seller.store_name,
-        tier: seller.tier || "free",
-        accountType: seller.account_type || "personal",
-        currentListings: count || 0,
-        maxListings: 50, // Default free tier
-        remainingListings: Math.max(50 - (count || 0), 0),
-        isUnlimited: false,
-        canAddListing: (count || 0) < 50,
-        needsUpgrade: (count || 0) >= 50,
-      })
-    }
-
-    // DB returns: { current_listings, max_listings, tier }
-    const info = limitInfo?.[0] || {
-      current_listings: 0,
-      max_listings: 50,
-      tier: 'free',
-    }
-    const isUnlimited = info.max_listings === -1
-    const remaining = isUnlimited ? 999 : Math.max(info.max_listings - info.current_listings, 0)
+    const subPlan = subscription?.subscription_plans as unknown as { max_listings: number; tier: string } | null
+    const maxListings = subPlan?.max_listings ?? 50
+    const tier = subPlan?.tier ?? "free"
+    const isUnlimited = maxListings === -1
+    const remaining = isUnlimited ? 999 : Math.max(maxListings - (currentListings ?? 0), 0)
 
     return json({
       sellerId: seller.id,
       storeName: seller.store_name,
-      tier: info.tier || "free",
+      tier,
       accountType: seller.account_type || "personal",
-      currentListings: info.current_listings,
-      maxListings: info.max_listings,
+      currentListings: currentListings ?? 0,
+      maxListings,
       remainingListings: remaining,
       isUnlimited,
       canAddListing: isUnlimited || remaining > 0,

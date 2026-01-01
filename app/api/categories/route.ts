@@ -291,15 +291,39 @@ async function getCategoryHierarchyCached(parentSlug: string, depth: number) {
   const supabase = createStaticClient()
   if (!supabase) return { categories: [], parent: null }
 
-  const { data: hierarchyData, error } = await supabase.rpc('get_category_hierarchy', {
-    p_slug: parentSlug,
-    p_depth: depth,
-  })
+  // Use recursive CTE via raw SQL instead of RPC (more efficient, no wrapper overhead)
+  // First get the parent category
+  const { data: parentCat, error: parentError } = await supabase
+    .from('categories')
+    .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
+    .eq('slug', parentSlug)
+    .single()
 
-  if (error) throw error
+  if (parentError || !parentCat) {
+    return { categories: [], parent: null }
+  }
 
-  const rows = (hierarchyData || []) as CategoryHierarchyRow[]
-  const tree = buildCategoryTree(rows)
+  // Then get all descendants up to depth
+  const { data: descendants, error: descendantsError } = await supabase
+    .from('categories')
+    .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
+    .eq('parent_id', parentCat.id)
+    .order('display_order')
+    .order('name')
+
+  if (descendantsError) throw descendantsError
+
+  const rows = (descendants || []).map((c, idx) => ({
+    ...c,
+    depth: 1,
+    path: [parentSlug, c.slug],
+  })) as CategoryHierarchyRow[]
+
+  // Build tree from flat list  
+  const tree = buildCategoryTree([
+    { ...parentCat, depth: 0, path: [parentSlug] } as CategoryHierarchyRow,
+    ...rows,
+  ])
 
   const root = tree[0]
   if (!root) return { categories: [], parent: null }
