@@ -49,22 +49,22 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
 
     return (
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="max-h-[90dvh] rounded-t-2xl">
-          {/* Header */}
-          <DrawerHeader className="pb-2 pt-0 border-b border-border">
+        <DrawerContent className="max-h-[90dvh]">
+          {/* Header - Compact with proper touch target for close */}
+          <DrawerHeader className="py-2 px-(--page-inset) border-b border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <SquaresFour size={18} weight="regular" className="text-muted-foreground" />
-                <DrawerTitle className="text-base font-semibold">
+                <DrawerTitle>
                   {locale === 'bg' ? 'Категории' : 'Categories'}
                 </DrawerTitle>
               </div>
               <DrawerClose asChild>
                 <button 
-                  className="flex items-center justify-center h-touch w-touch -mr-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted touch-action-manipulation"
+                  className="flex items-center justify-center size-touch -mr-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/70 transition-colors touch-action-manipulation tap-transparent"
                   aria-label="Close menu"
                 >
-                  <X size={18} weight="regular" />
+                  <X size={20} weight="regular" />
                 </button>
               </DrawerClose>
             </div>
@@ -74,10 +74,10 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
           </DrawerHeader>
 
           {/* Scrollable Content with safe area */}
-          <div className="flex-1 overflow-y-auto overscroll-contain px-(--page-inset) max-h-[calc(90dvh-70px)] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+          <div className="flex-1 overflow-y-auto overscroll-contain px-(--page-inset) pb-[max(1rem,env(safe-area-inset-bottom))]">
             
             {/* Categories Section - circles grid */}
-            <section className="pt-3">
+            <section className="py-3">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-foreground">
                   {locale === 'bg' ? 'Пазарувай по категория' : 'Shop by Category'}
@@ -85,17 +85,17 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
                 <Link 
                   href="/categories" 
                   onClick={() => setOpen(false)}
-                  className="text-xs text-cta-trust-blue font-medium hover:underline underline-offset-2 flex items-center gap-1 min-h-touch-xs"
+                  className="text-xs text-cta-trust-blue font-medium hover:underline underline-offset-2 flex items-center gap-0.5 min-h-touch-xs px-1 -mr-1 rounded transition-colors active:bg-muted/50"
                 >
                   {locale === 'bg' ? 'Виж всички' : 'See all'}
-                  <CaretRight size={10} weight="bold" />
+                  <CaretRight size={12} weight="bold" />
                 </Link>
               </div>
 
               {/* Intentionally no debug UI / query toggles here. */}
               
-              {/* Category Circles Grid - 4 columns */}
-              <div className="grid grid-cols-4 gap-y-5 gap-x-1.5">
+              {/* Category Circles Grid - 4 columns with proper spacing */}
+              <div className="grid grid-cols-4 gap-y-4 gap-x-2">
                 {categories.slice(0, 16).map((cat) => {
                   return (
                     <CategoryCircle
@@ -103,12 +103,12 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
                       category={cat}
                       href={`/categories/${cat.slug}`}
                       onClick={() => setOpen(false)}
-                      circleClassName="size-12"
-                      fallbackIconSize={24}
+                      circleClassName="size-14"
+                      fallbackIconSize={26}
                       fallbackIconWeight="regular"
                       variant="menu"
                       label={getShortName(cat)}
-                      labelClassName="text-2xs font-medium text-center text-muted-foreground leading-tight line-clamp-2 max-w-[72px]"
+                      labelClassName="text-2xs font-medium text-center text-muted-foreground leading-tight line-clamp-2 max-w-[72px] mt-1"
                     />
                   )
                 })}

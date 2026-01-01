@@ -17,9 +17,9 @@ export type BadgeCategory =
   | "verification"
   | "subscription"
 
-export type BadgeAccountType = "personal" | "business" | "buyer" | "all"
+type BadgeAccountType = "personal" | "business" | "buyer" | "all"
 
-export interface BadgeCriteria {
+interface BadgeCriteria {
   // Listing criteria
   min_listings?: number
   max_listings?: number
@@ -74,7 +74,7 @@ export interface BadgeDefinition {
   created_at: string | null
 }
 
-export interface UserBadge {
+interface UserBadge {
   id: string
   user_id: string
   badge_id: string
@@ -91,7 +91,7 @@ export interface UserBadge {
 // VERIFICATION TYPES
 // =====================================================
 
-export type IdDocumentType = "passport" | "id_card" | "drivers_license"
+type IdDocumentType = "passport" | "id_card" | "drivers_license"
 
 export interface UserVerification {
   id: string
@@ -134,7 +134,7 @@ export interface BusinessVerification {
 // STATS TYPES
 // =====================================================
 
-export interface SellerStats {
+interface SellerStats {
   seller_id: string
   total_listings: number | null
   active_listings: number | null
@@ -157,7 +157,7 @@ export interface SellerStats {
   updated_at: string | null
 }
 
-export interface BuyerStats {
+interface BuyerStats {
   user_id: string
   total_orders: number | null
   total_spent: number | null
@@ -178,7 +178,7 @@ export interface BuyerStats {
 // FEEDBACK TYPES
 // =====================================================
 
-export interface SellerFeedback {
+interface SellerFeedback {
   id: string
   buyer_id: string
   seller_id: string
@@ -199,7 +199,7 @@ export interface SellerFeedback {
   }
 }
 
-export interface BuyerFeedback {
+interface BuyerFeedback {
   id: string
   seller_id: string
   buyer_id: string
@@ -234,7 +234,7 @@ export interface DisplayBadge {
   category: BadgeCategory
 }
 
-export interface TrustScoreBreakdown {
+interface TrustScoreBreakdown {
   verification: number
   performance: number
   total: number
@@ -248,7 +248,7 @@ export interface BadgeProgress {
   targetValue: number
 }
 
-export interface SellerProfileBadges {
+interface SellerProfileBadges {
   verification: DisplayBadge[]
   rating: DisplayBadge[]
   milestone: DisplayBadge[]
@@ -256,7 +256,7 @@ export interface SellerProfileBadges {
   subscription: DisplayBadge | null
 }
 
-export interface BuyerProfileBadges {
+interface BuyerProfileBadges {
   verification: DisplayBadge[]
   milestone: DisplayBadge[]
   rating: DisplayBadge[]
@@ -267,13 +267,13 @@ export interface BuyerProfileBadges {
 // API RESPONSE TYPES
 // =====================================================
 
-export interface BadgeEvaluationResult {
+interface BadgeEvaluationResult {
   awarded: BadgeDefinition[]
   revoked: BadgeDefinition[]
   progress: BadgeProgress[]
 }
 
-export interface VerificationStatus {
+interface VerificationStatus {
   user: UserVerification | null
   business: BusinessVerification | null
   trustScore: number

@@ -247,4 +247,4 @@ export function SellHeader({
  * Memoized SellHeader - Optimized to prevent unnecessary re-renders.
  * Use this when the header is rendered frequently (e.g., in form context).
  */
-export const MemoizedSellHeader = memo(SellHeader);
+const MemoizedSellHeader = memo(SellHeader);

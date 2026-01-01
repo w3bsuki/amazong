@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import type { Database } from "@/lib/supabase/database.types"
+
+type CategoryAttribute = Database["public"]["Tables"]["category_attributes"]["Row"]
 
 function normalizeAttrKey(value: unknown): string {
   return String(value ?? "")
@@ -127,7 +130,7 @@ export async function GET(request: Request) {
     })
 
     const seenKeys = new Set<string>()
-    const deduplicatedAttributes: any[] = []
+    const deduplicatedAttributes: CategoryAttribute[] = []
 
     for (const attr of sortedAttributes) {
       const nameKey = normalizeAttrKey(attr.name)

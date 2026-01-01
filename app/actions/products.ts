@@ -480,7 +480,7 @@ export async function bulkDeleteProducts(productIds: string[]): Promise<ActionRe
 /**
  * Quick update product stock
  */
-export async function updateProductStock(
+async function updateProductStock(
   productId: string, 
   stock: number
 ): Promise<ActionResult> {

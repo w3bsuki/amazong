@@ -77,7 +77,7 @@ export function getCityLabel(value: string, locale: string = 'en'): string {
 /**
  * City values for Zod enum validation
  */
-export const CITY_VALUES = BULGARIAN_CITIES.map(c => c.value) as [string, ...string[]];
+const CITY_VALUES = BULGARIAN_CITIES.map(c => c.value) as [string, ...string[]];
 
 /**
  * Quick lookup map for validation
@@ -87,6 +87,6 @@ export const CITY_VALUE_SET = new Set(BULGARIAN_CITIES.map(c => c.value));
 /**
  * Validate if a value is a valid city
  */
-export function isValidCity(value: string): boolean {
+function isValidCity(value: string): boolean {
   return CITY_VALUE_SET.has(value);
 }

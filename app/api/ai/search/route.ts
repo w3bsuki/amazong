@@ -12,8 +12,19 @@ import { getProductUrl } from "@/lib/url-utils"
 import { AI_CONFIG } from "@/lib/ai/config"
 import { getAiModel } from "@/lib/ai/providers"
 import { compactUIMessages } from "@/lib/ai/ui-messages"
+import type { PostgrestError } from "@supabase/supabase-js"
 
 export const maxDuration = 30
+
+// Type for raw product data from DB query
+interface ProductQueryRow {
+  id: string
+  title: string | null
+  price: number
+  images: string[] | null
+  slug: string | null
+  seller: { username: string | null } | null
+}
 
 const nonNegativeNumberFromString = z.preprocess(
   (v) => {
@@ -104,8 +115,8 @@ async function searchProducts({ query, categorySlug, minPrice, maxPrice, limit }
   }
 
   const trimmedQuery = (query ?? "").trim()
-  let data: any[] | null = null
-  let error: any = null
+  let data: ProductQueryRow[] | null = null
+  let error: PostgrestError | null = null
 
   if (trimmedQuery) {
     const ftsResult = await buildBaseQuery().textSearch("search_vector", trimmedQuery, { type: "websearch" })
@@ -130,7 +141,7 @@ async function searchProducts({ query, categorySlug, minPrice, maxPrice, limit }
   }
 
   // Build minimal product objects for the model (~150 tokens max total)
-  const products: UiProduct[] = (data ?? []).map((p: any) => {
+  const products: UiProduct[] = (data ?? []).map((p) => {
     const storeSlug = p?.seller?.username ?? null
     const images = Array.isArray(p?.images) ? p.images.slice(0, 1) : []
     return {

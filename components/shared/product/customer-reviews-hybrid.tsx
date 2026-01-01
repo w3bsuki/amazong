@@ -66,9 +66,9 @@ export function CustomerReviewsHybrid({
   };
 
   return (
-    <section className="mt-6 rounded-md bg-muted/20 p-3 lg:p-4 border border-border/50">
-      <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
-        <h2 className="text-xl lg:text-2xl font-bold text-foreground tracking-tight">{t.title}</h2>
+    <section className="mt-4 rounded-md bg-muted/20 p-3 border border-border/50">
+      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+        <h2 className="text-lg font-bold text-foreground tracking-tight">{t.title}</h2>
         <div className="flex items-center gap-3">
           {productId && submitReview && (
             <WriteReviewDialog
@@ -90,37 +90,37 @@ export function CustomerReviewsHybrid({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[320px_1fr]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[240px_1fr]">
         {/* Summary */}
-        <div className="space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="relative flex h-24 w-24 items-center justify-center rounded-full border-[6px] border-primary text-3xl font-bold text-foreground">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2.5">
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-full border-4 border-primary text-2xl font-bold text-foreground">
               {safeRating.toFixed(1)}
             </div>
             <div>
-              <div className="flex gap-0.5 text-rating mb-2" aria-label={`Rating ${safeRating.toFixed(1)} out of 5`}>
+              <div className="flex gap-0.5 text-rating mb-1" aria-label={`Rating ${safeRating.toFixed(1)} out of 5`}>
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`h-5 w-5 ${i < Math.round(safeRating) ? "fill-current" : "text-muted-foreground/20"}`} />
+                  <Star key={i} className={`h-4 w-4 ${i < Math.round(safeRating) ? "fill-current" : "text-muted-foreground/20"}`} />
                 ))}
               </div>
-              <div className="text-xs text-muted-foreground font-semibold uppercase tracking-widest">
+              <div className="text-2xs text-muted-foreground font-medium">
                 {t.basedOn} {safeCount} {t.reviews}
               </div>
             </div>
           </div>
 
-          <div className="space-y-3 bg-background/50 p-4 rounded-md border border-border/30">
+          <div className="space-y-2 bg-background/50 p-3 rounded-md border border-border/30">
             {[5, 4, 3, 2, 1].map((star) => {
               const count = distribution[star - 1] ?? 0;
               const pct = safeCount > 0 ? (count / safeCount) * 100 : 0;
               return (
-                <div key={star} className="flex items-center gap-3 text-xs">
-                  <div className="flex items-center gap-1 w-10">
-                    <Star className="h-3.5 w-3.5 fill-rating text-rating" />
-                    <span className="font-bold text-foreground">{star}</span>
+                <div key={star} className="flex items-center gap-2 text-xs">
+                  <div className="flex items-center gap-0.5 w-8">
+                    <Star className="h-3 w-3 fill-rating text-rating" />
+                    <span className="font-medium text-foreground">{star}</span>
                   </div>
-                  <Progress value={pct} className="h-2 bg-muted [&>div]:bg-primary" />
-                  <span className="w-10 text-right text-muted-foreground font-bold">{count}</span>
+                  <Progress value={pct} className="h-1.5 flex-1 bg-muted [&>div]:bg-primary" />
+                  <span className="w-6 text-right text-muted-foreground text-2xs">{count}</span>
                 </div>
               );
             })}
@@ -147,31 +147,29 @@ export function CustomerReviewsHybrid({
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               {reviews.map((review) => {
                 const author = review.user?.display_name || review.user?.username || "User";
                 return (
                   <Card key={review.id} className="border border-border/50 bg-background rounded-md overflow-hidden">
-                    <CardContent className="p-5">
-                      <div className="flex items-center justify-between mb-3">
+                    <CardContent className="p-3">
+                      <div className="flex items-center justify-between mb-2">
                         <div className="flex text-rating gap-0.5" aria-label={`${review.rating} out of 5`}>
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`h-3.5 w-3.5 ${i < review.rating ? "fill-current" : "text-muted-foreground/20"}`} />
+                            <Star key={i} className={`h-3 w-3 ${i < review.rating ? "fill-current" : "text-muted-foreground/20"}`} />
                           ))}
                         </div>
-                        <span className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">
+                        <span className="text-2xs text-muted-foreground">
                           {formatDate(review.created_at)}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-3 mb-3">
-                        <Avatar className="h-8 w-8 border border-border">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Avatar className="h-6 w-6 border border-border">
                           <AvatarImage src={review.user?.avatar_url || undefined} alt={author} />
                           <AvatarFallback className="text-2xs">{initials(author)}</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0">
-                          <div className="font-semibold text-foreground text-sm truncate">{author}</div>
-                        </div>
+                        <span className="font-medium text-foreground text-sm truncate">{author}</span>
                       </div>
 
                       {review.comment ? (

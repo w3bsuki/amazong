@@ -226,7 +226,7 @@ export async function requestPasswordReset(
   return { success: true }
 }
 
-export async function resetPassword(
+async function resetPassword(
   locale: string,
   prevState: AuthActionState,
   formData: FormData

@@ -188,7 +188,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
 }
 
 // Helper function to transform orders/products into activity items
-export function transformToActivityItems(
+function transformToActivityItems(
   orders: Array<{
     id: string
     created_at: string

@@ -891,4 +891,4 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
  * @see useSellForm - Hook for form state access
  * @see useSellFormContext - Hook for context access
  */
-export const MemoizedAttributesField = memo(AttributesField);
+const MemoizedAttributesField = memo(AttributesField);

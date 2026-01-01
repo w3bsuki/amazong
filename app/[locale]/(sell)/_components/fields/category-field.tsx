@@ -156,4 +156,4 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
  * @see useSellForm - Hook for form state access
  * @see useSellFormContext - Hook for context access
  */
-export const MemoizedCategoryField = memo(CategoryField);
+const MemoizedCategoryField = memo(CategoryField);

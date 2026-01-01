@@ -197,7 +197,7 @@ const categoryIconComponents: Record<string, PhosphorIcon> = {
   default: Package,
 }
 
-export function getCategoryIconForSlug(slug: string): PhosphorIcon {
+function getCategoryIconForSlug(slug: string): PhosphorIcon {
   const direct = categoryIconComponents[slug]
   if (direct) return direct
 
@@ -439,13 +439,13 @@ export const megaMenuIconMap: Record<string, React.ReactNode> = {
 /**
  * Get subheader icon (size 16)
  */
-export function getSubheaderIcon(slug: string): React.ReactNode {
+function getSubheaderIcon(slug: string): React.ReactNode {
   return subheaderIconMap[slug] || <Package size={16} weight="regular" />
 }
 
 /**
  * Get mega menu icon (size 20 with mega-menu-icon class)
  */
-export function getMegaMenuIcon(slug: string): React.ReactNode {
+function getMegaMenuIcon(slug: string): React.ReactNode {
   return megaMenuIconMap[slug] || <ShoppingBag size={20} weight="regular" className="mega-menu-icon" />
 }

@@ -36,7 +36,7 @@ export function getSupabaseAnonKey(): string {
   return getRequiredEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY')
 }
 
-export function getSupabaseServiceRoleKey(): string {
+function getSupabaseServiceRoleKey(): string {
   return getRequiredEnvVar('SUPABASE_SERVICE_ROLE_KEY')
 }
 
@@ -64,26 +64,26 @@ export function getStripePublishableKey(): string {
 // Application Configuration
 // =============================================================================
 
-export function getAppUrl(): string {
+function getAppUrl(): string {
   return getRequiredEnvVar('NEXT_PUBLIC_APP_URL')
 }
 
-export function getAuthCookieDomain(): string | undefined {
+function getAuthCookieDomain(): string | undefined {
   return process.env.AUTH_COOKIE_DOMAIN
 }
 
-export function getSupabaseFetchTimeout(): number {
+function getSupabaseFetchTimeout(): number {
   const value = process.env.SUPABASE_FETCH_TIMEOUT_MS
   if (!value) return 8000
   const parsed = Number.parseInt(value, 10)
   return Number.isFinite(parsed) ? parsed : 8000
 }
 
-export function isProduction(): boolean {
+function isProduction(): boolean {
   return process.env.NODE_ENV === 'production'
 }
 
-export function isDevelopment(): boolean {
+function isDevelopment(): boolean {
   return process.env.NODE_ENV === 'development'
 }
 
@@ -95,7 +95,7 @@ export function isDevelopment(): boolean {
  * Get validated Supabase configuration.
  * Throws at startup if required vars are missing.
  */
-export function getSupabaseConfig() {
+function getSupabaseConfig() {
   return {
     url: getSupabaseUrl(),
     anonKey: getSupabaseAnonKey(),
@@ -106,7 +106,7 @@ export function getSupabaseConfig() {
  * Get validated Stripe configuration.
  * Throws at startup if required vars are missing.
  */
-export function getStripeConfig() {
+function getStripeConfig() {
   return {
     secretKey: getStripeSecretKey(),
     publishableKey: getStripePublishableKey(),

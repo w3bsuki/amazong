@@ -185,4 +185,4 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
  * @see useSellForm - Hook for form state access
  * @see useSellFormContext - Hook for context access
  */
-export const MemoizedConditionField = memo(ConditionField);
+const MemoizedConditionField = memo(ConditionField);

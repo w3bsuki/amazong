@@ -123,7 +123,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24 pt-14 lg:hidden">
+    <div className="min-h-screen bg-background pb-24 pt-12 lg:hidden">
       {/* Mobile Product Header */}
       <MobileProductHeader />
 
@@ -162,6 +162,15 @@ export function MobileProductPage(props: MobileProductPageProps) {
           salePrice={Number(product.price ?? 0)}
           regularPrice={product.list_price != null ? Number(product.list_price) : null}
           currency="BGN"
+        />
+      </div>
+
+      {/* Category Badge - Above fold with key info */}
+      <div className="px-4 pt-2">
+        <CategoryBadge
+          locale={locale}
+          category={rootCategory}
+          subcategory={category}
         />
       </div>
 
@@ -213,15 +222,6 @@ export function MobileProductPage(props: MobileProductPageProps) {
           />
         </div>
       )}
-
-      {/* Category Badge */}
-      <div className="px-4 py-2">
-        <CategoryBadge
-          locale={locale}
-          category={rootCategory}
-          subcategory={category}
-        />
-      </div>
 
       {/* Trust Block */}
       <div className="border-t border-border/50 mt-1">

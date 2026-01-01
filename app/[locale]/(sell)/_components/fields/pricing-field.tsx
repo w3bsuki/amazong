@@ -471,4 +471,4 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
  * @see useSellForm - Hook for form state access
  * @see useSellFormContext - Hook for context access
  */
-export const MemoizedPricingField = memo(PricingField);
+const MemoizedPricingField = memo(PricingField);

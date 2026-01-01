@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldCheck, RotateCcw, Truck, CreditCard, BadgeCheck, Lock } from "lucide-react";
+import { ShieldCheck, RotateCcw, Truck, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MobileTrustBlockProps {
@@ -10,6 +10,12 @@ interface MobileTrustBlockProps {
   freeReturns?: boolean;
 }
 
+/**
+ * MobileTrustBlock - Trust signals row
+ * 
+ * Uses neutral backgrounds with colored icons for proper contrast
+ * per WCAG 2.2 AA (avoiding blue-on-blue, green-on-green patterns)
+ */
 export function MobileTrustBlock({
   locale = "en",
   verifiedSeller,
@@ -33,42 +39,38 @@ export function MobileTrustBlock({
       icon: ShieldCheck,
       label: t.buyerProtection,
       desc: t.buyerProtectionDesc,
-      color: "text-verified",
-      bgColor: "bg-verified/10",
+      iconColor: "text-verified",
     },
     {
       icon: RotateCcw,
       label: t.returns,
       desc: freeReturns ? (locale === "bg" ? "Безплатно" : "Free") : t.returnsDesc,
-      color: "text-success",
-      bgColor: "bg-success/10",
+      iconColor: "text-success",
     },
     {
       icon: Truck,
       label: t.shipping,
       desc: freeShipping ? t.shippingDescFree : t.shippingDescStd,
-      color: freeShipping ? "text-shipping-free" : "text-muted-foreground",
-      bgColor: freeShipping ? "bg-shipping-free/10" : "bg-muted",
+      iconColor: freeShipping ? "text-shipping-free" : "text-muted-foreground",
     },
     {
       icon: Lock,
       label: t.securePayment,
       desc: t.securePaymentDesc,
-      color: "text-info",
-      bgColor: "bg-info/10",
+      iconColor: "text-info",
     },
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-2 py-3 px-3 bg-muted/30 rounded-lg mx-4 my-2 border border-border/50">
+    <div className="grid grid-cols-4 gap-2 py-3 px-3 bg-muted/30 mx-4 my-2 rounded-md border border-border/50">
       {trustItems.map((item, index) => (
         <div
           key={index}
           className="flex flex-col items-center text-center gap-1"
         >
-          {/* Icon container: 32px (h-8) secondary touch target */}
-          <div className={cn("size-8 rounded-lg flex items-center justify-center", item.bgColor)}>
-            <item.icon className={cn("size-4", item.color)} />
+          {/* Icon container: neutral bg with colored icon for proper contrast */}
+          <div className="size-8 rounded-md bg-muted flex items-center justify-center">
+            <item.icon className={cn("size-4", item.iconColor)} />
           </div>
           <div className="flex flex-col">
             <span className="text-2xs font-semibold text-foreground leading-tight">

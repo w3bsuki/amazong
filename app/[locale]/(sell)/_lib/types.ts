@@ -30,7 +30,7 @@ export interface Seller {
 /**
  * Category-specific attribute definition
  */
-export interface CategoryAttribute {
+interface CategoryAttribute {
   id: string;
   category_id: string;
   name: string;
@@ -47,7 +47,7 @@ export interface CategoryAttribute {
 /**
  * Custom attribute key-value pair
  */
-export interface CustomAttribute {
+interface CustomAttribute {
   name: string;
   value: string;
 }
@@ -55,7 +55,7 @@ export interface CustomAttribute {
 /**
  * Product image with positioning
  */
-export interface ProductImage {
+interface ProductImage {
   url: string;
   thumbnailUrl?: string;
   position: number;
@@ -76,4 +76,4 @@ export const TAG_OPTIONS = [
   { value: "eco-friendly", label: "Eco-Friendly", labelBg: "Еко", color: "bg-success", description: "Environmentally friendly" },
 ] as const;
 
-export type TagOption = typeof TAG_OPTIONS[number];
+type TagOption = typeof TAG_OPTIONS[number];

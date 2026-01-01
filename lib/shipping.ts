@@ -150,7 +150,7 @@ export function getDeliveryEstimate(
 /**
  * Get formatted delivery label
  */
-export function getDeliveryLabel(
+function getDeliveryLabel(
   sellerCountryCode: string,
   buyerRegion: ShippingRegion,
   locale: string = 'en'
@@ -216,7 +216,7 @@ export const SHIPPING_REGIONS: Record<ShippingRegion, { en: string; bg: string }
 /**
  * Get region display name
  */
-export function getRegionName(region: ShippingRegion, locale: string = 'en'): string {
+function getRegionName(region: ShippingRegion, locale: string = 'en'): string {
   return SHIPPING_REGIONS[region]?.[locale as 'en' | 'bg'] || SHIPPING_REGIONS[region]?.en || region;
 }
 

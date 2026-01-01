@@ -104,7 +104,7 @@ export const getImageLoadingStrategy = (index: number, threshold: number = 4): {
  * Image sizing configuration for responsive images
  * Returns optimized sizes prop based on component usage
  */
-export const imageSizes = {
+const imageSizes = {
   productCard: {
     default: "(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw",
     grid: "(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 20vw",
@@ -121,7 +121,7 @@ export const imageSizes = {
  * Placeholder SVG for missing images
  * Returns a branded placeholder with the Treido logo style
  */
-export const placeholderSvg = (): string => {
+const placeholderSvg = (): string => {
   const svg = `
     <svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
       <rect width="400" height="400" fill="#f3f4f6"/>

@@ -212,7 +212,7 @@ export function BusinessPerformanceScore({
 }
 
 // Calculate performance score from metrics
-export function calculatePerformanceScore(stats: {
+function calculatePerformanceScore(stats: {
   orders: number
   products: number
   views: number

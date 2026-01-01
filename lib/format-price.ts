@@ -8,7 +8,7 @@
 export const BASE_CURRENCY = 'EUR' as const
 
 export type SupportedCurrency = 'EUR' | 'USD'
-export type SupportedLocale = 'en' | 'bg'
+type SupportedLocale = 'en' | 'bg'
 
 interface FormatPriceOptions {
   locale?: string

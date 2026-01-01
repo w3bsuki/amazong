@@ -123,7 +123,7 @@ export function useBadges(): UseBadgesResult {
 /**
  * Hook to fetch another user's public badges
  */
-export function usePublicBadges(userId: string | null) {
+function usePublicBadges(userId: string | null) {
   const [badges, setBadges] = useState<BadgeWithMeta[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

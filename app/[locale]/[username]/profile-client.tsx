@@ -32,6 +32,52 @@ import {
 import { ProductCard } from "@/components/shared/product/product-card"
 import { FollowSellerButton } from "@/components/seller/follow-seller-button"
 
+// =============================================================================
+// Types - Match the data shape from lib/data/profile-page.ts
+// =============================================================================
+
+interface ProfileProduct {
+  id: string
+  title: string
+  slug: string | null
+  price: number
+  list_price: number | null
+  images: string[] | null
+  rating: number | null
+  review_count: number | null
+  created_at: string
+  is_boosted: boolean | null
+  seller_id: string | null
+  condition: string | null
+}
+
+interface ReviewPerson {
+  username: string | null
+  display_name: string | null
+  avatar_url: string | null
+}
+
+interface SellerReview {
+  id: string
+  rating: number
+  comment: string | null
+  item_as_described: boolean | null
+  shipping_speed: boolean | null
+  communication: boolean | null
+  created_at: string
+  buyer: ReviewPerson | null
+}
+
+interface BuyerReview {
+  id: string
+  rating: number
+  comment: string | null
+  payment_promptness: boolean | null
+  communication: boolean | null
+  created_at: string
+  seller: ReviewPerson | null
+}
+
 interface PublicProfileClientProps {
   profile: {
     id: string
@@ -55,11 +101,11 @@ interface PublicProfileClientProps {
     follower_count?: number
     created_at: string
   }
-  products: any[]
+  products: ProfileProduct[]
   productCount: number
-  sellerReviews: any[]
+  sellerReviews: SellerReview[]
   sellerReviewCount: number
-  buyerReviews: any[]
+  buyerReviews: BuyerReview[]
   buyerReviewCount: number
   isOwnProfile: boolean
   isFollowing: boolean
@@ -360,7 +406,7 @@ export function PublicProfileClient({
                         originalPrice={product.list_price}
                         sellerId={product.seller_id}
                         slug={product.slug}
-                        condition={product.condition}
+                        {...(product.condition ? { condition: product.condition } : {})}
                         username={profile.username}
                         sellerName={displayName}
                         sellerAvatarUrl={profile.avatar_url}
@@ -399,7 +445,7 @@ export function PublicProfileClient({
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
                           <Avatar className="size-10">
-                            <AvatarImage src={review.buyer?.avatar_url} />
+                            <AvatarImage src={review.buyer?.avatar_url ?? undefined} />
                             <AvatarFallback>
                               {(review.buyer?.display_name || review.buyer?.username || "?").slice(0, 2).toUpperCase()}
                             </AvatarFallback>
@@ -464,7 +510,7 @@ export function PublicProfileClient({
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
                           <Avatar className="size-10">
-                            <AvatarImage src={review.seller?.avatar_url} />
+                            <AvatarImage src={review.seller?.avatar_url ?? undefined} />
                             <AvatarFallback>
                               {(review.seller?.display_name || review.seller?.username || "?").slice(0, 2).toUpperCase()}
                             </AvatarFallback>
@@ -484,12 +530,12 @@ export function PublicProfileClient({
                             <div className="flex items-center gap-2 mt-1">
                               <StarRating rating={review.rating} count={0} />
                               <div className="flex gap-1 text-xs">
-                                {review.prompt_payment && (
+                                {review.payment_promptness && (
                                   <Badge variant="secondary" className="text-2xs py-0">
                                     {locale === "bg" ? "Бързо плащане" : "Prompt payment"}
                                   </Badge>
                                 )}
-                                {review.good_communication && (
+                                {review.communication && (
                                   <Badge variant="secondary" className="text-2xs py-0">
                                     {locale === "bg" ? "Добра комуникация" : "Good comms"}
                                   </Badge>

@@ -53,22 +53,32 @@ interface Product {
 
 interface TabbedProductFeedProps {
   locale: string
+  /** Initial products fetched server-side to avoid client waterfall */
+  initialProducts?: Product[]
+  /** Whether more products are available after initial load */
+  initialHasMore?: boolean
 }
 
 /**
  * TabbedProductFeed - Desktop optimized product feed with discovery UX
  * Features:
+ * - Server-side initial data (no client fetch on first load)
  * - Category quick filters (horizontal scrollable pills)
  * - Feed type tabs (All/Newest/Promoted/Deals)
- * - Clean product grid with load more
+ * - Clean product grid with load more (client-side pagination)
  */
-export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
+export function TabbedProductFeed({ 
+  locale, 
+  initialProducts = [], 
+  initialHasMore = true 
+}: TabbedProductFeedProps) {
   const [activeTab, setActiveTab] = useState<FeedTab>("all")
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
-  const [products, setProducts] = useState<Product[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  // Initialize with server-side data to avoid loading state flash
+  const [products, setProducts] = useState<Product[]>(initialProducts)
+  const [isLoading, setIsLoading] = useState(false) // Start false since we have initial data
   const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
+  const [hasMore, setHasMore] = useState(initialHasMore)
   const [pageSize, setPageSize] = useState(12)
 
   const router = useRouter()
@@ -246,7 +256,8 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
   const prevTabRef = useRef(activeTab)
   const prevCategoryRef = useRef(activeCategory)
   const prevPageSizeRef = useRef(pageSize)
-  const initialFetchDone = useRef(false)
+  // Mark as done if we have server-side initial data for "all" tab
+  const initialFetchDone = useRef(initialProducts.length > 0)
 
   useEffect(() => {
     const tabChanged = prevTabRef.current !== activeTab
@@ -257,7 +268,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
     prevCategoryRef.current = activeCategory
     prevPageSizeRef.current = pageSize
 
-    // Skip if nothing meaningful changed (prevent infinite loops)
+    // Skip initial fetch if we have server-side data for "all" tab
     const isInitialFetch = !initialFetchDone.current
     const shouldFetch = isInitialFetch || tabChanged || categoryChanged
     
@@ -274,7 +285,10 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
       // Don't clear products here - let the new data replace them to avoid flash
     }
     
-    fetchProducts(activeTab, 1, pageSize, false, activeCategory)
+    // Only fetch if tab/category changed (not on initial mount with server data)
+    if (tabChanged || categoryChanged) {
+      fetchProducts(activeTab, 1, pageSize, false, activeCategory)
+    }
   }, [pageSize, fetchProducts, activeTab, activeCategory])
 
   const handleTabChange = (tab: FeedTab) => {

@@ -12,7 +12,9 @@ export async function getMembersPageData(searchParams: MembersSearchParams) {
   const currentPage = Number.parseInt(page) || 1
   const offset = (currentPage - 1) * PAGE_SIZE
 
-  let query = supabase
+  // Build the query with all conditions applied inline
+  // This avoids complex generic types for the query builder
+  let baseQuery = supabase
     .from("profiles")
     .select(
       `
@@ -32,17 +34,38 @@ export async function getMembersPageData(searchParams: MembersSearchParams) {
     )
     .not("username", "is", null)
 
-  query = applyMembersFilter(query, filter)
-
-  if (q) {
-    query = query.or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+  // Apply filter
+  if (filter === "sellers") {
+    baseQuery = baseQuery.eq("is_seller", true)
+  } else if (filter === "buyers") {
+    baseQuery = baseQuery.eq("is_seller", false)
+  } else if (filter === "business") {
+    baseQuery = baseQuery.eq("account_type", "business")
   }
 
-  query = applyMembersSort(query, sort)
+  // Apply search
+  if (q) {
+    baseQuery = baseQuery.or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+  }
 
-  query = query.range(offset, offset + PAGE_SIZE - 1)
+  // Apply sort
+  if (sort === "rating") {
+    baseQuery = baseQuery.order("seller_rating", { ascending: false, nullsFirst: false })
+  } else if (sort === "sales") {
+    baseQuery = baseQuery.order("total_sales", { ascending: false })
+  } else if (sort === "purchases") {
+    baseQuery = baseQuery.order("total_purchases", { ascending: false })
+  } else if (sort === "newest") {
+    baseQuery = baseQuery.order("created_at", { ascending: false })
+  } else {
+    // "active" is the default
+    baseQuery = baseQuery.order("last_active_at", { ascending: false, nullsFirst: false })
+  }
 
-  const { data: members, count, error } = await query
+  // Apply pagination
+  baseQuery = baseQuery.range(offset, offset + PAGE_SIZE - 1)
+
+  const { data: members, count, error } = await baseQuery
   if (error) {
     throw error
   }
@@ -70,35 +93,5 @@ export async function getMembersPageData(searchParams: MembersSearchParams) {
     filter,
     sort,
     searchQuery: q || "",
-  }
-}
-
-function applyMembersFilter(query: any, filter: MembersFilter) {
-  switch (filter) {
-    case "sellers":
-      return query.eq("is_seller", true)
-    case "buyers":
-      return query.eq("is_seller", false)
-    case "business":
-      return query.eq("account_type", "business")
-    case "all":
-    default:
-      return query
-  }
-}
-
-function applyMembersSort(query: any, sort: MembersSort) {
-  switch (sort) {
-    case "rating":
-      return query.order("seller_rating", { ascending: false, nullsFirst: false })
-    case "sales":
-      return query.order("total_sales", { ascending: false })
-    case "purchases":
-      return query.order("total_purchases", { ascending: false })
-    case "newest":
-      return query.order("created_at", { ascending: false })
-    case "active":
-    default:
-      return query.order("last_active_at", { ascending: false, nullsFirst: false })
   }
 }

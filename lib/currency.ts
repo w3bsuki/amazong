@@ -109,6 +109,6 @@ export function getEstimatedDeliveryDate(businessDays: number = 1): Date {
  * - en: 1,000.50
  * - bg: 1 000,50
  */
-export function formatNumber(value: number, locale: string): string {
+function formatNumber(value: number, locale: string): string {
   return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-US').format(value)
 }

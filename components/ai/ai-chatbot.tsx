@@ -4,7 +4,7 @@ import * as React from "react"
 import { useLocale } from "next-intl"
 import { useChat } from "@ai-sdk/react"
 import { DefaultChatTransport } from "ai"
-import type { UIMessage } from "ai"
+import type { UIMessage, ChatStatus } from "ai"
 import {
   Sparkles,
   Search,
@@ -74,6 +74,105 @@ import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion"
 
 type ChatMode = "initial" | "buy" | "sell"
 
+// =============================================================================
+// AI SDK Message Part Types
+// The AI SDK's UIMessage.parts array contains a union of many different part types.
+// TypeScript cannot narrow these at runtime without type guards. The SDK does not
+// export discriminated union types for all part shapes, so we define our own
+// interfaces for the parts we use and cast accordingly.
+// =============================================================================
+
+/** Product shape returned from search/listing tools */
+interface AIProduct {
+  id: string
+  title?: string
+  price?: number
+  images?: string[]
+  slug?: string | null
+  storeSlug?: string | null
+  url?: string
+  image_url?: string
+  image?: string
+  list_price?: number | null
+  rating?: number
+  review_count?: number
+  store_slug?: string | null
+  tags?: string[]
+}
+
+/** Tool invocation part with typed output (legacy format) */
+interface ToolInvocationPart {
+  type: "tool-invocation"
+  toolName: string
+  state: "input-streaming" | "input-available" | "result"
+  result?: {
+    products?: AIProduct[]
+    listing?: ListingPreviewData
+    success?: boolean
+    url?: string
+    error?: string
+  }
+}
+
+/** Tool-specific part format (AI SDK v5) */
+interface ToolOutputPart {
+  type: string // "tool-searchProducts", "tool-createListing", etc.
+  state: "input-streaming" | "input-available" | "output-available"
+  output?: {
+    products?: AIProduct[]
+    listing?: ListingPreviewData
+    success?: boolean
+    url?: string
+    error?: string
+  }
+}
+
+/** Text part with content */
+interface TextPart {
+  type: "text"
+  text: string
+}
+
+/** Reasoning part (chain of thought) */
+interface ReasoningPart {
+  type: "reasoning"
+  text: string
+}
+
+/** Listing preview data from previewListing tool */
+interface ListingPreviewData {
+  title: string
+  description: string
+  price: number
+  categorySlug?: string
+  condition: string
+  images: { url: string }[]
+  brand?: string
+  attributes?: { name: string; value: string }[]
+}
+
+// Type guard helpers - narrow part types safely
+function isTextPart(part: unknown): part is TextPart {
+  return typeof part === "object" && part !== null && (part as TextPart).type === "text" && typeof (part as TextPart).text === "string"
+}
+
+function isReasoningPart(part: unknown): part is ReasoningPart {
+  return typeof part === "object" && part !== null && (part as ReasoningPart).type === "reasoning" && typeof (part as ReasoningPart).text === "string"
+}
+
+function isToolPart(part: unknown): part is ToolInvocationPart | ToolOutputPart {
+  if (typeof part !== "object" || part === null) return false
+  const p = part as { type?: string }
+  return p.type === "tool-invocation" || (typeof p.type === "string" && p.type.startsWith("tool-"))
+}
+
+/** Check if a message has legacy string content (for older SDK message formats) */
+function hasStringContent(message: unknown): message is { content: string } {
+  if (typeof message !== "object" || message === null) return false
+  const m = message as { content?: unknown }
+  return typeof m.content === "string" && m.content.length > 0
+}
+
 function getToolStatusLabel(toolName: string, locale: string) {
   switch (toolName) {
     case "searchProducts":
@@ -100,33 +199,37 @@ function getToolStatusLabel(toolName: string, locale: string) {
 }
 
 // Extract products from tool invocations
-function getProductsFromMessage(message: UIMessage): any[] {
-  const items: any[] = []
+function getProductsFromMessage(message: UIMessage): AIProduct[] {
+  const items: AIProduct[] = []
   const parts = Array.isArray(message?.parts) ? message.parts : []
 
   for (const part of parts) {
-    const p = part as any
+    if (!isToolPart(part)) continue
+    const p = part as ToolInvocationPart | ToolOutputPart
 
     // AI SDK v5 format
     if (
-      (p?.type === "tool-searchProducts" ||
-        p?.type === "tool-getNewestListings" ||
-        p?.type === "tool-getPromotedListings") &&
-      p?.state === "output-available"
+      (p.type === "tool-searchProducts" ||
+        p.type === "tool-getNewestListings" ||
+        p.type === "tool-getPromotedListings") &&
+      "output" in p &&
+      p.state === "output-available"
     ) {
-      const products = p?.output?.products
+      const products = p.output?.products
       if (Array.isArray(products)) items.push(...products)
     }
 
     // Legacy format
     if (
-      p?.type === "tool-invocation" &&
-      (p?.toolName === "searchProducts" ||
-        p?.toolName === "getNewestListings" ||
-        p?.toolName === "getPromotedListings") &&
-      p?.state === "result"
+      p.type === "tool-invocation" &&
+      "toolName" in p &&
+      (p.toolName === "searchProducts" ||
+        p.toolName === "getNewestListings" ||
+        p.toolName === "getPromotedListings") &&
+      "result" in p &&
+      p.state === "result"
     ) {
-      const products = p?.result?.products
+      const products = p.result?.products
       if (Array.isArray(products)) items.push(...products)
     }
   }
@@ -147,9 +250,9 @@ function getReasoningFromMessage(message: UIMessage): { text: string; isLast: bo
   const parts = Array.isArray(message?.parts) ? message.parts : []
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i]
-    if (part?.type === "reasoning" && (part as any)?.text) {
+    if (isReasoningPart(part)) {
       return {
-        text: (part as any).text,
+        text: part.text,
         isLast: i === parts.length - 1,
       }
     }
@@ -162,14 +265,29 @@ function getListingResultFromMessage(message: UIMessage): { success: boolean; ur
   const parts = Array.isArray(message?.parts) ? message.parts : []
 
   for (const part of parts) {
-    const p = part as any
+    if (!isToolPart(part)) continue
+    const p = part as ToolInvocationPart | ToolOutputPart
 
-    if (p?.type === "tool-createListing" && p?.state === "output-available") {
-      return p?.output
+    if (p.type === "tool-createListing" && "output" in p && p.state === "output-available") {
+      const output = p.output
+      if (output && typeof output.success === "boolean") {
+        return {
+          success: output.success,
+          ...(output.url ? { url: output.url } : {}),
+          ...(output.error ? { error: output.error } : {})
+        }
+      }
     }
 
-    if (p?.type === "tool-invocation" && p?.toolName === "createListing" && p?.state === "result") {
-      return p?.result
+    if (p.type === "tool-invocation" && "toolName" in p && p.toolName === "createListing" && "result" in p && p.state === "result") {
+      const result = p.result
+      if (result && typeof result.success === "boolean") {
+        return {
+          success: result.success,
+          ...(result.url ? { url: result.url } : {}),
+          ...(result.error ? { error: result.error } : {})
+        }
+      }
     }
   }
 
@@ -177,27 +295,19 @@ function getListingResultFromMessage(message: UIMessage): { success: boolean; ur
 }
 
 // Check for listing preview results
-function getListingPreviewFromMessage(message: UIMessage): {
-  title: string
-  description: string
-  price: number
-  categorySlug?: string
-  condition: string
-  images: { url: string }[]
-  brand?: string
-  attributes?: { name: string; value: string }[]
-} | null {
+function getListingPreviewFromMessage(message: UIMessage): ListingPreviewData | null {
   const parts = Array.isArray(message?.parts) ? message.parts : []
 
   for (const part of parts) {
-    const p = part as any
+    if (!isToolPart(part)) continue
+    const p = part as ToolInvocationPart | ToolOutputPart
 
-    if (p?.type === "tool-previewListing" && p?.state === "output-available") {
-      return p?.output?.listing
+    if (p.type === "tool-previewListing" && "output" in p && p.state === "output-available") {
+      return p.output?.listing ?? null
     }
 
-    if (p?.type === "tool-invocation" && p?.toolName === "previewListing" && p?.state === "result") {
-      return p?.result?.listing
+    if (p.type === "tool-invocation" && "toolName" in p && p.toolName === "previewListing" && "result" in p && p.state === "result") {
+      return p.result?.listing ?? null
     }
   }
 
@@ -209,9 +319,9 @@ function ChatSubmitButton({
   isStreaming, 
   hasError 
 }: { 
-  input: string, 
-  status: string, 
-  isStreaming: boolean, 
+  input: string
+  status: ChatStatus
+  isStreaming: boolean
   hasError: boolean 
 }) {
   const { files } = usePromptInputAttachments()
@@ -223,7 +333,7 @@ function ChatSubmitButton({
   return (
     <PromptInputSubmit
       disabled={isDisabled}
-      status={status as any}
+      status={status}
     />
   )
 }
@@ -273,7 +383,7 @@ export function AIChatbot({
   const safeSendMessage = React.useCallback(
     async (...args: Parameters<typeof sendMessage>) => {
       try {
-        await (sendMessage as any)(...args)
+        await sendMessage(...args)
       } catch (err) {
         // Avoid unhandled promise rejections which can trigger the Next.js redbox.
         console.error("sendMessage failed:", err)
@@ -292,7 +402,7 @@ export function AIChatbot({
 
   // Collect ALL products from entire conversation for the results panel
   const allProducts = React.useMemo(() => {
-    const items: any[] = []
+    const items: AIProduct[] = []
     const seen = new Set<string>()
     for (const message of messages) {
       const products = getProductsFromMessage(message as UIMessage)
@@ -741,16 +851,16 @@ export function AIChatbot({
 
                       {/* Text parts */}
                       {parts.map((part, i) => {
-                        if (part.type === "text" && (part as any).text) {
+                        if (isTextPart(part)) {
                           return (
                             <MessageComponent key={`${message.id}-${i}`} from={message.role}>
                               <MessageContent>
-                                <MessageResponse>{(part as any).text}</MessageResponse>
+                                <MessageResponse>{part.text}</MessageResponse>
                               </MessageContent>
                               {message.role === "assistant" && isLastMessage && (
                                 <MessageActions>
                                   <MessageAction
-                                    onClick={() => handleCopy((part as any).text)}
+                                    onClick={() => handleCopy(part.text)}
                                     label="Copy"
                                     tooltip="Copy to clipboard"
                                   >
@@ -764,14 +874,13 @@ export function AIChatbot({
 
                         // Tool invocations: don't render raw inputs/outputs in the chat UI.
                         // We only show a compact status line while a tool is running.
-                        if (
-                          part.type === "tool-invocation" ||
-                          (typeof part.type === "string" && part.type.startsWith("tool-"))
-                        ) {
-                          const toolPart = part as any
-                          const toolName = toolPart.toolName || (toolPart.type.startsWith("tool-") ? toolPart.type.replace("tool-", "") : "unknown")
+                        if (isToolPart(part)) {
+                          const toolPart = part as ToolInvocationPart | ToolOutputPart
+                          const toolName = "toolName" in toolPart 
+                            ? toolPart.toolName 
+                            : (toolPart.type.startsWith("tool-") ? toolPart.type.replace("tool-", "") : "unknown")
 
-                          const state = String(toolPart.state ?? "")
+                          const state = String("state" in toolPart ? toolPart.state : "")
                           if (["input-streaming", "input-available"].includes(state)) {
                             return (
                               <div
@@ -796,10 +905,10 @@ export function AIChatbot({
 
                       {/* Fallback content: only when no structured parts exist.
                           Prevents rendering raw tool-call JSON / internal artifacts. */}
-                      {parts.length === 0 && typeof (message as any).content === "string" && (message as any).content && (
+                      {parts.length === 0 && hasStringContent(message) && (
                           <MessageComponent from={message.role}>
                             <MessageContent>
-                              <MessageResponse>{(message as any).content}</MessageResponse>
+                              <MessageResponse>{message.content}</MessageResponse>
                             </MessageContent>
                           </MessageComponent>
                         )}

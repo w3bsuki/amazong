@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import type { Database } from "@/lib/supabase/database.types"
+
+type SharedWishlistRow = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
 
 function noStoreJson(data: unknown, init?: ResponseInit) {
   const res = NextResponse.json(data, init)
@@ -37,7 +40,7 @@ export async function GET(
     count: data.length,
   }
 
-  const items = data.map((row: any) => ({
+  const items = data.map((row: SharedWishlistRow) => ({
     product_id: row.product_id,
     product_title: row.product_title,
     product_price: row.product_price,

@@ -46,7 +46,7 @@ export const MAX_MENU_ITEMS = 4
  * Maximum categories to show in the subheader row.
  * Categories fill the full container width, rest go to "Всички" dropdown.
  */
-export const MAX_VISIBLE_CATEGORIES = 14
+const MAX_VISIBLE_CATEGORIES = 14
 
 /** Categories to always show in the visible row (by slug) */
 export const PRIORITY_VISIBLE_CATEGORIES = ["books"]

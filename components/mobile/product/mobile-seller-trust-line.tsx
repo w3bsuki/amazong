@@ -53,12 +53,12 @@ export function MobileSellerTrustLine({
   return (
     <Link
       href={href}
-      className="flex items-center gap-2.5 py-2.5 px-4 bg-muted/30 active:bg-muted/60 transition-colors duration-100 group border-y border-border/50 my-2"
+      className="flex items-center gap-2.5 py-2.5 px-4 bg-seller-banner active:bg-seller-banner/90 transition-colors duration-100 group my-2"
     >
       {/* Avatar */}
-      <Avatar className="size-9 border border-border shrink-0">
+      <Avatar className="size-9 border-2 border-white/30 shrink-0">
         <AvatarImage src={sellerAvatarUrl} alt={sellerName} />
-        <AvatarFallback className="text-xs font-medium bg-muted">
+        <AvatarFallback className="text-xs font-medium bg-white/20 text-white">
           {sellerName.slice(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
@@ -66,17 +66,17 @@ export function MobileSellerTrustLine({
       {/* Info */}
       <div className="flex flex-col flex-1 min-w-0">
         <div className="flex items-center gap-1">
-          <span className="text-sm font-medium text-foreground group-hover:text-primary truncate">
+          <span className="text-sm font-medium text-seller-banner-text truncate">
             {sellerName}
           </span>
           {isVerified && (
-            <ShieldCheck className="size-4 text-verified shrink-0" />
+            <ShieldCheck className="size-4 text-white shrink-0" />
           )}
         </div>
 
         <div className="flex items-center gap-2">
           {isNewSeller ? (
-            <span className="text-tiny font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+            <span className="text-tiny font-medium text-white bg-white/20 px-1.5 py-0.5 rounded">
               {t.newSeller}
             </span>
           ) : (
@@ -84,11 +84,11 @@ export function MobileSellerTrustLine({
               {displayRating && (
                 <div className="flex items-center gap-0.5 shrink-0">
                   <Star className="size-3 fill-rating text-rating" />
-                  <span className="text-tiny font-medium text-foreground">{displayRating}</span>
+                  <span className="text-tiny font-medium text-white">{displayRating}</span>
                 </div>
               )}
               {displayPositive && (
-                <span className="text-tiny text-muted-foreground">
+                <span className="text-tiny text-white/80">
                   {displayPositive} {t.positive}
                 </span>
               )}
@@ -98,7 +98,7 @@ export function MobileSellerTrustLine({
       </div>
 
       {/* Visit Button - 28px (h-7) compact touch target */}
-      <div className="flex items-center gap-0.5 h-7 px-2.5 rounded-full bg-primary/10 text-primary shrink-0">
+      <div className="flex items-center gap-0.5 h-7 px-2.5 rounded-full bg-white/20 text-white shrink-0">
         <span className="text-2xs font-medium">{locale === "bg" ? "Виж" : "Visit"}</span>
         <ChevronRight className="size-3.5" />
       </div>

@@ -269,7 +269,7 @@ export async function downgradeToFreeTier(): Promise<{ tier?: "free"; error?: st
 // GET SUBSCRIPTION DETAILS
 // =============================================================================
 
-export async function getSubscriptionDetails(): Promise<ActionResult<SubscriptionDetails | null>> {
+async function getSubscriptionDetails(): Promise<ActionResult<SubscriptionDetails | null>> {
   try {
     const supabase = await createClient()
     if (!supabase) {
@@ -478,7 +478,7 @@ export async function reactivateSubscription(): Promise<ActionResult> {
 
 const TIER_ORDER = ["free", "starter", "basic", "premium", "professional", "business", "enterprise"]
 
-export async function getAvailableUpgrades(): Promise<ActionResult<string[]>> {
+async function getAvailableUpgrades(): Promise<ActionResult<string[]>> {
   try {
     const supabase = await createClient()
     if (!supabase) {

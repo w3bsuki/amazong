@@ -111,12 +111,12 @@ export function getNextStatusOptions(currentStatus: OrderItemStatus): OrderItemS
 }
 
 // Format status for display
-export function formatStatus(status: OrderItemStatus): string {
+function formatStatus(status: OrderItemStatus): string {
   return getStatusConfig(status).label;
 }
 
 // Check if order is complete (delivered or cancelled)
-export function isOrderComplete(status: OrderItemStatus): boolean {
+function isOrderComplete(status: OrderItemStatus): boolean {
   return status === 'delivered' || status === 'cancelled';
 }
 

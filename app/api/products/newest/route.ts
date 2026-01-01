@@ -1,6 +1,60 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createStaticClient } from "@/lib/supabase/server"
 import { toUI } from "@/lib/data/products"
+import type { Database } from "@/lib/supabase/database.types"
+
+// Type for the nested select with relations
+interface ProductRowWithRelations {
+  id: string
+  title: string
+  price: number
+  list_price: number | null
+  rating: number | null
+  review_count: number | null
+  images: string[] | null
+  product_images: Array<{
+    image_url: string
+    thumbnail_url: string | null
+    display_order: number | null
+    is_primary: boolean | null
+  }> | null
+  product_attributes: Array<{ name: string; value: string }> | null
+  is_boosted: boolean | null
+  boost_expires_at: string | null
+  created_at: string
+  slug: string | null
+  attributes: Record<string, unknown> | null
+  category_ancestors: string[] | null
+  seller: { username: string | null } | null
+  categories: {
+    id: string
+    slug: string
+    name: string
+    name_bg: string | null
+    icon: string | null
+    parent: {
+      id: string
+      slug: string
+      name: string
+      name_bg: string | null
+      icon: string | null
+      parent: {
+        id: string
+        slug: string
+        name: string
+        name_bg: string | null
+        icon: string | null
+        parent: {
+          id: string
+          slug: string
+          name: string
+          name_bg: string | null
+          icon: string | null
+        } | null
+      } | null
+    } | null
+  } | null
+}
 
 // Public, query-string keyed endpoint. Align caching with next.config.ts cacheLife.products
 const CACHE_TTL_SECONDS = 300
@@ -46,9 +100,30 @@ export async function GET(request: NextRequest) {
       }, { status: 503 })
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase RPC + nested selects need runtime typing
-    let productRows: any[] = []
+    let productRows: ProductRowWithRelations[] = []
     let totalCount = 0
+
+    // Common select fields for product queries
+    // Note: category_ancestors exists in DB but may not be in generated types
+    const productSelect = `
+      id, 
+      title, 
+      price, 
+      list_price, 
+      rating, 
+      review_count, 
+      images,
+      category_ancestors, 
+      product_images(image_url,thumbnail_url,display_order,is_primary),
+      product_attributes(name,value),
+      is_boosted,
+      boost_expires_at,
+      created_at, 
+      slug,
+      attributes,
+      seller:profiles(username),
+      categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))
+    `
 
     if (category) {
       // =================================================================
@@ -58,65 +133,54 @@ export async function GET(request: NextRequest) {
       // ancestor chain (Fashion -> Men -> Clothing -> T-shirts).
       // =================================================================
       
-      // Get products from the optimized RPC function
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RPC function may not be in generated types
-      const { data: rpcProducts, error: rpcError } = await (supabase.rpc as any)(
-        'get_products_in_category',
-        { p_category_slug: category, p_limit: safeLimit, p_offset: offset }
-      )
+      // Step 1: Get category UUID from slug
+      const { data: categoryData, error: categoryError } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('slug', category)
+        .limit(1)
+        .maybeSingle()
       
-      if (rpcError) {
-        console.error("[API] get_products_in_category error:", rpcError.message)
+      if (categoryError) {
+        console.error("[API] Category lookup error:", categoryError.message)
         return NextResponse.json({ 
           products: [], 
           hasMore: false,
-          error: rpcError.message 
+          error: categoryError.message 
         }, { status: 500 })
       }
 
-      // Get total count for pagination
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RPC function may not be in generated types
-      const { data: countResult } = await (supabase.rpc as any)(
-        'count_products_in_category',
-        { p_category_slug: category }
-      )
-      totalCount = typeof countResult === 'number' ? countResult : 0
-
-      // If we got products, fetch full data with relations
-      const products = Array.isArray(rpcProducts) ? rpcProducts : []
-      if (products.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RPC result shape
-        const productIds = products.map((p: { id: string }) => p.id)
-        
-        const { data: fullProducts, error: fullError } = await supabase
-          .from('products')
-          .select(`
-            id, 
-            title, 
-            price, 
-            list_price, 
-            rating, 
-            review_count, 
-            images, 
-            product_images(image_url,thumbnail_url,display_order,is_primary),
-            product_attributes(name,value),
-            is_boosted,
-            boost_expires_at,
-            created_at, 
-            slug,
-            attributes,
-            seller:profiles(username),
-            categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))
-          `)
-          .in('id', productIds)
-          .order('created_at', { ascending: false })
-
-        if (fullError) {
-          console.error("[API] Full products fetch error:", fullError.message)
-        } else {
-          productRows = fullProducts || []
-        }
+      if (!categoryData) {
+        // Category not found - return empty
+        return cachedJsonResponse({
+          products: [],
+          hasMore: false,
+          totalCount: 0,
+          page,
+        })
       }
+
+      // Step 2: Query products using .filter() with raw PostgREST syntax
+      // 'cs' = contains operator (@>), works with array columns
+      // This uses the GIN index on category_ancestors for efficient lookups
+      const { data, error, count } = await supabase
+        .from('products')
+        .select(productSelect, { count: 'exact' })
+        .filter('category_ancestors', 'cs', `{${categoryData.id}}`)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + safeLimit - 1)
+
+      if (error) {
+        console.error("[API] Products by category error:", error.message)
+        return NextResponse.json({ 
+          products: [], 
+          hasMore: false,
+          error: error.message 
+        }, { status: 500 })
+      }
+
+      productRows = (data ?? []) as unknown as ProductRowWithRelations[]
+      totalCount = count ?? 0
     } else {
       // =================================================================
       // ALL PRODUCTS (no category filter)
@@ -124,24 +188,7 @@ export async function GET(request: NextRequest) {
       // =================================================================
       const { data, error, count } = await supabase
         .from('products')
-        .select(`
-          id, 
-          title, 
-          price, 
-          list_price, 
-          rating, 
-          review_count, 
-          images, 
-          product_images(image_url,thumbnail_url,display_order,is_primary),
-          product_attributes(name,value),
-          is_boosted,
-          boost_expires_at,
-          created_at, 
-          slug,
-          attributes,
-          seller:profiles(username),
-          categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))
-        `, { count: 'exact' })
+        .select(productSelect, { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(offset, offset + safeLimit - 1)
 
@@ -154,8 +201,8 @@ export async function GET(request: NextRequest) {
         }, { status: 500 })
       }
 
-      productRows = data || []
-      totalCount = count || 0
+      productRows = (data ?? []) as unknown as ProductRowWithRelations[]
+      totalCount = count ?? 0
     }
 
     // Transform to UI format
@@ -176,7 +223,7 @@ export async function GET(request: NextRequest) {
         store_slug: p.seller?.username ?? null,
         category_slug: p.categories?.slug ?? null,
         categories: p.categories ?? null,
-        attributes: p.attributes,
+        attributes: p.attributes as import("@/lib/supabase/database.types").Json | null,
       }),
     }))
 

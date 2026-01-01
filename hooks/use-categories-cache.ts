@@ -229,7 +229,7 @@ export function getCategoryShortName(category: Category, locale: string): string
  * Clear the categories cache
  * Useful for testing or after data mutations
  */
-export function clearCategoriesCache(): void {
+function clearCategoriesCache(): void {
   categoriesCache = null
   cacheTimestamp = 0
 }

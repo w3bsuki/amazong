@@ -25,7 +25,7 @@ export const emailSchema = z
   )
 
 // Username validation schema
-export const usernameSchema = z
+const usernameSchema = z
   .string()
   .min(3, { message: "Username must be at least 3 characters" })
   .max(30, { message: "Username must be less than 30 characters" })
@@ -57,7 +57,7 @@ export const loginSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters" }),
 })
 
-export type LoginFormData = z.infer<typeof loginSchema>
+type LoginFormData = z.infer<typeof loginSchema>
 
 // Sign up schema with password strength requirements
 export const signUpSchema = z
@@ -93,7 +93,7 @@ export const signUpSchema = z
     path: ["confirmPassword"],
   })
 
-export type SignUpFormData = z.infer<typeof signUpSchema>
+type SignUpFormData = z.infer<typeof signUpSchema>
 
 // Password strength utility
 export function getPasswordStrength(password: string): {
@@ -124,7 +124,7 @@ export function getPasswordStrength(password: string): {
 }
 
 // Change password form schema
-export const changePasswordSchema = z
+const changePasswordSchema = z
   .object({
     newPassword: passwordSchema,
     confirmPassword: z.string(),
@@ -135,7 +135,7 @@ export const changePasswordSchema = z
   })
 
 // Change email form schema
-export const changeEmailSchema = z.object({
+const changeEmailSchema = z.object({
   newEmail: emailSchema,
 })
 

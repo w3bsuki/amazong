@@ -13,12 +13,12 @@ export interface Category {
 
 export const DEFAULT_CATEGORY_IMAGE = "/placeholder.svg"
 
-export function getCategoryName(locale: string, category: Category) {
+function getCategoryName(locale: string, category: Category) {
   if (locale === "bg" && category.name_bg) return category.name_bg
   return category.name
 }
 
-export function getCategoryImageUrl(category: Category) {
+function getCategoryImageUrl(category: Category) {
   return category.image_url || DEFAULT_CATEGORY_IMAGE
 }
 

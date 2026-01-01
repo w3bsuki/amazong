@@ -203,7 +203,7 @@ export async function submitSellerFeedback(
  * Update existing feedback
  * - Only the feedback author can update within 30 days
  */
-export async function updateSellerFeedback(
+async function updateSellerFeedback(
   input: z.infer<typeof updateFeedbackSchema>
 ): Promise<ActionResult> {
   try {
@@ -287,7 +287,7 @@ export async function updateSellerFeedback(
  * Delete seller feedback
  * - Only the buyer or admin can delete
  */
-export async function deleteSellerFeedback(feedbackId: string): Promise<ActionResult> {
+async function deleteSellerFeedback(feedbackId: string): Promise<ActionResult> {
   try {
     const supabase = await createClient()
     if (!supabase) {
@@ -356,7 +356,7 @@ export async function deleteSellerFeedback(feedbackId: string): Promise<ActionRe
 /**
  * Get seller feedback with pagination
  */
-export async function getSellerFeedback(
+async function getSellerFeedback(
   sellerId: string,
   options?: {
     limit?: number
@@ -550,7 +550,7 @@ async function updateSellerStatsFromFeedback(
 /**
  * Check if user can leave feedback for a seller
  */
-export async function canUserLeaveFeedback(
+async function canUserLeaveFeedback(
   sellerId: string,
   orderId?: string
 ): Promise<ActionResult<{
@@ -620,7 +620,7 @@ export async function canUserLeaveFeedback(
  * Seller: Respond to feedback (buyer_response field)
  * Note: This is for the seller to respond via buyer_response field on seller_feedback
  */
-export async function respondToFeedback(
+async function respondToFeedback(
   feedbackId: string,
   response: string
 ): Promise<ActionResult> {

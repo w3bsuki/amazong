@@ -29,8 +29,7 @@ import { MoreWaysToShop } from "./_components/more-ways-to-shop"
 // Local components
 import { SignInCtaSkeleton } from "./_components/sign-in-cta-skeleton"
 
-import { createStaticClient } from "@/lib/supabase/server"
-import { getNewestProducts, toUI } from "@/lib/data/products"
+import { getNewestProducts, toUI, getFeedProducts } from "@/lib/data/products"
 import { getCategoryHierarchy } from "@/lib/data/categories"
 
 export function generateStaticParams() {
@@ -58,9 +57,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
   // Fetch categories with L1 children using server-side cache
   // This prevents the client from making additional /api/categories calls
-  const [categoriesWithChildren, newestProducts] = await Promise.all([
+  const [categoriesWithChildren, newestProducts, feedResult] = await Promise.all([
     getCategoryHierarchy(null, 2), // depth=2 for L0+L1+L2
-    getNewestProducts(12)
+    getNewestProducts(12),
+    getFeedProducts('all', { limit: 12 }) // Server-side initial feed for desktop
   ])
   
   // Shallow categories for desktop hero (just need slugs/names)
@@ -118,7 +118,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <div className="w-full bg-background pb-12">
           <div className="container">
             <Suspense fallback={<TabbedProductFeedSkeleton />}>
-              <TabbedProductFeed locale={locale} />
+              <TabbedProductFeed 
+                locale={locale} 
+                initialProducts={feedResult.products}
+                initialHasMore={feedResult.hasMore}
+              />
             </Suspense>
 
             {/* Promo + discovery */}

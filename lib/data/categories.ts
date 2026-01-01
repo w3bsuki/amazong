@@ -370,7 +370,7 @@ export async function getCategoryBySlug(slug: string): Promise<CategoryWithParen
  * @param categoryId - Category UUID
  * @returns Array of filterable attributes
  */
-export async function getCategoryAttributes(categoryId: string): Promise<CategoryAttribute[]> {
+async function getCategoryAttributes(categoryId: string): Promise<CategoryAttribute[]> {
   'use cache'
   cacheTag('attributes', `attrs-${categoryId}`)
   cacheLife('categories')
@@ -403,7 +403,7 @@ export async function getCategoryAttributes(categoryId: string): Promise<Categor
  * @param parentId - Parent category UUID (null for root categories)
  * @returns Array of sibling categories
  */
-export async function getSiblingCategories(parentId: string | null): Promise<Category[]> {
+async function getSiblingCategories(parentId: string | null): Promise<Category[]> {
   'use cache'
   cacheTag('categories', `siblings-${parentId || 'root'}`)
   cacheLife('categories')
@@ -444,7 +444,7 @@ export async function getSiblingCategories(parentId: string | null): Promise<Cat
  * @param categoryId - Parent category UUID
  * @returns Array of child categories
  */
-export async function getChildCategories(categoryId: string): Promise<Category[]> {
+async function getChildCategories(categoryId: string): Promise<Category[]> {
   'use cache'
   cacheTag('categories', `children-${categoryId}`)
   cacheLife('categories')

@@ -45,17 +45,11 @@ export { DesktopLayout, MobileLayout, StepperWrapper } from "./layouts";
 // Main Form Component - handles both desktop and mobile
 export { UnifiedSellForm } from "./sell-form-unified";
 
-// Header (renamed from sell-header-v3.tsx)
-export { SellHeader, MemoizedSellHeader } from "./sell-header";
+// Header
+export { SellHeader } from "./sell-header";
 
 // AI Assistant
 export { AiListingAssistant } from "./ai/ai-listing-assistant";
-
-// UI Components
-export { SmartCategoryPicker } from "./ui/smart-category-picker";
-export { BrandPicker } from "./ui/brand-picker";
-export { CategoryPicker } from "./ui/category-picker";
-export { DrawerSelect, DrawerMultiSelect } from "./ui/drawer-select";
 
 // Loading states & Error handling
 export { SellSectionSkeleton, SellFormSkeleton } from "./ui/sell-section-skeleton";

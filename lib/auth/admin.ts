@@ -60,7 +60,7 @@ export async function requireAdmin(redirectTo: string = "/"): Promise<AdminUser>
  * Checks if a user is admin without redirecting.
  * Useful for conditional UI rendering.
  */
-export async function isAdmin(): Promise<boolean> {
+async function isAdmin(): Promise<boolean> {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

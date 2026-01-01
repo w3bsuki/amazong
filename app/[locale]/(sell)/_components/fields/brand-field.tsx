@@ -109,4 +109,4 @@ export function BrandField({
  * @see useSellForm - Hook for form state access
  * @see useSellFormContext - Hook for context access
  */
-export const MemoizedBrandField = memo(BrandField);
+const MemoizedBrandField = memo(BrandField);

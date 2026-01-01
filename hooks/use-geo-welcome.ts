@@ -307,4 +307,4 @@ function getRegionCountryCode(region: ShippingRegion): string {
 /**
  * Export storage keys for external use (e.g., resetting preferences)
  */
-export const GEO_STORAGE_KEYS = STORAGE_KEYS;
+const GEO_STORAGE_KEYS = STORAGE_KEYS;

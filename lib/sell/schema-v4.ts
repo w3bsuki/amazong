@@ -279,11 +279,11 @@ export function calculateFormProgress(data: Partial<SellFormDataV4>): {
 // ============================================================================
 // VALIDATION HELPERS
 // ============================================================================
-export function getFieldError(errors: Record<string, string[] | undefined>, field: string): string | undefined {
+function getFieldError(errors: Record<string, string[] | undefined>, field: string): string | undefined {
 	return errors[field]?.[0];
 }
 
-export function isFormValid(data: Partial<SellFormDataV4>): boolean {
+function isFormValid(data: Partial<SellFormDataV4>): boolean {
 	const { percentage } = calculateFormProgress(data);
 	return percentage === 100;
 }

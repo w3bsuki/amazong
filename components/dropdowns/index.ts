@@ -1,12 +1,5 @@
 // Barrel export for all dropdown components
 export { AccountDropdown } from "./account-dropdown"
-export { OrdersDropdown } from "./orders-dropdown"
-export { SellingDropdown } from "./selling-dropdown"
-export { LocationDropdown } from "./location-dropdown"
-export { MessagesDropdown } from "./messages-dropdown"
 export { NotificationsDropdown } from "./notifications-dropdown"
-export { LanguageDropdown } from "./language-dropdown"
 export { LocaleDeliveryDropdown } from "./locale-delivery-dropdown"
 export { WishlistDropdown } from "./wishlist-dropdown"
-export { SearchCategoryDropdown } from "./search-category-dropdown"
-export { SearchDropdown } from "./search-dropdown"

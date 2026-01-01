@@ -42,7 +42,7 @@ export function OrderStatusBadge({
 }
 
 // Compact version for tables
-export function OrderStatusDot({ status }: { status: OrderItemStatus }) {
+function OrderStatusDot({ status }: { status: OrderItemStatus }) {
   const config = ORDER_STATUS_CONFIG[status] || ORDER_STATUS_CONFIG.pending
   
   const dotColors: Record<OrderItemStatus, string> = {

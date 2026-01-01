@@ -41,7 +41,7 @@ const avatarUrlSchema = z.object({
 // =====================================================
 // GET PROFILE
 // =====================================================
-export async function getProfile(): Promise<{
+async function getProfile(): Promise<{
   success: boolean
   data?: {
     id: string
@@ -466,7 +466,7 @@ export async function updatePassword(formData: FormData): Promise<{
 // =====================================================
 // DELETE ACCOUNT
 // =====================================================
-export async function deleteAccount(): Promise<{
+async function deleteAccount(): Promise<{
   success: boolean
   error?: string
 }> {

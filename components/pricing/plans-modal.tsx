@@ -289,7 +289,7 @@ export function PlansModal({
 // Convenience Export: Trigger Button
 // =============================================================================
 
-export function PlansModalTrigger({
+function PlansModalTrigger({
   children,
   className,
   variant = "default",
@@ -313,8 +313,4 @@ export function PlansModalTrigger({
   )
 }
 
-// =============================================================================
-// Hook for programmatic control
-// =============================================================================
 
-export { usePlansModal } from "@/hooks/use-plans-modal"

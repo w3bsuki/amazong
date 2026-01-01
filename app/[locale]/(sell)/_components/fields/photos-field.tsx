@@ -431,4 +431,4 @@ export function PhotosField({
  * @see useSellForm - Hook for form state access
  * @see useSellFormContext - Hook for context access
  */
-export const MemoizedPhotosField = memo(PhotosField);
+const MemoizedPhotosField = memo(PhotosField);

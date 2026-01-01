@@ -384,7 +384,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
 }
 
 /** Fetch single product by ID */
-export async function getProductById(id: string): Promise<Product | null> {
+async function getProductById(id: string): Promise<Product | null> {
   'use cache'
   cacheTag('products', `product-${id}`)
   cacheLife('products')
@@ -412,7 +412,7 @@ export type ShippingZone = 'BG' | 'UK' | 'EU' | 'US' | 'WW'
  * Filter products by shipping zone.
  * Can be used server-side or client-side.
  */
-export function filterByZone<T extends {
+function filterByZone<T extends {
   ships_to_bulgaria?: boolean | null
   ships_to_uk?: boolean | null
   ships_to_europe?: boolean | null
@@ -480,7 +480,7 @@ export function toUI(p: Product): UIProduct {
 }
 
 /** Transform Product array to CarouselProduct format for carousel sections */
-export function toCarouselProducts(products: Product[], options?: { isBoosted?: boolean }): {
+function toCarouselProducts(products: Product[], options?: { isBoosted?: boolean }): {
   id: string
   title: string
   price: number
@@ -513,11 +513,142 @@ export function toCarouselProducts(products: Product[], options?: { isBoosted?: 
 }
 
 // =============================================================================
+// Feed Products - Server-side function for TabbedProductFeed initial data
+// =============================================================================
+
+export type FeedType = 
+  | 'all' 
+  | 'newest' 
+  | 'promoted' 
+  | 'deals' 
+  | 'top_rated' 
+  | 'best_sellers' 
+  | 'most_viewed' 
+  | 'price_low'
+
+export interface FeedResult {
+  products: UIProduct[]
+  hasMore: boolean
+  totalCount: number
+}
+
+/**
+ * Server-side feed fetcher for initial page load.
+ * Mirrors the API route logic but runs at build/request time.
+ */
+export async function getFeedProducts(
+  type: FeedType = 'all',
+  options: {
+    limit?: number
+    page?: number
+    categorySlug?: string | null
+  } = {}
+): Promise<FeedResult> {
+  'use cache'
+  cacheTag('products', `feed-${type}`, options.categorySlug ? `category:${options.categorySlug}` : 'no-category')
+  cacheLife('products')
+
+  const { limit = 12, page = 1, categorySlug } = options
+  const offset = (page - 1) * limit
+  const nowIso = new Date().toISOString()
+
+  const supabase = createStaticClient()
+  if (!supabase) {
+    return { products: [], hasMore: false, totalCount: 0 }
+  }
+
+  let query = supabase
+    .from('products')
+    .select(`
+      id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date,
+      rating, review_count, images, 
+      product_images(image_url,thumbnail_url,display_order,is_primary),
+      product_attributes(name,value),
+      is_boosted, boost_expires_at, created_at, slug, attributes,
+      seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),
+      categories!inner(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))
+    `, { count: 'exact' })
+
+  // Apply category filter
+  if (categorySlug && categorySlug !== 'all') {
+    query = query.eq('categories.slug', categorySlug)
+  }
+
+  // Apply type-specific filters
+  switch (type) {
+    case 'promoted':
+      query = query.eq('is_boosted', true)
+      query = query.order('created_at', { ascending: false })
+      break
+
+    case 'deals':
+      query = query
+        .eq('is_on_sale', true)
+        .gt('sale_percent', 0)
+        .or(`sale_end_date.is.null,sale_end_date.gt.${nowIso}`)
+      query = query.order('created_at', { ascending: false })
+      break
+
+    case 'top_rated':
+      query = query.gte('rating', 4)
+      query = query.order('rating', { ascending: false })
+      query = query.order('review_count', { ascending: false })
+      break
+
+    case 'most_viewed':
+      query = query.order('review_count', { ascending: false })
+      query = query.order('rating', { ascending: false })
+      break
+
+    case 'best_sellers':
+      query = query.order('review_count', { ascending: false })
+      query = query.order('created_at', { ascending: false })
+      break
+
+    case 'price_low':
+      query = query.order('price', { ascending: true })
+      break
+
+    case 'newest':
+    case 'all':
+    default:
+      query = query.order('created_at', { ascending: false })
+      break
+  }
+
+  const { data, error, count } = await query.range(offset, offset + limit - 1)
+
+  if (error) {
+    console.error(`[getFeedProducts:${type}]`, error.message)
+    return { products: [], hasMore: false, totalCount: 0 }
+  }
+
+  const products = (data || []).map((p) => {
+    const row = p as unknown as Record<string, unknown>
+    const categories = normalizeCategoryNode(row.categories)
+    const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
+
+    return toUI({
+      ...(p as unknown as Product),
+      categories,
+      category_slug: categories?.slug ?? null,
+      store_slug: (typeof seller?.username === 'string') ? seller.username : null,
+      seller_profile: (row.seller as Product['seller_profile']) ?? null,
+    } as Product)
+  })
+
+  const totalCount = count || 0
+  const hasMore = offset + products.length < totalCount
+
+  return { products, hasMore, totalCount }
+}
+
+// =============================================================================
 // Legacy Exports - For backward compatibility (remove after migration)
 // =============================================================================
 
-export const getGlobalDeals = (limit = 50, zone?: ShippingRegion) => getProducts('deals', limit, zone)
+const getGlobalDeals = (limit = 50, zone?: ShippingRegion) => getProducts('deals', limit, zone)
 export const getNewestProducts = (limit = 36, zone?: ShippingRegion) => getProducts('newest', limit, zone)
-export const getPromoProducts = (limit = 36, zone?: ShippingRegion) => getProducts('promo', limit, zone)
-export const getBestSellers = (limit = 36, zone?: ShippingRegion) => getProducts('bestsellers', limit, zone)
-export const getFeaturedProducts = (limit = 36, zone?: ShippingRegion) => getProducts('featured', limit, zone)
+const getPromoProducts = (limit = 36, zone?: ShippingRegion) => getProducts('promo', limit, zone)
+const getBestSellers = (limit = 36, zone?: ShippingRegion) => getProducts('bestsellers', limit, zone)
+const getFeaturedProducts = (limit = 36, zone?: ShippingRegion) => getProducts('featured', limit, zone)

@@ -110,7 +110,7 @@ export function ProductPrice({
 }
 
 // Simple inline price for Buy Box etc
-export function InlinePrice({
+function InlinePrice({
   price,
   locale,
   className

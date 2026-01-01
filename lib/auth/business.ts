@@ -244,7 +244,7 @@ export async function requireDashboardAccess(
  * Gets business seller info with subscription status (no redirect).
  * Useful for checking subscription status without forcing redirect.
  */
-export async function getBusinessSellerWithSubscription(
+async function getBusinessSellerWithSubscription(
   sellerId: string
 ): Promise<BusinessSellerWithSubscription | null> {
   await connection()
@@ -292,7 +292,7 @@ export async function getBusinessSellerWithSubscription(
  * Checks if current user has a business account without redirecting.
  * Useful for conditional UI rendering.
  */
-export async function isBusinessAccount(): Promise<boolean> {
+async function isBusinessAccount(): Promise<boolean> {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -315,7 +315,7 @@ export async function isBusinessAccount(): Promise<boolean> {
  * Gets the current user's seller info including account type.
  * Returns null if user is not a seller.
  */
-export async function getSellerInfo() {
+async function getSellerInfo() {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

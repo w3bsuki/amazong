@@ -141,4 +141,4 @@ export function TitleField({
  * @see useSellForm - Hook for form state access
  * @see useSellFormContext - Hook for context access
  */
-export const MemoizedTitleField = memo(TitleField);
+const MemoizedTitleField = memo(TitleField);

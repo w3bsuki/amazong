@@ -67,7 +67,7 @@ export async function unfollowSeller(sellerId: string) {
   return { success: true }
 }
 
-export async function toggleFollowSeller(sellerId: string) {
+async function toggleFollowSeller(sellerId: string) {
   const isFollowing = await isFollowingSeller(sellerId)
   
   if (isFollowing) {

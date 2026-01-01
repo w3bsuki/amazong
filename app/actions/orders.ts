@@ -264,7 +264,7 @@ export async function getSellerOrderStats(): Promise<{
 /**
  * Get all orders for the current buyer
  */
-export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: string }> {
+async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: string }> {
   try {
     const supabase = await createClient()
     if (!supabase) {
@@ -834,7 +834,7 @@ export async function reportOrderIssue(
 /**
  * Get detailed order information for a buyer
  */
-export async function getBuyerOrderDetails(
+async function getBuyerOrderDetails(
   orderId: string
 ): Promise<{ 
   order: {

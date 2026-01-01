@@ -6,6 +6,7 @@ import {
   streamText,
   tool,
   type UIMessage,
+  type Tool,
 } from "ai"
 import { createStaticClient } from "@/lib/supabase/server"
 import { createClient } from "@/lib/supabase/server"
@@ -15,12 +16,23 @@ import { getAiModel } from "@/lib/ai/providers"
 import { buildMarketplaceSystemPrompt, type MarketplaceChatMode } from "@/lib/ai/prompts"
 import { compactUIMessages } from "@/lib/ai/ui-messages"
 import { aiEnv } from "@/lib/ai/env"
+import type { PostgrestError } from "@supabase/supabase-js"
 
 export const maxDuration = 60
 
 // ============================================================================
 // Types
 // ============================================================================
+
+// Type for raw product data from DB query
+interface ProductQueryRow {
+  id: string
+  title: string | null
+  price: number
+  images: string[] | null
+  slug: string | null
+  seller: { username: string | null } | null
+}
 
 type UiProduct = {
   id: string
@@ -204,8 +216,8 @@ async function searchProducts(input: z.infer<typeof searchProductsInput>): Promi
   }
 
   const trimmedQuery = (query ?? "").trim()
-  let data: any[] | null = null
-  let error: any = null
+  let data: ProductQueryRow[] | null = null
+  let error: PostgrestError | null = null
 
   if (trimmedQuery) {
     const ftsResult = await buildBaseQuery().textSearch("search_vector", trimmedQuery, { type: "websearch" })
@@ -229,7 +241,7 @@ async function searchProducts(input: z.infer<typeof searchProductsInput>): Promi
     return { products: [] }
   }
 
-  const products: UiProduct[] = (data ?? []).map((p: any) => {
+  const products: UiProduct[] = (data ?? []).map((p) => {
     const storeSlug = p?.seller?.username ?? null
     const images = Array.isArray(p?.images) ? p.images.slice(0, 1) : []
     return {
@@ -262,7 +274,7 @@ async function getNewestListings(input: z.infer<typeof listProductsInput>): Prom
     return { products: [] }
   }
 
-  const products: UiProduct[] = (data ?? []).map((p: any) => {
+  const products: UiProduct[] = (data ?? []).map((p) => {
     const storeSlug = p?.seller?.username ?? null
     const images = Array.isArray(p?.images) ? p.images.slice(0, 1) : []
     return {
@@ -296,7 +308,7 @@ async function getPromotedListings(input: z.infer<typeof listProductsInput>): Pr
     return { products: [] }
   }
 
-  const products: UiProduct[] = (data ?? []).map((p: any) => {
+  const products: UiProduct[] = (data ?? []).map((p) => {
     const storeSlug = p?.seller?.username ?? null
     const images = Array.isArray(p?.images) ? p.images.slice(0, 1) : []
     return {
@@ -654,8 +666,8 @@ export async function POST(req: Request) {
       // Buy mode: 2 steps max (search + respond). Sell mode: 3 steps (auth + analyze + create).
       stopWhen: stepCountIs(isBuyMode ? 2 : 3),
       ...(modelCtx.providerOptions ? { providerOptions: modelCtx.providerOptions } : {}),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- AI SDK tool type compatibility
-      tools: toolsForMode as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- AI SDK tool type inference requires cast; toolsForMode is a Record<string, Tool> but streamText expects specific tool shapes per mode
+      tools: toolsForMode as Record<string, Tool>,
     })
 
     return result.toUIMessageStreamResponse({
