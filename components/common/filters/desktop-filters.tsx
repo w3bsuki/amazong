@@ -205,7 +205,7 @@ export function DesktopFilters({ attributes = [], categorySlug }: DesktopFilters
       </Popover>
 
       {/* All Filters Modal - Only show if we have category attributes */}
-      {hasAttributes && (
+      {hasAttributes && categorySlug && (
         <DesktopFilterModal 
           attributes={attributes}
           categorySlug={categorySlug}

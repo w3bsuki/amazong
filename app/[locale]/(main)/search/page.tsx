@@ -1,5 +1,5 @@
 import { createStaticClient } from "@/lib/supabase/server"
-import { Link, routing } from "@/i18n/routing"
+import { routing } from "@/i18n/routing"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { SearchFilters } from "@/components/shared/search/search-filters"
 import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
@@ -11,6 +11,7 @@ import { DesktopFilters } from "@/components/common/filters/desktop-filters"
 import { FilterChips } from "@/components/common/filters/filter-chips"
 import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
+import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { Suspense } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { cookies } from "next/headers"
@@ -308,84 +309,73 @@ export default async function SearchPage({
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                title={product.title}
-                price={product.price}
-                image={product.image_url || product.images?.[0] || "/placeholder.svg"}
-                rating={product.rating || 0}
-                reviews={product.review_count || 0}
-                originalPrice={product.list_price}
-                tags={product.tags || []}
-                slug={product.slug}
-                storeSlug={product.profiles?.username}
-                sellerId={product.profiles?.id || undefined}
-                sellerName={(product.profiles?.display_name || product.profiles?.business_name || product.profiles?.username) || undefined}
-                sellerAvatarUrl={product.profiles?.avatar_url || null}
-                sellerTier={product.profiles?.account_type === 'business' ? 'business' : (product.profiles?.tier === 'premium' ? 'premium' : 'basic')}
-                sellerVerified={Boolean(product.profiles?.is_verified_business)}
-                categorySlug={product.categories?.slug || currentCategory?.slug}
-                condition={product.attributes?.condition}
-                brand={product.attributes?.brand}
-                make={product.attributes?.make}
-                model={product.attributes?.model}
-                year={product.attributes?.year}
-                location={product.attributes?.location}
-              />
-            ))}
+            {products.map((product) => {
+              const image = product.image_url || product.images?.[0] || "/placeholder.svg"
+              const sellerName =
+                product.profiles?.display_name ||
+                product.profiles?.business_name ||
+                product.profiles?.username
+              const resolvedCategorySlug = product.categories?.slug || currentCategory?.slug
+              const condition = product.attributes?.condition
+              const brand = product.attributes?.brand
+              const make = product.attributes?.make
+              const model = product.attributes?.model
+              const year = product.attributes?.year
+              const location = product.attributes?.location
+
+              return (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  title={product.title}
+                  price={product.price}
+                  image={image}
+                  rating={product.rating || 0}
+                  reviews={product.review_count || 0}
+                  originalPrice={product.list_price ?? null}
+                  tags={product.tags || []}
+                  slug={product.slug ?? null}
+                  storeSlug={product.profiles?.username ?? null}
+                  sellerId={product.profiles?.id ?? null}
+                  {...(sellerName ? { sellerName } : {})}
+                  sellerAvatarUrl={product.profiles?.avatar_url ?? null}
+                  sellerTier={
+                    product.profiles?.account_type === "business"
+                      ? "business"
+                      : product.profiles?.tier === "premium"
+                        ? "premium"
+                        : "basic"
+                  }
+                  sellerVerified={Boolean(product.profiles?.is_verified_business)}
+                  {...(resolvedCategorySlug ? { categorySlug: resolvedCategorySlug } : {})}
+                  {...(condition ? { condition } : {})}
+                  {...(brand ? { brand } : {})}
+                  {...(make ? { make } : {})}
+                  {...(model ? { model } : {})}
+                  {...(year ? { year } : {})}
+                  {...(location ? { location } : {})}
+                />
+              )
+            })}
           </div>
 
           {products.length === 0 && (
-            <div className="mt-12 text-center py-12 px-4">
-              <div className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg 
-                  className="size-10 text-muted-foreground" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={1.5} 
-                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" 
-                  />
-                </svg>
-              </div>
-              <h2 className="text-xl font-semibold text-foreground mb-2">{t('noProductsFound')}</h2>
-              <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                {query 
-                  ? t('noResultsForQuery', { query })
-                  : t('noResultsForFilters')
-                }
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href="/search">
-                  <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-brand hover:bg-brand/90 text-foreground h-10 px-4 py-2 gap-2">
-                    {t('clearAllFiltersButton')}
-                  </button>
-                </Link>
-                <Link href="/">
-                  <button className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
-                    {t('browseAllProducts')}
-                  </button>
-                </Link>
-              </div>
-              <div className="mt-8 pt-6 border-t border-border max-w-md mx-auto">
-                <p className="text-sm text-muted-foreground mb-3">{t('popularCategories')}</p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  <Link href="/search?category=electronics" className="text-sm text-link hover:underline">{locale === 'bg' ? 'Електроника' : 'Electronics'}</Link>
-                  <span className="text-muted-foreground">•</span>
-                  <Link href="/search?category=fashion" className="text-sm text-link hover:underline">{locale === 'bg' ? 'Мода' : 'Fashion'}</Link>
-                  <span className="text-muted-foreground">•</span>
-                  <Link href="/search?category=home" className="text-sm text-link hover:underline">{locale === 'bg' ? 'Дом' : 'Home'}</Link>
-                  <span className="text-muted-foreground">•</span>
-                  <Link href="/todays-deals" className="text-sm text-link hover:underline">{locale === 'bg' ? 'Оферти днес' : 'Today\'s Deals'}</Link>
-                </div>
-              </div>
-            </div>
+            (() => {
+              const categoryName = currentCategory
+                ? (locale === "bg" && currentCategory.name_bg)
+                  ? currentCategory.name_bg
+                  : currentCategory.name
+                : undefined
+
+              return (
+                <EmptyStateCTA
+                  variant={query ? "no-search" : "no-category"}
+                  {...(query ? { searchQuery: query } : {})}
+                  {...(categoryName ? { categoryName } : {})}
+                  className="mt-8"
+                />
+              )
+            })()
           )}
 
           {/* Pagination */}

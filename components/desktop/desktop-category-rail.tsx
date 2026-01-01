@@ -3,6 +3,7 @@
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { useCategoriesCache, getCategoryName } from "@/hooks/use-categories-cache"
+import type { Category } from "@/hooks/use-categories-cache"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { CaretLeft, CaretRight } from "@phosphor-icons/react"
 import {
@@ -23,7 +24,7 @@ const fallbackCategories = [
   { id: "6", name: "Sports", name_bg: "Спорт", slug: "sports", image_url: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=500&auto=format&fit=crop" },
   { id: "7", name: "Toys", name_bg: "Играчки", slug: "toys", image_url: "https://images.unsplash.com/photo-1566576912902-4b61e3785827?q=80&w=500&auto=format&fit=crop" },
   { id: "8", name: "Books", name_bg: "Книги", slug: "books", image_url: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?q=80&w=500&auto=format&fit=crop" },
-] as any[]
+] as const satisfies Category[]
 
 interface DesktopCategoryRailProps {
   locale: string

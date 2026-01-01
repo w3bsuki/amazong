@@ -47,23 +47,20 @@ export default async function SellPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  
-  // Fetch user and categories in parallel for better performance
-  const supabase = await createClient();
-  
-  // Run auth check and category fetch in parallel
-  const [categoriesResult, authResult] = await Promise.all([
-    getSellCategories(),
-    supabase ? supabase.auth.getUser() : Promise.resolve({ data: { user: null } })
-  ]);
-  
-  const categories = categoriesResult;
-  const user = authResult.data.user;
 
   // Auth-gated: redirect logged-out users to login.
+  // Do this BEFORE any expensive DB work to keep redirects fast.
+  const supabase = await createClient();
+  const authResult = await (supabase
+    ? supabase.auth.getUser()
+    : Promise.resolve({ data: { user: null } }));
+  const user = authResult.data.user;
+
   if (!user) {
     redirect(`/${locale}/auth/login`);
   }
+
+  const categories = await getSellCategories();
   
   // Fetch seller data only if user is authenticated
   let seller = null;
@@ -76,11 +73,18 @@ export default async function SellPage({
   
   return (
     <SellPageClient 
-      initialUser={user ? { id: user.id, email: user.email || undefined } : null}
+      initialUser={
+        user
+          ? {
+              id: user.id,
+              ...(user.email ? { email: user.email } : {}),
+            }
+          : null
+      }
       initialSeller={seller && seller.is_seller ? { id: seller.id, store_name: seller.store_name } : null}
       initialNeedsOnboarding={needsOnboarding ?? false}
       initialUsername={seller?.username ?? null}
-      initialAccountType={(seller?.account_type as string | null) ?? null}
+      initialAccountType={(seller?.account_type === "personal" || seller?.account_type === "business") ? seller.account_type : null}
       initialDisplayName={seller?.display_name ?? null}
       initialBusinessName={seller?.business_name ?? null}
       categories={categories}

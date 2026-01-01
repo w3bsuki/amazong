@@ -72,8 +72,8 @@ test.describe('UX Audit Phase 5 - Account Pages (authenticated)', () => {
     test(`authenticated account route renders cleanly: ${route} @phase5`, async ({ page, app }) => {
       const capture = setupConsoleCapture(page)
 
-      await app.gotoWithRetries(route, { timeout: 60_000, retries: 2 })
-      await app.waitForDevCompilingOverlayToHide(60_000)
+      await app.goto(route, { timeout: 60_000, retries: 2 })
+      await app.waitForHydration()
 
       // Should not show global error boundary.
       await expect(page.getByText(/something went wrong/i)).not.toBeVisible()

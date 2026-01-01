@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 import { normalizeOptionalImageUrl } from '@/lib/normalize-image-url'
@@ -74,12 +76,12 @@ function toCategoryAttribute(row: {
     attribute_type: attrType,
     options: Array.isArray(row.options) ? row.options as string[] : null,
     options_bg: Array.isArray(row.options_bg) ? row.options_bg as string[] : null,
-    placeholder: row.placeholder,
-    placeholder_bg: row.placeholder_bg,
+    placeholder: row.placeholder ?? null,
+    placeholder_bg: row.placeholder_bg ?? null,
     is_filterable: row.is_filterable,
     is_required: row.is_required,
     sort_order: row.sort_order,
-    validation_rules: row.validation_rules,
+    validation_rules: row.validation_rules ?? null,
   }
 }
 

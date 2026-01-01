@@ -77,7 +77,7 @@ interface OrderDetailViewProps {
   sellerId: string
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType; nextStatus?: string }> = {
+const STATUS_CONFIG = {
   pending: { 
     label: "Unfulfilled", 
     color: "bg-muted text-foreground border-border",
@@ -106,12 +106,21 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
     label: "Delivered", 
     color: "bg-success/10 text-success border-success/20",
     icon: IconCheck,
+    nextStatus: undefined,
   },
   cancelled: { 
     label: "Cancelled", 
     color: "bg-destructive/10 text-destructive border-destructive/20",
     icon: IconX,
+    nextStatus: undefined,
   },
+} as const
+
+type StatusKey = keyof typeof STATUS_CONFIG
+
+function getStatusConfig(status: string): (typeof STATUS_CONFIG)[StatusKey] {
+  if (status in STATUS_CONFIG) return STATUS_CONFIG[status as StatusKey]
+  return STATUS_CONFIG.pending
 }
 
 export function OrderDetailView({
@@ -126,17 +135,17 @@ export function OrderDetailView({
   // Helper to get nested data
   const getProduct = (item: OrderItem): OrderProduct | null => {
     if (!item.product) return null
-    return Array.isArray(item.product) ? item.product[0] : item.product
+    return Array.isArray(item.product) ? (item.product.at(0) ?? null) : item.product
   }
   
   const getCustomer = (): OrderCustomer | null => {
     if (!order.user) return null
-    return Array.isArray(order.user) ? order.user[0] : order.user
+    return Array.isArray(order.user) ? (order.user.at(0) ?? null) : order.user
   }
   
   const customer = getCustomer()
   const status = order.status || "pending"
-  const statusConfig = STATUS_CONFIG[status] || STATUS_CONFIG.pending
+  const statusConfig = getStatusConfig(status)
   const StatusIcon = statusConfig.icon
   
   const shippingCost = 0 // Shipping cost not stored in orders table yet

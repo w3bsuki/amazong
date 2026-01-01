@@ -82,8 +82,8 @@ export function BrandField({
           <FieldContent className={cn(!compact && "p-5")}>
             <BrandCombobox
               brands={brands}
-              value={brandId}
-              customValue={brandName}
+              value={brandId ?? null}
+              {...(brandName ? { customValue: brandName } : {})}
               onValueChange={handleValueChange}
               allowCustom={allowCustom}
               locale={locale}

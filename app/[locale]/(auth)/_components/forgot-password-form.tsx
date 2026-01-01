@@ -31,7 +31,7 @@ function SubmitButton({ locale }: { locale: string }) {
 }
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {
-  const initialState: AuthActionState = { fieldErrors: {}, error: undefined, success: false }
+  const initialState: AuthActionState = { fieldErrors: {}, success: false }
   const [state, formAction] = useActionState(requestPasswordReset.bind(null, locale), initialState)
 
   if (state?.success) {

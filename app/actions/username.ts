@@ -45,7 +45,7 @@ export async function checkUsernameAvailability(username: string): Promise<{
     // Validate format
     const validation = usernameSchema.safeParse(normalizedUsername)
     if (!validation.success) {
-      return { available: false, error: validation.error.errors[0]?.message }
+      return { available: false, error: validation.error.errors[0]?.message ?? "Invalid username" }
     }
     
     // Check reserved
@@ -99,7 +99,7 @@ export async function setUsername(username: string): Promise<{
     // Validate format
     const validation = usernameSchema.safeParse(normalizedUsername)
     if (!validation.success) {
-      return { success: false, error: validation.error.errors[0]?.message }
+      return { success: false, error: validation.error.errors[0]?.message ?? "Invalid username" }
     }
     
     // Check reserved
@@ -211,7 +211,7 @@ export async function updatePublicProfile(data: z.infer<typeof publicProfileSche
     // Validate
     const validation = publicProfileSchema.safeParse(data)
     if (!validation.success) {
-      return { success: false, error: validation.error.errors[0]?.message }
+      return { success: false, error: validation.error.errors[0]?.message ?? "Invalid profile data" }
     }
     
     const updateData: Record<string, unknown> = {
@@ -370,14 +370,14 @@ export async function upgradeToBusinessAccount(data: z.infer<typeof businessUpgr
     // Validate
     const validation = businessUpgradeSchema.safeParse(data)
     if (!validation.success) {
-      return { success: false, error: validation.error.errors[0]?.message }
+      return { success: false, error: validation.error.errors[0]?.message ?? "Invalid business data" }
     }
     
     // If changing username with upgrade
     if (data.change_username && data.new_username) {
       const usernameResult = await setUsername(data.new_username)
       if (!usernameResult.success) {
-        return { success: false, error: `Username: ${usernameResult.error}` }
+        return { success: false, error: `Username: ${usernameResult.error ?? "Failed to set username"}` }
       }
     }
     

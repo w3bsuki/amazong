@@ -36,6 +36,7 @@ export function AccountHeader() {
     for (const key of keysBySpecificity) {
       if (path.startsWith(key + "/")) {
         const value = titles[key]
+        if (!value) continue
         return locale === "bg" ? value.bg : value.en
       }
     }

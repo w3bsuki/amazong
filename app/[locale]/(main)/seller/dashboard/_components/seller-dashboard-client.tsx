@@ -307,7 +307,7 @@ export default function SellerDashboardClient() {
 
                   <div className="flex items-center gap-2">
                     <Button asChild variant="ghost" size="sm">
-                      <Link href={seller?.username ? `/${seller.username}/${(product as any).slug || product.id}` : "#"}>
+                      <Link href={seller?.username ? `/${seller.username}/${product.slug || product.id}` : "#"}>
                         <Eye className="w-4 h-4" />
                       </Link>
                     </Button>

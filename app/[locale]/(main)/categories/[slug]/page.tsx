@@ -8,6 +8,7 @@ import { FilterChips } from "@/components/common/filters/filter-chips"
 import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { SearchFilters } from "@/components/shared/search/search-filters"
+import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { Suspense } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { cookies } from "next/headers"
@@ -38,17 +39,31 @@ import { AttributeQuickFilters } from "@/components/category/attribute-quick-fil
 // - Product search results (filtered by user preferences)
 // =============================================================================
 
+const PLACEHOLDER_SLUG = '__placeholder__'
+
 // Generate static params for all categories (for SSG)
 // Uses createStaticClient because this runs at build time outside request scope
 export async function generateStaticParams() {
   const supabase = createStaticClient()
-  if (!supabase) return []
+  // With Cache Components enabled, `generateStaticParams` must return at least
+  // one param. When Supabase isn't configured (e.g. local/E2E), fall back to a
+  // placeholder param to avoid build-time empty-array errors.
+  if (!supabase) {
+    return routing.locales.map((locale) => ({ locale, slug: PLACEHOLDER_SLUG }))
+  }
   
   const { data: categories } = await supabase
     .from("categories")
     .select("slug")
   
-  const slugs = (categories || []).map((category) => category.slug)
+  const slugs = (categories || [])
+    .map((category) => category.slug)
+    .filter((slug): slug is string => typeof slug === 'string' && slug.length > 0)
+
+  if (slugs.length === 0) {
+    return routing.locales.map((locale) => ({ locale, slug: PLACEHOLDER_SLUG }))
+  }
+
   return routing.locales.flatMap((locale) => slugs.map((slug) => ({ locale, slug })))
 }
 
@@ -60,6 +75,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug, locale } = await params
   setRequestLocale(locale)
+
+  if (slug === PLACEHOLDER_SLUG) {
+    return {
+      title: locale === 'bg' ? 'Категории' : 'Categories',
+    }
+  }
   
   // Use cached function instead of direct query
   const category = await getCategoryBySlug(slug)
@@ -109,6 +130,11 @@ export default async function CategoryPage({
   const params = await paramsPromise
   const searchParams = await searchParamsPromise
   const { slug, locale } = params
+
+  if (slug === PLACEHOLDER_SLUG) {
+    notFound()
+  }
+
   setRequestLocale(locale)
   const currentPage = Math.max(1, Number.parseInt(searchParams.page || "1", 10))
   
@@ -279,69 +305,55 @@ export default async function CategoryPage({
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                title={product.title}
-                price={product.price}
-                image={product.image_url || product.images?.[0] || ""}
-                rating={product.rating || 0}
-                reviews={product.review_count || 0}
-                originalPrice={product.list_price}
-                tags={product.tags || []}
-                slug={product.slug}
-                storeSlug={product.sellers?.store_slug}
-                sellerId={product.sellers?.id || undefined}
-                sellerName={(product.sellers?.display_name || product.sellers?.business_name || product.sellers?.store_slug) || undefined}
-                sellerAvatarUrl={product.sellers?.avatar_url || null}
-                sellerTier={product.sellers?.account_type === 'business' ? 'business' : (product.sellers?.tier === 'premium' ? 'premium' : 'basic')}
-                sellerVerified={Boolean(product.sellers?.is_verified_business)}
-                categorySlug={slug}
-                condition={product.attributes?.condition}
-                brand={product.attributes?.brand}
-                make={product.attributes?.make}
-                model={product.attributes?.model}
-                year={product.attributes?.year}
-                location={product.attributes?.location}
-              />
-            ))}
+            {products.map((product) => {
+              const image = product.image_url || product.images?.[0] || "/placeholder.svg"
+              const sellerName =
+                product.sellers?.display_name ||
+                product.sellers?.business_name ||
+                product.sellers?.store_slug
+
+              return (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  title={product.title}
+                  price={product.price}
+                  image={image}
+                  rating={product.rating || 0}
+                  reviews={product.review_count || 0}
+                  originalPrice={product.list_price ?? null}
+                  tags={product.tags || []}
+                  slug={product.slug ?? null}
+                  storeSlug={product.sellers?.store_slug ?? null}
+                  sellerId={product.sellers?.id ?? null}
+                  {...(sellerName ? { sellerName } : {})}
+                  sellerAvatarUrl={product.sellers?.avatar_url ?? null}
+                  sellerTier={
+                    product.sellers?.account_type === "business"
+                      ? "business"
+                      : product.sellers?.tier === "premium"
+                        ? "premium"
+                        : "basic"
+                  }
+                  sellerVerified={Boolean(product.sellers?.is_verified_business)}
+                  categorySlug={slug}
+                  {...(product.attributes?.condition ? { condition: product.attributes.condition } : {})}
+                  {...(product.attributes?.brand ? { brand: product.attributes.brand } : {})}
+                  {...(product.attributes?.make ? { make: product.attributes.make } : {})}
+                  {...(product.attributes?.model ? { model: product.attributes.model } : {})}
+                  {...(product.attributes?.year ? { year: product.attributes.year } : {})}
+                  {...(product.attributes?.location ? { location: product.attributes.location } : {})}
+                />
+              )
+            })}
           </div>
 
           {products.length === 0 && (
-            <div className="mt-12 text-center py-12 px-4">
-              <div className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg 
-                  className="size-10 text-muted-foreground" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={1.5} 
-                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" 
-                  />
-                </svg>
-              </div>
-              <h2 className="text-xl font-semibold text-foreground mb-2">{t('noProductsFound')}</h2>
-              <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                {t('noResultsInCategory')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link href={`/categories/${slug}`}>
-                  <Button variant="default" className="h-touch-sm px-6">
-                    {t('clearAllFiltersButton')}
-                  </Button>
-                </Link>
-                <Link href="/categories">
-                  <Button variant="outline" className="h-touch-sm px-6">
-                    {t('browseAllCategories')}
-                  </Button>
-                </Link>
-              </div>
-            </div>
+            <EmptyStateCTA 
+              variant="no-category"
+              categoryName={categoryName}
+              className="mt-8"
+            />
           )}
 
           {/* Pagination */}

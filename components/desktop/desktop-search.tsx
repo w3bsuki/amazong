@@ -22,6 +22,14 @@ export function DesktopSearch() {
   const t = useTranslations("Navigation")
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
+
+  // IMPORTANT: `useRouter`/`Link` come from `@/i18n/routing` (next-intl navigation).
+  // Those helpers automatically prefix the active locale (localePrefix: 'always').
+  // So hrefs MUST be locale-agnostic (e.g. "/search"), otherwise we end up with
+  // duplicated paths like "/en/en/search".
+  const buildSearchHref = useCallback((q: string) => {
+    return `/search?q=${encodeURIComponent(q)}`
+  }, [])
   
   const [isOpen, setIsOpen] = React.useState(false)
   const [popoverWidth, setPopoverWidth] = React.useState(0)
@@ -43,23 +51,26 @@ export function DesktopSearch() {
     minSearchLength,
   } = useProductSearch(6)
 
-  const handleSearch = useCallback((e: React.FormEvent) => {
-    e.preventDefault()
-    if (!query.trim()) return
-    
-    saveSearch(query)
+  const handleSearch = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+    // For maximum reliability (including E2E), allow the native GET form
+    // submission to navigate. We still record the search and close UI.
+    const raw = new FormData(e.currentTarget).get("q")
+    const q = (typeof raw === "string" ? raw : (inputRef.current?.value ?? query)).trim()
+    if (!q) {
+      e.preventDefault()
+      return
+    }
+
+    saveSearch(q)
     setIsOpen(false)
-    // Use an explicit locale-prefixed URL to ensure the query string is preserved
-    // across locale-aware routing.
-    router.push(`/${locale}/search?q=${encodeURIComponent(query)}`)
-  }, [query, saveSearch, router, locale])
+  }, [query, saveSearch])
 
   const handleSelectSearch = useCallback((search: string) => {
     setQuery(search)
     saveSearch(search)
     setIsOpen(false)
-    router.push(`/${locale}/search?q=${encodeURIComponent(search)}`)
-  }, [setQuery, saveSearch, router, locale])
+    router.push(buildSearchHref(search))
+  }, [setQuery, saveSearch, router, buildSearchHref])
 
   // Build SEO-friendly product URL
   const buildProductUrl = useCallback((product: { slug?: string; storeSlug?: string | null; id: string }) => {
@@ -82,7 +93,7 @@ export function DesktopSearch() {
       setIsOpen(false)
       inputRef.current?.blur()
     }
-  }, [])
+  }, [query, saveSearch, router, locale])
 
   const handleClearInput = useCallback(() => {
     setQuery("")
@@ -110,6 +121,8 @@ export function DesktopSearch() {
           <form 
             ref={formRef}
             onSubmit={handleSearch}
+            action="/search"
+            method="get"
             className="flex h-full w-full rounded-full overflow-hidden bg-background border border-header-text/20 focus-within:border-header-text/35 focus-within:bg-background"
           >
             {/* Search Input */}
@@ -118,6 +131,7 @@ export function DesktopSearch() {
               <Input
                 ref={inputRef}
                 type="text"
+                name="q"
                 placeholder={
                   locale === "bg"
                     ? "Търси продукти, марки и още..."
@@ -170,7 +184,7 @@ export function DesktopSearch() {
                     {locale === "bg" ? "Продукти" : "Products"}
                   </span>
                   <Link 
-                    href={`/search?q=${encodeURIComponent(query)}`}
+                    href={buildSearchHref(query)}
                     className="text-xs text-brand flex items-center gap-1"
                     onClick={() => setIsOpen(false)}
                   >

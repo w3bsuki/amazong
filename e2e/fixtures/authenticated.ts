@@ -32,7 +32,7 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
     }
 
     // Authenticate in a clean environment.
-    const page = await browser.newPage({ storageState: undefined })
+    const page = await browser.newPage()
 
     // Ensure modal/consent overlays never block login.
     await page.addInitScript(() => {

@@ -1,7 +1,6 @@
 
-import { createClient } from "@supabase/supabase-js"
 import { NextResponse, type NextRequest } from "next/server"
-import { createRouteHandlerClient } from "@/lib/supabase/server"
+import { createRouteHandlerClient, createAdminClient } from "@/lib/supabase/server"
 import { z } from "zod"
 
 // Attribute schema
@@ -84,10 +83,7 @@ export async function POST(request: NextRequest) {
         const data = parseResult.data
 
         // 2. Use Service Role to bypass RLS
-        const supabaseAdmin = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        )
+        const supabaseAdmin = createAdminClient()
 
         // 3. Products are always created as normal - boosting requires Stripe payment
         // The boost is applied via /api/boost/checkout -> /api/boost/webhook flow
@@ -100,8 +96,8 @@ export async function POST(request: NextRequest) {
                 title: data.title,
                 description: data.description,
                 price: data.price,
-                list_price: data.listPrice,
-                category_id: data.categoryId,
+                list_price: data.listPrice ?? null,
+                category_id: data.categoryId ?? null,
                 tags: data.tags,
                 images: data.images.map((img) => img.url),
                 stock: data.stock,

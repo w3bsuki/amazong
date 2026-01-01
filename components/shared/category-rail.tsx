@@ -1,6 +1,7 @@
 "use client"
 
 import { useCategoriesCache, getCategoryName, getCategoryShortName } from "@/hooks/use-categories-cache"
+import type { Category } from "@/hooks/use-categories-cache"
 import { CategoryCircle } from "@/components/shared/category/category-circle"
 
 // Fallback categories if fetch fails
@@ -10,7 +11,7 @@ const fallbackCategories = [
   { id: "3", name: "Home", name_bg: "Дом", slug: "home", image_url: "/placeholder.svg" },
   { id: "4", name: "Beauty", name_bg: "Красота", slug: "beauty", image_url: "/placeholder.svg" },
   { id: "5", name: "Gaming", name_bg: "Гейминг", slug: "gaming", image_url: "/placeholder.svg" },
-] as any[]
+] as const satisfies Category[]
 
 interface MobileCategoryRailProps {
   locale: string
@@ -66,7 +67,7 @@ export function MobileCategoryRail({ locale }: MobileCategoryRailProps) {
                   label={shortName}
                   labelClassName="text-foreground font-medium text-tiny text-center w-12 leading-tight truncate"
                   className="rounded-md"
-                  role={"listitem" as any}
+                  role="listitem"
                 />
               )
             })

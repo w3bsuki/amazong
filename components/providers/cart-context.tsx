@@ -30,6 +30,33 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
+function toRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : null
+}
+
+function asString(value: unknown): string | null {
+  return typeof value === "string" ? value : null
+}
+
+function asNumber(value: unknown): number | null {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null
+  if (typeof value === "string") {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+  return null
+}
+
+function asStringArray(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null
+  const out: string[] = []
+  for (const item of value) {
+    if (typeof item !== "string") return null
+    out.push(item)
+  }
+  return out
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [userId, setUserId] = useState<string | null>(null)
@@ -54,7 +81,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClient()
 
     // Note: cart_items is introduced via migration; keep runtime-safe casts.
-    const { data, error } = await (supabase as unknown as any)
+    const { data, error } = await supabase
       .from("cart_items")
       .select(`
         product_id,
@@ -75,18 +102,34 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
-    const nextItems: CartItem[] = (data || []).map((row: any) => {
-      const prod = row.products
+    const rows: unknown[] = Array.isArray(data) ? data : []
+    const nextItems: CartItem[] = rows.map((row) => {
+      const record = toRecord(row)
+      const productId = asString(record?.product_id) ?? ""
+      const quantity = asNumber(record?.quantity) ?? 1
+
+      const products = toRecord(record?.products)
+      const title = asString(products?.title) ?? "Unknown Product"
+      const price = asNumber(products?.price) ?? 0
+
+      const images = asStringArray(products?.images)
+      const image = images?.[0] ?? "/placeholder.svg"
+
+      const slug = asString(products?.slug)
+      const seller = toRecord(products?.seller)
+      const username = asString(seller?.username)
+
       return {
-        id: row.product_id,
-        title: prod?.title || "Unknown Product",
-        price: typeof prod?.price === "number" ? prod.price : Number(prod?.price) || 0,
-        image: prod?.images?.[0] || "/placeholder.svg",
-        quantity: typeof row.quantity === "number" ? row.quantity : Number(row.quantity) || 1,
-        slug: prod?.slug || undefined,
-        username: prod?.seller?.username || undefined,
+        id: productId,
+        title,
+        price,
+        image,
+        quantity,
+        ...(slug ? { slug } : {}),
+        ...(username ? { username } : {}),
       }
     })
+    .filter((item) => Boolean(item.id))
 
     setItems(nextItems)
   }, [])
@@ -108,7 +151,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.rpc("cart_add_item", {
         p_product_id: item.id,
         p_quantity: qty,
-      } as any)
+      })
 
       if (error) {
         console.error("Error syncing cart item:", error)
@@ -211,7 +254,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const { error } = await supabase.rpc("cart_add_item", {
           p_product_id: itemWithValidPrice.id,
           p_quantity: qty,
-        } as any)
+        })
 
         if (error) {
           console.error("Error adding to server cart:", error)
@@ -229,7 +272,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const { error } = await supabase.rpc("cart_set_quantity", {
           p_product_id: id,
           p_quantity: 0,
-        } as any)
+        })
 
         if (error) {
           console.error("Error removing from server cart:", error)
@@ -251,7 +294,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const { error } = await supabase.rpc("cart_set_quantity", {
           p_product_id: id,
           p_quantity: quantity,
-        } as any)
+        })
 
         if (error) {
           console.error("Error updating server cart quantity:", error)

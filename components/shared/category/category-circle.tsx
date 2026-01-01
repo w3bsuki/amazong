@@ -14,15 +14,17 @@ type CategoryLike = {
   icon?: string | null
 }
 
+type LinkHref = React.ComponentProps<typeof Link>["href"]
+
 export interface CategoryCircleProps {
   category: CategoryLike
   label: string
   /** Defaults to `label`. */
   ariaLabel?: string
 
-  role?: string
+  role?: React.AriaRole
 
-  href?: string
+  href?: LinkHref
   prefetch?: boolean
   onClick?: () => void
 
@@ -72,7 +74,7 @@ export function CategoryCircle({
       <CategoryCircleVisual
         category={category}
         active={!!active}
-        className={circleClassName}
+        className={circleClassName ?? ""}
         fallbackIconSize={fallbackIconSize}
         fallbackIconWeight={fallbackIconWeight}
         variant={variant}
@@ -84,12 +86,12 @@ export function CategoryCircle({
   if (href) {
     return (
       <Link
-        href={href as any}
+        href={href}
         prefetch={prefetch}
         aria-label={ariaLabel ?? label}
         onClick={onClick}
         className={baseClasses}
-        role={role as any}
+        role={role}
       >
         {content}
       </Link>

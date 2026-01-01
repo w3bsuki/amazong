@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/supabase/server';
 import { headers } from 'next/headers';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-11-17.clover",
-});
+import { stripe } from '@/lib/stripe';
+import { getStripeWebhookSecret } from '@/lib/env';
+import type Stripe from 'stripe';
 
 // PRODUCTION: Use centralized admin client for consistency
 const supabase = createAdminClient();
@@ -26,7 +24,7 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(
       body,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      getStripeWebhookSecret()
     );
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';

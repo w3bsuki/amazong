@@ -34,9 +34,11 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
     notFound()
   }
 
-  const wishlistName = (wishlistItems as any)[0]?.wishlist_name || (wishlistItems as any)[0]?.name || t("wishlist")
-  const wishlistDescription = (wishlistItems as any)[0]?.wishlist_description || (wishlistItems as any)[0]?.description
-  const ownerName = (wishlistItems as any)[0]?.owner_name || t("anonymousUser")
+  // wishlistItems is typed from the RPC - all items share the same wishlist metadata
+  const firstItem = wishlistItems[0]
+  const wishlistName = firstItem?.wishlist_name || t("wishlist")
+  const wishlistDescription = firstItem?.wishlist_description || null
+  const ownerName = firstItem?.owner_name || t("anonymousUser")
 
   const productIds = (wishlistItems as SharedWishlistItem[]).map((i) => i.product_id)
   const { data: productsForLinks } = await supabase
@@ -44,14 +46,22 @@ export default async function SharedWishlistTokenPage({ params }: SharedWishlist
     .select("id, slug, seller:profiles!products_seller_id_fkey(username)")
     .in("id", productIds)
 
+  type ProductWithSeller = {
+    id: string
+    slug: string | null
+    seller: { username: string | null } | null
+  }
   const canonicalById = new Map(
-    (productsForLinks || []).map((p: any) => [
-      p.id as string,
-      {
-        username: (p.seller as { username?: string | null } | null)?.username ?? null,
-        slug: (p.slug as string | null) ?? null,
-      },
-    ])
+    (productsForLinks || []).map((p) => {
+      const product = p as ProductWithSeller
+      return [
+        product.id,
+        {
+          username: product.seller?.username ?? null,
+          slug: product.slug ?? null,
+        },
+      ]
+    })
   )
 
   const getProductHref = (productId: string) => {

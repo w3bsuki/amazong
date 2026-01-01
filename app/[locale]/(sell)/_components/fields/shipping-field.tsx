@@ -203,7 +203,12 @@ function DimensionsInput({
             type="number"
             placeholder="0"
             value={dimensions?.lengthCm || ""}
-            onChange={(e) => onChange({ ...dimensions, lengthCm: e.target.value ? Number(e.target.value) : undefined })}
+            onChange={(e) =>
+              onChange({
+                ...(dimensions ?? {}),
+                ...(e.target.value ? { lengthCm: Number(e.target.value) } : {}),
+              })
+            }
             className="h-10 pr-8 rounded-lg border-border font-medium"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-2xs font-bold text-muted-foreground">cm</span>
@@ -216,7 +221,12 @@ function DimensionsInput({
             type="number"
             placeholder="0"
             value={dimensions?.widthCm || ""}
-            onChange={(e) => onChange({ ...dimensions, widthCm: e.target.value ? Number(e.target.value) : undefined })}
+            onChange={(e) =>
+              onChange({
+                ...(dimensions ?? {}),
+                ...(e.target.value ? { widthCm: Number(e.target.value) } : {}),
+              })
+            }
             className="h-10 pr-8 rounded-lg border-border font-medium"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-2xs font-bold text-muted-foreground">cm</span>
@@ -229,7 +239,12 @@ function DimensionsInput({
             type="number"
             placeholder="0"
             value={dimensions?.heightCm || ""}
-            onChange={(e) => onChange({ ...dimensions, heightCm: e.target.value ? Number(e.target.value) : undefined })}
+            onChange={(e) =>
+              onChange({
+                ...(dimensions ?? {}),
+                ...(e.target.value ? { heightCm: Number(e.target.value) } : {}),
+              })
+            }
             className="h-10 pr-8 rounded-lg border-border font-medium"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-2xs font-bold text-muted-foreground">cm</span>
@@ -243,7 +258,12 @@ function DimensionsInput({
             step="0.1"
             placeholder="0"
             value={dimensions?.weightKg || ""}
-            onChange={(e) => onChange({ ...dimensions, weightKg: e.target.value ? Number(e.target.value) : undefined })}
+            onChange={(e) =>
+              onChange({
+                ...(dimensions ?? {}),
+                ...(e.target.value ? { weightKg: Number(e.target.value) } : {}),
+              })
+            }
             className="h-10 pr-8 rounded-lg border-border font-medium"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-2xs font-bold text-muted-foreground">kg</span>
@@ -283,6 +303,15 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
   const sellerCity = watch("sellerCity");
   const dimensions = watch("dimensions");
   const processingDays = watch("processingDays");
+
+  const cleanDimensions = dimensions
+    ? {
+        ...(dimensions.lengthCm !== undefined ? { lengthCm: dimensions.lengthCm } : {}),
+        ...(dimensions.widthCm !== undefined ? { widthCm: dimensions.widthCm } : {}),
+        ...(dimensions.heightCm !== undefined ? { heightCm: dimensions.heightCm } : {}),
+        ...(dimensions.weightKg !== undefined ? { weightKg: dimensions.weightKg } : {}),
+      }
+    : undefined;
 
   const regionValues = {
     shipsToBulgaria,
@@ -442,8 +471,18 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
               </Label>
             </div>
             <DimensionsInput
-              dimensions={dimensions}
-              onChange={(dims) => setValue("dimensions", dims)}
+              dimensions={cleanDimensions}
+              onChange={(dims) => {
+                const next = dims
+                  ? {
+                      ...(dims.lengthCm !== undefined ? { lengthCm: dims.lengthCm } : {}),
+                      ...(dims.widthCm !== undefined ? { widthCm: dims.widthCm } : {}),
+                      ...(dims.heightCm !== undefined ? { heightCm: dims.heightCm } : {}),
+                      ...(dims.weightKg !== undefined ? { weightKg: dims.weightKg } : {}),
+                    }
+                  : undefined;
+                setValue("dimensions", next);
+              }}
               isBg={isBg}
             />
           </div>

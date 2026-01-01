@@ -106,7 +106,7 @@ function toPlan(sp: SubscriptionPlan): Plan {
     final_value_fee: sp.final_value_fee ?? sp.commission_rate ?? 12,
     insertion_fee: 0,  // No longer used
     per_order_fee: 0,  // No longer used
-    commission_rate: sp.commission_rate ?? undefined,  // Legacy compat
+    ...(typeof sp.commission_rate === "number" ? { commission_rate: sp.commission_rate } : {}),
     boosts_included: sp.boosts_included ?? 0,
     priority_support: sp.priority_support ?? false,
     analytics_access: sp.analytics_access ?? "none",

@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CaretRight, TrendUp, Tag, CurrencyCircleDollar } from "@phosphor-icons/react"
-import { CarouselScrollButton } from "@/components/ui/carousel-scroll-button"
+import { CarouselScrollButton } from "@/components/common/carousel-scroll-button"
 import { useLocale } from "next-intl"
 import { ProductCard } from "@/components/shared/product/product-card"
 
@@ -141,12 +141,12 @@ export function TrendingProductsSection({
               <CarouselScrollButton
                 direction="left"
                 onClick={() => scroll(tab.id, "left")}
-                visible={scrollStates[tab.id]?.left}
+                visible={Boolean(scrollStates[tab.id]?.left)}
               />
               <CarouselScrollButton
                 direction="right"
                 onClick={() => scroll(tab.id, "right")}
-                visible={scrollStates[tab.id]?.right}
+                visible={Boolean(scrollStates[tab.id]?.right)}
               />
 
               {/* Products Container */}

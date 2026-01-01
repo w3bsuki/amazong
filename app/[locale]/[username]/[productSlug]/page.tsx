@@ -4,8 +4,8 @@ import { setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 
 import { createStaticClient } from "@/lib/supabase/server"
-import { fetchProductByUsernameAndSlug, fetchSellerProducts } from "@/lib/data/product-page"
-import { fetchProductReviews } from "@/lib/data/product-reviews"
+import { fetchProductByUsernameAndSlug, fetchSellerProducts, type ProductPageProduct } from "@/lib/data/product-page"
+import { fetchProductReviews, type ProductReview } from "@/lib/data/product-reviews"
 
 import { ProductPageLayout } from "@/components/shared/product/product-page-layout"
 import {
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     username,
     productSlug,
     product,
-    seller: (product as any).seller ?? null,
+    seller: product.seller ?? null,
   })
 }
 
@@ -53,34 +53,34 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const productData = await fetchProductByUsernameAndSlug(username, productSlug)
   if (!productData) notFound()
 
-  const category = (productData as any).category as any | null
-  const seller = (productData as any).seller as any | null
+  const category = productData.category
+  const seller = productData.seller
   if (!seller) notFound()
 
-  let parentCategory: any | null = null
+  let parentCategory: ProductPageProduct["category"] | null = null
   if (category?.parent_id) {
     const { data: parent } = await supabase
       .from("categories")
-      .select("id, name, name_bg, slug, icon, parent_id")
+      .select("id, name, name_bg, slug, icon, parent_id, image_url")
       .eq("id", category.parent_id)
       .maybeSingle()
-    parentCategory = parent ?? null
+    parentCategory = (parent as unknown as ProductPageProduct["category"] | null) ?? null
   }
 
   const rootCategory = parentCategory?.parent_id ? parentCategory : parentCategory ?? category
 
-  const relatedProductsRaw = await fetchSellerProducts(seller.id, (productData as any).id, 10)
+  const relatedProductsRaw = await fetchSellerProducts(seller.id, productData.id, 10)
 
-  const reviews = isUuid((productData as any).id)
-    ? await fetchProductReviews((productData as any).id, 8)
+  const reviews: ProductReview[] = isUuid(productData.id)
+    ? await fetchProductReviews(productData.id, 8)
     : []
 
   const viewModel = buildProductPageViewModel({
     locale,
     username,
     productSlug,
-    product: productData as any,
-    seller: seller as any,
+    product: productData,
+    seller,
     category,
     parentCategory,
     relatedProductsRaw: relatedProductsRaw || [],

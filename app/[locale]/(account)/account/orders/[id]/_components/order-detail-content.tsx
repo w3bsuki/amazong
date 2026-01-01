@@ -99,13 +99,33 @@ interface OrderDetailContentProps {
   existingSellerFeedbackSellerIds?: string[]
 }
 
-const STATUS_CONFIG: Record<string, { label: string; labelBg: string; color: string; icon: typeof CheckCircle }> = {
+const STATUS_CONFIG = {
   pending: { label: "Pending", labelBg: "Изчаква", color: "bg-yellow-500", icon: Clock },
   paid: { label: "Paid", labelBg: "Платена", color: "bg-blue-500", icon: Receipt },
   processing: { label: "Processing", labelBg: "Обработва се", color: "bg-indigo-500", icon: Package },
   shipped: { label: "Shipped", labelBg: "Изпратена", color: "bg-purple-500", icon: Truck },
   delivered: { label: "Delivered", labelBg: "Доставена", color: "bg-green-500", icon: CheckCircle },
   cancelled: { label: "Cancelled", labelBg: "Отменена", color: "bg-red-500", icon: XCircle },
+} as const satisfies Record<
+  "pending" | "paid" | "processing" | "shipped" | "delivered" | "cancelled",
+  { label: string; labelBg: string; color: string; icon: typeof CheckCircle }
+>
+
+type OrderStatusKey = keyof typeof STATUS_CONFIG
+
+const ORDER_PROGRESS_STATUSES = ["pending", "paid", "processing", "shipped", "delivered"] as const
+type OrderProgressStatusKey = (typeof ORDER_PROGRESS_STATUSES)[number]
+
+function normalizeProgressStatus(status: OrderStatusKey): OrderProgressStatusKey {
+  return status === "cancelled" ? "pending" : status
+}
+
+function isOrderStatusKey(status: string): status is OrderStatusKey {
+  return status in STATUS_CONFIG
+}
+
+function getStatusConfig(status: string): (typeof STATUS_CONFIG)[OrderStatusKey] {
+  return STATUS_CONFIG[isOrderStatusKey(status) ? status : "pending"]
 }
 
 const CARRIERS: Record<string, { name: string; trackingUrl: string }> = {
@@ -136,7 +156,8 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
 
   const dateLocale = locale === "bg" ? bg : enUS
   const orderStatus = order.status || "pending"
-  const statusConfig = STATUS_CONFIG[orderStatus] || STATUS_CONFIG.pending
+  const orderStatusKey: OrderStatusKey = isOrderStatusKey(orderStatus) ? orderStatus : "pending"
+  const statusConfig = STATUS_CONFIG[orderStatusKey]
   const StatusIcon = statusConfig.icon
 
   // Format currency
@@ -320,10 +341,10 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
-            {["pending", "paid", "processing", "shipped", "delivered"].map((status, index, arr) => {
+            {ORDER_PROGRESS_STATUSES.map((status, index, arr) => {
               const config = STATUS_CONFIG[status]
               const Icon = config.icon
-              const isActive = arr.indexOf(orderStatus) >= index
+              const isActive = arr.indexOf(normalizeProgressStatus(orderStatusKey)) >= index
               const isCurrent = orderStatus === status
               
               return (
@@ -340,7 +361,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                   </div>
                   {index < arr.length - 1 && (
                     <div className={`h-0.5 flex-1 mx-1 transition-colors ${
-                      arr.indexOf(orderStatus) > index ? "bg-primary" : "bg-muted"
+                      arr.indexOf(normalizeProgressStatus(orderStatusKey)) > index ? "bg-primary" : "bg-muted"
                     }`} />
                   )}
                 </div>
@@ -400,16 +421,17 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
             <CardContent className="space-y-4">
               {order.order_items.map((item) => {
                 const itemStatus = item.status || "pending"
-                const itemConfig = STATUS_CONFIG[itemStatus] || STATUS_CONFIG.pending
+                const itemConfig = getStatusConfig(itemStatus)
+                const firstImage = item.product?.images?.[0]
                 
                 return (
                   <div key={item.id} className="flex gap-4 p-3 rounded-lg border bg-card">
                     {/* Product Image */}
                     <div className="relative size-20 rounded-md overflow-hidden bg-muted shrink-0">
-                      {item.product?.images?.[0] ? (
+                      {firstImage ? (
                         <Image
-                          src={item.product.images[0]}
-                          alt={item.product.title || "Product"}
+                          src={firstImage}
+                          alt={item.product?.title || "Product"}
                           fill
                           className="object-cover"
                         />

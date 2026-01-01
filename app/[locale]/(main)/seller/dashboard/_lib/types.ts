@@ -1,6 +1,7 @@
 export interface Seller {
   id: string
   store_name: string
+  username?: string | null
   description?: string | null
   verified?: boolean | null
   created_at?: string
@@ -13,6 +14,7 @@ export interface Product {
   price: number
   stock: number
   images: string[]
+  slug?: string | null
   created_at: string
   category?: { name: string } | null
 }

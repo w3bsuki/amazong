@@ -4,7 +4,7 @@ import { createServerClient } from "@supabase/ssr"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { cookies } from "next/headers"
 import type { NextRequest, NextResponse } from "next/server"
-import type { Database } from "./database.types"
+import type { Database } from "@/types/database.types"
 
 // =============================================================================
 // Supabase Clients - Use the right one for your context
@@ -41,14 +41,16 @@ function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit) {
   return fetch(input, { ...init, signal: controller.signal }).finally(() => clearTimeout(timeoutId))
 }
 
-function withAuthCookieDomain(options: unknown): unknown {
+function withAuthCookieDomain<TOptions extends Record<string, unknown> | undefined>(
+  options: TOptions,
+): TOptions {
   if (!options || typeof options !== 'object') return options
   const domain = process.env.AUTH_COOKIE_DOMAIN
   // Only apply an explicit cookie domain in production. In local dev/E2E on
   // localhost, setting a non-local domain prevents the browser from sending
   // the auth cookies back, which breaks SSR-protected routes.
   if (!domain || process.env.NODE_ENV !== 'production') return options
-  return { ...(options as Record<string, unknown>), domain }
+  return { ...options, domain }
 }
 
 function assertEnvVars() {
@@ -58,18 +60,24 @@ function assertEnvVars() {
 }
 
 /** Auth-dependent client with cookies (for user-specific data) */
-export async function createClient() {
+export async function createClient(): Promise<ReturnType<typeof createServerClient<Database>>> {
   assertEnvVars()
   const cookieStore = await cookies()
 
   return createServerClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { fetch: fetchWithTimeout },
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll: (cookiesToSet) => {
         try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, withAuthCookieDomain(options) as any)
-          )
+          cookiesToSet.forEach(({ name, value, options }) => {
+            const cookieOptions = withAuthCookieDomain(
+              options && typeof options === "object" ? (options as Record<string, unknown>) : undefined,
+            )
+
+            if (cookieOptions) cookieStore.set(name, value, cookieOptions)
+            else cookieStore.set(name, value)
+          })
         } catch {
           // Called from Server Component - middleware handles session refresh
         }
@@ -87,19 +95,31 @@ export async function createClient() {
 export function createRouteHandlerClient(request: NextRequest) {
   assertEnvVars()
 
-  const pendingCookies: Array<{ name: string; value: string; options?: unknown }> = []
+  const pendingCookies: Array<{ name: string; value: string; options?: Record<string, unknown> }> = []
 
   const supabase = createServerClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { fetch: fetchWithTimeout },
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll: (cookiesToSet) => {
-        pendingCookies.push(...cookiesToSet)
+        pendingCookies.push(
+          ...cookiesToSet.map(({ name, value, options }) => {
+            const normalizedOptions =
+              options && typeof options === "object" ? (options as Record<string, unknown>) : undefined
+
+            return normalizedOptions ? { name, value, options: normalizedOptions } : { name, value }
+          }),
+        )
       },
     },
   })
 
   const applyCookies = <TBody>(response: NextResponse<TBody>) => {
-    pendingCookies.forEach(({ name, value, options }) => response.cookies.set(name, value, withAuthCookieDomain(options) as any))
+    pendingCookies.forEach(({ name, value, options }) => {
+      const cookieOptions = withAuthCookieDomain(options)
+      if (cookieOptions) response.cookies.set(name, value, cookieOptions)
+      else response.cookies.set(name, value)
+    })
     return response
   }
 
@@ -107,7 +127,7 @@ export function createRouteHandlerClient(request: NextRequest) {
 }
 
 /** Static client for cached queries (no cookies, safe for 'use cache') */
-export function createStaticClient() {
+export function createStaticClient(): ReturnType<typeof createSupabaseClient<Database>> {
   assertEnvVars()
   return createSupabaseClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
     global: { fetch: fetchWithTimeout },
@@ -115,7 +135,7 @@ export function createStaticClient() {
 }
 
 /** Admin client bypassing RLS (use only after auth verification) */
-export function createAdminClient() {
+export function createAdminClient(): ReturnType<typeof createSupabaseClient<Database>> {
   assertEnvVars()
   if (!SUPABASE_SERVICE_KEY) {
     throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY")

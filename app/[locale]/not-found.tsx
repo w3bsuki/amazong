@@ -1,20 +1,17 @@
-import { Button } from '@/components/ui/button'
-import { MagnifyingGlass, House } from '@phosphor-icons/react/dist/ssr'
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Oops',
+}
 
 export default function NotFound() {
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="text-center max-w-md">
-        <div className="text-8xl font-bold text-brand/20 mb-4">404</div>
-        
-        <div className="size-20 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <MagnifyingGlass className="size-10 text-brand" weight="regular" />
-        </div>
-        
-        <h1 className="text-2xl font-bold text-foreground mb-2">
-          Page not found
-        </h1>
+        <div className="text-8xl font-bold text-brand/20 mb-4">Oops</div>
+
+        <h1 className="text-2xl font-bold text-foreground mb-2">Not Found</h1>
         
         <p className="text-muted-foreground mb-6">
           The page you're looking for doesn't exist or has been moved.
@@ -23,17 +20,15 @@ export default function NotFound() {
         
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/">
-            <Button className="gap-2 bg-brand hover:bg-brand/90 w-full sm:w-auto">
-              <House className="size-4" />
+            <span className="inline-flex items-center justify-center rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand/90 w-full sm:w-auto">
               Go to homepage
-            </Button>
+            </span>
           </Link>
           
           <Link href="/search">
-            <Button variant="outline" className="gap-2 w-full sm:w-auto">
-              <MagnifyingGlass className="size-4" />
+            <span className="inline-flex items-center justify-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent w-full sm:w-auto">
               Search products
-            </Button>
+            </span>
           </Link>
         </div>
         

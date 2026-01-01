@@ -130,7 +130,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Button variant="outline" size="sm" className="h-7 px-2.5 text-[11px] border-cta-trust-blue/20 text-cta-trust-blue hover:bg-cta-trust-blue/5 rounded-full">
+            <Button variant="outline" size="sm" className="h-7 px-2.5 text-xs border-cta-trust-blue/20 text-cta-trust-blue hover:bg-cta-trust-blue/5 rounded-full">
               <Store className="mr-1 h-3 w-3" /> Visit
             </Button>
             <Button variant="ghost" size="sm" className="h-7 px-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground rounded-full">
@@ -181,7 +181,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
                     <span className="text-xs font-medium text-cta-trust-blue cursor-pointer hover:underline">Size Guide</span>
                   </div>
                   <FormControl>
-                    <SizeRadioGroup field={field} options={sizeHinges.options} />
+                    <SizeRadioGroup field={field} options={sizeHinges.options ?? []} />
                   </FormControl>
                 </FormItem>
               )}
@@ -225,7 +225,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
                       <span className="text-xs font-medium text-success">
                         {stockInfo?.stockQuantity ? `${stockInfo.stockQuantity} available` : "In Stock"}
                       </span>
-                      {product.soldCount ? <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{product.soldCount} sold</span> : null}
+                      {product.soldCount ? <span className="text-2xs text-muted-foreground font-medium uppercase tracking-wider">{product.soldCount} sold</span> : null}
                     </div>
                   </div>
                 </FormControl>
@@ -292,10 +292,10 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
         <div className="grid grid-cols-[90px_1fr] gap-2 text-sm items-center">
           <div className="text-muted-foreground font-medium">Payments:</div>
           <div className="flex gap-1.5">
-            <div className="h-5 w-8 bg-white border border-border rounded-sm shadow-sm"></div>
-            <div className="h-5 w-8 bg-white border border-border rounded-sm shadow-sm"></div>
-            <div className="h-5 w-8 bg-white border border-border rounded-sm shadow-sm"></div>
-            <div className="h-5 w-8 bg-white border border-border rounded-sm shadow-sm"></div>
+            <div className="h-5 w-8 bg-card border border-border rounded-sm shadow-sm"></div>
+            <div className="h-5 w-8 bg-card border border-border rounded-sm shadow-sm"></div>
+            <div className="h-5 w-8 bg-card border border-border rounded-sm shadow-sm"></div>
+            <div className="h-5 w-8 bg-card border border-border rounded-sm shadow-sm"></div>
           </div>
         </div>
       </div>

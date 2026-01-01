@@ -68,6 +68,7 @@ export function MultiSelectDrawer({
 
   const toggleOption = (index: number) => {
     const optionValue = options[index];
+    if (!optionValue) return;
     if (value.includes(optionValue)) {
       onChange(value.filter((v) => v !== optionValue));
     } else {
@@ -123,7 +124,9 @@ export function MultiSelectDrawer({
         <ScrollArea className="flex-1 px-2 py-2">
           <div className="space-y-1">
             {filtered.map(({ opt, idx }) => {
-              const isSelected = value.includes(options[idx]);
+              const originalValue = options[idx];
+              if (!originalValue) return null;
+              const isSelected = value.includes(originalValue);
               return (
                 <button
                   key={idx}

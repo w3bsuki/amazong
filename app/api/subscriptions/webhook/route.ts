@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
 import { createAdminClient } from '@/lib/supabase/server'
 import { headers } from 'next/headers'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-11-17.clover",
-})
+import { stripe } from '@/lib/stripe'
+import { getStripeSubscriptionWebhookSecret } from '@/lib/env'
+import type Stripe from 'stripe'
 
 export async function POST(req: Request) {
   // Create admin client inside handler (not at module level)
@@ -25,7 +23,7 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(
       body,
       sig,
-      process.env.STRIPE_SUBSCRIPTION_WEBHOOK_SECRET!
+      getStripeSubscriptionWebhookSecret()
     )
   } catch (err) {
     console.error('Webhook signature verification failed:', err)
@@ -99,10 +97,9 @@ export async function POST(req: Request) {
           if (profileId && planTier && subscriptionId) {
             // Get subscription details from Stripe
             const subscriptionResponse = await stripe.subscriptions.retrieve(subscriptionId)
-            const subscription = subscriptionResponse as unknown as { current_period_end: number }
             
-            // Calculate expiry date
-            const expiresAt = new Date(subscription.current_period_end * 1000).toISOString()
+            // Calculate expiry date - Stripe.Subscription has current_period_end as a number
+            const expiresAt = new Date((subscriptionResponse as unknown as { current_period_end: number }).current_period_end * 1000).toISOString()
 
             // Get plan details
             const { data: plan } = await supabase
@@ -162,11 +159,6 @@ export async function POST(req: Request) {
       case 'customer.subscription.updated': {
         const subscriptionEvent = event.data.object as Stripe.Subscription
         const stripeSubId = subscriptionEvent.id
-        const subscription = subscriptionEvent as unknown as { 
-          status: string
-          current_period_end: number
-          cancel_at_period_end: boolean
-        }
 
         // Find the subscription in our database
         const { data: existingSub } = await supabase
@@ -178,15 +170,16 @@ export async function POST(req: Request) {
         if (existingSub) {
           // Map Stripe status to our status
           // KEY: Don't downgrade when cancel_at_period_end is true - user keeps access until expiry
-          const newStatus = subscription.status === 'active' ? 'active' 
-            : subscription.status === 'canceled' ? 'cancelled'
-            : subscription.status === 'past_due' ? 'expired'
+          const stripeStatus = subscriptionEvent.status
+          const newStatus = stripeStatus === 'active' ? 'active' 
+            : stripeStatus === 'canceled' ? 'cancelled'
+            : stripeStatus === 'past_due' ? 'expired'
             : existingSub.status
 
-          const expiresAt = new Date(subscription.current_period_end * 1000).toISOString()
+          const expiresAt = new Date((subscriptionEvent as unknown as { current_period_end: number }).current_period_end * 1000).toISOString()
           
           // Track auto_renew based on cancel_at_period_end
-          const autoRenew = !subscription.cancel_at_period_end
+          const autoRenew = !subscriptionEvent.cancel_at_period_end
 
           await supabase
             .from('subscriptions')
@@ -261,12 +254,15 @@ export async function POST(req: Request) {
 
       case 'invoice.paid': {
         // Successful recurring payment - extend subscription
-        const invoice = event.data.object as Stripe.Invoice
-        const invoiceData = invoice as unknown as { 
-          subscription: string | null
-          lines?: { data?: Array<{ period?: { end?: number } }> }
+        const invoice = event.data.object
+        // Extract subscription ID safely - can be string, Subscription object, or null
+        const subField = 'subscription' in invoice ? invoice.subscription : null
+        let subscriptionId: string | null = null
+        if (typeof subField === 'string') {
+          subscriptionId = subField
+        } else if (subField && typeof subField === 'object' && 'id' in subField && typeof subField.id === 'string') {
+          subscriptionId = subField.id
         }
-        const subscriptionId = invoiceData.subscription
 
         if (subscriptionId) {
           const { data: existingSub } = await supabase
@@ -277,7 +273,9 @@ export async function POST(req: Request) {
 
           if (existingSub) {
             // Get the period end from invoice lines
-            const periodEnd = invoiceData.lines?.data?.[0]?.period?.end
+            const invoiceLines = 'lines' in invoice ? invoice.lines : null
+            const firstLine = invoiceLines?.data?.[0]
+            const periodEnd = firstLine?.period?.end
             const newExpiresAt = periodEnd 
               ? new Date(periodEnd * 1000).toISOString()
               : existingSub.expires_at
@@ -298,9 +296,15 @@ export async function POST(req: Request) {
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice
-        const invoiceData = invoice as unknown as { subscription: string | null }
-        const subscriptionId = invoiceData.subscription
+        const invoice = event.data.object
+        // Extract subscription ID safely - can be string, Subscription object, or null
+        const subField = 'subscription' in invoice ? invoice.subscription : null
+        let subscriptionId: string | null = null
+        if (typeof subField === 'string') {
+          subscriptionId = subField
+        } else if (subField && typeof subField === 'object' && 'id' in subField && typeof subField.id === 'string') {
+          subscriptionId = subField.id
+        }
 
         if (subscriptionId) {
           const { data: existingSub } = await supabase

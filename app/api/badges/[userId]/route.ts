@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/server"
 
 interface RouteContext {
   params: Promise<{ userId: string }>
@@ -22,6 +22,21 @@ interface UserBadge {
   badge_definitions: BadgeDefinition | null
 }
 
+// Public, userId-keyed endpoint. Align caching with next.config.ts cacheLife.user.
+const CACHE_TTL_SECONDS = 60
+const CACHE_STALE_WHILE_REVALIDATE = 30
+
+function cachedJsonResponse(data: unknown, init?: ResponseInit) {
+  const res = NextResponse.json(data, init)
+  res.headers.set(
+    "Cache-Control",
+    `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`
+  )
+  res.headers.set("CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
+  res.headers.set("Vercel-CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
+  return res
+}
+
 /**
  * GET /api/badges/[userId]
  * Returns a specific user's public badges
@@ -29,7 +44,11 @@ interface UserBadge {
 export async function GET(request: Request, { params }: RouteContext) {
   try {
     const { userId } = await params
-    const supabase = await createClient()
+    const supabase = createStaticClient()
+
+    if (!supabase) {
+      return NextResponse.json({ error: "Database unavailable" }, { status: 503 })
+    }
     
     // Get user's badges with definitions
     const { data: badges, error } = await supabase
@@ -68,7 +87,7 @@ export async function GET(request: Request, { params }: RouteContext) {
         ...b.badge_definitions,
       }))
     
-    return NextResponse.json({
+    return cachedJsonResponse({
       badges: transformedBadges,
       total: transformedBadges.length,
     })

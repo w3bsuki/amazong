@@ -345,7 +345,13 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     asChild 
                     className="flex-1 h-11"
                   >
-                    <Link href={getProductUrl({ id: item.product_id, slug: item.slug, username: item.username })}>
+                    <Link
+                      href={getProductUrl({
+                        id: item.product_id,
+                        slug: item.slug ?? null,
+                        username: item.username ?? null,
+                      })}
+                    >
                       <Eye className="size-4 mr-2" />
                       {labels.viewProduct}
                     </Link>
@@ -389,7 +395,11 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               />
 
               <Link
-                href={getProductUrl({ id: item.product_id, slug: item.slug, username: item.username })}
+                href={getProductUrl({
+                  id: item.product_id,
+                  slug: item.slug ?? null,
+                  username: item.username ?? null,
+                })}
                 className="absolute inset-0 z-10"
                 aria-label={item.title}
               />
@@ -420,7 +430,13 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     className="bg-white text-foreground hover:bg-gray-100"
                     asChild
                   >
-                    <Link href={getProductUrl({ id: item.product_id, slug: item.slug, username: item.username })}>
+                    <Link
+                      href={getProductUrl({
+                        id: item.product_id,
+                        slug: item.slug ?? null,
+                        username: item.username ?? null,
+                      })}
+                    >
                       <Eye className="size-4 mr-1.5" />
                       {labels.viewProduct}
                     </Link>
@@ -432,7 +448,11 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
             {/* Product Info */}
             <div className="flex flex-col p-4 flex-1">
               <Link 
-                href={getProductUrl({ id: item.product_id, slug: item.slug, username: item.username })}
+                href={getProductUrl({
+                  id: item.product_id,
+                  slug: item.slug ?? null,
+                  username: item.username ?? null,
+                })}
                 className="text-sm font-medium text-foreground line-clamp-2 leading-tight hover:text-primary transition-colors mb-2"
               >
                 {item.title}

@@ -25,6 +25,11 @@ import {
     Lock
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
+import {
+    createPaymentMethodSetupSession,
+    deletePaymentMethod,
+    setDefaultPaymentMethod,
+} from "@/app/actions/payments"
 
 interface PaymentMethod {
     id: string
@@ -42,13 +47,13 @@ interface PaymentsContentProps {
 }
 
 // Brand icons/colors - using semantic tokens
-const cardBrandStyles: Record<string, { bg: string; text: string }> = {
+const cardBrandStyles = {
     visa: { bg: 'bg-primary', text: 'text-primary-foreground' },
     mastercard: { bg: 'bg-primary', text: 'text-primary-foreground' },
     amex: { bg: 'bg-primary', text: 'text-primary-foreground' },
     discover: { bg: 'bg-primary', text: 'text-primary-foreground' },
     default: { bg: 'bg-muted-foreground', text: 'text-background' }
-}
+} as const
 
 export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsContentProps) {
     const router = useRouter()
@@ -61,20 +66,11 @@ export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsConte
     const handleAddCard = async () => {
         setIsAddingCard(true)
         try {
-            // Create a Stripe setup session to add a new payment method
-            const response = await fetch('/api/payments/setup', {
-                method: 'POST',
-            })
-
-            const data = await response.json()
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to create setup session')
-            }
+            const { url } = await createPaymentMethodSetupSession()
 
             // Redirect to Stripe's hosted payment method collection page
-            if (data.url) {
-                window.location.href = data.url
+            if (url) {
+                window.location.href = url
             }
         } catch (error) {
             console.error('Error adding card:', error)
@@ -92,20 +88,10 @@ export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsConte
 
         setIsLoading(true)
         try {
-            // Call API to detach from Stripe and delete from DB
-            const response = await fetch('/api/payments/delete', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    paymentMethodId: method.stripe_payment_method_id,
-                    dbId: method.id
-                })
+            await deletePaymentMethod({
+                paymentMethodId: method.stripe_payment_method_id,
+                dbId: method.id,
             })
-
-            if (!response.ok) {
-                const data = await response.json()
-                throw new Error(data.error || 'Failed to delete payment method')
-            }
 
             toast.success(locale === 'bg' ? 'Картата е премахната' : 'Card removed')
             setIsDeleteDialogOpen(false)
@@ -128,20 +114,10 @@ export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsConte
             const method = paymentMethods.find(m => m.id === methodId)
             if (!method) return
 
-            // Update default in Stripe
-            const response = await fetch('/api/payments/set-default', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    paymentMethodId: method.stripe_payment_method_id,
-                    dbId: method.id
-                })
+            await setDefaultPaymentMethod({
+                paymentMethodId: method.stripe_payment_method_id,
+                dbId: method.id,
             })
-
-            if (!response.ok) {
-                const data = await response.json()
-                throw new Error(data.error || 'Failed to set default')
-            }
 
             toast.success(locale === 'bg' ? 'Картата по подразбиране е променена' : 'Default card updated')
             
@@ -164,8 +140,10 @@ export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsConte
         return brand.charAt(0).toUpperCase() + brand.slice(1)
     }
 
-    const getCardStyle = (brand: string | null) => {
-        return cardBrandStyles[brand?.toLowerCase() || 'default'] || cardBrandStyles.default
+    const getCardStyle = (brand: string | null): (typeof cardBrandStyles)[keyof typeof cardBrandStyles] => {
+        const key = brand?.toLowerCase()
+        if (key && key in cardBrandStyles) return cardBrandStyles[key as keyof typeof cardBrandStyles]
+        return cardBrandStyles.default
     }
 
     return (

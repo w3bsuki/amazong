@@ -23,7 +23,7 @@ interface SellPageClientProps {
   initialSeller: Seller | null;
   initialNeedsOnboarding?: boolean;
   initialUsername?: string | null;
-  initialAccountType?: string | null;
+  initialAccountType?: "personal" | "business" | null;
   initialDisplayName?: string | null;
   initialBusinessName?: string | null;
   categories: Category[];
@@ -44,7 +44,7 @@ export function SellPageClient({
   const [isAuthChecking, setIsAuthChecking] = useState(!initialUser);
   const [needsOnboarding, setNeedsOnboarding] = useState(initialNeedsOnboarding);
   const [username, setUsername] = useState<string | null>(initialUsername);
-  const [accountType, setAccountType] = useState<string | null>(initialAccountType);
+  const [accountType, setAccountType] = useState<"personal" | "business" | null>(initialAccountType);
   const [displayName, setDisplayName] = useState<string | null>(initialDisplayName);
   const [businessName, setBusinessName] = useState<string | null>(initialBusinessName);
   
@@ -67,7 +67,14 @@ export function SellPageClient({
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: string, session: { user?: { id: string; email?: string } } | null) => {
       const currentUser = session?.user ?? null;
-      setUser(currentUser ? { id: currentUser.id, email: currentUser.email } : null);
+      setUser(
+        currentUser
+          ? {
+              id: currentUser.id,
+              ...(currentUser.email ? { email: currentUser.email } : {}),
+            }
+          : null
+      );
       
       if (currentUser && !seller) {
         // Check if user has a profile with username and is_seller status
@@ -79,7 +86,9 @@ export function SellPageClient({
         
         if (profileData?.username) {
           setUsername(profileData.username);
-          setAccountType(profileData.account_type || null);
+          // Only set account_type if it's a valid value
+          const accountTypeValue = profileData.account_type;
+          setAccountType(accountTypeValue === "personal" || accountTypeValue === "business" ? accountTypeValue : null);
           setDisplayName(profileData.display_name || null);
           setBusinessName(profileData.business_name || null);
           
@@ -152,12 +161,12 @@ export function SellPageClient({
 
     return (
       <div className="min-h-screen bg-muted/30 flex flex-col">
-        <SellHeader user={{ email: user.email }} />
+        <SellHeader {...(user.email ? { user: { email: user.email } } : {})} />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <SellerOnboardingWizard
             userId={user.id}
             username={username as string}
-            initialAccountType={(accountType as any) ?? null}
+            initialAccountType={accountType}
             displayName={displayName}
             initialBusinessName={businessName}
             onComplete={handleOnboardingComplete}
@@ -172,7 +181,7 @@ export function SellPageClient({
   if (!seller) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <SellHeader user={{ email: user.email }} />
+        <SellHeader {...(user.email ? { user: { email: user.email } } : {})} />
         <div className="flex-1 flex flex-col justify-center overflow-y-auto py-8">
           <div className="container-narrow text-center space-y-4">
             <h2 className="text-2xl font-bold">

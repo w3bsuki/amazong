@@ -31,5 +31,5 @@ if (!('ResizeObserver' in globalThis)) {
     unobserve() {}
     disconnect() {}
   }
-  ;(globalThis as any).ResizeObserver = ResizeObserver
+  ;(globalThis as typeof globalThis & { ResizeObserver?: typeof ResizeObserver }).ResizeObserver = ResizeObserver
 }

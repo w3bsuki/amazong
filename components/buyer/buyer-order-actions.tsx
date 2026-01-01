@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -45,7 +45,7 @@ export function BuyerOrderActions({
   orderId,
 }: BuyerOrderActionsProps) {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, startTransition] = useTransition()
   const [showRatingDialog, setShowRatingDialog] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [showIssueDialog, setShowIssueDialog] = useState(false)
@@ -77,71 +77,68 @@ export function BuyerOrderActions({
   }, [isDelivered, orderItemId])
 
   async function handleConfirmDelivery() {
-    setIsLoading(true)
-    try {
-      const result = await buyerConfirmDelivery(orderItemId)
-      if (result.success) {
-        toast.success(locale === 'bg' ? 'Доставката е потвърдена!' : 'Delivery confirmed!')
-        router.refresh()
-        // Ask to rate the seller
-        setTimeout(() => {
-          setShowRatingDialog(true)
-        }, 500)
-      } else {
-        toast.error(result.error || 'Failed to confirm delivery')
+    startTransition(async () => {
+      try {
+        const result = await buyerConfirmDelivery(orderItemId)
+        if (result.success) {
+          toast.success(locale === 'bg' ? 'Доставката е потвърдена!' : 'Delivery confirmed!')
+          router.refresh()
+          // Ask to rate the seller
+          setTimeout(() => {
+            setShowRatingDialog(true)
+          }, 500)
+        } else {
+          toast.error(result.error || 'Failed to confirm delivery')
+        }
+      } catch {
+        toast.error('An error occurred')
       }
-    } catch {
-      toast.error('An error occurred')
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   async function handleSubmitRating(rating: number, comment: string) {
-    setIsLoading(true)
-    try {
-      const result = await submitSellerFeedback({
-        sellerId,
-        orderId,
-        rating,
-        comment: comment || undefined,
-        itemAsDescribed: true,
-        shippingSpeed: true,
-        communication: true,
-      })
-      
-      if (result.success) {
-        toast.success(locale === 'bg' ? 'Благодарим за отзива!' : 'Thank you for your feedback!')
-        setShowRatingDialog(false)
-        setHasRated(true)
-        router.refresh()
-      } else {
-        toast.error(result.error || 'Failed to submit rating')
+    startTransition(async () => {
+      try {
+        const result = await submitSellerFeedback({
+          sellerId,
+          orderId,
+          rating,
+          comment: comment || undefined,
+          itemAsDescribed: true,
+          shippingSpeed: true,
+          communication: true,
+        })
+        
+        if (result.success) {
+          toast.success(locale === 'bg' ? 'Благодарим за отзива!' : 'Thank you for your feedback!')
+          setShowRatingDialog(false)
+          setHasRated(true)
+          router.refresh()
+        } else {
+          toast.error(result.error || 'Failed to submit rating')
+        }
+      } catch {
+        toast.error('An error occurred')
       }
-    } catch {
-      toast.error('An error occurred')
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   async function handleCancelOrder() {
-    setIsLoading(true)
-    try {
-      const result = await requestOrderCancellation(orderItemId, cancelReason || undefined)
-      if (result.success) {
-        toast.success(locale === 'bg' ? 'Поръчката е отменена!' : 'Order cancelled!')
-        setShowCancelDialog(false)
-        setCancelReason("")
-        router.refresh()
-      } else {
-        toast.error(result.error || 'Failed to cancel order')
+    startTransition(async () => {
+      try {
+        const result = await requestOrderCancellation(orderItemId, cancelReason || undefined)
+        if (result.success) {
+          toast.success(locale === 'bg' ? 'Поръчката е отменена!' : 'Order cancelled!')
+          setShowCancelDialog(false)
+          setCancelReason("")
+          router.refresh()
+        } else {
+          toast.error(result.error || 'Failed to cancel order')
+        }
+      } catch {
+        toast.error('An error occurred')
       }
-    } catch {
-      toast.error('An error occurred')
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   async function handleReportIssue() {
@@ -154,28 +151,27 @@ export function BuyerOrderActions({
       return
     }
 
-    setIsLoading(true)
-    try {
-      const result = await reportOrderIssue(orderItemId, issueType as IssueType, issueDescription)
-      if (result.success) {
-        toast.success(locale === 'bg' ? 'Проблемът е докладван!' : 'Issue reported!')
-        setShowIssueDialog(false)
-        setIssueType("")
-        setIssueDescription("")
-        // Navigate to conversation if available
-        if (result.conversationId) {
-          router.push(`/chat?conversation=${result.conversationId}`)
+    startTransition(async () => {
+      try {
+        const result = await reportOrderIssue(orderItemId, issueType as IssueType, issueDescription)
+        if (result.success) {
+          toast.success(locale === 'bg' ? 'Проблемът е докладван!' : 'Issue reported!')
+          setShowIssueDialog(false)
+          setIssueType("")
+          setIssueDescription("")
+          // Navigate to conversation if available
+          if (result.conversationId) {
+            router.push(`/chat?conversation=${result.conversationId}`)
+          } else {
+            router.refresh()
+          }
         } else {
-          router.refresh()
+          toast.error(result.error || 'Failed to report issue')
         }
-      } else {
-        toast.error(result.error || 'Failed to report issue')
+      } catch {
+        toast.error('An error occurred')
       }
-    } catch {
-      toast.error('An error occurred')
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   const t = {
@@ -241,7 +237,7 @@ export function BuyerOrderActions({
           size="sm"
           variant="outline"
           onClick={() => setShowCancelDialog(true)}
-          disabled={isLoading}
+          disabled={isSubmitting}
           className="text-status-error hover:bg-status-error/10"
         >
           <XCircle className="h-4 w-4 mr-1.5" />
@@ -255,7 +251,7 @@ export function BuyerOrderActions({
           size="sm"
           variant="outline"
           onClick={() => setShowIssueDialog(true)}
-          disabled={isLoading}
+          disabled={isSubmitting}
           className="text-status-warning hover:bg-status-warning/10"
         >
           <AlertTriangle className="h-4 w-4 mr-1.5" />
@@ -268,15 +264,15 @@ export function BuyerOrderActions({
         <Button
           size="sm"
           onClick={handleConfirmDelivery}
-          disabled={isLoading}
+          disabled={isSubmitting}
           className="bg-status-success text-white hover:brightness-95"
         >
-          {isLoading ? (
+          {isSubmitting ? (
             <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
           ) : (
             <Package className="h-4 w-4 mr-1.5" />
           )}
-          {isLoading ? '...' : t.confirmDelivery}
+          {isSubmitting ? '...' : t.confirmDelivery}
         </Button>
       )}
 
@@ -286,7 +282,7 @@ export function BuyerOrderActions({
           size="sm"
           variant="outline"
           onClick={() => setShowRatingDialog(true)}
-          disabled={isLoading}
+          disabled={isSubmitting}
         >
           <Star className="h-4 w-4 mr-1.5" />
           {t.rateSeller}
@@ -329,16 +325,16 @@ export function BuyerOrderActions({
             <Button 
               variant="outline" 
               onClick={() => setShowCancelDialog(false)}
-              disabled={isLoading}
+              disabled={isSubmitting}
             >
               {t.cancel}
             </Button>
             <Button 
               variant="destructive"
               onClick={handleCancelOrder} 
-              disabled={isLoading}
+              disabled={isSubmitting}
             >
-              {isLoading ? (
+              {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
                   ...
@@ -397,16 +393,16 @@ export function BuyerOrderActions({
             <Button 
               variant="outline" 
               onClick={() => setShowIssueDialog(false)}
-              disabled={isLoading}
+              disabled={isSubmitting}
             >
               {t.cancel}
             </Button>
             <Button 
               onClick={handleReportIssue} 
-              disabled={isLoading || !issueType || issueDescription.length < 10}
+              disabled={isSubmitting || !issueType || issueDescription.length < 10}
               className="bg-status-warning text-white hover:brightness-95"
             >
-              {isLoading ? (
+              {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
                   ...
@@ -434,7 +430,7 @@ export function BuyerOrderActions({
         submitLabel={t.submitRating}
         cancelLabel={t.cancel}
         locale={locale}
-        isLoading={isLoading}
+        isLoading={isSubmitting}
       />
     </div>
   )

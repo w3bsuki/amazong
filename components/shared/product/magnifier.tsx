@@ -18,8 +18,8 @@ interface MagnifierProps {
 export function Magnifier({
   src,
   alt,
-  width: _width,
-  height: _height,
+  width,
+  height,
   magnifierSize = 200,
   zoomLevel = 2.5,
   className,
@@ -51,18 +51,20 @@ export function Magnifier({
 
   return (
     <div
-      className={cn("relative overflow-hidden cursor-zoom-in", className)}
+      className={cn("relative cursor-zoom-in flex items-center justify-center", className)}
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
+      {/* Use width/height instead of fill for proper sizing in carousel context */}
       <Image
         src={src}
         alt={alt}
-        fill
-        className="object-contain"
+        width={width}
+        height={height}
+        className="max-w-full max-h-full w-auto h-auto object-contain"
         sizes="(max-width: 1024px) 100vw, 600px"
-        priority={false}
+        priority
       />
 
       <AnimatePresence>

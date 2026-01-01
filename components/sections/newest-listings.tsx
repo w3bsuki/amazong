@@ -1,11 +1,13 @@
 import { getNewestProducts, toUI, type Product } from '@/lib/data/products'
 import { NewestListingsSection as NewestListingsClient } from './newest-listings-section'
 
+type ListingCategory = { id: string; name: string; name_bg: string; slug: string }
+
 /**
  * Server component that fetches initial newest products.
  * Passes data to client component for infinite scroll.
  */
-export async function NewestListings({ categories }: { categories?: any[] }) {
+export async function NewestListings({ categories }: { categories?: ListingCategory[] }) {
   // Fetch initial batch of newest products (12 items)
   const products = await getNewestProducts(12)
   
@@ -18,7 +20,7 @@ export async function NewestListings({ categories }: { categories?: any[] }) {
     <NewestListingsClient 
       initialProducts={uiProducts}
       totalCount={100} // Assume there are more for now
-      categories={categories}
+      categories={categories ?? []}
     />
   )
 }

@@ -484,13 +484,13 @@ export function AIChatbot({
                 <span className="text-sm font-semibold text-foreground">
                   {locale === "bg" ? "AI Асистент" : "AI Assistant"}
                 </span>
-                <span className="hidden rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-flex">
+                <span className="hidden rounded-full bg-muted px-1.5 py-0.5 text-2xs font-medium text-muted-foreground sm:inline-flex">
                   AI
                 </span>
                 {mode !== "initial" && (
                   <span
                     className={cn(
-                      "rounded-full px-1.5 py-0.5 text-[10px] font-medium sm:px-2",
+                      "rounded-full px-1.5 py-0.5 text-2xs font-medium sm:px-2",
                       mode === "sell" ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
                     )}
                   >
@@ -591,7 +591,7 @@ export function AIChatbot({
               <Grid3X3 className="size-4" />
               {locale === "bg" ? "Резултати" : "Results"}
               {allProducts.length > 0 && (
-                <Badge variant="default" className="ml-1 h-5 min-w-5 justify-center px-1 text-[10px] font-bold">
+                <Badge variant="default" className="ml-1 h-5 min-w-5 justify-center px-1 text-2xs font-bold">
                   {allProducts.length}
                 </Badge>
               )}
@@ -617,7 +617,7 @@ export function AIChatbot({
             {!hasConversation && mode === "initial" && (
               <ConversationEmptyState className="py-12">
                 <div className="text-center">
-                  <div className="mx-auto mb-6 flex size-24 items-center justify-center rounded-3xl bg-primary/10">
+                  <div className="mx-auto mb-6 flex size-24 items-center justify-center rounded-lg bg-primary/10">
                     <Sparkles className="size-10 text-primary" />
                   </div>
                   <div className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
@@ -633,13 +633,13 @@ export function AIChatbot({
                       type="button"
                       onClick={() => handleSelectMode("buy")}
                       className={cn(
-                        "group relative flex items-center gap-4 rounded-2xl border border-border/50 bg-card p-5 transition-colors duration-200 sm:flex-col sm:gap-4 sm:p-8",
+                        "group relative flex items-center gap-4 rounded-md border border-border/50 bg-card p-3 transition-colors duration-200 sm:flex-col sm:gap-4 sm:p-8",
                         "hover:border-primary/30 hover:bg-muted/30",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                         "active:bg-muted/40"
                       )}
                     >
-                      <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-muted/50 transition-colors duration-200 group-hover:bg-background sm:size-20">
+                      <div className="flex size-14 shrink-0 items-center justify-center rounded-md bg-muted/50 transition-colors duration-200 group-hover:bg-background sm:size-20">
                         <ShoppingCart size={28} weight="duotone" className="text-foreground sm:hidden" />
                         <ShoppingCart size={40} weight="duotone" className="hidden text-foreground sm:block" />
                       </div>
@@ -658,13 +658,13 @@ export function AIChatbot({
                       type="button"
                       onClick={() => handleSelectMode("sell")}
                       className={cn(
-                        "group relative flex items-center gap-4 rounded-2xl border border-border/50 bg-card p-5 transition-colors duration-200 sm:flex-col sm:gap-4 sm:p-8",
+                        "group relative flex items-center gap-4 rounded-md border border-border/50 bg-card p-3 transition-colors duration-200 sm:flex-col sm:gap-4 sm:p-8",
                         "hover:border-primary/30 hover:bg-muted/30",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                         "active:bg-muted/40"
                       )}
                     >
-                      <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary/20 sm:size-20">
+                      <div className="flex size-14 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary/20 sm:size-20">
                         <Storefront size={28} weight="duotone" className="sm:hidden" />
                         <Storefront size={40} weight="duotone" className="hidden sm:block" />
                       </div>
@@ -776,7 +776,7 @@ export function AIChatbot({
                             return (
                               <div
                                 key={`${message.id}-${i}`}
-                                className="flex items-center gap-2.5 rounded-xl border border-border/40 bg-muted/30 px-4 py-2.5 text-xs font-medium text-muted-foreground"
+                                className="flex items-center gap-2.5 rounded-md border border-border/40 bg-muted/30 px-4 py-2.5 text-xs font-medium text-muted-foreground"
                               >
                                 <div className="relative flex size-4 items-center justify-center">
                                   <Loader2 className="absolute size-4 animate-spin text-primary/40" />
@@ -809,10 +809,10 @@ export function AIChatbot({
                         <button
                           type="button"
                           onClick={() => setMobileTab("results")}
-                          className="group flex w-full items-center justify-between gap-3 rounded-2xl border border-green-500/20 bg-green-500/5 p-4 text-left transition-colors hover:bg-green-500/10 md:cursor-default"
+                          className="group flex w-full items-center justify-between gap-3 rounded-md border border-green-500/20 bg-green-500/5 p-4 text-left transition-colors hover:bg-green-500/10 md:cursor-default"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="flex size-10 items-center justify-center rounded-xl bg-green-500/20 text-green-600">
+                            <div className="flex size-10 items-center justify-center rounded-md bg-green-500/20 text-green-600">
                               <Search className="size-5" />
                             </div>
                             <div>
@@ -887,7 +887,7 @@ export function AIChatbot({
 
                 {/* Loading indicator */}
                 {status === "submitted" && (
-                  <div className="flex items-center gap-2 rounded-xl text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 rounded-md text-sm text-muted-foreground">
                     <Loader size={16} />
                     {locale === "bg" ? "Мисля..." : "Thinking..."}
                   </div>
@@ -895,7 +895,7 @@ export function AIChatbot({
 
                 {/* Error message with retry */}
                 {error && (
-                  <div className="w-full max-w-5xl rounded-xl border border-red-500/30 bg-red-500/10 p-3 sm:p-4">
+                  <div className="w-full max-w-5xl rounded-md border border-red-500/30 bg-red-500/10 p-3 sm:p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 text-sm font-medium text-red-700 dark:text-red-400">
@@ -954,7 +954,7 @@ export function AIChatbot({
                   <Grid3X3 className="size-4 text-primary" />
                   {locale === "bg" ? "Намерени продукти" : "Products Found"}
                 </h3>
-                <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-bold">
+                <Badge variant="secondary" className="h-5 rounded-full px-2 text-2xs font-bold">
                   {allProducts.length}
                 </Badge>
               </div>
@@ -994,7 +994,7 @@ export function AIChatbot({
 
                   {/* Listing Success State */}
                   {latestListingResult?.success && latestListingResult.url && (
-                    <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-6 text-center">
+                    <div className="rounded-md border border-green-500/20 bg-green-500/5 p-3 text-center">
                       <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-green-500/20">
                         <Tag className="size-8 text-green-600" />
                       </div>
@@ -1009,7 +1009,7 @@ export function AIChatbot({
                       <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
                         <Button
                           asChild
-                          className="h-11 gap-2 rounded-xl font-bold transition-colors"
+                          className="h-11 gap-2 rounded-md font-bold transition-colors"
                           variant="default"
                         >
                           <a href={latestListingResult.url} target="_blank" rel="noopener noreferrer">
@@ -1020,7 +1020,7 @@ export function AIChatbot({
                         <Button 
                           variant="outline" 
                           onClick={handleClear}
-                          className="h-11 rounded-xl font-bold transition-colors"
+                          className="h-11 rounded-md font-bold transition-colors"
                         >
                           {locale === "bg" ? "Създай нова" : "Create Another"}
                         </Button>
@@ -1031,7 +1031,7 @@ export function AIChatbot({
                   {/* Empty state for results panel */}
                   {!allProducts.length && !latestListingResult?.success && (
                     <div className="flex flex-col items-center justify-center py-12 text-center opacity-60">
-                      <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-muted/50 border border-border/50">
+                      <div className="mb-4 flex size-16 items-center justify-center rounded-md bg-muted/50 border border-border/50">
                         <Search className="size-8 text-muted-foreground/50" />
                       </div>
                       <h3 className="text-sm font-bold text-foreground">
@@ -1079,7 +1079,7 @@ export function AIChatbot({
                 onSubmit={handleSubmit}
                 globalDrop
                 multiple
-                className="rounded-xl sm:rounded-2xl"
+                className="rounded-md sm:rounded-md"
               >
                 <PromptInputHeader>
                   <PromptInputAttachments>

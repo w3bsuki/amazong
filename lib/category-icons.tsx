@@ -198,7 +198,8 @@ const categoryIconComponents: Record<string, PhosphorIcon> = {
 }
 
 export function getCategoryIconForSlug(slug: string): PhosphorIcon {
-  if (categoryIconComponents[slug]) return categoryIconComponents[slug]
+  const direct = categoryIconComponents[slug]
+  if (direct) return direct
 
   const slugLower = slug.toLowerCase()
   for (const [key, icon] of Object.entries(categoryIconComponents)) {
@@ -206,7 +207,7 @@ export function getCategoryIconForSlug(slug: string): PhosphorIcon {
     if (slugLower.includes(key) || key.includes(slugLower)) return icon
   }
 
-  return categoryIconComponents.default
+  return categoryIconComponents.default ?? Package
 }
 
 export type IconSize = 16 | 20 | 24 | 26 | 28 | 32

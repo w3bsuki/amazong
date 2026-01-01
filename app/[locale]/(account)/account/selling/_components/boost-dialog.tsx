@@ -25,6 +25,7 @@ import {
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { createBoostCheckoutSession } from "@/app/actions/boost"
 
 interface BoostOption {
   days: number
@@ -92,24 +93,14 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
     setIsLoading(true)
     
     try {
-      const response = await fetch('/api/boost/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productId: product.id,
-          durationDays: selectedDays.toString(),
-        }),
+      const { url } = await createBoostCheckoutSession({
+        productId: product.id,
+        durationDays: selectedDays.toString(),
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create boost session')
-      }
-
       // Redirect to Stripe checkout
-      if (data.url) {
-        window.location.href = data.url
+      if (url) {
+        window.location.href = url
       }
     } catch (error) {
       console.error('Boost error:', error)

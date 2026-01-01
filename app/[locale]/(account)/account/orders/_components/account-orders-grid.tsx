@@ -368,7 +368,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                         orderItemId={item.id}
                                         currentStatus={itemStatus as OrderItemStatus}
                                         sellerId={item.seller_id}
-                                        conversationId={conversationMap.get(order.id)}
+                                        conversationId={conversationMap.get(order.id) ?? null}
                                         locale={locale}
                                         orderId={order.id}
                                       />
@@ -613,7 +613,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                         orderItemId={item.id}
                                         currentStatus={itemStatus as OrderItemStatus}
                                         sellerId={item.seller_id}
-                                        conversationId={conversationMap.get(order.id)}
+                                        conversationId={conversationMap.get(order.id) ?? null}
                                         locale={locale}
                                         orderId={order.id}
                                       />

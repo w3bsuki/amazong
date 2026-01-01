@@ -2,7 +2,7 @@
 
 import { Heart } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { Spinner } from "@/components/ui/spinner"
+import { Spinner } from "@/components/common/spinner"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { cn } from "@/lib/utils"
 import { useState } from "react"

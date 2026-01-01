@@ -103,14 +103,14 @@ export function SubcategoryCircles({
                   "border-2 border-primary"
                 )}
               >
-                <span className="text-white text-[10px] sm:text-sm font-medium text-center px-1 leading-tight">
+                <span className="text-white text-2xs sm:text-sm font-medium text-center px-1 leading-tight">
                   {locale === "bg" ? "Всички" : "All"}
                 </span>
               </div>
               
               {/* Label */}
               <span className={cn(
-                "text-[10px] sm:text-sm font-medium text-center text-primary",
+                "text-2xs sm:text-sm font-medium text-center text-primary",
                 "max-w-[56px] sm:max-w-[100px] line-clamp-2 leading-tight"
               )}>
                 {locale === "bg" ? "Всички продукти" : "All Products"}
@@ -163,7 +163,7 @@ export function SubcategoryCircles({
               
               {/* Category Name - Target style */}
               <span className={cn(
-                "text-[10px] sm:text-sm font-medium text-center text-foreground",
+                "text-2xs sm:text-sm font-medium text-center text-foreground",
                 "group-hover:text-primary group-hover:underline",
                 "line-clamp-2 leading-tight",
                 "max-w-[56px] sm:max-w-[100px]"

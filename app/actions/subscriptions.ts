@@ -1,5 +1,6 @@
 "use server"
 
+import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { revalidatePath } from "next/cache"
@@ -9,6 +10,12 @@ import { revalidatePath } from "next/cache"
 // =============================================================================
 
 export type BillingPeriod = "monthly" | "yearly"
+
+const billingPeriodSchema = z.enum(["monthly", "yearly"])
+const subscriptionCheckoutArgsSchema = z.object({
+  planId: z.string().min(1),
+  billingPeriod: billingPeriodSchema,
+})
 
 export interface SubscriptionDetails {
   id: string
@@ -57,11 +64,12 @@ export async function createSubscriptionCheckoutSession(args: {
     return { error: "Stripe configuration is missing. Please check your server logs." }
   }
 
-  const { planId, billingPeriod } = args
-
-  if (!planId || !billingPeriod) {
-    return { error: "Missing required fields" }
+  const parsedArgs = subscriptionCheckoutArgsSchema.safeParse(args)
+  if (!parsedArgs.success) {
+    return { error: "Invalid input" }
   }
+
+  const { planId, billingPeriod } = parsedArgs.data
 
   try {
     const supabase = await createClient()
@@ -105,7 +113,7 @@ export async function createSubscriptionCheckoutSession(args: {
 
     if (!customerId) {
       const customer = await stripe.customers.create({
-        email: user.email || undefined,
+        ...(user.email ? { email: user.email } : {}),
         metadata: {
           profile_id: profile.id,
           supabase_user_id: user.id,
@@ -145,7 +153,7 @@ export async function createSubscriptionCheckoutSession(args: {
     const appUrl = getAppUrl()
 
     const session = await stripe.checkout.sessions.create({
-      customer: customerId || undefined,
+      ...(customerId ? { customer: customerId } : {}),
       mode: "subscription",
       payment_method_types: ["card"],
       line_items: lineItems,
@@ -162,7 +170,7 @@ export async function createSubscriptionCheckoutSession(args: {
       cancel_url: `${appUrl}/account/plans?canceled=true`,
     })
 
-    return { url: session.url || undefined }
+    return session.url ? { url: session.url } : { error: "Failed to start checkout" }
   } catch (error) {
     console.error("Subscription checkout error:", error)
     return { error: error instanceof Error ? error.message : "Internal server error" }

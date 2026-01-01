@@ -38,6 +38,11 @@ export async function GET(request: NextRequest) {
     detected: true,
   })
 
+  // Varies by request headers/IP and sets cookies; do not cache at CDN.
+  response.headers.set('Cache-Control', 'private, no-store')
+  response.headers.set('CDN-Cache-Control', 'private, no-store')
+  response.headers.set('Vercel-CDN-Cache-Control', 'private, no-store')
+
   // Set cookies for client-side access
   response.cookies.set('user-country', normalizedCountry, {
     maxAge: 60 * 60 * 24 * 365, // 1 year

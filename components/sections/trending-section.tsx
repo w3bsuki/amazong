@@ -31,7 +31,7 @@ export async function TrendingSection() {
   const transformForUI = (products: Product[]) => 
     products.map(p => ({
       ...toUI(p),
-      createdAt: p.created_at ?? undefined,
+      createdAt: p.created_at ?? new Date().toISOString(),
     }))
   
   return (

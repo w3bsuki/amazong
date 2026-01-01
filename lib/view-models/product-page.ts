@@ -114,7 +114,27 @@ function buildGalleryImages(productTitle: string, images: string[]) {
   }));
 }
 
+/**
+ * Get product images - prioritizes normalized product_images table (WebP),
+ * falls back to legacy images JSON array
+ */
 function getProductImages(product: ProductPageProductLike): string[] {
+  // First check for product_images relation (normalized table with WebP images)
+  const productImages = (product as { product_images?: Array<{ image_url: string; is_primary?: boolean; display_order?: number }> }).product_images;
+  
+  if (Array.isArray(productImages) && productImages.length > 0) {
+    // Sort by display_order, then prioritize primary image first
+    const sorted = [...productImages].sort((a, b) => {
+      // Primary image always comes first
+      if (a.is_primary && !b.is_primary) return -1;
+      if (!a.is_primary && b.is_primary) return 1;
+      // Then sort by display_order
+      return (a.display_order ?? 0) - (b.display_order ?? 0);
+    });
+    return sorted.map(img => img.image_url);
+  }
+  
+  // Fallback to legacy images JSON array
   const raw = product.images;
   return Array.isArray(raw) && raw.length > 0 ? (raw as string[]) : ["/placeholder.svg"];
 }

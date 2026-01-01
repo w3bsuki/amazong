@@ -176,6 +176,7 @@ export function NotificationsContent({
 
       // Preferences (optional)
       try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- notification_preferences table may not be in generated types
         const { data: prefData, error: prefError } = await (supabase as any)
           .from("notification_preferences")
           .select("*")
@@ -257,6 +258,7 @@ export function NotificationsContent({
       const user = userData.user
       if (!user) return
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- notification_preferences table may not be in generated types
       await (supabase as any)
         .from("notification_preferences")
         .upsert(

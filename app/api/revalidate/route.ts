@@ -123,19 +123,11 @@ export async function GET() {
       tag: 'Single cache tag (optional if tags provided)',
       tags: 'Array of cache tags (optional if tag provided)'
     },
-    availableTags: [
-      'categories',
-      'products', 
-      'attributes',
-      'category-hierarchy-all',
-      'root-with-children',
-      'featured-products',
-      'deals',
-      'category-{slug}',
-      'category-hierarchy-{slug}',
-      'context-{slug}',
-      'children-{categoryId}',
-      'attrs-{categoryId}'
-    ]
+    note: 'Tags are defined by your app. This endpoint can revalidate any tag used by next/cache (cacheTag).',
+    examples: {
+      categories: ['categories', 'root-with-children', 'category-hierarchy-all', 'category-hierarchy-{slug}', 'category-{slug}'],
+      products: ['products', 'deals', 'newest', 'featured', 'product-{id}', 'category:{slug}'],
+      attributes: ['attributes', 'attrs-{categoryId}']
+    }
   })
 }

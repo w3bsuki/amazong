@@ -6,10 +6,30 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+type SelectRootProps = Omit<React.ComponentProps<typeof SelectPrimitive.Root>, "value" | "defaultValue" | "open" | "defaultOpen"> & {
+  value?: string | undefined
+  defaultValue?: string | undefined
+  open?: boolean | undefined
+  defaultOpen?: boolean | undefined
+}
+
 function Select({
+  value,
+  defaultValue,
+  open,
+  defaultOpen,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />
+}: SelectRootProps) {
+  return (
+    <SelectPrimitive.Root
+      data-slot="select"
+      {...props}
+      {...(value !== undefined ? { value } : {})}
+      {...(defaultValue !== undefined ? { defaultValue } : {})}
+      {...(open !== undefined ? { open } : {})}
+      {...(defaultOpen !== undefined ? { defaultOpen } : {})}
+    />
+  )
 }
 
 function SelectGroup({

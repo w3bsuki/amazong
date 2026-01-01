@@ -4,11 +4,40 @@ import { z } from "zod"
 import { sellFormSchemaV4 } from "@/lib/sell/schema-v4"
 import { createAdminClient, createClient } from "@/lib/supabase/server"
 
-export async function createListing(args: { sellerId: string; data: unknown }) {
+export type CreateListingResult =
+  | {
+      success: true
+      id: string
+      sellerUsername: string
+      product: {
+        id: string
+        slug: string | null
+      }
+    }
+  | {
+      success: false
+      error: string
+      message?: string
+      issues?: Array<{ path: string[]; message: string }>
+      upgradeRequired?: boolean
+    }
+
+const listingInfoRowsSchema = z
+  .array(
+    z
+      .object({
+        max_listings: z.number(),
+        current_listings: z.number(),
+      })
+      .passthrough(),
+  )
+  .min(1)
+
+export async function createListing(args: { sellerId: string; data: unknown }): Promise<CreateListingResult> {
   const schema = z.object({ sellerId: z.string().min(1), data: z.unknown() })
   const parsedArgs = schema.safeParse(args)
   if (!parsedArgs.success) {
-    return { error: "Invalid input" as const }
+    return { success: false, error: "Invalid input" }
   }
 
   const { sellerId, data } = parsedArgs.data
@@ -16,7 +45,8 @@ export async function createListing(args: { sellerId: string; data: unknown }) {
   const parsed = sellFormSchemaV4.safeParse(data)
   if (!parsed.success) {
     return {
-      error: "Validation failed" as const,
+      success: false,
+      error: "Validation failed",
       issues: parsed.error.issues.map((i) => ({ path: i.path.map(String), message: i.message })),
     }
   }
@@ -27,11 +57,11 @@ export async function createListing(args: { sellerId: string; data: unknown }) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: "Unauthorized" as const }
+    return { success: false, error: "Unauthorized" }
   }
 
   if (user.id !== sellerId) {
-    return { error: "Forbidden" as const }
+    return { success: false, error: "Forbidden" }
   }
 
   // Ensure user has username
@@ -42,7 +72,7 @@ export async function createListing(args: { sellerId: string; data: unknown }) {
     .single()
 
   if (!profile?.username) {
-    return { error: "You must set up a username to sell items" as const }
+    return { success: false, error: "You must set up a username to sell items" }
   }
 
   // Enforce listing limit (same RPC used by route handler)
@@ -50,16 +80,22 @@ export async function createListing(args: { sellerId: string; data: unknown }) {
     seller_uuid: user.id,
   })
 
-  if (limitInfo && Array.isArray(limitInfo) && limitInfo.length > 0) {
-    const info = limitInfo[0] as any
-    const isUnlimited = info?.max_listings === -1
-    const remaining = isUnlimited ? 999 : Math.max((info?.max_listings ?? 0) - (info?.current_listings ?? 0), 0)
+  const parsedListingInfo = listingInfoRowsSchema.safeParse(limitInfo)
+  if (parsedListingInfo.success) {
+    const info = parsedListingInfo.data[0]
+    if (info) {
+    const isUnlimited = info.max_listings === -1
+    const remaining = isUnlimited
+      ? Number.POSITIVE_INFINITY
+      : Math.max(info.max_listings - info.current_listings, 0)
     if (!isUnlimited && remaining <= 0) {
       return {
-        error: "LISTING_LIMIT_REACHED" as const,
-        message: `You have reached your listing limit (${info?.current_listings} of ${info?.max_listings}). Please upgrade your plan to add more listings.`,
-        upgradeRequired: true as const,
+        success: false,
+        error: "LISTING_LIMIT_REACHED",
+        message: `You have reached your listing limit (${info.current_listings} of ${info.max_listings}). Please upgrade your plan to add more listings.`,
+        upgradeRequired: true,
       }
+    }
     }
   }
 
@@ -109,14 +145,15 @@ export async function createListing(args: { sellerId: string; data: unknown }) {
     .single()
 
   if (error) {
-    if (error.message?.includes("LISTING_LIMIT_REACHED") || (error as any).code === "P0001") {
+    if (error.message?.includes("LISTING_LIMIT_REACHED") || error.code === "P0001") {
       return {
-        error: "LISTING_LIMIT_REACHED" as const,
+        success: false,
+        error: "LISTING_LIMIT_REACHED",
         message: "You have reached your listing limit. Please upgrade your plan to add more listings.",
-        upgradeRequired: true as const,
+        upgradeRequired: true,
       }
     }
-    return { error: error.message || "Failed to create product" }
+    return { success: false, error: error.message || "Failed to create product" }
   }
 
   const imageRecords = (form.images || []).map((img, index) => ({
@@ -163,10 +200,13 @@ export async function createListing(args: { sellerId: string; data: unknown }) {
   }
 
   return {
-    success: true as const,
-    id: product.id as string,
-    sellerUsername: profile.username as string,
-    product: product as any,
+    success: true,
+    id: product.id,
+    sellerUsername: profile.username,
+    product: {
+      id: product.id,
+      slug: product.slug ?? null,
+    },
   }
 }
 

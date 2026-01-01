@@ -37,8 +37,8 @@ export default function WishlistPageClient() {
       price: item.price,
       image: item.image,
       quantity: 1,
-      slug: item.slug,
-      username: item.username,
+      ...(item.slug ? { slug: item.slug } : {}),
+      ...(item.username ? { username: item.username } : {}),
     })
     removeFromWishlist(item.product_id)
     toast.success(locale === "bg" ? "Преместено в количката" : "Moved to cart")
@@ -52,8 +52,8 @@ export default function WishlistPageClient() {
         price: item.price,
         image: item.image,
         quantity: 1,
-        slug: item.slug,
-        username: item.username,
+        ...(item.slug ? { slug: item.slug } : {}),
+        ...(item.username ? { username: item.username } : {}),
       })
     })
     toast.success(locale === "bg" ? "Всички продукти добавени в количката" : "All items added to cart")

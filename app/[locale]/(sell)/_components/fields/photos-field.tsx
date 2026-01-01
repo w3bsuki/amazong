@@ -175,7 +175,9 @@ export function PhotosField({
     // Add to form
     const newImages = [...images, ...successfulUploads];
     if (newImages.length > 0 && !newImages.some(i => i.isPrimary)) {
-      newImages[0] = { ...newImages[0], isPrimary: true };
+      if (newImages[0]) {
+        newImages[0] = { ...newImages[0], isPrimary: true };
+      }
     }
     setValue("images", newImages, { shouldValidate: true });
 
@@ -203,7 +205,9 @@ export function PhotosField({
   const handleRemove = useCallback((index: number) => {
     const newImages = images.filter((_, i) => i !== index);
     if (images[index]?.isPrimary && newImages.length > 0) {
-      newImages[0] = { ...newImages[0], isPrimary: true };
+      if (newImages[0]) {
+        newImages[0] = { ...newImages[0], isPrimary: true };
+      }
     }
     setValue("images", newImages, { shouldValidate: true });
   }, [images, setValue]);
@@ -214,7 +218,7 @@ export function PhotosField({
       isPrimary: i === index,
     }));
     const cover = newImages.splice(index, 1)[0];
-    newImages.unshift(cover);
+    if (cover) newImages.unshift(cover);
     setValue("images", newImages, { shouldValidate: true });
   }, [images, setValue]);
 
@@ -232,7 +236,9 @@ export function PhotosField({
     if (draggingIndex !== null && dragOverIndex.current !== null && draggingIndex !== dragOverIndex.current) {
       const newImages = [...images];
       const [removed] = newImages.splice(draggingIndex, 1);
-      newImages.splice(dragOverIndex.current, 0, removed);
+      if (removed) {
+        newImages.splice(dragOverIndex.current, 0, removed);
+      }
       
       newImages.forEach((img, i) => {
         img.isPrimary = i === 0;

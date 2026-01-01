@@ -120,13 +120,18 @@ export async function updateProfile(formData: FormData): Promise<{
 
     const { data: validatedData } = validationResult
 
+    const updatePayload = {
+      ...(validatedData.full_name !== undefined ? { full_name: validatedData.full_name } : {}),
+      ...(validatedData.phone !== undefined ? { phone: validatedData.phone } : {}),
+      ...(validatedData.shipping_region !== undefined ? { shipping_region: validatedData.shipping_region } : {}),
+      ...(validatedData.country_code !== undefined ? { country_code: validatedData.country_code } : {}),
+      updated_at: new Date().toISOString(),
+    }
+
     // Update profile
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({
-        ...validatedData,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updatePayload)
       .eq("id", user.id)
 
     if (updateError) {
@@ -316,7 +321,9 @@ export async function deleteAvatar(): Promise<{
       const pathParts = url.pathname.split("/avatars/")
       if (pathParts.length > 1) {
         const filePath = pathParts[1]
-        await supabase.storage.from("avatars").remove([filePath])
+        if (filePath) {
+          await supabase.storage.from("avatars").remove([filePath])
+        }
       }
     }
 

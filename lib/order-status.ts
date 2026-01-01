@@ -99,7 +99,8 @@ export function getNextStatusOptions(currentStatus: OrderItemStatus): OrderItemS
   }
   
   // Can go to next status or skip to shipped (if received/processing)
-  const options: OrderItemStatus[] = [statusOrder[currentIndex + 1]];
+  const next = statusOrder[currentIndex + 1]
+  const options: OrderItemStatus[] = next ? [next] : []
   
   // Allow marking as cancelled from any non-delivered status
   if (currentStatus !== 'delivered' && currentStatus !== 'cancelled') {

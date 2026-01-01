@@ -196,7 +196,7 @@ export async function POST(req: Request) {
       maxOutputTokens: AI_CONFIG.search.maxOutputTokens,
       temperature: AI_CONFIG.search.temperature,
       maxRetries: AI_CONFIG.search.maxRetries,
-      providerOptions: modelCtx.providerOptions,
+      ...(modelCtx.providerOptions ? { providerOptions: modelCtx.providerOptions } : {}),
       tools: {
         searchProducts: tool({
           description: "Search marketplace listings. Pass keywords in 'query'. Optionally filter by categorySlug (see prompt), minPrice, maxPrice. Returns up to 6 products.",
@@ -209,9 +209,9 @@ export async function POST(req: Request) {
     return result.toUIMessageStreamResponse({
       onError: (error) => {
         console.error("AI route error:", error)
-        const msg = typeof (error as any)?.message === "string" ? (error as any).message : String(error)
+        const msg = error instanceof Error ? error.message : String(error)
         if (/quota exceeded|rate limit|too many requests|429/i.test(msg)) {
-          const retryMatch = msg.match(/retry in\s+([0-9]+(\.[0-9]+)?)s/i)
+          const retryMatch = msg.match(/retry in\s+([0-9]+(?:\.[0-9]+)?)s/i)
           const retryHint = retryMatch?.[1] ? ` Try again in ~${retryMatch[1]}s.` : ""
           return `I'm temporarily rate-limited by the AI provider (${modelCtx.provider}).${retryHint}`
         }

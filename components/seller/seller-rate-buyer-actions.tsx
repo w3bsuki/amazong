@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, UserCheck } from "lucide-react"
 import { canSellerRateBuyer } from "@/app/actions/orders"
@@ -22,7 +22,7 @@ export function SellerRateBuyerActions({
   locale = 'en',
 }: SellerRateBuyerActionsProps) {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const [showRatingDialog, setShowRatingDialog] = useState(false)
   const [canRate, setCanRate] = useState(false)
   const [hasRated, setHasRated] = useState(false)
@@ -51,28 +51,27 @@ export function SellerRateBuyerActions({
       return
     }
 
-    setIsLoading(true)
-    try {
-      const result = await submitBuyerFeedback({
-        buyer_id: buyerId,
-        order_id: orderId,
-        rating,
-        comment: comment || undefined,
-      })
-      
-      if (result.success) {
-        toast.success(locale === 'bg' ? 'Благодарим за отзива!' : 'Thank you for your feedback!')
-        setShowRatingDialog(false)
-        setHasRated(true)
-        router.refresh()
-      } else {
-        toast.error(result.error || 'Failed to submit rating')
+    startTransition(async () => {
+      try {
+        const result = await submitBuyerFeedback({
+          buyer_id: buyerId,
+          order_id: orderId,
+          rating,
+          ...(comment ? { comment } : {}),
+        })
+        
+        if (result.success) {
+          toast.success(locale === 'bg' ? 'Благодарим за отзива!' : 'Thank you for your feedback!')
+          setShowRatingDialog(false)
+          setHasRated(true)
+          router.refresh()
+        } else {
+          toast.error(result.error || 'Failed to submit rating')
+        }
+      } catch {
+        toast.error('An error occurred')
       }
-    } catch {
-      toast.error('An error occurred')
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   const t = {
@@ -103,7 +102,7 @@ export function SellerRateBuyerActions({
           size="sm"
           variant="outline"
           onClick={() => setShowRatingDialog(true)}
-          disabled={isLoading}
+          disabled={isPending}
         >
           <UserCheck className="h-4 w-4 mr-1.5" />
           {t.rateBuyer}
@@ -130,7 +129,7 @@ export function SellerRateBuyerActions({
         submitLabel={t.submitRating}
         cancelLabel={t.cancel}
         locale={locale}
-        isLoading={isLoading}
+        isLoading={isPending}
       />
     </>
   )

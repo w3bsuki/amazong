@@ -102,7 +102,7 @@ export function PromptInputAttachment({
       <HoverCardTrigger asChild>
         <div
           className={cn(
-            "group relative flex h-9 cursor-pointer select-none items-center gap-2 rounded-xl border border-border/50 bg-background/50 px-2 font-bold text-xs transition-colors hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+            "group relative flex h-9 cursor-pointer select-none items-center gap-2 rounded-md border border-border/50 bg-background/50 px-2 font-bold text-xs transition-colors hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
             className
           )}
           key={data.id}
@@ -774,7 +774,7 @@ export const PromptInputButton = ({
   return (
     <InputGroupButton
       className={cn(
-        "size-10 rounded-xl font-bold transition-colors duration-200",
+        "size-10 rounded-md font-bold transition-colors duration-200",
         variant === "ghost" && "hover:bg-accent/50 hover:text-accent-foreground",
         className
       )}
@@ -854,7 +854,7 @@ export const PromptInputSubmit = ({
     <InputGroupButton
       aria-label="Submit"
       className={cn(
-        "size-10 rounded-xl transition-colors duration-200",
+        "size-10 rounded-md transition-colors duration-200",
         status === "streaming" && "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         className
       )}
@@ -967,6 +967,7 @@ export const PromptInputSpeechButton = ({
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const result = event.results[i];
+          if (!result) continue;
           if (result.isFinal) {
             finalTranscript += result[0]?.transcript ?? "";
           }

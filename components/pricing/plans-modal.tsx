@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { createSubscriptionCheckoutSession } from "@/app/actions/subscriptions"
 
 // Reuse shared components from plan-card
 import { PlansGrid, PlansGridSkeleton, type Plan } from "@/components/pricing/plan-card"
@@ -144,24 +145,18 @@ export function PlansModal({
     setSubscribingPlan(plan.id)
     
     try {
-      const response = await fetch('/api/subscriptions/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          planId: plan.id,
-          billingPeriod,
-        }),
+      const { url, error } = await createSubscriptionCheckoutSession({
+        planId: plan.id,
+        billingPeriod,
       })
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session')
+      if (error) {
+        throw new Error(error)
       }
 
       // Redirect to Stripe
-      if (data.url) {
-        window.location.href = data.url
+      if (url) {
+        window.location.href = url
       }
     } catch (error) {
       console.error('Checkout error:', error)
@@ -171,7 +166,7 @@ export function PlansModal({
     } finally {
       setSubscribingPlan(null)
     }
-  }, [currentTier, billingPeriod, locale, router, setIsOpen])
+  }, [currentTier, billingPeriod, router, setIsOpen])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -266,7 +261,7 @@ export function PlansModal({
               plans={filteredPlans}
               locale={locale}
               billingPeriod={billingPeriod}
-              currentTier={currentTier}
+              {...(currentTier ? { currentTier } : {})}
               loadingPlanId={subscribingPlan}
               onSelectPlan={handleSelectPlan}
               variant="compact"

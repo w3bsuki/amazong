@@ -59,7 +59,7 @@ export function LoginForm({
   const [password, setPassword] = useState("")
 
   const initialState = useMemo(
-    (): AuthActionState => ({ fieldErrors: {}, error: undefined, success: false }),
+    (): AuthActionState => ({ fieldErrors: {}, success: false }),
     [],
   )
   const [state, formAction] = useActionState(login.bind(null, locale, redirectPath), initialState)

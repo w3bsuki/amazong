@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useRef, useCallback, useMemo } from "react"
 import { useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 import { ProductCard } from "@/components/shared/product/product-card"
@@ -8,25 +8,35 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { getCategoryName, getCategoryShortName, type Category } from "@/hooks/use-categories-cache"
 import { CategoryCircle } from "@/components/shared/category/category-circle"
 import { StartSellingBanner } from "@/components/sections/start-selling-banner"
+import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import type { UIProduct } from "@/lib/data/products"
 import { CaretLeft, Megaphone, Clock, Sparkle, Storefront, TrendUp } from "@phosphor-icons/react"
 import { usePathname, useSearchParams } from "next/navigation"
 
+// =============================================================================
+// Types
+// =============================================================================
+
 interface MobileHomeTabsProps {
   initialProducts: UIProduct[]
-  initialCategories?: Category[] // Categories with children from server
-  /** Default tab from URL (e.g., "electronics") */
+  /** Categories with children from server (L0→L1→L2 pre-loaded) */
+  initialCategories?: Category[]
   defaultTab?: string | null
-  /** Default subtab from URL (e.g., "smartphones") */
   defaultSubTab?: string | null
-
-  /** Whether to show the seller banner (default: true for homepage) */
   showBanner?: boolean
-  /** Optional SEO heading for category pages */
   pageTitle?: string | null
 }
 
-// Loading skeleton for the product grid
+interface TabData {
+  products: UIProduct[]
+  page: number
+  hasMore: boolean
+}
+
+// =============================================================================
+// Loading Skeleton
+// =============================================================================
+
 function ProductGridSkeleton({ count = 6 }: { count?: number }) {
   return (
     <div className="grid grid-cols-2 gap-1.5 px-(--page-inset)">
@@ -43,13 +53,21 @@ function ProductGridSkeleton({ count = 6 }: { count?: number }) {
   )
 }
 
+// =============================================================================
+// Constants
+// =============================================================================
+
 const ALL_TAB_FILTERS = [
   { id: 'promoted', label: { en: 'Promoted', bg: 'Промотирани' }, icon: Megaphone },
   { id: 'newest', label: { en: 'Newest', bg: 'Най-нови' }, icon: Clock },
   { id: 'suggested', label: { en: 'Suggested', bg: 'Предложени' }, icon: Sparkle },
   { id: 'top-sellers', label: { en: 'Top Sellers', bg: 'Топ търговци' }, icon: Storefront },
   { id: 'top-listings', label: { en: 'Top Listings', bg: 'Топ обяви' }, icon: TrendUp },
-]
+] as const
+
+// =============================================================================
+// Main Component
+// =============================================================================
 
 export function MobileHomeTabs({ 
   initialProducts, 
@@ -64,51 +82,118 @@ export function MobileHomeTabs({
   const searchParams = useSearchParams()
   const [headerHeight, setHeaderHeight] = useState(0)
   
-  // Use server-provided categories (already includes children)
+  // Categories from server (L0→L1→L2 pre-loaded, no client fetch needed)
   const displayCategories = initialCategories
 
   // Initialize from URL params or props
   const initialTab = defaultTab || searchParams.get('tab') || "all"
   const initialSubTab = defaultSubTab || searchParams.get('sub') || null
   
-  const [activeTab, setActiveTab] = useState<string>(initialTab) // L0
-  const [activeSubTab, setActiveSubTab] = useState<string | null>(initialSubTab) // L1
-  
-  // Deep navigation stack for L2+ (e.g. ["sneakers", "running-shoes"])
-  const [activeDeepPath, setActiveDeepPath] = useState<Category[]>([])
-  const [selectedPill, setSelectedPill] = useState<Category | null>(null)
+  // ==========================================================================
+  // Navigation State - Simple hierarchy: L0 → L1 → L2 → L3 (pill)
+  // ==========================================================================
+  const [activeTab, setActiveTab] = useState<string>(initialTab)       // L0 category slug
+  const [activeL1, setActiveL1] = useState<string | null>(initialSubTab) // L1 category slug
+  const [activeL2, setActiveL2] = useState<string | null>(null)        // L2 category slug
+  const [selectedPill, setSelectedPill] = useState<string | null>(null) // L3 pill slug
   
   // Filter state for "All" tab
   const [activeAllFilter, setActiveAllFilter] = useState<string>("newest")
 
+  // Product feed state
   const [isLoading, setIsLoading] = useState(false)
-  const isAllTab = activeTab === "all"
-  
-  // Effective category slug for fetching products
-  const activeSlug = selectedPill 
-    ? selectedPill.slug 
-    : (activeDeepPath.length > 0 
-        ? activeDeepPath[activeDeepPath.length - 1].slug 
-        : (activeSubTab || activeTab))
-
-  // State for product feeds per slug
-  const [tabData, setTabData] = useState<
-    Record<string, { products: UIProduct[]; page: number; hasMore: boolean }>
-  >({
+  const [tabData, setTabData] = useState<Record<string, TabData>>({
     all: {
       products: initialProducts,
       page: 1,
-      hasMore: true,
+      hasMore: initialProducts.length >= 12,
     }
   })
 
-  // Dynamic children fetching for deep navigation
-  const [dynamicChildren, setDynamicChildren] = useState<Record<string, Category[]>>({})
+  // L3 children cache (fetched on-demand via API)
+  const [l3ChildrenCache, setL3ChildrenCache] = useState<Record<string, Category[]>>({})
 
+  const isAllTab = activeTab === "all"
+
+  // Refs
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const tabsContainerRef = useRef<HTMLDivElement>(null)
   const subTabsContainerRef = useRef<HTMLDivElement>(null)
   const pillsContainerRef = useRef<HTMLDivElement>(null)
+
+  // ==========================================================================
+  // Derived State (computed from server-provided categories)
+  // ==========================================================================
+
+  // L0 category (Fashion, Electronics, etc.)
+  const currentL0 = useMemo(() => 
+    displayCategories.find(c => c.slug === activeTab),
+    [displayCategories, activeTab]
+  )
+
+  // L1 categories (children of L0: Men, Women, Kids for Fashion)
+  const l1Categories = useMemo(() => 
+    currentL0?.children ?? [],
+    [currentL0]
+  )
+
+  // Current L1 category
+  const currentL1 = useMemo(() => 
+    l1Categories.find(c => c.slug === activeL1),
+    [l1Categories, activeL1]
+  )
+
+  // L2 categories (children of L1: Clothing, Shoes, Accessories)
+  const l2Categories = useMemo(() => 
+    currentL1?.children ?? [],
+    [currentL1]
+  )
+
+  // Current L2 category
+  const currentL2 = useMemo(() => 
+    l2Categories.find(c => c.slug === activeL2),
+    [l2Categories, activeL2]
+  )
+
+  // L3 categories (children of L2: T-shirts, Shirts, Pants) - from cache or server
+  const l3Categories = useMemo(() => {
+    if (!activeL2) return []
+    // First check if L2 has children from server data
+    if (currentL2?.children?.length) return currentL2.children
+    // Otherwise use cached API response
+    return l3ChildrenCache[activeL2] ?? []
+  }, [activeL2, currentL2, l3ChildrenCache])
+
+  // Determine what to show
+  const showL1Circles = !activeL1 && l1Categories.length > 0
+  const showL2Circles = !!activeL1 && l2Categories.length > 0
+  const circlesToDisplay = showL2Circles ? l2Categories : (showL1Circles ? l1Categories : [])
+  
+  // Show L3 pills when L2 is selected
+  const showPills = !!activeL2 && l3Categories.length > 0
+
+  // Effective category slug for fetching products (most specific selection)
+  const activeSlug = useMemo(() => {
+    if (selectedPill) return selectedPill
+    if (activeL2) return activeL2
+    if (activeL1) return activeL1
+    return activeTab
+  }, [selectedPill, activeL2, activeL1, activeTab])
+
+  // Get current category name for empty state
+  const activeCategoryName = useMemo(() => {
+    if (selectedPill) {
+      const pill = l3Categories.find(c => c.slug === selectedPill)
+      return pill ? getCategoryName(pill, locale) : null
+    }
+    if (activeL2 && currentL2) return getCategoryName(currentL2, locale)
+    if (activeL1 && currentL1) return getCategoryName(currentL1, locale)
+    if (activeTab !== "all" && currentL0) return getCategoryName(currentL0, locale)
+    return null
+  }, [selectedPill, activeL2, activeL1, activeTab, currentL0, currentL1, currentL2, l3Categories, locale])
+
+  // Current feed data
+  const activeFeed = tabData[activeSlug] ?? { products: [], page: 0, hasMore: true }
 
   // Measure header height for sticky positioning
   useEffect(() => {
@@ -133,7 +218,9 @@ export function MobileHomeTabs({
     }
   }, [activeTab])
 
-  const activeFeed = tabData[activeSlug] || { products: [], page: 0, hasMore: true }
+  // ==========================================================================
+  // Data Fetching
+  // ==========================================================================
 
   // Fetch products for a slug
   const loadPage = useCallback(
@@ -142,8 +229,8 @@ export function MobileHomeTabs({
       
       if (slug !== "all") {
         url += `&category=${slug}`
-      } else if (activeAllFilter) {
-        if (activeAllFilter === 'promoted') url = `/api/products/promoted?page=${nextPage}&limit=12`
+      } else if (activeAllFilter === 'promoted') {
+        url = `/api/products/promoted?page=${nextPage}&limit=12`
       }
       
       const response = await fetch(url)
@@ -156,64 +243,73 @@ export function MobileHomeTabs({
     [activeAllFilter]
   )
 
-  // Fetch children for a category (L2+)
-  const loadChildren = useCallback(async (parentSlug: string) => {
+  // Fetch L3 children for an L2 category (only if not already in server data)
+  const loadL3Children = useCallback(async (l2Slug: string) => {
+    if (l3ChildrenCache[l2Slug]) return // Already cached
+    
     try {
-      const response = await fetch(`/api/categories?parent=${parentSlug}&depth=1`)
+      const response = await fetch(`/api/categories?parent=${l2Slug}&depth=1`)
       const data = await response.json()
       if (data.categories) {
-        setDynamicChildren(prev => ({
+        setL3ChildrenCache(prev => ({
           ...prev,
-          [parentSlug]: data.categories
+          [l2Slug]: data.categories
         }))
       }
     } catch (error) {
-      console.error(`Failed to load children for ${parentSlug}:`, error)
+      console.error(`Failed to load L3 children for ${l2Slug}:`, error)
     }
-  }, [])
+  }, [l3ChildrenCache])
 
-  // Load initial data for a slug if empty
+  // Track which slugs have been loaded to prevent infinite loops
+  const loadedSlugsRef = useRef<Set<string>>(new Set(["all"]))
+
+  // Load initial products for a slug if empty
   useEffect(() => {
-    const current = tabData[activeSlug]
-    if (!current || current.page === 0) {
-      let cancelled = false
-      setIsLoading(true)
+    // Skip if already loaded
+    if (loadedSlugsRef.current.has(activeSlug)) return
+    
+    // Mark as loading to prevent re-runs
+    loadedSlugsRef.current.add(activeSlug)
 
-      loadPage(activeSlug, 1)
-        .then((data) => {
-          if (cancelled) return
-          const first = data.products || []
-          setTabData(prev => ({
-            ...prev,
-            [activeSlug]: {
-              products: first,
-              page: first.length > 0 ? 1 : 0,
-              hasMore: data.hasMore ?? first.length === 12,
-            },
-          }))
-        })
-        .catch((error) => {
-          if (!cancelled) console.error(`Failed to load ${activeSlug} products:`, error)
-        })
-        .finally(() => {
-          if (!cancelled) setIsLoading(false)
-        })
+    let cancelled = false
+    setIsLoading(true)
 
-      return () => {
-        cancelled = true
-      }
-    }
-  }, [activeSlug, loadPage, tabData])
+    loadPage(activeSlug, 1)
+      .then((data) => {
+        if (cancelled) {
+          loadedSlugsRef.current.delete(activeSlug)
+          return
+        }
+        const first = data.products || []
+        setTabData(prev => ({
+          ...prev,
+          [activeSlug]: {
+            products: first,
+            page: first.length > 0 ? 1 : 0,
+            hasMore: data.hasMore ?? first.length === 12,
+          },
+        }))
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          console.error(`Failed to load ${activeSlug} products:`, error)
+          loadedSlugsRef.current.delete(activeSlug)
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
 
-  // Load children when a deep path item is added
+    return () => { cancelled = true }
+  }, [activeSlug, loadPage])
+
+  // Load L3 children when L2 is selected (if server didn't provide them)
   useEffect(() => {
-    if (activeDeepPath.length > 0) {
-      const lastCategory = activeDeepPath[activeDeepPath.length - 1]
-      if (!dynamicChildren[lastCategory.slug]) {
-        loadChildren(lastCategory.slug)
-      }
+    if (activeL2 && !currentL2?.children?.length && !l3ChildrenCache[activeL2]) {
+      loadL3Children(activeL2)
     }
-  }, [activeDeepPath, dynamicChildren, loadChildren])
+  }, [activeL2, currentL2, l3ChildrenCache, loadL3Children])
 
   // Load more products (infinite scroll)
   const loadMoreProducts = useCallback(async () => {
@@ -226,10 +322,13 @@ export function MobileHomeTabs({
 
       const nextProducts = data.products || []
       if (nextProducts.length === 0) {
-        setTabData(prev => ({
-          ...prev,
-          [activeSlug]: { ...prev[activeSlug], hasMore: false },
-        }))
+        setTabData((prev) => {
+          const current = prev[activeSlug] ?? { products: [], page: 0, hasMore: true }
+          return {
+            ...prev,
+            [activeSlug]: { ...current, hasMore: false },
+          }
+        })
         return
       }
 
@@ -254,11 +353,12 @@ export function MobileHomeTabs({
     }
   }, [activeFeed.hasMore, activeFeed.page, activeSlug, isLoading, loadPage])
 
-  // Intersection Observer
+  // Intersection Observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && activeFeed.hasMore && !isLoading) {
+        const firstEntry = entries.at(0)
+        if (firstEntry?.isIntersecting && activeFeed.hasMore && !isLoading) {
           loadMoreProducts()
         }
       },
@@ -272,109 +372,67 @@ export function MobileHomeTabs({
     return () => observer.disconnect()
   }, [activeFeed.hasMore, isLoading, loadMoreProducts])
 
-  // Get current category object to find children
-  const currentCategory = displayCategories.find(c => c.slug === activeTab)
-  const subcategories = currentCategory?.children || []
-  
-  // Get current subcategory object to find L2 children (initial set)
-  const currentSubCategory = subcategories.find(c => c.slug === activeSubTab)
-
-  // L2 Categories (for Circles)
-  const l2Categories = currentSubCategory 
-    ? (currentSubCategory.children?.length ? currentSubCategory.children : dynamicChildren[currentSubCategory.slug] || [])
-    : []
-
-  const showL2Circles = !!activeSubTab
-  const circlesToDisplay = showL2Circles ? l2Categories : subcategories
-
-  const handleCircleClick = (category: Category) => {
-    if (!showL2Circles) {
-      // Clicked L1 -> Go to L2 (Circles)
-      handleSubTabChange(category.slug)
-    } else {
-      // Clicked L2 -> Go to L3 (Pills)
-      setActiveDeepPath([category])
-      setSelectedPill(null)
-    }
-  }
-
-  const handleBackToL1 = () => {
-    setActiveSubTab(null)
-    setActiveDeepPath([])
-    setSelectedPill(null)
-    updateUrl(activeTab, null)
-  }
-  
-  // Determine which pills to show (L3+)
-  let pills: Category[] = []
-
-  if (activeDeepPath.length > 0) {
-    // We are deep (L2+ selected). Show children of the current deepest selection.
-    const lastSelected = activeDeepPath[activeDeepPath.length - 1]
-    pills = dynamicChildren[lastSelected.slug] || []
-  }
-
-  // Effect to fetch L2 children if missing from cache
-  useEffect(() => {
-    if (activeSubTab && currentSubCategory && (!currentSubCategory.children || currentSubCategory.children.length === 0)) {
-      if (!dynamicChildren[activeSubTab]) {
-        loadChildren(activeSubTab)
-      }
-    }
-  }, [activeSubTab, currentSubCategory, dynamicChildren, loadChildren])
-
+  // ==========================================================================
+  // Navigation Handlers
+  // ==========================================================================
 
   // Update URL when state changes (shallow routing - no page reload)
-  const updateUrl = useCallback((tab: string, sub: string | null) => {
+  const updateUrl = useCallback((tab: string, l1: string | null) => {
     const params = new URLSearchParams()
     if (tab !== 'all') params.set('tab', tab)
-    if (sub) params.set('sub', sub)
+    if (l1) params.set('sub', l1)
     
     const queryString = params.toString()
-    const newUrl = queryString 
-      ? `${pathname}?${queryString}` 
-      : pathname
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname
     
-    // Use replaceState to avoid polluting browser history for every tab click
     window.history.replaceState(null, '', newUrl)
   }, [pathname])
 
+  // Handle L0 tab change
   const handleTabChange = (slug: string) => {
     if (slug === activeTab) return
     setActiveTab(slug)
-    setActiveSubTab(null)
-    setActiveDeepPath([])
+    setActiveL1(null)
+    setActiveL2(null)
     setSelectedPill(null)
     updateUrl(slug, null)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  const handleSubTabChange = (slug: string) => {
-    if (slug === activeSubTab) {
-      setActiveSubTab(null)
-      setActiveDeepPath([])
+  // Handle circle click (L1 or L2)
+  const handleCircleClick = (category: Category) => {
+    if (!activeL1) {
+      // Currently showing L1 circles - click selects L1, shows L2 circles
+      setActiveL1(category.slug)
+      setActiveL2(null)
       setSelectedPill(null)
-      updateUrl(activeTab, null)
+      updateUrl(activeTab, category.slug)
     } else {
-      setActiveSubTab(slug)
-      setActiveDeepPath([]) 
+      // Currently showing L2 circles - click selects L2, shows L3 pills
+      setActiveL2(category.slug)
       setSelectedPill(null)
-      updateUrl(activeTab, slug)
     }
   }
 
+  // Handle back button (go from L2 back to L1)
+  const handleBackToL1 = () => {
+    setActiveL1(null)
+    setActiveL2(null)
+    setSelectedPill(null)
+    updateUrl(activeTab, null)
+  }
+
+  // Handle L3 pill click
   const handlePillClick = (category: Category) => {
-    if (selectedPill?.slug === category.slug) {
-      setActiveDeepPath(prev => [...prev, category])
+    if (selectedPill === category.slug) {
+      // Double-click could navigate deeper (if L4 exists), for now just toggle off
       setSelectedPill(null)
-      if (pillsContainerRef.current) {
-        pillsContainerRef.current.scrollTo({ left: 0, behavior: "smooth" })
-      }
     } else {
-      setSelectedPill(category)
+      setSelectedPill(category.slug)
     }
   }
 
+  // Handle All tab filter click
   const handleAllFilterClick = (id: string) => {
     setActiveAllFilter(id)
     setTabData(prev => ({
@@ -544,11 +602,11 @@ export function MobileHomeTabs({
 
             {circlesToDisplay.map((sub) => {
               const isActive = showL2Circles 
-                ? activeDeepPath[0]?.slug === sub.slug
-                : activeSubTab === sub.slug
+                ? activeL2 === sub.slug
+                : activeL1 === sub.slug
 
               const dimmed =
-                (showL2Circles ? activeDeepPath.length > 0 : !!activeSubTab) && !isActive
+                (showL2Circles ? !!activeL2 : !!activeL1) && !isActive
 
               return (
                 <CategoryCircle
@@ -575,37 +633,28 @@ export function MobileHomeTabs({
       </div>
 
       {/* 
-        3. Deep Navigation Pills (L3, L4...)
-        Revealed when L2 is selected (activeDeepPath > 0).
+        3. Deep Navigation Pills (L3)
+        Revealed when L2 is selected and has children.
       */}
-      {activeDeepPath.length > 0 && (
+      {showPills && (
         <div className="bg-background py-3 px-(--page-inset) overflow-x-auto no-scrollbar" ref={pillsContainerRef}>
           <div className="flex gap-2 items-center">
-            {/* Current Context Label */}
-            {activeDeepPath.length > 1 && (
-              <div className="px-3 py-1.5 rounded-full text-xs font-bold bg-primary text-primary-foreground border border-primary whitespace-nowrap shrink-0">
-                {getCategoryName(activeDeepPath[activeDeepPath.length - 1], locale)}
-              </div>
-            )}
-
             {/* "All" Pill */}
-            {pills.length > 0 && (
-              <button
-                onClick={() => setSelectedPill(null)}
-                className={cn(
-                  "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
-                  selectedPill === null
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-secondary text-secondary-foreground border-border/50 hover:bg-secondary/80"
-                )}
-              >
-                {locale === "bg" ? "Всички" : "All"}
-              </button>
-            )}
+            <button
+              onClick={() => setSelectedPill(null)}
+              className={cn(
+                "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+                selectedPill === null
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-secondary text-secondary-foreground border-border/50 hover:bg-secondary/80"
+              )}
+            >
+              {locale === "bg" ? "Всички" : "All"}
+            </button>
 
-            {/* Children Pills */}
-            {pills.map((child) => {
-              const isSelected = selectedPill?.slug === child.slug
+            {/* L3 Pills */}
+            {l3Categories.map((child) => {
+              const isSelected = selectedPill === child.slug
               return (
                 <button
                   key={child.slug}
@@ -621,13 +670,6 @@ export function MobileHomeTabs({
                 </button>
               )
             })}
-            
-            {/* Empty state for leaf nodes */}
-            {pills.length === 0 && (
-              <span className="text-xs text-muted-foreground italic px-2">
-                {locale === "bg" ? "Всички продукти" : "All products"}
-              </span>
-            )}
           </div>
         </div>
       )}
@@ -637,9 +679,10 @@ export function MobileHomeTabs({
       */}
       <div className="pt-1">
         {activeFeed.products.length === 0 && !isLoading ? (
-          <div className="py-20 text-center text-muted-foreground">
-            <p>{locale === "bg" ? "Няма намерени продукти" : "No products found"}</p>
-          </div>
+          <EmptyStateCTA 
+            variant={isAllTab ? "no-listings" : "no-category"}
+            {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
+          />
         ) : (
           <div className="grid grid-cols-2 gap-1.5 px-(--page-inset)">
             {activeFeed.products.map((product, index) => (
@@ -648,29 +691,31 @@ export function MobileHomeTabs({
                 id={product.id}
                 title={product.title}
                 price={product.price}
-                originalPrice={product.listPrice}
+                originalPrice={product.listPrice ?? null}
                 image={product.image}
                 rating={product.rating}
                 reviews={product.reviews}
-                state={product.isBoosted ? "promoted" : undefined}
+                {...(product.isBoosted ? { state: "promoted" as const } : {})}
                 index={index}
-                slug={product.slug}
-                storeSlug={product.storeSlug}
-                sellerId={product.sellerId || undefined}
-                sellerName={(product.sellerName || product.storeSlug) || undefined}
+                slug={product.slug ?? null}
+                storeSlug={product.storeSlug ?? null}
+                sellerId={product.sellerId ?? null}
+                {...((product.sellerName || product.storeSlug)
+                  ? { sellerName: product.sellerName || product.storeSlug || "" }
+                  : {})}
                 sellerAvatarUrl={product.sellerAvatarUrl || null}
-                sellerTier={product.sellerTier}
-                sellerVerified={product.sellerVerified}
-                condition={product.condition}
-                brand={product.brand}
-                categorySlug={product.categorySlug}
-                categoryRootSlug={product.categoryRootSlug}
-                categoryPath={product.categoryPath}
-                make={product.make}
-                model={product.model}
-                year={product.year}
-                location={product.location}
-                attributes={product.attributes}
+                sellerTier={product.sellerTier ?? "basic"}
+                sellerVerified={Boolean(product.sellerVerified)}
+                {...(product.condition ? { condition: product.condition } : {})}
+                {...(product.brand ? { brand: product.brand } : {})}
+                {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}
+                {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
+                {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+                {...(product.make ? { make: product.make } : {})}
+                {...(product.model ? { model: product.model } : {})}
+                {...(product.year ? { year: product.year } : {})}
+                {...(product.location ? { location: product.location } : {})}
+                {...(product.attributes ? { attributes: product.attributes } : {})}
                 cardStyle="marketplace"
                 showSellerRow={false}
                 showMetaPills={true}

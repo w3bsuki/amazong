@@ -156,7 +156,7 @@ export function PlanCard({
         isBest && "border-rating ring-1 ring-rating/20 shadow-md",
         isCurrentPlan && "bg-muted/30",
         // Padding
-        variant === "compact" ? "p-4" : "p-5 md:p-6"
+        variant === "compact" ? "p-3" : "p-3 md:p-4"
       )}
     >
       {/* Badge */}
@@ -353,7 +353,7 @@ export function PlansGrid({
           billingPeriod={billingPeriod}
           isCurrentPlan={plan.tier === currentTier}
           isLoading={loadingPlanId === plan.id}
-          onSelect={onSelectPlan}
+          {...(onSelectPlan ? { onSelect: onSelectPlan } : {})}
           variant={variant}
         />
       ))}

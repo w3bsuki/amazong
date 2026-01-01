@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { CountBadge } from "@/components/ui/count-badge"
+import { CountBadge } from "@/components/common/count-badge"
 
 interface Notification {
   id: string
@@ -155,7 +155,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
 
     try {
       const supabase = createClient()
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("notification_preferences")
         .select(
           "in_app_purchase,in_app_order_status,in_app_message,in_app_review,in_app_system,in_app_promotion"
@@ -355,9 +355,16 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                     .eq("id", productId)
                     .maybeSingle()
 
-                  const productImages = (data as any)?.product_images as
-                    | Array<{ image_url: string | null; thumbnail_url: string | null; is_primary: boolean | null; display_order: number | null }>
-                    | null
+                  // Type-safe access to the joined product_images
+                  type ProductImage = {
+                    image_url: string | null
+                    thumbnail_url: string | null
+                    is_primary: boolean | null
+                    display_order: number | null
+                  }
+                  
+                  const productImages = data?.product_images as ProductImage[] | null
+                  const legacyImages = data?.images as string[] | null
 
                   const primary = productImages?.find((img) => img.is_primary) ??
                     productImages?.slice().sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))[0]
@@ -365,7 +372,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                   const imageUrl =
                     primary?.thumbnail_url ??
                     primary?.image_url ??
-                    ((data as any)?.images?.[0] as string | undefined) ??
+                    legacyImages?.[0] ??
                     null
 
                   if (!imageUrl) return
@@ -440,7 +447,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
             {totalUnread > 0 && (
               <CountBadge
                 count={totalUnread}
-                className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-[10px] shadow-sm"
+                className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
                 aria-hidden="true"
               />
             )}
@@ -494,7 +501,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium text-foreground group-hover:text-brand transition-colors">{t("messagesSection")}</p>
                 {unreadMessagesCount > 0 && (
-                  <span className="text-[10px] bg-destructive text-destructive-foreground px-1.5 py-0.5 rounded-full font-medium">
+                  <span className="text-2xs bg-destructive text-destructive-foreground px-1.5 py-0.5 rounded-full font-medium">
                     {unreadMessagesCount}
                   </span>
                 )}

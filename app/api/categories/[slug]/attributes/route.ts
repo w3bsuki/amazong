@@ -1,28 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/database.types";
 
 // Use service role for this public endpoint to bypass RLS
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabase = createAdminClient();
 
-interface CategoryAttribute {
-  id: string;
-  category_id: string;
-  name: string;
-  name_bg: string | null;
-  attribute_type: string;
-  is_required: boolean;
-  is_filterable: boolean;
-  options: string[] | null;
-  options_bg: string[] | null;
-  placeholder: string | null;
-  placeholder_bg: string | null;
-  validation_rules: Record<string, unknown> | null;
-  sort_order: number;
-  created_at: string;
-}
+// Use the generated database type for category attributes
+type CategoryAttributeRow = Database["public"]["Tables"]["category_attributes"]["Row"];
 
 export async function GET(
   request: NextRequest,
@@ -82,7 +66,7 @@ export async function GET(
       .eq("id", categoryId)
       .single();
 
-    let parentAttributes: CategoryAttribute[] = [];
+    let parentAttributes: CategoryAttributeRow[] = [];
 
     if (category?.parent_id) {
       // Recursively get parent attributes
@@ -106,18 +90,18 @@ export async function GET(
     const allAttributes = [...(attributes || []), ...inheritedAttributes];
 
     // Transform to cleaner format for frontend
-    const formattedAttributes = allAttributes.map((attr: CategoryAttribute) => ({
+    const formattedAttributes = allAttributes.map((attr) => ({
       id: attr.id,
       name: attr.name,
       nameBg: attr.name_bg,
       type: attr.attribute_type,
       required: attr.is_required,
       filterable: attr.is_filterable,
-      options: attr.options,
-      optionsBg: attr.options_bg,
+      options: attr.options as string[] | null,
+      optionsBg: attr.options_bg as string[] | null,
       placeholder: attr.placeholder,
       placeholderBg: attr.placeholder_bg,
-      validationRules: attr.validation_rules,
+      validationRules: attr.validation_rules as Record<string, unknown> | null,
       sortOrder: attr.sort_order,
     }));
 

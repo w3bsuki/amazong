@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { House, SquaresFour, ChatCircle, User, PlusCircle } from "@phosphor-icons/react"
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { CountBadge } from "@/components/ui/count-badge"
+import { CountBadge } from "@/components/common/count-badge"
 import { useTranslations } from "next-intl"
 import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile/mobile-menu-sheet"
 import { useMessages } from "@/components/providers/message-context"
@@ -39,7 +39,8 @@ export function MobileTabBar() {
   })()
   const knownRoutes = ['categories', 'cart', 'checkout', 'account', 'chat', 'sell', 'help', 'auth', 'search', 'admin', 'dashboard', 'plans', 'wishlist', 'orders', 'settings', 'notifications']
   // /{username}/{slug-or-id} pattern: exactly 2 segments AND first segment is not a known route
-  const isProductPage = (pathSegments.length === 2 && !knownRoutes.includes(pathSegments[0]))
+  const firstSegment = pathSegments.at(0)
+  const isProductPage = (pathSegments.length === 2 && !!firstSegment && !knownRoutes.includes(firstSegment))
   
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/"

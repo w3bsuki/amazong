@@ -40,7 +40,7 @@ function toPathItem(cat: Category): CategoryPathItem {
   return {
     id: cat.id,
     name: cat.name,
-    name_bg: cat.name_bg,
+    name_bg: cat.name_bg ?? null,
     slug: cat.slug,
   };
 }
@@ -91,8 +91,8 @@ export function CategorySelector({
 
     // If not found in flat list (lazy loaded), use selectedPath if available
     if (selectedPath && selectedPath.length > 0) {
-      const last = selectedPath[selectedPath.length - 1];
-      if (last.id === value) {
+      const last = selectedPath.at(-1);
+      if (last && last.id === value) {
         const fullPath = selectedPath
           .map((c) => (locale === "bg" && c.name_bg ? c.name_bg : c.name))
           .join(" › ");
@@ -300,7 +300,8 @@ function CategoryModalContent({
   const currentCategories = useMemo(() => {
     if (isMobile) {
       if (navigationPath.length === 0) return categories;
-      const lastInPath = navigationPath[navigationPath.length - 1];
+      const lastInPath = navigationPath.at(-1);
+      if (!lastInPath) return categories;
       return getChildren(lastInPath);
     } else {
       return getChildren(activeL1);
@@ -436,7 +437,7 @@ function CategoryModalContent({
                   </span>
                   <h3 className="text-xs font-bold text-foreground uppercase tracking-wider truncate">
                     {navigationPath.length > 0 
-                      ? getName(navigationPath[navigationPath.length - 1])
+                      ? (navigationPath.at(-1) ? getName(navigationPath.at(-1)!) : stepLabels[0])
                       : stepLabels[0]
                     }
                   </h3>

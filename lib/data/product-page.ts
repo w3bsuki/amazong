@@ -2,6 +2,35 @@ import 'server-only'
 
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from "@/lib/supabase/server"
+import type { Database } from "@/types/database.types"
+
+type ProductRow = Database["public"]["Tables"]["products"]["Row"]
+type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"]
+type CategoryRow = Database["public"]["Tables"]["categories"]["Row"]
+type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"]
+type ProductImageRow = Database["public"]["Tables"]["product_images"]["Row"]
+
+type ProductSeller = Pick<
+  ProfileRow,
+  "id" | "username" | "display_name" | "avatar_url" | "verified" | "is_seller" | "created_at"
+>
+
+type ProductCategory = Pick<
+  CategoryRow,
+  "id" | "name" | "name_bg" | "slug" | "parent_id" | "icon" | "image_url"
+>
+
+type ProductImage = Pick<
+  ProductImageRow,
+  "id" | "image_url" | "thumbnail_url" | "display_order" | "is_primary"
+>
+
+export type ProductPageProduct = ProductRow & {
+  seller: ProductSeller
+  category: ProductCategory | null
+  seller_stats: SellerStatsRow | null
+  product_images?: ProductImage[]
+}
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -17,10 +46,28 @@ const isUuid = (value: unknown): value is string => typeof value === 'string' &&
 export async function fetchProductByUsernameAndSlug(
   username: string,
   productSlug: string
-) {
+): Promise<ProductPageProduct | null> {
   'use cache'
   cacheTag('products', 'product')
   cacheLife('products')
+
+  const addEntityTags = (p: { id?: unknown; seller?: { id?: unknown; username?: unknown } } | null) => {
+    if (!p) return
+
+    if (typeof p.id === 'string' && p.id) {
+      cacheTag('products', `product-${p.id}`)
+    }
+
+    const sellerId = p.seller?.id
+    if (typeof sellerId === 'string' && sellerId) {
+      cacheTag(`seller-${sellerId}`)
+    }
+
+    const sellerUsername = p.seller?.username
+    if (typeof sellerUsername === 'string' && sellerUsername) {
+      cacheTag(`seller-${sellerUsername}`)
+    }
+  }
 
   // In Next.js Cache Components mode, cached functions may be invoked with
   // non-serializable/temporary references if something goes wrong upstream.
@@ -49,6 +96,9 @@ export async function fetchProductByUsernameAndSlug(
       ),
       category:categories (
         id, name, name_bg, slug, parent_id, icon, image_url
+      ),
+      product_images (
+        id, image_url, thumbnail_url, display_order, is_primary
       )
     `)
     .eq("slug", safeSlug)
@@ -65,14 +115,14 @@ export async function fetchProductByUsernameAndSlug(
       .eq("username", safeUsername)
       .maybeSingle()
 
-    const profile = exactProfile
+    const profile = (exactProfile as unknown as ProductSeller | null)
       ?? (
         await supabase
           .from("profiles")
           .select("id, username, display_name, avatar_url, verified, is_seller, created_at")
           .ilike("username", safeUsername)
           .maybeSingle()
-      ).data
+      ).data as unknown as ProductSeller | null
 
     if (!profile) return null
 
@@ -101,14 +151,14 @@ export async function fetchProductByUsernameAndSlug(
 
     if (!fallbackProduct) return null
 
-    let category = null
+    let category: ProductCategory | null = null
     if (fallbackProduct.category_id) {
       const { data } = await supabase
         .from("categories")
-        .select("*")
+        .select("id, name, name_bg, slug, parent_id, icon, image_url")
         .eq("id", fallbackProduct.category_id)
         .single()
-      category = data
+      category = (data as unknown as ProductCategory | null) ?? null
     }
 
     const { data: sellerStats } = await supabase
@@ -117,19 +167,51 @@ export async function fetchProductByUsernameAndSlug(
       .eq("seller_id", profile.id)
       .single()
 
-    return { ...fallbackProduct, seller: profile, category, seller_stats: sellerStats ?? null }
+    // Fetch product_images for the fallback path
+    const { data: productImages } = await supabase
+      .from("product_images")
+      .select("id, image_url, thumbnail_url, display_order, is_primary")
+      .eq("product_id", fallbackProduct.id)
+      .order("display_order", { ascending: true })
+
+    const enriched: ProductPageProduct = {
+      ...(fallbackProduct as ProductRow),
+      seller: profile,
+      category,
+      seller_stats: sellerStats ?? null,
+      product_images: productImages ?? [],
+    }
+
+    addEntityTags(enriched)
+    return enriched
   }
 
-  const sellerId = (product as any)?.seller?.id as string | undefined
-  const { data: sellerStats } = sellerId
-    ? await supabase
-        .from("seller_stats")
-        .select("*")
-        .eq("seller_id", sellerId)
-        .single()
-    : { data: null as any }
+  const productWithRelations = product as unknown as (ProductRow & {
+    seller: ProductSeller | null
+    category: ProductCategory | null
+    product_images?: ProductImage[]
+  })
 
-  return { ...(product as any), seller_stats: sellerStats ?? null }
+  const seller = productWithRelations.seller
+  const sellerId = seller?.id
+  if (!sellerId || !seller) return null
+
+  const { data: sellerStats } = await supabase
+    .from("seller_stats")
+    .select("*")
+    .eq("seller_id", sellerId)
+    .single()
+
+  const enriched: ProductPageProduct = {
+    ...(productWithRelations as ProductRow),
+    seller,
+    category: productWithRelations.category ?? null,
+    seller_stats: sellerStats ?? null,
+    product_images: productWithRelations.product_images ?? [],
+  }
+
+  addEntityTags(enriched)
+  return enriched
 }
 
 /**

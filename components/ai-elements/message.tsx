@@ -48,8 +48,8 @@ export const MessageContent = ({
   <div
     className={cn(
       "is-user:dark flex w-fit max-w-full min-w-0 flex-col gap-2 overflow-hidden text-sm transition-all duration-200",
-      "group-[.is-user]:ml-auto group-[.is-user]:rounded-2xl group-[.is-user]:rounded-tr-sm group-[.is-user]:bg-primary group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-primary-foreground",
-      "group-[.is-assistant]:rounded-2xl group-[.is-assistant]:rounded-tl-sm group-[.is-assistant]:border group-[.is-assistant]:border-border/50 group-[.is-assistant]:bg-card group-[.is-assistant]:px-4 group-[.is-assistant]:py-3 group-[.is-assistant]:text-foreground",
+      "group-[.is-user]:ml-auto group-[.is-user]:rounded-md group-[.is-user]:rounded-tr-sm group-[.is-user]:bg-primary group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-primary-foreground",
+      "group-[.is-assistant]:rounded-md group-[.is-assistant]:rounded-tl-sm group-[.is-assistant]:border group-[.is-assistant]:border-border/50 group-[.is-assistant]:bg-card group-[.is-assistant]:px-4 group-[.is-assistant]:py-3 group-[.is-assistant]:text-foreground",
       className
     )}
     {...props}
@@ -345,7 +345,7 @@ export function MessageAttachment({
   return (
     <div
       className={cn(
-        "group relative size-24 overflow-hidden rounded-xl border border-border/50 bg-muted/30",
+        "group relative size-24 overflow-hidden rounded-md border border-border/50 bg-muted/30",
         className
       )}
       {...props}
@@ -382,7 +382,7 @@ export function MessageAttachment({
               <TooltipTrigger asChild>
                 <div className="flex size-full shrink-0 flex-col items-center justify-center gap-1.5 bg-muted/50 text-muted-foreground">
                   <PaperclipIcon className="size-5" />
-                  <span className="max-w-[80%] truncate text-[10px] font-bold uppercase tracking-widest">
+                  <span className="max-w-[80%] truncate text-2xs font-bold uppercase tracking-widest">
                     {attachmentLabel}
                   </span>
                 </div>

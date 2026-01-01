@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 import { getShippingFilter, productShipsToRegion, type ShippingRegion } from '@/lib/shipping'
@@ -37,14 +39,18 @@ export interface Product {
   category_slug?: string | null
   slug?: string | null
   store_slug?: string | null
-  /** Embedded leaf category with parent chain (up to 4 levels) */
+  /** 
+   * Embedded leaf category with parent chain (up to 4 levels).
+   * Supabase nested selects return parents as arrays, but the normalizeCategoryNode
+   * function handles both single objects and arrays, so we accept unknown here.
+   */
   categories?: {
     id?: string
     slug?: string
     name?: string
     name_bg?: string | null
     icon?: string | null
-    parent?: Product["categories"] | null
+    parent?: unknown // Supabase returns array[], normalizeCategoryNode handles both
   } | null
   seller_profile?: {
     id?: string | null
@@ -106,9 +112,19 @@ export interface UIProduct {
   location?: string
 }
 
+/** Type for normalized category - self-referencing for parent chain */
+interface NormalizedCategory {
+  id?: string
+  slug?: string
+  name?: string
+  name_bg?: string | null
+  icon?: string | null
+  parent?: NormalizedCategory | null
+}
+
 function normalizeCategoryNode(
   input: unknown
-): Product["categories"] | null | undefined {
+): NormalizedCategory | null | undefined {
   if (!input || typeof input !== 'object') return input as null | undefined
 
   // Supabase can return nested relations as arrays depending on FK metadata.
@@ -118,19 +134,21 @@ function normalizeCategoryNode(
   }
 
   const node = input as Record<string, unknown>
-  const normalized: NonNullable<Product["categories"]> = {
-    id: typeof node.id === 'string' ? node.id : undefined,
-    slug: typeof node.slug === 'string' ? node.slug : undefined,
-    name: typeof node.name === 'string' ? node.name : undefined,
-    name_bg:
-      typeof node.name_bg === 'string' || node.name_bg === null
-        ? (node.name_bg as string | null)
-        : undefined,
-    icon:
-      typeof node.icon === 'string' || node.icon === null
-        ? (node.icon as string | null)
-        : undefined,
+  const normalized: NormalizedCategory = {
     parent: normalizeCategoryNode(node.parent) ?? null,
+    ...(typeof node.id === "string" ? { id: node.id } : {}),
+    ...(typeof node.slug === "string" ? { slug: node.slug } : {}),
+    ...(typeof node.name === "string" ? { name: node.name } : {}),
+    ...(
+      typeof node.name_bg === "string" || node.name_bg === null
+        ? { name_bg: node.name_bg as string | null }
+        : {}
+    ),
+    ...(
+      typeof node.icon === "string" || node.icon === null
+        ? { icon: node.icon as string | null }
+        : {}
+    ),
   }
 
   return normalized
@@ -143,7 +161,9 @@ function buildCategoryPath(
   const path: NonNullable<UIProduct["categoryPath"]> = []
   const visited = new Set<string>()
 
-  let node: Product["categories"] | null | undefined = leaf
+  // Normalize first to get proper typed parent chain
+  const normalizedLeaf = normalizeCategoryNode(leaf)
+  let node: NormalizedCategory | null | undefined = normalizedLeaf
   while (node && typeof node === "object") {
     const slug = node.slug
     const name = node.name
@@ -430,32 +450,32 @@ export function toUI(p: Product): UIProduct {
     id: p.id,
     title: p.title,
     price: p.price,
-    listPrice: p.list_price ?? undefined,
-    isOnSale: p.is_on_sale ?? undefined,
-    salePercent: p.sale_percent ?? undefined,
+    ...(typeof p.list_price === "number" ? { listPrice: p.list_price } : {}),
+    ...(typeof p.is_on_sale === "boolean" ? { isOnSale: p.is_on_sale } : {}),
+    ...(typeof p.sale_percent === "number" ? { salePercent: p.sale_percent } : {}),
     saleEndDate: p.sale_end_date ?? null,
     isBoosted: Boolean(p.is_boosted),
     boostExpiresAt: p.boost_expires_at ?? null,
     image: pickPrimaryImage(p),
     rating: p.rating ?? 0,
     reviews: p.review_count ?? 0,
-    categorySlug: p.category_slug ?? undefined,
-    categoryRootSlug: categoryRootSlug || undefined,
-    categoryPath,
-    slug: p.slug,
-    storeSlug: p.store_slug,
+    ...(p.category_slug ? { categorySlug: p.category_slug } : {}),
+    ...(categoryRootSlug ? { categoryRootSlug } : {}),
+    ...(categoryPath ? { categoryPath } : {}),
+    slug: p.slug ?? null,
+    storeSlug: p.store_slug ?? null,
     sellerId: p.seller_id ?? p.seller_profile?.id ?? null,
     sellerName: sellerDisplayName,
     sellerAvatarUrl: p.seller_profile?.avatar_url ?? null,
     sellerTier,
     sellerVerified,
-    attributes: Object.keys(attrs).length ? attrs : undefined,
-    condition: typeof attrs.condition === 'string' ? attrs.condition : undefined,
-    brand: typeof attrs.brand === 'string' ? attrs.brand : undefined,
-    make: typeof attrs.make === 'string' ? attrs.make : undefined,
-    model: typeof attrs.model === 'string' ? attrs.model : undefined,
-    year: typeof attrs.year === 'string' ? attrs.year : undefined,
-    location: typeof attrs.location === 'string' ? attrs.location : undefined,
+    ...(Object.keys(attrs).length ? { attributes: attrs } : {}),
+    ...(typeof attrs.condition === "string" ? { condition: attrs.condition } : {}),
+    ...(typeof attrs.brand === "string" ? { brand: attrs.brand } : {}),
+    ...(typeof attrs.make === "string" ? { make: attrs.make } : {}),
+    ...(typeof attrs.model === "string" ? { model: attrs.model } : {}),
+    ...(typeof attrs.year === "string" ? { year: attrs.year } : {}),
+    ...(typeof attrs.location === "string" ? { location: attrs.location } : {}),
   }
 }
 
@@ -475,18 +495,19 @@ export function toCarouselProducts(products: Product[], options?: { isBoosted?: 
 }[] {
   return products.map((p) => {
     const ui = toUI(p)
+    const isBoosted = Boolean(options?.isBoosted ?? ui.isBoosted)
     return {
       id: ui.id,
       title: ui.title,
       price: ui.price,
-      listPrice: ui.listPrice,
-      isBoosted: options?.isBoosted ?? ui.isBoosted,
+      ...(ui.listPrice !== undefined ? { listPrice: ui.listPrice } : {}),
+      isBoosted,
       image: ui.image,
       rating: ui.rating,
       reviews: ui.reviews,
-      slug: ui.slug,
-      storeSlug: ui.storeSlug,
-      location: ui.location,
+      slug: ui.slug ?? null,
+      storeSlug: ui.storeSlug ?? null,
+      ...(ui.location ? { location: ui.location } : {}),
     }
   })
 }

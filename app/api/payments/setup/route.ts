@@ -29,7 +29,7 @@ export async function POST() {
         if (!stripeCustomerId) {
             // Create a new Stripe customer
             const customer = await stripe.customers.create({
-                email: user.email,
+                ...(user.email ? { email: user.email } : {}),
                 metadata: {
                     supabase_user_id: user.id
                 }
@@ -42,6 +42,10 @@ export async function POST() {
                 .update({ stripe_customer_id: stripeCustomerId })
                 .eq('id', user.id)
         }
+
+            if (!stripeCustomerId) {
+                return NextResponse.json({ error: "Stripe customer creation failed" }, { status: 500 })
+            }
 
         // Get origin for redirect URLs
         const headersList = await headers()

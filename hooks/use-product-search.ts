@@ -214,7 +214,7 @@ export function useProductSearch(maxResults: number = 8) {
         price: product.price,
         image: product.images?.[0] || null,
         slug: product.slug,
-        storeSlug: product.storeSlug,
+        storeSlug: product.storeSlug ?? null,
         searchedAt: Date.now(),
       }
 

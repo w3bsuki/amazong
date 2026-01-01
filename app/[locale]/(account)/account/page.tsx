@@ -81,7 +81,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
     title: p.title,
     price: p.price,
     stock: p.stock,
-    images: p.images ?? undefined,
+    ...(p.images ? { images: p.images } : {}),
     created_at: p.created_at
   }))
   const recentSales = salesData.map((sale: SaleItem) => {

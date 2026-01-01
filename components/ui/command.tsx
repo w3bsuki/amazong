@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { Command as CommandPrimitive } from 'cmdk'
-import { MagnifyingGlass } from '@phosphor-icons/react'
+import { Search } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import {
@@ -54,7 +54,7 @@ function CommandDialog({
         className={cn('overflow-hidden p-0', className)}
         showCloseButton={showCloseButton}
       >
-        <Command shouldFilter={shouldFilter} className="[&_[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-12 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
+        <Command shouldFilter={shouldFilter} className="[&_[cmdk-group-heading]]:text-muted-foreground **:data-[slot=command-input-wrapper]:h-10 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-2.5 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
           {children}
         </Command>
       </DialogContent>
@@ -70,9 +70,9 @@ function CommandInput({
   return (
     <div
       data-slot="command-input-wrapper"
-      className={cn("flex h-12 items-center gap-2 border-b px-3", wrapperClassName)}
+      className={cn("flex h-10 items-center gap-2 border-b px-3", wrapperClassName)}
     >
-      <MagnifyingGlass className="size-5 shrink-0 opacity-50" />
+      <Search className="size-5 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(

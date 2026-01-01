@@ -18,7 +18,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { useCart, type CartItem } from "@/components/providers/cart-context"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { CountBadge } from "@/components/ui/count-badge"
+import { CountBadge } from "@/components/common/count-badge"
 
 export function MobileCartDropdown() {
     const [open, setOpen] = useState(false)
@@ -66,7 +66,7 @@ export function MobileCartDropdown() {
                         {mounted && totalItems > 0 && (
                             <CountBadge
                                 count={totalItems}
-                                className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-[10px] shadow-sm"
+                                className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
                                 aria-hidden="true"
                             />
                         )}

@@ -155,7 +155,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
       <DialogContent 
-        className="w-full max-w-sm rounded-xl border border-border bg-background p-0"
+        className="w-full max-w-sm rounded-md border border-border bg-background p-0"
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">

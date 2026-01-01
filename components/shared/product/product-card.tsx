@@ -6,7 +6,7 @@ import { Link, useRouter } from "@/i18n/routing"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Spinner } from "@/components/ui/spinner"
+import { Spinner } from "@/components/common/spinner"
 import { useCart } from "@/components/providers/cart-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { toast } from "sonner"
@@ -148,7 +148,8 @@ function getCategoryLabel(
 ): string | null {
   if (!path || path.length === 0) return null
   // Prefer L1 (second level) if available, otherwise L0
-  const node = path.length > 1 ? path[1] : path[0]
+  const node = path.length > 1 ? path.at(1) : path.at(0)
+  if (!node) return null
   const raw = locale === "bg" ? (node.nameBg || node.name) : node.name
   const clean = raw.replace(/^\s*\[HIDDEN\]\s*/i, "").trim()
   if (!clean) return null
@@ -168,41 +169,38 @@ function formatSoldCount(n: number): string {
 // PRODUCT CARD COMPONENT - Clean, Professional, Dense
 // =============================================================================
 
-const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
-  (
-    {
-      id,
-      title,
-      price,
-      image,
-      originalPrice,
-      listPrice, // deprecated
-      isOnSale,
-      salePercent,
-      rating = 0,
-      reviews = 0,
-      categoryPath,
-      sellerId,
-      sellerName,
-      sellerAvatarUrl,
-      location,
-      freeShipping = false,
-      slug,
-      username,
-      storeSlug, // deprecated
-      variant = "default",
-      state,
-      isBoosted, // deprecated
-      showQuickAdd = true,
-      showWishlist = true,
-      showRating = true,
-      index = 0,
-      currentUserId,
-      inStock = true,
-      className,
-    },
-    ref
-  ) => {
+function ProductCard({
+  id,
+  title,
+  price,
+  image,
+  originalPrice,
+  listPrice, // deprecated
+  isOnSale,
+  salePercent,
+  rating = 0,
+  reviews = 0,
+  categoryPath,
+  sellerId,
+  sellerName,
+  sellerAvatarUrl,
+  location,
+  freeShipping = false,
+  slug,
+  username,
+  storeSlug, // deprecated
+  variant = "default",
+  state,
+  isBoosted, // deprecated
+  showQuickAdd = true,
+  showWishlist = true,
+  showRating = true,
+  index = 0,
+  currentUserId,
+  inStock = true,
+  className,
+  ref,
+}: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
     const router = useRouter()
     const { addToCart, items: cartItems } = useCart()
     const { isInWishlist, toggleWishlist } = useWishlist()
@@ -270,8 +268,8 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
         price,
         image,
         quantity: 1,
-        slug: slug || undefined,
-        username: username || undefined,
+        ...(slug ? { slug } : {}),
+        ...(resolvedUsername ? { username: resolvedUsername } : {}),
       })
       toast.success(tCart("itemAdded"))
     }
@@ -399,7 +397,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
 
           {/* Title - 13px mobile / text-sm (14px) desktop per _MASTER.md */}
           {/* Mobile: single line truncate | Desktop: up to 2 lines */}
-          <h3 className="truncate text-[13px] font-normal leading-snug text-foreground md:line-clamp-2 md:whitespace-normal md:text-sm">
+          <h3 className="truncate text-sm font-normal leading-snug text-foreground md:line-clamp-2 md:whitespace-normal md:text-sm">
             {title}
           </h3>
 
@@ -455,10 +453,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
         </div>
       </div>
     )
-  }
-)
-
-ProductCard.displayName = "ProductCard"
+}
 
 // =============================================================================
 // PRODUCT GRID - Dense Marketplace Style (_MASTER.md compliant)
@@ -546,7 +541,7 @@ function ProductCardSkeletonGrid({
   className,
 }: ProductCardSkeletonGridProps) {
   return (
-    <ProductGrid density={density} className={className}>
+    <ProductGrid density={density} className={className ?? ""}>
       {Array.from({ length: count }).map((_, i) => (
         <ProductCardSkeleton key={i} />
       ))}

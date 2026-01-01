@@ -109,6 +109,8 @@ export function MobileSearchOverlay({
       }, FOCUS_DELAY_MS)
       return () => clearTimeout(timer)
     }
+
+    return undefined
   }, [isOpen])
 
   // Lock body scroll when open
@@ -128,6 +130,8 @@ export function MobileSearchOverlay({
         window.scrollTo(0, scrollY)
       }
     }
+
+    return undefined
   }, [isOpen])
 
   // Handle Escape key to close overlay

@@ -55,6 +55,8 @@ export function AttributeQuickFilters({ attributes, locale }: AttributeQuickFilt
         window.removeEventListener("resize", checkScroll)
       }
     }
+
+    return undefined
   }, [checkScroll])
 
   const scroll = (direction: "left" | "right") => {

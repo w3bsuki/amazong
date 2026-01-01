@@ -24,11 +24,11 @@ export interface Product {
 }
 
 export interface CategoryProductFilters {
-  minPrice?: string
-  maxPrice?: string
-  tag?: string
-  minRating?: string
-  availability?: string
-  sort?: string
-  attributes?: Record<string, string | string[]>
+  minPrice?: string | undefined
+  maxPrice?: string | undefined
+  tag?: string | undefined
+  minRating?: string | undefined
+  availability?: string | undefined
+  sort?: string | undefined
+  attributes?: Record<string, string | string[]> | undefined
 }

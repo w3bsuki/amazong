@@ -198,7 +198,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                     variant="ghost"
                     size="icon-lg"
                     className={cn(
-                        "rounded-xl text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent",
+                        "rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent",
                         triggerClassName
                     )}
                     aria-label={locale === "bg" ? "Меню" : "Menu"}
@@ -234,10 +234,10 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                                 type="button"
                                                 className="flex items-center justify-center size-5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                                             >
-                                                <span className="text-[10px] font-bold uppercase text-white">{locale}</span>
+                                                <span className="text-2xs font-bold uppercase text-white">{locale}</span>
                                             </button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="start" className="min-w-[140px] rounded-xl p-1 border border-border/50">
+                                        <DropdownMenuContent align="start" className="min-w-[140px] rounded-md p-1 border border-border/50">
                                             <DropdownMenuItem asChild>
                                                 <Link
                                                     href="/"
@@ -293,7 +293,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                         <CaretRight size={12} weight="bold" />
                                     </Link>
                                 ) : (
-                                    <p className="text-[11px] font-medium text-white/70 mt-0.5">
+                                    <p className="text-xs font-medium text-white/70 mt-0.5">
                                         {locale === 'bg' ? 'Влез или се регистрирай' : 'Sign in or register'}
                                     </p>
                                 )}
@@ -323,7 +323,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                             type="search"
                             placeholder={locale === 'bg' ? 'Търси в категории...' : 'Search categories...'}
                             aria-label={locale === 'bg' ? 'Търси в категории' : 'Search categories'}
-                            className="h-10 pl-10 pr-4 rounded-xl border-border/60 bg-muted/30 focus:bg-background transition-colors placeholder:text-muted-foreground/70"
+                            className="h-10 pl-10 pr-4 rounded-md border-border/60 bg-muted/30 focus:bg-background transition-colors placeholder:text-muted-foreground/70"
                         />
                     </div>
                 </div>
@@ -366,40 +366,40 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                         onClick={() => setOpen(false)}
                                         className="flex flex-col items-center gap-2 group"
                                     >
-                                        <div className="size-12 rounded-2xl bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                        <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
                                             <Receipt size={24} weight="regular" />
                                         </div>
-                                        <span className="text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
+                                        <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
                                     </Link>
                                     <Link
                                         href="/account/sales"
                                         onClick={() => setOpen(false)}
                                         className="flex flex-col items-center gap-2 group"
                                     >
-                                        <div className="size-12 rounded-2xl bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                        <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
                                             <ChartLineUp size={24} weight="regular" />
                                         </div>
-                                        <span className="text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Продажби' : 'Sales'}</span>
+                                        <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Продажби' : 'Sales'}</span>
                                     </Link>
                                     <Link
                                         href="/wishlist"
                                         onClick={() => setOpen(false)}
                                         className="flex flex-col items-center gap-2 group"
                                     >
-                                        <div className="size-12 rounded-2xl bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                        <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
                                             <Heart size={24} weight="regular" />
                                         </div>
-                                        <span className="text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Любими' : 'Saved'}</span>
+                                        <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Любими' : 'Saved'}</span>
                                     </Link>
                                     <Link
                                         href="/chat"
                                         onClick={() => setOpen(false)}
                                         className="flex flex-col items-center gap-2 group"
                                     >
-                                        <div className="size-12 rounded-2xl bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                        <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
                                             <ChatCircleText size={24} weight="regular" />
                                         </div>
-                                        <span className="text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Чат' : 'Chat'}</span>
+                                        <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Чат' : 'Chat'}</span>
                                     </Link>
                                 </div>
                             ) : (
@@ -417,10 +417,10 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                                             }}
                                             className="flex flex-col items-center gap-2 group"
                                         >
-                                            <div className="size-12 rounded-2xl bg-muted/50 flex items-center justify-center group-hover:bg-muted transition-colors">
+                                            <div className="size-12 rounded-lg bg-muted/50 flex items-center justify-center group-hover:bg-muted transition-colors">
                                                 {link.icon}
                                             </div>
-                                            <span className="text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
+                                            <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">
                                                 {link.label}
                                             </span>
                                         </Link>

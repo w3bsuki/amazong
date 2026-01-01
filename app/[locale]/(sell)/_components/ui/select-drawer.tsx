@@ -64,7 +64,9 @@ export function SelectDrawer({
   }, [customValue, options]);
 
   const handleSelect = (index: number) => {
-    onChange(options[index]); // Always store original value
+    const optionValue = options[index]
+    if (!optionValue) return
+    onChange(optionValue); // Always store original value
     onClose();
   };
 

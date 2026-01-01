@@ -33,7 +33,7 @@ export function SubcategoryTabs({ currentCategory, subcategories, basePath }: Su
         <SubcategoryCircles
           subcategories={subcategories}
           currentCategory={currentCategory}
-          basePath={basePath}
+          {...(basePath ? { basePath } : {})}
         />
       )}
     </div>

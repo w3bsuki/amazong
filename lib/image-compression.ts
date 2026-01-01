@@ -1,3 +1,5 @@
+import 'client-only'
+
 export type CompressImageOptions = {
   maxWidth?: number;
   maxHeight?: number;

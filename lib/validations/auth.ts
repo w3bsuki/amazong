@@ -140,7 +140,12 @@ export const changeEmailSchema = z.object({
 })
 
 // Localized error messages
-export function getLocalizedPasswordErrors(locale: string): Record<string, string> {
+export function getLocalizedPasswordErrors(locale: string): {
+  min: string
+  letter: string
+  number: string
+  match: string
+} {
   if (locale === "bg") {
     return {
       min: "Паролата трябва да е поне 8 символа",
@@ -157,7 +162,10 @@ export function getLocalizedPasswordErrors(locale: string): Record<string, strin
   }
 }
 
-export function getLocalizedEmailErrors(locale: string): Record<string, string> {
+export function getLocalizedEmailErrors(locale: string): {
+  required: string
+  invalid: string
+} {
   if (locale === "bg") {
     return {
       required: "Имейлът е задължителен",

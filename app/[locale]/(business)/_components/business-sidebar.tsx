@@ -187,9 +187,11 @@ export function BusinessSidebar({
   }
 
   // Update orders badge with pending count
-  const salesChannelNavWithBadges = salesChannelNav.map(item => ({
+  const salesChannelNavWithBadges = salesChannelNav.map((item) => ({
     ...item,
-    badge: item.title === 'Orders' ? pendingOrdersCount : undefined
+    ...(item.title === "Orders" && pendingOrdersCount > 0
+      ? { badge: pendingOrdersCount }
+      : {}),
   }))
   
   // Get tier display info

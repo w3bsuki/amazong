@@ -1,0 +1,1229 @@
+
+> amazong-marketplace@1.0.0 test:e2e J:\amazong
+> node scripts/run-playwright.mjs test --project=chromium --grep-invert @accessibility
+
+[dotenv@17.2.3] injecting env (12) from .env.local -- tip: ≡ƒöæ add access controls to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  suppress all logs with { quiet: true }
+[e2e] Warming Next.js routes (10) via http://localhost:3000
+[e2e] warm: http://localhost:3000/en
+[e2e] warm: http://localhost:3000/en/auth/login
+[e2e] warm: http://localhost:3000/en/auth/sign-up
+[e2e] warm: http://localhost:3000/en/auth/forgot-password
+[e2e] warm: http://localhost:3000/en/search?q=warmup
+[e2e] warm: http://localhost:3000/en/cart
+[e2e] warm: http://localhost:3000/en/categories
+[e2e] warm: http://localhost:3000/en/account
+[e2e] warm: http://localhost:3000/en/plans
+[e2e] warm: http://localhost:3000/en/chat
+
+Running 234 tests using 1 worker
+
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+[E2E Auth] Starting login for e2e_1767195164550_08a211238a9ef@example.test
+[E2E Auth] Submit button disabled: false
+  Γ£ÿ    1 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account @phase5 (17.2s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  load multiple .env files with { path: ['.env.local', '.env'] }
+  Γ£ô    2 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/profile @phase5 (23.4s)
+  Γ£ô    3 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/orders @phase5 (8.9s)
+  Γ£ô    4 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/sales @phase5 (9.6s)
+  Γ£ô    5 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/wishlist @phase5 (13.3s)
+  Γ£ô    6 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/following @phase5 (18.6s)
+  Γ£ô    7 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/addresses @phase5 (17.3s)
+  Γ£ô    8 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/payments @phase5 (13.9s)
+  Γ£ô    9 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/security @phase5 (10.5s)
+  Γ£ô   10 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/settings @phase5 (12.4s)
+  Γ£ô   11 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/notifications @phase5 (12.2s)
+  Γ£ô   12 [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account/billing @phase5 (14.3s)
+  Γ£ô   13 [chromium] ΓÇ║ e2e\orders.spec.ts:59:13 ΓÇ║ Buyer Orders Page ΓÇ║ Page Rendering (Authenticated) ΓÇ║ displays orders page with proper layout (14.8s)
+  Γ£ô   14 [chromium] ΓÇ║ e2e\orders.spec.ts:70:13 ΓÇ║ Buyer Orders Page ΓÇ║ Page Rendering (Authenticated) ΓÇ║ shows stats cards or empty state (23.4s)
+  Γ£ô   15 [chromium] ΓÇ║ e2e\orders.spec.ts:91:13 ΓÇ║ Buyer Orders Page ΓÇ║ Order Filters (Authenticated) ΓÇ║ navigates with status filter - all (3.1s)
+  Γ£ô   16 [chromium] ΓÇ║ e2e\orders.spec.ts:99:13 ΓÇ║ Buyer Orders Page ΓÇ║ Order Filters (Authenticated) ΓÇ║ navigates with status filter - open (3.1s)
+  Γ£ô   17 [chromium] ΓÇ║ e2e\orders.spec.ts:106:13 ΓÇ║ Buyer Orders Page ΓÇ║ Order Filters (Authenticated) ΓÇ║ navigates with status filter - delivered (5.0s)
+  Γ£ô   18 [chromium] ΓÇ║ e2e\orders.spec.ts:113:13 ΓÇ║ Buyer Orders Page ΓÇ║ Order Filters (Authenticated) ΓÇ║ navigates with search query (2.7s)
+  Γ£ô   19 [chromium] ΓÇ║ e2e\orders.spec.ts:129:13 ΓÇ║ Buyer Orders Page ΓÇ║ Order Details (Authenticated) ΓÇ║ can view order details if orders exist (3.4s)
+  Γ£ô   20 [chromium] ΓÇ║ e2e\orders.spec.ts:165:13 ΓÇ║ Buyer Orders Page ΓÇ║ Locale Support (Authenticated) ΓÇ║ displays English content on /en locale (13.6s)
+  Γ£ô   21 [chromium] ΓÇ║ e2e\orders.spec.ts:180:13 ΓÇ║ Buyer Orders Page ΓÇ║ Locale Support (Authenticated) ΓÇ║ displays Bulgarian content on /bg locale (7.2s)
+  Γ£ô   22 [chromium] ΓÇ║ e2e\orders.spec.ts:196:13 ΓÇ║ Buyer Orders Page ΓÇ║ Responsive Design (Authenticated) ΓÇ║ renders on mobile viewport (3.9s)
+  Γ£ô   23 [chromium] ΓÇ║ e2e\orders.spec.ts:205:13 ΓÇ║ Buyer Orders Page ΓÇ║ Responsive Design (Authenticated) ΓÇ║ renders on tablet viewport (4.7s)
+  Γ£ô   24 [chromium] ΓÇ║ e2e\orders.spec.ts:214:13 ΓÇ║ Buyer Orders Page ΓÇ║ Responsive Design (Authenticated) ΓÇ║ renders on desktop viewport (2.5s)
+  Γ£ô   25 [chromium] ΓÇ║ e2e\orders.spec.ts:230:13 ΓÇ║ Buyer Orders Page ΓÇ║ Accessibility (Authenticated) ΓÇ║ has accessible page heading (2.7s)
+  Γ£ô   26 [chromium] ΓÇ║ e2e\orders.spec.ts:239:13 ΓÇ║ Buyer Orders Page ΓÇ║ Accessibility (Authenticated) ΓÇ║ is keyboard navigable (5.0s)
+  -   27 [chromium] ΓÇ║ e2e\orders.spec.ts:262:13 ΓÇ║ Buyer Orders Page ΓÇ║ Performance (Authenticated) ΓÇ║ loads orders page within acceptable time
+  Γ£ô   28 [chromium] ΓÇ║ e2e\orders.spec.ts:281:13 ΓÇ║ Buyer Orders Page ΓÇ║ Navigation (Authenticated) ΓÇ║ can navigate to orders from account page (32.5s)
+  Γ£ô   29 [chromium] ΓÇ║ e2e\orders.spec.ts:292:13 ΓÇ║ Buyer Orders Page ΓÇ║ Navigation (Authenticated) ΓÇ║ maintains auth state across navigation (6.3s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒôí add observability to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+  Γ£ô   30 [chromium] ΓÇ║ e2e\auth.spec.ts:101:7 ΓÇ║ Sign Up Flow ΓÇ║ should display sign up page correctly @auth (9.7s)
+  Γ£ô   31 [chromium] ΓÇ║ e2e\auth.spec.ts:120:7 ΓÇ║ Sign Up Flow ΓÇ║ should validate email format @auth @validation (4.7s)
+  Γ£ô   32 [chromium] ΓÇ║ e2e\auth.spec.ts:163:7 ΓÇ║ Sign Up Flow ΓÇ║ should show password strength indicator @auth @validation (5.1s)
+  Γ£ô   33 [chromium] ΓÇ║ e2e\auth.spec.ts:179:7 ΓÇ║ Sign Up Flow ΓÇ║ should validate password requirements @auth @validation (5.5s)
+  Γ£ô   34 [chromium] ΓÇ║ e2e\auth.spec.ts:202:7 ΓÇ║ Sign Up Flow ΓÇ║ should validate password confirmation match @auth @validation (2.2s)
+  Γ£ô   35 [chromium] ΓÇ║ e2e\auth.spec.ts:227:7 ΓÇ║ Sign Up Flow ΓÇ║ should validate username format @auth @validation (2.2s)
+  Γ£ô   36 [chromium] ΓÇ║ e2e\auth.spec.ts:254:7 ΓÇ║ Sign Up Flow ΓÇ║ should check username availability @auth @validation (5.0s)
+  Γ£ô   37 [chromium] ΓÇ║ e2e\auth.spec.ts:273:7 ΓÇ║ Sign Up Flow ΓÇ║ should submit form and redirect to success page @auth @flow (23.1s)
+  Γ£ô   38 [chromium] ΓÇ║ e2e\auth.spec.ts:311:7 ΓÇ║ Sign Up Flow ΓÇ║ should have link to login page @auth @navigation (2.8s)
+  Γ£ô   39 [chromium] ΓÇ║ e2e\auth.spec.ts:341:7 ΓÇ║ Login Flow ΓÇ║ should display login page correctly @auth (4.3s)
+  Γ£ô   40 [chromium] ΓÇ║ e2e\auth.spec.ts:358:7 ΓÇ║ Login Flow ΓÇ║ should validate email format @auth @validation (2.4s)
+  Γ£ô   41 [chromium] ΓÇ║ e2e\auth.spec.ts:385:7 ΓÇ║ Login Flow ΓÇ║ should show error for invalid credentials @auth @error (50.9s)
+  Γ£ô   42 [chromium] ΓÇ║ e2e\auth.spec.ts:404:7 ΓÇ║ Login Flow ΓÇ║ should toggle password visibility @auth @ui (2.6s)
+  Γ£ô   43 [chromium] ΓÇ║ e2e\auth.spec.ts:425:7 ΓÇ║ Login Flow ΓÇ║ should have link to create account @auth @navigation (2.6s)
+  Γ£ô   44 [chromium] ΓÇ║ e2e\auth.spec.ts:436:7 ΓÇ║ Login Flow ΓÇ║ should navigate to forgot password page @auth @navigation (1.9s)
+  Γ£ô   45 [chromium] ΓÇ║ e2e\auth.spec.ts:458:7 ΓÇ║ Forgot Password Flow ΓÇ║ should display forgot password page correctly @auth (6.4s)
+  Γ£ô   46 [chromium] ΓÇ║ e2e\auth.spec.ts:474:7 ΓÇ║ Forgot Password Flow ΓÇ║ should validate email format @auth @validation (3.2s)
+  Γ£ô   47 [chromium] ΓÇ║ e2e\auth.spec.ts:490:7 ΓÇ║ Forgot Password Flow ΓÇ║ should submit email and show success message @auth @flow (2.3s)
+  Γ£ô   48 [chromium] ΓÇ║ e2e\auth.spec.ts:508:7 ΓÇ║ Forgot Password Flow ΓÇ║ should have link back to login @auth @navigation (5.2s)
+  Γ£ô   49 [chromium] ΓÇ║ e2e\auth.spec.ts:542:7 ΓÇ║ Reset Password Flow ΓÇ║ should show invalid/expired link message without session @auth @error (33.3s)
+  Γ£ô   50 [chromium] ΓÇ║ e2e\auth.spec.ts:553:7 ΓÇ║ Reset Password Flow ΓÇ║ should have link to request new reset @auth @navigation (17.5s)
+  Γ£ô   51 [chromium] ΓÇ║ e2e\auth.spec.ts:589:7 ΓÇ║ Sign Up Success Page ΓÇ║ should display success message @auth (10.3s)
+  Γ£ô   52 [chromium] ΓÇ║ e2e\auth.spec.ts:599:7 ΓÇ║ Sign Up Success Page ΓÇ║ should have link to sign in @auth @navigation (32.2s)
+  Γ£ô   53 [chromium] ΓÇ║ e2e\auth.spec.ts:610:7 ΓÇ║ Sign Up Success Page ΓÇ║ should have link to homepage @auth @navigation (4.7s)
+  Γ£ô   54 [chromium] ΓÇ║ e2e\auth.spec.ts:632:7 ΓÇ║ Session Management ΓÇ║ should redirect to login when accessing protected route while logged out @auth @protection (4.3s)
+  Γ£ô   55 [chromium] ΓÇ║ e2e\auth.spec.ts:643:7 ΓÇ║ Session Management ΓÇ║ should preserve localStorage after page refresh @auth @session (5.1s)
+  Γ£ô   56 [chromium] ΓÇ║ e2e\auth.spec.ts:672:7 ΓÇ║ Auth Pages Accessibility ΓÇ║ sign up page should have proper form labels @auth @a11y (3.8s)
+  Γ£ô   57 [chromium] ΓÇ║ e2e\auth.spec.ts:703:7 ΓÇ║ Auth Pages Accessibility ΓÇ║ login page should be keyboard navigable @auth @a11y (2.2s)
+  Γ£ô   58 [chromium] ΓÇ║ e2e\full-flow.spec.ts:154:7 ΓÇ║ Complete Buyer Journey @buyer ΓÇ║ should browse products from homepage (46.2s)
+  Γ£ô   59 [chromium] ΓÇ║ e2e\full-flow.spec.ts:179:7 ΓÇ║ Complete Buyer Journey @buyer ΓÇ║ should search for products (13.6s)
+  Γ£ô   60 [chromium] ΓÇ║ e2e\full-flow.spec.ts:210:7 ΓÇ║ Complete Buyer Journey @buyer ΓÇ║ should view product details page (3.8s)
+  Γ£ô   61 [chromium] ΓÇ║ e2e\full-flow.spec.ts:237:7 ΓÇ║ Complete Buyer Journey @buyer ΓÇ║ should add product to cart (UI only) (16.5s)
+  Γ£ô   62 [chromium] ΓÇ║ e2e\full-flow.spec.ts:261:7 ΓÇ║ Complete Buyer Journey @buyer ΓÇ║ should view cart page (2.9s)
+  Γ£ô   63 [chromium] ΓÇ║ e2e\full-flow.spec.ts:275:7 ΓÇ║ Complete Buyer Journey @buyer ΓÇ║ should redirect to auth when accessing checkout without login (18.6s)
+  Γ£ô   64 [chromium] ΓÇ║ e2e\full-flow.spec.ts:292:7 ΓÇ║ Complete Buyer Journey @buyer ΓÇ║ should view orders page when authenticated (12.6s)
+  Γ£ô   65 [chromium] ΓÇ║ e2e\full-flow.spec.ts:317:7 ΓÇ║ Complete Seller Journey @seller ΓÇ║ should display sell page with auth requirement (36.7s)
+  Γ£ô   66 [chromium] ΓÇ║ e2e\full-flow.spec.ts:347:7 ΓÇ║ Complete Seller Journey @seller ΓÇ║ should show selling dashboard structure (4.6s)
+  Γ£ô   67 [chromium] ΓÇ║ e2e\full-flow.spec.ts:358:7 ΓÇ║ Complete Seller Journey @seller ΓÇ║ should show seller orders page structure (2.6s)
+  Γ£ô   68 [chromium] ΓÇ║ e2e\full-flow.spec.ts:369:7 ΓÇ║ Complete Seller Journey @seller ΓÇ║ should show sales stats page structure (4.1s)
+  Γ£ô   69 [chromium] ΓÇ║ e2e\full-flow.spec.ts:390:7 ΓÇ║ Messaging Flow @messaging ΓÇ║ should load chat page structure (2.8s)
+  Γ£ô   70 [chromium] ΓÇ║ e2e\full-flow.spec.ts:402:7 ΓÇ║ Messaging Flow @messaging ΓÇ║ should show empty state or conversations list (2.3s)
+  Γ£ÿ   71 [chromium] ΓÇ║ e2e\full-flow.spec.ts:428:7 ΓÇ║ Reviews Flow @reviews ΓÇ║ should display reviews section on product page (12.4s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒùé∩╕Å backup and recover secrets: https://dotenvx.com/ops
+  Γ£ô   72 [chromium] ΓÇ║ e2e\full-flow.spec.ts:461:7 ΓÇ║ Business Account Flow @business ΓÇ║ should show plans page with subscription options (10.2s)
+  Γ£ô   73 [chromium] ΓÇ║ e2e\full-flow.spec.ts:476:7 ΓÇ║ Business Account Flow @business ΓÇ║ should show account plans page structure (8.5s)
+  Γ£ô   74 [chromium] ΓÇ║ e2e\full-flow.spec.ts:487:7 ΓÇ║ Business Account Flow @business ΓÇ║ should show profile page with account type info (15.8s)
+  Γ£ô   75 [chromium] ΓÇ║ e2e\full-flow.spec.ts:508:7 ΓÇ║ Wishlist Flow @wishlist ΓÇ║ should show wishlist page structure (3.1s)
+  Γ£ô   76 [chromium] ΓÇ║ e2e\full-flow.spec.ts:519:7 ΓÇ║ Wishlist Flow @wishlist ΓÇ║ should show wishlist button on product cards (3.1s)
+  Γ£ô   77 [chromium] ΓÇ║ e2e\full-flow.spec.ts:542:7 ΓÇ║ Following Flow @following ΓÇ║ should show following page structure (5.5s)
+  Γ£ô   78 [chromium] ΓÇ║ e2e\full-flow.spec.ts:563:7 ΓÇ║ Notifications Flow @notifications ΓÇ║ should show notifications dropdown in header when authenticated (3.7s)
+  Γ£ô   79 [chromium] ΓÇ║ e2e\full-flow.spec.ts:595:7 ΓÇ║ Security Checks @security ΓÇ║ should protect account routes with authentication (20.3s)
+  Γ£ô   80 [chromium] ΓÇ║ e2e\full-flow.spec.ts:623:7 ΓÇ║ Security Checks @security ΓÇ║ should have secure headers on responses (5.3s)
+  Γ£ô   81 [chromium] ΓÇ║ e2e\full-flow.spec.ts:633:7 ΓÇ║ Security Checks @security ΓÇ║ should not expose sensitive data in page source (3.3s)
+  -   82 [chromium] ΓÇ║ e2e\full-flow.spec.ts:655:7 ΓÇ║ Performance Checks @performance ΓÇ║ should load homepage within acceptable time
+  -   83 [chromium] ΓÇ║ e2e\full-flow.spec.ts:667:7 ΓÇ║ Performance Checks @performance ΓÇ║ should load search results within acceptable time
+  -   84 [chromium] ΓÇ║ e2e\full-flow.spec.ts:679:7 ΓÇ║ Performance Checks @performance ΓÇ║ should have optimized images
+  Γ£ô   85 [chromium] ΓÇ║ e2e\full-flow.spec.ts:704:7 ΓÇ║ Accessibility Checks @a11y ΓÇ║ should have proper heading hierarchy on homepage (4.7s)
+  Γ£ô   86 [chromium] ΓÇ║ e2e\full-flow.spec.ts:716:7 ΓÇ║ Accessibility Checks @a11y ΓÇ║ should have accessible navigation (38.3s)
+  Γ£ô   87 [chromium] ΓÇ║ e2e\full-flow.spec.ts:729:7 ΓÇ║ Accessibility Checks @a11y ΓÇ║ should have keyboard navigable links (3.6s)
+  Γ£ô   88 [chromium] ΓÇ║ e2e\full-flow.spec.ts:807:7 ΓÇ║ Localization @i18n ΓÇ║ should load English version (4.9s)
+  Γ£ô   89 [chromium] ΓÇ║ e2e\full-flow.spec.ts:819:7 ΓÇ║ Localization @i18n ΓÇ║ should load Bulgarian version (4.0s)
+  Γ£ô   90 [chromium] ΓÇ║ e2e\full-flow.spec.ts:831:7 ΓÇ║ Localization @i18n ΓÇ║ should have language switcher (8.9s)
+  Γ£ô   91 [chromium] ΓÇ║ e2e\full-flow.spec.ts:864:7 ΓÇ║ Error Handling @errors ΓÇ║ should show 404 page for non-existent routes (1.3m)
+  Γ£ô   92 [chromium] ΓÇ║ e2e\full-flow.spec.ts:878:7 ΓÇ║ Error Handling @errors ΓÇ║ should handle invalid product slugs gracefully (4.2s)
+  Γ£ô   93 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:66:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Navigation ΓÇ║ mobile tab bar is visible and functional (21.2s)
+  Γ£ô   94 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:81:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Navigation ΓÇ║ hamburger menu opens category drawer (17.9s)
+  Γ£ô   95 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:99:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Navigation ΓÇ║ mobile search overlay opens (8.3s)
+  Γ£ô   96 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:114:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Homepage ΓÇ║ categories navigation renders on mobile (3.4s)
+  Γ£ÿ   97 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:133:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Homepage ΓÇ║ category list is scrollable on mobile (668ms)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒùé∩╕Å backup and recover secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+  Γ£ÿ   98 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:149:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Homepage ΓÇ║ product listing tabs work on mobile (2.5s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+  Γ£ÿ   99 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:168:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Homepage ΓÇ║ no horizontal overflow on homepage (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöä add secrets lifecycle management: https://dotenvx.com/ops
+  Γ£ÿ  100 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:181:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ product page renders correctly on mobile (2.5s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+  Γ£ÿ  101 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:197:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ product page has back button on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  suppress all logs with { quiet: true }
+  Γ£ÿ  102 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:209:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ product images are displayed on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+  Γ£ÿ  103 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:223:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ add to cart button is visible on mobile product page (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+  Γ£ÿ  104 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:232:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Search Page ΓÇ║ search page renders correctly on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒùé∩╕Å backup and recover secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  suppress all logs with { quiet: true }
+  Γ£ÿ  105 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:245:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Search Page ΓÇ║ filters button is accessible on mobile search (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒæÑ sync secrets across teammates & machines: https://dotenvx.com/ops
+  Γ£ÿ  106 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:253:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Search Page ΓÇ║ sort dropdown works on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒôí add observability to secrets: https://dotenvx.com/ops
+  Γ£ÿ  107 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:270:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Auth Pages ΓÇ║ login form is usable on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+  Γ£ÿ  108 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:286:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Auth Pages ΓÇ║ sign up form is usable on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒæÑ sync secrets across teammates & machines: https://dotenvx.com/ops
+  Γ£ÿ  109 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:303:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Cart & Checkout ΓÇ║ cart page renders correctly on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+  Γ£ÿ  110 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:320:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Cart & Checkout ΓÇ║ checkout page renders correctly on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.2.3] injecting env (0) from .env -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+  Γ£ÿ  111 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:336:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Account Pages ΓÇ║ account dashboard redirect works on mobile (guest) (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒôí add observability to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+  Γ£ÿ  112 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:343:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Account Pages ΓÇ║ account pages have no horizontal overflow (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+  Γ£ÿ  113 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:355:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Categories Page ΓÇ║ categories page renders correctly on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+  Γ£ÿ  114 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:371:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Categories Page ΓÇ║ category detail page works on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒæÑ sync secrets across teammates & machines: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+  Γ£ÿ  115 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:384:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Static Pages ΓÇ║ about page renders correctly on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+  Γ£ÿ  116 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:396:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Static Pages ΓÇ║ contact page renders correctly on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+  Γ£ÿ  117 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:408:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Static Pages ΓÇ║ customer service page renders correctly on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöæ add access controls to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒôí add observability to secrets: https://dotenvx.com/ops
+  Γ£ÿ  118 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:422:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Touch Targets ΓÇ║ tab bar buttons have adequate touch targets (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒæÑ sync secrets across teammates & machines: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+  Γ£ÿ  119 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:449:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Footer ΓÇ║ footer renders correctly on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+  Γ£ÿ  120 [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:471:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Bulgarian Locale Mobile ΓÇ║ Bulgarian homepage renders correctly on mobile (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒôí add observability to secrets: https://dotenvx.com/ops
+  Γ£ÿ  121 [chromium] ΓÇ║ e2e\orders.spec.ts:41:13 ΓÇ║ Buyer Orders Page ΓÇ║ Unauthenticated Access ΓÇ║ redirects to login when not authenticated (2.6s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöæ add access controls to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+  Γ£ÿ  122 [chromium] ΓÇ║ e2e\orders.spec.ts:46:13 ΓÇ║ Buyer Orders Page ΓÇ║ Unauthenticated Access ΓÇ║ redirects to login for Bulgarian locale (2.7s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöæ add access controls to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+  Γ£ô  123 [chromium] ΓÇ║ e2e\profile.spec.ts:134:7 ΓÇ║ Profile Page - Unauthenticated ΓÇ║ should redirect to login when accessing account page without auth @profile @auth (44.1s)
+  Γ£ô  124 [chromium] ΓÇ║ e2e\profile.spec.ts:138:7 ΓÇ║ Profile Page - Unauthenticated ΓÇ║ should redirect to login when accessing profile page without auth @profile @auth (5.9s)
+  Γ£ô  125 [chromium] ΓÇ║ e2e\profile.spec.ts:142:7 ΓÇ║ Profile Page - Unauthenticated ΓÇ║ should redirect to login when accessing security page without auth @profile @auth (3.5s)
+  Γ£ô  126 [chromium] ΓÇ║ e2e\profile.spec.ts:146:7 ΓÇ║ Profile Page - Unauthenticated ΓÇ║ should redirect to login when accessing orders page without auth @profile @auth (5.7s)
+  Γ£ô  127 [chromium] ΓÇ║ e2e\profile.spec.ts:150:7 ΓÇ║ Profile Page - Unauthenticated ΓÇ║ should redirect to login when accessing wishlist page without auth @profile @auth (9.8s)
+  Γ£ô  128 [chromium] ΓÇ║ e2e\profile.spec.ts:154:7 ΓÇ║ Profile Page - Unauthenticated ΓÇ║ should redirect to login when accessing addresses page without auth @profile @auth (2.8s)
+  Γ£ô  129 [chromium] ΓÇ║ e2e\profile.spec.ts:158:7 ΓÇ║ Profile Page - Unauthenticated ΓÇ║ should redirect to login when accessing selling page without auth @profile @auth (2.3s)
+  Γ£ô  130 [chromium] ΓÇ║ e2e\profile.spec.ts:174:7 ΓÇ║ Profile Page Display ΓÇ║ should display login page with proper form elements @profile @ui (1.2s)
+  Γ£ô  131 [chromium] ΓÇ║ e2e\profile.spec.ts:188:7 ΓÇ║ Profile Page Display ΓÇ║ should enable sign in button after filling form @profile @ui (2.2s)
+  Γ£ô  132 [chromium] ΓÇ║ e2e\profile.spec.ts:218:7 ΓÇ║ Username Validation ΓÇ║ should show username field on sign-up page @profile @validation (4.9s)
+  Γ£ô  133 [chromium] ΓÇ║ e2e\profile.spec.ts:225:7 ΓÇ║ Username Validation ΓÇ║ should validate username format on sign-up @profile @validation (4.2s)
+  Γ£ô  134 [chromium] ΓÇ║ e2e\profile.spec.ts:243:7 ΓÇ║ Username Validation ΓÇ║ should validate username length on sign-up @profile @validation (3.0s)
+  Γ£ô  135 [chromium] ΓÇ║ e2e\profile.spec.ts:260:7 ΓÇ║ Username Validation ΓÇ║ should check username availability @profile @validation (3.6s)
+  Γ£ô  136 [chromium] ΓÇ║ e2e\profile.spec.ts:294:7 ΓÇ║ Profile Form Elements ΓÇ║ should have password visibility toggle @profile @ui (2.1s)
+  Γ£ô  137 [chromium] ΓÇ║ e2e\profile.spec.ts:325:7 ΓÇ║ Profile Form Elements ΓÇ║ should have remember me checkbox @profile @ui (2.6s)
+  Γ£ô  138 [chromium] ΓÇ║ e2e\profile.spec.ts:337:7 ΓÇ║ Profile Form Elements ΓÇ║ should have forgot password link @profile @navigation (1.8s)
+  Γ£ô  139 [chromium] ΓÇ║ e2e\profile.spec.ts:345:7 ΓÇ║ Profile Form Elements ΓÇ║ should have create account link @profile @navigation (1.6s)
+  Γ£ô  140 [chromium] ΓÇ║ e2e\profile.spec.ts:363:7 ΓÇ║ Account Page Structure ΓÇ║ login page should have proper heading @profile @a11y (1.7s)
+  Γ£ô  141 [chromium] ΓÇ║ e2e\profile.spec.ts:370:7 ΓÇ║ Account Page Structure ΓÇ║ login page should have Amazon branding @profile @ui (2.1s)
+  Γ£ô  142 [chromium] ΓÇ║ e2e\profile.spec.ts:378:7 ΓÇ║ Account Page Structure ΓÇ║ login page should have terms and privacy links @profile @ui (1.7s)
+  Γ£ô  143 [chromium] ΓÇ║ e2e\profile.spec.ts:399:7 ΓÇ║ Login Error Handling ΓÇ║ should show error for invalid credentials @profile @error (2.3s)
+  Γ£ô  144 [chromium] ΓÇ║ e2e\profile.spec.ts:422:7 ΓÇ║ Login Error Handling ΓÇ║ should show error for malformed email @profile @validation (1.1s)
+  Γ£ô  145 [chromium] ΓÇ║ e2e\profile.spec.ts:453:7 ΓÇ║ Public Profile Pages ΓÇ║ should show 404 for non-existent user profile @profile @navigation (12.9s)
+  Γ£ô  146 [chromium] ΓÇ║ e2e\profile.spec.ts:468:7 ΓÇ║ Public Profile Pages ΓÇ║ should load seller store page @profile @navigation (2.0s)
+  Γ£ô  147 [chromium] ΓÇ║ e2e\profile.spec.ts:495:7 ΓÇ║ Profile Accessibility ΓÇ║ login page should have proper form labels @profile @a11y (1.8s)
+  Γ£ô  148 [chromium] ΓÇ║ e2e\profile.spec.ts:504:7 ΓÇ║ Profile Accessibility ΓÇ║ login page should be keyboard navigable @profile @a11y (1.1s)
+  Γ£ô  149 [chromium] ΓÇ║ e2e\profile.spec.ts:523:7 ΓÇ║ Profile Accessibility ΓÇ║ sign-up page should have proper form labels @profile @a11y (1.1s)
+  Γ£ô  150 [chromium] ΓÇ║ e2e\profile.spec.ts:551:7 ΓÇ║ Profile Navigation ΓÇ║ should navigate from login to sign-up @profile @navigation (3.2s)
+  Γ£ô  151 [chromium] ΓÇ║ e2e\profile.spec.ts:563:7 ΓÇ║ Profile Navigation ΓÇ║ should navigate from sign-up to login @profile @navigation (4.7s)
+  Γ£ô  152 [chromium] ΓÇ║ e2e\profile.spec.ts:575:7 ΓÇ║ Profile Navigation ΓÇ║ should navigate from login to forgot password @profile @navigation (7.7s)
+  Γ£ô  153 [chromium] ΓÇ║ e2e\profile.spec.ts:587:7 ΓÇ║ Profile Navigation ΓÇ║ should have working back navigation @profile @navigation (6.2s)
+  Γ£ô  154 [chromium] ΓÇ║ e2e\profile.spec.ts:610:7 ΓÇ║ Profile Responsive Design ΓÇ║ login page should work on mobile viewport @profile @responsive (1.7s)
+  Γ£ô  155 [chromium] ΓÇ║ e2e\profile.spec.ts:624:7 ΓÇ║ Profile Responsive Design ΓÇ║ login page should work on tablet viewport @profile @responsive (2.5s)
+  Γ£ô  156 [chromium] ΓÇ║ e2e\profile.spec.ts:636:7 ΓÇ║ Profile Responsive Design ΓÇ║ sign-up page should work on mobile viewport @profile @responsive (2.0s)
+  Γ£ô  157 [chromium] ΓÇ║ e2e\profile.spec.ts:662:7 ΓÇ║ Profile Performance ΓÇ║ login page should load within acceptable time @profile @performance (1.7s)
+  Γ£ô  158 [chromium] ΓÇ║ e2e\profile.spec.ts:671:7 ΓÇ║ Profile Performance ΓÇ║ sign-up page should load within acceptable time @profile @performance (2.0s)
+  Γ£ÿ  159 [chromium] ΓÇ║ e2e\reviews.spec.ts:88:7 ΓÇ║ Product Reviews ΓÇ║ should display reviews section on product page (44.4s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  suppress all logs with { quiet: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+  Γ£ÿ  160 [chromium] ΓÇ║ e2e\reviews.spec.ts:96:7 ΓÇ║ Product Reviews ΓÇ║ should render rating distribution bars (35.0s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+  Γ£ÿ  161 [chromium] ΓÇ║ e2e\reviews.spec.ts:106:7 ΓÇ║ Product Reviews ΓÇ║ should filter reviews by star rating (35.7s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+  Γ£ÿ  162 [chromium] ΓÇ║ e2e\reviews.spec.ts:131:7 ΓÇ║ Product Reviews ΓÇ║ should open and close review dialog (35.0s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+  Γ£ÿ  163 [chromium] ΓÇ║ e2e\reviews.spec.ts:153:7 ΓÇ║ Product Reviews ΓÇ║ should show purchase required state when unauthenticated (34.5s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+  Γ£ÿ  164 [chromium] ΓÇ║ e2e\reviews.spec.ts:172:7 ΓÇ║ Product Reviews ΓÇ║ should display reviews in Bulgarian locale (36.2s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  load multiple .env files with { path: ['.env.local', '.env'] }
+  Γ£ÿ  165 [chromium] ΓÇ║ e2e\reviews.spec.ts:185:7 ΓÇ║ Review Performance ΓÇ║ should load reviews section within acceptable time (34.3s)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+  Γ£ô  166 [chromium] ΓÇ║ e2e\sales.spec.ts:10:9 ΓÇ║ Seller Orders Page ΓÇ║ Unauthenticated Access ΓÇ║ redirects to login when not authenticated (12.5s)
+  Γ£ô  167 [chromium] ΓÇ║ e2e\sales.spec.ts:25:9 ΓÇ║ Seller Orders Page ΓÇ║ Unauthenticated Access ΓÇ║ redirects to login for Bulgarian locale (11.0s)
+  -  168 [chromium] ΓÇ║ e2e\sales.spec.ts:42:10 ΓÇ║ Seller Orders Page ΓÇ║ Page Structure ΓÇ║ displays seller orders page with header
+  -  169 [chromium] ΓÇ║ e2e\sales.spec.ts:50:10 ΓÇ║ Seller Orders Page ΓÇ║ Page Structure ΓÇ║ has back navigation to sell page
+  -  170 [chromium] ΓÇ║ e2e\sales.spec.ts:59:10 ΓÇ║ Seller Orders Page ΓÇ║ Page Structure ΓÇ║ has refresh button
+  -  171 [chromium] ΓÇ║ e2e\sales.spec.ts:67:10 ΓÇ║ Seller Orders Page ΓÇ║ Stats Cards ΓÇ║ displays order stats by status
+  -  172 [chromium] ΓÇ║ e2e\sales.spec.ts:77:10 ΓÇ║ Seller Orders Page ΓÇ║ Stats Cards ΓÇ║ clicking stat card filters orders
+  -  173 [chromium] ΓÇ║ e2e\sales.spec.ts:91:10 ΓÇ║ Seller Orders Page ΓÇ║ Filter Tabs ΓÇ║ has filter tabs for order statuses
+  -  174 [chromium] ΓÇ║ e2e\sales.spec.ts:102:10 ΓÇ║ Seller Orders Page ΓÇ║ Filter Tabs ΓÇ║ filters orders when clicking tabs
+  -  175 [chromium] ΓÇ║ e2e\sales.spec.ts:116:10 ΓÇ║ Seller Orders Page ΓÇ║ Empty State ΓÇ║ shows empty state when no orders
+  -  176 [chromium] ΓÇ║ e2e\sales.spec.ts:126:10 ΓÇ║ Seller Orders Page ΓÇ║ Order Cards ΓÇ║ displays order item with product details
+  -  177 [chromium] ΓÇ║ e2e\sales.spec.ts:144:10 ΓÇ║ Seller Orders Page ΓÇ║ Order Cards ΓÇ║ shows buyer information
+  -  178 [chromium] ΓÇ║ e2e\sales.spec.ts:153:10 ΓÇ║ Seller Orders Page ΓÇ║ Order Cards ΓÇ║ displays full shipping address for sellers
+  -  179 [chromium] ΓÇ║ e2e\sales.spec.ts:160:10 ΓÇ║ Seller Orders Page ΓÇ║ Order Cards ΓÇ║ shows tracking information when shipped
+  -  180 [chromium] ΓÇ║ e2e\sales.spec.ts:170:10 ΓÇ║ Seller Orders Page ΓÇ║ Order Cards ΓÇ║ displays relative order time
+  -  181 [chromium] ΓÇ║ e2e\sales.spec.ts:179:10 ΓÇ║ Seller Orders Page ΓÇ║ Status Badge ΓÇ║ displays order status badge
+  -  182 [chromium] ΓÇ║ e2e\sales.spec.ts:187:10 ΓÇ║ Seller Orders Page ΓÇ║ Status Badge ΓÇ║ status badge has appropriate styling
+  -  183 [chromium] ΓÇ║ e2e\sales.spec.ts:199:10 ΓÇ║ Seller Orders Page ΓÇ║ Order Actions ΓÇ║ shows Mark as Received button for pending orders
+  -  184 [chromium] ΓÇ║ e2e\sales.spec.ts:209:10 ΓÇ║ Seller Orders Page ΓÇ║ Order Actions ΓÇ║ shows Start Processing button for received orders
+  -  185 [chromium] ΓÇ║ e2e\sales.spec.ts:216:10 ΓÇ║ Seller Orders Page ΓÇ║ Order Actions ΓÇ║ shows Mark as Shipped button for processing orders
+  -  186 [chromium] ΓÇ║ e2e\sales.spec.ts:223:10 ΓÇ║ Seller Orders Page ΓÇ║ Order Actions ΓÇ║ shows Chat button for orders with conversations
+  -  187 [chromium] ΓÇ║ e2e\sales.spec.ts:232:10 ΓÇ║ Seller Orders Page ΓÇ║ Order Actions ΓÇ║ shows Cancel button for non-shipped orders
+  -  188 [chromium] ΓÇ║ e2e\sales.spec.ts:244:10 ΓÇ║ Seller Orders Page ΓÇ║ Shipping Dialog ΓÇ║ opens shipping dialog when marking as shipped
+  -  189 [chromium] ΓÇ║ e2e\sales.spec.ts:257:10 ΓÇ║ Seller Orders Page ΓÇ║ Shipping Dialog ΓÇ║ shipping dialog has carrier dropdown
+  -  190 [chromium] ΓÇ║ e2e\sales.spec.ts:268:10 ΓÇ║ Seller Orders Page ΓÇ║ Shipping Dialog ΓÇ║ shipping dialog has tracking number input
+  -  191 [chromium] ΓÇ║ e2e\sales.spec.ts:280:10 ΓÇ║ Seller Orders Page ΓÇ║ Shipping Dialog ΓÇ║ can submit shipping without tracking (optional)
+  -  192 [chromium] ΓÇ║ e2e\sales.spec.ts:294:10 ΓÇ║ Seller Orders Page ΓÇ║ Rate Buyer ΓÇ║ shows Rate Buyer button for delivered orders
+  -  193 [chromium] ΓÇ║ e2e\sales.spec.ts:302:10 ΓÇ║ Seller Orders Page ΓÇ║ Rate Buyer ΓÇ║ shows Rated badge if already rated
+  -  194 [chromium] ΓÇ║ e2e\sales.spec.ts:310:10 ΓÇ║ Seller Orders Page ΓÇ║ Rate Buyer ΓÇ║ opens rating dialog when clicking Rate Buyer
+  -  195 [chromium] ΓÇ║ e2e\sales.spec.ts:323:10 ΓÇ║ Seller Orders Page ΓÇ║ Rate Buyer ΓÇ║ rating dialog has star selector
+  -  196 [chromium] ΓÇ║ e2e\sales.spec.ts:341:10 ΓÇ║ Seller Orders Page ΓÇ║ Product Links ΓÇ║ has link to view product listing
+  -  197 [chromium] ΓÇ║ e2e\sales.spec.ts:356:10 ΓÇ║ Seller Orders Page ΓÇ║ Responsive Design ΓÇ║ adapts layout for mobile viewport
+  -  198 [chromium] ΓÇ║ e2e\sales.spec.ts:365:10 ΓÇ║ Seller Orders Page ΓÇ║ Responsive Design ΓÇ║ stats cards stack on mobile
+  -  199 [chromium] ΓÇ║ e2e\sales.spec.ts:376:10 ΓÇ║ Seller Orders Page ΓÇ║ Loading State ΓÇ║ shows loading spinner while fetching orders
+  -  200 [chromium] ΓÇ║ e2e\sales.spec.ts:388:10 ΓÇ║ Seller Orders Page ΓÇ║ Refresh Functionality ΓÇ║ refresh button reloads orders
+  -  201 [chromium] ΓÇ║ e2e\sales.spec.ts:402:10 ΓÇ║ Seller Orders Page ΓÇ║ Accessibility ΓÇ║ tabs are keyboard navigable
+  -  202 [chromium] ΓÇ║ e2e\sales.spec.ts:413:10 ΓÇ║ Seller Orders Page ΓÇ║ Accessibility ΓÇ║ dialog can be closed with Escape
+  -  203 [chromium] ΓÇ║ e2e\sales.spec.ts:426:10 ΓÇ║ Seller Orders Page ΓÇ║ Accessibility ΓÇ║ action buttons have accessible labels
+  Γ£ô  204 [chromium] ΓÇ║ e2e\sales.spec.ts:445:9 ΓÇ║ Sales Dashboard Page ΓÇ║ Unauthenticated Access ΓÇ║ redirects to login when not authenticated (1.1s)
+  -  205 [chromium] ΓÇ║ e2e\sales.spec.ts:452:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Page Structure ΓÇ║ displays sales dashboard with header
+  -  206 [chromium] ΓÇ║ e2e\sales.spec.ts:459:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Page Structure ΓÇ║ has navigation buttons to store and new listing
+  -  207 [chromium] ΓÇ║ e2e\sales.spec.ts:468:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Stats Cards ΓÇ║ displays revenue statistics
+  -  208 [chromium] ΓÇ║ e2e\sales.spec.ts:475:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Stats Cards ΓÇ║ displays sales count
+  -  209 [chromium] ΓÇ║ e2e\sales.spec.ts:481:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Stats Cards ΓÇ║ shows commission rate
+  -  210 [chromium] ΓÇ║ e2e\sales.spec.ts:489:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Period Filter ΓÇ║ has period filter badges
+  -  211 [chromium] ΓÇ║ e2e\sales.spec.ts:498:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Period Filter ΓÇ║ updates data when changing period
+  -  212 [chromium] ΓÇ║ e2e\sales.spec.ts:508:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Revenue Chart ΓÇ║ displays revenue chart
+  -  213 [chromium] ΓÇ║ e2e\sales.spec.ts:516:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Sales Table ΓÇ║ displays recent sales table
+  -  214 [chromium] ΓÇ║ e2e\sales.spec.ts:522:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Sales Table ΓÇ║ table has correct columns
+  -  215 [chromium] ΓÇ║ e2e\sales.spec.ts:533:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Empty State ΓÇ║ shows empty state when no sales
+  -  216 [chromium] ΓÇ║ e2e\sales.spec.ts:542:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Localization ΓÇ║ displays in Bulgarian when locale is bg
+  -  217 [chromium] ΓÇ║ e2e\sales.spec.ts:548:10 ΓÇ║ Sales Dashboard Page ΓÇ║ Localization ΓÇ║ formats currency according to locale
+[E2E Auth] Starting login for e2e_1767195164550_08a211238a9ef@example.test
+[E2E Auth] Submit button disabled: false
+[E2E Auth] Login successful, redirected to http://localhost:3000/en
+  Γ£ÿ  218 [chromium] ΓÇ║ e2e\seller-create-listing.spec.ts:7:7 ΓÇ║ Seller Create Listing - UX Audit Phase 6 ΓÇ║ authenticated user can create and publish a listing (mobile flow) @seller @sell @auth (2.5m)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒùé∩╕Å backup and recover secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  write to custom object with { processEnv: myObject }
+[E2E Auth] Starting login for e2e_1767195164550_08a211238a9ef@example.test
+[E2E Auth] Submit button disabled: true
+[E2E Auth] Screenshot saved to test-results/login-debug.png
+  Γ£ÿ  219 [chromium] ΓÇ║ e2e\seller-routes.spec.ts:7:7 ΓÇ║ Seller Routes - UX Audit Phase 6 ΓÇ║ sell entry is locale-safe and does not crash @seller @sell (1.0m)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+[E2E Auth] Starting login for e2e_1767195164550_08a211238a9ef@example.test
+[E2E Auth] Submit button disabled: false
+[E2E Auth] Login successful, redirected to http://localhost:3000/en
+  Γ£ô  220 [chromium] ΓÇ║ e2e\seller-routes.spec.ts:41:7 ΓÇ║ Seller Routes - UX Audit Phase 6 ΓÇ║ seller dashboard loads without crashing (post-login) @seller @dashboard (47.1s)
+  Γ£ô  221 [chromium] ΓÇ║ e2e\seller-routes.spec.ts:56:7 ΓÇ║ Seller Routes - UX Audit Phase 6 ΓÇ║ public seller profile and product page render (seed user) @seller @profile (15.8s)
+  Γ£ô  222 [chromium] ΓÇ║ e2e\smoke.spec.ts:162:7 ΓÇ║ Smoke Tests - Core Routes ΓÇ║ homepage loads with key landmarks @smoke (3.1s)
+  Γ£ô  223 [chromium] ΓÇ║ e2e\smoke.spec.ts:178:7 ΓÇ║ Smoke Tests - Core Routes ΓÇ║ homepage Bulgarian locale loads @smoke @i18n (3.3s)
+  Γ£ô  224 [chromium] ΓÇ║ e2e\smoke.spec.ts:193:7 ΓÇ║ Smoke Tests - Core Routes ΓÇ║ categories page loads @smoke (12.3s)
+  Γ£ô  225 [chromium] ΓÇ║ e2e\smoke.spec.ts:212:7 ΓÇ║ Smoke Tests - Core Routes ΓÇ║ search page renders results or empty state @smoke (11.7s)
+  Γ£ô  226 [chromium] ΓÇ║ e2e\smoke.spec.ts:231:7 ΓÇ║ Smoke Tests - Core Routes ΓÇ║ cart page renders empty or filled state @smoke (9.5s)
+  Γ£ô  227 [chromium] ΓÇ║ e2e\smoke.spec.ts:268:7 ΓÇ║ Smoke Tests - Auth-Gated Routes ΓÇ║ account page redirects or shows login CTA when logged out @smoke @auth (2.1s)
+  Γ£ô  228 [chromium] ΓÇ║ e2e\smoke.spec.ts:306:7 ΓÇ║ Smoke Tests - Auth-Gated Routes ΓÇ║ sell page redirects or shows login CTA when logged out @smoke @auth (44.6s)
+  Γ£ô  229 [chromium] ΓÇ║ e2e\smoke.spec.ts:360:7 ΓÇ║ Smoke Tests - Mobile ΓÇ║ homepage renders correctly on mobile @smoke @mobile (10.5s)
+  Γ£ô  230 [chromium] ΓÇ║ e2e\smoke.spec.ts:381:7 ΓÇ║ Smoke Tests - Mobile ΓÇ║ cart page is usable on mobile @smoke @mobile (23.5s)
+  -  231 [chromium] ΓÇ║ e2e\smoke.spec.ts:419:7 ΓÇ║ Smoke Tests - Performance Sanity ΓÇ║ homepage loads within acceptable time @smoke @perf
+  -  232 [chromium] ΓÇ║ e2e\smoke.spec.ts:434:7 ΓÇ║ Smoke Tests - Performance Sanity ΓÇ║ no memory leaks on navigation @smoke @perf
+  Γ£ÿ  233 [chromium] ΓÇ║ e2e\ux-audit-phase2.spec.ts:15:7 ΓÇ║ UX Audit Phase 2 (Search & Categories) ΓÇ║ audit /en search + categories (1.1m)
+[dotenv@17.2.3] injecting env (0) from .env.local -- tip: ≡ƒùé∩╕Å backup and recover secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒôí add observability to secrets: https://dotenvx.com/ops
+  Γ£ÿ  234 [chromium] ΓÇ║ e2e\ux-phase2-search-categories.spec.ts:77:7 ΓÇ║ UX Audit - Phase 2 (Search & Categories) ΓÇ║ P2 /en/search + /en/categories + /en/todays-deals (1.1m)
+
+
+  1) [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account @phase5 
+
+    Error: Login failed - page still at http://localhost:3000/en/auth/login
+
+       at fixtures\auth.ts:59
+
+      57 |       console.log(`[E2E Auth] Login error: ${errorText}`)
+      58 |     }
+    > 59 |     throw new Error(`Login failed - page still at ${page.url()}`)
+         |           ^
+      60 |   }
+      61 | }
+      62 |
+        at loginWithPassword (J:\amazong\e2e\fixtures\auth.ts:59:11)
+        at Object.exports.test._test.test.extend.workerStorageState.scope (J:\amazong\e2e\fixtures\authenticated.ts:47:5)
+
+  2) [chromium] ΓÇ║ e2e\full-flow.spec.ts:428:7 ΓÇ║ Reviews Flow @reviews ΓÇ║ should display reviews section on product page 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator:  locator('[data-testid="reviews-section"]').or(locator('section:has-text("Reviews")').first()).or(locator('[id*="review"], [class*="review"]').first()).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('[data-testid="reviews-section"]').or(locator('section:has-text("Reviews")').first()).or(locator('[id*="review"], [class*="review"]').first()).first()[22m
+    [2m    8 ├ù locator resolved to <section class="mt-12 rounded-md bg-muted/20 p-6 lg:p-10 border border-border/50">ΓÇª</section>[22m
+    [2m      - unexpected value "hidden"[22m
+
+
+      445 |       
+      446 |       // Reviews section should be visible on product page
+    > 447 |       await expect(reviewsSection.first()).toBeVisible({ timeout: 5000 })
+          |                                            ^
+      448 |     }
+      449 |   })
+      450 | })
+        at J:\amazong\e2e\full-flow.spec.ts:447:44
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\full-flow-Reviews-Flow-rev-33d88-ews-section-on-product-page-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\full-flow-Reviews-Flow-rev-33d88-ews-section-on-product-page-chromium\error-context.md
+
+  3) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:133:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Homepage ΓÇ║ category list is scrollable on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_RESET at http://localhost:3000/en
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en", waiting until "load"[22m
+
+
+      132 |
+      133 |     test("category list is scrollable on mobile", async ({ page }) => {
+    > 134 |       await page.goto("/en")
+          |                  ^
+      135 |       
+      136 |       // Wait for categories to load
+      137 |       await page.waitForLoadState("networkidle")
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:134:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-b334b-ist-is-scrollable-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  4) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:149:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Homepage ΓÇ║ product listing tabs work on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en", waiting until "load"[22m
+
+
+      148 |
+      149 |     test("product listing tabs work on mobile", async ({ page }) => {
+    > 150 |       await page.goto("/en")
+          |                  ^
+      151 |       
+      152 |       // Wait for listings to load
+      153 |       await page.waitForLoadState("networkidle")
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:150:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-80db8-listing-tabs-work-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  5) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:168:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Homepage ΓÇ║ no horizontal overflow on homepage 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en", waiting until "load"[22m
+
+
+      167 |
+      168 |     test("no horizontal overflow on homepage", async ({ page }) => {
+    > 169 |       await page.goto("/en")
+          |                  ^
+      170 |       
+      171 |       // Check that body doesn't have horizontal overflow
+      172 |       const hasOverflow = await page.evaluate(() => {
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:169:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-9f78b-zontal-overflow-on-homepage-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  6) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:181:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ product page renders correctly on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/shop4e/12322
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/shop4e/12322", waiting until "load"[22m
+
+
+      180 |   test.describe("Mobile Product Page", () => {
+      181 |     test("product page renders correctly on mobile", async ({ page }) => {
+    > 182 |       await page.goto("/en/shop4e/12322")
+          |                  ^
+      183 |       
+      184 |       // Wait for page to load
+      185 |       await page.waitForLoadState("networkidle")
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:182:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-341ac-renders-correctly-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  7) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:197:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ product page has back button on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/shop4e/12322
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/shop4e/12322", waiting until "load"[22m
+
+
+      197 |     test("product page has back button on mobile", async ({ page }) => {
+      198 |       // Navigate to product page
+    > 199 |       await page.goto("/en/shop4e/12322")
+          |                  ^
+      200 |       
+      201 |       // Wait for page to load
+      202 |       await page.waitForLoadState("networkidle")
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:199:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-59c53-e-has-back-button-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  8) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:209:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ product images are displayed on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/shop4e/12322
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/shop4e/12322", waiting until "load"[22m
+
+
+      208 |
+      209 |     test("product images are displayed on mobile", async ({ page }) => {
+    > 210 |       await page.goto("/en/shop4e/12322")
+          |                  ^
+      211 |       
+      212 |       // Wait for page to load
+      213 |       await page.waitForLoadState("networkidle")
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:210:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-a82fd-ges-are-displayed-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  9) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:223:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ add to cart button is visible on mobile product page 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/shop4e/12322
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/shop4e/12322", waiting until "load"[22m
+
+
+      222 |
+      223 |     test("add to cart button is visible on mobile product page", async ({ page }) => {
+    > 224 |       await page.goto("/en/shop4e/12322")
+          |                  ^
+      225 |       
+      226 |       // Add to cart should be in sticky footer or visible
+      227 |       await expect(page.getByRole("button", { name: /add to cart|╨┤╨╛╨▒╨░╨▓╨╕ ╨▓ ╨║╨╛╤ê╨╜╨╕╤å╨░╤é╨░/i })).toBeVisible({ timeout: 15000 })
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:224:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-c292c-ible-on-mobile-product-page-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  10) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:232:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Search Page ΓÇ║ search page renders correctly on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/search?q=phone
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/search?q=phone", waiting until "load"[22m
+
+
+      231 |   test.describe("Mobile Search Page", () => {
+      232 |     test("search page renders correctly on mobile", async ({ page }) => {
+    > 233 |       await page.goto("/en/search?q=phone")
+          |                  ^
+      234 |       
+      235 |       // Search results should be visible
+      236 |       await expect(page.locator("main")).toBeVisible()
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:233:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-2180c-renders-correctly-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  11) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:245:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Search Page ΓÇ║ filters button is accessible on mobile search 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/search?q=phone
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/search?q=phone", waiting until "load"[22m
+
+
+      244 |
+      245 |     test("filters button is accessible on mobile search", async ({ page }) => {
+    > 246 |       await page.goto("/en/search?q=phone")
+          |                  ^
+      247 |       
+      248 |       // Filter button should be visible on mobile
+      249 |       const filterButton = page.getByRole("button", { name: /filter|╤ä╨╕╨╗╤é╤Ç╨╕/i })
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:246:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-2d7e5-accessible-on-mobile-search-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  12) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:253:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Search Page ΓÇ║ sort dropdown works on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/search?q=phone
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/search?q=phone", waiting until "load"[22m
+
+
+      252 |
+      253 |     test("sort dropdown works on mobile", async ({ page }) => {
+    > 254 |       await page.goto("/en/search?q=phone")
+          |                  ^
+      255 |       
+      256 |       // Sort button/dropdown should be visible
+      257 |       const sortButton = page.getByRole("button", { name: /sort|╨┐╨╛╨┤╤Ç╨╡╨┤╨╕/i }).or(
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:254:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-bab5e-rt-dropdown-works-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  13) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:270:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Auth Pages ΓÇ║ login form is usable on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/auth/login
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/auth/login", waiting until "load"[22m
+
+
+      269 |   test.describe("Mobile Auth Pages", () => {
+      270 |     test("login form is usable on mobile", async ({ page }) => {
+    > 271 |       await page.goto("/en/auth/login")
+          |                  ^
+      272 |       
+      273 |       // Form elements should be visible
+      274 |       await expect(page.getByLabel(/email/i)).toBeVisible()
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:271:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-94d7c-in-form-is-usable-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  14) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:286:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Auth Pages ΓÇ║ sign up form is usable on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/auth/sign-up
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/auth/sign-up", waiting until "load"[22m
+
+
+      285 |
+      286 |     test("sign up form is usable on mobile", async ({ page }) => {
+    > 287 |       await page.goto("/en/auth/sign-up")
+          |                  ^
+      288 |       
+      289 |       // Form elements should be visible
+      290 |       await expect(page.getByLabel(/email/i)).toBeVisible()
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:287:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-fbb81-up-form-is-usable-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  15) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:303:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Cart & Checkout ΓÇ║ cart page renders correctly on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/cart
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/cart", waiting until "load"[22m
+
+
+      302 |   test.describe("Mobile Cart & Checkout", () => {
+      303 |     test("cart page renders correctly on mobile", async ({ page }) => {
+    > 304 |       await page.goto("/en/cart")
+          |                  ^
+      305 |       
+      306 |       // Cart page should load
+      307 |       await expect(page.locator("main")).toBeVisible()
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:304:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-01801-renders-correctly-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  16) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:320:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Cart & Checkout ΓÇ║ checkout page renders correctly on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/checkout
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/checkout", waiting until "domcontentloaded"[22m
+
+
+      320 |     test("checkout page renders correctly on mobile", async ({ page }) => {
+      321 |       test.setTimeout(120_000)
+    > 322 |       await page.goto("/en/checkout", { timeout: 90_000, waitUntil: 'domcontentloaded' })
+          |                  ^
+      323 |       
+      324 |       // Checkout page should load (may redirect to auth or show empty cart)
+      325 |       await expect(page.locator("main").first()).toBeVisible({ timeout: 30000 })
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:322:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-2b15e-renders-correctly-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  17) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:336:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Account Pages ΓÇ║ account dashboard redirect works on mobile (guest) 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/account
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/account", waiting until "load"[22m
+
+
+      335 |   test.describe("Mobile Account Pages", () => {
+      336 |     test("account dashboard redirect works on mobile (guest)", async ({ page }) => {
+    > 337 |       await page.goto("/en/account")
+          |                  ^
+      338 |       
+      339 |       // Should redirect to login for guests
+      340 |       await expect(page).toHaveURL(/auth\/login/)
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:337:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-2f9aa-rect-works-on-mobile-guest--chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  18) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:343:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Account Pages ΓÇ║ account pages have no horizontal overflow 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/account/profile
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/account/profile", waiting until "load"[22m
+
+
+      343 |     test("account pages have no horizontal overflow", async ({ page }) => {
+      344 |       // Test profile page (will redirect to login, but check layout)
+    > 345 |       await page.goto("/en/account/profile")
+          |                  ^
+      346 |       
+      347 |       const hasOverflow = await page.evaluate(() => {
+      348 |         return document.body.scrollWidth > window.innerWidth
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:345:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-37c1f-have-no-horizontal-overflow-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  19) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:355:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Categories Page ΓÇ║ categories page renders correctly on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/categories
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/categories", waiting until "load"[22m
+
+
+      354 |   test.describe("Mobile Categories Page", () => {
+      355 |     test("categories page renders correctly on mobile", async ({ page }) => {
+    > 356 |       await page.goto("/en/categories")
+          |                  ^
+      357 |       
+      358 |       // Categories should be visible
+      359 |       await expect(page.locator("main")).toBeVisible()
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:356:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-8cd6d-renders-correctly-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  20) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:371:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Categories Page ΓÇ║ category detail page works on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/categories/electronics
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/categories/electronics", waiting until "load"[22m
+
+
+      370 |
+      371 |     test("category detail page works on mobile", async ({ page }) => {
+    > 372 |       await page.goto("/en/categories/electronics")
+          |                  ^
+      373 |       
+      374 |       // Category page should load
+      375 |       await expect(page.locator("main")).toBeVisible()
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:372:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-6678b-detail-page-works-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  21) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:384:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Static Pages ΓÇ║ about page renders correctly on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/about
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/about", waiting until "domcontentloaded"[22m
+
+
+      384 |     test("about page renders correctly on mobile", async ({ page }) => {
+      385 |       test.setTimeout(120_000)
+    > 386 |       await page.goto("/en/about", { timeout: 90_000, waitUntil: 'domcontentloaded' })
+          |                  ^
+      387 |       
+      388 |       await expect(page.locator("main").first()).toBeVisible({ timeout: 30000 })
+      389 |       
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:386:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-bad00-renders-correctly-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  22) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:396:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Static Pages ΓÇ║ contact page renders correctly on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/contact
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/contact", waiting until "domcontentloaded"[22m
+
+
+      396 |     test("contact page renders correctly on mobile", async ({ page }) => {
+      397 |       test.setTimeout(120_000)
+    > 398 |       await page.goto("/en/contact", { timeout: 90_000, waitUntil: 'domcontentloaded' })
+          |                  ^
+      399 |       
+      400 |       await expect(page.locator("main").first()).toBeVisible({ timeout: 30000 })
+      401 |       
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:398:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-6a7b6-renders-correctly-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  23) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:408:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Static Pages ΓÇ║ customer service page renders correctly on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/customer-service
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/customer-service", waiting until "domcontentloaded"[22m
+
+
+      408 |     test("customer service page renders correctly on mobile", async ({ page }) => {
+      409 |       test.setTimeout(120_000)
+    > 410 |       await page.goto("/en/customer-service", { timeout: 90_000, waitUntil: 'domcontentloaded' })
+          |                  ^
+      411 |       
+      412 |       await expect(page.locator("main").first()).toBeVisible({ timeout: 30000 })
+      413 |       
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:410:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-b2b0f-renders-correctly-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  24) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:422:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Touch Targets ΓÇ║ tab bar buttons have adequate touch targets 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en", waiting until "load"[22m
+
+
+      421 |   test.describe("Mobile Touch Targets", () => {
+      422 |     test("tab bar buttons have adequate touch targets", async ({ page }) => {
+    > 423 |       await page.goto("/en")
+          |                  ^
+      424 |       
+      425 |       // Wait for page to load
+      426 |       await page.waitForLoadState("networkidle")
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:423:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-cf060-have-adequate-touch-targets-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  25) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:449:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Footer ΓÇ║ footer renders correctly on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en", waiting until "load"[22m
+
+
+      448 |   test.describe("Mobile Footer", () => {
+      449 |     test("footer renders correctly on mobile", async ({ page }) => {
+    > 450 |       await page.goto("/en")
+          |                  ^
+      451 |       
+      452 |       // Wait for page to load
+      453 |       await page.waitForLoadState("networkidle")
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:450:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-65216-renders-correctly-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  26) [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:471:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Bulgarian Locale Mobile ΓÇ║ Bulgarian homepage renders correctly on mobile 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/bg
+    Call log:
+    [2m  - navigating to "http://localhost:3000/bg", waiting until "load"[22m
+
+
+      470 |   test.describe("Bulgarian Locale Mobile", () => {
+      471 |     test("Bulgarian homepage renders correctly on mobile", async ({ page }) => {
+    > 472 |       await page.goto("/bg")
+          |                  ^
+      473 |       
+      474 |       // Wait for page to load
+      475 |       await page.waitForLoadState("networkidle")
+        at J:\amazong\e2e\mobile-responsiveness.spec.ts:472:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\mobile-responsiveness-Mobi-da0a8-renders-correctly-on-mobile-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  27) [chromium] ΓÇ║ e2e\orders.spec.ts:41:13 ΓÇ║ Buyer Orders Page ΓÇ║ Unauthenticated Access ΓÇ║ redirects to login when not authenticated 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/en/account/orders
+    Call log:
+    [2m  - navigating to "http://localhost:3000/en/account/orders", waiting until "domcontentloaded"[22m
+
+
+      40 |
+      41 |     baseTest("redirects to login when not authenticated", async ({ page }) => {
+    > 42 |       await page.goto("/en/account/orders", { waitUntil: "domcontentloaded", timeout: 60_000 })
+         |                  ^
+      43 |       await expect(page).toHaveURL(/\/auth\/login/, { timeout: 60_000 })
+      44 |     })
+      45 |
+        at J:\amazong\e2e\orders.spec.ts:42:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\orders-Buyer-Orders-Page-U-1c55f-ogin-when-not-authenticated-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  28) [chromium] ΓÇ║ e2e\orders.spec.ts:46:13 ΓÇ║ Buyer Orders Page ΓÇ║ Unauthenticated Access ΓÇ║ redirects to login for Bulgarian locale 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/bg/account/orders
+    Call log:
+    [2m  - navigating to "http://localhost:3000/bg/account/orders", waiting until "domcontentloaded"[22m
+
+
+      45 |
+      46 |     baseTest("redirects to login for Bulgarian locale", async ({ page }) => {
+    > 47 |       await page.goto("/bg/account/orders", { waitUntil: "domcontentloaded", timeout: 60_000 })
+         |                  ^
+      48 |       await expect(page).toHaveURL(/\/auth\/login/, { timeout: 60_000 })
+      49 |     })
+      50 |   })
+        at J:\amazong\e2e\orders.spec.ts:47:18
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\orders-Buyer-Orders-Page-U-0cef2--login-for-Bulgarian-locale-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+  29) [chromium] ΓÇ║ e2e\reviews.spec.ts:88:7 ΓÇ║ Product Reviews ΓÇ║ should display reviews section on product page 
+
+    TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")') to be visible[22m
+    [2m    63 ├ù locator resolved to 2 elements. Proceeding with the first one: <h2 class="text-xl lg:text-2xl font-bold text-foreground tracking-tight">Customer Reviews</h2>[22m
+
+
+      68 |   // - Modern product page: #product-reviews-section
+      69 |   // - Hybrid product page: a "Customer Reviews" heading (currently not localized)
+    > 70 |   await page.waitForSelector(
+         |              ^
+      71 |     '#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")',
+      72 |     { timeout: 30_000 },
+      73 |   )
+        at getAnyReviewsRoot (J:\amazong\e2e\reviews.spec.ts:70:14)
+        at J:\amazong\e2e\reviews.spec.ts:91:31
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\reviews-Product-Reviews-sh-e24f0-ews-section-on-product-page-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\reviews-Product-Reviews-sh-e24f0-ews-section-on-product-page-chromium\error-context.md
+
+  30) [chromium] ΓÇ║ e2e\reviews.spec.ts:96:7 ΓÇ║ Product Reviews ΓÇ║ should render rating distribution bars 
+
+    TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")') to be visible[22m
+    [2m    63 ├ù locator resolved to 2 elements. Proceeding with the first one: <h2 class="text-xl lg:text-2xl font-bold text-foreground tracking-tight">Customer Reviews</h2>[22m
+
+
+      68 |   // - Modern product page: #product-reviews-section
+      69 |   // - Hybrid product page: a "Customer Reviews" heading (currently not localized)
+    > 70 |   await page.waitForSelector(
+         |              ^
+      71 |     '#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")',
+      72 |     { timeout: 30_000 },
+      73 |   )
+        at getAnyReviewsRoot (J:\amazong\e2e\reviews.spec.ts:70:14)
+        at J:\amazong\e2e\reviews.spec.ts:99:31
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\reviews-Product-Reviews-sh-042d5-er-rating-distribution-bars-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\reviews-Product-Reviews-sh-042d5-er-rating-distribution-bars-chromium\error-context.md
+
+  31) [chromium] ΓÇ║ e2e\reviews.spec.ts:106:7 ΓÇ║ Product Reviews ΓÇ║ should filter reviews by star rating 
+
+    TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")') to be visible[22m
+    [2m    63 ├ù locator resolved to 2 elements. Proceeding with the first one: <h2 class="text-xl lg:text-2xl font-bold text-foreground tracking-tight">Customer Reviews</h2>[22m
+
+
+      68 |   // - Modern product page: #product-reviews-section
+      69 |   // - Hybrid product page: a "Customer Reviews" heading (currently not localized)
+    > 70 |   await page.waitForSelector(
+         |              ^
+      71 |     '#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")',
+      72 |     { timeout: 30_000 },
+      73 |   )
+        at getAnyReviewsRoot (J:\amazong\e2e\reviews.spec.ts:70:14)
+        at J:\amazong\e2e\reviews.spec.ts:109:31
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\reviews-Product-Reviews-should-filter-reviews-by-star-rating-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\reviews-Product-Reviews-should-filter-reviews-by-star-rating-chromium\error-context.md
+
+  32) [chromium] ΓÇ║ e2e\reviews.spec.ts:131:7 ΓÇ║ Product Reviews ΓÇ║ should open and close review dialog 
+
+    TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")') to be visible[22m
+    [2m    63 ├ù locator resolved to 2 elements. Proceeding with the first one: <h2 class="text-xl lg:text-2xl font-bold text-foreground tracking-tight">Customer Reviews</h2>[22m
+
+
+      68 |   // - Modern product page: #product-reviews-section
+      69 |   // - Hybrid product page: a "Customer Reviews" heading (currently not localized)
+    > 70 |   await page.waitForSelector(
+         |              ^
+      71 |     '#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")',
+      72 |     { timeout: 30_000 },
+      73 |   )
+        at getAnyReviewsRoot (J:\amazong\e2e\reviews.spec.ts:70:14)
+        at J:\amazong\e2e\reviews.spec.ts:134:31
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\reviews-Product-Reviews-should-open-and-close-review-dialog-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\reviews-Product-Reviews-should-open-and-close-review-dialog-chromium\error-context.md
+
+  33) [chromium] ΓÇ║ e2e\reviews.spec.ts:153:7 ΓÇ║ Product Reviews ΓÇ║ should show purchase required state when unauthenticated 
+
+    TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")') to be visible[22m
+    [2m    63 ├ù locator resolved to 2 elements. Proceeding with the first one: <h2 class="text-xl lg:text-2xl font-bold text-foreground tracking-tight">Customer Reviews</h2>[22m
+
+
+      68 |   // - Modern product page: #product-reviews-section
+      69 |   // - Hybrid product page: a "Customer Reviews" heading (currently not localized)
+    > 70 |   await page.waitForSelector(
+         |              ^
+      71 |     '#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")',
+      72 |     { timeout: 30_000 },
+      73 |   )
+        at getAnyReviewsRoot (J:\amazong\e2e\reviews.spec.ts:70:14)
+        at J:\amazong\e2e\reviews.spec.ts:156:31
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\reviews-Product-Reviews-sh-5306c--state-when-unauthenticated-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\reviews-Product-Reviews-sh-5306c--state-when-unauthenticated-chromium\error-context.md
+
+  34) [chromium] ΓÇ║ e2e\reviews.spec.ts:172:7 ΓÇ║ Product Reviews ΓÇ║ should display reviews in Bulgarian locale 
+
+    TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")') to be visible[22m
+
+
+      68 |   // - Modern product page: #product-reviews-section
+      69 |   // - Hybrid product page: a "Customer Reviews" heading (currently not localized)
+    > 70 |   await page.waitForSelector(
+         |              ^
+      71 |     '#product-reviews-section, h2:has-text("Customer Reviews"), h3:has-text("Customer Reviews")',
+      72 |     { timeout: 30_000 },
+      73 |   )
+        at getAnyReviewsRoot (J:\amazong\e2e\reviews.spec.ts:70:14)
+        at J:\amazong\e2e\reviews.spec.ts:176:31
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\reviews-Product-Reviews-sh-8fbe9-reviews-in-Bulgarian-locale-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\reviews-Product-Reviews-sh-8fbe9-reviews-in-Bulgarian-locale-chromium\error-context.md
+
+  35) [chromium] ΓÇ║ e2e\reviews.spec.ts:185:7 ΓÇ║ Review Performance ΓÇ║ should load reviews section within acceptable time 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('#product-reviews-section')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 30000ms[22m
+    [2m  - waiting for locator('#product-reviews-section')[22m
+
+
+      199 |
+      200 |     const reviewsSection = getReviewsSection(page)
+    > 201 |     await expect(reviewsSection).toBeVisible({ timeout: 30_000 })
+          |                                  ^
+      202 |
+      203 |     const loadTimeMs = Date.now() - startTime
+      204 |     // In dev mode, cold compilation can be slow; keep this threshold realistic.
+        at J:\amazong\e2e\reviews.spec.ts:201:34
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\reviews-Review-Performance-5fee6-tion-within-acceptable-time-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\reviews-Review-Performance-5fee6-tion-within-acceptable-time-chromium\error-context.md
+
+  36) [chromium] ΓÇ║ e2e\seller-create-listing.spec.ts:7:7 ΓÇ║ Seller Create Listing - UX Audit Phase 6 ΓÇ║ authenticated user can create and publish a listing (mobile flow) @seller @sell @auth 
+
+    Error: Navigation to /en/sell returned 500
+
+       at fixtures\test.ts:39
+
+      37 |       if (!response || response.ok()) return response
+      38 |
+    > 39 |       lastError = new Error(`Navigation to ${url} returned ${response.status()}`)
+         |                   ^
+      40 |     } catch (error) {
+      41 |       lastError = error
+      42 |     }
+        at gotoWithRetries (J:\amazong\e2e\fixtures\test.ts:39:19)
+        at J:\amazong\e2e\seller-create-listing.spec.ts:17:5
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\seller-create-listing-Sell-52e1f-obile-flow-seller-sell-auth-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\seller-create-listing-Sell-52e1f-obile-flow-seller-sell-auth-chromium\error-context.md
+
+  37) [chromium] ΓÇ║ e2e\seller-routes.spec.ts:7:7 ΓÇ║ Seller Routes - UX Audit Phase 6 ΓÇ║ sell entry is locale-safe and does not crash @seller @sell 
+
+    Error: Login failed - page still at http://localhost:3000/en/auth/login
+
+       at fixtures\auth.ts:59
+
+      57 |       console.log(`[E2E Auth] Login error: ${errorText}`)
+      58 |     }
+    > 59 |     throw new Error(`Login failed - page still at ${page.url()}`)
+         |           ^
+      60 |   }
+      61 | }
+      62 |
+        at loginWithPassword (J:\amazong\e2e\fixtures\auth.ts:59:11)
+        at J:\amazong\e2e\seller-routes.spec.ts:14:5
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\seller-routes-Seller-Route-642fa--does-not-crash-seller-sell-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\seller-routes-Seller-Route-642fa--does-not-crash-seller-sell-chromium\error-context.md
+
+  38) [chromium] ΓÇ║ e2e\ux-audit-phase2.spec.ts:15:7 ΓÇ║ UX Audit Phase 2 (Search & Categories) ΓÇ║ audit /en search + categories 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator:  locator('a[href*="/en/categories/"]').first()
+    Expected: visible
+    Received: hidden
+    Timeout:  10000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('a[href*="/en/categories/"]').first()[22m
+    [2m    14 ├ù locator resolved to <a data-slug="fashion" href="/en/categories/fashion" class="flex items-center justify-center px-4 h-[32px] rounded-full border transition-all whitespace-nowrap shrink-0 snap-start bg-muted text-muted-foreground border-transparent hover:bg-muted/80">ΓÇª</a>[22m
+    [2m       - unexpected value "hidden"[22m
+
+
+      202 |     // Click first category card
+      203 |     const firstCategoryLink = page.locator('a[href*="/en/categories/"]').first()
+    > 204 |     await expect(firstCategoryLink).toBeVisible()
+          |                                     ^
+      205 |     await firstCategoryLink.click()
+      206 |     await page.waitForURL(/\/en\/categories\//)
+      207 |     runSteps.push({
+        at J:\amazong\e2e\ux-audit-phase2.spec.ts:204:37
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\ux-audit-phase2-UX-Audit-P-ea29f--audit-en-search-categories-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\ux-audit-phase2-UX-Audit-P-ea29f--audit-en-search-categories-chromium\error-context.md
+
+  39) [chromium] ΓÇ║ e2e\ux-phase2-search-categories.spec.ts:77:7 ΓÇ║ UX Audit - Phase 2 (Search & Categories) ΓÇ║ P2 /en/search + /en/categories + /en/todays-deals ΓÇ║ Use header search box -> URL q param 
+
+    TimeoutError: page.waitForFunction: Timeout 45000ms exceeded.
+
+      124 |
+      125 |       // Client-side navigation may not trigger a full "load" event; wait on the URL state itself.
+    > 126 |       await page.waitForFunction(() => {
+          |                  ^
+      127 |         try {
+      128 |           return new URL(window.location.href).searchParams.get('q') === 'phone'
+      129 |         } catch {
+        at J:\amazong\e2e\ux-phase2-search-categories.spec.ts:126:18
+        at J:\amazong\e2e\ux-phase2-search-categories.spec.ts:113:5
+
+    attachment #1: screenshot (image/png) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    test-results\ux-phase2-search-categorie-1de31--categories-en-todays-deals-chromium\test-failed-1.png
+    ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+    Error Context: test-results\ux-phase2-search-categorie-1de31--categories-en-todays-deals-chromium\error-context.md
+
+  39 failed
+    [chromium] ΓÇ║ e2e\account-phase5.spec.ts:72:9 ΓÇ║ UX Audit Phase 5 - Account Pages (authenticated) ΓÇ║ authenticated account route renders cleanly: /en/account @phase5 
+    [chromium] ΓÇ║ e2e\full-flow.spec.ts:428:7 ΓÇ║ Reviews Flow @reviews ΓÇ║ should display reviews section on product page 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:133:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Homepage ΓÇ║ category list is scrollable on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:149:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Homepage ΓÇ║ product listing tabs work on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:168:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Homepage ΓÇ║ no horizontal overflow on homepage 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:181:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ product page renders correctly on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:197:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ product page has back button on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:209:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ product images are displayed on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:223:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Product Page ΓÇ║ add to cart button is visible on mobile product page 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:232:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Search Page ΓÇ║ search page renders correctly on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:245:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Search Page ΓÇ║ filters button is accessible on mobile search 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:253:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Search Page ΓÇ║ sort dropdown works on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:270:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Auth Pages ΓÇ║ login form is usable on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:286:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Auth Pages ΓÇ║ sign up form is usable on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:303:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Cart & Checkout ΓÇ║ cart page renders correctly on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:320:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Cart & Checkout ΓÇ║ checkout page renders correctly on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:336:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Account Pages ΓÇ║ account dashboard redirect works on mobile (guest) 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:343:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Account Pages ΓÇ║ account pages have no horizontal overflow 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:355:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Categories Page ΓÇ║ categories page renders correctly on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:371:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Categories Page ΓÇ║ category detail page works on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:384:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Static Pages ΓÇ║ about page renders correctly on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:396:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Static Pages ΓÇ║ contact page renders correctly on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:408:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Static Pages ΓÇ║ customer service page renders correctly on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:422:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Touch Targets ΓÇ║ tab bar buttons have adequate touch targets 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:449:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Mobile Footer ΓÇ║ footer renders correctly on mobile 
+    [chromium] ΓÇ║ e2e\mobile-responsiveness.spec.ts:471:9 ΓÇ║ Mobile Responsiveness - Phase 11 ΓÇ║ Bulgarian Locale Mobile ΓÇ║ Bulgarian homepage renders correctly on mobile 
+    [chromium] ΓÇ║ e2e\orders.spec.ts:41:13 ΓÇ║ Buyer Orders Page ΓÇ║ Unauthenticated Access ΓÇ║ redirects to login when not authenticated 
+    [chromium] ΓÇ║ e2e\orders.spec.ts:46:13 ΓÇ║ Buyer Orders Page ΓÇ║ Unauthenticated Access ΓÇ║ redirects to login for Bulgarian locale 
+    [chromium] ΓÇ║ e2e\reviews.spec.ts:88:7 ΓÇ║ Product Reviews ΓÇ║ should display reviews section on product page 
+    [chromium] ΓÇ║ e2e\reviews.spec.ts:96:7 ΓÇ║ Product Reviews ΓÇ║ should render rating distribution bars 
+    [chromium] ΓÇ║ e2e\reviews.spec.ts:106:7 ΓÇ║ Product Reviews ΓÇ║ should filter reviews by star rating 
+    [chromium] ΓÇ║ e2e\reviews.spec.ts:131:7 ΓÇ║ Product Reviews ΓÇ║ should open and close review dialog ΓöÇ
+    [chromium] ΓÇ║ e2e\reviews.spec.ts:153:7 ΓÇ║ Product Reviews ΓÇ║ should show purchase required state when unauthenticated 
+    [chromium] ΓÇ║ e2e\reviews.spec.ts:172:7 ΓÇ║ Product Reviews ΓÇ║ should display reviews in Bulgarian locale 
+    [chromium] ΓÇ║ e2e\reviews.spec.ts:185:7 ΓÇ║ Review Performance ΓÇ║ should load reviews section within acceptable time 
+    [chromium] ΓÇ║ e2e\seller-create-listing.spec.ts:7:7 ΓÇ║ Seller Create Listing - UX Audit Phase 6 ΓÇ║ authenticated user can create and publish a listing (mobile flow) @seller @sell @auth 
+    [chromium] ΓÇ║ e2e\seller-routes.spec.ts:7:7 ΓÇ║ Seller Routes - UX Audit Phase 6 ΓÇ║ sell entry is locale-safe and does not crash @seller @sell 
+    [chromium] ΓÇ║ e2e\ux-audit-phase2.spec.ts:15:7 ΓÇ║ UX Audit Phase 2 (Search & Categories) ΓÇ║ audit /en search + categories 
+    [chromium] ΓÇ║ e2e\ux-phase2-search-categories.spec.ts:77:7 ΓÇ║ UX Audit - Phase 2 (Search & Categories) ΓÇ║ P2 /en/search + /en/categories + /en/todays-deals 
+  55 skipped
+  140 passed (36.4m)
+
+To open last HTML report run:
+[36m[39m
+[36m  pnpm exec playwright show-report[39m
+[36m[39m
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.

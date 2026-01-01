@@ -24,7 +24,7 @@ import { MagnifyingGlass, Camera, CaretLeft, Scan } from "@phosphor-icons/react"
 // Utilities
 import { getCountryName } from "@/lib/geolocation"
 import { cn } from "@/lib/utils"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 
@@ -47,6 +47,7 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
   const [country, setCountry] = useState("Bulgaria")
   const [, setCountryCode] = useState("BG") // Used for shipping zone filtering
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
+  const headerRef = useRef<HTMLElement>(null)
   const t = useTranslations('Navigation')
   const locale = useLocale()
   const pathname = usePathname()
@@ -70,11 +71,18 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
     : "Search essentials..."
 
   useEffect(() => {
+    // Mark the header as hydrated so E2E can safely interact with client handlers
+    // without racing Next.js partial hydration boundaries.
+    headerRef.current?.setAttribute('data-hydrated', 'true')
+  }, [])
+
+  useEffect(() => {
     // Simple cookie parser
-    const getCookie = (name: string) => {
+    const getCookie = (name: string): string | undefined => {
       const value = `; ${document.cookie}`
       const parts = value.split(`; ${name}=`)
       if (parts.length === 2) return parts.pop()?.split(";").shift()
+      return undefined
     }
     const code = getCookie("user-country")
     if (code) {
@@ -84,10 +92,13 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
   }, [locale])
 
   return (
-    <header className={cn(
+    <header
+      ref={headerRef}
+      className={cn(
       "sticky top-0 z-50 w-full flex flex-col bg-header-bg",
       hideOnMobile && "hidden lg:flex"
-    )}>
+    )}
+    >
       {/* Mobile Header + Search - Unified container like Target */}
       <div className="md:hidden bg-header-bg text-header-text">
         {/* Top row - Logo & Actions - compact */}

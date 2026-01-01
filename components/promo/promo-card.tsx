@@ -46,7 +46,7 @@ export function PromoCard({
       
       {/* Badge */}
       {badge && (
-        <span className="absolute top-3 left-3 rounded-md border border-border bg-background/75 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground">
+        <span className="absolute top-3 left-3 rounded-md border border-border bg-background/75 px-2 py-1 text-2xs font-semibold uppercase tracking-wider text-foreground">
           {badge}
         </span>
       )}

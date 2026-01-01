@@ -292,7 +292,7 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                               orderId={item.order_id}
                               sellerId={item.seller_id}
                               isSeller={true}
-                              conversationId={conversationId}
+                              conversationId={conversationId ?? null}
                               locale={locale}
                             />
                             

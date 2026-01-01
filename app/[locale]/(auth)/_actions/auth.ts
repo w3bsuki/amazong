@@ -105,12 +105,15 @@ export async function login(
       const key = issue.path[0]
       if (typeof key === "string") fieldErrors[key] = issue.message
     }
-    return { ...prevState, fieldErrors, error: undefined, success: false }
+    return { fieldErrors, success: false }
   }
 
-  if (process.env.NEXT_PUBLIC_E2E === "true") {
+  const isE2E = process.env.NEXT_PUBLIC_E2E === "true"
+  const allowRealAuthInE2E =
+    process.env.E2E_REAL_AUTH === "true" || process.env.NEXT_PUBLIC_E2E_REAL_AUTH === "true"
+  if (isE2E && !allowRealAuthInE2E) {
     // Keep E2E runs stable and independent from external Supabase availability.
-    // The E2E suite does not require a real authenticated session by default.
+    // Opt into real auth explicitly via E2E_REAL_AUTH=true.
     return { ...prevState, error: "Invalid login credentials", success: false }
   }
 
@@ -148,7 +151,7 @@ export async function signUp(
       const key = issue.path[0]
       if (typeof key === "string") fieldErrors[key] = issue.message
     }
-    return { ...prevState, fieldErrors, error: undefined, success: false }
+    return { fieldErrors, success: false }
   }
 
   const usernameLower = parsed.data.username.toLowerCase()
@@ -220,7 +223,7 @@ export async function requestPasswordReset(
     return { ...prevState, error: error.message, success: false }
   }
 
-  return { ...prevState, error: undefined, success: true }
+  return { success: true }
 }
 
 export async function resetPassword(
@@ -239,7 +242,7 @@ export async function resetPassword(
       const key = issue.path[0]
       if (typeof key === "string") fieldErrors[key] = issue.message
     }
-    return { ...prevState, fieldErrors, error: undefined, success: false }
+    return { fieldErrors, success: false }
   }
 
   const supabase = await createClient()

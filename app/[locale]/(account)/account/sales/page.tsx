@@ -224,7 +224,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
 
   // Group sales by date for chart
   const salesByDate = sales.reduce((acc: Record<string, { revenue: number; orders: number }>, sale) => {
-    const date = new Date(sale.created_at).toISOString().split('T')[0]
+    const date = new Date(sale.created_at).toISOString().slice(0, 10)
     if (!acc[date]) {
       acc[date] = { revenue: 0, orders: 0 }
     }
@@ -237,7 +237,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   const chartData: { date: string; revenue: number; orders: number }[] = []
   const currentDate = new Date(startDate)
   while (currentDate <= now) {
-    const dateStr = currentDate.toISOString().split('T')[0]
+    const dateStr = currentDate.toISOString().slice(0, 10)
     chartData.push({
       date: dateStr,
       revenue: salesByDate[dateStr]?.revenue || 0,

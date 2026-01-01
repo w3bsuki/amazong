@@ -22,11 +22,9 @@ describe('lib/url-utils', () => {
     expect(getProductUrl({ id: '123', storeSlug: 'store', slug: 'item' })).toBe('/store/item')
   })
 
-  it('returns safe default and warns when missing identifier', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  it('returns safe default when missing identifier', () => {
+    // Function returns '#' as a safe fallback when no identifiers are provided
     expect(getProductUrl({})).toBe('#')
-    expect(warn).toHaveBeenCalled()
-    warn.mockRestore()
   })
 
   it('adds locale prefix', () => {

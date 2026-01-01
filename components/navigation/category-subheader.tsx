@@ -48,8 +48,9 @@ export function CategorySubheader() {
 
   // Set first category as active in full menu when data loads
   useEffect(() => {
-    if (categories.length > 0 && !fullMenuActiveCategory) {
-      setFullMenuActiveCategory(categories[0])
+    const firstCategory = categories.at(0)
+    if (firstCategory && !fullMenuActiveCategory) {
+      setFullMenuActiveCategory(firstCategory)
     }
   }, [categories, fullMenuActiveCategory])
 
@@ -616,7 +617,7 @@ function useMegaMenuContent(activeCategory: Category, _getName?: (cat: Category)
         maxItems: menuConfig.maxItems || MAX_MENU_ITEMS,
         columns: menuConfig.columns || 2,
         showL1sDirectly: menuConfig.showL1sDirectly || false,
-        columnHeaders: menuConfig.columnHeaders,
+        ...(menuConfig.columnHeaders ? { columnHeaders: menuConfig.columnHeaders } : {}),
       }
     }
 

@@ -93,8 +93,10 @@ export default function CheckoutPageClient() {
 
     if (addresses && addresses.length > 0) {
       setSavedAddresses(addresses)
-      const defaultAddress = addresses.find((a) => a.is_default) || addresses[0]
-      setSelectedAddressId(defaultAddress.id)
+      const defaultAddress = addresses.find((a) => a.is_default) ?? addresses.at(0)
+      if (defaultAddress) {
+        setSelectedAddressId(defaultAddress.id)
+      }
     } else {
       setUseNewAddress(true)
     }

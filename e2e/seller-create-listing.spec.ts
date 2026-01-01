@@ -14,8 +14,8 @@ test.describe('Seller Create Listing - UX Audit Phase 6', () => {
     await app.clearAuthSession()
     await loginWithPassword(page, creds!)
 
-    await app.gotoWithRetries('/en/sell', { timeout: 60_000, retries: 3 })
-    await app.waitForDevCompilingOverlayToHide(60_000)
+    await app.goto('/en/sell', { timeout: 60_000, retries: 3 })
+    await app.waitForHydration()
 
     const uniqueTitle = `E2E Listing ${Date.now()}`
 

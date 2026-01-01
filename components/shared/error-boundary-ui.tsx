@@ -87,13 +87,13 @@ export function ErrorBoundaryUI({
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="text-center max-w-md">
-        <div className="size-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="size-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-3">
           <WarningCircle className="size-10 text-destructive" weight="fill" />
         </div>
 
         <h1 className="text-2xl font-bold text-foreground mb-2">{title}</h1>
 
-        <p className="text-muted-foreground mb-6">{description}</p>
+        <p className="text-muted-foreground mb-3">{description}</p>
 
         {error.digest && (
           <p className="text-xs text-muted-foreground mb-4 font-mono bg-muted px-3 py-2 rounded">

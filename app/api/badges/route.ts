@@ -8,8 +8,13 @@ import { createRouteHandlerClient } from "@/lib/supabase/server"
 export async function GET(request: NextRequest) {
   try {
     const { supabase, applyCookies } = createRouteHandlerClient(request)
-    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-      applyCookies(NextResponse.json(body, init))
+    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) => {
+      const res = NextResponse.json(body, init)
+      res.headers.set('Cache-Control', 'private, no-store')
+      res.headers.set('CDN-Cache-Control', 'private, no-store')
+      res.headers.set('Vercel-CDN-Cache-Control', 'private, no-store')
+      return applyCookies(res)
+    }
 
     const { data: { user } } = await supabase.auth.getUser()
     

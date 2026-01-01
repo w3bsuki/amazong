@@ -508,7 +508,7 @@ async function checkUserAuth(): Promise<{ isAuthenticated: boolean; username?: s
 
     return {
       isAuthenticated: true,
-      username: profile?.username || undefined,
+      ...(profile?.username ? { username: profile.username } : {}),
       canSell: !!profile?.username,
     }
   } catch {
@@ -543,8 +543,8 @@ export async function POST(req: Request) {
     }
 
     const modelCtx = getAiModel("chat", {
-      userId,
       tags: ["marketplace-chat", `mode:${safeMode}`],
+      ...(userId ? { userId } : {}),
     })
 
     if (!modelCtx) {
@@ -560,16 +560,19 @@ export async function POST(req: Request) {
 
     // Heuristic: if the user message is too short (or just a number), disable tools.
     // This avoids brittle tool-calling on some providers (e.g. Groq) and yields a normal clarifying question.
-    const lastUser = [...messages].reverse().find((m) => m.role === "user") as any
+    const lastUser = [...messages].reverse().find((m) => m.role === "user")
+    // UIMessage can have content as string or parts array - handle both shapes
+    const msgContent = lastUser ? (lastUser as unknown as Record<string, unknown>).content : undefined
+    const msgParts = lastUser ? (lastUser as unknown as Record<string, unknown>).parts : undefined
     const lastUserText =
-      (typeof lastUser?.content === "string" ? lastUser.content : "") ||
-      (Array.isArray(lastUser?.parts)
-        ? String(lastUser.parts.find((p: any) => p?.type === "text")?.text ?? "")
+      (typeof msgContent === "string" ? msgContent : "") ||
+      (Array.isArray(msgParts)
+        ? String((msgParts as Array<{ type?: string; text?: string }>).find((p) => p?.type === "text")?.text ?? "")
         : "")
     const lastTrimmed = String(lastUserText ?? "").trim()
     const disableToolsForThisTurn = lastTrimmed.length > 0 && (lastTrimmed.length < 3 || /^[0-9]+$/.test(lastTrimmed))
 
-    const toolsForMode: Record<string, any> = disableToolsForThisTurn
+    const toolsForMode = disableToolsForThisTurn
       ? {}
       : safeMode === "buy"
         ? {
@@ -650,7 +653,8 @@ export async function POST(req: Request) {
       maxRetries: AI_CONFIG.chat.maxRetries,
       // Buy mode: 2 steps max (search + respond). Sell mode: 3 steps (auth + analyze + create).
       stopWhen: stepCountIs(isBuyMode ? 2 : 3),
-      providerOptions: modelCtx.providerOptions,
+      ...(modelCtx.providerOptions ? { providerOptions: modelCtx.providerOptions } : {}),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- AI SDK tool type compatibility
       tools: toolsForMode as any,
     })
 
@@ -659,14 +663,14 @@ export async function POST(req: Request) {
       // Don't stream internal reasoning by default (safer for production UX).
       sendReasoning: aiEnv.flags.sendReasoning,
       onError: (error) => {
-        const msg = typeof (error as any)?.message === "string" ? (error as any).message : String(error)
+        const msg = error instanceof Error ? error.message : String(error)
         const isDev = process.env.NODE_ENV !== "production"
         const debugSuffix = isDev && msg ? `\n\n[debug] ${msg}` : ""
 
         // Common provider messages (Gemini free tier, OpenAI 429, Gateway rate limits)
         if (/quota exceeded|rate limit|too many requests|429/i.test(msg)) {
           // Surface the provider's suggested retry delay if present.
-          const retryMatch = msg.match(/retry in\s+([0-9]+(\.[0-9]+)?)s/i)
+          const retryMatch = msg.match(/retry in\s+([0-9]+(?:\.[0-9]+)?)s/i)
           const retryHint = retryMatch?.[1] ? ` Try again in ~${retryMatch[1]}s.` : ""
           return `I'm temporarily rate-limited by the AI provider (${modelCtx.provider}).${retryHint} If this keeps happening, switch to another model/provider (Vercel AI Gateway is recommended).${debugSuffix}`
         }

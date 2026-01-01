@@ -42,7 +42,7 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("[SellErrorBoundary] Error caught:", error, errorInfo);
     
     // Check if there's a draft saved
@@ -59,7 +59,7 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
     this.setState({ hasError: false, error: null });
   };
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">

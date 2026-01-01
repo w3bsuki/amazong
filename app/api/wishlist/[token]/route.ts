@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
+function noStoreJson(data: unknown, init?: ResponseInit) {
+  const res = NextResponse.json(data, init)
+  res.headers.set("Cache-Control", "private, no-store")
+  res.headers.set("CDN-Cache-Control", "private, no-store")
+  res.headers.set("Vercel-CDN-Cache-Control", "private, no-store")
+  return res
+}
 
 export async function GET(
   _req: Request,
@@ -9,18 +16,18 @@ export async function GET(
   const { token } = await params
 
   if (!token || token.length !== 32) {
-    return NextResponse.json({ error: "Invalid token" }, { status: 400 })
+    return noStoreJson({ error: "Invalid token" }, { status: 400 })
   }
 
   const supabase = await createClient()
   if (!supabase) {
-    return NextResponse.json({ error: "Database unavailable" }, { status: 503 })
+    return noStoreJson({ error: "Database unavailable" }, { status: 503 })
   }
 
   const { data, error } = await supabase.rpc("get_shared_wishlist", { p_share_token: token })
 
   if (error || !data || data.length === 0) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
+    return noStoreJson({ error: "Not found" }, { status: 404 })
   }
 
   const meta = {
@@ -38,5 +45,5 @@ export async function GET(
     added_at: row.added_at,
   }))
 
-  return NextResponse.json({ meta, items })
+  return noStoreJson({ meta, items })
 }

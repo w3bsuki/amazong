@@ -78,6 +78,7 @@ export function AccountChart({ locale }: AccountChartProps) {
   }, [isMobile])
 
   const filteredData = chartData.filter((item) => {
+    if (!item.date) return false
     const date = new Date(item.date)
     const now = new Date()
     let daysToSubtract = 90

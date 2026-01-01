@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useRef, useCallback } from "react"
 import { ProductCard } from "@/components/shared/product/product-card"
+import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLocale } from "next-intl"
 import type { UIProduct } from "@/lib/data/products"
@@ -205,10 +206,13 @@ export function NewestListingsSection({
 
       const nextProducts = data.products || []
       if (nextProducts.length === 0) {
-        setTabData(prev => ({
-          ...prev,
-          [activeTab]: { ...prev[activeTab], hasMore: false },
-        }))
+        setTabData((prev) => {
+          const current = prev[activeTab] ?? { products: [], page: 0, hasMore: true }
+          return {
+            ...prev,
+            [activeTab]: { ...current, hasMore: false },
+          }
+        })
         return
       }
 
@@ -234,18 +238,26 @@ export function NewestListingsSection({
     }
   }, [active.hasMore, active.page, activeTab, isLoading, loadPage])
 
-  // Lazy-load tabs on first open
+  // Lazy-load tabs on first open - track which tabs have been loaded
+  const loadedTabsRef = useRef<Set<string>>(new Set(["newest"]))
+
   useEffect(() => {
+    // Skip if already loaded or is the initial tab
     if (activeTab === "newest") return
-    const current = tabData[activeTab]
-    if (current && current.page !== 0) return
+    if (loadedTabsRef.current.has(activeTab)) return
+    
+    // Mark as loading to prevent re-runs
+    loadedTabsRef.current.add(activeTab)
 
     let cancelled = false
     setIsLoading(true)
 
     loadPage(activeTab, 1)
       .then((data) => {
-        if (cancelled) return
+        if (cancelled) {
+          loadedTabsRef.current.delete(activeTab)
+          return
+        }
         const first = data.products || []
         setTabData(prev => ({
           ...prev,
@@ -257,7 +269,10 @@ export function NewestListingsSection({
         }))
       })
       .catch((error) => {
-        if (!cancelled) console.error(`Failed to load ${activeTab} products:`, error)
+        if (!cancelled) {
+          console.error(`Failed to load ${activeTab} products:`, error)
+          loadedTabsRef.current.delete(activeTab)
+        }
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false)
@@ -266,13 +281,14 @@ export function NewestListingsSection({
     return () => {
       cancelled = true
     }
-  }, [activeTab, loadPage, tabData])
+  }, [activeTab, loadPage])
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && active.hasMore && !isLoading) {
+        const firstEntry = entries.at(0)
+        if (firstEntry?.isIntersecting && active.hasMore && !isLoading) {
           loadMoreProducts()
         }
       },
@@ -323,12 +339,12 @@ export function NewestListingsSection({
                 aria-controls={`panel-${tab.id}`}
               >
                 {tab.id === "promoted" && (
-                  <span className="mr-1 inline-flex items-center justify-center size-3.5 rounded-full bg-success text-[9px] text-primary-foreground">
+                  <span className="mr-1 inline-flex items-center justify-center size-3.5 rounded-full bg-success text-2xs text-primary-foreground">
                     %
                   </span>
                 )}
                 {tab.id === "near_me" && (
-                  <span className="mr-1 inline-flex items-center justify-center text-[12px]">
+                  <span className="mr-1 inline-flex items-center justify-center text-xs">
                     📍
                   </span>
                 )}
@@ -388,16 +404,12 @@ export function NewestListingsSection({
           </div>
         </div>
       ) : active.products.length === 0 && activeTab === "promoted" && !isLoading ? (
-        <div className="px-2 py-4">
-          <div className="rounded-md border border-border bg-card px-4 py-6 text-center">
-            <p className="text-sm font-semibold text-foreground">
-              {locale === "bg" ? "Няма промотирани обяви" : "No promoted listings"}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {locale === "bg" ? "Провери по-късно" : "Check again later"}
-            </p>
-          </div>
-        </div>
+        <EmptyStateCTA 
+          variant="no-listings"
+          title={locale === "bg" ? "Няма промотирани обяви" : "No promoted listings"}
+          description={locale === "bg" ? "Тук ще се показват промотирани продукти" : "Promoted products will appear here"}
+          showCTA={true}
+        />
       ) : (
         <div className="grid grid-cols-2 gap-1.5 px-2 py-2">
           {active.products.map((product, index) => (
@@ -406,29 +418,31 @@ export function NewestListingsSection({
               id={product.id}
               title={product.title}
               price={product.price}
-              originalPrice={product.listPrice}
+              originalPrice={product.listPrice ?? null}
               image={product.image}
-              rating={product.rating}
-              reviews={product.reviews}
-              state={activeTab === "promoted" || product.isBoosted ? "promoted" : undefined}
+              rating={product.rating ?? 0}
+              reviews={product.reviews ?? 0}
+              {...((activeTab === "promoted" || product.isBoosted) ? { state: "promoted" as const } : {})}
               index={index}
-              slug={product.slug}
-              storeSlug={product.storeSlug}
-              sellerId={product.sellerId || undefined}
-              sellerName={(product.sellerName || product.storeSlug) || undefined}
-              sellerAvatarUrl={product.sellerAvatarUrl || null}
-              sellerTier={product.sellerTier}
-              sellerVerified={product.sellerVerified}
-              condition={product.condition}
-              brand={product.brand}
-              categorySlug={product.categorySlug}
-              categoryRootSlug={product.categoryRootSlug}
-              categoryPath={product.categoryPath}
-              make={product.make}
-              model={product.model}
-              year={product.year}
-              location={product.location}
-              attributes={product.attributes}
+              slug={product.slug ?? null}
+              storeSlug={product.storeSlug ?? null}
+              sellerId={product.sellerId ?? null}
+              {...((product.sellerName || product.storeSlug)
+                ? { sellerName: product.sellerName || product.storeSlug || "" }
+                : {})}
+              sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+              sellerTier={product.sellerTier ?? "basic"}
+              sellerVerified={Boolean(product.sellerVerified)}
+              {...(product.condition ? { condition: product.condition } : {})}
+              {...(product.brand ? { brand: product.brand } : {})}
+              {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}
+              {...(product.categoryRootSlug ? { categoryRootSlug: product.categoryRootSlug } : {})}
+              {...(product.categoryPath ? { categoryPath: product.categoryPath } : {})}
+              {...(product.make ? { make: product.make } : {})}
+              {...(product.model ? { model: product.model } : {})}
+              {...(product.year ? { year: product.year } : {})}
+              {...(product.location ? { location: product.location } : {})}
+              {...(product.attributes ? { attributes: product.attributes } : {})}
               cardStyle="marketplace"
               showSellerRow={false}
               showMetaPills={true}

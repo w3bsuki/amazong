@@ -199,7 +199,7 @@ export function SiteFooter() {
             {/* Brand Logo, Social Media & Legal Section */}
             <div className="container py-10">
                 {/* Logo */}
-                <div className="flex justify-center mb-8">
+                <div className="flex justify-center mb-4">
                     <Link href="/" className="inline-block group" aria-label={t('homePage')}>
                         <span className="text-3xl font-semibold text-primary-foreground tracking-tight group-hover:text-accent transition-colors">
                             Treido
@@ -208,7 +208,7 @@ export function SiteFooter() {
                 </div>
 
                 {/* Social Media Icons */}
-                <nav aria-label={t('socialMedia')} className="flex justify-center gap-3 mb-8">
+                <nav aria-label={t('socialMedia')} className="flex justify-center gap-3 mb-4">
                     {socialLinks.map((social) => (
                         <a
                             key={social.name}
@@ -224,7 +224,7 @@ export function SiteFooter() {
                 </nav>
 
                 {/* Legal Links */}
-                <nav aria-label={t('legalLinks')} className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-primary-foreground/90 mb-6">
+                <nav aria-label={t('legalLinks')} className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-primary-foreground/90 mb-3">
                     {legalLinks.map((link, index) => 
                         'external' in link && link.external ? (
                             <a 

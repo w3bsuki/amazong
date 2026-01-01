@@ -3,6 +3,7 @@
 import { stripe } from "@/lib/stripe"
 import { createClient, createAdminClient } from "@/lib/supabase/server"
 import type { CartItem } from "@/components/providers/cart-context"
+import type Stripe from "stripe"
 
 export async function createCheckoutSession(items: CartItem[]) {
   if (!process.env.STRIPE_SECRET_KEY) {
@@ -38,7 +39,7 @@ export async function createCheckoutSession(items: CartItem[]) {
       }
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"],
       line_items: items.map((item) => ({
         price_data: {
@@ -59,14 +60,16 @@ export async function createCheckoutSession(items: CartItem[]) {
         quantity: item.quantity,
       })),
       mode: "payment",
-      client_reference_id: userId,
+      ...(userId ? { client_reference_id: userId } : {}),
       metadata: {
         user_id: userId || "guest",
         items_json: JSON.stringify(items.map((i) => ({ id: i.id, qty: i.quantity, price: i.price }))),
       },
       success_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/cart`,
-    })
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams)
 
     return { url: session.url }
   } catch (error) {

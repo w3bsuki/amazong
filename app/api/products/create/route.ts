@@ -1,6 +1,5 @@
-import { createClient } from "@supabase/supabase-js"
 import { NextResponse, type NextRequest } from "next/server"
-import { createRouteHandlerClient } from "@/lib/supabase/server"
+import { createRouteHandlerClient, createAdminClient } from "@/lib/supabase/server"
 import { z } from "zod"
 
 // Image schema - supports both URL string and object format (including isPrimary from form)
@@ -151,7 +150,10 @@ export async function POST(request: NextRequest) {
     })
     
     if (limitInfo && limitInfo.length > 0) {
-      const info = limitInfo[0]
+      const info = limitInfo.at(0)
+      if (!info) {
+        // Continue without limit enforcement if response is unexpectedly empty
+      } else {
       // max_listings=-1 means unlimited
       const isUnlimited = info.max_listings === -1
       const remaining = isUnlimited ? 999 : Math.max(info.max_listings - info.current_listings, 0)
@@ -163,6 +165,7 @@ export async function POST(request: NextRequest) {
           maxAllowed: info.max_listings,
           upgradeRequired: true
         }, { status: 403 }))
+      }
       }
     }
 
@@ -204,10 +207,7 @@ export async function POST(request: NextRequest) {
     const data = parseResult.data
 
     // 4. Use Service Role to bypass RLS for insert
-    const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
+    const supabaseAdmin = createAdminClient()
 
     // 5. Normalize images to URL array for products table
     // After transform, all images are objects with url property

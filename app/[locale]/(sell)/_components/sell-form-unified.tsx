@@ -20,7 +20,7 @@ import { SellFormProvider, useSellForm, useSellFormContext, defaultSellFormValue
 import { DesktopLayout, MobileLayout } from "./layouts";
 import type { Category } from "../_lib/types";
 import type { SellFormDataV4 } from "@/lib/sell/schema-v4";
-import { createListing } from "../_actions/sell";
+import { createListing, type CreateListingResult } from "../_actions/sell";
 
 // ============================================================================
 // UNIFIED SELL FORM - Phase 4: Responsive Unification
@@ -54,7 +54,7 @@ export function UnifiedSellForm({
       locale={locale}
       categories={categories}
       sellerId={sellerId}
-      existingProduct={existingProduct}
+      {...(existingProduct ? { existingProduct } : {})}
       totalSteps={4}
     >
       <SellFormContent sellerId={sellerId} />
@@ -90,13 +90,15 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
           return;
         }
 
-        const result = await createListing({ sellerId, data });
+        const result: CreateListingResult = await createListing({ sellerId, data });
 
-        if (!result || ("error" in result && result.error)) {
-          const issueMessages = (result as any)?.issues
-            ?.map((i: { path: string[]; message: string }) => `${i.path.join(".")}: ${i.message}`)
-            .join(", ") || "";
-          const baseError = (result as any)?.message || (result as any)?.error || "Failed to create listing";
+        if (!result.success) {
+          const issueMessages = result.issues
+            ?.map((i) => `${i.path.join(".")}: ${i.message}`)
+            .join(", ")
+            .trim();
+
+          const baseError = result.message || result.error || "Failed to create listing";
           throw new Error(baseError + (issueMessages ? ` (${issueMessages})` : ""));
         }
 
@@ -108,20 +110,15 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
           { description: isBg ? "Вашият продукт е на живо" : "Your product is now live" }
         );
 
-        const productId = (result as any)?.product?.id || (result as any)?.id;
-        const sellerUsername = (result as any)?.sellerUsername as string | undefined;
-        const productSlug = (result as any)?.product?.slug as string | undefined;
-
-        if (productId) {
-          setCreatedProductId(productId);
-          setCreatedProductHref(
-            sellerUsername
-              ? `/${sellerUsername}/${productSlug || productId}`
-              : null
-          );
+        const productId = result.product.id;
+        setCreatedProductId(productId);
+        setCreatedProductHref(
+          result.sellerUsername
+            ? `/${result.sellerUsername}/${result.product.slug || productId}`
+            : null,
+        );
           setShowSuccess(true);
           window.scrollTo({ top: 0, behavior: "instant" });
-        }
       } catch (error) {
         console.error("Submit error:", error);
         const errorMessage = error instanceof Error 

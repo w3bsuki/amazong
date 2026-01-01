@@ -35,13 +35,13 @@ export interface Product {
 }
 
 export interface SearchProductFilters {
-  minPrice?: string
-  maxPrice?: string
-  tag?: string
-  minRating?: string
-  deals?: string
-  verified?: string
-  availability?: string
-  sort?: string
-  attributes?: Record<string, string | string[]>
+  minPrice?: string | undefined
+  maxPrice?: string | undefined
+  tag?: string | undefined
+  minRating?: string | undefined
+  deals?: string | undefined
+  verified?: string | undefined
+  availability?: string | undefined
+  sort?: string | undefined
+  attributes?: Record<string, string | string[]> | undefined
 }

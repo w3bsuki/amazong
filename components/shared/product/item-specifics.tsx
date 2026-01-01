@@ -1,7 +1,9 @@
 import { cn } from "@/lib/utils"
 
+type AttributeArrayItem = { name?: unknown; value?: unknown }
+
 interface ItemSpecificsProps {
-  attributes: Record<string, any> | any[] | null
+  attributes: Record<string, unknown> | AttributeArrayItem[] | null
   condition?: string
   categoryName?: string
   parentCategoryName?: string
@@ -13,9 +15,9 @@ export function ItemSpecifics({ attributes, condition, categoryName, parentCateg
   let dynamicSpecs: { label: string; value: string }[] = [];
 
   if (Array.isArray(attributes)) {
-    dynamicSpecs = attributes.map((attr: any) => ({
-      label: attr.name || "Unknown",
-      value: String(attr.value || "")
+    dynamicSpecs = attributes.map((attr) => ({
+      label: typeof attr.name === "string" ? attr.name : "Unknown",
+      value: attr.value == null ? "" : String(attr.value)
     }));
   } else if (attributes && typeof attributes === 'object') {
     dynamicSpecs = Object.entries(attributes).map(([key, value]) => ({

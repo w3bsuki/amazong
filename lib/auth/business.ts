@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { createClient, createAdminClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
@@ -1037,7 +1039,7 @@ export function transformToActivityItemsServer(
       meta: {
         amount: Number(orderItem.price_at_purchase) * orderItem.quantity,
         status: "Unfulfilled",
-        image: product?.images?.[0],
+        ...(product?.images?.[0] ? { image: product.images[0] } : {}),
       },
     })
   }
@@ -1053,7 +1055,7 @@ export function transformToActivityItemsServer(
       href: `/dashboard/products/${product.id}`,
       meta: {
         status: product.status || "Active",
-        image: product.images?.[0],
+        ...(product.images?.[0] ? { image: product.images[0] } : {}),
       },
     })
   }

@@ -1,9 +1,14 @@
 import next from "eslint-config-next";
 import sonarjs from "eslint-plugin-sonarjs";
 import unicorn from "eslint-plugin-unicorn";
+import tsParser from "@typescript-eslint/parser";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 // eslint-config-next (Next.js v16) ships as an ESLint v9 flat config array.
 // We re-export it so `eslint .` works out of the box.
+
+const tsconfigRootDir = path.dirname(fileURLToPath(import.meta.url));
 
 const baseRestrictedImportPatterns = [
   {
@@ -102,6 +107,31 @@ const config = [
           ],
         },
       ],
+    },
+  },
+
+  // =========================================================================
+  // TypeScript Safety Rules (Phase 0): warnings-first rollout
+  // =========================================================================
+  {
+    files: [
+      "app/**/*.{ts,tsx}",
+      "components/**/*.{ts,tsx}",
+      "lib/**/*.{ts,tsx}",
+      "hooks/**/*.{ts,tsx}",
+    ],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: ["./tsconfig.json"],
+        tsconfigRootDir,
+      },
+    },
+    rules: {
+      // Gradual rollout: warnings first, tighten later.
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-non-null-assertion": "warn",
+      "@typescript-eslint/no-unsafe-argument": "warn",
     },
   },
 
@@ -322,6 +352,10 @@ const config = [
       "**/__tests__/**/*.{js,jsx,ts,tsx}",
     ],
     rules: {
+      "react-hooks/rules-of-hooks": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
       "sonarjs/no-duplicate-string": "off", // Tests often repeat strings
       "sonarjs/no-identical-functions": "off", // Test setup functions can be similar
       "sonarjs/cognitive-complexity": "off", // Complex test scenarios are OK
@@ -337,6 +371,9 @@ const config = [
       "scripts/**/*.{js,mjs,ts}",
     ],
     rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
       "sonarjs/no-duplicate-string": "off", // Config files often repeat paths
       "unicorn/prefer-module": "off", // Some configs need CJS
     },

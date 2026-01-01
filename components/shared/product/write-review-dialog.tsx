@@ -84,10 +84,11 @@ export function WriteReviewDialog({
     }
 
     startTransition(async () => {
+      const trimmedComment = comment.trim()
       const result = await submitReview({
         productId,
         rating,
-        comment: comment.trim() || undefined,
+        ...(trimmedComment ? { comment: trimmedComment } : {}),
       });
 
       if (result.success) {
@@ -144,7 +145,7 @@ export function WriteReviewDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-6 py-4">
+        <div className="grid gap-6 py-2">
           {/* Star Rating */}
           <div className="space-y-2">
             <Label>{t.ratingLabel}</Label>

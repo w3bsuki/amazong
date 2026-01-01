@@ -14,7 +14,7 @@ test.describe('Seller Routes - UX Audit Phase 6', () => {
     await loginWithPassword(page, creds!)
 
     // Sell should load (or at least show onboarding/username setup) without error boundary
-    await app.gotoWithRetries('/en/sell', { timeout: 60_000, retries: 3 })
+    await app.goto('/en/sell', { timeout: 60_000, retries: 3 })
 
     await expect(page.getByText(/something went wrong/i)).not.toBeVisible()
 
@@ -45,7 +45,7 @@ test.describe('Seller Routes - UX Audit Phase 6', () => {
     test.skip(!creds, 'Set TEST_USER_EMAIL/TEST_USER_PASSWORD to run authenticated seller route checks')
     await loginWithPassword(page, creds!)
 
-    await app.gotoWithRetries('/en/seller/dashboard', { timeout: 60_000, retries: 3 })
+    await app.goto('/en/seller/dashboard', { timeout: 60_000, retries: 3 })
 
     await expect(page.getByText(/something went wrong/i)).not.toBeVisible()
 
@@ -55,11 +55,11 @@ test.describe('Seller Routes - UX Audit Phase 6', () => {
 
   test('public seller profile and product page render (seed user) @seller @profile', async ({ page, app }) => {
     // Public profile should render (or 404 gracefully) without crashing.
-    await app.gotoWithRetries('/en/shop4e', { timeout: 60_000, retries: 3 })
+    await app.goto('/en/shop4e', { timeout: 60_000, retries: 3 })
     await expect(page.getByText(/something went wrong/i)).not.toBeVisible()
 
     // Product page should also render (or 404 gracefully) without crashing.
-    await app.gotoWithRetries('/en/shop4e/12322', { timeout: 60_000, retries: 3 })
+    await app.goto('/en/shop4e/12322', { timeout: 60_000, retries: 3 })
     await expect(page.getByText(/something went wrong/i)).not.toBeVisible()
   })
 })

@@ -29,7 +29,7 @@ export async function blockUser(userId: string, reason?: string) {
 
   const { data, error } = await supabase.rpc("block_user", {
     p_user_to_block: userId,
-    p_reason: reason || undefined
+    ...(reason ? { p_reason: reason } : {})
   })
 
   if (error) {

@@ -92,7 +92,7 @@ type OrderStatus = "all" | "pending" | "processing" | "shipped" | "delivered" | 
 type SortField = "created_at" | "total" | "customer"
 type SortOrder = "asc" | "desc"
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ElementType }> = {
+const STATUS_CONFIG = {
   pending: { 
     label: "Unfulfilled", 
     color: "bg-muted text-foreground border-border",
@@ -123,6 +123,13 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
     color: "bg-success/10 text-success border-success/20",
     icon: IconCheck
   },
+} as const
+
+type StatusKey = keyof typeof STATUS_CONFIG
+
+function getStatusConfig(status: string): (typeof STATUS_CONFIG)[StatusKey] {
+  if (status in STATUS_CONFIG) return STATUS_CONFIG[status as StatusKey]
+  return STATUS_CONFIG.pending
 }
 
 export function OrdersTable({
@@ -143,17 +150,17 @@ export function OrdersTable({
   // Helper to extract order data from potentially nested structure
   const getOrder = (item: OrderItem): Order | null => {
     if (!item.order) return null
-    return Array.isArray(item.order) ? item.order[0] : item.order
+    return Array.isArray(item.order) ? (item.order.at(0) ?? null) : item.order
   }
 
   const getProduct = (item: OrderItem): OrderProduct | null => {
     if (!item.product) return null
-    return Array.isArray(item.product) ? item.product[0] : item.product
+    return Array.isArray(item.product) ? (item.product.at(0) ?? null) : item.product
   }
 
   const getCustomer = (order: Order | null): OrderCustomer | null => {
     if (!order?.user) return null
-    return Array.isArray(order.user) ? order.user[0] : order.user
+    return Array.isArray(order.user) ? (order.user.at(0) ?? null) : order.user
   }
 
   // Count orders by status
@@ -471,8 +478,9 @@ export function OrdersTable({
                 const product = getProduct(item)
                 const customer = getCustomer(order)
                 const status = order?.status || "pending"
-                const statusConfig = STATUS_CONFIG[status] || STATUS_CONFIG.pending
+                const statusConfig = getStatusConfig(status)
                 const StatusIcon = statusConfig.icon
+                const firstImage = product?.images?.[0]
 
                 return (
                   <TableRow 
@@ -520,9 +528,9 @@ export function OrdersTable({
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className="relative size-10 rounded-md overflow-hidden bg-muted shrink-0">
-                          {product?.images?.[0] ? (
+                          {firstImage ? (
                             <Image
-                              src={product.images[0]}
+                              src={firstImage}
                               alt={product?.title || "Product"}
                               fill
                               className="object-cover"

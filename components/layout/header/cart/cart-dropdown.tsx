@@ -8,7 +8,7 @@ import { useCart, type CartItem } from "@/components/providers/cart-context"
 import { ShoppingCart, Package, Minus, Plus, Trash } from "@phosphor-icons/react"
 import Image from "next/image"
 import { useState, useEffect, useCallback } from "react"
-import { CountBadge } from "@/components/ui/count-badge"
+import { CountBadge } from "@/components/common/count-badge"
 
 export function CartDropdown() {
   const { items, totalItems, subtotal, removeFromCart, updateQuantity } = useCart()

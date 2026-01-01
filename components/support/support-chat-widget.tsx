@@ -279,7 +279,7 @@ export function SupportChatWidget({
           <Button
             size="lg"
             className={cn(
-              "fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full shadow-md bg-brand hover:bg-brand-dark",
+              "fixed bottom-4 right-4 z-50 h-12 w-12 rounded-full shadow bg-brand hover:bg-brand-dark",
               "md:bottom-6 md:right-6",
               className
             )}
@@ -366,7 +366,7 @@ export function SupportChatWidget({
                     </p>
                     <p
                       className={cn(
-                        "text-[10px] mt-1",
+                        "text-2xs mt-1",
                         msg.is_support ? "text-muted-foreground" : "text-white/70"
                       )}
                     >

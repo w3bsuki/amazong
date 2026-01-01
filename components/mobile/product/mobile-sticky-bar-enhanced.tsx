@@ -42,9 +42,8 @@ export function MobileStickyBarEnhanced({
       price: Number(price ?? 0),
       image: product.image,
       quantity: 1,
-      slug: product.slug,
-      username: product.username,
-      storeSlug: product.username,
+      ...(product.slug ? { slug: product.slug } : {}),
+      ...(product.username ? { username: product.username, storeSlug: product.username } : {}),
     });
     toast.success(t("addedToCart"));
   };
@@ -57,9 +56,8 @@ export function MobileStickyBarEnhanced({
       price: Number(price ?? 0),
       image: product.image,
       quantity: 1,
-      slug: product.slug,
-      username: product.username,
-      storeSlug: product.username,
+      ...(product.slug ? { slug: product.slug } : {}),
+      ...(product.username ? { username: product.username, storeSlug: product.username } : {}),
     });
     router.push("/cart");
   };

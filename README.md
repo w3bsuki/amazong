@@ -65,6 +65,12 @@ Docs are organized under `docs/`:
 - `docs/dev/` — testing and architecture notes
 - `docs/archive/` — older masterplans and superseded docs
 
+## Caching (Next.js 16)
+
+- Cache Components are enabled (`cacheComponents: true`) and cache profiles live in `next.config.ts` under `cacheLife` (`categories`, `products`, `deals`, `user`).
+- Cached server data fetchers should use `'use cache'` + `cacheLife()` + `cacheTag()` for targeted invalidation.
+- Reference guides: `docs/production/01-nextjs.md` and `docs/production/07-performance.md`.
+
 ## Environment Variables
 #### AI Search (optional)
 

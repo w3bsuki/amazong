@@ -11,6 +11,31 @@ import { SellersNote } from "@/components/shared/product/sellers-note";
 import { TrustBadges } from "@/components/shared/product/trust-badges";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
+import type { Database } from "@/types/database.types";
+import type { CustomerReview } from "@/components/shared/product/customer-reviews-hybrid";
+
+type ProductRow = Database["public"]["Tables"]["products"]["Row"];
+type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
+
+type ProductWithSellerStats = ProductRow & { seller_stats?: SellerStatsRow | null };
+
+type SellerSummary = {
+  id: string;
+  username?: string | null;
+  display_name?: string | null;
+  avatar_url?: string | null;
+  verified?: boolean | null;
+  created_at?: string | null;
+};
+
+type CategorySummary = {
+  id?: string;
+  name: string;
+  name_bg?: string | null;
+  slug: string;
+  icon?: string | null;
+  parent_id?: string | null;
+};
 
 // Mobile-specific imports
 import { MobileProductPage } from "@/components/mobile/product/mobile-product-page";
@@ -19,13 +44,13 @@ interface ProductPageLayoutProps {
   locale: string;
   username: string;
   productSlug: string;
-  product: any;
-  seller: any;
-  category: any | null;
-  parentCategory: any | null;
-  rootCategory: any | null;
+  product: ProductWithSellerStats;
+  seller: SellerSummary;
+  category: CategorySummary | null;
+  parentCategory: CategorySummary | null;
+  rootCategory: CategorySummary | null;
   relatedProducts: ProductPageViewModel["relatedProducts"];
-  reviews: any[];
+  reviews: CustomerReview[];
   viewModel: ProductPageViewModel;
 }
 
@@ -91,14 +116,14 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
             price: Number(product.price ?? 0),
             image: primaryImageSrc,
             slug: product.slug || product.id,
-            username: seller?.username,
+            username: seller?.username ?? null,
           }}
         />
 
         <div className="container px-8 py-10">
           <div className="grid grid-cols-12 gap-12 items-start">
             {/* Left column - Gallery & Details */}
-            <div className="col-span-7 flex flex-col gap-6">
+            <div className="col-span-7 flex flex-col gap-3">
               <ProductGalleryHybrid images={viewModel.galleryImages} />
 
               <div className="flex items-center gap-3">
@@ -111,9 +136,9 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
 
               <ItemSpecifics
                 attributes={viewModel.itemSpecifics.attributes ?? null}
-                condition={product.condition ?? null}
-                categoryName={category?.name ?? null}
-                parentCategoryName={parentCategory?.name ?? null}
+                condition={product.condition ?? ""}
+                categoryName={category?.name ?? ""}
+                parentCategoryName={parentCategory?.name ?? ""}
               />
 
               {product.description ? (
@@ -126,7 +151,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
 
             {/* Right column - Buy Box & Seller */}
             <div className="col-span-5">
-              <div className="sticky top-24 flex flex-col gap-6">
+              <div className="sticky top-24 flex flex-col gap-3">
                 <SellerBanner
                   locale={locale}
                   seller={seller}
@@ -138,7 +163,9 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                     name: product.title,
                     price: {
                       sale: Number(product.price ?? 0),
-                      regular: product.list_price != null ? Number(product.list_price) : undefined,
+                      regular: product.list_price != null
+                        ? Number(product.list_price)
+                        : Number(product.price ?? 0),
                       currency: locale === "bg" ? "BGN" : "EUR",
                     },
                     store: storeForBuyBox,
@@ -148,13 +175,13 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                       canShip: true,
                     },
                     returns: "30 days returns. Buyer pays for return shipping.",
-                    description: product.description ?? undefined,
+                    ...(product.description ? { description: product.description } : {}),
                     itemSpecifics: (
                       <ItemSpecifics
                         attributes={viewModel.itemSpecifics.attributes ?? null}
-                        condition={product.condition ?? null}
-                        categoryName={category?.name ?? null}
-                        parentCategoryName={parentCategory?.name ?? null}
+                        condition={product.condition ?? ""}
+                        categoryName={category?.name ?? ""}
+                        parentCategoryName={parentCategory?.name ?? ""}
                       />
                     ),
                   }}

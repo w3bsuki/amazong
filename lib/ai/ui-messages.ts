@@ -9,16 +9,14 @@ function stripToolParts(message: UIMessage): UIMessage {
 
   // Keep everything except tool parts. This preserves conversational context
   // while avoiding token bloat from tool outputs.
-  const filteredParts = parts.filter((p: any) => {
-    const type = p?.type
-    if (type === "tool-invocation") return false
-    if (typeof type === "string" && type.startsWith("tool-")) return false
-    return true
+  const filteredParts = parts.filter((p) => {
+    if (p.type === "tool-invocation") return false
+    return !p.type.startsWith("tool-")
   })
 
   return {
     ...message,
-    parts: filteredParts as any,
+    parts: filteredParts,
   }
 }
 

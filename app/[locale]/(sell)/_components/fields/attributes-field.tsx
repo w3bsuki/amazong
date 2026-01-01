@@ -193,7 +193,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
 
           // The `[slug]/attributes` endpoint returns a formatted shape (e.g. `nameBg`, `sortOrder`).
           // Normalize to the internal `CategoryAttribute` shape used by this field.
-          const normalized = (maybeAttributes as any[]).map((attr) => ({
+          const normalized = (maybeAttributes as Array<Record<string, unknown>>).map((attr) => ({
             id: String(attr.id),
             name: String(attr.name ?? ""),
             name_bg: attr.name_bg ?? attr.nameBg ?? null,
@@ -415,7 +415,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                           label={getName(attr)}
                           value={currentValue}
                           options={attr.options}
-                          optionsBg={attr.options_bg}
+                          {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
                           onChange={(value) => handleAttributeChange(attr, value)}
                           placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
                           compact={compact}
@@ -484,7 +484,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                             label={getName(attr)}
                             value={currentValue}
                             options={attr.options}
-                            optionsBg={attr.options_bg}
+                            {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
                             onChange={(value) => handleAttributeChange(attr, value)}
                             placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
                             compact={compact}
@@ -527,7 +527,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                             label={getName(attr)}
                             value={currentValue}
                             options={attr.options}
-                            optionsBg={attr.options_bg}
+                            {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
                             onChange={(value) => handleAttributeChange(attr, value)}
                             placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
                             compact={compact}
@@ -744,7 +744,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
                           label={getName(attr)}
                           value={currentValue}
                           options={attr.options}
-                          optionsBg={attr.options_bg}
+                          {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
                           onChange={(value) => handleAttributeChange(attr, value)}
                           placeholder={getPlaceholder(attr) || `${isBg ? "Избери" : "Select"} ${getName(attr)}`}
                           compact={compact}

@@ -1,4 +1,4 @@
-import { gateway } from "ai"
+import { gateway, type LanguageModel } from "ai"
 import { google } from "@ai-sdk/google"
 import { createGroq } from "@ai-sdk/groq"
 import { openai } from "@ai-sdk/openai"
@@ -6,9 +6,17 @@ import { aiEnv } from "@/lib/ai/env"
 
 export type AiTask = "chat" | "vision"
 
+type GatewayProviderOptions = {
+  gateway: {
+    user?: string
+    tags?: string[]
+    models?: string[]
+  }
+}
+
 export type AiModelContext = {
-  model: any
-  providerOptions?: any
+  model: LanguageModel
+  providerOptions?: GatewayProviderOptions
   label: "gateway" | "direct"
   provider: "gateway" | "openai" | "google" | "groq"
 }
@@ -19,8 +27,8 @@ type GatewayTracking = {
   fallbackModels?: string[]
 }
 
-function getGatewayProviderOptions(tracking: GatewayTracking): any {
-  const gatewayOptions: any = {}
+function getGatewayProviderOptions(tracking: GatewayTracking): GatewayProviderOptions | undefined {
+  const gatewayOptions: GatewayProviderOptions["gateway"] = {}
   if (tracking.userId) gatewayOptions.user = tracking.userId
   if (tracking.tags?.length) gatewayOptions.tags = tracking.tags
   if (tracking.fallbackModels?.length) gatewayOptions.models = tracking.fallbackModels
@@ -31,25 +39,27 @@ export function getAiModel(task: AiTask, tracking?: GatewayTracking): AiModelCon
   // Preferred path: Vercel AI Gateway when configured.
   if (aiEnv.gateway.apiKey) {
     if (task === "vision") {
+      const providerOptions = getGatewayProviderOptions({
+        ...tracking,
+        tags: [...(tracking?.tags ?? []), "vision"],
+        fallbackModels: tracking?.fallbackModels ?? ["openai/gpt-4o-mini"],
+      })
       return {
         model: gateway(aiEnv.gateway.visionModel),
-        providerOptions: getGatewayProviderOptions({
-          ...tracking,
-          tags: [...(tracking?.tags ?? []), "vision"],
-          fallbackModels: tracking?.fallbackModels ?? ["openai/gpt-4o-mini"],
-        }),
+        ...(providerOptions ? { providerOptions } : {}),
         label: "gateway",
         provider: "gateway",
       }
     }
 
+    const providerOptions = getGatewayProviderOptions({
+      ...tracking,
+      tags: [...(tracking?.tags ?? []), "chat"],
+      fallbackModels: tracking?.fallbackModels ?? ["anthropic/claude-haiku-4"],
+    })
     return {
       model: gateway(aiEnv.gateway.chatModel),
-      providerOptions: getGatewayProviderOptions({
-        ...tracking,
-        tags: [...(tracking?.tags ?? []), "chat"],
-        fallbackModels: tracking?.fallbackModels ?? ["anthropic/claude-haiku-4"],
-      }),
+      ...(providerOptions ? { providerOptions } : {}),
       label: "gateway",
       provider: "gateway",
     }

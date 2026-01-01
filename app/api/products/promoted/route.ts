@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from "next/server"
 import { createStaticClient } from "@/lib/supabase/server"
 import { toUI } from "@/lib/data/products"
 
+// Public, query-string keyed endpoint. Align caching with next.config.ts cacheLife.products
+const CACHE_TTL_SECONDS = 300
+const CACHE_STALE_WHILE_REVALIDATE = 60
+
+function cachedJsonResponse(data: unknown, init?: ResponseInit) {
+  const res = NextResponse.json(data, init)
+  res.headers.set(
+    "Cache-Control",
+    `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`
+  )
+  res.headers.set("CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
+  res.headers.set("Vercel-CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
+  return res
+}
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const page = Number.parseInt(searchParams.get("page") || "1", 10)
@@ -79,7 +94,7 @@ export async function GET(request: NextRequest) {
         slug: p.slug,
         store_slug: p.seller?.username ?? null,
         category_slug: p.categories?.slug ?? null,
-        categories: (p as any).categories ?? null,
+        categories: p.categories ?? null,
         attributes: p.attributes,
       }),
     }))
@@ -87,7 +102,7 @@ export async function GET(request: NextRequest) {
     const totalCount = count || 0
     const hasMore = offset + products.length < totalCount
 
-    return NextResponse.json({
+    return cachedJsonResponse({
       products,
       hasMore,
       totalCount,

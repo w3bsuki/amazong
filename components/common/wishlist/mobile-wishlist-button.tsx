@@ -5,7 +5,7 @@ import { Heart } from "@phosphor-icons/react"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useTranslations } from "next-intl"
 import { WishlistDrawer, type WishlistDrawerHandle } from "@/components/common/wishlist/wishlist-drawer"
-import { CountBadge } from "@/components/ui/count-badge"
+import { CountBadge } from "@/components/common/count-badge"
 
 export function MobileWishlistButton() {
   const [mounted, setMounted] = useState(false)
@@ -29,7 +29,7 @@ export function MobileWishlistButton() {
           {mounted && totalItems > 0 && (
             <CountBadge
               count={totalItems}
-              className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-[10px] shadow-sm"
+              className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
               aria-hidden="true"
             />
           )}

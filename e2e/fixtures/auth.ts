@@ -1,4 +1,5 @@
 import type { Page } from './test'
+import { expect } from '@playwright/test'
 
 export type TestUserCredentials = {
   email: string
@@ -18,19 +19,58 @@ export function getTestUserCredentials(): TestUserCredentials | null {
   return { email, password }
 }
 
+const baseURL = process.env.BASE_URL || 'http://localhost:3000'
+
 export async function loginWithPassword(page: Page, creds: TestUserCredentials) {
-  await page.goto('/en/auth/login', { waitUntil: 'domcontentloaded' })
+  console.log(`[E2E Auth] Starting login for ${creds.email}`)
+  await page.goto(`${baseURL}/en/auth/login`, { waitUntil: 'domcontentloaded' })
 
-  const loginForm = page.locator('form').first()
-  const emailInput = loginForm.locator('input[type="email"], input#email').first()
-  const passwordInput = loginForm.locator('input[type="password"], input#password').first()
+  // Wait for form to be fully loaded and hydrated
+  await page.waitForSelector('form', { state: 'visible' })
+  // In dev mode, Next can briefly render a compiling overlay that blocks input.
+  await page
+    .locator('button[aria-label="Open Next.js Dev Tools"] >> text=/Compiling/i')
+    .waitFor({ state: 'hidden', timeout: 60_000 })
+    .catch(() => {
+      // ignore
+    })
+  await page.waitForTimeout(500)
 
-  await emailInput.fill(creds.email)
-  await passwordInput.fill(creds.password)
+  const emailInput = page.locator('#email')
+  const passwordInput = page.locator('#password')
 
-  await loginForm.getByRole('button', { name: /sign in/i }).click()
+  // These are controlled React inputs; typing is more reliable than fill if
+  // hydration is still completing.
+  await emailInput.click()
+  await emailInput.fill('')
+  await emailInput.type(creds.email, { delay: 10 })
+  await passwordInput.click()
+  await passwordInput.fill('')
+  await passwordInput.type(creds.password, { delay: 10 })
 
-  // Login usually redirects away from /auth/login.
-  // Keep it tolerant across locales.
-  await page.waitForURL((url) => !url.pathname.includes('/auth/login'), { timeout: 30_000 })
+  const submitButton = page.getByRole('button', { name: /sign in/i })
+
+  try {
+    await expect(submitButton).toBeEnabled({ timeout: 60_000 })
+  } catch {
+    const isDisabled = await submitButton.isDisabled()
+    console.log(`[E2E Auth] Submit button disabled: ${isDisabled}`)
+    await page.screenshot({ path: 'test-results/login-debug.png' })
+    console.log('[E2E Auth] Screenshot saved to test-results/login-debug.png')
+    throw new Error('Login form never became submittable')
+  }
+
+  await submitButton.click()
+
+  try {
+    await page.waitForURL((url) => !url.pathname.includes('/auth/login'), { timeout: 60_000 })
+    console.log(`[E2E Auth] Login successful, redirected to ${page.url()}`)
+  } catch {
+    const errorEl = page.locator('.text-destructive')
+    if (await errorEl.count() > 0) {
+      const errorText = await errorEl.first().textContent()
+      console.log(`[E2E Auth] Login error: ${errorText}`)
+    }
+    throw new Error(`Login failed - page still at ${page.url()}`)
+  }
 }

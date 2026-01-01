@@ -37,7 +37,7 @@ export function CategoryBadge(props: {
   const icon = category.icon?.trim()
 
   const sizeClass =
-    size === "lg" ? "text-sm px-3.5 py-2" : size === "md" ? "text-xs px-3 py-1.5" : "text-[11px] px-2.5 py-1"
+    size === "lg" ? "text-sm px-3.5 py-2" : size === "md" ? "text-xs px-3 py-1.5" : "text-xs px-2.5 py-1"
 
   return (
     <Badge

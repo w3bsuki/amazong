@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useState, useEffect, useCallback } from "react"
+import { createContext, useContext, useState, useEffect, useCallback, useOptimistic } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 
@@ -63,6 +63,31 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
 
+  // useOptimistic for instant heart toggle feedback
+  type OptimisticAction = 
+    | { type: "add"; productId: string; title: string; price: number; image: string }
+    | { type: "remove"; productId: string }
+  
+  const [optimisticItems, applyOptimistic] = useOptimistic(
+    items,
+    (state, action: OptimisticAction) => {
+      if (action.type === "add") {
+        // Don't add if already present
+        if (state.some(item => item.product_id === action.productId)) return state
+        return [{
+          id: `optimistic-${action.productId}`,
+          product_id: action.productId,
+          title: action.title,
+          price: action.price,
+          image: action.image,
+          created_at: new Date().toISOString(),
+        }, ...state]
+      } else {
+        return state.filter(item => item.product_id !== action.productId)
+      }
+    }
+  )
+
   const refreshWishlist = useCallback(async () => {
     try {
       const supabase = createClient()
@@ -119,6 +144,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           } | null 
         }) => {
           const prod = item.products
+          const slug = prod?.slug
+          const username = prod?.seller?.username
           return {
             id: item.id,
             product_id: item.product_id,
@@ -126,8 +153,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
             price: prod?.price || 0,
             image: prod?.images?.[0] || "/placeholder.svg",
             created_at: item.created_at,
-            slug: prod?.slug || undefined,
-            username: prod?.seller?.username || undefined,
+            ...(slug ? { slug } : {}),
+            ...(username ? { username } : {}),
           }
         }))
       }
@@ -154,8 +181,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }, [refreshWishlist])
 
   const isInWishlist = useCallback((productId: string) => {
-    return items.some(item => item.product_id === productId)
-  }, [items])
+    return optimisticItems.some(item => item.product_id === productId)
+  }, [optimisticItems])
 
   const addToWishlist = async (product: { id: string; title: string; price: number; image: string }) => {
     const locale = getLocale()
@@ -173,6 +200,9 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       })
       return
     }
+
+    // Apply optimistic update BEFORE server call for instant feedback
+    applyOptimistic({ type: "add", productId: product.id, title: product.title, price: product.price, image: product.image })
 
     try {
       const supabase = createClient()
@@ -193,7 +223,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           throw error
         }
       } else {
-        // Add optimistically
+        // Commit the real data to state
         setItems(prev => [{
           id: data?.id ?? crypto.randomUUID(),
           product_id: product.id,
@@ -201,7 +231,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           price: product.price,
           image: product.image,
           created_at: data?.created_at ?? new Date().toISOString(),
-        }, ...prev])
+        }, ...prev.filter(item => item.product_id !== product.id)])
         toast.success(t.added)
       }
     } catch (error) {
@@ -215,6 +245,9 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     
     if (!userId) return
 
+    // Apply optimistic update BEFORE server call for instant feedback
+    applyOptimistic({ type: "remove", productId })
+
     try {
       const supabase = createClient()
       const { error } = await supabase
@@ -227,12 +260,14 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         throw error
       }
 
-      // Remove optimistically
+      // Commit to real state
       setItems(prev => prev.filter(item => item.product_id !== productId))
       toast.success(t.removed)
     } catch (error) {
       console.error("Error removing from wishlist:", error)
       toast.error(t.removeFailed)
+      // On error, refresh to restore correct state
+      refreshWishlist()
     }
   }
 
@@ -244,12 +279,13 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const totalItems = items.length
+  // Use optimistic items count for instant badge updates
+  const totalItems = optimisticItems.length
 
   return (
     <WishlistContext.Provider
       value={{
-        items,
+        items: optimisticItems, // Expose optimistic state for instant UI updates
         isLoading,
         isInWishlist,
         addToWishlist,

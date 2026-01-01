@@ -63,14 +63,14 @@ export function CustomerReviewsHybrid({
   };
 
   return (
-    <section className="mt-12 rounded-md bg-muted/20 p-6 lg:p-10 border border-border/50">
+    <section className="mt-6 rounded-md bg-muted/20 p-3 lg:p-4 border border-border/50">
       <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
         <h2 className="text-xl lg:text-2xl font-bold text-foreground tracking-tight">{t.title}</h2>
         <div className="flex items-center gap-3">
           {productId && (
             <WriteReviewDialog
               productId={productId}
-              productTitle={productTitle}
+              productTitle={productTitle ?? "Product"}
               locale={locale}
               trigger={
                 <Button variant="default" size="sm" className="gap-2">
@@ -89,7 +89,7 @@ export function CustomerReviewsHybrid({
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[320px_1fr]">
         {/* Summary */}
         <div className="space-y-6">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
             <div className="relative flex h-24 w-24 items-center justify-center rounded-full border-[6px] border-primary text-3xl font-bold text-foreground">
               {safeRating.toFixed(1)}
             </div>
@@ -131,7 +131,7 @@ export function CustomerReviewsHybrid({
               {productId && (
                 <WriteReviewDialog
                   productId={productId}
-                  productTitle={productTitle}
+                  productTitle={productTitle ?? "Product"}
                   locale={locale}
                   trigger={
                     <Button variant="outline" size="sm">
@@ -154,7 +154,7 @@ export function CustomerReviewsHybrid({
                             <Star key={i} className={`h-3.5 w-3.5 ${i < review.rating ? "fill-current" : "text-muted-foreground/20"}`} />
                           ))}
                         </div>
-                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                        <span className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">
                           {formatDate(review.created_at)}
                         </span>
                       </div>
@@ -162,7 +162,7 @@ export function CustomerReviewsHybrid({
                       <div className="flex items-center gap-3 mb-3">
                         <Avatar className="h-8 w-8 border border-border">
                           <AvatarImage src={review.user?.avatar_url || undefined} alt={author} />
-                          <AvatarFallback className="text-[10px]">{initials(author)}</AvatarFallback>
+                          <AvatarFallback className="text-2xs">{initials(author)}</AvatarFallback>
                         </Avatar>
                         <div className="min-w-0">
                           <div className="font-semibold text-foreground text-sm truncate">{author}</div>

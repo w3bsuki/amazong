@@ -8,7 +8,7 @@ import { Heart } from "@phosphor-icons/react"
 import { useEffect, useMemo, useState } from "react"
 
 import { useWishlist, type WishlistItem } from "@/components/providers/wishlist-context"
-import { CountBadge } from "@/components/ui/count-badge"
+import { CountBadge } from "@/components/common/count-badge"
 import { DropdownProductItem } from "@/components/shared/dropdown-product-item"
 
 function buildProductUrl(item: WishlistItem) {
@@ -50,7 +50,7 @@ export function WishlistDropdown() {
               {mounted && displayItems > 0 && (
                 <CountBadge
                   count={displayItems}
-                  className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-[10px] shadow-sm"
+                  className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
                   aria-hidden="true"
                 />
               )}

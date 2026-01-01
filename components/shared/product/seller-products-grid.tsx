@@ -61,7 +61,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
   };
 
   useEffect(() => {
-    if (!hasProducts) return;
+    if (!hasProducts) return undefined;
     checkScroll();
     const el = scrollRef.current;
     if (el) {
@@ -72,6 +72,8 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
         window.removeEventListener("resize", checkScroll);
       };
     }
+
+    return undefined;
   }, [hasProducts, products]);
 
   const scroll = (dir: "left" | "right") => {
@@ -147,7 +149,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
               )}
               {/* Condition badge */}
               {product.condition && (
-                <div className="absolute top-2 left-2 bg-background/95 backdrop-blur-sm px-2 py-0.5 rounded-lg text-[9px] font-bold text-foreground shadow-sm border border-border/30 uppercase tracking-wide">
+                <div className="absolute top-2 left-2 bg-background/95 backdrop-blur-sm px-2 py-0.5 rounded-lg text-2xs font-bold text-foreground shadow-sm border border-border/30 uppercase tracking-wide">
                   {product.condition.replaceAll('-', " ")}
                 </div>
               )}

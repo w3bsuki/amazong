@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { CaretRight, TrendUp, GridFour, Fire, Percent, Star, Tag, MapPin, ChartLineUp, Eye } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/shared/product/product-card"
+import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { Link } from "@/i18n/routing"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -179,29 +180,49 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
         const salePercent = (typeof salePercentRaw === 'number') ? salePercentRaw : (typeof salePercentRaw === 'string') ? Number(salePercentRaw) : undefined
         const saleEndDate = (typeof p.saleEndDate === 'string') ? p.saleEndDate : (typeof (p as { sale_end_date?: unknown }).sale_end_date === 'string') ? ((p as { sale_end_date?: string }).sale_end_date ?? null) : null
 
-        return {
+        const rating = typeof p.rating === 'number' ? p.rating : undefined
+        const reviews = typeof p.reviews === 'number' ? p.reviews : (typeof p.review_count === 'number' ? p.review_count : undefined)
+        const sellerTier = (p.sellerTier === 'basic' || p.sellerTier === 'premium' || p.sellerTier === 'business') ? p.sellerTier : undefined
+        const sellerVerified = typeof p.sellerVerified === 'boolean' ? p.sellerVerified : undefined
+        const location = typeof p.location === 'string' ? p.location : undefined
+        const condition = typeof p.condition === 'string' ? p.condition : undefined
+        const brand = typeof p.brand === 'string' ? p.brand : undefined
+        const make = typeof p.make === 'string' ? p.make : undefined
+        const model = typeof p.model === 'string' ? p.model : undefined
+        const year = typeof p.year === 'string' ? p.year : undefined
+
+        const base: Product = {
           id: p.id as string,
           title: p.title as string,
           price: typeof p.price === 'number' ? p.price : Number(p.price ?? 0),
-          listPrice, isOnSale, salePercent, saleEndDate, image,
-          rating: typeof p.rating === 'number' ? p.rating : undefined,
-          reviews: typeof p.reviews === 'number' ? p.reviews : (typeof p.review_count === 'number' ? p.review_count : undefined),
+          saleEndDate,
+          image,
           slug: (p.slug as string | null) ?? null,
-          storeSlug, categorySlug: categorySlugVal,
+          storeSlug,
+          categorySlug: categorySlugVal,
           sellerId: typeof p.sellerId === 'string' ? p.sellerId : null,
           sellerName: typeof p.sellerName === 'string' ? p.sellerName : null,
           sellerAvatarUrl: typeof p.sellerAvatarUrl === 'string' ? p.sellerAvatarUrl : null,
-          sellerTier: (p.sellerTier === 'basic' || p.sellerTier === 'premium' || p.sellerTier === 'business') ? p.sellerTier : undefined,
-          sellerVerified: typeof p.sellerVerified === 'boolean' ? p.sellerVerified : undefined,
-          location: typeof p.location === 'string' ? p.location : undefined,
-          condition: typeof p.condition === 'string' ? p.condition : undefined,
-          brand: typeof p.brand === 'string' ? p.brand : undefined,
-          make: typeof p.make === 'string' ? p.make : undefined,
-          model: typeof p.model === 'string' ? p.model : undefined,
-          year: typeof p.year === 'string' ? p.year : undefined,
           isBoosted: tab === 'promoted' || Boolean(p.isBoosted) || Boolean((p as { is_boosted?: boolean | null }).is_boosted),
           tags: Array.isArray(p.tags) ? (p.tags as unknown[]).filter((x): x is string => typeof x === 'string') : [],
-          attributes,
+        }
+
+        return {
+          ...base,
+          ...(listPrice !== undefined ? { listPrice } : {}),
+          ...(isOnSale !== undefined ? { isOnSale } : {}),
+          ...(salePercent !== undefined ? { salePercent } : {}),
+          ...(rating !== undefined ? { rating } : {}),
+          ...(reviews !== undefined ? { reviews } : {}),
+          ...(sellerTier !== undefined ? { sellerTier } : {}),
+          ...(sellerVerified !== undefined ? { sellerVerified } : {}),
+          ...(location ? { location } : {}),
+          ...(condition ? { condition } : {}),
+          ...(brand ? { brand } : {}),
+          ...(make ? { make } : {}),
+          ...(model ? { model } : {}),
+          ...(year ? { year } : {}),
+          ...(attributes ? { attributes } : {}),
         }
       })
 
@@ -221,24 +242,55 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
     }
   }, [])
 
+  // Track previous values to detect actual changes - prevents infinite loops
+  const prevTabRef = useRef(activeTab)
+  const prevCategoryRef = useRef(activeCategory)
+  const prevPageSizeRef = useRef(pageSize)
+  const initialFetchDone = useRef(false)
+
   useEffect(() => {
-    setPage(1)
-    setProducts([])
+    const tabChanged = prevTabRef.current !== activeTab
+    const categoryChanged = prevCategoryRef.current !== activeCategory
+    const pageSizeChanged = prevPageSizeRef.current !== pageSize
+    
+    prevTabRef.current = activeTab
+    prevCategoryRef.current = activeCategory
+    prevPageSizeRef.current = pageSize
+
+    // Skip if nothing meaningful changed (prevent infinite loops)
+    const isInitialFetch = !initialFetchDone.current
+    const shouldFetch = isInitialFetch || tabChanged || categoryChanged
+    
+    if (!shouldFetch) {
+      // pageSize changed but tab/category didn't - don't refetch, just note the size change
+      return
+    }
+
+    initialFetchDone.current = true
+
+    // Only reset page when tab or category actually changed
+    if (tabChanged || categoryChanged) {
+      setPage(1)
+      // Don't clear products here - let the new data replace them to avoid flash
+    }
+    
     fetchProducts(activeTab, 1, pageSize, false, activeCategory)
   }, [pageSize, fetchProducts, activeTab, activeCategory])
 
   const handleTabChange = (tab: FeedTab) => {
+    if (tab === activeTab) return // Prevent redundant updates
     setActiveTab(tab)
     setPage(1)
-    setProducts([])
+    // Don't setProducts([]) - causes flash
   }
 
   const handleCategoryChange = (slug: string | null) => {
     const newSlug = slug === "all" ? null : slug
+    if (newSlug === activeCategory) return // Prevent redundant updates
     setActiveCategory(newSlug)
     updateUrlCategory(newSlug)
     setPage(1)
-    setProducts([])
+    // Don't setProducts([]) - causes flash
   }
 
   const loadMore = () => {
@@ -252,7 +304,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
   return (
     <section id="listings" className="w-full" aria-label={locale === "bg" ? "Обяви" : "Listings"}>
       {/* Unified Navigation Row - Professional Nav Pills */}
-      <div className="flex flex-col gap-4 mb-8">
+      <div className="flex flex-col gap-4 mb-4">
         <div className="-mx-4 px-4 md:mx-0 md:px-0">
           <Tabs
             value={activeTab}
@@ -302,49 +354,49 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
                     ))}
                   </div>
                 ) : products.length === 0 ? (
-                  <div className="text-center py-20 text-muted-foreground" role="status">
-                    <div className="text-4xl mb-4" aria-hidden="true">📦</div>
-                    <p className="text-lg">{locale === "bg" ? "Няма намерени обяви" : "No listings found"}</p>
-                    {activeCategory && (
-                      <button onClick={() => handleCategoryChange(null)} className="mt-4 text-sm text-primary hover:underline">
-                        {locale === "bg" ? "Покажи всички категории" : "Show all categories"}
-                      </button>
-                    )}
-                  </div>
+                  <EmptyStateCTA 
+                    variant={activeCategory ? "no-category" : "no-listings"}
+                    {...(activeCategory ? { categoryName: activeCategory } : {})}
+                  />
                 ) : (
                   <>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8">
                       {products.map((product, index) => (
                         <div key={product.id} role="listitem">
-                          <ProductCard
-                            id={product.id}
-                            title={product.title}
-                            price={product.price}
-                            originalPrice={product.listPrice}
-                            isOnSale={product.isOnSale}
-                            salePercent={product.salePercent}
-                            saleEndDate={product.saleEndDate}
-                            image={product.image}
-                            rating={product.rating}
-                            reviews={product.reviews}
-                            slug={product.slug}
-                            storeSlug={product.storeSlug}
-                            sellerId={product.sellerId || undefined}
-                            sellerName={(product.sellerName || product.storeSlug) || undefined}
-                            sellerAvatarUrl={product.sellerAvatarUrl || null}
-                            sellerTier={product.sellerTier}
-                            sellerVerified={product.sellerVerified}
-                            location={product.location}
-                            brand={product.brand}
-                            condition={product.condition}
-                            make={product.make}
-                            model={product.model}
-                            year={product.year}
-                            tags={product.tags}
-                            isBoosted={product.isBoosted}
-                            showPills={true}
-                            index={index}
-                          />
+                          {(() => {
+                            const sellerName = (product.sellerName || product.storeSlug) || undefined
+                            return (
+                              <ProductCard
+                                id={product.id}
+                                title={product.title}
+                                price={product.price}
+                                originalPrice={product.listPrice ?? null}
+                                isOnSale={Boolean(product.isOnSale)}
+                                salePercent={product.salePercent ?? 0}
+                                saleEndDate={product.saleEndDate ?? null}
+                                image={product.image}
+                                rating={product.rating ?? 0}
+                                reviews={product.reviews ?? 0}
+                                slug={product.slug ?? null}
+                                storeSlug={product.storeSlug ?? null}
+                                sellerId={product.sellerId ?? null}
+                                {...(sellerName ? { sellerName } : {})}
+                                sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+                                {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
+                                sellerVerified={Boolean(product.sellerVerified)}
+                                {...(product.location ? { location: product.location } : {})}
+                                {...(product.brand ? { brand: product.brand } : {})}
+                                {...(product.condition ? { condition: product.condition } : {})}
+                                {...(product.make ? { make: product.make } : {})}
+                                {...(product.model ? { model: product.model } : {})}
+                                {...(product.year ? { year: product.year } : {})}
+                                tags={product.tags ?? []}
+                                isBoosted={Boolean(product.isBoosted)}
+                                showPills={true}
+                                index={index}
+                              />
+                            )
+                          })()}
                         </div>
                       ))}
                     </div>
@@ -386,7 +438,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
 export function TabbedProductFeedSkeleton() {
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-4 mb-8">
+      <div className="flex flex-col gap-4 mb-4">
         <div className="flex items-center justify-between">
           <Skeleton className="h-6 w-24" />
           <Skeleton className="h-4 w-16" />

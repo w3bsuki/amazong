@@ -1,4 +1,23 @@
 import { defineConfig, devices } from '@playwright/test'
+import fs from 'node:fs'
+import path from 'node:path'
+import dotenv from 'dotenv'
+
+// Capture shell environment BEFORE dotenv runs
+const shellReuseServer = process.env.REUSE_EXISTING_SERVER
+
+// Ensure Playwright has access to the same env vars as Next.js dev.
+// - Does not override already-set process.env (CI or shell takes precedence).
+// - Keeps E2E runs deterministic without requiring cross-env for every command.
+for (const file of ['.env.local', '.env']) {
+  const fullPath = path.join(process.cwd(), file)
+  if (fs.existsSync(fullPath)) dotenv.config({ path: fullPath, override: false })
+}
+
+// Restore shell value if it was set (dotenv should NOT have overridden it, but just in case)
+if (shellReuseServer != null) {
+  process.env.REUSE_EXISTING_SERVER = shellReuseServer
+}
 
 /**
  * Playwright Configuration for Production Readiness Testing
@@ -23,6 +42,9 @@ const reuseExistingServer =
   process.env.REUSE_EXISTING_SERVER != null
     ? process.env.REUSE_EXISTING_SERVER === 'true'
     : false
+
+// Debug: Log the reuse setting
+console.log('[Playwright Config] REUSE_EXISTING_SERVER:', process.env.REUSE_EXISTING_SERVER, '-> reuseExistingServer:', reuseExistingServer)
 const base = new URL(baseURL)
 const basePort =
   base.port ||
@@ -61,7 +83,7 @@ export default defineConfig({
   retries: isCI ? 2 : 0,
 
   // Opt out of parallel tests on CI for stability
-  workers: isCI ? 1 : (isProdTest ? undefined : 1),
+  ...(isProdTest && !isCI ? {} : { workers: 1 }),
 
   // Reporter configuration
   reporter: [
@@ -152,9 +174,10 @@ export default defineConfig({
         : `cross-env NEXT_PUBLIC_E2E=true PORT=${basePort} pnpm dev`,
     url: webServerURL,
     reuseExistingServer,
+    // Even when reusing an existing dev server, the first request to a route can
+    // trigger slow on-demand compilation. Keep the readiness timeout generous.
     timeout: 120_000,
-    stdout: isCI ? 'pipe' : undefined,
-    stderr: isCI ? 'pipe' : undefined,
+    ...(isCI ? { stdout: 'pipe', stderr: 'pipe' } : {}),
   },
 
   // Output directory for test artifacts

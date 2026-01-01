@@ -144,19 +144,24 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                           {activity.meta.status}
                         </Badge>
                       )}
-                      {activity.meta?.rating && (
+                      {(() => {
+                        const rating = activity.meta?.rating
+                        if (typeof rating !== "number") return null
+
+                        return (
                         <div className="flex items-center gap-0.5 text-amber-500">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <IconStar
                               key={i}
                               className={cn(
                                 "size-3",
-                                i < activity.meta!.rating! ? "fill-current" : "opacity-30"
+                                i < rating ? "fill-current" : "opacity-30"
                               )}
                             />
                           ))}
                         </div>
-                      )}
+                        )
+                      })()}
                       <span className="text-2xs text-muted-foreground">
                         {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
                       </span>
@@ -214,7 +219,7 @@ export function transformToActivityItems(
       meta: {
         amount: Number(order.price_at_time) * order.quantity,
         status: "Unfulfilled",
-        image: product?.images?.[0],
+        ...(product?.images?.[0] ? { image: product.images[0] } : {}),
       },
     })
   }
@@ -230,7 +235,7 @@ export function transformToActivityItems(
       href: `/dashboard/products/${product.id}`,
       meta: {
         status: product.status || "Active",
-        image: product.images?.[0],
+        ...(product.images?.[0] ? { image: product.images[0] } : {}),
       },
     })
   }

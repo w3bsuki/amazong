@@ -3,6 +3,14 @@ import { getProductsByCategorySlug, toUI } from "@/lib/data/products"
 import { cookies } from "next/headers"
 import type { ShippingRegion } from "@/lib/shipping"
 
+function noStoreJson(data: unknown, init?: ResponseInit) {
+  const res = NextResponse.json(data, init)
+  res.headers.set("Cache-Control", "private, no-store")
+  res.headers.set("CDN-Cache-Control", "private, no-store")
+  res.headers.set("Vercel-CDN-Cache-Control", "private, no-store")
+  return res
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ slug: string }> }
@@ -18,9 +26,9 @@ export async function GET(
     const products = await getProductsByCategorySlug(slug, limit, userZone)
     const uiProducts = products.map(toUI)
 
-    return NextResponse.json({ products: uiProducts })
+    return noStoreJson({ products: uiProducts })
   } catch (error) {
     console.error("Category products API error:", error)
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
+    return noStoreJson({ error: "Internal Server Error" }, { status: 500 })
   }
 }

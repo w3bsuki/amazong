@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useOptimistic, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Heart, SpinnerGap, UserPlus } from "@phosphor-icons/react"
 import { followSeller, unfollowSeller } from "@/app/actions/seller-follows"
@@ -19,7 +19,7 @@ interface FollowSellerButtonProps {
 
 /**
  * Follow/Unfollow button for seller profiles and product pages
- * Uses optimistic updates for instant feedback
+ * Uses React 19 useOptimistic for instant feedback
  */
 export function FollowSellerButton({
   sellerId,
@@ -31,8 +31,9 @@ export function FollowSellerButton({
   size = "sm",
   className,
 }: FollowSellerButtonProps) {
-  const [isFollowing, setIsFollowing] = useState(initialIsFollowing)
   const [isPending, startTransition] = useTransition()
+  // React 19: useOptimistic for instant UI feedback before server responds
+  const [optimisticFollowing, setOptimisticFollowing] = useOptimistic(initialIsFollowing)
 
   const t = {
     follow: locale === "bg" ? "Следвай" : "Follow",
@@ -45,9 +46,9 @@ export function FollowSellerButton({
   }
 
   const handleClick = async () => {
-    // Optimistic update
-    const newState = !isFollowing
-    setIsFollowing(newState)
+    const newState = !optimisticFollowing
+    // Instant UI feedback via useOptimistic
+    setOptimisticFollowing(newState)
     onFollowChange?.(newState)
 
     startTransition(async () => {
@@ -58,8 +59,8 @@ export function FollowSellerButton({
       if (result.success) {
         toast.success(newState ? t.followSuccess : t.unfollowSuccess)
       } else {
-        // Rollback on error
-        setIsFollowing(!newState)
+        // On error, useOptimistic automatically rolls back when transition ends
+        // But we need to notify parent
         onFollowChange?.(!newState)
         
         if (result.error === "Not authenticated") {
@@ -73,7 +74,7 @@ export function FollowSellerButton({
 
   return (
     <Button
-      variant={isFollowing ? "secondary" : variant}
+      variant={optimisticFollowing ? "secondary" : variant}
       size={size}
       className={className}
       onClick={handleClick}
@@ -81,14 +82,14 @@ export function FollowSellerButton({
     >
       {isPending ? (
         <SpinnerGap className="size-4 animate-spin" />
-      ) : isFollowing ? (
+      ) : optimisticFollowing ? (
         <Heart className="size-4" weight="fill" />
       ) : (
         <UserPlus className="size-4" />
       )}
       {showLabel && (
         <span className="ml-1.5">
-          {isFollowing ? t.following : t.follow}
+          {optimisticFollowing ? t.following : t.follow}
         </span>
       )}
     </Button>

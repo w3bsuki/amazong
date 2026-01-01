@@ -233,15 +233,17 @@ export function MessageProvider({ children }: MessageProviderProps) {
           seller: { 
             id: conv.seller_id, 
             business_name: sellerMap.get(conv.seller_id) || "Seller",
-            user_id: conv.seller_id,
-            profile: undefined
+            user_id: conv.seller_id
           },
-          product: conv.product ? {
-            id: conv.product.id,
-            title: conv.product.title,
-            images: conv.product.images || []
-          } : undefined,
-          last_message: undefined
+          ...(conv.product
+            ? {
+                product: {
+                  id: conv.product.id,
+                  title: conv.product.title,
+                  images: conv.product.images || [],
+                },
+              }
+            : {})
         })) as Conversation[]
         
         setConversations(transformed)
@@ -494,9 +496,8 @@ export function MessageProvider({ children }: MessageProviderProps) {
         "get_or_create_conversation",
         {
           p_seller_id: sellerId,
-          p_product_id: productId,
-          p_order_id: undefined,
-          p_subject: subject
+          ...(productId ? { p_product_id: productId } : {}),
+          ...(subject ? { p_subject: subject } : {})
         }
       )
 
@@ -602,13 +603,24 @@ export function MessageProvider({ children }: MessageProviderProps) {
     }
   }, [supabase, currentConversation])
 
+  // Auto-load conversations on mount
+  useEffect(() => {
+    loadConversations()
+  }, [loadConversations])
+
   // Set up realtime subscription for new messages
   useEffect(() => {
     let realtimeChannel: RealtimeChannel | null = null
+    const userId = { current: "" }
 
     const setupRealtime = async () => {
       const { data: userData } = await supabase.auth.getUser()
       if (!userData.user) return
+      userId.current = userData.user.id
+
+      // Get all conversation IDs for filtering realtime events
+      const conversationIds = conversations.map(c => c.id)
+      if (conversationIds.length === 0) return
 
       realtimeChannel = supabase
         .channel("messages-realtime")
@@ -617,7 +629,9 @@ export function MessageProvider({ children }: MessageProviderProps) {
           {
             event: "INSERT",
             schema: "public",
-            table: "messages"
+            table: "messages",
+            // Filter to only conversations the user participates in
+            filter: `conversation_id=in.(${conversationIds.join(',')})`
           },
           async (payload: { new: Record<string, unknown> }) => {
             const newMessage = payload.new as unknown as Message
@@ -668,7 +682,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
         supabase.removeChannel(realtimeChannel)
       }
     }
-  }, [supabase, currentConversation, loadConversations])
+  }, [supabase, currentConversation, conversations, loadConversations])
 
   // Clean up on unmount
   useEffect(() => {

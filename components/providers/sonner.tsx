@@ -9,9 +9,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = 'system' } = useTheme()
   const isMobile = useIsMobile()
 
+  const resolvedTheme: NonNullable<ToasterProps['theme']> =
+    theme === 'light' || theme === 'dark' ? theme : 'system'
+
   return (
     <Sonner
-      theme={theme as ToasterProps['theme']}
+      theme={resolvedTheme}
       className="toaster group"
       // Position: bottom-center on mobile, bottom-right on desktop
       position={isMobile ? 'bottom-center' : 'bottom-right'}

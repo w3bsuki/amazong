@@ -32,6 +32,8 @@ export function CookieConsent() {
         } else {
             setConsent(storedConsent as ConsentValue)
         }
+
+        return undefined
     }, [isE2E])
 
     const handleAccept = () => {
@@ -91,14 +93,14 @@ export function CookieConsent() {
                     <div className="flex flex-col gap-2.5">
                         <Button 
                             onClick={handleAccept}
-                            className="w-full h-12 bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md"
+                            className="w-full h-10 bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md"
                         >
                             {t('acceptAll')}
                         </Button>
                         <Button 
                             variant="outline"
                             onClick={handleDecline}
-                            className="w-full h-12 border-border text-foreground hover:bg-muted rounded-md"
+                            className="w-full h-10 border-border text-foreground hover:bg-muted rounded-md"
                         >
                             {t('declineOptional')}
                         </Button>

@@ -1,6 +1,5 @@
-import { createClient } from "@supabase/supabase-js"
 import { NextResponse, type NextRequest } from "next/server"
-import { createRouteHandlerClient } from "@/lib/supabase/server"
+import { createRouteHandlerClient, createAdminClient } from "@/lib/supabase/server"
 
 /**
  * @deprecated This route is deprecated. Users now get a username at signup.
@@ -42,10 +41,7 @@ export async function POST(request: NextRequest) {
         }
 
         // 2. Use Service Role to bypass RLS
-        const supabaseAdmin = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        )
+        const supabaseAdmin = createAdminClient()
 
         // 3. Get existing profile
         const { data: existingProfile } = await supabaseAdmin

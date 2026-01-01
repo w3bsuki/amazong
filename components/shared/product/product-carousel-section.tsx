@@ -252,19 +252,21 @@ export function ProductCarouselSection({
                     id={product.id}
                     title={product.title}
                     price={product.price}
-                    listPrice={product.listPrice}
-                    isBoosted={product.isBoosted}
+                    listPrice={product.listPrice ?? null}
+                    isBoosted={Boolean(product.isBoosted)}
                     image={product.image}
-                    rating={product.rating}
-                    reviews={product.reviews}
-                    slug={product.slug}
-                    storeSlug={product.storeSlug}
-                    sellerId={product.sellerId || undefined}
-                    sellerName={(product.sellerName || product.storeSlug) || undefined}
-                    sellerAvatarUrl={product.sellerAvatarUrl || null}
-                    sellerTier={product.sellerTier}
-                    sellerVerified={product.sellerVerified}
-                    location={product.location}
+                    rating={product.rating ?? 0}
+                    reviews={product.reviews ?? 0}
+                    slug={product.slug ?? null}
+                    storeSlug={product.storeSlug ?? null}
+                    sellerId={product.sellerId ?? null}
+                    {...((product.sellerName || product.storeSlug)
+                      ? { sellerName: product.sellerName || product.storeSlug || "" }
+                      : {})}
+                    sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+                    sellerTier={product.sellerTier ?? "basic"}
+                    sellerVerified={Boolean(product.sellerVerified)}
+                    {...(product.location ? { location: product.location } : {})}
                   />
                 </div>
               ))

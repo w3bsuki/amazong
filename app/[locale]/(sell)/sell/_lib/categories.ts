@@ -1,5 +1,5 @@
 import { createStaticClient } from "@/lib/supabase/server";
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
 export interface CategoryNode {
   id: string;
@@ -60,79 +60,75 @@ function buildCategoryTree(categories: RawCategory[]): CategoryNode[] {
   return sortChildren(rootCategories);
 }
 
-const getSellCategoriesCached = unstable_cache(
-  async (): Promise<CategoryNode[]> => {
-    try {
-      const supabase = createStaticClient();
-      if (!supabase) return [];
+export async function getSellCategories(): Promise<CategoryNode[]> {
+  'use cache'
+  // Sell flow needs a stable category tree (root + 2 levels).
+  cacheTag('categories', 'sell-categories', 'sell-categories:depth:2')
+  cacheLife('categories')
 
-      const { data: rootCats, error: rootError } = await supabase
-        .from("categories")
-        .select("id, name, name_bg, slug, parent_id, display_order")
-        .is("parent_id", null)
-        .lt("display_order", 9000)
-        .order("display_order", { ascending: true });
+  try {
+    const supabase = createStaticClient();
+    if (!supabase) return [];
 
-      if (rootError) {
-        console.error("[SellPage] Error fetching root categories:", rootError);
-        return [];
-      }
+    const { data: rootCats, error: rootError } = await supabase
+      .from("categories")
+      .select("id, name, name_bg, slug, parent_id, display_order")
+      .is("parent_id", null)
+      .lt("display_order", 9000)
+      .order("display_order", { ascending: true });
 
-      if (!rootCats || rootCats.length === 0) return [];
+    if (rootError) {
+      console.error("[SellPage] Error fetching root categories:", rootError);
+      return [];
+    }
 
-      const rootIds = rootCats.map((c) => c.id);
-      const { data: l1Cats, error: l1Error } = await supabase
-        .from("categories")
-        .select("id, name, name_bg, slug, parent_id, display_order")
-        .in("parent_id", rootIds)
-        .lt("display_order", 9000)
-        .order("display_order", { ascending: true });
+    if (!rootCats || rootCats.length === 0) return [];
 
-      if (l1Error) {
-        console.error("[SellPage] Error fetching L1 categories:", l1Error);
-      }
+    const rootIds = rootCats.map((c) => c.id);
+    const { data: l1Cats, error: l1Error } = await supabase
+      .from("categories")
+      .select("id, name, name_bg, slug, parent_id, display_order")
+      .in("parent_id", rootIds)
+      .lt("display_order", 9000)
+      .order("display_order", { ascending: true });
 
-      let l2Cats: typeof l1Cats = [];
-      if (l1Cats && l1Cats.length > 0) {
-        const l1Ids = l1Cats.map((c) => c.id);
-        const BATCH_SIZE = 100;
+    if (l1Error) {
+      console.error("[SellPage] Error fetching L1 categories:", l1Error);
+    }
 
-        for (let i = 0; i < l1Ids.length; i += BATCH_SIZE) {
-          const batchIds = l1Ids.slice(i, i + BATCH_SIZE);
-          const { data: l2Data, error: l2Error } = await supabase
-            .from("categories")
-            .select("id, name, name_bg, slug, parent_id, display_order")
-            .in("parent_id", batchIds)
-            .lt("display_order", 9000)
-            .order("display_order", { ascending: true });
+    let l2Cats: typeof l1Cats = [];
+    if (l1Cats && l1Cats.length > 0) {
+      const l1Ids = l1Cats.map((c) => c.id);
+      const BATCH_SIZE = 100;
 
-          if (l2Error) {
-            console.error("[SellPage] Error fetching L2 batch:", l2Error);
-          } else if (l2Data) {
-            l2Cats = [...l2Cats, ...l2Data];
-          }
+      for (let i = 0; i < l1Ids.length; i += BATCH_SIZE) {
+        const batchIds = l1Ids.slice(i, i + BATCH_SIZE);
+        const { data: l2Data, error: l2Error } = await supabase
+          .from("categories")
+          .select("id, name, name_bg, slug, parent_id, display_order")
+          .in("parent_id", batchIds)
+          .lt("display_order", 9000)
+          .order("display_order", { ascending: true });
+
+        if (l2Error) {
+          console.error("[SellPage] Error fetching L2 batch:", l2Error);
+        } else if (l2Data) {
+          l2Cats = [...l2Cats, ...l2Data];
         }
       }
+    }
 
-      const allCategories = [...rootCats, ...(l1Cats || []), ...l2Cats];
+    const allCategories = [...rootCats, ...(l1Cats || []), ...l2Cats];
 
+    if (process.env.NODE_ENV !== 'production') {
       console.log(
         `[SellPage] Fetched ${allCategories.length} categories (${rootCats.length} root, ${l1Cats?.length || 0} L1, ${l2Cats.length} L2)`
       );
-
-      return buildCategoryTree(allCategories);
-    } catch (error) {
-      console.error("[SellPage] Error in getSellCategoriesCached:", error);
-      return [];
     }
-  },
-  ["sell-page-categories"],
-  {
-    revalidate: 3600,
-    tags: ["categories"],
-  }
-);
 
-export async function getSellCategories(): Promise<CategoryNode[]> {
-  return getSellCategoriesCached();
+    return buildCategoryTree(allCategories);
+  } catch (error) {
+    console.error("[SellPage] Error in getSellCategories:", error);
+    return [];
+  }
 }

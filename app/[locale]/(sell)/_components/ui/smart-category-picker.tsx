@@ -115,8 +115,8 @@ export function SmartCategoryPicker({
     if (navigationPath.length === 0) {
       return categories;
     }
-    const lastInPath = navigationPath[navigationPath.length - 1];
-    return lastInPath.children || [];
+    const lastInPath = navigationPath.at(-1);
+    return lastInPath?.children || [];
   }, [categories, navigationPath]);
 
   // Popular categories
@@ -408,7 +408,8 @@ export function SmartCategoryPicker({
                 <button
                   type="button"
                   onClick={() => {
-                    const lastCat = navigationPath[navigationPath.length - 1];
+                    const lastCat = navigationPath.at(-1);
+                    if (!lastCat) return;
                     const flatCat = flatCategories.find((c) => c.id === lastCat.id);
                     if (flatCat) {
                       handleSelect(flatCat);
@@ -417,7 +418,10 @@ export function SmartCategoryPicker({
                   className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-primary/5 hover:bg-primary/10 text-sm font-semibold text-primary transition-colors mb-3"
                 >
                   <span>
-                    {locale === "bg" ? "Избери" : "Select"} "{getName(navigationPath[navigationPath.length - 1])}"
+                    {locale === "bg" ? "Избери" : "Select"} "{(() => {
+                      const last = navigationPath.at(-1)
+                      return last ? getName(last) : ""
+                    })()}"
                   </span>
                   <Check className="size-4" weight="bold" />
                 </button>
@@ -477,8 +481,14 @@ export function SmartCategoryPicker({
                 {navigationPath.length === 0
                   ? locale === "bg" ? "Стъпка 1: Избери основна категория" : "Step 1: Choose main category"
                   : locale === "bg" 
-                    ? `Стъпка ${currentStep + 1}: ${getName(navigationPath[navigationPath.length - 1])}`
-                    : `Step ${currentStep + 1}: ${getName(navigationPath[navigationPath.length - 1])}`
+                    ? `Стъпка ${currentStep + 1}: ${(() => {
+                        const last = navigationPath.at(-1)
+                        return last ? getName(last) : ""
+                      })()}`
+                    : `Step ${currentStep + 1}: ${(() => {
+                        const last = navigationPath.at(-1)
+                        return last ? getName(last) : ""
+                      })()}`
                 }
               </p>
             </div>
@@ -606,7 +616,8 @@ export function SmartCategoryPicker({
                 <button
                   type="button"
                   onClick={() => {
-                    const lastCat = navigationPath[navigationPath.length - 1];
+                    const lastCat = navigationPath.at(-1);
+                    if (!lastCat) return;
                     const flatCat = flatCategories.find((c) => c.id === lastCat.id);
                     if (flatCat) {
                       handleSelect(flatCat);

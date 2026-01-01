@@ -1,18 +1,36 @@
-import { createClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/server"
 import { normalizeImageUrls } from "@/lib/normalize-image-url"
 import { NextResponse } from "next/server"
+
+// Public, query-string keyed endpoint. Align caching with next.config.ts cacheLife.products
+const CACHE_TTL_SECONDS = 300
+const CACHE_STALE_WHILE_REVALIDATE = 60
+
+function cachedJsonResponse(data: unknown, init?: ResponseInit) {
+  const res = NextResponse.json(data, init)
+  res.headers.set(
+    "Cache-Control",
+    `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`
+  )
+  res.headers.set("CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
+  res.headers.set("Vercel-CDN-Cache-Control", `public, max-age=${CACHE_TTL_SECONDS}`)
+  return res
+}
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
-    const query = searchParams.get("q")?.trim()
+    const rawQuery = searchParams.get("q")?.trim()
     const limit = Number.parseInt(searchParams.get("limit") || "10")
 
+    const query = rawQuery?.slice(0, 80)
+    const safeLimit = Math.min(Math.max(Number.isFinite(limit) ? limit : 10, 1), 20)
+
     if (!query || query.length < 2) {
-      return NextResponse.json({ products: [] })
+      return cachedJsonResponse({ products: [] })
     }
 
-    const supabase = await createClient()
+    const supabase = createStaticClient()
     if (!supabase) {
       return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
     }
@@ -32,7 +50,7 @@ export async function GET(request: Request) {
         seller:profiles(username)
       `)
       .or(`title.ilike.${searchPattern},description.ilike.${searchPattern}`)
-      .limit(limit)
+      .limit(safeLimit)
       .order("created_at", { ascending: false })
 
     if (error) {
@@ -42,9 +60,7 @@ export async function GET(request: Request) {
 
     // Transform to include storeSlug at top level for easier client consumption
     const transformedProducts = (products || []).map((p) => {
-      const productImages = (p as any).product_images as
-        | Array<{ image_url: string; display_order?: number | null; is_primary?: boolean | null }>
-        | null
+      const productImages = p.product_images
 
       const normalizedImages = Array.isArray(p.images) && p.images.length > 0
         ? p.images
@@ -70,7 +86,7 @@ export async function GET(request: Request) {
       }
     })
 
-    return NextResponse.json({ products: transformedProducts })
+    return cachedJsonResponse({ products: transformedProducts })
   } catch (error) {
     console.error("Search API Error:", error)
     const message = error instanceof Error ? error.message : "Internal Server Error"

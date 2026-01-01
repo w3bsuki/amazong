@@ -17,18 +17,47 @@ import { RecentlyViewedTracker } from "@/components/shared/product/recently-view
 import { CategoryBadge } from "@/components/shared/product/category-badge";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
+import type { Database } from "@/types/database.types";
+import type { CustomerReview } from "@/components/shared/product/customer-reviews-hybrid";
+
+type ProductRow = Database["public"]["Tables"]["products"]["Row"];
+type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
+
+type ProductWithSellerStats = ProductRow & {
+  seller_stats?: SellerStatsRow | null;
+  viewers_count?: number | null;
+  sold_count?: number | null;
+};
+
+type SellerSummary = {
+  id: string;
+  username?: string | null;
+  display_name?: string | null;
+  avatar_url?: string | null;
+  verified?: boolean | null;
+  created_at?: string | null;
+};
+
+type CategorySummary = {
+  id?: string;
+  name: string;
+  name_bg?: string | null;
+  slug: string;
+  icon?: string | null;
+  parent_id?: string | null;
+};
 
 interface MobileProductPageProps {
   locale: string;
   username: string;
   productSlug: string;
-  product: any;
-  seller: any;
-  category: any | null;
-  parentCategory: any | null;
-  rootCategory: any | null;
+  product: ProductWithSellerStats;
+  seller: SellerSummary;
+  category: CategorySummary | null;
+  parentCategory: CategorySummary | null;
+  rootCategory: CategorySummary | null;
   relatedProducts: ProductPageViewModel["relatedProducts"];
-  reviews: any[];
+  reviews: CustomerReview[];
   viewModel: ProductPageViewModel;
 }
 
@@ -113,7 +142,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
           price: Number(product.price ?? 0),
           image: primaryImageSrc,
           slug: product.slug || product.id,
-          username: seller?.username,
+          username: seller?.username ?? null,
         }}
       />
 

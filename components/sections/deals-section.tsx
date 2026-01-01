@@ -6,7 +6,7 @@ import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { Star, Clock, Lightning } from "@phosphor-icons/react"
 import { CaretRight } from "@phosphor-icons/react"
-import { CarouselScrollButton } from "@/components/ui/carousel-scroll-button"
+import { CarouselScrollButton } from "@/components/common/carousel-scroll-button"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 
@@ -222,12 +222,12 @@ export function DealsSection({
               <CarouselScrollButton
                 direction="left"
                 onClick={() => scroll(tab.id, "left")}
-                visible={scrollStates[tab.id]?.left}
+                visible={Boolean(scrollStates[tab.id]?.left)}
               />
               <CarouselScrollButton
                 direction="right"
                 onClick={() => scroll(tab.id, "right")}
-                visible={scrollStates[tab.id]?.right}
+                visible={Boolean(scrollStates[tab.id]?.right)}
               />
 
               {/* Deals Container - Horizontal scroll with exactly 2 visible on mobile */}

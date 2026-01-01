@@ -55,7 +55,7 @@ export function SignUpForm({ locale }: { locale: string }) {
 
   const [accountType, setAccountType] = useState<"personal" | "business">("personal")
 
-  const initialState = useMemo<AuthActionState>(() => ({ fieldErrors: {}, error: undefined, success: false }), [])
+  const initialState = useMemo<AuthActionState>(() => ({ fieldErrors: {}, success: false }), [])
   const [state, formAction] = useActionState(signUp.bind(null, locale), initialState)
 
   useEffect(() => {

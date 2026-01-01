@@ -91,7 +91,7 @@ export function BusinessHeader({
         
         {/* Command Palette Search - Shopify Style */}
         <div className="hidden md:flex flex-1 max-w-md mx-auto justify-center">
-          <BusinessCommandPalette storeName={storeName} />
+          <BusinessCommandPalette {...(storeName ? { storeName } : {})} />
         </div>
         
         {/* Right Actions */}

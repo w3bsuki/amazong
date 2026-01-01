@@ -2,6 +2,7 @@ import { stripe } from "@/lib/stripe"
 import { createAdminClient } from "@/lib/supabase/server"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
+import { getStripeWebhookSecret } from "@/lib/env"
 
 // PRODUCTION: Use centralized admin client for consistency
 const supabase = createAdminClient()
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
         event = stripe.webhooks.constructEvent(
             body,
             signature,
-            process.env.STRIPE_WEBHOOK_SECRET!
+            getStripeWebhookSecret()
         )
     } catch (error) {
         const message = error instanceof Error ? error.message : "Webhook verification failed"

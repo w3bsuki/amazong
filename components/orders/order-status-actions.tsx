@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -52,7 +52,7 @@ export function OrderStatusActions({
   locale = 'en'
 }: OrderStatusActionsProps) {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isPending, startTransition] = useTransition()
   const [showShippingDialog, setShowShippingDialog] = useState(false)
   const [trackingNumber, setTrackingNumber] = useState('')
   const [shippingCarrier, setShippingCarrier] = useState<ShippingCarrier | ''>()
@@ -68,43 +68,41 @@ export function OrderStatusActions({
       return
     }
 
-    setIsLoading(true)
-    try {
-      const result = await updateOrderItemStatus(orderItemId, newStatus)
-      if (result.success) {
-        toast.success(`Order marked as ${ORDER_STATUS_CONFIG[newStatus].label}`)
-        router.refresh()
-      } else {
-        toast.error(result.error || 'Failed to update status')
+    startTransition(async () => {
+      try {
+        const result = await updateOrderItemStatus(orderItemId, newStatus)
+        if (result.success) {
+          toast.success(`Order marked as ${ORDER_STATUS_CONFIG[newStatus].label}`)
+          router.refresh()
+        } else {
+          toast.error(result.error || 'Failed to update status')
+        }
+      } catch {
+        toast.error('An error occurred')
       }
-    } catch {
-      toast.error('An error occurred')
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   async function handleShippingSubmit() {
-    setIsLoading(true)
-    try {
-      const result = await updateOrderItemStatus(
-        orderItemId, 
-        'shipped',
-        trackingNumber || undefined,
-        shippingCarrier as ShippingCarrier || undefined
-      )
-      if (result.success) {
-        toast.success('Order marked as shipped!')
-        setShowShippingDialog(false)
-        router.refresh()
-      } else {
-        toast.error(result.error || 'Failed to update status')
+    startTransition(async () => {
+      try {
+        const result = await updateOrderItemStatus(
+          orderItemId, 
+          'shipped',
+          trackingNumber || undefined,
+          shippingCarrier as ShippingCarrier || undefined
+        )
+        if (result.success) {
+          toast.success('Order marked as shipped!')
+          setShowShippingDialog(false)
+          router.refresh()
+        } else {
+          toast.error(result.error || 'Failed to update status')
+        }
+      } catch {
+        toast.error('An error occurred')
       }
-    } catch {
-      toast.error('An error occurred')
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   const getActionIcon = (status: OrderItemStatus) => {
@@ -135,14 +133,14 @@ export function OrderStatusActions({
         <Button
           size="sm"
           onClick={() => handleStatusUpdate(config.nextStatus!)}
-          disabled={isLoading}
+          disabled={isPending}
         >
-          {isLoading ? (
+          {isPending ? (
             <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
           ) : (
             getActionIcon(config.nextStatus)
           )}
-          {isLoading ? 'Updating...' : config.nextActionLabel}
+          {isPending ? 'Updating...' : config.nextActionLabel}
         </Button>
       )}
 
@@ -153,7 +151,7 @@ export function OrderStatusActions({
           size="sm"
           className="text-status-error hover:bg-status-error/10"
           onClick={() => handleStatusUpdate('cancelled')}
-          disabled={isLoading}
+          disabled={isPending}
         >
           <XCircle className="h-4 w-4 mr-1.5" />
           Cancel
@@ -202,12 +200,12 @@ export function OrderStatusActions({
             <Button 
               variant="outline" 
               onClick={() => setShowShippingDialog(false)}
-              disabled={isLoading}
+              disabled={isPending}
             >
               Cancel
             </Button>
-            <Button onClick={handleShippingSubmit} disabled={isLoading}>
-              {isLoading ? (
+            <Button onClick={handleShippingSubmit} disabled={isPending}>
+              {isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
                   Shipping...

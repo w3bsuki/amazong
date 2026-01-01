@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, KeyboardEvent } from "react";
+import type { KeyboardEvent, Ref } from "react";
 import { CaretRight, Check } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import type { Category } from "../../../_lib/types";
@@ -14,6 +14,8 @@ interface CategoryOptionProps {
   onKeyDown?: (e: KeyboardEvent<HTMLButtonElement>) => void;
   /** Whether this option is currently focused (for roving tabindex) */
   isFocused?: boolean;
+  /** Ref forwarding (React 19 - ref as prop) */
+  ref?: Ref<HTMLButtonElement>;
 }
 
 /**
@@ -21,18 +23,15 @@ interface CategoryOptionProps {
  * Uses touch-friendly sizing from design tokens
  * Supports keyboard navigation (Enter/Space to select)
  */
-export const CategoryOption = forwardRef<HTMLButtonElement, CategoryOptionProps>(
-  function CategoryOption(
-    {
-      category,
-      isSelected,
-      hasChildren,
-      onClick,
-      onKeyDown,
-      isFocused = false,
-    },
-    ref
-  ) {
+export function CategoryOption({
+  category,
+  isSelected,
+  hasChildren,
+  onClick,
+  onKeyDown,
+  isFocused = false,
+  ref,
+}: CategoryOptionProps) {
     const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
       // Enter or Space to select
       if (e.key === "Enter" || e.key === " ") {
@@ -74,5 +73,4 @@ export const CategoryOption = forwardRef<HTMLButtonElement, CategoryOptionProps>
         </div>
       </button>
     );
-  }
-);
+}

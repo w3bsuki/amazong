@@ -37,8 +37,8 @@ export function CategoryPicker({
     if (selectedPath.length === 0) {
       return categories;
     }
-    const lastCategory = selectedPath[selectedPath.length - 1];
-    return lastCategory.children || [];
+    const lastCategory = selectedPath.at(-1);
+    return lastCategory?.children || [];
   }, [categories, selectedPath]);
 
   // Flatten all categories for search functionality

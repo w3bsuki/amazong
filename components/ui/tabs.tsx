@@ -5,15 +5,24 @@ import * as TabsPrimitive from '@radix-ui/react-tabs'
 
 import { cn } from '@/lib/utils'
 
+type TabsRootProps = Omit<React.ComponentProps<typeof TabsPrimitive.Root>, 'value' | 'defaultValue'> & {
+  value?: string | undefined
+  defaultValue?: string | undefined
+}
+
 function Tabs({
   className,
+  value,
+  defaultValue,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Root>) {
+}: TabsRootProps) {
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
       className={cn('flex flex-col gap-2', className)}
       {...props}
+      {...(value !== undefined ? { value } : {})}
+      {...(defaultValue !== undefined ? { defaultValue } : {})}
     />
   )
 }

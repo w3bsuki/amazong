@@ -297,7 +297,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                         size={96}
                         name={profile?.username || "user"}
                         variant={selectedVariant}
-                        colors={COLOR_PALETTES[selectedPalette]}
+                        colors={COLOR_PALETTES[selectedPalette] ?? COLOR_PALETTES[0] ?? []}
                       />
                     )}
                     <label className="absolute bottom-0 right-0 size-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full flex items-center justify-center cursor-pointer shadow-sm transition-colors">
@@ -328,7 +328,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                           size={40}
                           name={profile?.username || "user"}
                           variant={variant}
-                          colors={COLOR_PALETTES[selectedPalette]}
+                          colors={COLOR_PALETTES[selectedPalette] ?? COLOR_PALETTES[0] ?? []}
                         />
                       </button>
                     ))}
@@ -419,7 +419,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                       size={64}
                       name={profile?.username || "user"}
                       variant={selectedVariant}
-                      colors={COLOR_PALETTES[selectedPalette]}
+                      colors={COLOR_PALETTES[selectedPalette] ?? COLOR_PALETTES[0] ?? []}
                     />
                   )}
                 </div>

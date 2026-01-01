@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 

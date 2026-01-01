@@ -49,6 +49,7 @@ export default async function globalSetup(config: FullConfig) {
     '/en/categories',
     '/en/account',
     '/en/plans',
+    '/en/sell',
     '/en/chat',
   ]
 

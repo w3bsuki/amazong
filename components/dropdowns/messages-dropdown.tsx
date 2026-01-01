@@ -6,7 +6,7 @@ import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { User } from "@supabase/supabase-js"
 import { ChatCircle, PaperPlaneTilt, Bell, CaretRight } from "@phosphor-icons/react"
-import { CountBadge } from "@/components/ui/count-badge"
+import { CountBadge } from "@/components/common/count-badge"
 
 interface MessagesDropdownProps {
   user: User | null

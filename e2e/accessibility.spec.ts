@@ -145,7 +145,7 @@ test.describe('Accessibility - Navigation @accessibility', () => {
 })
 
 test.describe('Accessibility - Forms @accessibility', () => {
-  test('search form is accessible', async ({ page, makeAxeBuilder }) => {
+  test('search form is accessible', async ({ page, makeAxeBuilder: _makeAxeBuilder }) => {
     await page.goto('/en')
     await waitForPageReady(page)
 
@@ -211,7 +211,7 @@ test.describe('Accessibility - Focus Management @accessibility', () => {
       if (!el) return false
 
       const styles = window.getComputedStyle(el)
-      const pseudoStyles = window.getComputedStyle(el, ':focus')
+      window.getComputedStyle(el, ':focus')
 
       // Check for common focus indicators
       const hasOutline = styles.outline !== 'none' && styles.outline !== ''
@@ -304,8 +304,12 @@ test.describe('Accessibility - Semantic HTML @accessibility', () => {
 
     // Check for heading level skips (e.g., h1 -> h3)
     for (let i = 1; i < headings.length; i++) {
-      const prevLevel = headings[i - 1].level
-      const currLevel = headings[i].level
+      const prev = headings[i - 1]
+      const curr = headings[i]
+      if (!prev || !curr) continue
+
+      const prevLevel = prev.level
+      const currLevel = curr.level
       
       // Allow going to any lower level, but not skipping when going higher
       if (currLevel > prevLevel && currLevel - prevLevel > 1) {
@@ -352,7 +356,7 @@ test.describe('Accessibility - Semantic HTML @accessibility', () => {
 test.describe('Accessibility - Mobile @accessibility @mobile', () => {
   test.use({ viewport: { width: 375, height: 667 } })
 
-  test('touch targets are large enough', async ({ page, makeAxeBuilder }) => {
+  test('touch targets are large enough', async ({ page, makeAxeBuilder: _makeAxeBuilder }) => {
     await page.goto('/en')
     await waitForPageReady(page)
 
