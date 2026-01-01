@@ -124,8 +124,8 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       <div>
         <SectionHeader title={t.recentOrders} href={withLocale("/account/orders")} viewAllText={t.viewAll} />
         {orders.length === 0 ? (
-          <div className="rounded-2xl bg-account-stat-bg border border-account-stat-border p-8 text-center">
-            <div className="flex size-14 mx-auto items-center justify-center rounded-2xl bg-account-stat-icon-bg border border-account-stat-border mb-3">
+          <div className="rounded-md bg-account-stat-bg border border-account-stat-border p-4 text-center">
+            <div className="flex size-14 mx-auto items-center justify-center rounded-md bg-account-stat-icon-bg border border-account-stat-border mb-3">
               <IconPackage className="size-6 text-account-stat-icon" />
             </div>
             <p className="text-sm text-muted-foreground">{t.noOrders}</p>
@@ -149,10 +149,10 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                     <Link 
                       key={order.id} 
                       href={withLocale(`/account/orders/${order.id}`)}
-                      className="flex flex-col w-[140px] rounded-2xl bg-account-stat-bg border border-account-stat-border p-3 active:scale-[0.98] transition-all"
+                      className="flex flex-col w-[140px] rounded-md bg-account-stat-bg border border-account-stat-border p-3 active:scale-[0.98] transition-all"
                     >
                       {/* Order Image */}
-                      <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border mb-3">
+                      <div className="relative w-full aspect-square rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border mb-3">
                         {firstImageUrl ? (
                           <>
                             <Image
@@ -191,7 +191,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
             </div>
             
             {/* Desktop: List view */}
-            <div className="hidden md:block rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden">
+            <div className="hidden md:block rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden">
               <div className="divide-y divide-account-stat-border/50">
                 {orders.slice(0, 3).map((order) => {
                   const getProductImage = (products: { images?: string[] } | { images?: string[] }[] | null): string | undefined => {
@@ -209,7 +209,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                       href={withLocale(`/account/orders/${order.id}`)}
                       className="flex items-center gap-3 p-4 hover:bg-account-card-hover transition-colors"
                     >
-                      <div className="relative size-11 rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
+                      <div className="relative size-11 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
                         {firstImageUrl ? (
                           <>
                             <Image
@@ -263,10 +263,10 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                 <Link 
                   key={product.id} 
                   href={withLocale(`/product/${product.id}`)}
-                  className="flex flex-col w-[140px] rounded-2xl bg-account-stat-bg border border-account-stat-border p-3 active:scale-[0.98] transition-all"
+                  className="flex flex-col w-[140px] rounded-md bg-account-stat-bg border border-account-stat-border p-3 active:scale-[0.98] transition-all"
                 >
                   {/* Product Image */}
-                  <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border mb-3">
+                  <div className="relative w-full aspect-square rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border mb-3">
                     {product.images?.[0] ? (
                       <Image
                         src={product.images[0]}
@@ -298,7 +298,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
           </div>
           
           {/* Desktop: List view */}
-          <div className="hidden md:block rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden">
+          <div className="hidden md:block rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden">
             <div className="divide-y divide-account-stat-border/50">
               {products.slice(0, 3).map((product) => (
                 <Link 
@@ -306,7 +306,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                   href={withLocale(`/product/${product.id}`)}
                   className="flex items-center gap-3 p-4 hover:bg-account-card-hover transition-colors"
                 >
-                  <div className="relative size-11 rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
+                  <div className="relative size-11 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
                     {product.images?.[0] ? (
                       <Image
                         src={product.images[0]}
@@ -343,12 +343,12 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       {sales.length > 0 && (
         <div>
           <SectionHeader title={t.recentSales} href={withLocale("/account/sales")} viewAllText={t.viewAll} />
-          <div className="rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden">
+          <div className="rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden">
             <div className="divide-y divide-account-stat-border/50">
             {sales.slice(0, 3).map((sale, index) => (
               <div key={`${sale.id}-${index}`} className="flex items-center gap-3 p-4">
                 {/* Product Image or Quantity Badge */}
-                <div className="relative size-11 rounded-xl overflow-hidden bg-account-success-soft shrink-0">
+                <div className="relative size-11 rounded-md overflow-hidden bg-account-success-soft shrink-0">
                   {sale.product_image ? (
                     <>
                       <Image

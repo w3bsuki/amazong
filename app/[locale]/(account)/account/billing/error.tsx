@@ -17,7 +17,7 @@ export default function BillingError({
   }, [error])
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 lg:p-4">
       <div className="max-w-5xl mx-auto">
         <Card className="border-destructive/50">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">

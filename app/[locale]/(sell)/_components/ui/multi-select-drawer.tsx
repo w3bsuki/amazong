@@ -93,7 +93,7 @@ export function MultiSelectDrawer({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={isBg ? "Търсене..." : "Search..."}
-              className="h-12 rounded-xl pl-10 text-base"
+              className="h-12 rounded-md pl-10 text-base"
               autoFocus
               inputMode="search"
             />
@@ -109,7 +109,7 @@ export function MultiSelectDrawer({
                 setQuery("");
               }}
               className={cn(
-                "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left min-h-11 touch-action-manipulation",
+                "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-action-manipulation",
                 "border border-border bg-muted/20 hover:bg-muted/30 active:bg-muted/40"
               )}
             >
@@ -133,7 +133,7 @@ export function MultiSelectDrawer({
                   type="button"
                   onClick={() => toggleOption(idx)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left min-h-11 touch-action-manipulation",
+                    "w-full flex items-center gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-action-manipulation",
                     isSelected
                       ? "bg-primary/10"
                       : "hover:bg-accent active:bg-accent/80"
@@ -158,7 +158,7 @@ export function MultiSelectDrawer({
         </ScrollArea>
 
         <div className="p-4 border-t border-border">
-          <Button className="w-full h-12 rounded-xl" onClick={onClose}>
+          <Button className="w-full h-12 rounded-md" onClick={onClose}>
             {isBg ? "Готово" : "Done"} {value.length > 0 && `(${value.length})`}
           </Button>
         </div>

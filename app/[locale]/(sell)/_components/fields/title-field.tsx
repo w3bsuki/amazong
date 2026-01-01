@@ -44,7 +44,7 @@ export function TitleField({
         <Field data-invalid={fieldState.invalid} className={className}>
           {/* Section Header (non-compact mode) */}
           {!compact && (
-            <div className="p-5 pb-4 border-b border-form-section-border bg-muted/10">
+            <div className="p-4 pb-3 border-b border-form-section-border bg-muted/10">
               <div className="flex items-center gap-3.5">
                 <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
                   <TextAa className="size-5 text-muted-foreground" weight="bold" />
@@ -75,7 +75,7 @@ export function TitleField({
           {/* Input with label inside */}
           <FieldContent className={cn(!compact && "p-5")}>
             <div className={cn(
-              "relative flex items-center h-12 px-4 rounded-xl border transition-all",
+              "relative flex items-center h-12 px-4 rounded-md border transition-all",
               "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5",
               fieldState.invalid && "border-destructive bg-destructive/5"
             )}>

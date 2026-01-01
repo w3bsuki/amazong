@@ -213,12 +213,12 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
 
             {/* Product preview card - cleaner */}
             {firstImageUrl && (
-              <div className="bg-muted/30 rounded-2xl p-4 border border-border/50">
+              <div className="bg-muted/30 rounded-md p-4 border border-border/50">
                 <div className="flex items-center gap-4">
                   <img 
                     src={firstImageUrl} 
                     alt={productTitle}
-                    className="w-20 h-20 rounded-xl object-cover"
+                    className="w-20 h-20 rounded-md object-cover"
                   />
                   <div className="flex-1 text-left min-w-0">
                     <p className="font-bold text-base truncate">{productTitle}</p>
@@ -232,7 +232,7 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
 
             {/* Action buttons - cleaner, more professional */}
             <div className="space-y-4 pt-4">
-              <Button asChild className="w-full h-12 gap-2 bg-primary hover:bg-primary/90 text-base font-semibold rounded-xl">
+              <Button asChild className="w-full h-12 gap-2 bg-primary hover:bg-primary/90 text-base font-semibold rounded-md">
                 <Link href={createdProductHref || "/"}>
                   <Eye className="size-5" />
                   {isBg ? "Виж обявата" : "View Listing"}
@@ -242,7 +242,7 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
               <div className="grid grid-cols-2 gap-4">
                 <Button
                   variant="outline"
-                  className="h-12 gap-2 rounded-xl font-medium"
+                  className="h-12 gap-2 rounded-md font-medium"
                   onClick={() => {
                     const locale = isBg ? "bg" : "en";
                     if (navigator.share) {
@@ -268,7 +268,7 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
 
                 <Button
                   variant="outline"
-                  className="h-12 gap-2 rounded-xl font-medium"
+                  className="h-12 gap-2 rounded-md font-medium"
                   onClick={handleNewListing}
                 >
                   <Plus className="size-5" />
@@ -279,7 +279,7 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
               <Button
                 variant="ghost"
                 asChild
-                className="w-full h-12 gap-2 text-muted-foreground hover:text-foreground rounded-xl"
+                className="w-full h-12 gap-2 text-muted-foreground hover:text-foreground rounded-md"
               >
                 <Link href="/">
                   <House className="size-5" />

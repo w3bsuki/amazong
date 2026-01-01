@@ -123,7 +123,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">{locale === 'bg' ? 'Моят магазин' : 'My Store'}</h1>
         
         {/* Mobile: Revolut-style header with stats pills */}
@@ -171,7 +171,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
         {/* Desktop: Full header */}
         <div className="hidden sm:flex sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="size-14 rounded-2xl bg-account-stat-icon-bg border border-account-stat-border flex items-center justify-center">
+            <div className="size-14 rounded-md bg-account-stat-icon-bg border border-account-stat-border flex items-center justify-center">
               <Storefront weight="fill" className="size-7 text-account-stat-icon" />
             </div>
             <div>

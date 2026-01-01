@@ -67,7 +67,7 @@ export default function CategorySlugLoading() {
             <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {Array.from({ length: 12 }).map((_, i) => (
                 <div key={i} className="space-y-2">
-                  <Skeleton className="aspect-square w-full rounded-xl" />
+                  <Skeleton className="aspect-square w-full rounded-md" />
                   <Skeleton className="h-4 w-11/12" />
                   <Skeleton className="h-4 w-8/12" />
                   <Skeleton className="h-4 w-6/12" />

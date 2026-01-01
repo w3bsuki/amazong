@@ -269,7 +269,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               exit={{ opacity: 0, x: -20 }}
               className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
             >
-              <div className="p-6 border-b border-border">
+              <div className="p-4 border-b border-border">
                 <button
                   onClick={() => setStep(1)}
                   className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
@@ -281,7 +281,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                 <p className="text-sm text-muted-foreground mt-1">Pick a style or upload your own photo</p>
               </div>
 
-              <div className="p-6 space-y-6">
+              <div className="p-4 space-y-4">
                 <div className="flex justify-center">
                   <div className="relative">
                     {useCustomAvatar && avatarPreview ? (
@@ -318,7 +318,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                           setUseCustomAvatar(false)
                         }}
                         className={cn(
-                          "p-2 rounded-xl border-2 transition-all hover:scale-105",
+                          "p-2 rounded-md border-2 transition-all hover:scale-105",
                           !useCustomAvatar && selectedVariant === variant
                             ? "border-primary bg-muted"
                             : "border-border hover:border-border/80"
@@ -399,7 +399,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               exit={{ opacity: 0, x: -20 }}
               className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
             >
-              <div className="p-6 border-b border-border">
+              <div className="p-4 border-b border-border">
                 <button
                   onClick={() => setStep(2)}
                   className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4"
@@ -410,7 +410,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                 <p className="text-sm text-muted-foreground mt-1">This helps other users know who you are</p>
               </div>
 
-              <div className="p-6 space-y-5">
+              <div className="p-4 space-y-4">
                 <div className="flex justify-center mb-2">
                   {useCustomAvatar && avatarPreview ? (
                     <Image src={avatarPreview} alt="Avatar" width={64} height={64} className="size-16 rounded-full object-cover" />
@@ -479,7 +479,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
               animate={{ opacity: 1, scale: 1 }}
               className="bg-card rounded-md border border-border shadow-sm overflow-hidden"
             >
-              <div className="p-8 text-center">
+              <div className="p-4 text-center">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -497,9 +497,9 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-xl border border-border transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-md border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                      <div className="size-12 bg-primary/10 rounded-md flex items-center justify-center shrink-0">
                         <ShoppingBag className="size-6 text-primary" weight="duotone" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -514,9 +514,9 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-xl border border-border transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-md border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-primary rounded-xl flex items-center justify-center shrink-0">
+                      <div className="size-12 bg-primary rounded-md flex items-center justify-center shrink-0">
                         <Storefront className="size-6 text-primary-foreground" weight="fill" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -531,9 +531,9 @@ export function WelcomeClient({ locale }: { locale: string }) {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-xl border border-border transition-colors group"
+                      className="flex items-center gap-4 p-4 bg-muted hover:bg-muted/80 rounded-md border border-border transition-colors group"
                     >
-                      <div className="size-12 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                      <div className="size-12 bg-primary/10 rounded-md flex items-center justify-center shrink-0">
                         <UserCircle className="size-6 text-primary" weight="duotone" />
                       </div>
                       <div className="flex-1 min-w-0">

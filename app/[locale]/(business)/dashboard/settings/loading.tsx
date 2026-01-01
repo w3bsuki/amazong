@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export default function DashboardSettingsLoading() {
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6">
       {/* Header */}
       <div className="px-4 lg:px-6 space-y-2">
         <Skeleton className="h-8 w-28" />
@@ -28,10 +28,10 @@ export default function DashboardSettingsLoading() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Logo & Banner */}
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-3">
                 <Skeleton className="h-4 w-24" />
-                <Skeleton className="size-24 rounded-xl" />
+                <Skeleton className="size-24 rounded-md" />
                 <Skeleton className="h-9 w-28" />
               </div>
               <div className="space-y-3">

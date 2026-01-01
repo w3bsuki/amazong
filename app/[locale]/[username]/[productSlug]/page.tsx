@@ -6,6 +6,7 @@ import { connection } from "next/server"
 import { createStaticClient } from "@/lib/supabase/server"
 import { fetchProductByUsernameAndSlug, fetchSellerProducts, type ProductPageProduct } from "@/lib/data/product-page"
 import { fetchProductReviews, type ProductReview } from "@/lib/data/product-reviews"
+import { submitReview } from "@/app/actions/reviews"
 
 import { ProductPageLayout } from "@/components/shared/product/product-page-layout"
 import {
@@ -99,6 +100,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       relatedProducts={viewModel.relatedProducts}
       reviews={reviews}
       viewModel={viewModel}
+      submitReview={submitReview}
     />
   )
 }

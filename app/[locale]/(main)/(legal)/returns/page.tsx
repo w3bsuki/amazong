@@ -48,7 +48,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
           <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
             <AppBreadcrumb items={breadcrumbPresets.returns} />
           </div>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="max-w-2xl">
               <h1 className="text-2xl md:text-4xl font-bold mb-3">{t('heroTitle')}</h1>
               <p className="text-white/80">{t('heroSubtitle')}</p>
@@ -68,28 +68,28 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
         <section className="mb-12">
           <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-4">
             <Card className="border-brand-success/30 bg-brand-success-light/30">
-              <CardContent className="p-5 text-center">
+              <CardContent className="p-4 text-center">
                 <Clock className="size-8 text-brand-success mx-auto mb-3" />
                 <h3 className="font-bold text-2xl text-brand-success">30</h3>
                 <p className="text-sm text-muted-foreground">{t('daysToReturn')}</p>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-5 text-center">
+              <CardContent className="p-4 text-center">
                 <Truck className="size-8 text-brand mx-auto mb-3" />
                 <h3 className="font-bold">{t('freeReturns')}</h3>
                 <p className="text-sm text-muted-foreground">{t('freeReturnsDesc')}</p>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-5 text-center">
+              <CardContent className="p-4 text-center">
                 <CreditCard className="size-8 text-brand mx-auto mb-3" />
                 <h3 className="font-bold">{t('fastRefunds')}</h3>
                 <p className="text-sm text-muted-foreground">{t('fastRefundsDesc')}</p>
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-5 text-center">
+              <CardContent className="p-4 text-center">
                 <ShieldCheck className="size-8 text-brand mx-auto mb-3" />
                 <h3 className="font-bold">{t('noHassle')}</h3>
                 <p className="text-sm text-muted-foreground">{t('noHassleDesc')}</p>
@@ -101,7 +101,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
         {/* How to Return Section */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold mb-6">{t('howToReturn')}</h2>
-          <div className="grid grid-cols-2 gap-3 md:gap-6 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-4">
             {/* Step 1 */}
             <Card className="relative">
               <CardContent className="p-6">
@@ -153,7 +153,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
         </section>
 
         {/* Return Policy Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-12">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Eligible Items */}
@@ -226,7 +226,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
           <div className="space-y-4">
             {/* Start Return CTA */}
             <Card className="border-brand/30 bg-brand/5">
-              <CardContent className="p-6 text-center">
+              <CardContent className="p-4 text-center">
                 <ArrowCounterClockwise className="size-12 text-brand mx-auto mb-4" />
                 <h3 className="font-bold text-lg mb-2">{t('readyToReturn')}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{t('readyToReturnDesc')}</p>

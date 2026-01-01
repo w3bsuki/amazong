@@ -628,12 +628,12 @@ export function AIChatbot({
                   </div>
 
                   {/* Buy/Sell Selection Buttons - Modernized with glassmorphism and refined interactions */}
-                  <div className="mx-auto mt-10 grid w-full max-w-md grid-cols-1 gap-4 px-4 sm:mt-12 sm:max-w-2xl sm:grid-cols-2 sm:gap-6 sm:px-0">
+                  <div className="mx-auto mt-10 grid w-full max-w-md grid-cols-1 gap-4 px-4 sm:mt-12 sm:max-w-2xl sm:grid-cols-2 sm:gap-4 sm:px-0">
                     <button
                       type="button"
                       onClick={() => handleSelectMode("buy")}
                       className={cn(
-                        "group relative flex items-center gap-4 rounded-md border border-border/50 bg-card p-3 transition-colors duration-200 sm:flex-col sm:gap-4 sm:p-8",
+                        "group relative flex items-center gap-4 rounded-md border border-border/50 bg-card p-3 transition-colors duration-200 sm:flex-col sm:gap-4 sm:p-4",
                         "hover:border-primary/30 hover:bg-muted/30",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                         "active:bg-muted/40"
@@ -658,7 +658,7 @@ export function AIChatbot({
                       type="button"
                       onClick={() => handleSelectMode("sell")}
                       className={cn(
-                        "group relative flex items-center gap-4 rounded-md border border-border/50 bg-card p-3 transition-colors duration-200 sm:flex-col sm:gap-4 sm:p-8",
+                        "group relative flex items-center gap-4 rounded-md border border-border/50 bg-card p-3 transition-colors duration-200 sm:flex-col sm:gap-4 sm:p-4",
                         "hover:border-primary/30 hover:bg-muted/30",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                         "active:bg-muted/40"
@@ -982,10 +982,9 @@ export function AIChatbot({
                           originalPrice={(product.list_price ?? null) as number | null}
                           tags={Array.isArray(product.tags) ? product.tags : []}
                           slug={(product.slug ?? null) as string | null}
-                          storeSlug={(product.store_slug ?? null) as string | null}
+                          username={(product.store_slug ?? null) as string | null}
                           showWishlist={true}
                           showRating={false}
-                          showPills={true}
                           variant="featured"
                         />
                       ))}
@@ -1095,7 +1094,7 @@ export function AIChatbot({
                         ? locale === "bg" ? "Какво търсите?" : "What are you looking for?"
                         : locale === "bg" ? "Опишете продукта си..." : "Describe your product..."
                     }
-                    className="min-h-[44px] text-base sm:text-sm"
+                    className="min-h-11 text-base sm:text-sm"
                     disabled={isLoading}
                   />
                 </PromptInputBody>

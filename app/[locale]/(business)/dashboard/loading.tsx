@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export default function BusinessDashboardLoading() {
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6">
       {/* Setup Guide Skeleton (for new stores) */}
       <Card className="mx-4 lg:mx-6">
         <CardHeader className="pb-2">

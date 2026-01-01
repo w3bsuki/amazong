@@ -103,7 +103,7 @@ export function LegalPageLayout({
       </div>
 
       <div className="container py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {/* Sidebar Navigation */}
           <aside className="lg:col-span-1">
             <Card className="sticky top-4">

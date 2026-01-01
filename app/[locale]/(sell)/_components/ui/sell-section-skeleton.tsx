@@ -22,7 +22,7 @@ export function SellSectionSkeleton({
   className 
 }: SellSectionSkeletonProps) {
   return (
-    <Card className={cn("rounded-xl border-border/60", className)}>
+    <Card className={cn("rounded-md border-border/60", className)}>
       {/* Header skeleton */}
       <CardHeader className="pb-3 pt-4 px-4">
         <div className="flex items-center gap-2.5">
@@ -56,10 +56,10 @@ function PhotosSkeleton() {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {/* Main upload zone */}
-      <Skeleton className="col-span-2 aspect-square rounded-2xl" />
+      <Skeleton className="col-span-2 aspect-square rounded-md" />
       {/* Thumbnail slots */}
       {Array.from({ length: 4 }).map((_, i) => (
-        <Skeleton key={i} className="aspect-square rounded-xl" />
+        <Skeleton key={i} className="aspect-square rounded-md" />
       ))}
     </div>
   );
@@ -71,26 +71,26 @@ function DetailsSkeleton() {
       {/* Title field */}
       <div className="space-y-1.5">
         <Skeleton className="h-4 w-12" />
-        <Skeleton className="h-12 w-full rounded-xl" />
+        <Skeleton className="h-12 w-full rounded-md" />
         <Skeleton className="h-3 w-20" />
       </div>
       
       {/* Category picker */}
       <div className="space-y-1.5">
         <Skeleton className="h-4 w-16" />
-        <Skeleton className="h-40 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-md" />
       </div>
       
       {/* Condition dropdown */}
       <div className="space-y-1.5">
         <Skeleton className="h-4 w-16" />
-        <Skeleton className="h-12 w-full rounded-xl" />
+        <Skeleton className="h-12 w-full rounded-md" />
       </div>
       
       {/* Description textarea */}
       <div className="space-y-1.5">
         <Skeleton className="h-4 w-20" />
-        <Skeleton className="h-40 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-md" />
       </div>
     </div>
   );
@@ -101,19 +101,19 @@ function PricingSkeleton() {
     <div className="space-y-4">
       {/* Format selection (2 cards) */}
       <div className="grid grid-cols-2 gap-3">
-        <Skeleton className="h-touch-lg rounded-xl" />
-        <Skeleton className="h-touch-lg rounded-xl" />
+        <Skeleton className="h-touch-lg rounded-md" />
+        <Skeleton className="h-touch-lg rounded-md" />
       </div>
       
       {/* Price and quantity */}
       <div className="grid grid-cols-2 gap-5">
         <div className="space-y-1.5">
           <Skeleton className="h-4 w-12" />
-          <Skeleton className="h-touch w-full rounded-xl" />
+          <Skeleton className="h-touch w-full rounded-md" />
         </div>
         <div className="space-y-1.5">
           <Skeleton className="h-4 w-16" />
-          <Skeleton className="h-touch w-full rounded-xl" />
+          <Skeleton className="h-touch w-full rounded-md" />
         </div>
       </div>
       
@@ -130,11 +130,11 @@ function ShippingSkeleton() {
   return (
     <div className="space-y-3">
       {/* Shipping option cards */}
-      <Skeleton className="h-touch-lg rounded-xl" />
-      <Skeleton className="h-touch-lg rounded-xl" />
+      <Skeleton className="h-touch-lg rounded-md" />
+      <Skeleton className="h-touch-lg rounded-md" />
       
       {/* Package dimensions */}
-      <div className="rounded-xl border border-border bg-muted/30 p-4">
+      <div className="rounded-md border border-border bg-muted/30 p-4">
         <div className="flex items-center justify-between mb-3">
           <Skeleton className="h-4 w-32" />
           <Skeleton className="h-3 w-28" />
@@ -183,7 +183,7 @@ export function SellFormSkeleton() {
       {/* Main content */}
       <main className="pt-14">
         <div className="container-content">
-          <div className="lg:grid lg:grid-cols-[1fr_340px] lg:gap-8 py-6 lg:py-8">
+          <div className="lg:grid lg:grid-cols-[1fr_340px] lg:gap-4 py-4 lg:py-6">
             {/* Left column - Form sections */}
             <div className="space-y-6">
               {/* Page header */}
@@ -212,7 +212,7 @@ export function SellFormSkeleton() {
             <div className="hidden lg:block">
               <div className="sticky top-20 space-y-4">
                 {/* Preview card */}
-                <Card className="rounded-xl">
+                <Card className="rounded-md">
                   <CardHeader className="pb-2">
                     <Skeleton className="h-4 w-24" />
                   </CardHeader>
@@ -224,7 +224,7 @@ export function SellFormSkeleton() {
                 </Card>
 
                 {/* Tips card */}
-                <Card className="rounded-xl">
+                <Card className="rounded-md">
                   <CardHeader className="pb-2">
                     <Skeleton className="h-4 w-20" />
                   </CardHeader>
@@ -236,7 +236,7 @@ export function SellFormSkeleton() {
                 </Card>
 
                 {/* Checklist card */}
-                <Card className="rounded-xl">
+                <Card className="rounded-md">
                   <CardHeader className="pb-2">
                     <Skeleton className="h-4 w-28" />
                   </CardHeader>

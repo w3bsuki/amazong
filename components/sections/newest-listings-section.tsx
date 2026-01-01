@@ -425,7 +425,7 @@ export function NewestListingsSection({
               {...((activeTab === "promoted" || product.isBoosted) ? { state: "promoted" as const } : {})}
               index={index}
               slug={product.slug ?? null}
-              storeSlug={product.storeSlug ?? null}
+              username={product.storeSlug ?? null}
               sellerId={product.sellerId ?? null}
               {...((product.sellerName || product.storeSlug)
                 ? { sellerName: product.sellerName || product.storeSlug || "" }
@@ -443,9 +443,6 @@ export function NewestListingsSection({
               {...(product.year ? { year: product.year } : {})}
               {...(product.location ? { location: product.location } : {})}
               {...(product.attributes ? { attributes: product.attributes } : {})}
-              cardStyle="marketplace"
-              showSellerRow={false}
-              showMetaPills={true}
             />
           ))}
         </div>

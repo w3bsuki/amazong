@@ -37,7 +37,7 @@ export default function CustomerServiceLoading() {
         <Skeleton className="h-6 w-40 mb-6" />
         <div className="grid sm:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-lg border border-border p-6 text-center">
+            <div key={i} className="bg-card rounded-lg border border-border p-4 text-center">
               <Skeleton className="size-14 mx-auto rounded-full mb-4" />
               <Skeleton className="h-5 w-24 mx-auto mb-2" />
               <Skeleton className="h-4 w-32 mx-auto" />

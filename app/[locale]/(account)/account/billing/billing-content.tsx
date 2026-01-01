@@ -309,7 +309,7 @@ export function BillingContent({
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-4">
       {/* Page Header */}
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center gap-4">
         <div>

@@ -333,7 +333,7 @@ function FullMegaMenu({
             </nav>
 
             {/* Subcategories Panel - Full width */}
-            <div className="flex-1 p-5 bg-popover overflow-y-auto overscroll-contain">
+            <div className="flex-1 p-4 bg-popover overflow-y-auto overscroll-contain">
               {activeCategory && (
                 <FullMenuSubcategoriesGrid
                   category={activeCategory}
@@ -651,9 +651,9 @@ interface EbayStyleMenuProps {
 
 function EbayStyleMenu({ content, getName, onClose, locale, activeCategory }: EbayStyleMenuProps) {
   return (
-    <div className="flex gap-6 items-stretch">
+    <div className="flex gap-4 items-stretch">
       {/* Category columns */}
-      <div className={cn("grid gap-6", content.columns === 3 ? "w-3/5 grid-cols-3" : "w-1/2 grid-cols-2")}>
+      <div className={cn("grid gap-4", content.columns === 3 ? "w-3/5 grid-cols-3" : "w-1/2 grid-cols-2")}>
         {content.showL1sDirectly ? (
           <DirectL1Columns content={content} getName={getName} onClose={onClose} locale={locale} activeCategory={activeCategory} />
         ) : (
@@ -813,7 +813,7 @@ function BannerCTA({ banner, columns, onClose, locale }: BannerCTAProps) {
     >
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${banner.image})` }} />
       <div className="absolute inset-0 bg-foreground/40" />
-      <div className="relative z-10 h-full flex flex-col justify-center p-8 text-primary-foreground">
+      <div className="relative z-10 h-full flex flex-col justify-center p-4 text-primary-foreground">
         <h3 className="text-2xl font-bold mb-2">{locale === "bg" ? banner.titleBg : banner.title}</h3>
         <p className="text-primary-foreground/80 text-sm mb-4 max-w-xs">{locale === "bg" ? banner.subtitleBg : banner.subtitle}</p>
         <div className="inline-flex items-center gap-2 bg-brand text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium w-fit">
@@ -838,7 +838,7 @@ function SimpleGridMenu({ content, getName, onClose }: SimpleGridMenuProps) {
   return (
     <div
       className={cn(
-        "grid gap-8",
+        "grid gap-4",
         colCount === 1 && "grid-cols-1",
         colCount === 2 && "grid-cols-2",
         colCount === 3 && "grid-cols-3",

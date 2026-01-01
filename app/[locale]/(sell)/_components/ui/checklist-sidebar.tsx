@@ -29,7 +29,7 @@ export function ChecklistSidebar({
   const completedCount = items.filter(i => i.completed).length;
   
   return (
-    <div className="p-5 rounded-xl border border-border bg-background">
+    <div className="p-4 rounded-md border border-border bg-background">
       <div className="flex items-center justify-between mb-5">
         <h4 className="text-sm font-semibold text-foreground">
           {isBg ? "Списък" : "Checklist"}

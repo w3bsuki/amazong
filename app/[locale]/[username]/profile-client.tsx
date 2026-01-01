@@ -204,7 +204,7 @@ export function PublicProfileClient({
         </div>
         
         {/* Bio and Info */}
-        <div className="mt-4 grid gap-6 md:grid-cols-3">
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
           {/* Left Column - Bio and Details */}
           <div className="md:col-span-2 space-y-4">
             {profile.bio && (
@@ -361,7 +361,7 @@ export function PublicProfileClient({
                         sellerId={product.seller_id}
                         slug={product.slug}
                         condition={product.condition}
-                        storeSlug={profile.username}
+                        username={profile.username}
                         sellerName={displayName}
                         sellerAvatarUrl={profile.avatar_url}
                         sellerVerified={Boolean(profile.is_verified_business)}
@@ -420,17 +420,17 @@ export function PublicProfileClient({
                               <StarRating rating={review.rating} count={0} />
                               <div className="flex gap-1 text-xs">
                                 {review.item_as_described && (
-                                  <Badge variant="secondary" className="text-[10px] py-0">
+                                  <Badge variant="secondary" className="text-2xs py-0">
                                     {locale === "bg" ? "Точно описание" : "Accurate"}
                                   </Badge>
                                 )}
                                 {review.shipping_speed && (
-                                  <Badge variant="secondary" className="text-[10px] py-0">
+                                  <Badge variant="secondary" className="text-2xs py-0">
                                     {locale === "bg" ? "Бърза доставка" : "Fast shipping"}
                                   </Badge>
                                 )}
                                 {review.communication && (
-                                  <Badge variant="secondary" className="text-[10px] py-0">
+                                  <Badge variant="secondary" className="text-2xs py-0">
                                     {locale === "bg" ? "Добра комуникация" : "Good comms"}
                                   </Badge>
                                 )}
@@ -485,12 +485,12 @@ export function PublicProfileClient({
                               <StarRating rating={review.rating} count={0} />
                               <div className="flex gap-1 text-xs">
                                 {review.prompt_payment && (
-                                  <Badge variant="secondary" className="text-[10px] py-0">
+                                  <Badge variant="secondary" className="text-2xs py-0">
                                     {locale === "bg" ? "Бързо плащане" : "Prompt payment"}
                                   </Badge>
                                 )}
                                 {review.good_communication && (
-                                  <Badge variant="secondary" className="text-[10px] py-0">
+                                  <Badge variant="secondary" className="text-2xs py-0">
                                     {locale === "bg" ? "Добра комуникация" : "Good comms"}
                                   </Badge>
                                 )}

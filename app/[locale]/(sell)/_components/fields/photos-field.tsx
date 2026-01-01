@@ -263,9 +263,9 @@ export function PhotosField({
       {/* Main Photos Field */}
       <Field data-invalid={hasError}>
         {!compact ? (
-          <div className="rounded-xl border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
+          <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
             {/* Header */}
-            <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
+            <div className="p-4 pb-3 border-b border-border/50 bg-muted/10">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3.5">
                   <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">

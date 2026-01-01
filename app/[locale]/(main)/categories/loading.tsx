@@ -18,7 +18,7 @@ export default function CategoriesLoading() {
 
       <div className="container -mt-4 sm:-mt-6 space-y-2">
         {/* Category Circles card (match /categories) */}
-        <section className="bg-background rounded-xl border border-border p-2 shadow-sm">
+        <section className="bg-background rounded-md border border-border p-2 shadow-sm">
           <div className="px-2 py-1">
             <Skeleton className="h-6 w-52" />
           </div>
@@ -34,7 +34,7 @@ export default function CategoriesLoading() {
 
         {/* CTA placeholder (match page structure) */}
         <div className="px-0">
-          <Skeleton className="h-24 w-full rounded-xl" />
+          <Skeleton className="h-24 w-full rounded-md" />
         </div>
       </div>
     </div>

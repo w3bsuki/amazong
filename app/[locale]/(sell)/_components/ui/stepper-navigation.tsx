@@ -40,7 +40,7 @@ export function StepperNavigation({
           onClick={onBack}
           disabled={isFirstStep || isSubmitting}
           className={cn(
-            "h-12 min-w-22 gap-2 text-sm font-medium rounded-xl transition-all",
+            "h-12 min-w-22 gap-2 text-sm font-medium rounded-md transition-all",
             "active:scale-[0.98]",
             isFirstStep && "opacity-0 pointer-events-none"
           )}
@@ -59,7 +59,7 @@ export function StepperNavigation({
             onClick={onSubmit}
             disabled={!isStepValid || isSubmitting}
             className={cn(
-              "h-12 min-w-32 gap-2 text-sm font-semibold rounded-xl transition-all",
+              "h-12 min-w-32 gap-2 text-sm font-semibold rounded-md transition-all",
               "bg-primary text-primary-foreground hover:bg-primary/90",
               "active:scale-[0.98]",
               "disabled:opacity-50 disabled:cursor-not-allowed"
@@ -83,7 +83,7 @@ export function StepperNavigation({
             onClick={onNext}
             disabled={!isStepValid || isSubmitting}
             className={cn(
-              "h-12 min-w-26 gap-2 text-sm font-semibold rounded-xl transition-all",
+              "h-12 min-w-26 gap-2 text-sm font-semibold rounded-md transition-all",
               "active:scale-[0.98]",
               "disabled:opacity-50 disabled:cursor-not-allowed"
             )}

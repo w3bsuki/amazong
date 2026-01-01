@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export default function PaymentsLoading() {
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 lg:p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -18,7 +18,7 @@ export default function PaymentsLoading() {
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Add New Payment Method Card */}
           <Card className="border-dashed">
-            <CardContent className="p-6 flex flex-col items-center justify-center min-h-[180px]">
+            <CardContent className="p-4 flex flex-col items-center justify-center min-h-[180px]">
               <Skeleton className="size-12 rounded-full mb-3" />
               <Skeleton className="h-5 w-40 mb-2" />
               <Skeleton className="h-4 w-56" />

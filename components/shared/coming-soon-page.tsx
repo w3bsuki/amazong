@@ -57,7 +57,7 @@ export function ComingSoonPage({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-muted/30 to-background flex flex-col">
+    <div className="min-h-screen bg-muted/30 flex flex-col">
       {/* Header with back button */}
       <div className="container py-4">
         <Link href="/">

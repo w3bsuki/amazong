@@ -117,7 +117,7 @@ export function CookieConsent() {
             {/* Desktop banner */}
             <div className="hidden md:block bg-primary text-primary-foreground border-t border-border/30">
                 <div className="container py-4">
-                    <div className="flex items-center justify-between gap-8">
+                    <div className="flex items-center justify-between gap-4">
                         <div className="flex-1 flex items-center gap-3">
                             <Cookie size={20} weight="regular" className="text-accent shrink-0" />
                             <p className="text-sm text-primary-foreground/80">

@@ -154,7 +154,7 @@ export default function CheckoutPageClient() {
     return (
       <div className="min-h-[60vh] flex items-center justify-center p-4">
         <Card className="max-w-md w-full border-0 shadow-sm">
-          <CardContent className="p-8 text-center">
+          <CardContent className="p-4 text-center">
             <div className="size-20 bg-brand/5 rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingCart className="size-10 text-brand" weight="duotone" />
             </div>
@@ -184,10 +184,10 @@ export default function CheckoutPageClient() {
           {locale === "bg" ? "Обратно към количката" : "Back to cart"}
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-4">
           <div className="lg:col-span-2">
             <Card className="hidden lg:block border-0 shadow-sm">
-              <CardContent className="p-5 space-y-5">
+              <CardContent className="p-4 space-y-4">
                 <section className="rounded-lg border border-border p-4">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-base flex items-center gap-2">

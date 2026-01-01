@@ -28,7 +28,7 @@ export function DesktopHeroCTA({ locale = "en", bottomSlot }: DesktopHeroCTAProp
       <div className="relative overflow-hidden rounded-md bg-cta-trust-blue">
 
         <div className="relative px-6 py-5 lg:px-8 lg:py-7">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-8">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             {/* Left Content */}
             <div className="text-center lg:text-left">
               {/* Badge - social proof */}

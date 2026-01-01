@@ -52,7 +52,7 @@ const productCardVariants = cva(
 )
 
 // =============================================================================
-// TYPES - Essential props with backwards compatibility
+// TYPES - Essential props
 // =============================================================================
 
 interface ProductCardProps extends VariantProps<typeof productCardVariants> {
@@ -64,8 +64,6 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
 
   // Pricing
   originalPrice?: number | null
-  /** @deprecated Use originalPrice */
-  listPrice?: number | null
   isOnSale?: boolean
   salePercent?: number
   saleEndDate?: string | null
@@ -102,25 +100,11 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   // URLs
   slug?: string | null
   username?: string | null
-  /** @deprecated Use username */
-  storeSlug?: string | null
 
   // Feature toggles
   showQuickAdd?: boolean
   showWishlist?: boolean
   showRating?: boolean
-  /** @deprecated No longer used */
-  showPills?: boolean
-  /** @deprecated No longer used */
-  showMetaPills?: boolean
-  /** @deprecated No longer used */
-  showExtraPills?: boolean
-  /** @deprecated No longer used */
-  showSellerRow?: boolean
-  /** @deprecated No longer used */
-  cardStyle?: "default" | "marketplace"
-  /** @deprecated Use state="promoted" */
-  isBoosted?: boolean
 
   // Context
   index?: number
@@ -175,7 +159,6 @@ function ProductCard({
   price,
   image,
   originalPrice,
-  listPrice, // deprecated
   isOnSale,
   salePercent,
   rating = 0,
@@ -188,10 +171,8 @@ function ProductCard({
   freeShipping = false,
   slug,
   username,
-  storeSlug, // deprecated
   variant = "default",
   state,
-  isBoosted, // deprecated
   showQuickAdd = true,
   showWishlist = true,
   showRating = true,
@@ -210,21 +191,17 @@ function ProductCard({
 
     const [isWishlistPending, setIsWishlistPending] = React.useState(false)
 
-    // Resolve deprecated props
-    const resolvedOriginalPrice = originalPrice ?? listPrice ?? null
-    const resolvedUsername = username ?? storeSlug ?? null
-
     // Derived values
-    const hasDiscount = resolvedOriginalPrice && resolvedOriginalPrice > price
+    const hasDiscount = originalPrice && originalPrice > price
     const discountPercent = hasDiscount
-      ? Math.round(((resolvedOriginalPrice - price) / resolvedOriginalPrice) * 100)
+      ? Math.round(((originalPrice - price) / originalPrice) * 100)
       : (salePercent ?? 0)
 
-    // Resolve state (handle deprecated isBoosted)
-    const resolvedState = state ?? (isBoosted ? "promoted" : (isOnSale || hasDiscount ? "sale" : "default"))
+    // Resolve state
+    const resolvedState = state ?? (isOnSale || hasDiscount ? "sale" : "default")
 
     // URLs
-    const productUrl = resolvedUsername ? `/${resolvedUsername}/${slug || id}` : "#"
+    const productUrl = username ? `/${username}/${slug || id}` : "#"
     const categoryLabel = React.useMemo(() => getCategoryLabel(categoryPath, locale), [categoryPath, locale])
 
     const inWishlist = isInWishlist(id)
@@ -269,7 +246,7 @@ function ProductCard({
         image,
         quantity: 1,
         ...(slug ? { slug } : {}),
-        ...(resolvedUsername ? { username: resolvedUsername } : {}),
+        ...(username ? { username } : {}),
       })
       toast.success(tCart("itemAdded"))
     }
@@ -295,7 +272,7 @@ function ProductCard({
         {/* Full-card link for accessibility */}
         <Link
           href={productUrl}
-          className="absolute inset-0 z-[1]"
+          className="absolute inset-0 z-1"
           aria-label={t("openProduct", { title })}
         >
           <span className="sr-only">{title}</span>
@@ -411,9 +388,9 @@ function ProductCard({
             >
               {formatPrice(price)}
             </span>
-            {hasDiscount && resolvedOriginalPrice && (
+            {hasDiscount && originalPrice && (
               <span className="text-xs text-muted-foreground line-through">
-                {formatPrice(resolvedOriginalPrice)}
+                {formatPrice(originalPrice)}
               </span>
             )}
           </div>

@@ -140,7 +140,7 @@ export default function WishlistPageClient() {
             {t("title")}
           </h1>
 
-          <div className="bg-card rounded-xl border border-border p-8 md:p-12 text-center">
+          <div className="bg-card rounded-md border border-border p-4 md:p-4 text-center">
             <div className="size-20 md:size-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
               <Heart className="size-10 md:size-12 text-muted-foreground" weight="duotone" />
             </div>

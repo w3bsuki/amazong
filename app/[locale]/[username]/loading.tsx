@@ -8,7 +8,7 @@ export default function ProfileLoading() {
 
       {/* Profile header skeleton */}
       <div className="container -mt-12 md:-mt-16">
-        <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6">
+        <div className="flex flex-col md:flex-row items-start gap-4 md:gap-4">
           <Skeleton className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-background" />
           <div className="flex-1 pt-2 space-y-2">
             <Skeleton className="h-7 w-48" />

@@ -33,7 +33,7 @@ export function MobileProductHeader() {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[60] h-14 bg-background/95 backdrop-blur-md flex items-center justify-between px-1 border-b border-border/50 shadow-sm lg:hidden">
+    <header className="fixed top-0 left-0 right-0 z-60 h-14 bg-background/95 backdrop-blur-md flex items-center justify-between px-1 border-b border-border/50 shadow-sm lg:hidden">
       {/* Back button */}
       <Link 
         href="/" 

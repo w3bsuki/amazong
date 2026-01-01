@@ -62,7 +62,7 @@ export function StepperWrapper({
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             {/* Step indicator badge */}
-            <span className="flex size-6 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+            <span className="flex size-6 items-center justify-center rounded-full bg-primary text-2xs font-bold text-primary-foreground">
               {currentStep}
             </span>
             <p className="text-sm font-bold text-foreground uppercase tracking-tight">
@@ -97,7 +97,7 @@ export function StepperWrapper({
               type="button"
               variant="outline"
               onClick={handleBack}
-              className="h-11 w-11 shrink-0 rounded-xl p-0 border-border/50"
+              className="h-11 w-11 shrink-0 rounded-md p-0 border-border/50"
               aria-label={isBg ? "Назад" : "Back"}
             >
               <CaretLeft className="size-4.5" weight="bold" />
@@ -109,7 +109,7 @@ export function StepperWrapper({
               type="button"
               onClick={onSubmit}
               disabled={isSubmitting}
-              className="h-11 flex-1 gap-2 rounded-xl text-sm font-bold uppercase tracking-wider"
+              className="h-11 flex-1 gap-2 rounded-md text-sm font-bold uppercase tracking-wider"
             >
               {isSubmitting ? (
                 <>
@@ -127,7 +127,7 @@ export function StepperWrapper({
             <Button
               type="button"
               onClick={handleNext}
-              className="h-11 flex-1 gap-2 rounded-xl text-sm font-bold uppercase tracking-wider"
+              className="h-11 flex-1 gap-2 rounded-md text-sm font-bold uppercase tracking-wider"
             >
               {isBg ? "Продължи" : "Continue"}
               <ArrowRight className="size-4" weight="bold" />

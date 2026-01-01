@@ -361,7 +361,7 @@ export function SupportChatWidget({
                         : "bg-brand text-white"
                     )}
                   >
-                    <p className="text-sm whitespace-pre-wrap break-words">
+                    <p className="text-sm whitespace-pre-wrap wrap-break-word">
                       {msg.content}
                     </p>
                     <p

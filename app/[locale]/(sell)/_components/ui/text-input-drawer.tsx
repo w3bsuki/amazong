@@ -67,7 +67,7 @@ export function TextInputDrawer({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={placeholder}
-            className="h-12 text-base rounded-xl"
+            className="h-12 text-base rounded-md"
             autoFocus
           />
         </div>
@@ -75,13 +75,13 @@ export function TextInputDrawer({
         <div className="p-4 pt-0 flex gap-3">
           <Button
             variant="outline"
-            className="flex-1 h-12 rounded-xl"
+            className="flex-1 h-12 rounded-md"
             onClick={onClose}
           >
             {isBg ? "Отказ" : "Cancel"}
           </Button>
           <Button
-            className="flex-1 h-12 rounded-xl"
+            className="flex-1 h-12 rounded-md"
             onClick={handleSave}
           >
             {isBg ? "Запази" : "Save"}

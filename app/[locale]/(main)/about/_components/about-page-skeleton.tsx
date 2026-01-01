@@ -12,7 +12,7 @@ export function AboutPageSkeleton() {
         </div>
       </div>
       <div className="container py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="space-y-4">
             <Skeleton className="h-8 w-32" />
             <Skeleton className="h-10 w-64" />

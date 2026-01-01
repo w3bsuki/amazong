@@ -86,7 +86,7 @@ export default function CartPageClient() {
           <AppBreadcrumb items={breadcrumbPresets.cart} />
 
           <Card className="mt-6 max-w-lg mx-auto">
-            <CardContent className="p-8 text-center">
+            <CardContent className="p-4 text-center">
               <div className="size-24 bg-brand/5 rounded-full flex items-center justify-center mx-auto mb-6">
                 <ShoppingCart className="size-12 text-brand" weight="duotone" />
               </div>
@@ -139,7 +139,7 @@ export default function CartPageClient() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item, index) => (

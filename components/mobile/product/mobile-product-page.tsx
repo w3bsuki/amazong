@@ -19,6 +19,7 @@ import { CategoryBadge } from "@/components/shared/product/category-badge";
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/types/database.types";
 import type { CustomerReview } from "@/components/shared/product/customer-reviews-hybrid";
+import type { SubmitReviewFn } from "@/components/shared/product/write-review-dialog";
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
@@ -59,6 +60,7 @@ interface MobileProductPageProps {
   relatedProducts: ProductPageViewModel["relatedProducts"];
   reviews: CustomerReview[];
   viewModel: ProductPageViewModel;
+  submitReview?: SubmitReviewFn;
 }
 
 export function MobileProductPage(props: MobileProductPageProps) {
@@ -74,6 +76,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
     relatedProducts,
     reviews,
     viewModel,
+    submitReview,
   } = props;
 
   const accordionRef = useRef<HTMLDivElement>(null);
@@ -258,6 +261,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
           productId={product.id}
           productTitle={product.title}
           locale={locale}
+          {...(submitReview && { submitReview })}
         />
       </div>
 

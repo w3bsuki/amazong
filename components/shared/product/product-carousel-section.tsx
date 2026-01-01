@@ -252,13 +252,13 @@ export function ProductCarouselSection({
                     id={product.id}
                     title={product.title}
                     price={product.price}
-                    listPrice={product.listPrice ?? null}
-                    isBoosted={Boolean(product.isBoosted)}
+                    originalPrice={product.listPrice ?? null}
+                    state={product.isBoosted ? "promoted" : undefined}
                     image={product.image}
                     rating={product.rating ?? 0}
                     reviews={product.reviews ?? 0}
                     slug={product.slug ?? null}
-                    storeSlug={product.storeSlug ?? null}
+                    username={product.storeSlug ?? null}
                     sellerId={product.sellerId ?? null}
                     {...((product.sellerName || product.storeSlug)
                       ? { sellerName: product.sellerName || product.storeSlug || "" }

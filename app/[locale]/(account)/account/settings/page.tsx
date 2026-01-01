@@ -38,7 +38,7 @@ export default async function AccountSettingsPage({
   ]
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-4">
       <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>
 
       {sp.email_changed === "true" && (

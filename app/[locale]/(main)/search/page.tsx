@@ -213,7 +213,7 @@ export default async function SearchPage({
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container overflow-x-hidden">
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-4">
           {/* Sidebar Filters - Hidden on mobile */}
           <aside className="w-64 hidden lg:block shrink-0 border-r border-border">
             <div className="sticky top-28 py-4 pr-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
@@ -335,7 +335,7 @@ export default async function SearchPage({
                   originalPrice={product.list_price ?? null}
                   tags={product.tags || []}
                   slug={product.slug ?? null}
-                  storeSlug={product.profiles?.username ?? null}
+                  username={product.profiles?.username ?? null}
                   sellerId={product.profiles?.id ?? null}
                   {...(sellerName ? { sellerName } : {})}
                   sellerAvatarUrl={product.profiles?.avatar_url ?? null}

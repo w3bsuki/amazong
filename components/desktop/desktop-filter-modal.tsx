@@ -222,7 +222,7 @@ export function DesktopFilterModal({
 
         {/* Content - scrollable with scroll shadow indicator */}
         <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-track]:bg-transparent">
-          <div className="p-6 space-y-4">
+          <div className="p-4 space-y-4">
             
             {/* Row 1: Price & Rating - 2 columns 50/50 */}
             <div className="grid grid-cols-2 gap-4">

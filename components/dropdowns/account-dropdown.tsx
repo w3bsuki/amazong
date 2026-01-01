@@ -92,7 +92,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
         collisionPadding={10}
       >
         {!user ? (
-          <div className="flex flex-col items-center p-8 bg-muted border-b border-border gap-4">
+          <div className="flex flex-col items-center p-4 bg-muted border-b border-border gap-4">
             <div className="flex flex-col items-center gap-2">
               <Link href="/auth/login">
                 <Button className="w-56 bg-cta-primary hover:bg-cta-primary-hover text-cta-primary-text">

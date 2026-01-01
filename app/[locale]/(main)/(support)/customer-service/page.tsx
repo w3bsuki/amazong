@@ -79,7 +79,7 @@ export default async function CustomerServicePage({ params }: { params: Promise<
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="col-span-2">
                         <h2 className="text-xl font-bold mb-4">{t('allHelpTopics')}</h2>
                         <div className="space-y-4">
@@ -114,7 +114,7 @@ export default async function CustomerServicePage({ params }: { params: Promise<
                     </div>
 
                     <div>
-                        <div className="bg-muted p-6 rounded-lg border border-border">
+                        <div className="bg-muted p-4 rounded-lg border border-border">
                             <h3 className="font-bold text-lg mb-4">{t('contactUs')}</h3>
                             <p className="text-sm text-muted-foreground mb-4">
                                 {t('needMoreHelp')}

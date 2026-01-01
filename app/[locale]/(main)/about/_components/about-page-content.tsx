@@ -43,7 +43,7 @@ export async function AboutPageContent() {
       <div className="container">
         {/* Mission Section */}
         <section className="py-12 md:py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand/10 text-brand text-sm font-medium mb-4">
                 <Target className="size-4" />
@@ -71,24 +71,24 @@ export async function AboutPageContent() {
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-video bg-gradient-to-br from-brand/10 to-brand/5 flex items-center justify-center">
+              <div className="aspect-video bg-brand/10 flex items-center justify-center">
                 <div className="grid grid-cols-2 gap-4 p-8">
-                  <div className="bg-white p-6 text-center shadow-sm">
+                  <div className="bg-white p-4 text-center shadow-sm">
                     <Lightning className="size-8 text-brand mx-auto mb-2" />
                     <div className="text-lg font-bold text-brand">{t("statGrowing")}</div>
                     <div className="text-xs text-muted-foreground">{t("statGrowingDesc")}</div>
                   </div>
-                  <div className="bg-white p-6 text-center shadow-sm">
+                  <div className="bg-white p-4 text-center shadow-sm">
                     <Shield className="size-8 text-brand mx-auto mb-2" />
                     <div className="text-lg font-bold text-brand">{t("statSecure")}</div>
                     <div className="text-xs text-muted-foreground">{t("statSecureDesc")}</div>
                   </div>
-                  <div className="bg-white p-6 text-center shadow-sm">
+                  <div className="bg-white p-4 text-center shadow-sm">
                     <Users className="size-8 text-brand mx-auto mb-2" />
                     <div className="text-lg font-bold text-brand">{t("statLocal")}</div>
                     <div className="text-xs text-muted-foreground">{t("statLocalDesc")}</div>
                   </div>
-                  <div className="bg-white p-6 text-center shadow-sm">
+                  <div className="bg-white p-4 text-center shadow-sm">
                     <Heart className="size-8 text-brand mx-auto mb-2" />
                     <div className="text-lg font-bold text-brand">{t("statPassion")}</div>
                     <div className="text-xs text-muted-foreground">{t("statPassionDesc")}</div>
@@ -106,7 +106,7 @@ export async function AboutPageContent() {
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("valuesSubtitle")}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="group hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="size-12 bg-brand/10 flex items-center justify-center mb-4 group-hover:bg-brand/20 transition-colors">
@@ -156,7 +156,7 @@ export async function AboutPageContent() {
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("whatWeOfferSubtitle")}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-6">
               <div className="size-16 bg-brand-success-light text-brand-success flex items-center justify-center mx-auto mb-4">
                 <Truck className="size-8" />
@@ -185,9 +185,9 @@ export async function AboutPageContent() {
 
         {/* Our Promises Section */}
         <section className="py-12 md:py-16 border-t border-border">
-          <div className="bg-muted p-8 md:p-12">
+          <div className="bg-muted p-4 md:p-4">
             <h3 className="text-xl font-bold text-center mb-8">{t("ourPromises")}</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div>
                 <div className="size-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Shield className="size-6 text-brand" />

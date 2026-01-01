@@ -80,7 +80,7 @@ export function ListingPreviewCard({
                   sizes="96px"
                 />
                 {idx === 0 && (
-                  <div className="absolute bottom-1.5 left-1.5 rounded-lg bg-black/60 px-2 py-0.5 text-2xs font-bold uppercase tracking-widest text-white">
+                  <div className="absolute bottom-1.5 left-1.5 rounded-md bg-overlay-dark px-2 py-0.5 text-2xs font-bold uppercase tracking-widest text-white">
                     {isBg ? "Основна" : "Main"}
                   </div>
                 )}
@@ -116,7 +116,7 @@ export function ListingPreviewCard({
             {conditionLabel}
           </Badge>
           {listing.categorySlug && (
-            <Badge variant="outline" className="rounded-md border-border/50 px-3 py-1 text-2xs font-bold uppercase tracking-widest text-muted-foreground capitalize">
+            <Badge variant="outline" className="rounded-md border-border/50 px-3 py-1 text-2xs font-bold capitalize tracking-widest text-muted-foreground">
               {listing.categorySlug.replaceAll('-', " ")}
             </Badge>
           )}

@@ -52,7 +52,7 @@ export function ConditionSelector({
         type="button"
         onClick={() => setIsOpen(true)}
         className={cn(
-          "w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed border-muted-foreground/30 text-left min-h-11 touch-action-manipulation",
+          "w-full flex items-center gap-3 px-4 py-3 rounded-md border border-dashed border-muted-foreground/30 text-left min-h-11 touch-action-manipulation",
           "bg-background hover:bg-accent active:bg-accent/80",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         )}
@@ -103,7 +103,7 @@ export function ConditionSelector({
                   type="button"
                   onClick={() => handleSelect(option.value as SellFormDataV4["condition"])}
                   className={cn(
-                    "w-full flex items-center justify-between gap-3 p-4 rounded-xl text-left min-h-11 touch-action-manipulation",
+                    "w-full flex items-center justify-between gap-3 p-4 rounded-md text-left min-h-11 touch-action-manipulation",
                     isSelected
                       ? "bg-primary/10 border-2 border-primary"
                       : "bg-accent hover:bg-accent/80 border-2 border-transparent"

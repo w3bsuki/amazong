@@ -42,10 +42,10 @@ export function StartSellingBanner({
           href="/sell"
           className={cn(
             "block w-full",
-            "bg-gradient-to-r from-brand via-brand to-brand-dark",
+            "bg-brand",
             "text-white",
             "px-(--page-inset) py-3",
-            "hover:from-brand-dark hover:to-brand-dark",
+            "hover:bg-brand-dark",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
             "transition-all duration-150"
           )}

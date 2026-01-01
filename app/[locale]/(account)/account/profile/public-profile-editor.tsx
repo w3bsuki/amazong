@@ -408,7 +408,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
             onClick={() => bannerInputRef.current?.click()}
           >
             {bannerPreview ? (
-              <Image src={bannerPreview} alt="Banner" fill className="object-cover" />
+              <Image src={bannerPreview} alt="Banner" fill sizes="100vw" className="object-cover" />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
                 <ImageIcon className="size-8 text-muted-foreground" />

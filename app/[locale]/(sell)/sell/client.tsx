@@ -223,14 +223,14 @@ export function SellPageClient({
                 <ArrowLeft className="size-5" />
               </Link>
               <div className="flex items-center gap-2.5">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
+                <div className="flex size-9 items-center justify-center rounded-md bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
                   <Sparkles className="size-4.5" />
                 </div>
                 <div className="flex flex-col">
                   <h1 className="text-sm font-bold tracking-tight leading-none">
                     {isBg ? "Създай обява" : "Create Listing"}
                   </h1>
-                  <p className="mt-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">
+                  <p className="mt-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground/80">
                     {isBg ? "с AI асистент" : "with AI assistant"}
                   </p>
                 </div>

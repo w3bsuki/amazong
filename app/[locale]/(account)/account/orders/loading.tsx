@@ -2,9 +2,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function OrdersLoading() {
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-4">
       {/* Main card */}
-      <div className="rounded-xl border border-border bg-card">
+      <div className="rounded-md border border-border bg-card">
         <div className="px-4 py-4 sm:px-6 sm:py-6 space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>

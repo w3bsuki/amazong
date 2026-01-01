@@ -144,7 +144,7 @@ export function CategorySelector({
       type="button"
       onClick={() => setIsOpen(true)}
       className={cn(
-        "relative w-full flex items-center h-12 px-4 rounded-xl border transition-all text-left",
+        "relative w-full flex items-center h-12 px-4 rounded-md border transition-all text-left",
         "bg-background border border-border shadow-xs",
         "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
         "transition-all active:scale-[0.98]",
@@ -408,7 +408,7 @@ function CategoryModalContent({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={locale === "bg" ? "Търси категория..." : "Search category..."}
-                className="pl-11 h-12 text-base font-medium rounded-xl border-border bg-muted/20 focus:bg-background transition-all"
+                className="pl-11 h-12 text-base font-medium rounded-md border-border bg-muted/20 focus:bg-background transition-all"
               />
             </div>
           </div>
@@ -474,7 +474,7 @@ function CategoryModalContent({
                       type="button"
                       onClick={() => handleSearchSelect(cat)}
                       className={cn(
-                        "w-full flex flex-col items-start gap-0.5 px-4 py-2.5 rounded-xl border text-left transition-all active:scale-[0.98]",
+                        "w-full flex flex-col items-start gap-0.5 px-4 py-2.5 rounded-md border text-left transition-all active:scale-[0.98]",
                         value === cat.id 
                           ? "border-primary bg-primary/5 shadow-xs" 
                           : "border-border bg-background hover:border-primary/30"
@@ -635,7 +635,7 @@ function CategoryCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "relative flex items-center justify-between gap-3 w-full px-4 py-2.5 rounded-xl border text-left transition-all min-h-[48px] touch-action-manipulation",
+        "relative flex items-center justify-between gap-3 w-full px-4 py-2.5 rounded-md border text-left transition-all min-h-[48px] touch-action-manipulation",
         "hover:border-primary/30 active:scale-[0.98]",
         "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
         isSelected 

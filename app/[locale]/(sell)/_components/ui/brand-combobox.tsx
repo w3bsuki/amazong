@@ -256,7 +256,7 @@ export function BrandCombobox({
       aria-expanded={open}
       disabled={disabled}
       className={cn(
-        "relative w-full flex flex-col justify-center h-14 px-4 rounded-xl border transition-all text-left",
+        "relative w-full flex flex-col justify-center h-14 px-4 rounded-md border transition-all text-left",
         "bg-background border border-border shadow-xs",
         "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
         "transition-all active:scale-[0.98]",
@@ -264,7 +264,7 @@ export function BrandCombobox({
         className
       )}
     >
-      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground leading-none mb-1.5">
+      <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground leading-none mb-1.5">
         {isBg ? "Марка" : "Brand"}
       </span>
       <div className="flex items-center justify-between w-full">
@@ -289,7 +289,7 @@ export function BrandCombobox({
           )}
           {/* Custom brand indicator */}
           {customValue && !selectedBrand && (
-            <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider shrink-0">
+            <span className="text-2xs font-bold text-muted-foreground uppercase tracking-wider shrink-0">
               ({isBg ? "Потребителска" : "Custom"})
             </span>
           )}

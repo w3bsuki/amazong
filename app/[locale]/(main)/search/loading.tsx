@@ -38,7 +38,7 @@ export default function SearchLoading() {
         </aside>
 
         {/* Main Results Skeleton */}
-        <div className="flex-1 p-4 sm:p-6">
+        <div className="flex-1 p-4 sm:p-4">
           {/* Search Header */}
           <div className="mb-4">
             <Skeleton className="h-8 w-64 mb-2" />

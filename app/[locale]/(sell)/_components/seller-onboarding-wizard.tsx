@@ -179,7 +179,7 @@ export function SellerOnboardingWizard({
 
   return (
     <div className="w-full max-w-lg mx-auto py-6 px-4">
-      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-md border border-gray-200 overflow-hidden">
         {/* Progress indicator */}
         <div className="h-1 bg-gray-100">
           <motion.div
@@ -190,7 +190,7 @@ export function SellerOnboardingWizard({
           />
         </div>
 
-        <div className="p-6 sm:p-8">
+        <div className="p-4">
           <AnimatePresence mode="wait">
             {/* Step 1: Account Type Selection */}
             {step === 1 && (
@@ -203,7 +203,7 @@ export function SellerOnboardingWizard({
               >
                 {/* Header */}
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-amber-500 mb-4">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-md bg-amber-500 mb-4">
                     <Storefront weight="bold" className="w-7 h-7 text-white" />
                   </div>
                   <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
@@ -219,7 +219,7 @@ export function SellerOnboardingWizard({
                     type="button"
                     onClick={() => setAccountType("personal")}
                     className={cn(
-                      "relative w-full p-4 rounded-xl border-2 text-left transition-all",
+                      "relative w-full p-4 rounded-md border-2 text-left transition-all",
                       accountType === "personal"
                         ? "border-blue-500 bg-blue-50/50"
                         : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
@@ -227,7 +227,7 @@ export function SellerOnboardingWizard({
                   >
                     <div className="flex items-start gap-4">
                       <div className={cn(
-                        "size-12 rounded-xl flex items-center justify-center shrink-0",
+                        "size-12 rounded-md flex items-center justify-center shrink-0",
                         accountType === "personal" ? "bg-blue-100" : "bg-gray-100"
                       )}>
                         <User
@@ -264,7 +264,7 @@ export function SellerOnboardingWizard({
                     type="button"
                     onClick={() => setAccountType("business")}
                     className={cn(
-                      "relative w-full p-4 rounded-xl border-2 text-left transition-all",
+                      "relative w-full p-4 rounded-md border-2 text-left transition-all",
                       accountType === "business"
                         ? "border-blue-500 bg-blue-50/50"
                         : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
@@ -272,7 +272,7 @@ export function SellerOnboardingWizard({
                   >
                     <div className="flex items-start gap-4">
                       <div className={cn(
-                        "size-12 rounded-xl flex items-center justify-center shrink-0",
+                        "size-12 rounded-md flex items-center justify-center shrink-0",
                         accountType === "business" ? "bg-blue-100" : "bg-gray-100"
                       )}>
                         <Buildings
@@ -330,7 +330,7 @@ export function SellerOnboardingWizard({
               >
                 {/* Header */}
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-purple-600 mb-4">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-md bg-purple-600 mb-4">
                     <Sparkle weight="bold" className="w-7 h-7 text-white" />
                   </div>
                   <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
@@ -459,7 +459,7 @@ export function SellerOnboardingWizard({
                 </div>
 
                 {/* Profile URL */}
-                <div className="mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div className="mb-6 p-4 bg-gray-50 rounded-md border border-gray-200">
                   <p className="text-sm text-gray-500 mb-1">{t.profileUrl}</p>
                   <p className="font-medium text-gray-900">treido.eu/u/{username}</p>
                 </div>

@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 
 export default function FollowingLoading() {
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 lg:p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="space-y-2">

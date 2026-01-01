@@ -45,7 +45,7 @@ export function ShippingRegionCard({
   return (
     <label
       className={cn(
-        "relative flex items-start gap-3.5 p-4 rounded-xl border text-left transition-all w-full cursor-pointer shadow-xs",
+        "relative flex items-start gap-3.5 p-4 rounded-md border text-left transition-all w-full cursor-pointer shadow-xs",
         isSelected
           ? "border-primary bg-primary/5 ring-1 ring-primary/20"
           : "border-border bg-background hover:border-primary/30"

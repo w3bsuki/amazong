@@ -83,7 +83,7 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
   })
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">
         {locale === "bg" ? "Следвани магазини" : "Following"}
       </h1>

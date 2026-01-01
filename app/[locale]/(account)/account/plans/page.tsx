@@ -65,7 +65,7 @@ export default async function PlansPage({ params }: PlansPageProps) {
   } : null
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">{locale === 'bg' ? 'Планове' : 'Plans'}</h1>
       <PlansContent 
         locale={locale}

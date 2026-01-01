@@ -90,12 +90,12 @@ export default async function ContactPage({
           </div>
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <Card>
-              <CardContent className="p-6 md:p-8">
-                <div className="flex items-center gap-3 mb-6">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3 mb-4">
                   <div className="size-10 bg-brand/10 flex items-center justify-center">
                     <PaperPlaneTilt className="size-5 text-brand" />
                   </div>
@@ -271,7 +271,7 @@ export default async function ContactPage({
         {/* FAQ Teaser */}
         <section className="mt-12">
           <Card className="bg-muted">
-            <CardContent className="p-6 md:p-8">
+            <CardContent className="p-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-start gap-4">
                   <div className="size-12 bg-brand/10 flex items-center justify-center shrink-0">

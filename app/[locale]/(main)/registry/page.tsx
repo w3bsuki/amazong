@@ -53,7 +53,7 @@ export default async function RegistryPage({
             {/* Registry Types */}
             <div className="container py-12">
                 <h2 className="text-3xl font-bold text-center mb-12">{t("typesTitle")}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card className="hover:border-brand transition-colors cursor-pointer border border-border">
                         <CardHeader className="text-center">
                             <div className="mx-auto bg-brand/10 w-16 h-16 rounded-full flex items-center justify-center mb-4">
@@ -96,7 +96,7 @@ export default async function RegistryPage({
             <div className="bg-muted py-16 px-4">
                 <div className="container">
                     <h2 className="text-3xl font-bold text-center mb-12">{t("benefitsTitle")}</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="text-center space-y-2">
                             <h3 className="font-bold text-lg">{t("benefit1Title")}</h3>
                             <p className="text-sm text-muted-foreground">{t("benefit1Desc")}</p>

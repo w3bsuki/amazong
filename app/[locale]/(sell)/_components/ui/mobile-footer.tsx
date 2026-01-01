@@ -49,7 +49,7 @@ export function MobileFooter({
             variant="outline"
             size="icon-lg"
             onClick={onBack}
-            className="rounded-xl shrink-0"
+            className="rounded-md shrink-0"
             aria-label={isBg ? "Назад" : "Back"}
           >
             <CaretLeft className="size-5" weight="bold" />
@@ -63,7 +63,7 @@ export function MobileFooter({
             disabled={isSubmitting || progressPercent < 50}
             size="lg"
             className={cn(
-              "flex-1 h-12 rounded-xl gap-2 text-sm font-semibold",
+              "flex-1 h-12 rounded-md gap-2 text-sm font-semibold",
               !isComplete && "bg-muted text-muted-foreground hover:bg-muted/80"
             )}
           >
@@ -85,7 +85,7 @@ export function MobileFooter({
             onClick={onNext}
             disabled={!canGoNext}
             size="lg"
-            className="flex-1 h-12 rounded-xl gap-2 text-sm font-semibold"
+            className="flex-1 h-12 rounded-md gap-2 text-sm font-semibold"
           >
             {isBg ? "Напред" : "Next"}
             <ArrowRight className="size-5" weight="bold" />

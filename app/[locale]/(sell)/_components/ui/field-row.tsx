@@ -43,7 +43,7 @@ export function FieldRow({
         type="button"
         onClick={onClick}
         className={cn(
-          "w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left min-h-11 touch-manipulation",
+          "w-full flex items-center gap-3 px-4 py-3 rounded-md border text-left min-h-11 touch-manipulation",
           "bg-background hover:bg-accent active:bg-accent/80",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           hasError 

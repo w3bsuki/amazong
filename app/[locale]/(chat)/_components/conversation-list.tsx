@@ -320,7 +320,7 @@ function ConversationItem({
 
           {/* Unread badge */}
           {hasUnread && unreadCount > 0 && (
-            <span className="ml-1 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+            <span className="ml-1 shrink-0 flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-primary text-2xs font-bold text-primary-foreground">
               {unreadCount > 99 ? "99+" : unreadCount}
             </span>
           )}

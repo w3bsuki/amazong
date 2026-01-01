@@ -257,7 +257,7 @@ export function ChatInterface({
           className
         )}
       >
-        <div className="flex flex-col items-center gap-4 p-8 text-center max-w-sm">
+        <div className="flex flex-col items-center gap-4 p-4 text-center max-w-sm">
           <div className="flex size-20 items-center justify-center rounded-full border-2 border-foreground/20">
             <svg
               className="size-10 text-foreground/60"
@@ -455,7 +455,7 @@ export function ChatInterface({
                 {i % 2 !== 0 && <Skeleton className="size-7 rounded-full shrink-0" />}
                 <Skeleton
                   className={cn(
-                    "h-12 rounded-2xl",
+                    "h-12 rounded-md",
                     i % 2 === 0 ? "w-40 rounded-br-md" : "w-48 rounded-bl-md"
                   )}
                 />
@@ -569,7 +569,7 @@ export function ChatInterface({
                         {/* Product image - clickable */}
                         {productImage ? (
                           <Link href={`/product/${currentConversation.product.id}`} className="shrink-0">
-                            <div className="relative w-16 h-full min-h-[64px] bg-muted">
+                            <div className="relative w-16 h-full min-h-16 bg-muted">
                               <Image
                                 src={productImage}
                                 alt={currentConversation.product.title}
@@ -680,8 +680,8 @@ export function ChatInterface({
                       "max-w-[70%] relative group",
                       message.message_type === "image" ? "p-1" : "px-3.5 py-2",
                       isOwn
-                        ? "bg-primary text-primary-foreground rounded-2xl"
-                        : "bg-muted rounded-2xl",
+                        ? "bg-primary text-primary-foreground rounded-md"
+                        : "bg-muted rounded-md",
                       // Bubble tail styling
                       isOwn && isLastInGroup && "rounded-br-md",
                       !isOwn && isLastInGroup && "rounded-bl-md"
@@ -700,12 +700,12 @@ export function ChatInterface({
                           alt="Shared image"
                           width={280}
                           height={280}
-                          className="rounded-xl max-w-[280px] w-auto h-auto object-cover cursor-pointer hover:opacity-95 transition-opacity"
+                          className="rounded-md max-w-[280px] w-auto h-auto object-cover cursor-pointer hover:opacity-95 transition-opacity"
                           unoptimized
                         />
                       </a>
                     ) : (
-                      <p className="text-base leading-snug whitespace-pre-wrap break-words">
+                      <p className="text-base leading-snug whitespace-pre-wrap wrap-break-word">
                         {message.content}
                       </p>
                     )}
@@ -809,7 +809,7 @@ export function ChatInterface({
             </button>
 
             {/* Input container */}
-            <div className="flex-1 flex items-end gap-2 px-4 py-2 rounded-3xl border border-border bg-muted/30 focus-within:border-primary/50 transition-colors">
+            <div className="flex-1 flex items-end gap-2 px-4 py-2 rounded-md border border-border bg-muted/30 focus-within:border-primary/50 transition-colors">
               <textarea
                 ref={inputRef}
                 value={inputValue}

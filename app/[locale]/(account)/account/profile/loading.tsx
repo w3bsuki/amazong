@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export default function ProfileLoading() {
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 lg:p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

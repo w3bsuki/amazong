@@ -53,7 +53,7 @@ export function CategoryOption({
         aria-selected={isSelected}
         className={cn(
           // Base styles with touch-friendly sizing
-          "flex items-center justify-between w-full px-4 min-h-touch rounded-xl border transition-all text-left",
+          "flex items-center justify-between w-full px-4 min-h-touch rounded-md border transition-all text-left",
           // Focus styles for keyboard navigation
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           // State variants

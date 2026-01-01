@@ -143,7 +143,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
                   src={product.image}
                   alt={product.title}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="object-cover"
                   sizes="(max-width: 640px) 130px, 150px"
                 />
               )}

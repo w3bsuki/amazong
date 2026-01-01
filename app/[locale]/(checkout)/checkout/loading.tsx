@@ -30,7 +30,7 @@ export default function CheckoutLoading() {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-[1fr_400px] gap-6">
+        <div className="grid lg:grid-cols-[1fr_400px] gap-4">
           {/* Left Column - Forms */}
           <div className="space-y-6">
             {/* Shipping Address Card */}

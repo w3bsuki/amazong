@@ -58,7 +58,7 @@ function FormSection({
     <section
       data-slot="form-section"
       className={cn(
-        "rounded-lg border border-border bg-card p-5 sm:p-6",
+        "rounded-lg border border-border bg-card p-4",
         className
       )}
       {...props}

@@ -83,7 +83,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
 
               <div className="flex flex-wrap items-center gap-1.5 mt-2">
                 {member.is_seller && (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 gap-0.5">
+                  <Badge variant="secondary" className="text-2xs px-1.5 py-0 gap-0.5">
                     <Package className="size-3" />
                     Seller
                   </Badge>
@@ -91,7 +91,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
                 {member.tier && member.tier !== "free" && (
                   <Badge
                     variant="outline"
-                    className="text-[10px] px-1.5 py-0 gap-0.5 text-yellow-600 border-yellow-200 bg-yellow-50"
+                    className="text-2xs px-1.5 py-0 gap-0.5 text-yellow-600 border-yellow-200 bg-yellow-50"
                   >
                     <Star className="size-3" weight="fill" />
                     {member.tier}
@@ -100,7 +100,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
               </div>
 
               {member.location && (
-                <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-1.5">
+                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1.5">
                   <MapPin className="size-3" />
                   {member.location}
                 </p>
@@ -108,14 +108,14 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between mt-3 pt-3 border-t text-[11px] text-muted-foreground">
+          <div className="flex items-center justify-between mt-3 pt-3 border-t text-xs text-muted-foreground">
             {member.account_type === "business" && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+              <Badge variant="secondary" className="text-2xs px-1.5 py-0">
                 <Storefront className="size-3 mr-0.5" />
                 {locale === "bg" ? "Бизнес" : "Business"}
               </Badge>
             )}
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-2xs text-muted-foreground">
               {locale === "bg" ? "Присъединил се" : "Joined"}{" "}
               {formatDistanceToNow(new Date(member.created_at), { addSuffix: true })}
             </span>
@@ -185,7 +185,7 @@ export default function MembersPageClient({
             </div>
           </div>
 
-          <div className="flex gap-6 mt-4 text-sm">
+          <div className="flex gap-4 mt-4 text-sm">
             <div>
               <span className="text-2xl font-bold">{totalMembers.toLocaleString()}</span>
               <p className="text-white/70">{locale === "bg" ? "членове" : "members"}</p>

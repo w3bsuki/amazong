@@ -9,7 +9,7 @@ export default function SignUpSuccessClient() {
 
   return (
     <div className="min-h-svh flex items-center justify-center bg-muted p-4">
-      <div className="w-full max-w-sm bg-card rounded-xl border border-border relative">
+      <div className="w-full max-w-sm bg-card rounded-md border border-border relative">
         <div className="p-6">
           <div className="flex flex-col items-center mb-6">
             <div className="size-14 bg-success/15 rounded-full flex items-center justify-center mb-3">

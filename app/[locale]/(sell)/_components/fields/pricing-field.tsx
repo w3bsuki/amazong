@@ -161,7 +161,7 @@ function QuantityStepper({
   max?: number;
 }) {
   return (
-    <div className="flex items-center h-12 w-fit rounded-xl border border-border bg-background shadow-xs overflow-hidden">
+    <div className="flex items-center h-12 w-fit rounded-md border border-border bg-background shadow-xs overflow-hidden">
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
@@ -253,7 +253,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
                   type="button"
                   onClick={() => setValue("format", option.value, { shouldValidate: true })}
                   className={cn(
-                    "flex items-center justify-center gap-2 h-12 rounded-xl border transition-all",
+                    "flex items-center justify-center gap-2 h-12 rounded-md border transition-all",
                     "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
                     isSelected
                       ? "border-primary bg-primary/10 text-primary font-bold shadow-xs"
@@ -276,7 +276,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
             render={({ field, fieldState }) => (
               <div className="space-y-2">
                 <div className={cn(
-                  "flex items-center h-12 rounded-xl border border-border bg-background shadow-xs transition-all focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary/50 overflow-hidden",
+                  "flex items-center h-12 rounded-md border border-border bg-background shadow-xs transition-all focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary/50 overflow-hidden",
                   fieldState.invalid && "border-destructive bg-destructive/5 focus-within:ring-destructive/5 focus-within:border-destructive/50"
                 )}>
                   <div className="relative flex-1 flex items-center px-4 min-w-0">
@@ -357,7 +357,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
 
           {/* Compare at Price (Optional) */}
           <div className="space-y-2">
-            <div className="flex items-center h-12 rounded-xl border border-border bg-background shadow-xs transition-all focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary/50 overflow-hidden">
+            <div className="flex items-center h-12 rounded-md border border-border bg-background shadow-xs transition-all focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary/50 overflow-hidden">
               <div className="relative flex-1 flex items-center px-4 min-w-0">
                 <label 
                   htmlFor="sell-form-compare-price"
@@ -381,7 +381,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
                 </div>
               </div>
             </div>
-            <p className="text-[11px] text-muted-foreground font-medium px-1">
+            <p className="text-xs text-muted-foreground font-medium px-1">
               {isBg 
                 ? "Ако продуктът е на промоция, въведете оригиналната цена"
                 : "If the item is on sale, enter the original price"}
@@ -400,7 +400,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
           </div>
 
           {/* Accept Offers Toggle */}
-          <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-muted/5 shadow-xs ring-1 ring-border/5">
+          <div className="flex items-center justify-between p-4 rounded-md border border-border bg-muted/5 shadow-xs ring-1 ring-border/5">
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-lg bg-background border border-border flex items-center justify-center shrink-0 shadow-sm">
                 <Handshake className="size-5 text-primary" weight="bold" />
@@ -409,7 +409,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
                 <span className="text-sm font-bold text-foreground">
                   {isBg ? "Приемане на оферти" : "Accept Offers"}
                 </span>
-                <p className="text-[11px] text-muted-foreground font-medium leading-tight mt-0.5">
+                <p className="text-xs text-muted-foreground font-medium leading-tight mt-0.5">
                   {isBg 
                     ? "Позволете на купувачите да предлагат цена"
                     : "Allow buyers to make price offers"}
@@ -428,7 +428,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
   return (
     <Field data-invalid={hasError} className={className}>
       {!compact ? (
-        <div className="rounded-2xl border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
+        <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
           {/* Header */}
           <div className="p-section pb-form border-b border-border/50 bg-muted/10">
             <div className="flex items-center gap-form-sm">

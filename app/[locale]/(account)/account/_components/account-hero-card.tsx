@@ -52,7 +52,7 @@ export function AccountHeroCard({ totals, locale, userName }: AccountHeroCardPro
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-foreground p-5 sm:p-6 text-background">
+    <div className="relative overflow-hidden rounded-md bg-foreground p-4 sm:p-4 text-background">
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-32 h-32 sm:w-48 sm:h-48 bg-background/5 rounded-full -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-24 h-24 sm:w-32 sm:h-32 bg-background/5 rounded-full translate-y-1/2 -translate-x-1/2" />

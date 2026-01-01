@@ -234,13 +234,13 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
           />
 
           <div className="hidden flex-col gap-2 lg:flex">
-            <Button className="w-full bg-cta-trust-blue text-white hover:bg-cta-trust-blue/90 h-11 text-base font-bold rounded-full shadow-sm transition-all active:scale-[0.98]" size="lg">
+            <Button className="w-full bg-cta-trust-blue text-white hover:bg-cta-trust-blue/90 h-11 text-base font-bold rounded-full shadow-sm transition-colors" size="lg">
               Buy It Now
             </Button>
-            <Button variant="outline" className="w-full border-cta-trust-blue text-cta-trust-blue hover:bg-cta-trust-blue/5 h-11 text-base font-bold rounded-full transition-all active:scale-[0.98]" size="lg">
+            <Button variant="outline" className="w-full border-cta-trust-blue text-cta-trust-blue hover:bg-cta-trust-blue/5 h-11 text-base font-bold rounded-full transition-colors" size="lg">
               Add to cart
             </Button>
-            <Button variant="outline" className="w-full border-border text-foreground hover:bg-muted h-11 text-base font-bold rounded-full transition-all active:scale-[0.98]" size="lg">
+            <Button variant="outline" className="w-full border-border text-foreground hover:bg-muted h-11 text-base font-bold rounded-full transition-colors" size="lg">
               <Heart className="mr-2 h-5 w-5" /> Add to Watchlist
             </Button>
           </div>
@@ -327,7 +327,7 @@ const SizeRadioGroup = ({ options, field }: SizeRadioGroupProps) => {
               className="peer sr-only"
               disabled={item.stockInfo.stockStatusCode === "OUT_OF_STOCK"}
             />
-            <div className="flex h-9 min-w-[2.5rem] lg:h-10 lg:min-w-[3.5rem] items-center justify-center rounded-md border border-border bg-background px-2 lg:px-3 text-xs lg:text-sm font-medium text-foreground transition-all hover:border-foreground peer-data-[state=checked]:border-foreground peer-data-[state=checked]:bg-foreground peer-data-[state=checked]:text-background peer-disabled:cursor-not-allowed peer-disabled:opacity-50 peer-disabled:bg-muted peer-disabled:text-muted-foreground">
+            <div className="flex h-9 min-w-10 lg:h-10 lg:min-w-14 items-center justify-center rounded-md border border-border bg-background px-2 lg:px-3 text-xs lg:text-sm font-medium text-foreground transition-all hover:border-foreground peer-data-[state=checked]:border-foreground peer-data-[state=checked]:bg-foreground peer-data-[state=checked]:text-background peer-disabled:cursor-not-allowed peer-disabled:opacity-50 peer-disabled:bg-muted peer-disabled:text-muted-foreground">
               {item.label}
             </div>
           </FormLabel>

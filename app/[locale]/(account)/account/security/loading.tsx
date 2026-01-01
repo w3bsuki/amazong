@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export default function SecurityLoading() {
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 lg:p-4">
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Header */}
         <div className="space-y-2">

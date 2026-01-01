@@ -56,7 +56,7 @@ export function CategoryField({ onCategoryChange, className, compact = false }: 
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid} className={className}>
           {!compact ? (
-            <div className="rounded-2xl border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
+            <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
               {/* Header */}
               <div className="p-section pb-form border-b border-border/50 bg-muted/10">
                 <div className="flex items-center gap-form-sm">

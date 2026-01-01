@@ -425,7 +425,7 @@ export function PlansContent({
 
       {/* Account Type Toggle + Billing Toggle */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-        <div className="inline-flex p-1 rounded-xl bg-muted/50 border">
+        <div className="inline-flex p-1 rounded-md bg-muted/50 border">
           <button
             onClick={() => setAccountType("personal")}
             className={cn(
@@ -498,7 +498,7 @@ export function PlansContent({
       {/* Boost Section - Compact */}
       <div className="mt-6 md:mt-10">
         <Card className="border-border">
-          <CardHeader className="p-4 pb-2 md:p-6 md:pb-4">
+          <CardHeader className="p-4 pb-2 md:p-4 md:pb-4">
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded-md bg-muted">
                 <Lightning className="size-4 text-primary" weight="fill" />
@@ -515,7 +515,7 @@ export function PlansContent({
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-4 pt-2 md:p-6 md:pt-0">
+          <CardContent className="p-4 pt-2 md:p-4 md:pt-0">
             {/* Horizontal scroll on mobile */}
             <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory sm:grid sm:grid-cols-3 sm:overflow-visible">
               <div className="border border-border rounded-md p-3 text-center shrink-0 w-24 snap-center sm:w-auto">
@@ -523,7 +523,7 @@ export function PlansContent({
                 <p className="text-xs text-muted-foreground">{locale === 'bg' ? '7 дни' : '7 days'}</p>
               </div>
               <div className="border border-primary rounded-md p-3 text-center relative shrink-0 w-24 snap-center sm:w-auto">
-                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] px-1.5 py-0">
+                <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-2xs px-1.5 py-0">
                   {locale === 'bg' ? 'Най-добра' : 'Best'}
                 </Badge>
                 <p className="text-lg font-semibold">4.99 лв</p>
@@ -534,7 +534,7 @@ export function PlansContent({
                 <p className="text-xs text-muted-foreground">{locale === 'bg' ? '30 дни' : '30 days'}</p>
               </div>
             </div>
-            <p className="text-[10px] md:text-xs text-muted-foreground mt-3 text-center">
+            <p className="text-2xs md:text-xs text-muted-foreground mt-3 text-center">
               {locale === 'bg' 
                 ? 'Промотираните обяви се показват в секцията "Препоръчани" и имат по-високо позициониране.'
                 : 'Boosted listings appear in "Recommended" and rank higher in search.'}

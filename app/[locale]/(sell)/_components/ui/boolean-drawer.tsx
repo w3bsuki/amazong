@@ -59,7 +59,7 @@ export function BooleanDrawer({
                 type="button"
                 onClick={() => handleSelect(opt.value)}
                 className={cn(
-                  "w-full flex items-center justify-between gap-3 p-4 rounded-xl text-left",
+                  "w-full flex items-center justify-between gap-3 p-4 rounded-md text-left",
                   isSelected
                     ? "bg-primary/10 border-2 border-primary"
                     : "bg-accent hover:bg-accent/80 border-2 border-transparent"

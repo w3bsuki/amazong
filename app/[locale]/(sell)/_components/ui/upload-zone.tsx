@@ -37,7 +37,7 @@ export function UploadZone({
     <div
       {...getRootProps()}
       className={cn(
-        "relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors cursor-pointer",
+        "relative flex flex-col items-center justify-center rounded-md border-2 border-dashed transition-colors cursor-pointer",
         "min-h-[140px] sm:min-h-[160px] touch-action-manipulation",
         isDragActive
           ? "border-primary bg-primary/10"
@@ -82,7 +82,7 @@ export function UploadZone({
               </>
             )}
           </span>
-          <span className="mt-2 text-[10px] font-medium text-muted-foreground/60">
+          <span className="mt-2 text-2xs font-medium text-muted-foreground/60">
             {remaining > 0 
               ? (isBg
                   ? `Още до ${remaining} снимки`

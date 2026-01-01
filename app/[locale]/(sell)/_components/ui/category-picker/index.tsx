@@ -138,7 +138,7 @@ export function CategoryPicker({
     <div className={cn("space-y-4", className)}>
       {/* Selected category display */}
       {selectedCategory && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50 border border-border">
+        <div className="flex items-center justify-between p-3 rounded-md bg-muted/50 border border-border">
           <div className="flex items-center gap-2">
             <Check className="h-4 w-4 text-green-600" weight="bold" />
             <span className="text-sm">
@@ -162,7 +162,7 @@ export function CategoryPicker({
 
       {/* Category selection UI */}
       {!selectedCategory && (
-        <div className="rounded-xl border border-border bg-background p-4">
+        <div className="rounded-md border border-border bg-background p-4">
           {/* Search */}
           <CategorySearch value={search} onChange={setSearch} />
 

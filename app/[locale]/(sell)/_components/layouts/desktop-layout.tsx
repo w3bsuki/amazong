@@ -119,8 +119,8 @@ export function DesktopLayout({
       />
 
       {/* Main Content */}
-      <PageContainer size="wide" className="py-6">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_22rem]">
+      <PageContainer size="wide" className="py-4">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_22rem]">
           {/* Main Form */}
           <div className="min-w-0">
             <form
@@ -131,7 +131,7 @@ export function DesktopLayout({
               className="space-y-6"
             >
               {/* Section 1: Photos & AI */}
-              <section className="space-y-6 rounded-xl border border-border bg-background p-6">
+              <section className="space-y-6 rounded-md border border-border bg-background p-6">
                 <h2 className="text-base font-semibold text-foreground">
                   {isBg ? "Снимки" : "Photos"}
                 </h2>
@@ -146,7 +146,7 @@ export function DesktopLayout({
               </section>
 
               {/* Section 2: Item Details */}
-              <section className="space-y-6 rounded-xl border border-border bg-background p-6">
+              <section className="space-y-6 rounded-md border border-border bg-background p-6">
                 <h2 className="text-base font-semibold text-foreground">
                   {isBg ? "Детайли" : "Details"}
                 </h2>
@@ -160,7 +160,7 @@ export function DesktopLayout({
               </section>
 
               {/* Section 3: Pricing & Shipping */}
-              <section className="space-y-6 rounded-xl border border-border bg-background p-6">
+              <section className="space-y-6 rounded-md border border-border bg-background p-6">
                 <h2 className="text-base font-semibold text-foreground">
                   {isBg ? "Цена и доставка" : "Pricing & Shipping"}
                 </h2>
@@ -192,7 +192,7 @@ export function DesktopLayout({
                 disabled={isSubmitting}
                 size="lg"
                 className={cn(
-                  "w-full h-12 rounded-xl gap-2 text-sm font-semibold",
+                  "w-full h-12 rounded-md gap-2 text-sm font-semibold",
                   progress !== 100 && "bg-muted text-muted-foreground hover:bg-muted/80"
                 )}
               >
@@ -231,7 +231,7 @@ export function DesktopLayout({
               <ChecklistSidebar items={progressItems} locale={isBg ? "bg" : "en"} />
               
               {/* Tips Card */}
-              <div className="p-5 rounded-xl border border-border bg-background shadow-xs">
+              <div className="p-4 rounded-md border border-border bg-background shadow-xs">
                 <div className="flex items-center gap-2.5 mb-4">
                   <div className="flex size-8 items-center justify-center rounded-md bg-primary/10 border border-primary/20">
                     <Sparkle className="size-4 text-primary" weight="bold" />

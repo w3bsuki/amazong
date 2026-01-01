@@ -168,7 +168,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
     .order('price_monthly', { ascending: true })
 
   return (
-    <div className="container flex flex-col gap-6 py-6">
+    <div className="container flex flex-col gap-4 py-6">
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 mb-4">
@@ -201,7 +201,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
       </Card>
 
       {/* Plans Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {/* Business Pro Plan */}
         <Card className="relative border-2 border-primary shadow-sm">
           <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -318,7 +318,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
       </Card>
 
       {/* Comparison: Free vs Pro */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {/* Free Plan */}
         <Card className="border-muted">
           <CardHeader>

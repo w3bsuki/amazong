@@ -50,7 +50,7 @@ export default function ChatLoading() {
           <div className="flex gap-3 max-w-[80%]">
             <Skeleton className="size-8 rounded-full shrink-0" />
             <div className="space-y-2">
-              <Skeleton className="h-20 w-64 rounded-2xl rounded-tl-none" />
+              <Skeleton className="h-20 w-64 rounded-md rounded-tl-none" />
               <Skeleton className="h-3 w-16" />
             </div>
           </div>
@@ -58,7 +58,7 @@ export default function ChatLoading() {
           {/* Sent Messages */}
           <div className="flex gap-3 max-w-[80%] ml-auto flex-row-reverse">
             <div className="space-y-2">
-              <Skeleton className="h-16 w-56 rounded-2xl rounded-tr-none" />
+              <Skeleton className="h-16 w-56 rounded-md rounded-tr-none" />
               <Skeleton className="h-3 w-16 ml-auto" />
             </div>
           </div>
@@ -67,7 +67,7 @@ export default function ChatLoading() {
           <div className="flex gap-3 max-w-[80%]">
             <Skeleton className="size-8 rounded-full shrink-0" />
             <div className="space-y-2">
-              <Skeleton className="h-12 w-48 rounded-2xl rounded-tl-none" />
+              <Skeleton className="h-12 w-48 rounded-md rounded-tl-none" />
               <Skeleton className="h-24 w-64 rounded-lg" />
               <Skeleton className="h-3 w-16" />
             </div>
@@ -76,7 +76,7 @@ export default function ChatLoading() {
           {/* Sent Message */}
           <div className="flex gap-3 max-w-[80%] ml-auto flex-row-reverse">
             <div className="space-y-2">
-              <Skeleton className="h-10 w-40 rounded-2xl rounded-tr-none" />
+              <Skeleton className="h-10 w-40 rounded-md rounded-tr-none" />
               <Skeleton className="h-3 w-16 ml-auto" />
             </div>
           </div>
@@ -85,7 +85,7 @@ export default function ChatLoading() {
           <div className="flex gap-3 max-w-[80%]">
             <Skeleton className="size-8 rounded-full shrink-0" />
             <div className="space-y-2">
-              <Skeleton className="h-14 w-72 rounded-2xl rounded-tl-none" />
+              <Skeleton className="h-14 w-72 rounded-md rounded-tl-none" />
               <Skeleton className="h-3 w-16" />
             </div>
           </div>

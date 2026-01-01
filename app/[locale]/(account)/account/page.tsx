@@ -97,7 +97,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
   })
 
   return (
-    <div className="flex flex-col gap-5 md:gap-6">
+    <div className="flex flex-col gap-4">
       <h1 className="sr-only">{locale === "bg" ? "Преглед на акаунта" : "Account Overview"}</h1>
       
       {/* Hero card with revenue & key stats */}

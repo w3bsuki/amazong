@@ -195,7 +195,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   }
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">
         {locale === "bg" ? `Поръчка #${id.slice(0, 8)}` : `Order #${id.slice(0, 8)}`}
       </h1>

@@ -41,7 +41,7 @@ export function TrustBar({ locale = "en", className = "", variant = "auto" }: Tr
   if (variant === "desktop") {
     return (
       <div className={`w-full bg-muted/50 border-b border-border/50 ${className}`}>
-        <div className="flex items-center justify-center gap-8 py-2 container">
+        <div className="flex items-center justify-center gap-4 py-2 container">
           {items.map((item, index) => (
             <div key={index} className="flex items-center gap-1.5 text-muted-foreground">
               <item.icon size={16} weight="regular" className="shrink-0" />
@@ -73,7 +73,7 @@ export function TrustBar({ locale = "en", className = "", variant = "auto" }: Tr
   return (
     <div className={`w-full bg-muted/50 border-b border-border/50 ${className}`}>
       {/* Desktop: Centered flex row */}
-      <div className="hidden md:flex items-center justify-center gap-8 py-2 container">
+      <div className="hidden md:flex items-center justify-center gap-4 py-2 container">
         {items.map((item, index) => (
           <div key={index} className="flex items-center gap-1.5 text-muted-foreground">
             <item.icon size={16} weight="regular" className="shrink-0" />

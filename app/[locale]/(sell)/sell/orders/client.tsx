@@ -187,7 +187,7 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                   
                   return (
                     <Card key={item.id}>
-                      <CardContent className="p-4 md:p-6">
+                      <CardContent className="p-4 md:p-4">
                         <div className="flex flex-col md:flex-row gap-4">
                           {/* Product Image */}
                           <div className="relative w-full md:w-24 h-24 bg-muted rounded-lg overflow-hidden shrink-0">

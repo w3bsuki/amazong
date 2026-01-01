@@ -155,7 +155,7 @@ export default function SellerDashboardClient() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+            <div className="w-12 h-12 rounded-md bg-primary flex items-center justify-center">
               <Storefront weight="fill" className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -186,7 +186,7 @@ export default function SellerDashboardClient() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-md bg-blue-100 flex items-center justify-center">
                 <Package weight="duotone" className="w-6 h-6 text-blue-600" />
               </div>
               <div>
@@ -200,7 +200,7 @@ export default function SellerDashboardClient() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-md bg-green-100 flex items-center justify-center">
                 <CurrencyDollar weight="duotone" className="w-6 h-6 text-green-600" />
               </div>
               <div>
@@ -214,7 +214,7 @@ export default function SellerDashboardClient() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-md bg-purple-100 flex items-center justify-center">
                 <ShoppingCart weight="duotone" className="w-6 h-6 text-purple-600" />
               </div>
               <div>
@@ -228,7 +228,7 @@ export default function SellerDashboardClient() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-md bg-amber-100 flex items-center justify-center">
                 <Warning weight="duotone" className="w-6 h-6 text-amber-600" />
               </div>
               <div>

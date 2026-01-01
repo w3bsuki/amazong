@@ -16,7 +16,19 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { submitReview } from "@/app/actions/reviews";
+
+// Type for the review submission result
+export interface ReviewResult {
+  success: boolean;
+  error?: string;
+}
+
+// Type for the submit function (allows dependency injection)
+export type SubmitReviewFn = (input: {
+  productId: string;
+  rating: number;
+  comment?: string;
+}) => Promise<ReviewResult>;
 
 interface WriteReviewDialogProps {
   productId: string;
@@ -24,6 +36,8 @@ interface WriteReviewDialogProps {
   locale?: string;
   onReviewSubmitted?: () => void;
   trigger?: React.ReactNode;
+  /** Server action to submit review - must be passed from route-level component */
+  submitReview: SubmitReviewFn;
 }
 
 const translations = {
@@ -67,6 +81,7 @@ export function WriteReviewDialog({
   locale = "en",
   onReviewSubmitted,
   trigger,
+  submitReview,
 }: WriteReviewDialogProps) {
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
@@ -145,7 +160,7 @@ export function WriteReviewDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-6 py-2">
+        <div className="grid gap-4 py-2">
           {/* Star Rating */}
           <div className="space-y-2">
             <Label>{t.ratingLabel}</Label>

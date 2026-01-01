@@ -263,7 +263,7 @@ export function SmartCategoryPicker({
 
   const triggerClassName = cn(
     "w-full flex items-center justify-between gap-3 px-4 py-3.5 text-left",
-    "bg-background border border-border rounded-xl",
+    "bg-background border border-border rounded-md",
     "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
     "transition-colors cursor-pointer min-h-[52px]"
   );
@@ -304,7 +304,7 @@ export function SmartCategoryPicker({
                     type="button"
                     onClick={() => handleSearchSelect(cat)}
                     className={cn(
-                      "w-full flex flex-col items-start gap-1 px-4 py-3 rounded-xl text-left transition-colors",
+                      "w-full flex flex-col items-start gap-1 px-4 py-3 rounded-md text-left transition-colors",
                       "hover:bg-muted active:bg-muted/80",
                       value === cat.id && "bg-primary/10"
                     )}
@@ -415,7 +415,7 @@ export function SmartCategoryPicker({
                       handleSelect(flatCat);
                     }
                   }}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-primary/5 hover:bg-primary/10 text-sm font-semibold text-primary transition-colors mb-3"
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-md bg-primary/5 hover:bg-primary/10 text-sm font-semibold text-primary transition-colors mb-3"
                 >
                   <span>
                     {locale === "bg" ? "Избери" : "Select"} "{(() => {
@@ -435,7 +435,7 @@ export function SmartCategoryPicker({
                     type="button"
                     onClick={() => handleNavigate(cat)}
                     className={cn(
-                      "w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm transition-colors",
+                      "w-full flex items-center justify-between px-4 py-3 rounded-md text-sm transition-colors",
                       "hover:bg-muted active:bg-muted/80",
                       value === cat.id && "bg-primary/10"
                     )}
@@ -550,7 +550,7 @@ export function SmartCategoryPicker({
                     type="button"
                     onClick={() => handleSearchSelect(cat)}
                     className={cn(
-                      "w-full flex flex-col items-start gap-1.5 px-4 py-4 rounded-xl text-left transition-colors",
+                      "w-full flex flex-col items-start gap-1.5 px-4 py-4 rounded-md text-left transition-colors",
                       "bg-muted/30 hover:bg-muted active:bg-muted/80",
                       value === cat.id && "bg-primary/10 ring-1 ring-primary/30"
                     )}
@@ -623,7 +623,7 @@ export function SmartCategoryPicker({
                       handleSelect(flatCat);
                     }
                   }}
-                  className="w-full flex items-center justify-between px-4 py-4 rounded-xl bg-primary text-primary-foreground text-base font-semibold transition-colors mb-4"
+                  className="w-full flex items-center justify-between px-4 py-4 rounded-md bg-primary text-primary-foreground text-base font-semibold transition-colors mb-4"
                 >
                   <span>
                     {locale === "bg" ? "Избери тази категория" : "Select this category"}
@@ -647,7 +647,7 @@ export function SmartCategoryPicker({
                       type="button"
                       onClick={() => handleNavigate(cat)}
                       className={cn(
-                        "w-full flex items-center justify-between px-4 py-4 rounded-xl text-base transition-colors",
+                        "w-full flex items-center justify-between px-4 py-4 rounded-md text-base transition-colors",
                         "bg-muted/30 hover:bg-muted active:bg-muted/80",
                         value === cat.id && "bg-primary/10 ring-1 ring-primary/30"
                       )}

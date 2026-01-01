@@ -45,7 +45,7 @@ function ReviewSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-border overflow-hidden">
+    <div className="rounded-md border border-border overflow-hidden">
       <div className="flex items-center justify-between px-3 py-2 bg-muted/50 border-b border-border">
         <div className="flex items-center gap-2">
           <Icon className={cn(
@@ -61,7 +61,7 @@ function ReviewSection({
             variant="ghost"
             size="sm"
             onClick={onEdit}
-            className="h-7 px-2 gap-1 text-primary text-[11px] font-bold uppercase tracking-wider"
+            className="h-7 px-2 gap-1 text-primary text-xs font-bold uppercase tracking-wider"
           >
             <PencilSimple className="size-3" />
             Edit
@@ -141,7 +141,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
     <div className="flex flex-col gap-4">
       {/* Validation warnings */}
       {!isValid && (
-        <div className="p-4 rounded-xl bg-muted/50 border border-border">
+        <div className="p-4 rounded-md bg-muted/50 border border-border">
           <div className="flex items-start gap-3">
             <Warning className="size-5 text-muted-foreground shrink-0 mt-0.5" weight="fill" />
             <div>
@@ -184,7 +184,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
                 />
                 {idx === 0 && (
                   <div className="absolute bottom-0 inset-x-0 bg-black/50 py-0.5 text-center">
-                    <span className="text-[9px] text-white font-bold uppercase tracking-wider">Cover</span>
+                    <span className="text-2xs text-white font-bold uppercase tracking-wider">Cover</span>
                   </div>
                 )}
               </div>
@@ -344,7 +344,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
       </ReviewSection>
 
       {/* Terms agreement */}
-      <div className="p-4 rounded-xl bg-muted/50 border border-border">
+      <div className="p-4 rounded-md bg-muted/50 border border-border">
         <p className="text-sm text-muted-foreground">
           {isBg
             ? "При публикуване на обявата, Вие се съгласявате с Условията за продажба и потвърждавате, че информацията е вярна."

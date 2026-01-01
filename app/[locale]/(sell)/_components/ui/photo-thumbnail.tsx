@@ -52,7 +52,7 @@ export function PhotoThumbnail({
       onDragOver={onDragOver}
       onDragEnd={onDragEnd}
       className={cn(
-        "relative aspect-square overflow-hidden rounded-xl border bg-muted transition-colors",
+        "relative aspect-square overflow-hidden rounded-md border bg-muted transition-colors",
         isDragging 
           ? "border-primary border-dashed opacity-50 scale-95" 
           : "border-border/40 hover:border-primary/30",
@@ -70,7 +70,7 @@ export function PhotoThumbnail({
       {/* Cover Badge - Top left */}
       {isCover && (
         <div className="absolute top-1.5 left-1.5 z-10">
-          <Badge variant="secondary" className="px-1.5 py-0 gap-1 font-bold text-[9px] uppercase tracking-wider bg-white/90 backdrop-blur-xs text-primary border-none shadow-sm h-5">
+          <Badge variant="secondary" className="px-1.5 py-0 gap-1 font-bold text-2xs uppercase tracking-wider bg-white/90 backdrop-blur-xs text-primary border-none shadow-sm h-5">
             <Star className="size-2" weight="fill" />
             Cover
           </Badge>
@@ -88,7 +88,7 @@ export function PhotoThumbnail({
       </button>
 
       {/* Position Number - Bottom left */}
-      <div className="absolute bottom-1.5 left-1.5 bg-black/40 backdrop-blur-xs text-white text-[9px] font-bold px-1 py-0.5 rounded-md">
+      <div className="absolute bottom-1.5 left-1.5 bg-black/40 backdrop-blur-xs text-white text-2xs font-bold px-1 py-0.5 rounded-md">
         {index + 1}
       </div>
 

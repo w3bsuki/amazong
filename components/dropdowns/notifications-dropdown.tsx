@@ -526,7 +526,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
               {t("loading")}
             </div>
           ) : notifications.length === 0 ? (
-            <div className="p-8 text-center">
+            <div className="p-4 text-center">
               <ChatCircle size={40} weight="thin" className="mx-auto mb-2 text-muted-foreground/50" />
               <p className="text-sm text-muted-foreground">{t("noNotifications")}</p>
             </div>

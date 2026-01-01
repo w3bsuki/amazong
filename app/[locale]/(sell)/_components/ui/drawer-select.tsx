@@ -119,7 +119,7 @@ export function DrawerSelect({
         disabled={disabled}
         className={cn(
           "w-full flex items-center justify-between gap-2 h-12 px-4 text-left",
-          "bg-background border border-input rounded-xl",
+          "bg-background border border-input rounded-md",
           "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           "transition-colors active:bg-accent/50",
           "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -189,7 +189,7 @@ export function DrawerSelect({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={isBg ? searchPlaceholderBg : searchPlaceholder}
-                  className="pl-9 h-11 rounded-xl"
+                  className="pl-9 h-11 rounded-md"
                   autoFocus
                 />
               </div>
@@ -214,7 +214,7 @@ export function DrawerSelect({
                       type="button"
                       onClick={() => handleSelect(option.value)}
                       className={cn(
-                        "w-full flex items-center gap-3 p-3 rounded-xl text-left transition-colors",
+                        "w-full flex items-center gap-3 p-3 rounded-md text-left transition-colors",
                         "active:scale-[0.99]",
                         isSelected
                           ? "bg-primary/10 text-primary"
@@ -333,7 +333,7 @@ export function DrawerMultiSelect({
         disabled={disabled}
         className={cn(
           "w-full flex items-center justify-between gap-2 h-12 px-4 text-left",
-          "bg-background border border-input rounded-xl",
+          "bg-background border border-input rounded-md",
           "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           "transition-colors active:bg-accent/50",
           "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -384,7 +384,7 @@ export function DrawerMultiSelect({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={isBg ? searchPlaceholderBg : searchPlaceholder}
-                  className="pl-9 h-11 rounded-xl"
+                  className="pl-9 h-11 rounded-md"
                 />
               </div>
             </div>
@@ -409,7 +409,7 @@ export function DrawerMultiSelect({
                       onClick={() => toggleSelection(option.value)}
                       disabled={atLimit}
                       className={cn(
-                        "w-full flex items-center gap-3 p-3 rounded-xl text-left transition-colors",
+                        "w-full flex items-center gap-3 p-3 rounded-md text-left transition-colors",
                         "active:scale-[0.99]",
                         isSelected
                           ? "bg-primary/10 text-primary"

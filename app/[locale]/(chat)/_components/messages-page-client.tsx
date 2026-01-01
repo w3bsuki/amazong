@@ -37,17 +37,17 @@ function ChatInterfaceSkeleton() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         <div className="flex items-end gap-2">
           <Skeleton className="size-7 rounded-full shrink-0" />
-          <Skeleton className="h-12 w-48 rounded-2xl rounded-bl-md" />
+          <Skeleton className="h-12 w-48 rounded-md rounded-bl-md" />
         </div>
         <div className="flex justify-end">
-          <Skeleton className="h-12 w-40 rounded-2xl rounded-br-md" />
+          <Skeleton className="h-12 w-40 rounded-md rounded-br-md" />
         </div>
         <div className="flex items-end gap-2">
           <Skeleton className="size-7 rounded-full shrink-0" />
-          <Skeleton className="h-16 w-56 rounded-2xl rounded-bl-md" />
+          <Skeleton className="h-16 w-56 rounded-md rounded-bl-md" />
         </div>
         <div className="flex justify-end">
-          <Skeleton className="h-10 w-32 rounded-2xl rounded-br-md" />
+          <Skeleton className="h-10 w-32 rounded-md rounded-br-md" />
         </div>
       </div>
       {/* Input skeleton */}
@@ -94,7 +94,7 @@ function ChatBottomTabs({
             >
               <Icon className={cn("size-5", isActive && "stroke-[2.5]")} />
               <span className={cn(
-                "text-[10px] font-medium",
+                "text-2xs font-medium",
                 isActive && "font-semibold"
               )}>
                 {tab.label}
@@ -234,7 +234,7 @@ function MessagesContent() {
         ) : (
           /* Empty state - Desktop only */
           <div className="hidden lg:flex flex-col items-center justify-center h-full bg-muted/30">
-            <div className="flex flex-col items-center gap-4 p-8 text-center max-w-sm">
+            <div className="flex flex-col items-center gap-4 p-4 text-center max-w-sm">
               <div className="flex size-20 items-center justify-center rounded-full border-2 border-border bg-background">
                 <svg className="size-10 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />

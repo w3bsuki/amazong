@@ -43,7 +43,7 @@ export default function PlansLoading() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="shrink-0 snap-center md:w-auto md:shrink md:snap-none w-[calc(100vw-3rem)] rounded-xl border bg-card p-4 sm:p-6"
+              className="shrink-0 snap-center md:w-auto md:shrink md:snap-none w-[calc(100vw-3rem)] rounded-md border bg-card p-4 sm:p-4"
             >
               {/* Plan Header */}
               <div className="flex items-center gap-3 mb-4">

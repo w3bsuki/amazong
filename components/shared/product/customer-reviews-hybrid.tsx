@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
-import { WriteReviewDialog } from "./write-review-dialog";
+import { WriteReviewDialog, type SubmitReviewFn } from "./write-review-dialog";
 
 export interface CustomerReview {
   id: string;
@@ -27,6 +27,8 @@ interface CustomerReviewsHybridProps {
   productId?: string;
   productTitle?: string;
   locale?: string;
+  /** Server action to submit review - must be passed from route-level component */
+  submitReview?: SubmitReviewFn;
 }
 
 function formatDate(value: string) {
@@ -46,7 +48,8 @@ export function CustomerReviewsHybrid({
   reviews,
   productId,
   productTitle,
-  locale = "en"
+  locale = "en",
+  submitReview,
 }: CustomerReviewsHybridProps) {
   const safeRating = Number.isFinite(rating) ? rating : 0;
   const safeCount = Number.isFinite(reviewCount) ? reviewCount : 0;
@@ -67,11 +70,12 @@ export function CustomerReviewsHybrid({
       <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
         <h2 className="text-xl lg:text-2xl font-bold text-foreground tracking-tight">{t.title}</h2>
         <div className="flex items-center gap-3">
-          {productId && (
+          {productId && submitReview && (
             <WriteReviewDialog
               productId={productId}
               productTitle={productTitle ?? "Product"}
               locale={locale}
+              submitReview={submitReview}
               trigger={
                 <Button variant="default" size="sm" className="gap-2">
                   <PencilLine className="h-4 w-4" />
@@ -126,13 +130,14 @@ export function CustomerReviewsHybrid({
         {/* Reviews */}
         <div>
           {reviews.length === 0 ? (
-            <div className="rounded-md border border-border/50 bg-background p-6 text-center">
+            <div className="rounded-md border border-border/50 bg-background p-4 text-center">
               <p className="text-sm text-muted-foreground mb-3">{t.noReviews}</p>
-              {productId && (
+              {productId && submitReview && (
                 <WriteReviewDialog
                   productId={productId}
                   productTitle={productTitle ?? "Product"}
                   locale={locale}
+                  submitReview={submitReview}
                   trigger={
                     <Button variant="outline" size="sm">
                       {t.beFirst}
@@ -142,7 +147,7 @@ export function CustomerReviewsHybrid({
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {reviews.map((review) => {
                 const author = review.user?.display_name || review.user?.username || "User";
                 return (

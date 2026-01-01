@@ -69,7 +69,7 @@ export function LocaleDeliveryDropdown({ pathname, country, onCountryChange, cla
               <span className="text-2xs text-header-text/70 font-normal">
                 {tNav("deliverTo")}
               </span>
-              <span className="text-xs font-bold truncate max-w-[80px] lg:max-w-[120px]">
+              <span className="text-xs font-bold truncate max-w-20 lg:max-w-[120px]">
                 {country}
               </span>
             </div>

@@ -311,12 +311,12 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
           return (
             <div 
               key={product.id} 
-              className={`flex items-start gap-3 p-3 rounded-2xl bg-account-stat-bg border border-account-stat-border transition-all active:scale-[0.99] ${
+              className={`flex items-start gap-3 p-3 rounded-md bg-account-stat-bg border border-account-stat-border transition-all active:scale-[0.99] ${
                 boosted ? 'ring-2 ring-primary/20 border-primary/30' : ''
               }`}
             >
               {/* Product Image */}
-              <div className="relative size-20 rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
+              <div className="relative size-20 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
                 {product.images?.[0] && product.images[0].startsWith('http') ? (
                   <Image
                     src={product.images[0]}
@@ -332,7 +332,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                 )}
                 {boosted && (
                   <div className="absolute top-1.5 left-1.5">
-                    <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 gap-0.5 shadow-sm">
+                    <Badge className="bg-primary text-primary-foreground text-2xs px-1.5 py-0.5 gap-0.5 shadow-sm">
                       <Lightning className="size-2.5" weight="fill" />
                     </Badge>
                   </div>
@@ -354,7 +354,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                         {formatCurrency(Number(product.price))}
                       </span>
                       {saleActive && salePercent > 0 && (
-                        <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-[10px] px-1.5 py-0">
+                        <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-2xs px-1.5 py-0">
                           <Tag weight="fill" className="size-2.5 mr-0.5" />
                           -{salePercent}%
                         </Badge>
@@ -368,7 +368,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                         }
                       </span>
                       {boosted && (
-                        <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-[10px] px-1.5 py-0">
+                        <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-2xs px-1.5 py-0">
                           <Lightning weight="fill" className="size-2.5 mr-0.5" />
                           {daysLeft}d
                         </Badge>
@@ -386,7 +386,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                           />
                         ))}
                       </div>
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="text-2xs text-muted-foreground">
                         ({product.review_count || 0})
                       </span>
                     </div>
@@ -498,7 +498,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
               }`}
             >
               {/* Product Image */}
-              <div className="relative size-16 rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
+              <div className="relative size-16 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
                 {product.images?.[0] && product.images[0].startsWith('http') ? (
                   <Image
                     src={product.images[0]}
@@ -514,7 +514,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                 )}
                 {boosted && (
                   <div className="absolute top-1 left-1">
-                    <Badge className="bg-primary text-primary-foreground text-[10px] px-1 py-0 gap-0.5">
+                    <Badge className="bg-primary text-primary-foreground text-2xs px-1 py-0 gap-0.5">
                       <Lightning className="size-2.5" weight="fill" />
                     </Badge>
                   </div>

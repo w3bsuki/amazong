@@ -63,7 +63,7 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">
-          <Card className="max-w-md w-full rounded-xl">
+          <Card className="max-w-md w-full rounded-md">
             <CardHeader className="text-center pb-2">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
                 <WarningCircle className="h-8 w-8 text-destructive" weight="duotone" />

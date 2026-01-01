@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export default function BusinessUpgradeLoading() {
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6">
       {/* Header */}
       <div className="px-4 lg:px-6 text-center">
         <Skeleton className="h-8 w-56 mx-auto mb-2" />
@@ -37,7 +37,7 @@ export default function BusinessUpgradeLoading() {
 
       {/* Plans Grid */}
       <div className="px-4 lg:px-6">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <Card key={i} className={i === 2 ? "border-primary" : ""}>
               <CardHeader className="pb-3">

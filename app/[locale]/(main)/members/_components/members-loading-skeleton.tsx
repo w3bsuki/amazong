@@ -6,7 +6,7 @@ export default function MembersLoadingSkeleton() {
       <p className="sr-only">Loading members…</p>
       <div className="bg-primary/5 py-10 sm:py-16">
         <div className="container">
-          <div className="flex flex-col md:flex-row items-center gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-4">
             <div className="flex-1 space-y-4">
               <Skeleton className="h-5 w-32 rounded-full" />
               <Skeleton className="h-10 sm:h-12 w-72" />
@@ -17,7 +17,7 @@ export default function MembersLoadingSkeleton() {
                 <Skeleton className="h-11 w-36 rounded-full" />
               </div>
             </div>
-            <Skeleton className="w-72 h-48 rounded-xl" />
+            <Skeleton className="w-72 h-48 rounded-md" />
           </div>
         </div>
       </div>
@@ -41,9 +41,9 @@ export default function MembersLoadingSkeleton() {
 
         <div className="max-w-3xl mx-auto">
           <Skeleton className="h-7 w-36 mx-auto mb-8" />
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             {[1, 2].map((i) => (
-              <div key={i} className="bg-card rounded-xl border border-border p-6">
+              <div key={i} className="bg-card rounded-md border border-border p-6">
                 <Skeleton className="h-6 w-28 mb-2" />
                 <Skeleton className="h-10 w-32 mb-4" />
                 <div className="space-y-3 mb-6">

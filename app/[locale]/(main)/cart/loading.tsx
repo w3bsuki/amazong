@@ -10,9 +10,9 @@ export default function CartLoading() {
         <Skeleton className="h-4 w-12" />
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 mt-4">
+      <div className="flex flex-col lg:flex-row gap-4 mt-4">
         {/* Cart Items Skeleton */}
-        <div className="flex-1 bg-card p-6 rounded border border-border">
+        <div className="flex-1 bg-card p-4 rounded border border-border">
           <div className="flex justify-between items-end mb-2">
             <Skeleton className="h-9 w-48" />
             <Skeleton className="h-4 w-12" />

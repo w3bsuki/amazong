@@ -24,7 +24,7 @@ export function CategorySearch({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="pl-9 h-touch rounded-xl"
+        className="pl-9 h-touch rounded-md"
       />
       {value && (
         <button

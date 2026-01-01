@@ -18,11 +18,11 @@ export default function RegistryLoading() {
       <div className="container py-10">
         {/* Registry Types */}
         <Skeleton className="h-6 w-44 mx-auto mb-8" />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-16">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-16">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-xl border border-border overflow-hidden">
+            <div key={i} className="bg-card rounded-md border border-border overflow-hidden">
               <Skeleton className="aspect-[16/9] w-full" />
-              <div className="p-5 space-y-3">
+              <div className="p-4 space-y-3">
                 <Skeleton className="h-6 w-36" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-3/4" />
@@ -33,9 +33,9 @@ export default function RegistryLoading() {
         </div>
 
         {/* How It Works */}
-        <div className="bg-muted rounded-xl p-8 mb-16">
+        <div className="bg-muted rounded-md p-4 mb-16">
           <Skeleton className="h-6 w-40 mx-auto mb-10" />
-          <div className="grid gap-8 sm:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-4">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="text-center">
                 <Skeleton className="size-14 mx-auto rounded-full mb-4" />

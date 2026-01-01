@@ -32,12 +32,12 @@ export function MarketplaceHero({ locale, categories }: MarketplaceHeroProps) {
     <div className="w-full">
       {/* Main Hero Banner - Full Width */}
       <div className="relative w-full overflow-hidden rounded-md bg-cta-trust-blue shadow-sm">
-        {/* Background Pattern/Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-cta-trust-blue via-cta-trust-blue to-cta-trust-blue/80 z-0" />
+        {/* Background Solid Color */}
+        <div className="absolute inset-0 bg-cta-trust-blue z-0" />
         <div className="absolute right-0 top-0 h-full w-1/2 bg-[url('https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay" />
         
         <div className="relative z-10 px-6 py-6 lg:px-8 lg:py-8">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             {/* Left Content */}
             <div className="text-center lg:text-left max-w-2xl">
               {/* Badge */}

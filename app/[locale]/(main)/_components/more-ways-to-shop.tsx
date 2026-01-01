@@ -41,18 +41,19 @@ export function MoreWaysToShop({ locale }: { locale: string }) {
           <Link
             key={card.href}
             href={card.href}
-            className="group relative aspect-4/3 rounded-xl overflow-hidden"
+            className="group relative aspect-4/3 rounded-md overflow-hidden"
           >
             <Image
               src={card.image}
               alt={card.title}
               fill
+              sizes="(max-width: 640px) 50vw, 25vw"
               className="absolute inset-0 size-full object-cover"
               loading="lazy"
             />
             <div className="absolute inset-0 bg-black/35" />
             {card.badge && (
-              <span className="absolute top-2.5 left-2.5 bg-black/40 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md">
+              <span className="absolute top-2.5 left-2.5 bg-black/40 text-white text-2xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-md">
                 {card.badge}
               </span>
             )}

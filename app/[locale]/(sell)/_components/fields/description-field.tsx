@@ -42,7 +42,7 @@ export function DescriptionField({
         <Field data-invalid={fieldState.invalid} className={className}>
           {/* Section Header (non-compact mode) */}
           {!compact && (
-            <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
+            <div className="p-4 pb-3 border-b border-border/50 bg-muted/10">
               <div className="flex items-center gap-3.5">
                 <div className="flex size-10 items-center justify-center rounded-md bg-background border border-border shadow-xs">
                   <TextAlignLeft className="size-5 text-muted-foreground" weight="bold" />
@@ -73,14 +73,14 @@ export function DescriptionField({
           {/* Rich Textarea with label inside */}
           <FieldContent className={cn(!compact && "p-5")}>
             <div className={cn(
-              "rounded-xl border shadow-xs overflow-hidden transition-all bg-background",
+              "rounded-md border shadow-xs overflow-hidden transition-all bg-background",
               "focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5",
               fieldState.invalid && "border-destructive focus-within:ring-destructive/5"
             )}>
               <div className="px-4 pt-3">
                 <label 
                   htmlFor="sell-form-description"
-                  className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground leading-none"
+                  className="text-2xs font-bold uppercase tracking-wider text-muted-foreground leading-none"
                 >
                   {isBg ? "Описание" : "Description"}
                 </label>
@@ -131,7 +131,7 @@ export function DescriptionField({
                 </div>
                 <span
                   className={cn(
-                    "text-[10px] font-bold tabular-nums uppercase tracking-widest",
+                    "text-2xs font-bold tabular-nums uppercase tracking-widest",
                     charCount >= maxLength 
                       ? "text-destructive" 
                       : "text-muted-foreground/60"

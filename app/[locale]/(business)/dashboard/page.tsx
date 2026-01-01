@@ -34,7 +34,7 @@ export default async function BusinessDashboardPage() {
   const isNewStore = !setupProgress.hasProducts || !setupProgress.hasDescription
 
   return (
-    <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6">
       {/* Setup Guide for New Sellers - Shopify Style */}
       {isNewStore && (
         <BusinessSetupGuide

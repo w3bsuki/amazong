@@ -387,7 +387,7 @@ export function ProductFormModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="max-w-full w-full h-dvh sm:h-[98dvh] sm:w-[98vw] sm:max-w-none p-0 gap-0 overflow-hidden flex flex-col rounded-none sm:rounded-xl border-0 sm:border"
+        className="max-w-full w-full h-dvh sm:h-[98dvh] sm:w-[98vw] sm:max-w-none p-0 gap-0 overflow-hidden flex flex-col rounded-none sm:rounded-md border-0 sm:border"
         showCloseButton={false}
       >
         {/* Header */}
@@ -476,14 +476,14 @@ export function ProductFormModal({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto bg-muted/30">
-          <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-            <div className="grid gap-6 lg:grid-cols-[1fr,380px] xl:grid-cols-[1fr,420px]">
+          <div className="max-w-7xl mx-auto p-4 sm:p-4 lg:p-4">
+            <div className="grid gap-4 lg:grid-cols-[1fr,380px] xl:grid-cols-[1fr,420px]">
               
               {/* Left Column */}
               <div className="space-y-6">
                 
                 {/* Title & Description */}
-                <div className="bg-background rounded-lg p-4 sm:p-6 space-y-4">
+                <div className="bg-background rounded-lg p-4 sm:p-4 space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="title" className="text-sm font-medium">
                       Title <span className="text-red-500">*</span>
@@ -512,7 +512,7 @@ export function ProductFormModal({
                 </div>
 
                 {/* Media */}
-                <div className="bg-background rounded-lg p-4 sm:p-6">
+                <div className="bg-background rounded-lg p-4 sm:p-4">
                   <div className="flex items-center gap-2 mb-4">
                     <IconPhoto className="size-5 text-muted-foreground" />
                     <h3 className="font-medium">Media</h3>
@@ -578,7 +578,7 @@ export function ProductFormModal({
                 {/* Pricing & Inventory - Side by side */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   {/* Pricing */}
-                  <div className="bg-background rounded-lg p-4 sm:p-6 space-y-4">
+                  <div className="bg-background rounded-lg p-4 sm:p-4 space-y-4">
                     <h3 className="font-medium">Pricing</h3>
                     
                     <div className="space-y-3">
@@ -643,7 +643,7 @@ export function ProductFormModal({
                   </div>
 
                   {/* Inventory */}
-                  <div className="bg-background rounded-lg p-4 sm:p-6 space-y-4">
+                  <div className="bg-background rounded-lg p-4 sm:p-4 space-y-4">
                     <h3 className="font-medium">Inventory</h3>
                     
                     <div className="space-y-3">
@@ -694,7 +694,7 @@ export function ProductFormModal({
                 </div>
 
                 {/* Shipping */}
-                <div className="bg-background rounded-lg p-4 sm:p-6 space-y-4">
+                <div className="bg-background rounded-lg p-4 sm:p-4 space-y-4">
                   <h3 className="font-medium">Shipping</h3>
                   
                   <div className="flex gap-2">
@@ -734,7 +734,7 @@ export function ProductFormModal({
               <div className="space-y-4">
                 
                 {/* Category Selector - Cascading */}
-                <div className="bg-background rounded-lg p-4 sm:p-6">
+                <div className="bg-background rounded-lg p-4 sm:p-4">
                   <h3 className="font-medium mb-3">Category</h3>
                   <CategorySelector
                     categories={categories}
@@ -744,7 +744,7 @@ export function ProductFormModal({
                 </div>
 
                 {/* Condition */}
-                <div className="bg-background rounded-lg p-4 sm:p-6">
+                <div className="bg-background rounded-lg p-4 sm:p-4">
                   <h3 className="font-medium mb-3">Condition</h3>
                   <div className="grid grid-cols-3 gap-2">
                     {(["new", "like_new", "good", "used", "fair", "refurbished"] as const).map((cond) => (
@@ -767,7 +767,7 @@ export function ProductFormModal({
 
                 {/* Quick Stats for editing */}
                 {isEditing && (
-                  <div className="bg-background rounded-lg p-4 sm:p-6">
+                  <div className="bg-background rounded-lg p-4 sm:p-4">
                     <h3 className="font-medium mb-3">Quick Info</h3>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div className="p-2 rounded bg-muted">

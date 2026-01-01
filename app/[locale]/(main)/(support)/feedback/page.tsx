@@ -96,7 +96,7 @@ export default async function FeedbackPage({
         {/* Feedback Form */}
         <section className="max-w-2xl">
           <Card>
-            <CardContent className="p-6 md:p-8">
+            <CardContent className="p-4">
               <div className="flex items-center gap-3 mb-6">
                 <div className="size-10 bg-brand/10 rounded-lg flex items-center justify-center">
                   <PaperPlaneTilt className="size-5 text-brand" />

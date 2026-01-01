@@ -378,7 +378,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
                                 rating={product.rating ?? 0}
                                 reviews={product.reviews ?? 0}
                                 slug={product.slug ?? null}
-                                storeSlug={product.storeSlug ?? null}
+                                username={product.storeSlug ?? null}
                                 sellerId={product.sellerId ?? null}
                                 {...(sellerName ? { sellerName } : {})}
                                 sellerAvatarUrl={product.sellerAvatarUrl ?? null}
@@ -391,8 +391,7 @@ export function TabbedProductFeed({ locale }: TabbedProductFeedProps) {
                                 {...(product.model ? { model: product.model } : {})}
                                 {...(product.year ? { year: product.year } : {})}
                                 tags={product.tags ?? []}
-                                isBoosted={Boolean(product.isBoosted)}
-                                showPills={true}
+                                state={product.isBoosted ? "promoted" : undefined}
                                 index={index}
                               />
                             )

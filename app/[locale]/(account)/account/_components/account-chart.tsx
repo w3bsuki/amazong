@@ -131,7 +131,7 @@ export function AccountChart({ locale }: AccountChartProps) {
             >
               <SelectValue placeholder={t.last90} />
             </SelectTrigger>
-            <SelectContent className="rounded-xl">
+            <SelectContent className="rounded-md">
               <SelectItem value="90d" className="rounded-lg">
                 {t.last90}
               </SelectItem>

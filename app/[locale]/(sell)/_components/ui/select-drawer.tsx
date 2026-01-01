@@ -87,7 +87,7 @@ export function SelectDrawer({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={isBg ? "Търсене..." : "Search..."}
-              className="h-12 rounded-xl pl-10 text-base"
+              className="h-12 rounded-md pl-10 text-base"
               autoFocus
               inputMode="search"
             />
@@ -103,7 +103,7 @@ export function SelectDrawer({
                 onClose();
               }}
               className={cn(
-                "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left min-h-11 touch-action-manipulation",
+                "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-action-manipulation",
                 "border border-border bg-muted/20 hover:bg-muted/30 active:bg-muted/40"
               )}
             >
@@ -125,7 +125,7 @@ export function SelectDrawer({
                   type="button"
                   onClick={() => handleSelect(idx)}
                   className={cn(
-                    "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-left min-h-11 touch-action-manipulation",
+                    "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-md text-left min-h-11 touch-action-manipulation",
                     isSelected
                       ? "bg-primary/10 text-primary"
                       : "hover:bg-accent active:bg-accent/80"

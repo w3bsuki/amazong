@@ -135,7 +135,7 @@ export function BrandPicker({
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left bg-background border border-border rounded-xl hover:border-primary/50 transition-colors group"
+          className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left bg-background border border-border rounded-md hover:border-primary/50 transition-colors group"
         >
           <div className="flex items-center gap-3 min-w-0">
             {selectedBrand?.logo_url && (
@@ -183,13 +183,13 @@ export function BrandPicker({
               }}
               onFocus={() => setIsOpen(true)}
               placeholder={placeholder}
-              className="pl-10 pr-4 h-12 rounded-xl"
+              className="pl-10 pr-4 h-12 rounded-md"
             />
           </div>
 
           {/* Dropdown */}
           {isOpen && (
-            <div className="absolute z-50 top-full left-0 right-0 mt-2 bg-background border border-border rounded-xl shadow-xl overflow-hidden max-h-[300px] overflow-y-auto">
+            <div className="absolute z-50 top-full left-0 right-0 mt-2 bg-background border border-border rounded-md shadow-md overflow-hidden max-h-[300px] overflow-y-auto">
               <div className="p-2">
                 {/* Add Custom Option */}
                 {showAddCustom && (

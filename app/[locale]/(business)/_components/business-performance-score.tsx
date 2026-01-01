@@ -101,7 +101,7 @@ export function BusinessPerformanceScore({
       </CardHeader>
       <CardContent>
         {/* Overall Score Circle */}
-        <div className="flex items-center gap-6 mb-6">
+        <div className="flex items-center gap-4 mb-6">
           <div className="relative">
             <svg className="size-24 -rotate-90" viewBox="0 0 100 100">
               <circle

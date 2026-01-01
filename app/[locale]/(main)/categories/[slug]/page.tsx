@@ -324,7 +324,7 @@ export default async function CategoryPage({
                   originalPrice={product.list_price ?? null}
                   tags={product.tags || []}
                   slug={product.slug ?? null}
-                  storeSlug={product.sellers?.store_slug ?? null}
+                  username={product.sellers?.store_slug ?? null}
                   sellerId={product.sellers?.id ?? null}
                   {...(sellerName ? { sellerName } : {})}
                   sellerAvatarUrl={product.sellers?.avatar_url ?? null}

@@ -205,7 +205,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               role="button"
               tabIndex={0}
               aria-label={locale === "bg" ? `Отвори ${item.title}` : `Open ${item.title}`}
-              className="flex flex-col rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden transition-colors active:bg-account-card-hover text-left"
+              className="flex flex-col rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden transition-colors active:bg-account-card-hover text-left"
             >
               {/* Product Image */}
               <div className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">
@@ -298,7 +298,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               </SheetHeader>
               
               <div className="py-4">
-                <div className="relative aspect-square w-full max-w-60 mx-auto rounded-2xl overflow-hidden bg-muted">
+                <div className="relative aspect-square w-full max-w-60 mx-auto rounded-md overflow-hidden bg-muted">
                   <Image 
                     src={item.image} 
                     alt={item.title} 
@@ -379,7 +379,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
         {items.map((item) => (
           <div 
             key={item.id}
-            className="group relative flex flex-col rounded-2xl bg-account-stat-bg border border-account-stat-border overflow-hidden transition-colors hover:border-account-accent"
+            className="group relative flex flex-col rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden transition-colors hover:border-account-accent"
           >
             {/* Product Image */}
             <div className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">

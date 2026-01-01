@@ -14,7 +14,7 @@ export default function AboutLoading() {
 
       <div className="container py-12">
         {/* Mission Section */}
-        <div className="grid md:grid-cols-2 gap-8 items-center mb-16">
+        <div className="grid md:grid-cols-2 gap-4 items-center mb-16">
           <div className="space-y-4">
             <Skeleton className="h-8 w-48" />
             <Skeleton className="h-4 w-full" />
@@ -23,11 +23,11 @@ export default function AboutLoading() {
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-5/6" />
           </div>
-          <Skeleton className="aspect-video rounded-xl" />
+          <Skeleton className="aspect-video rounded-md" />
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="text-center">
               <Skeleton className="h-10 w-20 mx-auto mb-2" />
@@ -39,7 +39,7 @@ export default function AboutLoading() {
         {/* Values */}
         <div className="mb-16">
           <Skeleton className="h-8 w-40 mx-auto mb-8" />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="bg-card rounded-lg border border-border p-6">
                 <Skeleton className="size-12 rounded-lg mb-4" />
@@ -54,10 +54,10 @@ export default function AboutLoading() {
         {/* Team */}
         <div className="text-center">
           <Skeleton className="h-8 w-32 mx-auto mb-8" />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((i) => (
               <div key={i}>
-                <Skeleton className="aspect-square rounded-xl mb-3" />
+                <Skeleton className="aspect-square rounded-md mb-3" />
                 <Skeleton className="h-5 w-28 mx-auto mb-1" />
                 <Skeleton className="h-4 w-20 mx-auto" />
               </div>

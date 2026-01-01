@@ -13,6 +13,7 @@ import { TrustBadges } from "@/components/shared/product/trust-badges";
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/types/database.types";
 import type { CustomerReview } from "@/components/shared/product/customer-reviews-hybrid";
+import type { SubmitReviewFn } from "@/components/shared/product/write-review-dialog";
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
@@ -52,6 +53,7 @@ interface ProductPageLayoutProps {
   relatedProducts: ProductPageViewModel["relatedProducts"];
   reviews: CustomerReview[];
   viewModel: ProductPageViewModel;
+  submitReview?: SubmitReviewFn;
 }
 
 export function ProductPageLayout(props: ProductPageLayoutProps) {
@@ -67,6 +69,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
     relatedProducts,
     reviews,
     viewModel,
+    submitReview,
   } = props;
 
   const primaryImageSrc = viewModel.galleryImages?.[0]?.src ?? null;
@@ -94,6 +97,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
         relatedProducts={relatedProducts}
         reviews={reviews}
         viewModel={viewModel}
+        {...(submitReview && { submitReview })}
       />
 
       {/* ===== DESKTOP PRODUCT PAGE ===== */}
@@ -207,6 +211,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
               productId={product.id}
               productTitle={product.title}
               locale={locale}
+              {...(submitReview && { submitReview })}
             />
           </div>
         </div>

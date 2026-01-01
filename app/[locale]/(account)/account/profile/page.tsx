@@ -64,7 +64,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   } : null
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6">
+    <div className="flex flex-col gap-4 md:gap-4">
       <h1 className="sr-only">{locale === "bg" ? "Профил" : "Profile"}</h1>
       <ProfileContent 
         locale={locale} 

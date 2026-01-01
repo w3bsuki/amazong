@@ -20,7 +20,7 @@ export function SignInPrompt() {
   
   return (
     <div className="container-content py-6 sm:py-8 lg:py-16">
-      <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+      <div className="grid lg:grid-cols-2 gap-4 lg:gap-4 items-center">
         {/* Left Side - Hero Content */}
         <div className="order-2 lg:order-1 text-center lg:text-left">
           {/* Badge */}
@@ -61,7 +61,7 @@ export function SignInPrompt() {
           </div>
           
           {/* Trust Stats - Mobile friendly */}
-          <div className="grid grid-cols-3 gap-4 sm:gap-6 pt-6 sm:pt-8 border-t border-border">
+          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
             {[
               { value: "$2M+", label: "Paid to Sellers" },
               { value: "50K+", label: "Products Listed" },
@@ -82,10 +82,10 @@ export function SignInPrompt() {
             <div className="hidden" />
             
             {/* Card */}
-            <div className="relative bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-none">
+            <div className="relative bg-card border border-border rounded-md p-4 shadow-none">
               {/* Header */}
               <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-                <div className="flex items-center justify-center size-12 sm:size-14 rounded-xl bg-primary text-primary-foreground">
+                <div className="flex items-center justify-center size-12 sm:size-14 rounded-md bg-primary text-primary-foreground">
                   <Storefront weight="fill" className="size-6 sm:size-7" />
                 </div>
                 <div>
@@ -117,7 +117,7 @@ export function SignInPrompt() {
               </div>
               
               {/* Testimonial */}
-              <div className="bg-muted/50 rounded-xl p-3 sm:p-4 border border-border/50">
+              <div className="bg-muted/50 rounded-md p-3 sm:p-4 border border-border/50">
                 <div className="flex gap-0.5 mb-2">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} weight="fill" className="size-3.5 sm:size-4 text-rating" />

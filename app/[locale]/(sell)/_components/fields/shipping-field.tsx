@@ -124,7 +124,7 @@ function ShippingRegionCard({
   return (
     <label
       className={cn(
-        "relative flex items-start gap-3 p-3 rounded-xl border text-left transition-all w-full cursor-pointer",
+        "relative flex items-start gap-3 p-3 rounded-md border text-left transition-all w-full cursor-pointer",
         isSelected
           ? "border-primary bg-primary/10 shadow-xs"
           : "border-border bg-background hover:border-primary/30"
@@ -368,7 +368,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                   <button
                     type="button"
                     onClick={() => setIsCityDrawerOpen(true)}
-                    className="relative w-full flex items-center h-12 px-4 rounded-xl border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
+                    className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
@@ -403,7 +403,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                     value={sellerCity || ""}
                     onValueChange={(val) => setValue("sellerCity", val)}
                   >
-                    <SelectTrigger className="h-12 rounded-xl border-border font-medium">
+                    <SelectTrigger className="h-12 rounded-md border-border font-medium">
                       <SelectValue placeholder={isBg ? "Изберете град..." : "Select city..."} />
                     </SelectTrigger>
                     <SelectContent>
@@ -456,7 +456,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                   placeholder="0.00"
                   value={shippingPrice || ""}
                   onChange={(e) => setValue("shippingPrice", e.target.value)}
-                  className="pl-10 h-12 rounded-xl border-border font-bold text-base"
+                  className="pl-10 h-12 rounded-md border-border font-bold text-base"
                 />
               </div>
             )}
@@ -494,7 +494,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                 <button
                   type="button"
                   onClick={() => setIsProcessingDrawerOpen(true)}
-                  className="relative w-full flex items-center h-12 px-4 rounded-xl border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
+                  className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
                 >
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
@@ -526,7 +526,7 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
                   value={String(processingDays)}
                   onValueChange={(val) => setValue("processingDays", Number(val))}
                 >
-                  <SelectTrigger className="h-12 w-44 rounded-xl border-border font-medium">
+                  <SelectTrigger className="h-12 w-44 rounded-md border-border font-medium">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -551,9 +551,9 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
   return (
     <Field data-invalid={hasError} className={className}>
       {!compact ? (
-        <div className="rounded-xl border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
+        <div className="rounded-md border border-form-section-border bg-form-section-bg overflow-hidden shadow-xs">
           {/* Header */}
-          <div className="p-5 pb-4 border-b border-border/50 bg-muted/10">
+          <div className="p-4 pb-3 border-b border-border/50 bg-muted/10">
             <div className="flex items-center gap-3.5">
               <div className="flex size-10 items-center justify-center rounded-md bg-form-section-bg border border-form-section-border shadow-xs">
                 <Truck className="size-5 text-muted-foreground" weight="bold" />

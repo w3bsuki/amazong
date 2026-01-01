@@ -57,7 +57,7 @@ export default async function UpgradePage({
   } : null
 
   return (
-    <div className="p-4 lg:p-6 max-w-4xl mx-auto">
+    <div className="p-4 lg:p-4 max-w-4xl mx-auto">
       {/* Back Link */}
       <Link 
         href="/account/plans"

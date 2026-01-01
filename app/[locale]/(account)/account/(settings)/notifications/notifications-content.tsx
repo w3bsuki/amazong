@@ -317,7 +317,7 @@ export function NotificationsContent({
             {locale === "bg" ? "Зареждане..." : "Loading..."}
           </div>
         ) : visibleNotifications.length === 0 ? (
-          <div className="p-8 text-center">
+          <div className="p-4 text-center">
             <Bell size={40} weight="thin" className="mx-auto mb-2 text-muted-foreground/50" />
             <p className="text-sm text-muted-foreground">
               {locale === "bg" ? "Няма известия" : "No notifications"}

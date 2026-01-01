@@ -353,7 +353,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <div className="relative">
               <div className="size-24 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-muted">
                 {avatarPreview ? (

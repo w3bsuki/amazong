@@ -202,7 +202,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
           return (
             <Sheet key={order.id}>
               <SheetTrigger asChild>
-                <button className="w-full text-left rounded-2xl bg-account-stat-bg border border-account-stat-border p-4 transition-all active:scale-[0.99]">
+                <button className="w-full text-left rounded-md bg-account-stat-bg border border-account-stat-border p-4 transition-all active:scale-[0.99]">
                   {/* Header: Price + Date */}
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-lg font-bold text-foreground tabular-nums">
@@ -223,7 +223,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                       return (
                         <div
                           key={item.id}
-                          className="relative size-14 rounded-xl overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0"
+                          className="relative size-14 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0"
                         >
                           {image ? (
                             <Image
@@ -247,7 +247,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                       )
                     })}
                     {remainingCount > 0 && (
-                      <div className="flex size-14 items-center justify-center rounded-xl bg-muted/50 text-sm font-medium text-muted-foreground">
+                      <div className="flex size-14 items-center justify-center rounded-md bg-muted/50 text-sm font-medium text-muted-foreground">
                         +{remainingCount}
                       </div>
                     )}

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export default function AccountPlansLoading() {
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 lg:p-4">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -32,7 +32,7 @@ export default function AccountPlansLoading() {
                     <Skeleton className="h-4 w-32" />
                   </div>
                 </div>
-                <div className="flex gap-6">
+                <div className="flex gap-4">
                   <Skeleton className="h-4 w-40" />
                   <Skeleton className="h-4 w-36" />
                 </div>
