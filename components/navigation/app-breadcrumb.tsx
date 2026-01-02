@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
-import { House } from "@phosphor-icons/react"
+import { House } from "@phosphor-icons/react/dist/ssr"
 import {
   Breadcrumb,
   BreadcrumbList,

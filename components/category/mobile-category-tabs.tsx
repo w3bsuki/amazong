@@ -1,9 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { useSelectedLayoutSegment } from "next/navigation"
+import { useSelectedLayoutSegment, useRouter } from "next/navigation"
 
 interface Category {
   id: string
@@ -22,12 +21,19 @@ interface MobileCategoryTabsProps {
 
 export function MobileCategoryTabs({ categories, locale, rootSlugBySlug }: MobileCategoryTabsProps) {
   const selectedSegment = useSelectedLayoutSegment()
+  const router = useRouter()
   const scrollRef = React.useRef<HTMLDivElement>(null)
+  const [pendingSlug, setPendingSlug] = React.useState<string | null>(null)
 
   const activeRootSlug = React.useMemo(() => {
     if (!selectedSegment) return null
     return rootSlugBySlug?.[selectedSegment] ?? selectedSegment
   }, [rootSlugBySlug, selectedSegment])
+
+  // Clear pending state when navigation completes
+  React.useEffect(() => {
+    setPendingSlug(null)
+  }, [selectedSegment])
 
   // Scroll active tab into view on mount/change
   React.useEffect(() => {
@@ -58,79 +64,76 @@ export function MobileCategoryTabs({ categories, locale, rootSlugBySlug }: Mobil
     return cat.name
   }
 
+  // Handle pill click - instant visual feedback + router navigation
+  const handlePillClick = React.useCallback((slug: string | null) => {
+    const targetSlug = slug
+    const currentSlug = selectedSegment
+
+    // Skip if already on this category
+    if (targetSlug === currentSlug || (targetSlug === null && !currentSlug)) return
+
+    // Instant visual feedback
+    setPendingSlug(targetSlug)
+
+    // Navigate without scroll reset
+    const path = targetSlug ? `/${locale}/categories/${targetSlug}` : `/${locale}/categories`
+    router.push(path, { scroll: false })
+  }, [locale, router, selectedSegment])
+
+  // Determine which slug is visually active (pending takes priority for instant feedback)
+  const visuallyActiveSlug = pendingSlug !== null ? pendingSlug : activeRootSlug
+
   return (
     <div className="w-full bg-background border-b border-border/40 sticky top-[52px] z-30">
       <div 
         ref={scrollRef}
-        className="relative flex items-center gap-3 overflow-x-auto no-scrollbar px-(--page-inset)"
+        className="relative flex items-center gap-1.5 overflow-x-auto no-scrollbar px-(--page-inset) py-1.5"
         role="tablist"
       >
-        {/* "All" Tab - Text style like homepage */}
-        <Link
-          href="/categories"
-          prefetch={true}
+        {/* "All" Pill - Compact quick pill */}
+        <button
+          type="button"
+          onClick={() => handlePillClick(null)}
           data-slug="all"
           role="tab"
-          aria-selected={!selectedSegment}
+          aria-selected={!visuallyActiveSlug}
           className={cn(
-            "shrink-0 py-3 text-sm relative",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-            "transition-colors",
-            !selectedSegment
-              ? "text-primary"
-              : "text-muted-foreground hover:text-foreground"
+            // Compact pill - 28px height, tight padding, WCAG 2.2 AA compliant (min 24px)
+            "shrink-0 h-7 px-3 rounded-full text-xs font-medium",
+            "inline-flex items-center justify-center",
+            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+            "transition-colors duration-100",
+            !visuallyActiveSlug
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
           )}
         >
-          <span className="relative inline-flex flex-col items-center">
-            <span className={cn(
-              "transition-[font-weight] duration-100",
-              !selectedSegment ? "font-bold" : "font-medium"
-            )}>
-              {locale === 'bg' ? 'Всички' : 'All'}
-            </span>
-            <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
-              {locale === 'bg' ? 'Всички' : 'All'}
-            </span>
-            {!selectedSegment && (
-              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
-            )}
-          </span>
-        </Link>
+          {locale === 'bg' ? 'Всички' : 'All'}
+        </button>
 
         {categories.map((cat) => {
-          const isActive = activeRootSlug === cat.slug
+          const isActive = visuallyActiveSlug === cat.slug
           return (
-            <Link
+            <button
+              type="button"
               key={cat.id}
-              href={`/categories/${cat.slug}`}
+              onClick={() => handlePillClick(cat.slug)}
               data-slug={cat.slug}
-              prefetch={true}
               role="tab"
               aria-selected={isActive}
               className={cn(
-                "shrink-0 py-3 text-sm relative",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                "transition-colors",
+                // Compact pill - 28px height, tight padding, WCAG 2.2 AA compliant (min 24px)
+                "shrink-0 h-7 px-3 rounded-full text-xs font-medium",
+                "inline-flex items-center justify-center",
+                "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                "transition-colors duration-100",
                 isActive
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              <span className="relative inline-flex flex-col items-center">
-                <span className={cn(
-                  "transition-[font-weight] duration-100",
-                  isActive ? "font-bold" : "font-medium"
-                )}>
-                  {getCategoryName(cat)}
-                </span>
-                <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
-                  {getCategoryName(cat)}
-                </span>
-                {isActive && (
-                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
-                )}
-              </span>
-            </Link>
+              {getCategoryName(cat)}
+            </button>
           )
         })}
       </div>
