@@ -18,7 +18,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { useCart, type CartItem } from "@/components/providers/cart-context"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { CountBadge } from "@/components/common/count-badge"
+import { CountBadge } from "@/components/shared/count-badge"
 
 export function MobileCartDropdown() {
     const [open, setOpen] = useState(false)

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
-import { Sliders, Star, Check, CaretRight, CaretLeft } from "@phosphor-icons/react"
+import { Sliders, Star, Check, CaretRight, CaretLeft, CaretUp } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -234,18 +234,20 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
         variant="ghost"
         onClick={() => setIsOpen(true)}
         className={cn(
-          "w-full h-9 rounded-full px-4 bg-secondary hover:bg-secondary/80 hover:text-foreground transition-colors border border-border/50",
+          "h-8 rounded-full px-3 gap-1 text-sm bg-secondary hover:bg-secondary/80 hover:text-foreground transition-colors border border-border/50",
           filterCount > 0 && "bg-primary/10 text-primary border-primary/20"
         )}
       >
-        <Sliders size={16} weight="regular" className={cn(
+        <Sliders size={14} weight="regular" className={cn(
           filterCount > 0 ? "text-primary" : "text-muted-foreground"
         )} />
         <span className={cn(filterCount > 0 ? "text-primary" : "text-foreground")}>{t('filters')}</span>
-        {filterCount > 0 && (
-          <span className="bg-primary text-primary-foreground text-xs font-bold rounded-full min-w-5 h-5 px-1.5 flex items-center justify-center ml-1">
+        {filterCount > 0 ? (
+          <span className="bg-primary text-primary-foreground text-xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center ml-0.5 text-[10px]">
             {filterCount}
           </span>
+        ) : (
+          <CaretUp size={12} weight="bold" className="text-muted-foreground" />
         )}
       </Button>
 

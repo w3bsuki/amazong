@@ -35,7 +35,7 @@ describe("product-card-hero-attributes", () => {
 
     it("returns null for null/undefined", () => {
       expect(getHeroAttributeConfig(null)).toBeNull()
-      expect(getHeroAttributeConfig(undefined)).toBeNull()
+      expect(getHeroAttributeConfig()).toBeNull()
     })
   })
 

@@ -211,8 +211,8 @@ test.describe('Smoke Tests - Critical Path', () => {
     const notFoundText = page.locator('text=/not found|404/i').first()
 
     await Promise.race([
-      notFoundText.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => undefined),
-      page.waitForURL((url) => !url.toString().includes(unknownMarker), { timeout: 5_000 }).catch(() => undefined),
+      notFoundText.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => {}),
+      page.waitForURL((url) => !url.toString().includes(unknownMarker), { timeout: 5_000 }).catch(() => {}),
     ])
 
     const is404 = await notFoundText.isVisible().catch(() => false)

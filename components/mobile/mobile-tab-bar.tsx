@@ -2,10 +2,10 @@
 
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
-import { House, SquaresFour, ChatCircle, User, PlusCircle } from "@phosphor-icons/react"
+import { Home, LayoutGrid, MessageCircle, User, PlusCircle } from "lucide-react"
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { CountBadge } from "@/components/common/count-badge"
+import { CountBadge } from "@/components/shared/count-badge"
 import { useTranslations } from "next-intl"
 import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile/mobile-menu-sheet"
 import { useMessages } from "@/components/providers/message-context"
@@ -22,7 +22,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   const pathname = usePathname()
   const t = useTranslations("Navigation")
   const menuSheetRef = useRef<MobileMenuSheetHandle>(null)
-  
+
   // Get unread message count from message context
   const { totalUnreadCount } = useMessages()
   const unreadCount = totalUnreadCount
@@ -46,7 +46,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   // /{username}/{slug-or-id} pattern: exactly 2 segments AND first segment is not a known route
   const firstSegment = pathSegments.at(0)
   const isProductPage = (pathSegments.length === 2 && !!firstSegment && !knownRoutes.includes(firstSegment))
-  
+
   const isActive = (path: string) => {
     if (path === "/") return pathname === "/"
     return pathname.startsWith(path)
@@ -57,7 +57,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
 
   return (
     <>
-      <nav 
+      <nav
         className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden pb-safe"
         role="navigation"
         aria-label="Mobile navigation"
@@ -77,14 +77,14 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-label={t("home")}
             aria-current={pathname === "/" ? "page" : undefined}
           >
-            <House size={20} weight={pathname === "/" ? "fill" : "regular"} />
+            <Home size={20} className={pathname === "/" ? "fill-current" : ""} />
             <span className="text-2xs font-medium leading-none">{t("home")}</span>
           </Link>
 
-          {/* Categories - Canonical Browse route */}
-          <Link
-            href="/categories"
-            prefetch={true}
+          {/* Categories - Opens drawer sheet */}
+          <button
+            type="button"
+            onClick={() => menuSheetRef.current?.open()}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
               "touch-action-manipulation tap-transparent",
@@ -92,11 +92,11 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               isActive("/categories") ? "text-cta-trust-blue" : "text-muted-foreground active:text-foreground"
             )}
             aria-label={t("categories")}
-            aria-current={isActive("/categories") ? "page" : undefined}
+            aria-haspopup="dialog"
           >
-            <SquaresFour size={20} weight={isActive("/categories") ? "fill" : "regular"} />
+            <LayoutGrid size={20} className={isActive("/categories") ? "fill-current" : ""} />
             <span className="text-2xs font-medium leading-none">{t("categories")}</span>
-          </Link>
+          </button>
 
           {/* Sell */}
           <Link
@@ -111,7 +111,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
-            <PlusCircle size={20} weight={isActive("/sell") ? "fill" : "regular"} />
+            <PlusCircle size={20} className={isActive("/sell") ? "fill-current" : ""} />
             <span className="text-2xs font-medium leading-none">{t("sell")}</span>
           </Link>
 
@@ -129,7 +129,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-current={isActive("/chat") ? "page" : undefined}
           >
             <span className="relative">
-              <ChatCircle size={20} weight={isActive("/chat") ? "fill" : "regular"} />
+              <MessageCircle size={20} className={isActive("/chat") ? "fill-current" : ""} />
               {unreadCount > 0 && (
                 <CountBadge
                   count={unreadCount}
@@ -154,12 +154,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-label={t("account")}
             aria-current={isActive("/account") ? "page" : undefined}
           >
-            <User size={20} weight={isActive("/account") ? "fill" : "regular"} />
+            <User size={20} className={isActive("/account") ? "fill-current" : ""} />
             <span className="text-2xs font-medium leading-none">{t("account")}</span>
           </Link>
         </div>
       </nav>
-    
+
       {/* Mobile Menu Sheet with category circles */}
       <MobileMenuSheet ref={menuSheetRef} categories={categories} />
     </>

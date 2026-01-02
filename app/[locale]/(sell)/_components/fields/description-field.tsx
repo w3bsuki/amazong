@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { TextAlignLeft, TextB, TextItalic, List } from "@phosphor-icons/react";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 
@@ -22,11 +22,11 @@ interface DescriptionFieldProps {
   compact?: boolean;
 }
 
-export function DescriptionField({ 
-  className, 
+export function DescriptionField({
+  className,
   maxLength = 2000,
   minRows = 4,
-  compact = false 
+  compact = false
 }: DescriptionFieldProps) {
   const { control, watch } = useSellForm();
   const { isBg } = useSellFormContext();
@@ -52,7 +52,7 @@ export function DescriptionField({
                     {isBg ? "Описание" : "Description"}
                   </FieldLabel>
                   <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                    {isBg 
+                    {isBg
                       ? "Опишете детайлите - размер, цвят, дефекти"
                       : "Describe the details - size, color, flaws"}
                   </FieldDescription>
@@ -78,7 +78,7 @@ export function DescriptionField({
               fieldState.invalid && "border-destructive focus-within:ring-destructive/5"
             )}>
               <div className="px-4 pt-3">
-                <label 
+                <label
                   htmlFor="sell-form-description"
                   className="text-2xs font-bold uppercase tracking-wider text-muted-foreground leading-none"
                 >
@@ -89,8 +89,8 @@ export function DescriptionField({
                 {...field}
                 id="sell-form-description"
                 aria-invalid={fieldState.invalid}
-                placeholder={isBg 
-                  ? "Добавете описание на вашия продукт..." 
+                placeholder={isBg
+                  ? "Добавете описание на вашия продукт..."
                   : "Add a description of your product..."}
                 maxLength={maxLength}
                 rows={minRows}
@@ -100,7 +100,7 @@ export function DescriptionField({
                   "min-h-32"
                 )}
               />
-              
+
               {/* Toolbar */}
               <div className="flex items-center justify-between border-t border-border/50 bg-muted/20 px-4 py-2">
                 <div className="flex gap-1">
@@ -132,8 +132,8 @@ export function DescriptionField({
                 <span
                   className={cn(
                     "text-2xs font-bold tabular-nums uppercase tracking-widest",
-                    charCount >= maxLength 
-                      ? "text-destructive" 
+                    charCount >= maxLength
+                      ? "text-destructive"
                       : "text-muted-foreground/60"
                   )}
                 >
@@ -144,8 +144,8 @@ export function DescriptionField({
 
             {/* Error Message */}
             {fieldState.invalid && (
-              <FieldError 
-                errors={[fieldState.error]} 
+              <FieldError
+                errors={[fieldState.error]}
                 className="mt-2"
               />
             )}

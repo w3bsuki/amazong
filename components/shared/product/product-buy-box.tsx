@@ -340,39 +340,18 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product,
           />
 
           <div className="hidden flex-col gap-2 lg:flex">
-            <Button type="button" className="w-full bg-cta-trust-blue text-white hover:bg-cta-trust-blue/90 h-11 text-base font-bold rounded-full shadow-sm transition-colors" size="lg">
+            <Button type="button" className="w-full bg-cta-trust-blue text-white hover:bg-cta-trust-blue/90 h-10 text-base font-bold rounded-full shadow-sm transition-colors" size="lg">
               Buy It Now
             </Button>
-            <Button type="submit" variant="outline" className="w-full border-cta-trust-blue text-cta-trust-blue hover:bg-cta-trust-blue/5 h-11 text-base font-bold rounded-full transition-colors" size="lg">
+            <Button type="submit" variant="outline" className="w-full border-cta-trust-blue text-cta-trust-blue hover:bg-cta-trust-blue/5 h-10 text-base font-bold rounded-full transition-colors" size="lg">
               Add to cart
             </Button>
-            <Button type="button" variant="outline" className="w-full border-border text-foreground hover:bg-muted h-11 text-base font-bold rounded-full transition-colors" size="lg">
+            <Button type="button" variant="outline" className="w-full border-border text-foreground hover:bg-muted h-9 text-base font-bold rounded-full transition-colors">
               <Heart className="mr-2 h-5 w-5" /> Add to Watchlist
             </Button>
           </div>
         </form>
       </Form>
-
-      {/* About this item & Item specifics - Moved here to use the space */}
-      <div className="hidden lg:block space-y-form py-form-sm">
-        {product.description && (
-          <div className="space-y-2">
-            <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">About this item</h2>
-            <div className="text-sm leading-relaxed text-foreground/85 whitespace-pre-line">
-              {product.description}
-            </div>
-          </div>
-        )}
-
-        {product.itemSpecifics && (
-          <div className="space-y-2">
-            <h2 className="text-sm font-bold text-foreground uppercase tracking-wider">Item specifics</h2>
-            <div className="text-sm">
-              {product.itemSpecifics}
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* Shipping, Returns, Payments - Styled like Urgency Box */}
       <div className="hidden lg:block bg-muted/30 p-form rounded-md space-y-form-sm border border-border/50 mt-auto">

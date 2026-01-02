@@ -16,9 +16,9 @@ export function TrustBadges(props: { locale: string; verifiedSeller?: boolean })
 
   return (
     <Card className="border border-border/50">
-      <CardContent className="p-4 space-y-4">
+      <CardContent className="p-3 space-y-3">
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 rounded-full bg-muted/40 p-2">
+          <div className="mt-0.5 rounded-md bg-muted/40 p-2">
             <ShieldCheck className="h-4 w-4 text-foreground" />
           </div>
           <div>
@@ -28,7 +28,7 @@ export function TrustBadges(props: { locale: string; verifiedSeller?: boolean })
         </div>
 
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 rounded-full bg-muted/40 p-2">
+          <div className="mt-0.5 rounded-md bg-muted/40 p-2">
             <RotateCcw className="h-4 w-4 text-foreground" />
           </div>
           <div>
@@ -38,7 +38,7 @@ export function TrustBadges(props: { locale: string; verifiedSeller?: boolean })
         </div>
 
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 rounded-full bg-muted/40 p-2">
+          <div className="mt-0.5 rounded-md bg-muted/40 p-2">
             <Truck className="h-4 w-4 text-foreground" />
           </div>
           <div>

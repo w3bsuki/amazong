@@ -13,7 +13,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { ChatCircleDots, PaperPlaneTilt, X, Spinner, Headphones } from "@phosphor-icons/react"
+import { ChatCircleDots, PaperPlaneTilt, X, Headphones } from "@phosphor-icons/react"
+import { Spinner } from "@/components/shared/spinner"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 
@@ -39,15 +40,15 @@ interface SupportChatWidgetProps {
   hideTrigger?: boolean
 }
 
-export function SupportChatWidget({ 
-  className, 
+export function SupportChatWidget({
+  className,
   isOpen: controlledIsOpen,
   onOpenChange,
   hideTrigger = false,
 }: SupportChatWidgetProps) {
   const t = useTranslations("CustomerService")
   const supabase = createClient()
-  
+
   // Support both controlled and uncontrolled modes
   const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(false)
   const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : uncontrolledIsOpen
@@ -158,7 +159,7 @@ export function SupportChatWidget({
             sender_id: string
             created_at: string
           }
-          
+
           // Avoid duplicates
           setMessages(prev => {
             if (prev.some(m => m.id === newMsg.id)) return prev
@@ -289,8 +290,8 @@ export function SupportChatWidget({
           </Button>
         </SheetTrigger>
       )}
-      <SheetContent 
-        side="right" 
+      <SheetContent
+        side="right"
         className="w-full sm:w-[400px] p-0 flex flex-col"
       >
         {/* Header */}
@@ -323,7 +324,7 @@ export function SupportChatWidget({
             </div>
           ) : isLoading ? (
             <div className="flex items-center justify-center h-full">
-              <Spinner className="size-8 animate-spin text-brand" />
+              <Spinner className="size-8 text-brand" />
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-8">
@@ -399,7 +400,7 @@ export function SupportChatWidget({
                 className="bg-brand hover:bg-brand-dark shrink-0"
               >
                 {isSending ? (
-                  <Spinner className="size-4 animate-spin" />
+                  <Spinner className="size-4" />
                 ) : (
                   <PaperPlaneTilt className="size-4" weight="fill" />
                 )}

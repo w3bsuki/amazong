@@ -6,9 +6,9 @@ import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
 import { SearchHeader } from "./_components/search-header"
 import { searchProducts } from "./_lib/search-products"
 import type { Category, Product } from "./_lib/types"
-import { MobileFilters } from "@/components/common/filters/mobile-filters"
-import { DesktopFilters } from "@/components/common/filters/desktop-filters"
-import { FilterChips } from "@/components/common/filters/filter-chips"
+import { MobileFilters } from "@/components/shared/filters/mobile-filters"
+import { DesktopFilters } from "@/components/shared/filters/desktop-filters"
+import { FilterChips } from "@/components/shared/filters/filter-chips"
 import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
@@ -33,17 +33,17 @@ export async function generateMetadata({ params, searchParams }: {
   const resolvedSearchParams = await searchParams;
   const query = resolvedSearchParams.q || '';
   const category = resolvedSearchParams.category || '';
-  
+
   let title = 'Search Results';
   if (query) {
     title = `"${query}" - Search Results`;
   } else if (category) {
     title = `${category.charAt(0).toUpperCase() + category.slice(1)} - Shop`;
   }
-  
+
   return {
     title,
-    description: query 
+    description: query
       ? `Find the best deals on "${query}" at Treido. Fast shipping and great prices.`
       : 'Browse our wide selection of products. Find electronics, fashion, home goods and more.',
   };
@@ -78,7 +78,7 @@ export default async function SearchPage({
   const supabase = createStaticClient()
   const query = searchParams.q || ""
   const currentPage = Math.max(1, Number.parseInt(searchParams.page || "1", 10))
-  
+
   // Read shipping zone from cookie (set by header "Доставка до" dropdown)
   // Only filter if user has selected a specific zone (not WW = worldwide = show all)
   const cookieStore = await cookies()
@@ -87,7 +87,7 @@ export default async function SearchPage({
   const shippingFilter = parsedZone !== 'WW'
     ? (getShippingFilter(parsedZone) || undefined)
     : undefined
-  
+
   let products: Product[] = []
   let totalProducts = 0
   let currentCategory: Category | null = null
@@ -104,14 +104,14 @@ export default async function SearchPage({
       .select("id, name, name_bg, slug, parent_id, image_url")
       .is("parent_id", null)
       .order("name")
-    
+
     if (rootError) {
       console.error("[SearchPage] Root categories fetch error:", rootError)
     }
-    
+
     if (rootCats && rootCats.length > 0) {
       allCategories = rootCats
-      
+
       // Fetch L1 subcategories for all root categories
       const rootIds = rootCats.map(c => c.id)
       const { data: subCats } = await supabase
@@ -119,13 +119,13 @@ export default async function SearchPage({
         .select("id, name, name_bg, slug, parent_id, image_url")
         .in("parent_id", rootIds)
         .order("name")
-      
+
       // Build the hierarchical structure for the sidebar
       allCategoriesWithSubs = rootCats.map(cat => ({
         category: cat,
         subs: (subCats || []).filter(c => c.parent_id === cat.id)
       }))
-      
+
       // Also store subCats for category lookup
       const allCats = [...rootCats, ...(subCats || [])]
 
@@ -217,180 +217,180 @@ export default async function SearchPage({
           {/* Sidebar Filters - Hidden on mobile */}
           <aside className="w-64 hidden lg:block shrink-0 border-r border-border">
             <div className="sticky top-28 py-4 pr-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
-            <Suspense>
-              <SearchFilters 
-                categories={allCategories}
-                subcategories={subcategories}
-                currentCategory={currentCategory}
-                allCategoriesWithSubs={allCategoriesWithSubs}
-                brands={brands}
-              />
-            </Suspense>
-          </div>
-        </aside>
-
-        {/* Main Results */}
-        <div className="flex-1 min-w-0 py-4 sm:py-6">
-          {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
-          {currentCategory ? (
-            <Suspense>
-              <SubcategoryTabs
-                currentCategory={currentCategory}
-                subcategories={subcategories}
-                parentCategory={parentCategory}
-              />
-            </Suspense>
-          ) : (
-            <Suspense>
-              <SearchHeader 
-                query={query}
-                totalResults={products.length}
-              />
-            </Suspense>
-          )}
-
-          {/* Active Filter Pills - Show on all devices, only when filters are active */}
-          <div className="mb-4">
-            <Suspense>
-              <FilterChips currentCategory={currentCategory} />
-            </Suspense>
-          </div>
-
-          {/* Filter & Sort Row - Amazon/Target style toolbar */}
-          <div className="mb-3 sm:mb-5 flex items-center gap-2 sm:gap-2.5">
-            {/* Mobile Filter Button - Larger on mobile */}
-            <div className="flex-1 lg:hidden">
               <Suspense>
-                <MobileFilters 
-                  locale={locale}
-                  resultsCount={totalProducts}
+                <SearchFilters
+                  categories={allCategories}
+                  subcategories={subcategories}
+                  currentCategory={currentCategory}
+                  allCategoriesWithSubs={allCategoriesWithSubs}
+                  brands={brands}
                 />
               </Suspense>
             </div>
-            
-            {/* Sort Dropdown - Left aligned on all devices, larger on mobile */}
-            <div className="flex-1 lg:max-w-[180px] lg:flex-initial">
-              <SortSelect />
-            </div>
-            
-            {/* Desktop Quick Filters */}
-            <div className="hidden lg:flex items-center gap-2">
+          </aside>
+
+          {/* Main Results */}
+          <div className="flex-1 min-w-0 py-4 sm:py-6">
+            {/* Show SubcategoryTabs when in a category, SearchHeader otherwise */}
+            {currentCategory ? (
               <Suspense>
-                <DesktopFilters />
+                <SubcategoryTabs
+                  currentCategory={currentCategory}
+                  subcategories={subcategories}
+                  parentCategory={parentCategory}
+                />
+              </Suspense>
+            ) : (
+              <Suspense>
+                <SearchHeader
+                  query={query}
+                  totalResults={products.length}
+                />
+              </Suspense>
+            )}
+
+            {/* Active Filter Pills - Show on all devices, only when filters are active */}
+            <div className="mb-4">
+              <Suspense>
+                <FilterChips currentCategory={currentCategory} />
               </Suspense>
             </div>
-            
-            {/* Results count - right aligned, hidden on mobile since it clutters the UI */}
-            <p className="hidden sm:block text-sm text-muted-foreground ml-auto whitespace-nowrap">
-              <span className="font-semibold text-foreground">{totalProducts}</span>
-              <span> {t('results')}</span>
-              {query && (
-                <span className="hidden lg:inline">
-                  {" "}{t('for')} <span className="font-medium text-primary">&quot;{query}&quot;</span>
+
+            {/* Filter & Sort Row - Amazon/Target style toolbar */}
+            <div className="mb-3 sm:mb-5 flex items-center gap-2 sm:gap-2.5">
+              {/* Mobile Filter Button - Larger on mobile */}
+              <div className="flex-1 lg:hidden">
+                <Suspense>
+                  <MobileFilters
+                    locale={locale}
+                    resultsCount={totalProducts}
+                  />
+                </Suspense>
+              </div>
+
+              {/* Sort Dropdown - Left aligned on all devices, larger on mobile */}
+              <div className="flex-1 lg:max-w-[180px] lg:flex-initial">
+                <SortSelect />
+              </div>
+
+              {/* Desktop Quick Filters */}
+              <div className="hidden lg:flex items-center gap-2">
+                <Suspense>
+                  <DesktopFilters />
+                </Suspense>
+              </div>
+
+              {/* Results count - right aligned, hidden on mobile since it clutters the UI */}
+              <p className="hidden sm:block text-sm text-muted-foreground ml-auto whitespace-nowrap">
+                <span className="font-semibold text-foreground">{totalProducts}</span>
+                <span> {t('results')}</span>
+                {query && (
+                  <span className="hidden lg:inline">
+                    {" "}{t('for')} <span className="font-medium text-primary">&quot;{query}&quot;</span>
+                  </span>
+                )}
+                {currentCategory && !query && (
+                  <span className="hidden lg:inline"> {t('in')} <span className="font-medium">{locale === 'bg' && currentCategory.name_bg ? currentCategory.name_bg : currentCategory.name}</span></span>
+                )}
+              </p>
+            </div>
+
+            {/* Mobile Results Info Strip */}
+            <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2.5">
+              <span>
+                <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? t('product') : t('products')}
+              </span>
+              {currentCategory && (
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                  {locale === 'bg' && currentCategory.name_bg ? currentCategory.name_bg : currentCategory.name}
                 </span>
               )}
-              {currentCategory && !query && (
-                <span className="hidden lg:inline"> {t('in')} <span className="font-medium">{locale === 'bg' && currentCategory.name_bg ? currentCategory.name_bg : currentCategory.name}</span></span>
-              )}
-            </p>
-          </div>
-          
-          {/* Mobile Results Info Strip */}
-          <div className="sm:hidden mb-4 flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2.5">
-            <span>
-              <span className="font-semibold text-foreground">{totalProducts}</span> {totalProducts === 1 ? t('product') : t('products')}
-            </span>
-            {currentCategory && (
-              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-                {locale === 'bg' && currentCategory.name_bg ? currentCategory.name_bg : currentCategory.name}
-              </span>
+            </div>
+
+            {/* Product Grid */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {products.map((product) => {
+                const image = product.image_url || product.images?.[0] || "/placeholder.svg"
+                const sellerName =
+                  product.profiles?.display_name ||
+                  product.profiles?.business_name ||
+                  product.profiles?.username
+                const resolvedCategorySlug = product.categories?.slug || currentCategory?.slug
+                const condition = product.attributes?.condition
+                const brand = product.attributes?.brand
+                const make = product.attributes?.make
+                const model = product.attributes?.model
+                const year = product.attributes?.year
+                const location = product.attributes?.location
+
+                return (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    title={product.title}
+                    price={product.price}
+                    image={image}
+                    rating={product.rating || 0}
+                    reviews={product.review_count || 0}
+                    originalPrice={product.list_price ?? null}
+                    tags={product.tags || []}
+                    slug={product.slug ?? null}
+                    username={product.profiles?.username ?? null}
+                    sellerId={product.profiles?.id ?? null}
+                    {...(sellerName ? { sellerName } : {})}
+                    sellerAvatarUrl={product.profiles?.avatar_url ?? null}
+                    sellerTier={
+                      product.profiles?.account_type === "business"
+                        ? "business"
+                        : product.profiles?.tier === "premium"
+                          ? "premium"
+                          : "basic"
+                    }
+                    sellerVerified={Boolean(product.profiles?.is_verified_business)}
+                    {...(resolvedCategorySlug ? { categorySlug: resolvedCategorySlug } : {})}
+                    {...(condition ? { condition } : {})}
+                    {...(brand ? { brand } : {})}
+                    {...(make ? { make } : {})}
+                    {...(model ? { model } : {})}
+                    {...(year ? { year } : {})}
+                    {...(location ? { location } : {})}
+                  />
+                )
+              })}
+            </div>
+
+            {products.length === 0 && (
+              (() => {
+                const categoryName = currentCategory
+                  ? (locale === "bg" && currentCategory.name_bg)
+                    ? currentCategory.name_bg
+                    : currentCategory.name
+                  : undefined
+
+                return (
+                  <EmptyStateCTA
+                    variant={query ? "no-search" : "no-category"}
+                    {...(query ? { searchQuery: query } : {})}
+                    {...(categoryName ? { categoryName } : {})}
+                    className="mt-8"
+                  />
+                )
+              })()
+            )}
+
+            {/* Pagination */}
+            {products.length > 0 && (
+              <Suspense>
+                <SearchPagination
+                  totalItems={totalProducts}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  currentPage={currentPage}
+                />
+              </Suspense>
             )}
           </div>
-
-          {/* Product Grid */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {products.map((product) => {
-              const image = product.image_url || product.images?.[0] || "/placeholder.svg"
-              const sellerName =
-                product.profiles?.display_name ||
-                product.profiles?.business_name ||
-                product.profiles?.username
-              const resolvedCategorySlug = product.categories?.slug || currentCategory?.slug
-              const condition = product.attributes?.condition
-              const brand = product.attributes?.brand
-              const make = product.attributes?.make
-              const model = product.attributes?.model
-              const year = product.attributes?.year
-              const location = product.attributes?.location
-
-              return (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  title={product.title}
-                  price={product.price}
-                  image={image}
-                  rating={product.rating || 0}
-                  reviews={product.review_count || 0}
-                  originalPrice={product.list_price ?? null}
-                  tags={product.tags || []}
-                  slug={product.slug ?? null}
-                  username={product.profiles?.username ?? null}
-                  sellerId={product.profiles?.id ?? null}
-                  {...(sellerName ? { sellerName } : {})}
-                  sellerAvatarUrl={product.profiles?.avatar_url ?? null}
-                  sellerTier={
-                    product.profiles?.account_type === "business"
-                      ? "business"
-                      : product.profiles?.tier === "premium"
-                        ? "premium"
-                        : "basic"
-                  }
-                  sellerVerified={Boolean(product.profiles?.is_verified_business)}
-                  {...(resolvedCategorySlug ? { categorySlug: resolvedCategorySlug } : {})}
-                  {...(condition ? { condition } : {})}
-                  {...(brand ? { brand } : {})}
-                  {...(make ? { make } : {})}
-                  {...(model ? { model } : {})}
-                  {...(year ? { year } : {})}
-                  {...(location ? { location } : {})}
-                />
-              )
-            })}
-          </div>
-
-          {products.length === 0 && (
-            (() => {
-              const categoryName = currentCategory
-                ? (locale === "bg" && currentCategory.name_bg)
-                  ? currentCategory.name_bg
-                  : currentCategory.name
-                : undefined
-
-              return (
-                <EmptyStateCTA
-                  variant={query ? "no-search" : "no-category"}
-                  {...(query ? { searchQuery: query } : {})}
-                  {...(categoryName ? { categoryName } : {})}
-                  className="mt-8"
-                />
-              )
-            })()
-          )}
-
-          {/* Pagination */}
-          {products.length > 0 && (
-            <Suspense>
-              <SearchPagination 
-                totalItems={totalProducts}
-                itemsPerPage={ITEMS_PER_PAGE}
-                currentPage={currentPage}
-              />
-            </Suspense>
-          )}
         </div>
       </div>
-    </div>
     </div>
   )
 }

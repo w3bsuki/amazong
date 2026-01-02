@@ -3,7 +3,7 @@
 import { memo, useState } from "react";
 import { Controller } from "react-hook-form";
 import { Sparkle, Check, CaretRight } from "@phosphor-icons/react";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { conditionOptions } from "@/lib/sell/schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
@@ -54,7 +54,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                     {isBg ? "Състояние" : "Condition"}
                   </FieldLabel>
                   <FieldDescription className="text-sm text-muted-foreground mt-0.5">
-                    {isBg 
+                    {isBg
                       ? "Изберете състоянието на вашия продукт"
                       : "Select the condition of your item"}
                   </FieldDescription>
@@ -110,7 +110,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                       {conditionOptions.map((option) => {
                         const isSelected = field.value === option.value;
                         const label = isBg ? option.labelBg : option.label;
-                        
+
                         return (
                           <button
                             key={option.value}
@@ -142,7 +142,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                   {conditionOptions.map((option) => {
                     const isSelected = field.value === option.value;
                     const label = isBg ? option.labelBg : option.label;
-                    
+
                     return (
                       <button
                         key={option.value}
@@ -168,8 +168,8 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
 
               {/* Error Message */}
               {fieldState.invalid && (
-                <FieldError 
-                  errors={[fieldState.error]} 
+                <FieldError
+                  errors={[fieldState.error]}
                   className="mt-3"
                 />
               )}

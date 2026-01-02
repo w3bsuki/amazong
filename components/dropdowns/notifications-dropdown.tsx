@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client"
 import { formatDistanceToNow } from "date-fns"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { CountBadge } from "@/components/common/count-badge"
+import { CountBadge } from "@/components/shared/count-badge"
 
 interface Notification {
   id: string

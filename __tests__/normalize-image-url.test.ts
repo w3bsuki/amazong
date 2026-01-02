@@ -19,7 +19,7 @@ describe('lib/normalize-image-url', () => {
     })
 
     it('returns placeholder for undefined input', () => {
-      expect(normalizeImageUrl(undefined)).toBe(PLACEHOLDER_IMAGE_PATH)
+      expect(normalizeImageUrl()).toBe(PLACEHOLDER_IMAGE_PATH)
     })
 
     it('returns placeholder for empty string', () => {
@@ -67,7 +67,7 @@ describe('lib/normalize-image-url', () => {
     })
 
     it('returns null for undefined input', () => {
-      expect(normalizeOptionalImageUrl(undefined)).toBeNull()
+      expect(normalizeOptionalImageUrl()).toBeNull()
     })
 
     it('returns null for empty string', () => {

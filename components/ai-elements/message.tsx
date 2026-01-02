@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   ButtonGroup,
   ButtonGroupText,
-} from "@/components/common/button-group";
+} from "@/components/shared/button-group";
 import {
   Tooltip,
   TooltipContent,

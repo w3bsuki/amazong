@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { BULGARIAN_CITIES } from "@/lib/bulgarian-cities";
@@ -287,7 +287,7 @@ interface ShippingFieldProps {
 export function ShippingField({ className, compact = false }: ShippingFieldProps) {
   const { setValue, watch } = useSellForm();
   const { isBg } = useSellFormContext();
-  
+
   const [isCityDrawerOpen, setIsCityDrawerOpen] = useState(false);
   const [isProcessingDrawerOpen, setIsProcessingDrawerOpen] = useState(false);
 
@@ -306,11 +306,11 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
 
   const cleanDimensions = dimensions
     ? {
-        ...(dimensions.lengthCm !== undefined ? { lengthCm: dimensions.lengthCm } : {}),
-        ...(dimensions.widthCm !== undefined ? { widthCm: dimensions.widthCm } : {}),
-        ...(dimensions.heightCm !== undefined ? { heightCm: dimensions.heightCm } : {}),
-        ...(dimensions.weightKg !== undefined ? { weightKg: dimensions.weightKg } : {}),
-      }
+      ...(dimensions.lengthCm !== undefined ? { lengthCm: dimensions.lengthCm } : {}),
+      ...(dimensions.widthCm !== undefined ? { widthCm: dimensions.widthCm } : {}),
+      ...(dimensions.heightCm !== undefined ? { heightCm: dimensions.heightCm } : {}),
+      ...(dimensions.weightKg !== undefined ? { weightKg: dimensions.weightKg } : {}),
+    }
     : undefined;
 
   const regionValues = {
@@ -339,212 +339,212 @@ export function ShippingField({ className, compact = false }: ShippingFieldProps
 
   const content = (
     <FieldContent className={cn("space-y-6", !compact && "p-6")}>
-          {/* Shipping Regions */}
-          <div className="space-y-3">
-            <Label className="text-sm font-semibold">
-              {isBg ? "Региони за доставка" : "Shipping Regions"}
-            </Label>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {SHIPPING_REGIONS.map((region) => (
-                <ShippingRegionCard
-                  key={region.id}
-                  region={region}
-                  isSelected={regionValues[region.field]}
-                  onToggle={() => toggleRegion(region.field)}
-                  isBg={isBg}
-                />
-              ))}
-            </div>
-            {hasError && (
-              <FieldError errors={[{ message: isBg ? "Изберете поне един регион" : "Select at least one region" }]} />
-            )}
-          </div>
-
-          {/* Seller City (for Bulgaria or Pickup) */}
-          {(shipsToBulgaria || pickupOnly) && (
-            <div className="space-y-2">
-              {compact ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setIsCityDrawerOpen(true)}
-                    className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
-                  >
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
-                        {isBg ? "Вашият град:" : "Your City:"} *
-                      </span>
-                      <span className={cn(
-                        "text-sm font-semibold truncate",
-                        sellerCity ? "text-foreground" : "text-muted-foreground/50"
-                      )}>
-                        {selectedCityLabel || (isBg ? "Изберете град..." : "Select city...")}
-                      </span>
-                    </div>
-                    <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
-                  </button>
-                  <SelectDrawer
-                    isOpen={isCityDrawerOpen}
-                    onClose={() => setIsCityDrawerOpen(false)}
-                    title={isBg ? "Изберете град" : "Select City"}
-                    options={BULGARIAN_CITIES.map(c => c.value)}
-                    optionsBg={isBg ? cityOptionsBg : cityOptions}
-                    value={sellerCity || ""}
-                    onChange={(val) => setValue("sellerCity", val)}
-                    locale={isBg ? "bg" : "en"}
-                  />
-                </>
-              ) : (
-                <>
-                  <Label className="text-sm font-semibold">
-                    {isBg ? "Вашият град" : "Your City"} *
-                  </Label>
-                  <Select
-                    value={sellerCity || ""}
-                    onValueChange={(val) => setValue("sellerCity", val)}
-                  >
-                    <SelectTrigger className="h-12 rounded-md border-border font-medium">
-                      <SelectValue placeholder={isBg ? "Изберете град..." : "Select city..."} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {BULGARIAN_CITIES.map((city) => (
-                        <SelectItem key={city.value} value={city.value} className="font-medium">
-                          {isBg ? city.labelBg : city.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </>
-              )}
-              <p className="text-xs text-muted-foreground font-medium px-1">
-                {isBg 
-                  ? "Градът, от който ще изпращате"
-                  : "The city you'll ship from"}
-              </p>
-            </div>
-          )}
-
-          {/* Shipping Price */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label className="text-sm font-semibold">
-                {isBg ? "Цена за доставка" : "Shipping Price"}
-              </Label>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  {isBg ? "Безплатна" : "Free"}
-                </span>
-                <Switch
-                  checked={freeShipping}
-                  onCheckedChange={(checked) => {
-                    setValue("freeShipping", checked);
-                    if (checked) {
-                      setValue("shippingPrice", "0");
-                    }
-                  }}
-                />
-              </div>
-            </div>
-            {!freeShipping && (
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
-                  лв
-                </span>
-                <Input
-                  type="text"
-                  inputMode="decimal"
-                  placeholder="0.00"
-                  value={shippingPrice || ""}
-                  onChange={(e) => setValue("shippingPrice", e.target.value)}
-                  className="pl-10 h-12 rounded-md border-border font-bold text-base"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Package Dimensions */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Package className="size-4 text-muted-foreground" weight="bold" />
-              <Label className="text-sm font-semibold">
-                {isBg ? "Размери на пратката (по избор)" : "Package Dimensions (optional)"}
-              </Label>
-            </div>
-            <DimensionsInput
-              dimensions={cleanDimensions}
-              onChange={(dims) => {
-                const next = dims
-                  ? {
-                      ...(dims.lengthCm !== undefined ? { lengthCm: dims.lengthCm } : {}),
-                      ...(dims.widthCm !== undefined ? { widthCm: dims.widthCm } : {}),
-                      ...(dims.heightCm !== undefined ? { heightCm: dims.heightCm } : {}),
-                      ...(dims.weightKg !== undefined ? { weightKg: dims.weightKg } : {}),
-                    }
-                  : undefined;
-                setValue("dimensions", next);
-              }}
+      {/* Shipping Regions */}
+      <div className="space-y-3">
+        <Label className="text-sm font-semibold">
+          {isBg ? "Региони за доставка" : "Shipping Regions"}
+        </Label>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {SHIPPING_REGIONS.map((region) => (
+            <ShippingRegionCard
+              key={region.id}
+              region={region}
+              isSelected={regionValues[region.field]}
+              onToggle={() => toggleRegion(region.field)}
               isBg={isBg}
             />
-          </div>
+          ))}
+        </div>
+        {hasError && (
+          <FieldError errors={[{ message: isBg ? "Изберете поне един регион" : "Select at least one region" }]} />
+        )}
+      </div>
 
-          {/* Processing Time */}
-          <div className="space-y-2">
-            {compact ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setIsProcessingDrawerOpen(true)}
-                  className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
-                >
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
-                      {isBg ? "Обработка:" : "Processing:"}
-                    </span>
-                    <span className="text-sm font-semibold text-foreground truncate">
-                      {processingDays} {isBg ? (processingDays === 1 ? "ден" : "дни") : (processingDays === 1 ? "day" : "days")}
-                    </span>
-                  </div>
-                  <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
-                </button>
-                <SelectDrawer
-                  isOpen={isProcessingDrawerOpen}
-                  onClose={() => setIsProcessingDrawerOpen(false)}
-                  title={isBg ? "Време за обработка" : "Processing Time"}
-                  options={processingOptions}
-                  optionsBg={isBg ? processingOptionsBg : processingOptionsEn}
-                  value={String(processingDays)}
-                  onChange={(val) => setValue("processingDays", Number(val))}
-                  locale={isBg ? "bg" : "en"}
-                />
-              </>
-            ) : (
-              <>
-                <Label className="text-sm font-semibold">
-                  {isBg ? "Време за обработка" : "Processing Time"}
-                </Label>
-                <Select
-                  value={String(processingDays)}
-                  onValueChange={(val) => setValue("processingDays", Number(val))}
-                >
-                  <SelectTrigger className="h-12 w-44 rounded-md border-border font-medium">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 5, 7, 10, 14].map((days) => (
-                      <SelectItem key={days} value={String(days)} className="font-medium">
-                        {days} {isBg ? (days === 1 ? "ден" : "дни") : (days === 1 ? "day" : "days")}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </>
-            )}
-            <p className="text-xs text-muted-foreground font-medium px-1">
-              {isBg 
-                ? "Време за подготовка на поръчката преди изпращане"
-                : "Time to prepare the order before shipping"}
-            </p>
+      {/* Seller City (for Bulgaria or Pickup) */}
+      {(shipsToBulgaria || pickupOnly) && (
+        <div className="space-y-2">
+          {compact ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setIsCityDrawerOpen(true)}
+                className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
+              >
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
+                    {isBg ? "Вашият град:" : "Your City:"} *
+                  </span>
+                  <span className={cn(
+                    "text-sm font-semibold truncate",
+                    sellerCity ? "text-foreground" : "text-muted-foreground/50"
+                  )}>
+                    {selectedCityLabel || (isBg ? "Изберете град..." : "Select city...")}
+                  </span>
+                </div>
+                <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
+              </button>
+              <SelectDrawer
+                isOpen={isCityDrawerOpen}
+                onClose={() => setIsCityDrawerOpen(false)}
+                title={isBg ? "Изберете град" : "Select City"}
+                options={BULGARIAN_CITIES.map(c => c.value)}
+                optionsBg={isBg ? cityOptionsBg : cityOptions}
+                value={sellerCity || ""}
+                onChange={(val) => setValue("sellerCity", val)}
+                locale={isBg ? "bg" : "en"}
+              />
+            </>
+          ) : (
+            <>
+              <Label className="text-sm font-semibold">
+                {isBg ? "Вашият град" : "Your City"} *
+              </Label>
+              <Select
+                value={sellerCity || ""}
+                onValueChange={(val) => setValue("sellerCity", val)}
+              >
+                <SelectTrigger className="h-12 rounded-md border-border font-medium">
+                  <SelectValue placeholder={isBg ? "Изберете град..." : "Select city..."} />
+                </SelectTrigger>
+                <SelectContent>
+                  {BULGARIAN_CITIES.map((city) => (
+                    <SelectItem key={city.value} value={city.value} className="font-medium">
+                      {isBg ? city.labelBg : city.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
+          )}
+          <p className="text-xs text-muted-foreground font-medium px-1">
+            {isBg
+              ? "Градът, от който ще изпращате"
+              : "The city you'll ship from"}
+          </p>
+        </div>
+      )}
+
+      {/* Shipping Price */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Label className="text-sm font-semibold">
+            {isBg ? "Цена за доставка" : "Shipping Price"}
+          </Label>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              {isBg ? "Безплатна" : "Free"}
+            </span>
+            <Switch
+              checked={freeShipping}
+              onCheckedChange={(checked) => {
+                setValue("freeShipping", checked);
+                if (checked) {
+                  setValue("shippingPrice", "0");
+                }
+              }}
+            />
           </div>
+        </div>
+        {!freeShipping && (
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">
+              лв
+            </span>
+            <Input
+              type="text"
+              inputMode="decimal"
+              placeholder="0.00"
+              value={shippingPrice || ""}
+              onChange={(e) => setValue("shippingPrice", e.target.value)}
+              className="pl-10 h-12 rounded-md border-border font-bold text-base"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Package Dimensions */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Package className="size-4 text-muted-foreground" weight="bold" />
+          <Label className="text-sm font-semibold">
+            {isBg ? "Размери на пратката (по избор)" : "Package Dimensions (optional)"}
+          </Label>
+        </div>
+        <DimensionsInput
+          dimensions={cleanDimensions}
+          onChange={(dims) => {
+            const next = dims
+              ? {
+                ...(dims.lengthCm !== undefined ? { lengthCm: dims.lengthCm } : {}),
+                ...(dims.widthCm !== undefined ? { widthCm: dims.widthCm } : {}),
+                ...(dims.heightCm !== undefined ? { heightCm: dims.heightCm } : {}),
+                ...(dims.weightKg !== undefined ? { weightKg: dims.weightKg } : {}),
+              }
+              : undefined;
+            setValue("dimensions", next);
+          }}
+          isBg={isBg}
+        />
+      </div>
+
+      {/* Processing Time */}
+      <div className="space-y-2">
+        {compact ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setIsProcessingDrawerOpen(true)}
+              className="relative w-full flex items-center h-12 px-4 rounded-md border border-border bg-background hover:border-primary/30 transition-all text-left shadow-xs"
+            >
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <span className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0">
+                  {isBg ? "Обработка:" : "Processing:"}
+                </span>
+                <span className="text-sm font-semibold text-foreground truncate">
+                  {processingDays} {isBg ? (processingDays === 1 ? "ден" : "дни") : (processingDays === 1 ? "day" : "days")}
+                </span>
+              </div>
+              <CaretRight className="size-4 text-muted-foreground/50 shrink-0 ml-2" weight="bold" />
+            </button>
+            <SelectDrawer
+              isOpen={isProcessingDrawerOpen}
+              onClose={() => setIsProcessingDrawerOpen(false)}
+              title={isBg ? "Време за обработка" : "Processing Time"}
+              options={processingOptions}
+              optionsBg={isBg ? processingOptionsBg : processingOptionsEn}
+              value={String(processingDays)}
+              onChange={(val) => setValue("processingDays", Number(val))}
+              locale={isBg ? "bg" : "en"}
+            />
+          </>
+        ) : (
+          <>
+            <Label className="text-sm font-semibold">
+              {isBg ? "Време за обработка" : "Processing Time"}
+            </Label>
+            <Select
+              value={String(processingDays)}
+              onValueChange={(val) => setValue("processingDays", Number(val))}
+            >
+              <SelectTrigger className="h-12 w-44 rounded-md border-border font-medium">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[1, 2, 3, 5, 7, 10, 14].map((days) => (
+                  <SelectItem key={days} value={String(days)} className="font-medium">
+                    {days} {isBg ? (days === 1 ? "ден" : "дни") : (days === 1 ? "day" : "days")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </>
+        )}
+        <p className="text-xs text-muted-foreground font-medium px-1">
+          {isBg
+            ? "Време за подготовка на поръчката преди изпращане"
+            : "Time to prepare the order before shipping"}
+        </p>
+      </div>
     </FieldContent>
   );
 

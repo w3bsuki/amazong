@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { FolderSimple } from "@phosphor-icons/react";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { CategorySelector } from "../ui/category-modal";

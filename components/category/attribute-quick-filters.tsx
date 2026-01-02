@@ -56,7 +56,7 @@ export function AttributeQuickFilters({ attributes, locale }: AttributeQuickFilt
       }
     }
 
-    return undefined
+    return
   }, [checkScroll])
 
   const scroll = (direction: "left" | "right") => {

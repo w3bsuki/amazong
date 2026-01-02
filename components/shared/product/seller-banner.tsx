@@ -84,17 +84,17 @@ export function SellerBanner(props: {
 
       <div className="grid grid-cols-3 gap-2 border-t border-border/50 pt-3">
         <div className="text-center">
-          <div className="text-2xs text-muted-foreground uppercase tracking-widest font-medium">Response</div>
+          <div className="text-2xs text-muted-foreground uppercase tracking-wide font-medium">Response</div>
           <div className="text-sm font-medium text-foreground">
             {stats?.response_time_hours != null ? `${Math.round(Number(stats.response_time_hours))}h` : "—"}
           </div>
         </div>
         <div className="text-center border-l border-border/50">
-          <div className="text-2xs text-muted-foreground uppercase tracking-widest font-medium">Sales</div>
+          <div className="text-2xs text-muted-foreground uppercase tracking-wide font-medium">Sales</div>
           <div className="text-sm font-medium text-foreground">{stats?.total_sales != null ? Number(stats.total_sales) : "—"}</div>
         </div>
         <div className="text-center border-l border-border/50">
-          <div className="text-2xs text-muted-foreground uppercase tracking-widest font-medium">Followers</div>
+          <div className="text-2xs text-muted-foreground uppercase tracking-wide font-medium">Followers</div>
           <div className="text-sm font-medium text-foreground">
             {stats?.follower_count != null ? Number(stats.follower_count) : "—"}
           </div>

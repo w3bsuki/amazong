@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { Heart } from "@phosphor-icons/react"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { useTranslations } from "next-intl"
-import { WishlistDrawer, type WishlistDrawerHandle } from "@/components/common/wishlist/wishlist-drawer"
-import { CountBadge } from "@/components/common/count-badge"
+import { WishlistDrawer, type WishlistDrawerHandle } from "@/components/shared/wishlist/wishlist-drawer"
+import { CountBadge } from "@/components/shared/count-badge"
 
 export function MobileWishlistButton() {
   const [mounted, setMounted] = useState(false)

@@ -12,11 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Field, FieldLabel, FieldDescription, FieldContent } from "@/components/common/field";
+import { Field, FieldLabel, FieldDescription, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import type { ProductAttribute } from "@/lib/sell/schema-v4";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
-import { 
+import {
   getCategoryConfigFromPath,
   isAttributeFilled
 } from "@/lib/category-attribute-config";
@@ -226,7 +226,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
 
     if (existing) {
       if (value) {
-        newAttrs = attributes.map(a => 
+        newAttrs = attributes.map(a =>
           a.attributeId === attr.id ? { ...a, value } : a
         );
       } else {
@@ -253,7 +253,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
 
     if (existing) {
       if (value) {
-        newAttrs = attributes.map(a => 
+        newAttrs = attributes.map(a =>
           a.name === attrKey ? { ...a, value } : a
         );
       } else {
@@ -303,7 +303,7 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
   }, [attributes, setValue]);
 
   // Helper functions for localization
-  const getName = useCallback((attr: CategoryAttribute) => 
+  const getName = useCallback((attr: CategoryAttribute) =>
     isBg && attr.name_bg ? attr.name_bg : attr.name, [isBg]);
 
   const getPlaceholder = useCallback((attr: CategoryAttribute) =>
@@ -372,473 +372,473 @@ export function AttributesField({ className, compact = false }: AttributesFieldP
 
   const content = (
     <FieldContent className={cn("space-y-5", !compact && "p-5")}>
-          {/* Loading State */}
-          {isLoading && (
-            <div className="flex items-center justify-center p-8">
-              <SpinnerGap className="size-6 animate-spin text-primary" />
-            </div>
-          )}
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center p-8">
+          <SpinnerGap className="size-6 animate-spin text-primary" />
+        </div>
+      )}
 
-          {/* Primary: Database-driven (smart + main) required attributes */}
-          {!isLoading && dbRequiredSmart.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 text-sm font-bold">
-                  {filledDbRequiredSmartCount === dbRequiredSmartCount ? (
-                    <CheckCircle className="size-4 text-primary" weight="fill" />
-                  ) : (
-                    <WarningCircle className="size-4 text-muted-foreground" weight="fill" />
-                  )}
-                  <span className="text-foreground uppercase tracking-wider text-xs">
-                    {isBg ? "Основни характеристики" : "Main specifics"}
-                  </span>
-                </div>
-                <span className="text-xs font-bold text-muted-foreground tabular-nums bg-muted/50 px-2 py-0.5 rounded-full">
-                  {filledDbRequiredSmartCount}/{dbRequiredSmartCount}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {dbRequiredSmart.map((attr) => {
-                  const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
-                  return (
-                    <div key={attr.id} className="space-y-1.5">
-                      {!compact && (
-                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                          {getName(attr)}
-                          <span className="text-destructive ml-1">*</span>
-                        </Label>
-                      )}
-
-                      {attr.attribute_type === "select" && attr.options?.length ? (
-                        <AttributeSelect
-                          label={getName(attr)}
-                          value={currentValue}
-                          options={attr.options}
-                          {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
-                          onChange={(value) => handleAttributeChange(attr, value)}
-                          placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
-                          compact={compact}
-                          isBg={isBg}
-                        />
-                      ) : (
-                        <div className={cn(
-                          "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                          "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
-                        )}>
-                          <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
-                            {getName(attr)}:
-                            <span className="text-destructive ml-1">*</span>
-                          </label>
-                          <Input
-                            value={currentValue}
-                            onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                            placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
-                            type={attr.attribute_type === "number" ? "number" : "text"}
-                            className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Optional DB attributes: hidden by default */}
-          {!isLoading && (dbOptionalAttrs.length > 0 || dbRequiredAttrs.length > dbRequiredSmart.length) && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-2">
-                <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  {isBg ? "Още детайли (по желание)" : "More details (optional)"}
-                </Label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowAllDbAttributes((v) => !v)}
-                  className="h-8 text-xs font-bold text-primary hover:bg-primary/5"
-                >
-                  {showAllDbAttributes
-                    ? (isBg ? "Скрий" : "Hide")
-                    : (isBg ? "Покажи всички" : "Show all")}
-                </Button>
-              </div>
-
-              {showAllDbAttributes && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                  {/* Remaining required beyond the smart cap */}
-                  {dbRequiredAttrs.slice(SMART_REQUIRED_LIMIT).map((attr) => {
-                    const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
-                    return (
-                      <div key={attr.id} className="space-y-1.5">
-                        {!compact && (
-                          <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                            {getName(attr)}
-                            <span className="text-destructive ml-1">*</span>
-                          </Label>
-                        )}
-                        {attr.attribute_type === "select" && attr.options?.length ? (
-                          <AttributeSelect
-                            label={getName(attr)}
-                            value={currentValue}
-                            options={attr.options}
-                            {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
-                            onChange={(value) => handleAttributeChange(attr, value)}
-                            placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
-                            compact={compact}
-                            isBg={isBg}
-                          />
-                        ) : (
-                          <div className={cn(
-                            "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                            "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
-                          )}>
-                            <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
-                              {getName(attr)}:
-                              <span className="text-destructive ml-1">*</span>
-                            </label>
-                            <Input
-                              value={currentValue}
-                              onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                              placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
-                              type={attr.attribute_type === "number" ? "number" : "text"}
-                              className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-
-                  {/* Optional attributes */}
-                  {dbOptionalAttrs.map((attr) => {
-                    const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
-                    return (
-                      <div key={attr.id} className="space-y-1.5">
-                        {!compact && (
-                          <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                            {getName(attr)}
-                          </Label>
-                        )}
-                        {attr.attribute_type === "select" && attr.options?.length ? (
-                          <AttributeSelect
-                            label={getName(attr)}
-                            value={currentValue}
-                            options={attr.options}
-                            {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
-                            onChange={(value) => handleAttributeChange(attr, value)}
-                            placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
-                            compact={compact}
-                            isBg={isBg}
-                          />
-                        ) : (
-                          <div className={cn(
-                            "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                            "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
-                          )}>
-                            <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
-                              {getName(attr)}:
-                            </label>
-                            <Input
-                              value={currentValue}
-                              onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                              placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
-                              type={attr.attribute_type === "number" ? "number" : "text"}
-                              className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+      {/* Primary: Database-driven (smart + main) required attributes */}
+      {!isLoading && dbRequiredSmart.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-sm font-bold">
+              {filledDbRequiredSmartCount === dbRequiredSmartCount ? (
+                <CheckCircle className="size-4 text-primary" weight="fill" />
+              ) : (
+                <WarningCircle className="size-4 text-muted-foreground" weight="fill" />
               )}
+              <span className="text-foreground uppercase tracking-wider text-xs">
+                {isBg ? "Основни характеристики" : "Main specifics"}
+              </span>
             </div>
-          )}
+            <span className="text-xs font-bold text-muted-foreground tabular-nums bg-muted/50 px-2 py-0.5 rounded-full">
+              {filledDbRequiredSmartCount}/{dbRequiredSmartCount}
+            </span>
+          </div>
 
-          {/* Category-Specific Required Attributes (from config) */}
-          {!isLoading && dbRequiredSmart.length === 0 && categoryConfig && categoryConfig.requiredAttributes.length > 0 && (
-            <div className="space-y-4">
-              {/* Header with completion indicator */}
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 text-sm font-bold">
-                  {filledRequiredCount === requiredAttrsCount ? (
-                    <CheckCircle className="size-4 text-primary" weight="fill" />
-                  ) : (
-                    <WarningCircle className="size-4 text-muted-foreground" weight="fill" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {dbRequiredSmart.map((attr) => {
+              const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
+              return (
+                <div key={attr.id} className="space-y-1.5">
+                  {!compact && (
+                    <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      {getName(attr)}
+                      <span className="text-destructive ml-1">*</span>
+                    </Label>
                   )}
-                  <span className="text-foreground uppercase tracking-wider text-xs">
-                    {isBg ? "Задължителни характеристики" : "Required specifications"}
-                  </span>
+
+                  {attr.attribute_type === "select" && attr.options?.length ? (
+                    <AttributeSelect
+                      label={getName(attr)}
+                      value={currentValue}
+                      options={attr.options}
+                      {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
+                      onChange={(value) => handleAttributeChange(attr, value)}
+                      placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                      compact={compact}
+                      isBg={isBg}
+                    />
+                  ) : (
+                    <div className={cn(
+                      "relative flex items-center h-12 px-4 rounded-md border transition-all",
+                      "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                    )}>
+                      <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                        {getName(attr)}:
+                        <span className="text-destructive ml-1">*</span>
+                      </label>
+                      <Input
+                        value={currentValue}
+                        onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                        placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                        type={attr.attribute_type === "number" ? "number" : "text"}
+                        className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                      />
+                    </div>
+                  )}
                 </div>
-                <span className="text-xs font-bold text-muted-foreground tabular-nums bg-muted/50 px-2 py-0.5 rounded-full">
-                  {filledRequiredCount}/{requiredAttrsCount}
-                </span>
-              </div>
-              
-              {/* Required attributes grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {categoryConfig.requiredAttributes.map((attr) => {
-                  const key = normalizeConfigKey(attr.key);
-                  // Special-case: if the category renames Brand to Make, prefer `brandName` for Make.
-                  const currentValue = key === "make" && brandName ? brandName : getConfigAttrValue(key);
-                  const label = isBg ? attr.name.bg : attr.name.en;
-                  const placeholder = attr.placeholder 
-                    ? (isBg ? attr.placeholder.bg : attr.placeholder.en)
-                    : undefined;
-                  
-                  return (
-                    <div key={attr.key} className="space-y-1.5">
-                      {!compact && (
-                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                          {label}
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Optional DB attributes: hidden by default */}
+      {!isLoading && (dbOptionalAttrs.length > 0 || dbRequiredAttrs.length > dbRequiredSmart.length) && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              {isBg ? "Още детайли (по желание)" : "More details (optional)"}
+            </Label>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowAllDbAttributes((v) => !v)}
+              className="h-8 text-xs font-bold text-primary hover:bg-primary/5"
+            >
+              {showAllDbAttributes
+                ? (isBg ? "Скрий" : "Hide")
+                : (isBg ? "Покажи всички" : "Show all")}
+            </Button>
+          </div>
+
+          {showAllDbAttributes && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              {/* Remaining required beyond the smart cap */}
+              {dbRequiredAttrs.slice(SMART_REQUIRED_LIMIT).map((attr) => {
+                const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
+                return (
+                  <div key={attr.id} className="space-y-1.5">
+                    {!compact && (
+                      <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        {getName(attr)}
+                        <span className="text-destructive ml-1">*</span>
+                      </Label>
+                    )}
+                    {attr.attribute_type === "select" && attr.options?.length ? (
+                      <AttributeSelect
+                        label={getName(attr)}
+                        value={currentValue}
+                        options={attr.options}
+                        {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
+                        onChange={(value) => handleAttributeChange(attr, value)}
+                        placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                        compact={compact}
+                        isBg={isBg}
+                      />
+                    ) : (
+                      <div className={cn(
+                        "relative flex items-center h-12 px-4 rounded-md border transition-all",
+                        "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                      )}>
+                        <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                          {getName(attr)}:
                           <span className="text-destructive ml-1">*</span>
-                        </Label>
-                      )}
-                      {attr.type === "select" && attr.options?.length ? (
-                        <AttributeSelect
-                          label={label}
-                          value={currentValue || ""}
-                          options={attr.options.map((opt) => ({
-                            value: opt.value,
-                            label: isBg ? opt.label.bg : opt.label.en
-                          }))}
-                          onChange={(value) => {
-                            if (key === "make") {
-                              setValue("brandName", value, { shouldValidate: false, shouldDirty: true });
-                              return;
-                            }
-                            handleConfigAttributeChange(key, value);
-                          }}
-                          placeholder={`${isBg ? "Избери" : "Select"}...`}
-                          compact={compact}
-                          isBg={isBg}
-                        />
-                      ) : (
-                        <div className={cn(
-                          "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                          "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
-                        )}>
-                          <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
-                            {label}:
-                            <span className="text-destructive ml-1">*</span>
-                          </label>
-                          <Input
-                            value={currentValue}
-                            onChange={(e) => {
-                              if (key === "make") {
-                                setValue("brandName", e.target.value, { shouldValidate: false, shouldDirty: true });
-                                return;
-                              }
-                              handleConfigAttributeChange(key, e.target.value);
-                            }}
-                            placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
-                            type={attr.type === "number" ? "number" : "text"}
-                            className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Optional attributes from config */}
-          {!isLoading && dbRequiredSmart.length === 0 && categoryConfig?.optionalAttributes && categoryConfig.optionalAttributes.length > 0 && (
-            <div className="space-y-4 pt-2">
-              <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                {isBg ? "Препоръчителни (по желание)" : "Recommended (optional)"}
-              </Label>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {categoryConfig.optionalAttributes.map((attr) => {
-                  const key = normalizeConfigKey(attr.key);
-                  const currentValue = key === "make" && brandName ? brandName : getConfigAttrValue(key);
-                  const label = isBg ? attr.name.bg : attr.name.en;
-                  const placeholder = attr.placeholder 
-                    ? (isBg ? attr.placeholder.bg : attr.placeholder.en)
-                    : undefined;
-                  
-                  return (
-                    <div key={attr.key} className="space-y-1.5">
-                      {!compact && (
-                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                          {label}
-                        </Label>
-                      )}
-                      {attr.type === "select" && attr.options?.length ? (
-                        <AttributeSelect
-                          label={label}
-                          value={currentValue || ""}
-                          options={attr.options.map((opt) => ({
-                            value: opt.value,
-                            label: isBg ? opt.label.bg : opt.label.en
-                          }))}
-                          onChange={(value) => {
-                            if (key === "make") {
-                              setValue("brandName", value, { shouldValidate: false, shouldDirty: true });
-                              return;
-                            }
-                            handleConfigAttributeChange(key, value);
-                          }}
-                          placeholder={`${isBg ? "Избери" : "Select"}...`}
-                          compact={compact}
-                          isBg={isBg}
-                        />
-                      ) : (
-                        <div className={cn(
-                          "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                          "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
-                        )}>
-                          <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
-                            {label}:
-                          </label>
-                          <Input
-                            value={currentValue}
-                            onChange={(e) => {
-                              if (key === "make") {
-                                setValue("brandName", e.target.value, { shouldValidate: false, shouldDirty: true });
-                                return;
-                              }
-                              handleConfigAttributeChange(key, e.target.value);
-                            }}
-                            placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
-                            type={attr.type === "number" ? "number" : "text"}
-                            className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Database-based Predefined Attributes (fallback when no config) */}
-          {!isLoading && dbRequiredSmart.length === 0 && !categoryConfig && dbAttributes.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                <Info className="size-4" weight="bold" />
-                {isBg ? "Спецификациите помагат на купувачите" : "Item specifics help buyers"}
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {dbAttributes.map((attr) => {
-                  const currentValue = attributes.find(a => a.attributeId === attr.id)?.value || "";
-                  
-                  return (
-                    <div key={attr.id} className="space-y-1.5">
-                      {!compact && (
-                        <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                          {getName(attr)}
-                          {attr.is_required && <span className="text-destructive ml-1">*</span>}
-                        </Label>
-                      )}
-                      {attr.attribute_type === "select" && attr.options?.length ? (
-                        <AttributeSelect
-                          label={getName(attr)}
+                        </label>
+                        <Input
                           value={currentValue}
-                          options={attr.options}
-                          {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
-                          onChange={(value) => handleAttributeChange(attr, value)}
-                          placeholder={getPlaceholder(attr) || `${isBg ? "Избери" : "Select"} ${getName(attr)}`}
-                          compact={compact}
-                          isBg={isBg}
+                          onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                          placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                          type={attr.attribute_type === "number" ? "number" : "text"}
+                          className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
                         />
-                      ) : (
-                        <div className={cn(
-                          "relative flex items-center h-12 px-4 rounded-md border transition-all",
-                          "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
-                        )}>
-                          <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
-                            {getName(attr)}:
-                            {attr.is_required && <span className="text-destructive ml-1">*</span>}
-                          </label>
-                          <Input
-                            value={currentValue}
-                            onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                            placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
-                            type={attr.attribute_type === "number" ? "number" : "text"}
-                            className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Custom Attributes */}
-          {!isLoading && (
-            <div className="space-y-4 pt-4 border-t border-border/50">
-              <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                {isBg ? "Допълнителни характеристики" : "Custom Attributes"}
-              </Label>
-              
-              {/* Existing Custom Attributes */}
-              {customAttrs.length > 0 && (
-                <div className="grid gap-2">
-                  {customAttrs.map((attr, index) => (
-                    <div key={index} className="flex items-center gap-3 rounded-md border border-border bg-muted/30 p-3">
-                      <div className="min-w-0 flex-1 flex items-center gap-2">
-                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider shrink-0">{attr.name}:</span>
-                        <span className="truncate text-sm font-bold text-foreground">{attr.value}</span>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveCustom(index)}
-                        className="size-8 flex items-center justify-center rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                        aria-label={isBg ? "Премахни" : "Remove"}
-                      >
-                        <X className="size-4" weight="bold" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    )}
+                  </div>
+                );
+              })}
 
-              {/* Add New Custom Attribute */}
-              <div className="flex flex-col gap-3 p-4 rounded-md bg-muted/20 border border-dashed border-border">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Име" : "Name"}</Label>
-                    <Input
-                      value={newAttrName}
-                      onChange={(e) => setNewAttrName(e.target.value)}
-                      placeholder={isBg ? "напр. Материал" : "e.g., Material"}
-                      className="h-10 rounded-lg border-border font-medium text-sm"
-                    />
+              {/* Optional attributes */}
+              {dbOptionalAttrs.map((attr) => {
+                const currentValue = attributes.find((a) => a.attributeId === attr.id)?.value || "";
+                return (
+                  <div key={attr.id} className="space-y-1.5">
+                    {!compact && (
+                      <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        {getName(attr)}
+                      </Label>
+                    )}
+                    {attr.attribute_type === "select" && attr.options?.length ? (
+                      <AttributeSelect
+                        label={getName(attr)}
+                        value={currentValue}
+                        options={attr.options}
+                        {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
+                        onChange={(value) => handleAttributeChange(attr, value)}
+                        placeholder={`${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                        compact={compact}
+                        isBg={isBg}
+                      />
+                    ) : (
+                      <div className={cn(
+                        "relative flex items-center h-12 px-4 rounded-md border transition-all",
+                        "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                      )}>
+                        <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                          {getName(attr)}:
+                        </label>
+                        <Input
+                          value={currentValue}
+                          onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                          placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                          type={attr.attribute_type === "number" ? "number" : "text"}
+                          className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                        />
+                      </div>
+                    )}
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Стойност" : "Value"}</Label>
-                    <Input
-                      value={newAttrValue}
-                      onChange={(e) => setNewAttrValue(e.target.value)}
-                      placeholder={isBg ? "напр. Памук" : "e.g., Cotton"}
-                      className="h-10 rounded-lg border-border font-medium text-sm"
-                    />
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleAddCustom}
-                  disabled={!newAttrName.trim() || !newAttrValue.trim()}
-                  className="h-10 rounded-md border-primary/20 text-primary font-bold text-xs uppercase tracking-widest hover:bg-primary/5"
-                >
-                  <Plus className="size-3.5 mr-2" weight="bold" />
-                  {isBg ? "Добави характеристика" : "Add attribute"}
-                </Button>
-              </div>
+                );
+              })}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Category-Specific Required Attributes (from config) */}
+      {!isLoading && dbRequiredSmart.length === 0 && categoryConfig && categoryConfig.requiredAttributes.length > 0 && (
+        <div className="space-y-4">
+          {/* Header with completion indicator */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-sm font-bold">
+              {filledRequiredCount === requiredAttrsCount ? (
+                <CheckCircle className="size-4 text-primary" weight="fill" />
+              ) : (
+                <WarningCircle className="size-4 text-muted-foreground" weight="fill" />
+              )}
+              <span className="text-foreground uppercase tracking-wider text-xs">
+                {isBg ? "Задължителни характеристики" : "Required specifications"}
+              </span>
+            </div>
+            <span className="text-xs font-bold text-muted-foreground tabular-nums bg-muted/50 px-2 py-0.5 rounded-full">
+              {filledRequiredCount}/{requiredAttrsCount}
+            </span>
+          </div>
+
+          {/* Required attributes grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {categoryConfig.requiredAttributes.map((attr) => {
+              const key = normalizeConfigKey(attr.key);
+              // Special-case: if the category renames Brand to Make, prefer `brandName` for Make.
+              const currentValue = key === "make" && brandName ? brandName : getConfigAttrValue(key);
+              const label = isBg ? attr.name.bg : attr.name.en;
+              const placeholder = attr.placeholder
+                ? (isBg ? attr.placeholder.bg : attr.placeholder.en)
+                : undefined;
+
+              return (
+                <div key={attr.key} className="space-y-1.5">
+                  {!compact && (
+                    <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      {label}
+                      <span className="text-destructive ml-1">*</span>
+                    </Label>
+                  )}
+                  {attr.type === "select" && attr.options?.length ? (
+                    <AttributeSelect
+                      label={label}
+                      value={currentValue || ""}
+                      options={attr.options.map((opt) => ({
+                        value: opt.value,
+                        label: isBg ? opt.label.bg : opt.label.en
+                      }))}
+                      onChange={(value) => {
+                        if (key === "make") {
+                          setValue("brandName", value, { shouldValidate: false, shouldDirty: true });
+                          return;
+                        }
+                        handleConfigAttributeChange(key, value);
+                      }}
+                      placeholder={`${isBg ? "Избери" : "Select"}...`}
+                      compact={compact}
+                      isBg={isBg}
+                    />
+                  ) : (
+                    <div className={cn(
+                      "relative flex items-center h-12 px-4 rounded-md border transition-all",
+                      "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                    )}>
+                      <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                        {label}:
+                        <span className="text-destructive ml-1">*</span>
+                      </label>
+                      <Input
+                        value={currentValue}
+                        onChange={(e) => {
+                          if (key === "make") {
+                            setValue("brandName", e.target.value, { shouldValidate: false, shouldDirty: true });
+                            return;
+                          }
+                          handleConfigAttributeChange(key, e.target.value);
+                        }}
+                        placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
+                        type={attr.type === "number" ? "number" : "text"}
+                        className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Optional attributes from config */}
+      {!isLoading && dbRequiredSmart.length === 0 && categoryConfig?.optionalAttributes && categoryConfig.optionalAttributes.length > 0 && (
+        <div className="space-y-4 pt-2">
+          <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            {isBg ? "Препоръчителни (по желание)" : "Recommended (optional)"}
+          </Label>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {categoryConfig.optionalAttributes.map((attr) => {
+              const key = normalizeConfigKey(attr.key);
+              const currentValue = key === "make" && brandName ? brandName : getConfigAttrValue(key);
+              const label = isBg ? attr.name.bg : attr.name.en;
+              const placeholder = attr.placeholder
+                ? (isBg ? attr.placeholder.bg : attr.placeholder.en)
+                : undefined;
+
+              return (
+                <div key={attr.key} className="space-y-1.5">
+                  {!compact && (
+                    <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      {label}
+                    </Label>
+                  )}
+                  {attr.type === "select" && attr.options?.length ? (
+                    <AttributeSelect
+                      label={label}
+                      value={currentValue || ""}
+                      options={attr.options.map((opt) => ({
+                        value: opt.value,
+                        label: isBg ? opt.label.bg : opt.label.en
+                      }))}
+                      onChange={(value) => {
+                        if (key === "make") {
+                          setValue("brandName", value, { shouldValidate: false, shouldDirty: true });
+                          return;
+                        }
+                        handleConfigAttributeChange(key, value);
+                      }}
+                      placeholder={`${isBg ? "Избери" : "Select"}...`}
+                      compact={compact}
+                      isBg={isBg}
+                    />
+                  ) : (
+                    <div className={cn(
+                      "relative flex items-center h-12 px-4 rounded-md border transition-all",
+                      "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                    )}>
+                      <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                        {label}:
+                      </label>
+                      <Input
+                        value={currentValue}
+                        onChange={(e) => {
+                          if (key === "make") {
+                            setValue("brandName", e.target.value, { shouldValidate: false, shouldDirty: true });
+                            return;
+                          }
+                          handleConfigAttributeChange(key, e.target.value);
+                        }}
+                        placeholder={placeholder || `${isBg ? "Въведи" : "Enter"}...`}
+                        type={attr.type === "number" ? "number" : "text"}
+                        className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Database-based Predefined Attributes (fallback when no config) */}
+      {!isLoading && dbRequiredSmart.length === 0 && !categoryConfig && dbAttributes.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            <Info className="size-4" weight="bold" />
+            {isBg ? "Спецификациите помагат на купувачите" : "Item specifics help buyers"}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {dbAttributes.map((attr) => {
+              const currentValue = attributes.find(a => a.attributeId === attr.id)?.value || "";
+
+              return (
+                <div key={attr.id} className="space-y-1.5">
+                  {!compact && (
+                    <Label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      {getName(attr)}
+                      {attr.is_required && <span className="text-destructive ml-1">*</span>}
+                    </Label>
+                  )}
+                  {attr.attribute_type === "select" && attr.options?.length ? (
+                    <AttributeSelect
+                      label={getName(attr)}
+                      value={currentValue}
+                      options={attr.options}
+                      {...(attr.options_bg ? { optionsBg: attr.options_bg } : {})}
+                      onChange={(value) => handleAttributeChange(attr, value)}
+                      placeholder={getPlaceholder(attr) || `${isBg ? "Избери" : "Select"} ${getName(attr)}`}
+                      compact={compact}
+                      isBg={isBg}
+                    />
+                  ) : (
+                    <div className={cn(
+                      "relative flex items-center h-12 px-4 rounded-md border transition-all",
+                      "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5"
+                    )}>
+                      <label className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2">
+                        {getName(attr)}:
+                        {attr.is_required && <span className="text-destructive ml-1">*</span>}
+                      </label>
+                      <Input
+                        value={currentValue}
+                        onChange={(e) => handleAttributeChange(attr, e.target.value)}
+                        placeholder={getPlaceholder(attr) || `${isBg ? "Въведи" : "Enter"} ${getName(attr)}`}
+                        type={attr.attribute_type === "number" ? "number" : "text"}
+                        className="h-auto p-0 border-none bg-transparent shadow-none focus-visible:ring-0 text-sm font-semibold flex-1 min-w-0"
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Custom Attributes */}
+      {!isLoading && (
+        <div className="space-y-4 pt-4 border-t border-border/50">
+          <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            {isBg ? "Допълнителни характеристики" : "Custom Attributes"}
+          </Label>
+
+          {/* Existing Custom Attributes */}
+          {customAttrs.length > 0 && (
+            <div className="grid gap-2">
+              {customAttrs.map((attr, index) => (
+                <div key={index} className="flex items-center gap-3 rounded-md border border-border bg-muted/30 p-3">
+                  <div className="min-w-0 flex-1 flex items-center gap-2">
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider shrink-0">{attr.name}:</span>
+                    <span className="truncate text-sm font-bold text-foreground">{attr.value}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveCustom(index)}
+                    className="size-8 flex items-center justify-center rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                    aria-label={isBg ? "Премахни" : "Remove"}
+                  >
+                    <X className="size-4" weight="bold" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add New Custom Attribute */}
+          <div className="flex flex-col gap-3 p-4 rounded-md bg-muted/20 border border-dashed border-border">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Име" : "Name"}</Label>
+                <Input
+                  value={newAttrName}
+                  onChange={(e) => setNewAttrName(e.target.value)}
+                  placeholder={isBg ? "напр. Материал" : "e.g., Material"}
+                  className="h-10 rounded-lg border-border font-medium text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-2xs font-bold text-muted-foreground uppercase tracking-wider">{isBg ? "Стойност" : "Value"}</Label>
+                <Input
+                  value={newAttrValue}
+                  onChange={(e) => setNewAttrValue(e.target.value)}
+                  placeholder={isBg ? "напр. Памук" : "e.g., Cotton"}
+                  className="h-10 rounded-lg border-border font-medium text-sm"
+                />
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddCustom}
+              disabled={!newAttrName.trim() || !newAttrValue.trim()}
+              className="h-10 rounded-md border-primary/20 text-primary font-bold text-xs uppercase tracking-widest hover:bg-primary/5"
+            >
+              <Plus className="size-3.5 mr-2" weight="bold" />
+              {isBg ? "Добави характеристика" : "Add attribute"}
+            </Button>
+          </div>
+        </div>
+      )}
     </FieldContent>
   );
 

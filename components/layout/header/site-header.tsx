@@ -16,10 +16,10 @@ import { SidebarMenu } from "@/components/layout/sidebar/sidebar-menu"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
-import { MobileWishlistButton } from "@/components/common/wishlist/mobile-wishlist-button"
+import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
 import { DesktopSearch } from "@/components/desktop/desktop-search"
 import { Button } from "@/components/ui/button"
-import { MagnifyingGlass, Camera, CaretLeft, Scan } from "@phosphor-icons/react"
+import { Search, Camera, ChevronLeft, ScanLine } from "lucide-react"
 
 // Utilities
 import { getCountryName } from "@/lib/geolocation"
@@ -54,7 +54,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
   const locale = useLocale()
   const pathname = usePathname()
   const router = useRouter()
-  
+
   const pathWithoutLocale = (() => {
     const segments = pathname.split("/").filter(Boolean)
     const maybeLocale = segments[0]
@@ -67,9 +67,9 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
   // Product pages get special UX: back button instead of hamburger, no search bar.
   // Avoid heuristics (like segment counts) and rely on the route-group layout passing variant="product".
   const isProductPage = variant === "product"
-  
-  const searchPlaceholder = locale === "bg" 
-    ? "Търсене..." 
+
+  const searchPlaceholder = locale === "bg"
+    ? "Търсене..."
     : "Search essentials..."
 
   useEffect(() => {
@@ -97,9 +97,9 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
     <header
       ref={headerRef}
       className={cn(
-      "sticky top-0 z-50 w-full flex flex-col bg-header-bg",
-      hideOnMobile && "hidden lg:flex"
-    )}
+        "sticky top-0 z-50 w-full flex flex-col bg-header-bg",
+        hideOnMobile && "hidden lg:flex"
+      )}
     >
       {/* Mobile Header + Search - Unified container like Target */}
       <div className="md:hidden bg-header-bg text-header-text">
@@ -110,12 +110,12 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
           {isProductPage ? (
-            <button 
+            <button
               onClick={() => router.back()}
               className="flex items-center justify-center h-touch w-touch rounded-full text-header-text hover:bg-header-hover active:bg-header-active"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
-              <CaretLeft size={20} weight="bold" />
+              <ChevronLeft size={20} strokeWidth={2.5} />
             </button>
           ) : (
             <SidebarMenu user={user} categories={categories} triggerClassName="justify-start" />
@@ -133,37 +133,37 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
             <MobileCartDropdown />
           </div>
         </div>
-        
+
         {/* Search bar row - integrated into header, hidden on product pages */}
         {!isProductPage && (
-        <div className="px-(--page-inset) pb-2">
-          <button
-            onClick={() => setIsMobileSearchOpen(true)}
-            className={cn(
-              "w-full flex items-center gap-2 h-9 px-3 rounded-lg",
-              "bg-background",
-              "text-muted-foreground text-sm text-left",
-              "active:bg-muted/50",
-              "touch-action-manipulation tap-transparent"
-            )}
-            aria-label={searchPlaceholder}
-            aria-haspopup="dialog"
-            aria-expanded={isMobileSearchOpen}
-          >
-            <MagnifyingGlass size={18} weight="regular" className="text-muted-foreground shrink-0" />
-            <span className="flex-1 truncate font-normal">{searchPlaceholder}</span>
-            <div className="flex items-center gap-1.5 shrink-0">
-              <Scan size={18} weight="regular" className="text-muted-foreground/60" />
-            </div>
-          </button>
-        </div>
+          <div className="px-(--page-inset) pb-2">
+            <button
+              onClick={() => setIsMobileSearchOpen(true)}
+              className={cn(
+                "w-full flex items-center gap-2 h-9 px-3 rounded-lg",
+                "bg-background",
+                "text-muted-foreground text-sm text-left",
+                "active:bg-muted/50",
+                "touch-action-manipulation tap-transparent"
+              )}
+              aria-label={searchPlaceholder}
+              aria-haspopup="dialog"
+              aria-expanded={isMobileSearchOpen}
+            >
+              <Search size={18} className="text-muted-foreground shrink-0" />
+              <span className="flex-1 truncate font-normal">{searchPlaceholder}</span>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <ScanLine size={18} className="text-muted-foreground/60" />
+              </div>
+            </button>
+          </div>
         )}
-        
+
         {/* Search Overlay - controlled by header */}
-        <MobileSearchOverlay 
-          hideDefaultTrigger 
-          externalOpen={isMobileSearchOpen} 
-          onOpenChange={setIsMobileSearchOpen} 
+        <MobileSearchOverlay
+          hideDefaultTrigger
+          externalOpen={isMobileSearchOpen}
+          onOpenChange={setIsMobileSearchOpen}
         />
       </div>
 
@@ -209,7 +209,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
                       className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
                     >
                       <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
-                      <Camera weight="regular" aria-hidden="true" />
+                      <Camera size={20} aria-hidden="true" />
                     </Button>
                   </Link>
                 </div>
@@ -247,7 +247,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
                       className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
                     >
                       <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
-                      <Camera weight="regular" aria-hidden="true" />
+                      <Camera size={20} aria-hidden="true" />
                     </Button>
                   </Link>
                 </div>
@@ -277,7 +277,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
                 <Link href="/sell" className="font-normal text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
               </div>
             </div>
-            
+
             {/* Desktop: Categories fill container width */}
             <div className="hidden lg:block">
               <CategorySubheader categories={categories} />

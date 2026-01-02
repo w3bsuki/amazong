@@ -2,9 +2,9 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { Button } from "@/components/ui/button"
 import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
-import { MobileFilters } from "@/components/common/filters/mobile-filters"
-import { DesktopFilters } from "@/components/common/filters/desktop-filters"
-import { FilterChips } from "@/components/common/filters/filter-chips"
+import { MobileFilters } from "@/components/shared/filters/mobile-filters"
+import { DesktopFilters } from "@/components/shared/filters/desktop-filters"
+import { FilterChips } from "@/components/shared/filters/filter-chips"
 import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { SearchFilters } from "@/components/shared/search/search-filters"
@@ -49,11 +49,11 @@ export async function generateStaticParams() {
   if (!supabase) {
     return routing.locales.map((locale) => ({ locale, slug: PLACEHOLDER_SLUG }))
   }
-  
+
   const { data: categories } = await supabase
     .from("categories")
     .select("slug")
-  
+
   const slugs = (categories || [])
     .map((category) => category.slug)
     .filter((slug): slug is string => typeof slug === 'string' && slug.length > 0)
@@ -66,8 +66,8 @@ export async function generateStaticParams() {
 }
 
 // Generate metadata for SEO - Uses cached getCategoryBySlug
-export async function generateMetadata({ 
-  params 
+export async function generateMetadata({
+  params
 }: {
   params: Promise<{ slug: string; locale: string }>
 }): Promise<Metadata> {
@@ -79,20 +79,20 @@ export async function generateMetadata({
       title: locale === 'bg' ? 'Категории' : 'Categories',
     }
   }
-  
+
   // Use cached function instead of direct query
   const category = await getCategoryBySlug(slug)
-  
+
   if (!category) {
     return {
       title: "Category Not Found",
     }
   }
-  
-  const categoryName = locale === "bg" && category.name_bg 
-    ? category.name_bg 
+
+  const categoryName = locale === "bg" && category.name_bg
+    ? category.name_bg
     : category.name
-  
+
   return {
     title: `${categoryName} - Shop`,
     description: `Browse our wide selection of ${categoryName} products. Find the best deals with fast shipping and great prices.`,
@@ -135,9 +135,9 @@ export default async function CategoryPage({
 
   setRequestLocale(locale)
   const currentPage = Math.max(1, Number.parseInt(searchParams.page || "1", 10))
-  
+
   const supabase = createStaticClient()
-  
+
   // Read shipping zone from cookie (set by header "Доставка до" dropdown)
   // Only filter if user has selected a specific zone (not WW = worldwide = show all)
   const cookieStore = await cookies()
@@ -146,29 +146,29 @@ export default async function CategoryPage({
   const shippingFilter = parsedZone !== 'WW'
     ? getShippingFilter(parsedZone)
     : ''
-  
+
   if (!supabase) {
     notFound()
   }
-  
+
   // ============================================================================
   // PHASE 2: Use cached data fetching functions (Next.js 16+ 'use cache' pattern)
   // These functions use cacheTag and cacheLife for granular cache invalidation
   // ============================================================================
-  
+
   // Fetch category context (current, parent, siblings, children, attributes) - CACHED
   const categoryContext = await getCategoryContext(slug)
-  
+
   if (!categoryContext) {
     notFound()
   }
-  
+
   const { current: currentCategory, parent: parentCategory, children: subcategories } = categoryContext
-  
+
   // Fetch ALL categories for the sidebar - use cached function
   const allCategoriesWithSubs = await getRootCategoriesWithChildren()
   const allCategories = allCategoriesWithSubs.map(c => c.category)
-  
+
   // Products still use direct Supabase query (dynamic, user-specific filters)
   let products: Product[] = []
   let totalProducts = 0
@@ -197,10 +197,10 @@ export default async function CategoryPage({
   products = result.products
   totalProducts = result.total
 
-  const categoryName = locale === 'bg' && currentCategory.name_bg 
-    ? currentCategory.name_bg 
+  const categoryName = locale === 'bg' && currentCategory.name_bg
+    ? currentCategory.name_bg
     : currentCategory.name
-  
+
   // Extract filterable attributes for the filter toolbar
   const filterableAttributes = categoryContext.attributes.filter(attr => attr.is_filterable)
 
@@ -234,63 +234,54 @@ export default async function CategoryPage({
               </Suspense>
             </div>
           </aside>
-          
+
           {/* Main Content */}
           <div className="flex-1 min-w-0 lg:pl-5">
 
-            {/* Mobile category banner (deepest selection = current slug) */}
-            <div className="lg:hidden mb-3">
-              <div className="rounded-lg border border-border/50 bg-secondary/40 px-3 py-2">
-                <h1 className="text-base font-bold leading-tight">{categoryName}</h1>
-              </div>
-            </div>
-            
-            {/* Subcategory Circles - only show if subcategories exist */}
-            {subcategories.length > 0 ? (
-              <Suspense>
-                <SubcategoryTabs
-                  currentCategory={currentCategory}
-                  subcategories={subcategories}
-                  parentCategory={parentCategory}
-                  basePath="/categories"
-                />
-              </Suspense>
-            ) : null}
+            {/* Subcategory Circles or Category Banner (when at deepest level) */}
+            <Suspense>
+              <SubcategoryTabs
+                currentCategory={currentCategory}
+                subcategories={subcategories}
+                parentCategory={parentCategory}
+                basePath="/categories"
+              />
+            </Suspense>
 
-            {/* Filter & Sort Row - Consolidated toolbar with all filters */}
-            <div className="mb-2 sm:mb-4 grid grid-cols-2 lg:flex lg:flex-wrap items-center gap-2">
+            {/* Filter & Sort Row - Compact toolbar */}
+            <div className="mb-2 sm:mb-4 flex items-center gap-2">
               {/* Mobile Filters (Sheet) */}
               <div className="lg:hidden">
                 <Suspense>
-                  <MobileFilters 
+                  <MobileFilters
                     locale={locale}
                     resultsCount={totalProducts}
                     attributes={filterableAttributes}
                   />
                 </Suspense>
               </div>
-              
+
               {/* Sort Dropdown */}
               <div className="lg:contents">
                 <SortSelect />
               </div>
-              
+
+              {/* Results Count - Show on mobile too */}
+              <p className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                <span className="font-semibold text-foreground">{totalProducts}</span>
+                <span> {t('results')}</span>
+                <span className="hidden lg:inline"> {t('in')} <span className="font-medium">{categoryName}</span></span>
+              </p>
+
               {/* Desktop Filters - Now includes attribute filters */}
-              <div className="hidden lg:flex items-center gap-2 flex-wrap">
+              <div className="hidden lg:flex items-center gap-2 flex-wrap ml-auto">
                 <Suspense>
-                  <DesktopFilters 
+                  <DesktopFilters
                     attributes={filterableAttributes}
                     categorySlug={slug}
                   />
                 </Suspense>
               </div>
-              
-              {/* Results Count */}
-              <p className="hidden sm:block text-sm text-muted-foreground ml-auto whitespace-nowrap">
-                <span className="font-semibold text-foreground">{totalProducts}</span>
-                <span> {t('results')}</span>
-                <span className="hidden lg:inline"> {t('in')} <span className="font-medium">{categoryName}</span></span>
-              </p>
             </div>
 
             {/* Active Filter Pills - Moved below toolbar */}
@@ -300,71 +291,71 @@ export default async function CategoryPage({
               </Suspense>
             </div>
 
-          {/* Product Grid */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {products.map((product) => {
-              const image = product.image_url || product.images?.[0] || "/placeholder.svg"
-              const sellerName =
-                product.sellers?.display_name ||
-                product.sellers?.business_name ||
-                product.sellers?.store_slug
+            {/* Product Grid */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {products.map((product) => {
+                const image = product.image_url || product.images?.[0] || "/placeholder.svg"
+                const sellerName =
+                  product.sellers?.display_name ||
+                  product.sellers?.business_name ||
+                  product.sellers?.store_slug
 
-              return (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  title={product.title}
-                  price={product.price}
-                  image={image}
-                  rating={product.rating || 0}
-                  reviews={product.review_count || 0}
-                  originalPrice={product.list_price ?? null}
-                  tags={product.tags || []}
-                  slug={product.slug ?? null}
-                  username={product.sellers?.store_slug ?? null}
-                  sellerId={product.sellers?.id ?? null}
-                  {...(sellerName ? { sellerName } : {})}
-                  sellerAvatarUrl={product.sellers?.avatar_url ?? null}
-                  sellerTier={
-                    product.sellers?.account_type === "business"
-                      ? "business"
-                      : product.sellers?.tier === "premium"
-                        ? "premium"
-                        : "basic"
-                  }
-                  sellerVerified={Boolean(product.sellers?.is_verified_business)}
-                  categorySlug={slug}
-                  {...(product.attributes?.condition ? { condition: product.attributes.condition } : {})}
-                  {...(product.attributes?.brand ? { brand: product.attributes.brand } : {})}
-                  {...(product.attributes?.make ? { make: product.attributes.make } : {})}
-                  {...(product.attributes?.model ? { model: product.attributes.model } : {})}
-                  {...(product.attributes?.year ? { year: product.attributes.year } : {})}
-                  {...(product.attributes?.location ? { location: product.attributes.location } : {})}
-                />
-              )
-            })}
-          </div>
+                return (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    title={product.title}
+                    price={product.price}
+                    image={image}
+                    rating={product.rating || 0}
+                    reviews={product.review_count || 0}
+                    originalPrice={product.list_price ?? null}
+                    tags={product.tags || []}
+                    slug={product.slug ?? null}
+                    username={product.sellers?.store_slug ?? null}
+                    sellerId={product.sellers?.id ?? null}
+                    {...(sellerName ? { sellerName } : {})}
+                    sellerAvatarUrl={product.sellers?.avatar_url ?? null}
+                    sellerTier={
+                      product.sellers?.account_type === "business"
+                        ? "business"
+                        : product.sellers?.tier === "premium"
+                          ? "premium"
+                          : "basic"
+                    }
+                    sellerVerified={Boolean(product.sellers?.is_verified_business)}
+                    categorySlug={slug}
+                    {...(product.attributes?.condition ? { condition: product.attributes.condition } : {})}
+                    {...(product.attributes?.brand ? { brand: product.attributes.brand } : {})}
+                    {...(product.attributes?.make ? { make: product.attributes.make } : {})}
+                    {...(product.attributes?.model ? { model: product.attributes.model } : {})}
+                    {...(product.attributes?.year ? { year: product.attributes.year } : {})}
+                    {...(product.attributes?.location ? { location: product.attributes.location } : {})}
+                  />
+                )
+              })}
+            </div>
 
-          {products.length === 0 && (
-            <EmptyStateCTA 
-              variant="no-category"
-              categoryName={categoryName}
-              className="mt-8"
-            />
-          )}
-
-          {/* Pagination */}
-          {products.length > 0 && (
-            <Suspense>
-              <SearchPagination 
-                totalItems={totalProducts}
-                itemsPerPage={ITEMS_PER_PAGE}
-                currentPage={currentPage}
+            {products.length === 0 && (
+              <EmptyStateCTA
+                variant="no-category"
+                categoryName={categoryName}
+                className="mt-8"
               />
-            </Suspense>
-          )}
-        </div>
-        {/* End Main Content */}
+            )}
+
+            {/* Pagination */}
+            {products.length > 0 && (
+              <Suspense>
+                <SearchPagination
+                  totalItems={totalProducts}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  currentPage={currentPage}
+                />
+              </Suspense>
+            )}
+          </div>
+          {/* End Main Content */}
         </div>
         {/* End flex container */}
       </div>

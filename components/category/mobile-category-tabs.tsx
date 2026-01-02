@@ -59,25 +59,42 @@ export function MobileCategoryTabs({ categories, locale, rootSlugBySlug }: Mobil
   }
 
   return (
-    <div className="w-full bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-border sticky top-[52px] z-30">
+    <div className="w-full bg-background border-b border-border/40 sticky top-[52px] z-30">
       <div 
         ref={scrollRef}
-        className="flex overflow-x-auto scrollbar-hide py-2 px-2 gap-2 items-center snap-x snap-mandatory scroll-pl-2"
+        className="relative flex items-center gap-3 overflow-x-auto no-scrollbar px-(--page-inset)"
+        role="tablist"
       >
-        {/* "All" Link */}
+        {/* "All" Tab - Text style like homepage */}
         <Link
           href="/categories"
+          prefetch={true}
           data-slug="all"
+          role="tab"
+          aria-selected={!selectedSegment}
           className={cn(
-            "flex items-center justify-center px-4 h-[32px] rounded-full border transition-all whitespace-nowrap shrink-0 snap-start",
-            !selectedSegment 
-              ? "bg-foreground text-background border-foreground font-medium" 
-              : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
+            "shrink-0 py-3 text-sm relative",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            "transition-colors",
+            !selectedSegment
+              ? "text-primary"
+              : "text-muted-foreground hover:text-foreground"
           )}
         >
-           <span className="text-xs">
-             {locale === 'bg' ? 'Всички' : 'All'}
-           </span>
+          <span className="relative inline-flex flex-col items-center">
+            <span className={cn(
+              "transition-[font-weight] duration-100",
+              !selectedSegment ? "font-bold" : "font-medium"
+            )}>
+              {locale === 'bg' ? 'Всички' : 'All'}
+            </span>
+            <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
+              {locale === 'bg' ? 'Всички' : 'All'}
+            </span>
+            {!selectedSegment && (
+              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+            )}
+          </span>
         </Link>
 
         {categories.map((cat) => {
@@ -88,15 +105,30 @@ export function MobileCategoryTabs({ categories, locale, rootSlugBySlug }: Mobil
               href={`/categories/${cat.slug}`}
               data-slug={cat.slug}
               prefetch={true}
+              role="tab"
+              aria-selected={isActive}
               className={cn(
-                "flex items-center justify-center px-4 h-[32px] rounded-full border transition-all whitespace-nowrap shrink-0 snap-start",
+                "shrink-0 py-3 text-sm relative",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                "transition-colors",
                 isActive
-                  ? "bg-foreground text-background border-foreground font-medium" 
-                  : "bg-muted text-muted-foreground border-transparent hover:bg-muted/80"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <span className="text-xs">
-                {getCategoryName(cat)}
+              <span className="relative inline-flex flex-col items-center">
+                <span className={cn(
+                  "transition-[font-weight] duration-100",
+                  isActive ? "font-bold" : "font-medium"
+                )}>
+                  {getCategoryName(cat)}
+                </span>
+                <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
+                  {getCategoryName(cat)}
+                </span>
+                {isActive && (
+                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                )}
               </span>
             </Link>
           )

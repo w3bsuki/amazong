@@ -158,7 +158,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
 
   return (
     <div className="min-h-screen bg-background pb-24 pt-12 lg:hidden">
-      {/* Mobile Product Header */}
+      {/* Mobile Product Header - Back, Search, Share, Wishlist, Cart */}
       <MobileProductHeader />
 
       {/* JSON-LD Structured Data for SEO */}
@@ -190,12 +190,41 @@ export function MobileProductPage(props: MobileProductPageProps) {
         <ProductGalleryHybrid images={viewModel.galleryImages} />
       </div>
 
+      {/* Title - FIRST for context (moved above price per UX best practices) */}
+      <div className="px-3 pt-3">
+        <h1 className="text-base font-medium leading-snug text-foreground line-clamp-3">
+          {product.title}
+        </h1>
+      </div>
+
       {/* Price Block */}
       <div className="px-3 pt-2">
         <MobilePriceBlock
           salePrice={displayPrice}
           regularPrice={displayRegularPrice}
           currency="BGN"
+        />
+      </div>
+
+      {/* Badges Row - Moved up for quick scanning */}
+      <div className="-ml-1">
+        <MobileBadgesRow
+          condition={product.condition}
+          freeShipping={!product.pickup_only}
+          stockQuantity={stockQuantity}
+          stockStatus={stockStatus}
+          isOnSale={displayRegularPrice != null && displayRegularPrice > displayPrice}
+          locale={locale}
+        />
+      </div>
+
+      {/* Urgency Banner (Conditional) */}
+      <div className="mx-3">
+        <MobileUrgencyBanner
+          stockQuantity={stockQuantity}
+          viewersCount={product.viewers_count ?? null}
+          soldCount={product.sold_count ?? null}
+          locale={locale}
         />
       </div>
 
@@ -222,35 +251,6 @@ export function MobileProductPage(props: MobileProductPageProps) {
           </Select>
         </div>
       ) : null}
-
-      {/* Urgency Banner (Conditional) - High priority placement */}
-      <div className="-mx-1 mt-1 mb-1">
-        <MobileUrgencyBanner
-          stockQuantity={stockQuantity}
-          viewersCount={product.viewers_count ?? null}
-          soldCount={product.sold_count ?? null}
-          locale={locale}
-        />
-      </div>
-
-      {/* Title - text-base (16px) for better readability, tight leading */}
-      <div className="px-3 pt-1">
-        <h1 className="text-base font-medium leading-snug text-foreground line-clamp-3">
-          {product.title}
-        </h1>
-      </div>
-
-      {/* Badges Row - Scrollable */}
-      <div className="-ml-1">
-        <MobileBadgesRow
-          condition={product.condition}
-          freeShipping={!product.pickup_only}
-          stockQuantity={stockQuantity}
-          stockStatus={stockStatus}
-          isOnSale={displayRegularPrice != null && displayRegularPrice > displayPrice}
-          locale={locale}
-        />
-      </div>
 
       {/* Seller Trust Line */}
       <MobileSellerTrustLine

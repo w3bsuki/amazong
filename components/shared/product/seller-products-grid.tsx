@@ -61,7 +61,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
   };
 
   useEffect(() => {
-    if (!hasProducts) return undefined;
+    if (!hasProducts) return;
     checkScroll();
     const el = scrollRef.current;
     if (el) {
@@ -73,7 +73,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
       };
     }
 
-    return undefined;
+    return;
   }, [hasProducts, products]);
 
   const scroll = (dir: "left" | "right") => {

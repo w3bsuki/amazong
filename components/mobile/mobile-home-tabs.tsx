@@ -104,6 +104,22 @@ export function MobileHomeTabs({
   const [activeL2, setActiveL2] = useState<string | null>(null)        // L2 category slug
   const [selectedPill, setSelectedPill] = useState<string | null>(null) // L3 pill slug
 
+  // Sync state with URL params when they change (e.g. from drawer navigation)
+  const urlTab = searchParams.get('tab') || 'all'
+  const urlSub = searchParams.get('sub') || null
+  useEffect(() => {
+    if (urlTab !== activeTab) {
+      setActiveTab(urlTab)
+      setActiveL2(null)
+      setSelectedPill(null)
+    }
+    if (urlSub !== activeL1) {
+      setActiveL1(urlSub)
+      setActiveL2(null)
+      setSelectedPill(null)
+    }
+  }, [urlTab, urlSub]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Filter state for "All" tab
   const [activeAllFilter, setActiveAllFilter] = useState<string>("newest")
 
@@ -213,7 +229,7 @@ export function MobileHomeTabs({
       const container = tabsContainerRef.current
       const activeBtn = container.querySelector(`[data-tab="${activeTab}"]`) as HTMLElement
       if (activeBtn) {
-        const padding = parseFloat(getComputedStyle(container).paddingLeft)
+        const padding = Number.parseFloat(getComputedStyle(container).paddingLeft)
         container.scrollLeft = Math.max(0, activeBtn.offsetLeft - padding)
       }
     }

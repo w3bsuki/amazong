@@ -12,7 +12,7 @@ import { AuthStateListener } from "@/components/providers/auth-state-listener";
 import { CartProvider } from "@/components/providers/cart-context";
 import { Toaster } from "@/components/providers/sonner";
 import { WishlistProvider } from "@/components/providers/wishlist-context";
-import { GeoWelcomeModal } from "@/components/common/geo-welcome-modal";
+import { GeoWelcomeModal } from "@/components/shared/geo-welcome-modal";
 import { CookieConsent } from "@/components/layout/cookie-consent";
 
 import { SkipLinks } from "@/components/shared/skip-links";
@@ -40,10 +40,10 @@ export default async function MainLayout({
     params: Promise<{ locale: string }>;
 }) {
     const { locale } = await params;
-    
+
     // Enable static rendering - required for Next.js 16+ with cacheComponents
     setRequestLocale(locale);
-    
+
     const supabase = await createClient();
     let user = null;
     if (supabase) {
@@ -63,15 +63,15 @@ export default async function MainLayout({
                     <Suspense fallback={null}>
                         <AuthStateListener />
                     </Suspense>
-                    
+
                     <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
                         <SiteHeader user={user} categories={categories} />
                     </Suspense>
-                    
+
                     <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
                         {children}
                     </main>
-                    
+
                     <SiteFooter />
                     <MobileTabBar categories={categories} />
                     <Toaster />

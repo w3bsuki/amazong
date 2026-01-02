@@ -14,7 +14,7 @@ describe('lib/safe-json', () => {
 
   it('returns undefined on null/empty input', () => {
     expect(safeJsonParse(null)).toBeUndefined()
-    expect(safeJsonParse(undefined)).toBeUndefined()
+    expect(safeJsonParse()).toBeUndefined()
     expect(safeJsonParse('')).toBeUndefined()
   })
 })

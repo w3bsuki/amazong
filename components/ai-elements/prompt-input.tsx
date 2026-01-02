@@ -26,7 +26,7 @@ import {
   InputGroupAddon,
   InputGroupButton,
   InputGroupTextarea,
-} from "@/components/common/input-group";
+} from "@/components/shared/input-group";
 import {
   Select,
   SelectContent,

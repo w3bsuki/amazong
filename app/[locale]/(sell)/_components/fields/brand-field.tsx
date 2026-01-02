@@ -3,7 +3,7 @@
 import { useCallback, memo } from "react";
 import { Controller } from "react-hook-form";
 import { Tag } from "lucide-react";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 import { BrandCombobox } from "../ui/brand-combobox";
@@ -22,14 +22,14 @@ interface BrandFieldProps {
   allowCustom?: boolean;
 }
 
-export function BrandField({ 
-  className, 
+export function BrandField({
+  className,
   compact = false,
-  allowCustom = true 
+  allowCustom = true
 }: BrandFieldProps) {
   const { control, setValue, watch } = useSellForm();
   const { brands, isBg, locale } = useSellFormContext();
-  
+
   const brandId = watch("brandId");
   const brandName = watch("brandName");
 
@@ -60,7 +60,7 @@ export function BrandField({
                     {isBg ? "Марка" : "Brand"}
                   </FieldLabel>
                   <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                    {isBg 
+                    {isBg
                       ? "Изберете марката на вашия продукт"
                       : "Select your product's brand"}
                   </FieldDescription>
@@ -91,8 +91,8 @@ export function BrandField({
 
             {/* Error Message */}
             {fieldState.invalid && (
-              <FieldError 
-                errors={[fieldState.error]} 
+              <FieldError
+                errors={[fieldState.error]}
                 className="mt-2"
               />
             )}

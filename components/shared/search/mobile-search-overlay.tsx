@@ -110,7 +110,7 @@ export function MobileSearchOverlay({
       return () => clearTimeout(timer)
     }
 
-    return undefined
+    return
   }, [isOpen])
 
   // Lock body scroll when open
@@ -131,7 +131,7 @@ export function MobileSearchOverlay({
       }
     }
 
-    return undefined
+    return
   }, [isOpen])
 
   // Handle Escape key to close overlay

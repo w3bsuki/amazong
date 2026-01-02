@@ -33,7 +33,7 @@ export function CookieConsent() {
             setConsent(storedConsent as ConsentValue)
         }
 
-        return undefined
+        return
     }, [isE2E])
 
     const handleAccept = () => {

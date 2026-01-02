@@ -42,23 +42,23 @@ export function SortSelect() {
   return (
     <Select value={currentSort} onValueChange={handleSortChange}>
       <SelectTrigger 
+        size="sm"
         className={cn(
-          "w-full lg:w-auto h-9 px-4 rounded-full gap-2",
+          "!h-8 !py-0 px-3 rounded-full gap-1",
           "bg-secondary hover:bg-secondary/80 hover:text-foreground border border-border/50",
           "active:bg-secondary/80",
           isSorted && "bg-primary/10 text-primary border-primary/20",
-          "text-sm font-medium text-foreground",
+          "text-sm text-foreground",
           "focus:ring-2 focus:ring-offset-1 focus:ring-ring",
-          "[&>svg:last-child]:hidden"
+          "[&_svg[data-slot=select-icon]]:size-3"
         )}
         aria-label={t('sortBy')}
       >
-        <ArrowsDownUp size={16} weight="regular" className={cn(
+        <ArrowsDownUp size={14} weight="regular" className={cn(
           isSorted ? "text-primary" : "text-muted-foreground",
           "shrink-0"
         )} aria-hidden="true" />
-        <span className="whitespace-nowrap"><SelectValue placeholder={t('sortBy')} /></span>
-        <CaretDown size={16} weight="regular" className="text-muted-foreground shrink-0" aria-hidden="true" />
+        <SelectValue placeholder={t('sortBy')} />
       </SelectTrigger>
       <SelectContent className="rounded-lg border-border">
         <SelectItem value="featured" className="rounded-md">{t('featured')}</SelectItem>

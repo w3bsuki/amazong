@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Controller } from "react-hook-form";
 import { TextAa } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 import { cn } from "@/lib/utils";
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
 
@@ -24,11 +24,11 @@ interface TitleFieldProps {
   compact?: boolean;
 }
 
-export function TitleField({ 
-  className, 
-  minLength = 5, 
+export function TitleField({
+  className,
+  minLength = 5,
   maxLength = 80,
-  compact = false 
+  compact = false
 }: TitleFieldProps) {
   const { control, watch } = useSellForm();
   const { isBg } = useSellFormContext();
@@ -54,7 +54,7 @@ export function TitleField({
                     {isBg ? "Заглавие" : "Title"}
                   </FieldLabel>
                   <FieldDescription className="text-xs font-medium text-muted-foreground mt-0.5">
-                    {isBg 
+                    {isBg
                       ? `${minLength}-${maxLength} символа. Бъдете конкретни.`
                       : `${minLength}-${maxLength} characters. Be specific.`}
                   </FieldDescription>
@@ -79,7 +79,7 @@ export function TitleField({
               "bg-background border-border shadow-xs focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/5",
               fieldState.invalid && "border-destructive bg-destructive/5"
             )}>
-              <label 
+              <label
                 htmlFor="sell-form-title"
                 className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2"
               >
@@ -89,8 +89,8 @@ export function TitleField({
                 {...field}
                 id="sell-form-title"
                 aria-invalid={fieldState.invalid}
-                placeholder={isBg 
-                  ? "Напр. iPhone 15 Pro Max 256GB" 
+                placeholder={isBg
+                  ? "Напр. iPhone 15 Pro Max 256GB"
                   : "e.g., iPhone 15 Pro Max 256GB"}
                 maxLength={maxLength}
                 className={cn(
@@ -98,12 +98,12 @@ export function TitleField({
                   fieldState.invalid && "text-destructive"
                 )}
               />
-              <span 
+              <span
                 className={cn(
                   "ml-2 text-2xs font-bold tabular-nums uppercase tracking-widest shrink-0",
-                  charCount >= maxLength 
-                    ? "text-destructive" 
-                    : charCount >= minLength 
+                  charCount >= maxLength
+                    ? "text-destructive"
+                    : charCount >= minLength
                       ? "text-muted-foreground"
                       : "text-muted-foreground/40"
                 )}
@@ -115,7 +115,7 @@ export function TitleField({
             {/* Helper text - shows progress toward minimum */}
             {charCount > 0 && charCount < minLength && (
               <p className="mt-2 text-xs font-bold text-primary uppercase tracking-wider">
-                {isBg 
+                {isBg
                   ? `Добавете още ${minLength - charCount} символа`
                   : `Add ${minLength - charCount} more characters`}
               </p>
@@ -123,8 +123,8 @@ export function TitleField({
 
             {/* Error Message */}
             {fieldState.invalid && (
-              <FieldError 
-                errors={[fieldState.error]} 
+              <FieldError
+                errors={[fieldState.error]}
                 className="mt-form-sm"
               />
             )}

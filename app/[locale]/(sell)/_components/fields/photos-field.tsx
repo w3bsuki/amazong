@@ -5,7 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { Camera, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/common/field";
+import { Field, FieldLabel, FieldDescription, FieldError, FieldContent } from "@/components/shared/field";
 
 import type { ProductImage } from "@/lib/sell/schema-v4";
 import { compressImage } from "@/lib/image-compression";
@@ -86,7 +86,7 @@ export function PhotosField({
   // ============================================================================
   // Upload Logic
   // ============================================================================
-  
+
   const uploadFile = useCallback(async (file: File): Promise<ProductImage | null> => {
     // Compress image on client-side BEFORE upload
     let compressedFile: File;
@@ -142,8 +142,8 @@ export function PhotosField({
     const uploadPromises = filesToUpload.map(async (file, idx) => {
       try {
         const progressInterval = setInterval(() => {
-          setUploads(prev => prev.map((u, i) => 
-            i === idx && u.progress < 90 
+          setUploads(prev => prev.map((u, i) =>
+            i === idx && u.progress < 90
               ? { ...u, progress: u.progress + 10 }
               : u
           ));
@@ -152,17 +152,17 @@ export function PhotosField({
         const result = await uploadFile(file);
 
         clearInterval(progressInterval);
-        setUploads(prev => prev.map((u, i) => 
+        setUploads(prev => prev.map((u, i) =>
           i === idx ? { ...u, progress: 100, status: "done" as const } : u
         ));
 
         return result;
       } catch (error) {
-        setUploads(prev => prev.map((u, i) => 
-          i === idx ? { 
-            ...u, 
-            status: "error" as const, 
-            error: error instanceof Error ? error.message : "Upload failed" 
+        setUploads(prev => prev.map((u, i) =>
+          i === idx ? {
+            ...u,
+            status: "error" as const,
+            error: error instanceof Error ? error.message : "Upload failed"
           } : u
         ));
         return null;
@@ -174,11 +174,9 @@ export function PhotosField({
 
     // Add to form
     const newImages = [...images, ...successfulUploads];
-    if (newImages.length > 0 && !newImages.some(i => i.isPrimary)) {
-      if (newImages[0]) {
+    if (newImages.length > 0 && !newImages.some(i => i.isPrimary) && newImages[0]) {
         newImages[0] = { ...newImages[0], isPrimary: true };
       }
-    }
     setValue("images", newImages, { shouldValidate: true });
 
     // Clear upload progress after delay
@@ -204,11 +202,9 @@ export function PhotosField({
 
   const handleRemove = useCallback((index: number) => {
     const newImages = images.filter((_, i) => i !== index);
-    if (images[index]?.isPrimary && newImages.length > 0) {
-      if (newImages[0]) {
+    if (images[index]?.isPrimary && newImages.length > 0 && newImages[0]) {
         newImages[0] = { ...newImages[0], isPrimary: true };
       }
-    }
     setValue("images", newImages, { shouldValidate: true });
   }, [images, setValue]);
 
@@ -239,11 +235,11 @@ export function PhotosField({
       if (removed) {
         newImages.splice(dragOverIndex.current, 0, removed);
       }
-      
+
       newImages.forEach((img, i) => {
         img.isPrimary = i === 0;
       });
-      
+
       setValue("images", newImages, { shouldValidate: true });
     }
     setDraggingIndex(null);
@@ -316,14 +312,14 @@ export function PhotosField({
 
               {/* Upload Zone */}
               {images.length < maxPhotos && (
-                  <UploadZone
+                <UploadZone
                   isUploading={isUploading}
                   isDragActive={isDragActive}
                   getRootProps={getRootProps}
                   getInputProps={getInputProps}
                   currentCount={images.length}
                   maxCount={maxPhotos}
-                    locale={isBg ? "bg" : "en"}
+                  locale={isBg ? "bg" : "en"}
                 />
               )}
 
@@ -405,8 +401,8 @@ export function PhotosField({
 
             {/* Error Message */}
             {hasError && (
-              <FieldError 
-                errors={[errors.images]} 
+              <FieldError
+                errors={[errors.images]}
                 className="mt-3"
               />
             )}

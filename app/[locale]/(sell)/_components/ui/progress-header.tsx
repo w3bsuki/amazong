@@ -3,7 +3,7 @@
 import { Spinner, CloudCheck, FloppyDisk, CaretLeft, House } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { PageContainer } from "@/components/common/page-container";
+import { PageContainer } from "@/components/shared/page-container";
 import { cn } from "@/lib/utils";
 import { Link } from "@/i18n/routing";
 
@@ -46,8 +46,8 @@ export function ProgressHeader({
         {/* Top bar with logo and actions */}
         <div className="flex items-center justify-between h-14 gap-4">
           {/* Left: Back/Logo */}
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
           >
             <CaretLeft className="size-4" weight="bold" />
@@ -60,9 +60,9 @@ export function ProgressHeader({
           {/* Center: Progress indicator (Desktop) */}
           <div className="flex-1 max-w-md mx-4 hidden sm:block">
             <div className="flex items-center gap-4">
-              <Progress 
-                value={progressPercent} 
-                className="h-1.5 flex-1" 
+              <Progress
+                value={progressPercent}
+                className="h-1.5 flex-1"
                 aria-label={`${isBg ? "Прогрес на формуляра" : "Form progress"}: ${progressPercent}%`}
               />
               <span className={cn(
@@ -78,7 +78,7 @@ export function ProgressHeader({
           <div className="sm:hidden flex-1 flex justify-center">
             <div className="flex items-center gap-1.5">
               {Array.from({ length: totalSteps }).map((_, i) => (
-                <div 
+                <div
                   key={i}
                   className={cn(
                     "h-1 rounded-full transition-all duration-300",

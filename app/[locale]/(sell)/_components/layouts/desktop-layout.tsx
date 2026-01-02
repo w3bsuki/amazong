@@ -11,7 +11,7 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
-import { PageContainer } from "@/components/common/page-container";
+import { PageContainer } from "@/components/shared/page-container";
 import { cn } from "@/lib/utils";
 
 import { useSellForm, useSellFormContext } from "../sell-form-provider";
@@ -136,7 +136,7 @@ export function DesktopLayout({
                   {isBg ? "Снимки" : "Photos"}
                 </h2>
                 <PhotosField maxPhotos={12} compact />
-                
+
                 {/* AI Assistant - Show after first photo */}
                 {(formValues.images?.length ?? 0) > 0 && (
                   <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 pt-4 border-t border-border">
@@ -217,7 +217,7 @@ export function DesktopLayout({
 
               {progress < 100 && (
                 <p className="text-center text-sm text-muted-foreground">
-                  {isBg 
+                  {isBg
                     ? "Попълнете всички задължителни полета, за да публикувате"
                     : "Complete all required fields to publish your listing"}
                 </p>
@@ -229,7 +229,7 @@ export function DesktopLayout({
           <aside className="hidden lg:block">
             <div className="sticky top-20 space-y-4">
               <ChecklistSidebar items={progressItems} locale={isBg ? "bg" : "en"} />
-              
+
               {/* Tips Card */}
               <div className="p-4 rounded-md border border-border bg-background shadow-xs">
                 <div className="flex items-center gap-2.5 mb-4">

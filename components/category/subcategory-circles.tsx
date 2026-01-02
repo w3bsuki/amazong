@@ -5,7 +5,6 @@ import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import { useLocale } from "next-intl"
-import { useSearchParams } from "next/navigation"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 
@@ -24,6 +23,8 @@ interface SubcategoryCirclesProps {
   title?: string
   className?: string
   basePath?: string // "/categories" or undefined for "/search?category="
+  /** Pre-serialized search params string (without leading '?') to preserve during navigation */
+  searchParamsString?: string
 }
 
 // Map category slugs to placeholder images (these would ideally come from the database)
@@ -38,10 +39,10 @@ export function SubcategoryCircles({
   currentCategory,
   title,
   className,
-  basePath
+  basePath,
+  searchParamsString = ""
 }: SubcategoryCirclesProps) {
   const locale = useLocale()
-  const searchParams = useSearchParams()
 
   const getCategoryName = (cat: Category) => {
     if (locale === 'bg' && cat.name_bg) {
@@ -63,12 +64,12 @@ export function SubcategoryCircles({
   // Build URL - supports both /categories/slug and /search?category=slug
   const buildUrl = (categorySlug: string) => {
     if (basePath) {
-      const params = new URLSearchParams(searchParams.toString())
+      const params = new URLSearchParams(searchParamsString)
       params.delete("category")
       const queryString = params.toString()
       return `${basePath}/${categorySlug}${queryString ? `?${queryString}` : ''}`
     }
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(searchParamsString)
     params.set("category", categorySlug)
     return `/search?${params.toString()}`
   }
@@ -89,6 +90,7 @@ export function SubcategoryCircles({
           {currentCategory && (
             <Link
               href={buildUrl(currentCategory.slug)}
+              prefetch={true}
               className={cn(
                 "flex flex-col items-center gap-1 min-w-[56px] sm:min-w-[100px] group shrink-0",
                 "touch-action-manipulation"
@@ -127,6 +129,7 @@ export function SubcategoryCircles({
               <Link
                 key={subcat.id}
                 href={buildUrl(subcat.slug)}
+                prefetch={true}
                 className={cn(
                   "flex flex-col items-center gap-1 min-w-[56px] sm:min-w-[100px] group shrink-0",
                   "touch-action-manipulation",

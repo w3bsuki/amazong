@@ -29,7 +29,7 @@ export function MobileProductHeader() {
           title: document.title,
           url: window.location.href,
         })
-      } catch (err) {
+      } catch {
         // User cancelled or error
       }
     }

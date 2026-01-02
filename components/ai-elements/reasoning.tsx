@@ -89,7 +89,7 @@ export const Reasoning = memo(
         return () => clearTimeout(timer);
       }
 
-      return undefined;
+      return;
     }, [isStreaming, isOpen, defaultOpen, setIsOpen, hasAutoClosed]);
 
     const handleOpenChange = (newOpen: boolean) => {

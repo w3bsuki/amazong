@@ -1,4 +1,4 @@
-import { Modal } from "@/components/common/modal"
+import { Modal } from "@/components/shared/modal"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { getLocale } from "next-intl/server"
@@ -14,16 +14,16 @@ const SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE =
 async function UpgradeModalContent() {
   // Ensure this runs dynamically, not during static generation
   await connection()
-  
+
   const locale = await getLocale()
   const supabase = await createClient()
-  
+
   if (!supabase) {
     redirect("/auth/login")
   }
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect("/auth/login")
   }
@@ -52,14 +52,14 @@ async function UpgradeModalContent() {
   }))
 
   return (
-    <Modal 
+    <Modal
       title={locale === 'bg' ? 'Надгради плана си' : 'Upgrade Your Plan'}
-      description={locale === 'bg' 
+      description={locale === 'bg'
         ? 'Изберете план с по-ниски комисиони и повече функции'
         : 'Choose a plan with lower commissions and more features'
       }
     >
-      <UpgradeContent 
+      <UpgradeContent
         locale={locale}
         plans={transformedPlans}
         currentTier={currentTier}
@@ -71,7 +71,7 @@ async function UpgradeModalContent() {
 
 function UpgradeLoadingFallback() {
   return (
-    <Modal 
+    <Modal
       title="Upgrade Your Plan"
       description="Choose a plan with lower commissions and more features"
     >

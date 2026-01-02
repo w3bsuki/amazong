@@ -66,32 +66,32 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
 
   return (
     <div className="flex flex-col gap-3 w-full lg:max-w-[600px]">
-      {/* Main Image Container */}
+      {/* Main Image Container - aspect-[4/3] on mobile for better product visibility */}
       <div 
-        className="w-full overflow-hidden lg:rounded-md lg:border lg:border-border bg-card relative group aspect-square lg:max-h-[400px]" 
+        className="w-full overflow-hidden lg:rounded-md lg:border lg:border-border bg-card relative group aspect-[4/3] lg:aspect-square" 
         id={galleryID}
       >
         {/* Carousel Area */}
-        <div className="relative size-full">
-          <Carousel setApi={setApi} className="size-full">
-            <CarouselContent className="size-full">
+        <div className="absolute inset-0">
+          <Carousel setApi={setApi} className="h-full">
+            <CarouselContent className="h-full -ml-0">
               {images.map((img, index) => (
-                <CarouselItem key={index} className="size-full">
-                  <div className="size-full flex items-center justify-center lg:p-4">
+                <CarouselItem key={index} className="h-full pl-0">
+                  <div className="h-full flex items-center justify-center lg:p-4">
                     <a
                       href={img.src}
                       data-pswp-width={img.width}
                       data-pswp-height={img.height}
                       target="_blank"
                       rel="noreferrer"
-                      className="size-full flex items-center justify-center"
+                      className="h-full w-full flex items-center justify-center"
                     >
                       <Magnifier
                         src={img.src}
                         alt={img.alt}
                         width={img.width}
                         height={img.height}
-                        className="size-full object-contain"
+                        className="max-h-full max-w-full w-auto h-auto object-contain"
                       />
                     </a>
                   </div>

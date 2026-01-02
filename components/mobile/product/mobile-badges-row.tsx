@@ -43,7 +43,7 @@ export function MobileBadgesRow({
 
   // Normalize condition string
   const normalizeCondition = (cond: string) => {
-    const lower = cond.toLowerCase().replace(/[-_]/g, " ");
+    const lower = cond.toLowerCase().replaceAll(/[-_]/g, " ");
     if (lower.includes("new with tag")) return t.newWithTags;
     if (lower.includes("like new") || lower.includes("as new")) return t.likeNew;
     if (lower.includes("refurbished") || lower.includes("renewed")) return t.refurbished;

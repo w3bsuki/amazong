@@ -1,5 +1,4 @@
-import { Flame, Eye, Clock, TrendingUp, AlertTriangle, Users } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Flame, Clock, AlertTriangle, Users } from "lucide-react";
 
 interface MobileUrgencyBannerProps {
   viewersCount?: number | null;
@@ -60,15 +59,15 @@ export function MobileUrgencyBanner({
   // Priority: Low stock > Sale timer > Viewers > Sold count
   if (showLowStock) {
     return (
-      <div className="flex items-center gap-2.5 px-3 py-2.5 bg-amber-50 dark:bg-amber-900/20 rounded-lg mx-3 my-2 border border-amber-200 dark:border-amber-800/50">
-        <div className="flex items-center justify-center size-9 rounded-lg bg-amber-100 dark:bg-amber-800/40">
-          <AlertTriangle className="size-4 text-amber-700 dark:text-amber-400" />
+      <div className="flex items-center gap-2.5 px-3 py-2.5 bg-urgency-stock-bg rounded-md border border-urgency-stock-border">
+        <div className="flex items-center justify-center size-9 rounded-md bg-urgency-stock-icon-bg">
+          <AlertTriangle className="size-4 text-urgency-stock-icon" />
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+          <span className="text-sm font-semibold text-urgency-stock-text">
             {t.onlyLeft} {stockQuantity} {t.leftSuffix}
           </span>
-          <span className="text-xs text-amber-700 dark:text-amber-400/80">
+          <span className="text-xs text-urgency-stock-text/80">
             {locale === "bg" ? "Високо търсене" : "High demand"}
           </span>
         </div>
@@ -80,15 +79,15 @@ export function MobileUrgencyBanner({
     const timeRemaining = getTimeRemaining();
     if (timeRemaining) {
       return (
-        <div className="flex items-center gap-2.5 px-3 py-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg mx-3 my-2 border border-blue-200 dark:border-blue-800/50">
-          <div className="flex items-center justify-center size-9 rounded-lg bg-blue-100 dark:bg-blue-800/40">
-            <Clock className="size-4 text-blue-700 dark:text-blue-400" />
+        <div className="flex items-center gap-2.5 px-3 py-2.5 bg-urgency-sale-bg rounded-md border border-urgency-sale-border">
+          <div className="flex items-center justify-center size-9 rounded-md bg-urgency-sale-icon-bg">
+            <Clock className="size-4 text-urgency-sale-icon" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold text-blue-900 dark:text-blue-200">
+            <span className="text-sm font-semibold text-urgency-sale-text">
               {t.saleEnds} {timeRemaining}
             </span>
-            <span className="text-xs text-blue-700 dark:text-blue-400/80">
+            <span className="text-xs text-urgency-sale-text/80">
               {locale === "bg" ? "Не пропускай" : "Don't miss out"}
             </span>
           </div>
@@ -99,17 +98,17 @@ export function MobileUrgencyBanner({
 
   if (showViewers) {
     return (
-      <div className="flex items-center gap-2.5 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg mx-3 my-2 border border-emerald-200 dark:border-emerald-800/50">
-        <div className="relative flex items-center justify-center size-9 rounded-lg bg-emerald-100 dark:bg-emerald-800/40">
-          <Users className="size-4 text-emerald-700 dark:text-emerald-400" />
+      <div className="flex items-center gap-2.5 px-3 py-2.5 bg-urgency-viewers-bg rounded-md border border-urgency-viewers-border">
+        <div className="relative flex items-center justify-center size-9 rounded-md bg-urgency-viewers-icon-bg">
+          <Users className="size-4 text-urgency-viewers-icon" />
           {/* Static dot instead of ping */}
-          <span className="absolute -top-0.5 -right-0.5 size-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-background" />
+          <span className="absolute -top-0.5 -right-0.5 size-2.5 bg-live-dot rounded-full ring-2 ring-white dark:ring-background" />
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
-            <span className="text-emerald-700 dark:text-emerald-400 font-bold">{viewersCount}</span> {t.viewing}
+          <span className="text-sm font-semibold text-urgency-viewers-text">
+            <span className="text-urgency-viewers-icon font-bold">{viewersCount}</span> {t.viewing}
           </span>
-          <span className="text-xs text-emerald-700 dark:text-emerald-400/80">
+          <span className="text-xs text-urgency-viewers-text/80">
             {locale === "bg" ? "Популярен продукт" : "Popular item"}
           </span>
         </div>
@@ -119,15 +118,15 @@ export function MobileUrgencyBanner({
 
   if (showSoldCount) {
     return (
-      <div className="flex items-center gap-2.5 px-3 py-2.5 bg-orange-50 dark:bg-orange-900/20 rounded-lg mx-3 my-2 border border-orange-200 dark:border-orange-800/50">
-        <div className="flex items-center justify-center size-9 rounded-lg bg-orange-100 dark:bg-orange-800/40">
-          <Flame className="size-4 text-orange-700 dark:text-orange-400" />
+      <div className="flex items-center gap-2.5 px-3 py-2.5 bg-urgency-hot-bg rounded-md border border-urgency-hot-border">
+        <div className="flex items-center justify-center size-9 rounded-md bg-urgency-hot-icon-bg">
+          <Flame className="size-4 text-urgency-hot-icon" />
         </div>
         <div className="flex flex-col">
-          <span className="text-sm font-semibold text-orange-900 dark:text-orange-200">
-            <span className="text-orange-700 dark:text-orange-400 font-bold">{soldCount}+</span> {t.soldRecently}
+          <span className="text-sm font-semibold text-urgency-hot-text">
+            <span className="text-urgency-hot-icon font-bold">{soldCount}+</span> {t.soldRecently}
           </span>
-          <span className="text-xs text-orange-700 dark:text-orange-400/80">
+          <span className="text-xs text-urgency-hot-text/80">
             {locale === "bg" ? "Горещ продукт" : "Hot item"}
           </span>
         </div>

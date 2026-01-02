@@ -233,11 +233,39 @@
   --color-stock-urgent-bg: oklch(0.96 0.04 27);
   --color-stock-urgent-text: oklch(0.45 0.20 27);
 
-  /* Urgency Banners */
+  /* Urgency Banners - Semantic tokens for different urgency types */
   --color-urgency-bg: oklch(0.97 0.02 85);
   --color-urgency-text: oklch(0.35 0.10 85);
   --color-urgency-icon: oklch(0.60 0.18 27);
   --color-live-dot: oklch(0.55 0.22 145);
+  
+  /* Urgency - Low Stock (Amber/Warning) */
+  --color-urgency-stock-bg: oklch(0.96 0.04 85);
+  --color-urgency-stock-text: oklch(0.38 0.12 85);
+  --color-urgency-stock-icon-bg: oklch(0.92 0.06 85);
+  --color-urgency-stock-icon: oklch(0.50 0.14 85);
+  --color-urgency-stock-border: oklch(0.90 0.06 85);
+  
+  /* Urgency - Sale Timer (Blue/Info) */
+  --color-urgency-sale-bg: oklch(0.96 0.03 250);
+  --color-urgency-sale-text: oklch(0.38 0.12 250);
+  --color-urgency-sale-icon-bg: oklch(0.92 0.05 250);
+  --color-urgency-sale-icon: oklch(0.50 0.14 250);
+  --color-urgency-sale-border: oklch(0.90 0.04 250);
+  
+  /* Urgency - Viewers (Emerald/Success) */
+  --color-urgency-viewers-bg: oklch(0.96 0.03 160);
+  --color-urgency-viewers-text: oklch(0.38 0.12 160);
+  --color-urgency-viewers-icon-bg: oklch(0.92 0.05 160);
+  --color-urgency-viewers-icon: oklch(0.50 0.14 160);
+  --color-urgency-viewers-border: oklch(0.90 0.04 160);
+  
+  /* Urgency - Hot/Sold (Orange) */
+  --color-urgency-hot-bg: oklch(0.96 0.04 65);
+  --color-urgency-hot-text: oklch(0.38 0.12 50);
+  --color-urgency-hot-icon-bg: oklch(0.92 0.06 65);
+  --color-urgency-hot-icon: oklch(0.55 0.15 50);
+  --color-urgency-hot-border: oklch(0.90 0.05 65);
 
   /* Shipping */
   --color-shipping-free: oklch(0.50 0.18 250);
@@ -478,6 +506,31 @@
   /* Mobile product (dark) */
   --color-discount-badge-bg: oklch(0.55 0.20 27);
   --color-discount-badge-text: oklch(1 0 0);
+  
+  /* Urgency Banners - Dark mode overrides */
+  --color-urgency-stock-bg: oklch(0.25 0.04 85);
+  --color-urgency-stock-text: oklch(0.85 0.08 85);
+  --color-urgency-stock-icon-bg: oklch(0.30 0.06 85);
+  --color-urgency-stock-icon: oklch(0.75 0.12 85);
+  --color-urgency-stock-border: oklch(0.35 0.05 85);
+  
+  --color-urgency-sale-bg: oklch(0.25 0.03 250);
+  --color-urgency-sale-text: oklch(0.85 0.08 250);
+  --color-urgency-sale-icon-bg: oklch(0.30 0.05 250);
+  --color-urgency-sale-icon: oklch(0.75 0.12 250);
+  --color-urgency-sale-border: oklch(0.35 0.04 250);
+  
+  --color-urgency-viewers-bg: oklch(0.25 0.03 160);
+  --color-urgency-viewers-text: oklch(0.85 0.08 160);
+  --color-urgency-viewers-icon-bg: oklch(0.30 0.05 160);
+  --color-urgency-viewers-icon: oklch(0.75 0.12 160);
+  --color-urgency-viewers-border: oklch(0.35 0.04 160);
+  
+  --color-urgency-hot-bg: oklch(0.25 0.04 65);
+  --color-urgency-hot-text: oklch(0.85 0.08 50);
+  --color-urgency-hot-icon-bg: oklch(0.30 0.06 65);
+  --color-urgency-hot-icon: oklch(0.75 0.12 50);
+  --color-urgency-hot-border: oklch(0.35 0.05 65);
 
   --sidebar: hsl(240 5.9% 10%);
   --sidebar-foreground: hsl(240 4.8% 95.9%);
