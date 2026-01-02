@@ -45,3 +45,54 @@ export async function getRootCategories() {
 
   return (data || []) as Category[]
 }
+
+/**
+ * Build a mapping from any category slug to its root category slug.
+ * Used for keeping the root category pill active on deep /categories/[slug] pages.
+ */
+export async function getCategoryRootSlugMap(): Promise<Record<string, string>> {
+  'use cache'
+  cacheTag('categories', 'category-root-slug-map')
+  cacheLife('categories')
+
+  const supabase = createStaticClient()
+  if (!supabase) return {}
+
+  const { data } = await supabase
+    .from("categories")
+    .select("id, slug, parent_id")
+
+  const rows = (data || []) as Array<{ id: string; slug: string; parent_id: string | null }>
+  if (rows.length === 0) return {}
+
+  const byId = new Map<string, { id: string; slug: string; parent_id: string | null }>()
+  for (const row of rows) byId.set(row.id, row)
+
+  const rootSlugById = new Map<string, string>()
+
+  const resolveRootSlug = (id: string): string => {
+    const cached = rootSlugById.get(id)
+    if (cached) return cached
+
+    const node = byId.get(id)
+    if (!node) return ""
+
+    if (!node.parent_id) {
+      rootSlugById.set(id, node.slug)
+      return node.slug
+    }
+
+    const root = resolveRootSlug(node.parent_id)
+    const rootSlug = root || node.slug
+    rootSlugById.set(id, rootSlug)
+    return rootSlug
+  }
+
+  const rootSlugBySlug: Record<string, string> = {}
+  for (const row of rows) {
+    const rootSlug = resolveRootSlug(row.id)
+    if (row.slug) rootSlugBySlug[row.slug] = rootSlug || row.slug
+  }
+
+  return rootSlugBySlug
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, ControllerRenderProps } from "react-hook-form";
 import { useLocale } from "next-intl";
@@ -25,6 +25,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCart } from "@/components/providers/cart-context";
 import { useToast } from "@/hooks/use-toast";
+import type { Database } from "@/lib/supabase/database.types";
 
 // --- Types ---
 
@@ -58,9 +59,12 @@ type price = {
   currency?: string;
 };
 
+type ProductVariantRow = Database["public"]["Tables"]["product_variants"]["Row"];
+
 const formSchema = z.object({
   quantity: z.number().min(1).max(99),
   size: z.string().optional(),
+  variantId: z.string().optional(),
 });
 
 type FormType = z.infer<typeof formSchema>;
@@ -91,9 +95,10 @@ interface ProductBuyBoxProps {
     description?: string;
     itemSpecifics?: React.ReactNode;
   };
+  variants?: ProductVariantRow[];
 }
 
-export function ProductBuyBox({ productId, productSlug, sellerUsername, product }: ProductBuyBoxProps) {
+export function ProductBuyBox({ productId, productSlug, sellerUsername, product, variants }: ProductBuyBoxProps) {
   const locale = useLocale();
   const { addToCart } = useCart();
   const { toast } = useToast();
@@ -108,6 +113,25 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product 
   const sizeHinges = product.hinges?.size;
   const size = form.watch("size");
 
+  const safeVariants = Array.isArray(variants) ? variants : [];
+  const defaultVariant = safeVariants.find((v) => v.is_default) ?? safeVariants[0] ?? null;
+
+  // Initialize variant selection when variants exist.
+  useEffect(() => {
+    if (safeVariants.length === 0) return;
+    const current = form.getValues("variantId");
+    if (current) return;
+    if (defaultVariant?.id) {
+      form.setValue("variantId", defaultVariant.id);
+    }
+  }, [defaultVariant?.id, form, safeVariants.length]);
+
+  const variantId = form.watch("variantId");
+  const selectedVariant = useMemo(() => {
+    if (!variantId) return defaultVariant;
+    return safeVariants.find((v) => v.id === variantId) ?? defaultVariant;
+  }, [defaultVariant, safeVariants, variantId]);
+
   const selectedItem = useMemo(() => {
     if (!sizeHinges?.options) return null;
     return sizeHinges.options.find((item) => item.value === size);
@@ -115,12 +139,30 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product 
 
   const stockInfo = selectedItem?.stockInfo;
 
+  const basePrice = product.price.sale ?? product.price.regular ?? 0;
+  const displayPrice = safeVariants.length > 0
+    ? basePrice + Number(selectedVariant?.price_adjustment ?? 0)
+    : basePrice;
+
   const onSubmit = (data: FormType) => {
-    const currentPrice = product.price.sale ?? product.price.regular ?? 0;
+    if (safeVariants.length > 0) {
+      if (!selectedVariant?.id) {
+        toast({ title: "Select a variant" });
+        return;
+      }
+      if ((selectedVariant.stock ?? 0) <= 0) {
+        toast({ title: "Out of stock" });
+        return;
+      }
+    }
+
+    const currentPrice = displayPrice;
     const primaryImage = product.images[0]?.src ?? "";
     
     addToCart({
       id: productId,
+      ...(safeVariants.length > 0 && selectedVariant?.id ? { variantId: selectedVariant.id } : {}),
+      ...(safeVariants.length > 0 && selectedVariant?.name ? { variantName: selectedVariant.name } : {}),
       title: product.name,
       price: currentPrice,
       image: primaryImage,
@@ -173,7 +215,7 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product 
           <span className="text-sm font-medium text-muted-foreground hidden lg:block">Price:</span>
           <div className="flex items-baseline gap-2 flex-wrap">
             <span className="text-2xl lg:text-3xl font-bold text-foreground tracking-tight">
-              {new Intl.NumberFormat(locale, { style: "currency", currency: product.price.currency || "USD", minimumFractionDigits: 2 }).format(product.price.sale || 0)}
+              {new Intl.NumberFormat(locale, { style: "currency", currency: product.price.currency || "USD", minimumFractionDigits: 2 }).format(displayPrice || 0)}
               <span className="text-xs font-normal text-muted-foreground ml-1">{locale === "bg" ? "с ДДС" : "incl. VAT"}</span>
             </span>
             {product.price.regular && (
@@ -195,6 +237,43 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product 
       {/* Form (Size & Buttons) */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-form-sm">
+          {safeVariants.length > 0 ? (
+            <FormField
+              control={form.control}
+              name="variantId"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <FormLabel className="text-sm font-medium text-muted-foreground">
+                    Select Variant
+                  </FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      className="flex flex-wrap gap-form-sm"
+                    >
+                      {safeVariants.map((v) => (
+                        <FormItem key={v.id}>
+                          <FormLabel className="cursor-pointer">
+                            <RadioGroupItem
+                              value={v.id}
+                              id={v.id}
+                              className="peer sr-only"
+                              disabled={(v.stock ?? 0) <= 0}
+                            />
+                            <div className="flex h-9 min-w-10 lg:h-10 lg:min-w-14 items-center justify-center rounded-md border border-border bg-background px-2 lg:px-3 text-xs lg:text-sm font-medium text-foreground transition-all hover:border-foreground peer-data-[state=checked]:border-foreground peer-data-[state=checked]:bg-foreground peer-data-[state=checked]:text-background peer-disabled:cursor-not-allowed peer-disabled:opacity-50 peer-disabled:bg-muted peer-disabled:text-muted-foreground">
+                              {v.name}
+                            </div>
+                          </FormLabel>
+                        </FormItem>
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          ) : null}
+
           {sizeHinges && sizeHinges.options && sizeHinges.options.length > 0 && (
             <FormField
               control={form.control}
@@ -261,13 +340,13 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product 
           />
 
           <div className="hidden flex-col gap-2 lg:flex">
-            <Button className="w-full bg-cta-trust-blue text-white hover:bg-cta-trust-blue/90 h-11 text-base font-bold rounded-full shadow-sm transition-colors" size="lg">
+            <Button type="button" className="w-full bg-cta-trust-blue text-white hover:bg-cta-trust-blue/90 h-11 text-base font-bold rounded-full shadow-sm transition-colors" size="lg">
               Buy It Now
             </Button>
-            <Button variant="outline" className="w-full border-cta-trust-blue text-cta-trust-blue hover:bg-cta-trust-blue/5 h-11 text-base font-bold rounded-full transition-colors" size="lg">
+            <Button type="submit" variant="outline" className="w-full border-cta-trust-blue text-cta-trust-blue hover:bg-cta-trust-blue/5 h-11 text-base font-bold rounded-full transition-colors" size="lg">
               Add to cart
             </Button>
-            <Button variant="outline" className="w-full border-border text-foreground hover:bg-muted h-11 text-base font-bold rounded-full transition-colors" size="lg">
+            <Button type="button" variant="outline" className="w-full border-border text-foreground hover:bg-muted h-11 text-base font-bold rounded-full transition-colors" size="lg">
               <Heart className="mr-2 h-5 w-5" /> Add to Watchlist
             </Button>
           </div>

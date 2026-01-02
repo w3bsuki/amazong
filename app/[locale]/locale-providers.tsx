@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
 
-import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { IntlClientProvider } from './intl-client-provider'
 
 export default async function LocaleProviders({
   locale,
@@ -19,7 +19,7 @@ export default async function LocaleProviders({
   const messages = await getMessages()
 
   return (
-    <NextIntlClientProvider messages={messages}>
+    <IntlClientProvider locale={locale} messages={messages}>
       <ThemeProvider
         attribute="class"
         defaultTheme="light"
@@ -29,6 +29,6 @@ export default async function LocaleProviders({
       >
         {children}
       </ThemeProvider>
-    </NextIntlClientProvider>
+    </IntlClientProvider>
   )
 }

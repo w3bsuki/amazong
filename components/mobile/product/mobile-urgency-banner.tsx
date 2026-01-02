@@ -1,5 +1,3 @@
-"use client";
-
 import { Flame, Eye, Clock, TrendingUp, AlertTriangle, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 

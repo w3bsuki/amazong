@@ -62,8 +62,9 @@ function buildCategoryTree(categories: RawCategory[]): CategoryNode[] {
 
 export async function getSellCategories(): Promise<CategoryNode[]> {
   'use cache'
-  // Sell flow needs a stable category tree (root + 2 levels).
-  cacheTag('categories', 'sell-categories', 'sell-categories:depth:2')
+  // Sell flow needs a stable category tree (root + 3 levels) so the selector
+  // can navigate without client-side fetching.
+  cacheTag('categories', 'sell-categories', 'sell-categories:depth:3')
   cacheLife('categories')
 
   try {
@@ -118,11 +119,33 @@ export async function getSellCategories(): Promise<CategoryNode[]> {
       }
     }
 
-    const allCategories = [...rootCats, ...(l1Cats || []), ...l2Cats];
+    let l3Cats: typeof l1Cats = [];
+    if (l2Cats.length > 0) {
+      const l2Ids = l2Cats.map((c) => c.id);
+      const BATCH_SIZE = 100;
+
+      for (let i = 0; i < l2Ids.length; i += BATCH_SIZE) {
+        const batchIds = l2Ids.slice(i, i + BATCH_SIZE);
+        const { data: l3Data, error: l3Error } = await supabase
+          .from("categories")
+          .select("id, name, name_bg, slug, parent_id, display_order")
+          .in("parent_id", batchIds)
+          .lt("display_order", 9000)
+          .order("display_order", { ascending: true });
+
+        if (l3Error) {
+          console.error("[SellPage] Error fetching L3 batch:", l3Error);
+        } else if (l3Data) {
+          l3Cats = [...l3Cats, ...l3Data];
+        }
+      }
+    }
+
+    const allCategories = [...rootCats, ...(l1Cats || []), ...l2Cats, ...l3Cats];
 
     if (process.env.NODE_ENV !== 'production') {
       console.log(
-        `[SellPage] Fetched ${allCategories.length} categories (${rootCats.length} root, ${l1Cats?.length || 0} L1, ${l2Cats.length} L2)`
+        `[SellPage] Fetched ${allCategories.length} categories (${rootCats.length} root, ${l1Cats?.length || 0} L1, ${l2Cats.length} L2, ${l3Cats.length} L3)`
       );
     }
 

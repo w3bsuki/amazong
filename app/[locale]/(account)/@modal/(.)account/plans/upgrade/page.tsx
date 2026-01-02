@@ -7,6 +7,10 @@ import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 import { connection } from "next/server"
 
+const PROFILE_SELECT_FOR_UPGRADE = 'id,tier,commission_rate,stripe_customer_id'
+const SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE =
+  'id,tier,name,price_monthly,price_yearly,commission_rate,features,is_active,account_type'
+
 async function UpgradeModalContent() {
   // Ensure this runs dynamically, not during static generation
   await connection()
@@ -27,14 +31,14 @@ async function UpgradeModalContent() {
   // Fetch profile info (seller fields are now on profiles)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select(PROFILE_SELECT_FOR_UPGRADE)
     .eq('id', user.id)
     .single()
 
   // Fetch subscription plans
   const { data: plans } = await supabase
     .from('subscription_plans')
-    .select('*')
+    .select(SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE)
     .eq('is_active', true)
     .order('price_monthly', { ascending: true })
 

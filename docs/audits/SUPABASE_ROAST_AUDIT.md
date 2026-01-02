@@ -188,27 +188,33 @@ const { data: product, error } = await supabaseAdmin.from("products").insert({..
 - [ ] **Enable Leaked Password Protection**
   - Go to Supabase Dashboard → Auth → Settings → Enable "Leaked Password Protection"
 
-- [ ] **Stop Bypassing RLS Unnecessarily**
-  - `app/api/products/route.ts` — Use `createRouteHandlerClient` for inserts, not `createAdminClient`
-  - Only use admin client for actual admin operations (after `requireAdmin()` check)
+- [x] **Stop Bypassing RLS Unnecessarily**
+  - Implemented: route handlers now use the authenticated Supabase client so RLS is enforced.
+  - Fixed files:
+    - `app/api/products/route.ts`
+    - `app/api/products/create/route.ts`
+    - `app/api/stores/route.ts` (deprecated route, still hardened)
+    - `app/api/categories/[slug]/attributes/route.ts` (public endpoint now uses anon/static client)
+  - Rule: only use admin/service-role client for true admin/server tasks (e.g. webhooks), never for normal user writes.
 
-- [ ] **Run the cleanup migration you already wrote!**
-  ```bash
-  supabase migration up
-  ```
+- [x] **Run the cleanup migration you already wrote**
+  - Applied to the live Supabase project via Supabase MCP on **Jan 1, 2026**:
+    - Drops over-engineered RPC wrappers
+    - Drops advisor-flagged unused indexes
+  - Note: after index cleanup, Supabase started reporting **unindexed foreign keys**. We restored covering FK indexes in a follow-up migration to keep production performance sane.
 
 ### HIGH (This Week)
 
-- [ ] **Delete the abandoned `sellers` table**
+- [x] **Delete the abandoned `sellers` table**
   - It's confusing everyone and adds zero value
   - Migrate any remaining references to `profiles.is_seller`
 
 - [ ] **Drop those 14+ unused indexes**
   - They're slowing down writes for zero benefit
 
-- [ ] **Remove the mock client code**
-  - If env vars are missing in production, FAIL LOUDLY
-  - Don't silently serve broken experiences
+- [x] **Remove the mock client code**
+  - Implemented: browser client now throws immediately if `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` are missing.
+  - Deleted mock client implementation so missing envs cannot silently degrade UX.
 
 ### MEDIUM (This Month)
 
@@ -251,6 +257,29 @@ const { data: product, error } = await supabaseAdmin.from("products").insert({..
 **Rating: 4/10 — Would not serve to customers**
 
 Now get back in there and FIX IT before dinner service! 🔥
+
+---
+
+## ✅ Phase 1 Implementation Notes (Jan 1, 2026)
+
+**Supabase MCP (live project) results**
+
+- Security advisor: only remaining warning is **Leaked Password Protection Disabled** (dashboard toggle).
+- Performance advisor: the big “unused index pile” is reduced; remaining notices are expected given low production traffic.
+
+**Schema / migrations**
+
+- Executed the existing cleanup migration intent (drop RPC wrappers + unused indexes).
+- Added a follow-up migration to restore covering indexes for key foreign keys to avoid regressions (FK checks, joins, deletes).
+
+**Frontend/backend alignment**
+
+- Product creation routes now rely on RLS for all inserts into:
+  - `products`
+  - `product_images`
+  - `product_attributes`
+
+This ensures production behavior matches the policy model (no “works only because service role” surprises).
 
 ---
 

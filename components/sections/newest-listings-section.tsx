@@ -27,7 +27,7 @@ interface NewestListingsSectionProps {
 // Loading skeleton for the product grid
 function ProductGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 gap-1.5 px-2">
+    <div className="grid grid-cols-2 gap-1 px-1 pt-1 lg:gap-1.5">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="flex flex-col h-full">
           <Skeleton className="aspect-square w-full rounded-md mb-1" />
@@ -45,7 +45,7 @@ function ProductGridSkeleton({ count = 6 }: { count?: number }) {
   )
 }
 
-export function NewestListingsSection({ 
+export function NewestListingsSection({
   initialProducts,
   title: _title,
   totalCount = 100,
@@ -85,12 +85,12 @@ export function NewestListingsSection({
         { id: "promoted", label: locale === "bg" ? "Промотирани" : "Promoted" },
         { id: "near_me", label: locale === "bg" ? "Наблизо" : "Near me" },
       ]
-      
+
       const categoryTabs = categories.map(cat => ({
         id: `cat:${cat.slug}`,
         label: locale === "bg" ? cat.name_bg : cat.name
       }))
-      
+
       return [...baseTabs, ...categoryTabs]
     },
     [locale, categories]
@@ -117,7 +117,7 @@ export function NewestListingsSection({
       hasMore: true,
     },
     ...Object.fromEntries(categories.map(cat => [
-      `cat:${cat.slug}`, 
+      `cat:${cat.slug}`,
       { products: [], page: 0, hasMore: true }
     ]))
   })
@@ -140,12 +140,12 @@ export function NewestListingsSection({
       if (tab === "near_me") {
         url += `&city=${encodeURIComponent(nearMeCity)}`
       }
-      
+
       if (tab.startsWith("cat:")) {
         const slug = tab.split(":")[1]
         url += `&category=${slug}`
       }
-      
+
       const response = await fetch(url)
       const data = await response.json()
       return data as {
@@ -198,7 +198,7 @@ export function NewestListingsSection({
   // Fetch more products
   const loadMoreProducts = useCallback(async () => {
     if (isLoading || !active.hasMore) return
-    
+
     setIsLoading(true)
     try {
       const nextPage = (active.page || 0) + 1
@@ -221,7 +221,7 @@ export function NewestListingsSection({
         // Deduplicate: filter out any products we already have
         const existingIds = new Set(current.products.map(p => p.id))
         const uniqueNewProducts = nextProducts.filter(p => !existingIds.has(p.id))
-        
+
         return {
           ...prev,
           [activeTab]: {
@@ -245,7 +245,7 @@ export function NewestListingsSection({
     // Skip if already loaded or is the initial tab
     if (activeTab === "newest") return
     if (loadedTabsRef.current.has(activeTab)) return
-    
+
     // Mark as loading to prevent re-runs
     loadedTabsRef.current.add(activeTab)
 
@@ -292,9 +292,9 @@ export function NewestListingsSection({
           loadMoreProducts()
         }
       },
-      { 
+      {
         rootMargin: "200px", // Load before user reaches the end
-        threshold: 0.1 
+        threshold: 0.1
       }
     )
 
@@ -317,7 +317,7 @@ export function NewestListingsSection({
         style={{ top: headerHeight }}
       >
         <div className="flex items-center justify-between gap-2">
-          <div 
+          <div
             className="flex-1 flex items-center gap-2 overflow-x-auto no-scrollbar"
             role="tablist"
           >
@@ -404,14 +404,14 @@ export function NewestListingsSection({
           </div>
         </div>
       ) : active.products.length === 0 && activeTab === "promoted" && !isLoading ? (
-        <EmptyStateCTA 
+        <EmptyStateCTA
           variant="no-listings"
           title={locale === "bg" ? "Няма промотирани обяви" : "No promoted listings"}
           description={locale === "bg" ? "Тук ще се показват промотирани продукти" : "Promoted products will appear here"}
           showCTA={true}
         />
       ) : (
-        <div className="grid grid-cols-2 gap-1.5 px-2 py-2">
+        <div className="grid grid-cols-2 gap-1 px-1 pt-1 lg:gap-1.5">
           {active.products.map((product, index) => (
             <ProductCard
               key={product.id}

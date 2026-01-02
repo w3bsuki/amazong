@@ -86,7 +86,9 @@ export default function CheckoutPageClient() {
 
     const { data: addresses } = await supabase
       .from("user_addresses")
-      .select("*")
+      .select(
+        "id,label,full_name,phone,address_line1,address_line2,city,state,postal_code,country,is_default,created_at"
+      )
       .eq("user_id", user.id)
       .order("is_default", { ascending: false })
       .order("created_at", { ascending: false })

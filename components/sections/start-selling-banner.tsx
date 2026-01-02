@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import { Storefront, ArrowRight, ShieldCheck, ArrowCounterClockwise, Lock } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"

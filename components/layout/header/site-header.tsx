@@ -29,9 +29,11 @@ import { Link, usePathname, useRouter } from "@/i18n/routing"
 import { useTranslations, useLocale } from "next-intl"
 
 import { User } from "@supabase/supabase-js"
+import type { CategoryTreeNode } from "@/lib/category-tree"
 
 interface SiteHeaderProps {
   user: User | null
+  categories: CategoryTreeNode[]
   hideSubheader?: boolean
   /** Hide entire header on mobile (< lg breakpoint) */
   hideOnMobile?: boolean
@@ -43,7 +45,7 @@ interface SiteHeaderProps {
   variant?: "default" | "product"
 }
 
-export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, variant = "default" }: SiteHeaderProps) {
+export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobile = false, variant = "default" }: SiteHeaderProps) {
   const [country, setCountry] = useState("Bulgaria")
   const [, setCountryCode] = useState("BG") // Used for shipping zone filtering
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
@@ -116,7 +118,7 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
               <CaretLeft size={20} weight="bold" />
             </button>
           ) : (
-            <SidebarMenu user={user} triggerClassName="justify-start" />
+            <SidebarMenu user={user} categories={categories} triggerClassName="justify-start" />
           )}
           <Link href="/" className={cn(
             "flex items-center shrink-0 min-h-touch -ml-2",
@@ -267,7 +269,7 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
             {/* Mobile/Tablet: Quick Links with Sidebar Menu */}
             <div className="lg:hidden">
               <div className="w-full flex items-center gap-0.5 overflow-x-auto no-scrollbar">
-                <SidebarMenu user={user} />
+                <SidebarMenu user={user} categories={categories} />
                 <Link href="/todays-deals" prefetch={true} className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
                 <Link href="/customer-service" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
                 <Link href="/registry" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('registry')}</Link>
@@ -278,7 +280,7 @@ export function SiteHeader({ user, hideSubheader = false, hideOnMobile = false, 
             
             {/* Desktop: Categories fill container width */}
             <div className="hidden lg:block">
-              <CategorySubheader />
+              <CategorySubheader categories={categories} />
             </div>
           </div>
         </nav>

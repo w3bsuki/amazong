@@ -60,6 +60,7 @@ interface Product {
   sku?: string | null
   barcode?: string | null
   stock: number
+  variant_count?: number | null
   track_inventory?: boolean | null
   status?: string | null
   weight?: number | null
@@ -136,7 +137,7 @@ export function ProductsTable({
       const query = searchQuery.toLowerCase()
       result = result.filter((p) => 
         p.title.toLowerCase().includes(query) ||
-        (p.sku && p.sku.toLowerCase().includes(query)) ||
+        (p.variant_count ? false : (p.sku && p.sku.toLowerCase().includes(query))) ||
         (p.barcode && p.barcode.toLowerCase().includes(query))
       )
     }
@@ -157,7 +158,9 @@ export function ProductsTable({
           comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           break
         case "sku":
-          comparison = (a.sku || "").localeCompare(b.sku || "")
+          comparison = (a.variant_count ? "" : (a.sku || "")).localeCompare(
+            b.variant_count ? "" : (b.sku || "")
+          )
           break
         case "status":
           comparison = (a.status || "draft").localeCompare(b.status || "draft")
@@ -613,7 +616,7 @@ export function ProductsTable({
                     </TableCell>
                     <TableCell>
                       <span className="text-xs text-muted-foreground font-mono">
-                        {product.sku || "—"}
+                        {product.variant_count ? "—" : (product.sku || "—")}
                       </span>
                     </TableCell>
                     <TableCell>

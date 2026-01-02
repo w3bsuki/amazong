@@ -16,23 +16,25 @@ import {
   SquaresFour
 } from "@phosphor-icons/react"
 import { useLocale } from "next-intl"
-import { useCategoriesCache, getCategoryName } from "@/hooks/use-categories-cache"
+import { getCategoryName } from "@/lib/category-display"
 import { CategoryCircle } from "@/components/shared/category/category-circle"
+import type { CategoryTreeNode } from "@/lib/category-tree"
 
 export interface MobileMenuSheetHandle {
   open: () => void
   close: () => void
 }
 
-export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
-  function MobileMenuSheet(_props, ref) {
+interface MobileMenuSheetProps {
+  categories: CategoryTreeNode[]
+}
+
+export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheetProps>(
+  function MobileMenuSheet({ categories }, ref) {
     const [open, setOpen] = useState(false)
     const locale = useLocale()
     // Chosen design: blue circles with white icons.
     // Keep labels black underneath for maximum readability.
-
-    const { categories } = useCategoriesCache({ minCategories: 0 })
-
     useImperativeHandle(ref, () => ({
       open: () => setOpen(true),
       close: () => setOpen(false),
@@ -103,7 +105,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle>(
                       category={cat}
                       href={`/categories/${cat.slug}`}
                       onClick={() => setOpen(false)}
-                      circleClassName="size-14"
+                      circleClassName="size-(--category-circle-mobile)"
                       fallbackIconSize={26}
                       fallbackIconWeight="regular"
                       variant="menu"

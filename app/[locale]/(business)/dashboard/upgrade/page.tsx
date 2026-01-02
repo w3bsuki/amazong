@@ -161,7 +161,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
   const supabase = await createClient()
   const { data: _plans } = await supabase
     .from('subscription_plans')
-    .select('*')
+    .select('id')
     .eq('account_type', 'business')
     .eq('is_active', true)
     .in('tier', ['professional', 'enterprise'])

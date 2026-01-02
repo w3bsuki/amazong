@@ -12,7 +12,14 @@ import { categoryBlurDataURL } from "@/lib/image-utils"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { getSubcategoryImage } from "@/config/subcategory-images"
 import { MEGA_MENU_CONFIG, MAX_MENU_ITEMS, PRIORITY_VISIBLE_CATEGORIES, HIDDEN_FROM_SUBHEADER } from "@/config/mega-menu-config"
-import { useCategoriesCache, getCategoryName, type Category } from "@/hooks/use-categories-cache"
+import type { CategoryTreeNode } from "@/lib/category-tree"
+import { getCategoryName } from "@/lib/category-display"
+
+type Category = CategoryTreeNode
+
+interface CategorySubheaderProps {
+  categories: Category[]
+}
 
 const MAX_VISIBLE_SUBCATEGORIES = 16
 
@@ -33,9 +40,8 @@ function useHeaderHeight(): number {
   return headerHeight
 }
 
-export function CategorySubheader() {
+export function CategorySubheader({ categories }: CategorySubheaderProps) {
   const locale = useLocale()
-  const { categories, isLoading } = useCategoriesCache({ depth: 2 })
   const headerHeight = useHeaderHeight()
   const [activeCategory, setActiveCategory] = useState<Category | null>(null)
   const [isFullMenuOpen, setIsFullMenuOpen] = useState(false)
@@ -104,7 +110,7 @@ export function CategorySubheader() {
   const fullMenuVisibleCategories = showAllCategories ? categories : categories.slice(0, MAX_FULL_MENU_CATEGORIES)
   const hasMoreCategories = categories.length > MAX_FULL_MENU_CATEGORIES
 
-  if (isLoading) {
+  if (categories.length === 0) {
     return <CategorySubheaderSkeleton />
   }
 

@@ -9,8 +9,13 @@ import { CountBadge } from "@/components/common/count-badge"
 import { useTranslations } from "next-intl"
 import { MobileMenuSheet, type MobileMenuSheetHandle } from "@/components/mobile/mobile-menu-sheet"
 import { useMessages } from "@/components/providers/message-context"
+import type { CategoryTreeNode } from "@/lib/category-tree"
 
-export function MobileTabBar() {
+interface MobileTabBarProps {
+  categories: CategoryTreeNode[]
+}
+
+export function MobileTabBar({ categories }: MobileTabBarProps) {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
@@ -76,9 +81,10 @@ export function MobileTabBar() {
             <span className="text-2xs font-medium leading-none">{t("home")}</span>
           </Link>
 
-          {/* Categories - Opens drawer with category circles */}
-          <button
-            onClick={() => menuSheetRef.current?.open()}
+          {/* Categories - Canonical Browse route */}
+          <Link
+            href="/categories"
+            prefetch={true}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
               "touch-action-manipulation tap-transparent",
@@ -86,10 +92,11 @@ export function MobileTabBar() {
               isActive("/categories") ? "text-cta-trust-blue" : "text-muted-foreground active:text-foreground"
             )}
             aria-label={t("categories")}
+            aria-current={isActive("/categories") ? "page" : undefined}
           >
             <SquaresFour size={20} weight={isActive("/categories") ? "fill" : "regular"} />
             <span className="text-2xs font-medium leading-none">{t("categories")}</span>
-          </button>
+          </Link>
 
           {/* Sell */}
           <Link
@@ -154,7 +161,7 @@ export function MobileTabBar() {
       </nav>
     
       {/* Mobile Menu Sheet with category circles */}
-      <MobileMenuSheet ref={menuSheetRef} />
+      <MobileMenuSheet ref={menuSheetRef} categories={categories} />
     </>
   )
 }

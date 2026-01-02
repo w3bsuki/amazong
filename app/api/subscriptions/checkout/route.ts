@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
 
+const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
+const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
+  'id,tier,name,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,commission_rate,final_value_fee'
+
 export async function POST(req: Request) {
   try {
     const supabase = await createClient()
@@ -26,7 +30,7 @@ export async function POST(req: Request) {
     // Get profile info
     const { data: profile } = await supabase
       .from('profiles')
-      .select('*')
+      .select(PROFILE_SELECT_FOR_STRIPE)
       .eq('id', user.id)
       .single()
 
@@ -37,7 +41,7 @@ export async function POST(req: Request) {
     // Get the subscription plan by ID
     const { data: plan } = await supabase
       .from('subscription_plans')
-      .select('*')
+      .select(SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT)
       .eq('id', planId)
       .eq('is_active', true)
       .single()

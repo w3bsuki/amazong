@@ -4,7 +4,7 @@
 > **Estimated Time:** 4-8 hours  
 > **Goal:** Secure data, optimize queries, verify auth flows  
 > **Tools:** Supabase Dashboard + SQL Editor, `supabase db push` (if using CLI)  
-> **Last Updated:** 2025-12-27
+> **Last Updated:** 2026-01-01
 
 ---
 
@@ -24,9 +24,17 @@
 
 ### Files Verified:
 - ✅ `lib/supabase/server.ts` - `createClient()`, `createRouteHandlerClient()`, `createStaticClient()`, `createAdminClient()`
-- ✅ `lib/supabase/client.ts` - Browser client with singleton + mock fallback for dev
+- ✅ `lib/supabase/client.ts` - Browser client with singleton; fails fast if env vars missing
 - ✅ `lib/supabase/middleware.ts` - Session refresh via `updateSession()`
 - ✅ `proxy.ts` - i18n + geo + session middleware chain
+
+### Phase 1 Security Alignment (Implemented ✅)
+
+- ✅ User-facing API routes no longer use the service-role client after authenticating a user (RLS is enforced end-to-end).
+- ✅ Public read routes use anon/static clients (no accidental privilege escalation).
+- ✅ Removed mock browser client fallback so missing env vars fail loudly.
+- ✅ Applied DB cleanup migration to remove over-engineered RPC wrappers; followed by restoring FK-covering indexes after advisors flagged gaps.
+- ✅ Regenerated and synced `lib/supabase/database.types.ts` to match live DB.
 
 ---
 

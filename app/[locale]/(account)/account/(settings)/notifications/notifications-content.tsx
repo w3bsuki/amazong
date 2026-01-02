@@ -178,7 +178,9 @@ export function NotificationsContent({
       try {
         const { data: prefData, error: prefError } = await supabase
           .from("notification_preferences")
-          .select("*")
+          .select(
+            "user_id,in_app_purchase,in_app_order_status,in_app_message,in_app_review,in_app_system,in_app_promotion,email_purchase,email_order_status,email_message,email_review,email_system,email_promotion,push_enabled"
+          )
           .eq("user_id", user.id)
           .maybeSingle()
 
@@ -205,7 +207,9 @@ export function NotificationsContent({
 
       const { data, error } = await supabase
         .from("notifications")
-        .select("*")
+        .select(
+          "id,type,title,body,data,order_id,product_id,conversation_id,is_read,created_at"
+        )
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(50)

@@ -1,5 +1,3 @@
-"use client";
-
 import { Star, ShieldCheck, ChevronRight } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

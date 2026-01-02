@@ -46,6 +46,9 @@ export interface CategoryAttribute {
 // Valid attribute types
 const VALID_ATTRIBUTE_TYPES: AttributeType[] = ['select', 'multiselect', 'boolean', 'number', 'text']
 
+const CATEGORY_ATTRIBUTES_SELECT =
+  'id,category_id,name,name_bg,attribute_type,options,options_bg,placeholder,placeholder_bg,is_filterable,is_required,sort_order,validation_rules,created_at' as const
+
 // Helper to transform DB row to CategoryAttribute
 function toCategoryAttribute(row: {
   id: string
@@ -303,21 +306,69 @@ export async function getCategoryHierarchy(
     }
   }
 
-  // Combine and build tree
-  const allCats = [...(rootCats || []), ...(l1Cats || []), ...l2Cats]
+  // Fetch L3 categories if depth >= 3 (batched to avoid large IN clauses)
+  let l3Cats: typeof l1Cats = []
+  if (depth >= 3 && l2Cats && l2Cats.length > 0) {
+    const l2Ids = l2Cats.map(c => c.id)
+    const BATCH_SIZE = 50
+    
+    // Use Promise.all for parallel fetching
+    const batches = []
+    for (let i = 0; i < l2Ids.length; i += BATCH_SIZE) {
+      batches.push(l2Ids.slice(i, i + BATCH_SIZE))
+    }
+    
+    const results = await Promise.all(
+      batches.map(batchIds => 
+        supabase
+          .from("categories")
+          .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
+          .in("parent_id", batchIds)
+          .lt("display_order", 9000)
+          .order("display_order", { ascending: true })
+      )
+    )
+    
+    for (const result of results) {
+      if (result.data) {
+        l3Cats.push(...result.data)
+      }
+    }
+  }
+
+  // Combine and build tree (L0 + L1 + L2 + L3)
+  const allCats = [...(rootCats || []), ...(l1Cats || []), ...l2Cats, ...l3Cats]
   
-  const rows: CategoryHierarchyRow[] = allCats.map(cat => ({
-    id: cat.id,
-    name: cat.name,
-    name_bg: cat.name_bg,
-    slug: cat.slug,
-    parent_id: cat.parent_id,
-    icon: cat.icon,
-    image_url: normalizeOptionalImageUrl(cat.image_url),
-    display_order: cat.display_order,
-    depth: cat.parent_id === null ? 0 : (rootIds.includes(cat.parent_id) ? 1 : 2),
-    path: []
-  }))
+  // Create sets for efficient depth lookups
+  const l1Ids = new Set((l1Cats || []).map(c => c.id))
+  const l2Ids = new Set(l2Cats.map(c => c.id))
+  
+  const rows: CategoryHierarchyRow[] = allCats.map(cat => {
+    // Calculate depth based on parent membership
+    let catDepth = 0
+    if (cat.parent_id === null) {
+      catDepth = 0  // Root/L0
+    } else if (rootIds.includes(cat.parent_id)) {
+      catDepth = 1  // L1 (parent is L0)
+    } else if (l1Ids.has(cat.parent_id)) {
+      catDepth = 2  // L2 (parent is L1)
+    } else if (l2Ids.has(cat.parent_id)) {
+      catDepth = 3  // L3 (parent is L2)
+    }
+    
+    return {
+      id: cat.id,
+      name: cat.name,
+      name_bg: cat.name_bg,
+      slug: cat.slug,
+      parent_id: cat.parent_id,
+      icon: cat.icon,
+      image_url: normalizeOptionalImageUrl(cat.image_url),
+      display_order: cat.display_order,
+      depth: catDepth,
+      path: []
+    }
+  })
   
   return buildCategoryTree(rows)
 }
@@ -383,7 +434,7 @@ async function getCategoryAttributes(categoryId: string): Promise<CategoryAttrib
   
   const { data, error } = await supabase
     .from('category_attributes')
-    .select('*')
+    .select(CATEGORY_ATTRIBUTES_SELECT)
     .eq('category_id', categoryId)
     .eq('is_filterable', true)
     .order('sort_order', { ascending: true })
@@ -535,7 +586,7 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     // Filterable attributes for current category
     supabase
       .from('category_attributes')
-      .select('*')
+      .select(CATEGORY_ATTRIBUTES_SELECT)
       .eq('category_id', current.id)
       .eq('is_filterable', true)
       .order('sort_order')
@@ -551,7 +602,7 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
   if (current.parent_id) {
     const { data: parentAttributesRaw } = await supabase
       .from('category_attributes')
-      .select('*')
+      .select(CATEGORY_ATTRIBUTES_SELECT)
       .eq('category_id', current.parent_id)
       .eq('is_filterable', true)
       .order('sort_order')

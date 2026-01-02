@@ -1,5 +1,3 @@
-"use client"
-
 import { cn } from "@/lib/utils"
 import { ORDER_STATUS_CONFIG, type OrderItemStatus } from "@/lib/order-status"
 

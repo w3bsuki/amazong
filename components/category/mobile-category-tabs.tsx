@@ -16,11 +16,18 @@ interface Category {
 interface MobileCategoryTabsProps {
   categories: Category[]
   locale: string
+  /** Maps any category slug to its root category slug (optional). */
+  rootSlugBySlug?: Record<string, string>
 }
 
-export function MobileCategoryTabs({ categories, locale }: MobileCategoryTabsProps) {
+export function MobileCategoryTabs({ categories, locale, rootSlugBySlug }: MobileCategoryTabsProps) {
   const selectedSegment = useSelectedLayoutSegment()
   const scrollRef = React.useRef<HTMLDivElement>(null)
+
+  const activeRootSlug = React.useMemo(() => {
+    if (!selectedSegment) return null
+    return rootSlugBySlug?.[selectedSegment] ?? selectedSegment
+  }, [rootSlugBySlug, selectedSegment])
 
   // Scroll active tab into view on mount/change
   React.useEffect(() => {
@@ -33,7 +40,8 @@ export function MobileCategoryTabs({ categories, locale }: MobileCategoryTabsPro
       return
     }
 
-    const activeTab = container.querySelector(`[data-slug="${selectedSegment}"]`) as HTMLElement | null
+    const slugToScroll = activeRootSlug ?? selectedSegment
+    const activeTab = container.querySelector(`[data-slug="${slugToScroll}"]`) as HTMLElement | null
     if (!activeTab) return
 
     // More reliable than scrollIntoView for horizontal tab bars:
@@ -43,7 +51,7 @@ export function MobileCategoryTabs({ categories, locale }: MobileCategoryTabsPro
       left: Math.max(0, targetLeft),
       behavior: "smooth",
     })
-  }, [selectedSegment])
+  }, [activeRootSlug, selectedSegment])
 
   const getCategoryName = (cat: Category) => {
     if (locale === 'bg' && cat.name_bg) return cat.name_bg
@@ -51,7 +59,7 @@ export function MobileCategoryTabs({ categories, locale }: MobileCategoryTabsPro
   }
 
   return (
-    <div className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border sticky top-[52px] z-30">
+    <div className="w-full bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-border sticky top-[52px] z-30">
       <div 
         ref={scrollRef}
         className="flex overflow-x-auto scrollbar-hide py-2 px-2 gap-2 items-center snap-x snap-mandatory scroll-pl-2"
@@ -73,7 +81,7 @@ export function MobileCategoryTabs({ categories, locale }: MobileCategoryTabsPro
         </Link>
 
         {categories.map((cat) => {
-          const isActive = selectedSegment === cat.slug
+          const isActive = activeRootSlug === cat.slug
           return (
             <Link
               key={cat.id}

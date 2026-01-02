@@ -3,6 +3,8 @@ import { redirect } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 import { PlansContent } from "./plans-content"
 
+const PROFILE_SELECT_FOR_PLANS = 'id,tier,account_type,commission_rate,stripe_customer_id'
+
 interface PlansPageProps {
   params: Promise<{
     locale: string
@@ -27,7 +29,7 @@ export default async function PlansPage({ params }: PlansPageProps) {
   // Fetch profile info (seller fields are now on profiles)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select(PROFILE_SELECT_FOR_PLANS)
     .eq('id', user.id)
     .single()
 

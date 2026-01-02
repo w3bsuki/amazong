@@ -19,12 +19,15 @@ import {
   IconShield,
 } from "@tabler/icons-react"
 
+const PROFILE_SELECT_FOR_BUSINESS_SETTINGS =
+  'id,username,display_name,business_name,bio,vat_number,is_verified_business,tier,phone'
+
 async function getSellerDetails(sellerId: string) {
   const supabase = await createClient()
   
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select(PROFILE_SELECT_FOR_BUSINESS_SETTINGS)
     .eq('id', sellerId)
     .single()
   

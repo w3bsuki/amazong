@@ -51,42 +51,47 @@ import { useTranslations, useLocale } from "next-intl"
 import { User as SupabaseUser } from "@supabase/supabase-js"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
-import { useCategoriesCache, getCategoryName } from "@/hooks/use-categories-cache"
+import { getCategoryName } from "@/lib/category-display"
 import { getCategoryIcon } from "@/lib/category-icons"
+import type { CategoryTreeNode } from "@/lib/category-tree"
 
 interface SidebarMenuProps {
     user?: SupabaseUser | null
+    categories: CategoryTreeNode[]
     triggerClassName?: string
 }
 
 function HamburgerCategoryCircles({
     open,
     locale,
+    categories,
     onNavigate,
 }: {
     open: boolean
     locale: string
+    categories: CategoryTreeNode[]
     onNavigate: () => void
 }) {
     // Mount only when drawer is open to avoid eager fetch on every page.
     if (!open) return null
 
-    return <HamburgerCategoryCirclesInner locale={locale} onNavigate={onNavigate} />
+    return <HamburgerCategoryCirclesInner locale={locale} categories={categories} onNavigate={onNavigate} />
 }
 
 function HamburgerCategoryCirclesInner({
     locale,
+    categories,
     onNavigate,
 }: {
     locale: string
+    categories: CategoryTreeNode[]
     onNavigate: () => void
 }) {
-    const { categories, isLoading } = useCategoriesCache({ minCategories: 0 })
     const displayCategories = categories.slice(0, 20)
 
     return (
         <section id="sidebar-categories" className="px-(--page-inset) py-3">
-            {isLoading && categories.length === 0 ? (
+            {categories.length === 0 ? (
                 <div className="grid grid-cols-4 gap-y-6 gap-x-2">
                     {Array.from({ length: 8 }).map((_, i) => (
                         <div key={i} className="flex flex-col items-center gap-2">
@@ -132,7 +137,7 @@ function HamburgerCategoryCirclesInner({
     )
 }
 
-export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
+export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuProps) {
     const [open, setOpen] = useState(false)
     const [isSigningOut, setIsSigningOut] = useState(false)
     const t = useTranslations('Sidebar')
@@ -315,6 +320,13 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                     </div>
                 </div>
 
+                <HamburgerCategoryCircles
+                    open={open}
+                    locale={locale}
+                    categories={categories}
+                    onNavigate={() => setOpen(false)}
+                />
+
                 {/* Search Bar */}
                 <div className="px-(--page-inset) py-2 bg-background border-b border-border/40">
                     <div className="relative group">
@@ -434,6 +446,7 @@ export function SidebarMenu({ user, triggerClassName }: SidebarMenuProps) {
                             <HamburgerCategoryCircles
                                 open={open}
                                 locale={locale}
+                                categories={categories}
                                 onNavigate={() => setOpen(false)}
                             />
                         </div>

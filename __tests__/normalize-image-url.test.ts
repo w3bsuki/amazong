@@ -54,6 +54,11 @@ describe('lib/normalize-image-url', () => {
       const supabaseUrl = 'https://xyz.supabase.co/storage/v1/object/public/images/123.jpg'
       expect(normalizeImageUrl(supabaseUrl)).toBe(supabaseUrl)
     })
+
+    it('normalizes relative public asset paths to root-relative', () => {
+      expect(normalizeImageUrl('placeholder.jpg')).toBe(PLACEHOLDER_IMAGE_PATH)
+      expect(normalizeImageUrl('images/foo.jpg')).toBe('/images/foo.jpg')
+    })
   })
 
   describe('normalizeOptionalImageUrl', () => {
@@ -85,6 +90,10 @@ describe('lib/normalize-image-url', () => {
     it('returns valid URLs unchanged', () => {
       const validUrl = 'https://example.com/image.jpg'
       expect(normalizeOptionalImageUrl(validUrl)).toBe(validUrl)
+    })
+
+    it('returns null for relative placeholder asset paths', () => {
+      expect(normalizeOptionalImageUrl('placeholder.jpg')).toBeNull()
     })
   })
 

@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidateTag } from "next/cache"
 
 // =====================================================
 // SELLER FOLLOWS SERVER ACTIONS
@@ -41,7 +41,8 @@ export async function followSeller(sellerId: string) {
     return { success: false, error: error.message }
   }
 
-  revalidatePath("/account/following")
+  revalidateTag("follows", "max")
+  revalidateTag("profiles", "max")
   return { success: true }
 }
 
@@ -63,7 +64,8 @@ export async function unfollowSeller(sellerId: string) {
     return { success: false, error: error.message }
   }
 
-  revalidatePath("/account/following")
+  revalidateTag("follows", "max")
+  revalidateTag("profiles", "max")
   return { success: true }
 }
 

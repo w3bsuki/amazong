@@ -54,7 +54,7 @@ export async function GET(request: Request) {
         // Note: onboarding_completed column may be added to database later
         const { data: profile } = await supabase
           .from("profiles")
-          .select("*")
+          .select("id")
           .eq("id", user.id)
           .single()
         
@@ -88,7 +88,7 @@ export async function GET(request: Request) {
         if (user) {
           const { data: profile } = await supabase
             .from("profiles")
-            .select("*")
+            .select("id")
             .eq("id", user.id)
             .single()
           

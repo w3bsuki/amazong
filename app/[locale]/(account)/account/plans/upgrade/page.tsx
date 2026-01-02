@@ -5,6 +5,10 @@ import { UpgradeContent } from "./upgrade-content"
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr"
 import Link from "next/link"
 
+const PROFILE_SELECT_FOR_UPGRADE = 'id,tier,commission_rate,stripe_customer_id'
+const SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE =
+  'id,tier,name,price_monthly,price_yearly,commission_rate,features,is_active,account_type'
+
 /**
  * Full Upgrade Page
  * 
@@ -35,14 +39,14 @@ export default async function UpgradePage({
   // Fetch profile info (seller fields are now on profiles)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select(PROFILE_SELECT_FOR_UPGRADE)
     .eq('id', user.id)
     .single()
 
   // Fetch subscription plans
   const { data: plans } = await supabase
     .from('subscription_plans')
-    .select('*')
+    .select(SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE)
     .eq('is_active', true)
     .order('price_monthly', { ascending: true })
 

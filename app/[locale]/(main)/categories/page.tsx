@@ -77,8 +77,8 @@ export default async function CategoriesPage({
   const defaultTab = searchParams.tab || null
   const defaultSubTab = searchParams.sub || null
 
-  // Fetch categories WITH children for tabs + circles (L0 + L1 + L2)
-  const categoriesWithChildren = await getCategoryHierarchy(null, 2)
+  // Fetch categories WITH children for tabs + circles + pills (L0 + L1 + L2 + L3)
+  const categoriesWithChildren = await getCategoryHierarchy(null, 3)
 
   // Page title based on locale
   const pageTitle = locale === "bg" ? "Всички категории" : "All Categories"
@@ -95,6 +95,7 @@ export default async function CategoriesPage({
             defaultSubTab={defaultSubTab}
             showBanner={false}
             pageTitle={pageTitle}
+            showL0Tabs={false}
           />
         </Suspense>
       </div>
@@ -110,6 +111,7 @@ export default async function CategoriesPage({
               defaultTab={defaultTab}
               defaultSubTab={defaultSubTab}
               showBanner={false}
+              showL0Tabs={false}
             />
           </Suspense>
         </div>

@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
+import { logger } from "@/lib/logger"
+import { fetchWithTimeout, getPublicSupabaseEnvOptional, withAuthCookieDomain } from "@/lib/supabase/shared"
 
 function getLocaleFromPath(pathname: string): string | null {
   const match = pathname.match(/^\/([a-zA-Z]{2})(?:\/|$)/)
@@ -31,25 +33,14 @@ function isChatPath(pathname: string): boolean {
   return pathname === '/chat' || pathname.startsWith('/chat/')
 }
 
-function withAuthCookieDomain<TOptions extends Record<string, unknown> | undefined>(
-  options: TOptions,
-): TOptions {
-  if (!options || typeof options !== 'object') return options
-  const domain = process.env.AUTH_COOKIE_DOMAIN
-  // Only apply an explicit cookie domain in production. In local dev/E2E on
-  // localhost, setting a non-local domain prevents the browser from sending
-  // the auth cookies back, which breaks SSR-protected routes.
-  if (!domain || process.env.NODE_ENV !== 'production') return options
-  return { ...options, domain }
-}
-
 export async function updateSession(request: NextRequest, response?: NextResponse) {
   const pathname = request.nextUrl.pathname
   const locale = getLocaleFromPath(pathname)
   const authPrefix = locale ? `/${locale}/auth` : '/auth'
   const loginPath = locale ? `/${locale}/auth/login` : '/auth/login'
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  const supabaseEnv = getPublicSupabaseEnvOptional()
+  if (!supabaseEnv) {
     // In E2E/local tests we still want account routes to be protected.
     // If Supabase isn't configured, treat user as unauthenticated.
     if ((isAccountPath(pathname) || isSellPath(pathname) || isChatPath(pathname)) && !pathname.startsWith(authPrefix)) {
@@ -59,7 +50,7 @@ export async function updateSession(request: NextRequest, response?: NextRespons
       return NextResponse.redirect(url)
     }
 
-    console.warn("Supabase environment variables are missing. Skipping session update.")
+    logger.debug("[Supabase] Missing public env vars; skipping middleware session update")
     return response || NextResponse.next({ request })
   }
 
@@ -68,9 +59,10 @@ export async function updateSession(request: NextRequest, response?: NextRespons
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseEnv.url,
+    supabaseEnv.anonKey,
     {
+      global: { fetch: fetchWithTimeout },
       cookies: {
         getAll() {
           return request.cookies.getAll()

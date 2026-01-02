@@ -346,6 +346,7 @@ export type Database = {
           quantity: number
           updated_at: string
           user_id: string
+          variant_id: string | null
         }
         Insert: {
           created_at?: string
@@ -354,6 +355,7 @@ export type Database = {
           quantity?: number
           updated_at?: string
           user_id: string
+          variant_id?: string | null
         }
         Update: {
           created_at?: string
@@ -362,6 +364,7 @@ export type Database = {
           quantity?: number
           updated_at?: string
           user_id?: string
+          variant_id?: string | null
         }
         Relationships: [
           {
@@ -383,6 +386,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cart_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
             referencedColumns: ["id"]
           },
         ]
@@ -789,6 +799,7 @@ export type Database = {
           shipping_carrier: string | null
           status: string | null
           tracking_number: string | null
+          variant_id: string | null
         }
         Insert: {
           delivered_at?: string | null
@@ -803,6 +814,7 @@ export type Database = {
           shipping_carrier?: string | null
           status?: string | null
           tracking_number?: string | null
+          variant_id?: string | null
         }
         Update: {
           delivered_at?: string | null
@@ -817,6 +829,7 @@ export type Database = {
           shipping_carrier?: string | null
           status?: string | null
           tracking_number?: string | null
+          variant_id?: string | null
         }
         Relationships: [
           {
@@ -824,6 +837,13 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "deal_products"
             referencedColumns: ["id"]
           },
           {
@@ -838,6 +858,13 @@ export type Database = {
             columns: ["seller_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
             referencedColumns: ["id"]
           },
         ]
@@ -1028,16 +1055,21 @@ export type Database = {
           barcode: string | null
           boost_expires_at: string | null
           brand_id: string | null
+          category_ancestors: string[] | null
           category_id: string | null
           condition: string | null
           cost_price: number | null
           created_at: string
           description: string | null
+          featured_until: string | null
+          free_shipping: boolean | null
           id: string
           images: string[] | null
           is_boosted: boolean | null
           is_featured: boolean | null
+          is_limited_stock: boolean | null
           is_on_sale: boolean | null
+          is_prime: boolean | null
           list_price: number | null
           listing_type: string | null
           meta_description: string | null
@@ -1051,6 +1083,7 @@ export type Database = {
           search_vector: unknown
           seller_city: string | null
           seller_id: string
+          shipping_days: number | null
           ships_to_bulgaria: boolean | null
           ships_to_europe: boolean | null
           ships_to_uk: boolean | null
@@ -1060,6 +1093,7 @@ export type Database = {
           slug: string | null
           status: string | null
           stock: number
+          stock_quantity: number | null
           tags: string[] | null
           title: string
           track_inventory: boolean | null
@@ -1072,15 +1106,21 @@ export type Database = {
           barcode?: string | null
           boost_expires_at?: string | null
           brand_id?: string | null
+          category_ancestors?: string[] | null
           category_id?: string | null
           condition?: string | null
           cost_price?: number | null
           created_at?: string
           description?: string | null
+          featured_until?: string | null
+          free_shipping?: boolean | null
           id?: string
           images?: string[] | null
           is_boosted?: boolean | null
           is_featured?: boolean | null
+          is_limited_stock?: boolean | null
+          is_on_sale?: boolean | null
+          is_prime?: boolean | null
           list_price?: number | null
           listing_type?: string | null
           meta_description?: string | null
@@ -1089,9 +1129,12 @@ export type Database = {
           price: number
           rating?: number | null
           review_count?: number | null
+          sale_end_date?: string | null
+          sale_percent?: number | null
           search_vector?: unknown
           seller_city?: string | null
           seller_id: string
+          shipping_days?: number | null
           ships_to_bulgaria?: boolean | null
           ships_to_europe?: boolean | null
           ships_to_uk?: boolean | null
@@ -1101,6 +1144,7 @@ export type Database = {
           slug?: string | null
           status?: string | null
           stock?: number
+          stock_quantity?: number | null
           tags?: string[] | null
           title: string
           track_inventory?: boolean | null
@@ -1113,15 +1157,21 @@ export type Database = {
           barcode?: string | null
           boost_expires_at?: string | null
           brand_id?: string | null
+          category_ancestors?: string[] | null
           category_id?: string | null
           condition?: string | null
           cost_price?: number | null
           created_at?: string
           description?: string | null
+          featured_until?: string | null
+          free_shipping?: boolean | null
           id?: string
           images?: string[] | null
           is_boosted?: boolean | null
           is_featured?: boolean | null
+          is_limited_stock?: boolean | null
+          is_on_sale?: boolean | null
+          is_prime?: boolean | null
           list_price?: number | null
           listing_type?: string | null
           meta_description?: string | null
@@ -1130,9 +1180,12 @@ export type Database = {
           price?: number
           rating?: number | null
           review_count?: number | null
+          sale_end_date?: string | null
+          sale_percent?: number | null
           search_vector?: unknown
           seller_city?: string | null
           seller_id?: string
+          shipping_days?: number | null
           ships_to_bulgaria?: boolean | null
           ships_to_europe?: boolean | null
           ships_to_uk?: boolean | null
@@ -1142,6 +1195,7 @@ export type Database = {
           slug?: string | null
           status?: string | null
           stock?: number
+          stock_quantity?: number | null
           tags?: string[] | null
           title?: string
           track_inventory?: boolean | null
@@ -2044,12 +2098,12 @@ export type Database = {
         Returns: boolean
       }
       cart_add_item: {
-        Args: { p_product_id: string; p_quantity?: number }
+        Args: { p_product_id: string; p_quantity?: number; p_variant_id?: string }
         Returns: undefined
       }
       cart_clear: { Args: never; Returns: undefined }
       cart_set_quantity: {
-        Args: { p_product_id: string; p_quantity: number }
+        Args: { p_product_id: string; p_quantity: number; p_variant_id?: string }
         Returns: undefined
       }
       check_subscription_expiry: { Args: never; Returns: undefined }
@@ -2082,36 +2136,23 @@ export type Database = {
           reason: string
         }[]
       }
-      get_category_hierarchy: {
-        Args: { p_depth?: number; p_slug?: string }
-        Returns: {
-          depth: number
-          display_order: number
-          icon: string
-          id: string
-          image_url: string
-          name: string
-          name_bg: string
-          parent_id: string
-          path: string[]
-          slug: string
-        }[]
+      get_category_ancestor_ids: {
+        Args: { p_category_id: string }
+        Returns: string[]
       }
       get_conversation_messages: {
         Args: { p_conversation_id: string }
         Returns: {
-          id: string
-          conversation_id: string
-          sender_id: string
           content: string
-          message_type: string
-          attachment_url: string | null
-          is_read: boolean
-          read_at: string | null
+          conversation_id: string
           created_at: string
-          updated_at: string | null
-          sender_full_name: string | null
-          sender_avatar_url: string | null
+          id: string
+          is_read: boolean
+          message_type: string
+          read_at: string
+          sender_avatar_url: string
+          sender_full_name: string
+          sender_id: string
         }[]
       }
       get_or_create_conversation: {
@@ -2122,36 +2163,6 @@ export type Database = {
           p_subject?: string
         }
         Returns: string
-      }
-      get_seller_listing_info: {
-        Args: { seller_uuid: string }
-        Returns: {
-          current_listings: number
-          max_listings: number
-          tier: string
-        }[]
-      }
-      get_seller_stats: {
-        Args: { target_seller_id?: string }
-        Returns: {
-          avg_product_rating: number
-          order_count: number
-          product_count: number
-          seller_id: string
-          store_name: string
-          total_revenue: number
-        }[]
-      }
-      get_seller_subscription_status: {
-        Args: { seller_uuid: string }
-        Returns: {
-          auto_renew: boolean
-          expires_at: string
-          has_subscription: boolean
-          plan_name: string
-          status: string
-          tier: string
-        }[]
       }
       get_shared_wishlist: {
         Args: { p_share_token: string }
@@ -2167,7 +2178,6 @@ export type Database = {
         }[]
       }
       get_total_unread_messages: { Args: never; Returns: number }
-      get_unread_notification_count: { Args: never; Returns: number }
       get_user_conversation_ids: {
         Args: { p_user_id: string }
         Returns: {

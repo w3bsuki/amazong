@@ -73,9 +73,21 @@ export async function POST(request: Request) {
       .single()
     
     // Get applicable badge definitions based on context
+    const BADGE_DEFINITIONS_SELECT =
+      "id,account_type,category,code,color,created_at,criteria,description,description_bg,icon,is_active,is_automatic,name,name_bg,tier" as const
+
+    const SELLER_STATS_SELECT =
+      "seller_id,total_sales,total_listings,average_rating,total_reviews,positive_feedback_pct,follower_count,response_rate_pct,repeat_customer_pct,active_listings,total_revenue,five_star_reviews,response_time_hours,communication_pct,item_described_pct,shipped_on_time_pct,shipping_speed_pct,first_sale_at,last_sale_at,updated_at" as const
+
+    const BUYER_STATS_SELECT =
+      "user_id,average_rating,conversations_started,disputes_opened,disputes_won,first_purchase_at,last_purchase_at,reviews_written,stores_following,total_orders,total_ratings,total_spent,updated_at,wishlist_count" as const
+
+    const USER_VERIFICATION_SELECT =
+      "id,user_id,email_verified,phone_verified,id_verified,address_verified,address_verified_at,id_verified_at,id_document_type,phone_number,trust_score,created_at,updated_at" as const
+
     let badgeQuery = supabase
       .from("badge_definitions")
-      .select("*")
+      .select(BADGE_DEFINITIONS_SELECT)
       .eq("is_active", true)
     
     if (profile) {
@@ -131,7 +143,7 @@ export async function POST(request: Request) {
       // Get seller stats
       const { data: sellerStats } = await supabase
         .from("seller_stats")
-        .select("*")
+        .select(SELLER_STATS_SELECT)
         .eq("seller_id", profile.id)
         .single()
       
@@ -140,7 +152,7 @@ export async function POST(request: Request) {
       // Get buyer stats
       const { data: buyerStats } = await supabase
         .from("buyer_stats")
-        .select("*")
+        .select(BUYER_STATS_SELECT)
         .eq("user_id", userId)
         .single()
       
@@ -150,7 +162,7 @@ export async function POST(request: Request) {
     // Get verification status
     const { data: verification } = await supabase
       .from("user_verification")
-      .select("*")
+      .select(USER_VERIFICATION_SELECT)
       .eq("user_id", userId)
       .single()
     

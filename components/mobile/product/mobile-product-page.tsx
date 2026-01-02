@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ProductGalleryHybrid } from "@/components/shared/product/product-gallery-hybrid";
 import { MobileProductHeader } from "./mobile-product-header";
 import { MobilePriceBlock } from "./mobile-price-block";
@@ -16,6 +16,14 @@ import { CustomerReviewsHybrid } from "@/components/shared/product/customer-revi
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker";
 import { CategoryBadge } from "@/components/shared/product/category-badge";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
 import type { CustomerReview } from "@/components/shared/product/customer-reviews-hybrid";
@@ -23,6 +31,7 @@ import type { SubmitReviewFn } from "@/components/shared/product/write-review-di
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
+type ProductVariantRow = Database["public"]["Tables"]["product_variants"]["Row"];
 
 type ProductWithSellerStats = ProductRow & {
   seller_stats?: SellerStatsRow | null;
@@ -60,6 +69,7 @@ interface MobileProductPageProps {
   relatedProducts: ProductPageViewModel["relatedProducts"];
   reviews: CustomerReview[];
   viewModel: ProductPageViewModel;
+  variants?: ProductVariantRow[];
   submitReview?: SubmitReviewFn;
 }
 
@@ -76,11 +86,25 @@ export function MobileProductPage(props: MobileProductPageProps) {
     relatedProducts,
     reviews,
     viewModel,
+    variants,
     submitReview,
   } = props;
 
   const accordionRef = useRef<HTMLDivElement>(null);
   const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+  const safeVariants = Array.isArray(variants) ? variants : [];
+  const defaultVariantId = useMemo(() => {
+    const defaultVariant = safeVariants.find((v) => v.is_default) ?? safeVariants[0];
+    return defaultVariant?.id ?? null;
+  }, [safeVariants]);
+
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(defaultVariantId);
+
+  const selectedVariant = useMemo(() => {
+    if (!selectedVariantId) return null;
+    return safeVariants.find((v) => v.id === selectedVariantId) ?? null;
+  }, [safeVariants, selectedVariantId]);
 
   const primaryImageSrc = viewModel.galleryImages?.[0]?.src ?? null;
 
@@ -104,12 +128,22 @@ export function MobileProductPage(props: MobileProductPageProps) {
   };
 
   // Stock info
-  const stockQuantity = product.stock ?? null;
+  const baseStockQuantity = product.stock ?? null;
+  const stockQuantity = safeVariants.length > 0
+    ? (selectedVariant?.stock ?? null)
+    : baseStockQuantity;
   const stockStatus = stockQuantity === 0 
     ? "out_of_stock" 
     : (stockQuantity && stockQuantity <= 5) 
       ? "low_stock" 
       : "in_stock";
+
+  const basePrice = Number(product.price ?? 0);
+  const displayPrice = safeVariants.length > 0
+    ? basePrice + Number(selectedVariant?.price_adjustment ?? 0)
+    : basePrice;
+
+  const displayRegularPrice = product.list_price != null ? Number(product.list_price) : null;
 
   // Quick specs from item specifics
   const quickSpecs = viewModel.itemSpecifics.details?.slice(0, 8) ?? [];
@@ -159,11 +193,35 @@ export function MobileProductPage(props: MobileProductPageProps) {
       {/* Price Block */}
       <div className="px-3 pt-2">
         <MobilePriceBlock
-          salePrice={Number(product.price ?? 0)}
-          regularPrice={product.list_price != null ? Number(product.list_price) : null}
+          salePrice={displayPrice}
+          regularPrice={displayRegularPrice}
           currency="BGN"
         />
       </div>
+
+      {/* Variant Selector (only when variants exist) */}
+      {safeVariants.length > 0 ? (
+        <div className="px-3 pt-2">
+          <div className="text-xs font-medium text-muted-foreground mb-1">
+            {locale === "bg" ? "Вариант" : "Variant"}
+          </div>
+          <Select
+            value={selectedVariantId ?? undefined}
+            onValueChange={(v) => setSelectedVariantId(v)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={locale === "bg" ? "Изберете вариант" : "Select variant"} />
+            </SelectTrigger>
+            <SelectContent>
+              {safeVariants.map((v) => (
+                <SelectItem key={v.id} value={v.id} disabled={(v.stock ?? 0) <= 0}>
+                  {v.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      ) : null}
 
       {/* Urgency Banner (Conditional) - High priority placement */}
       <div className="-mx-1 mt-1 mb-1">
@@ -189,7 +247,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
           freeShipping={!product.pickup_only}
           stockQuantity={stockQuantity}
           stockStatus={stockStatus}
-          isOnSale={product.list_price != null && product.list_price > product.price}
+          isOnSale={displayRegularPrice != null && displayRegularPrice > displayPrice}
           locale={locale}
         />
       </div>
@@ -263,10 +321,12 @@ export function MobileProductPage(props: MobileProductPageProps) {
       {/* Sticky Bar */}
       <MobileStickyBarEnhanced
         product={cartProduct}
-        price={Number(product.price ?? 0)}
-        originalPrice={product.list_price != null ? Number(product.list_price) : null}
+        price={displayPrice}
+        originalPrice={displayRegularPrice}
         currency="BGN"
         isOutOfStock={stockStatus === "out_of_stock"}
+        {...(safeVariants.length > 0 && selectedVariant?.id ? { variantId: selectedVariant.id } : {})}
+        {...(safeVariants.length > 0 && selectedVariant?.name ? { variantName: selectedVariant.name } : {})}
       />
     </div>
   );

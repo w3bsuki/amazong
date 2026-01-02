@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidateTag } from "next/cache"
 
 // ============================================================================
 // TYPES
@@ -134,8 +134,10 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
     return { success: false, error: "Failed to submit review. Please try again." }
   }
 
-  // 9. Revalidate the product page cache
-  revalidatePath(`/[locale]/product/${input.productId}`)
+  // 9. Revalidate cached product/review data
+  revalidateTag("reviews", "max")
+  revalidateTag("products", "max")
+  revalidateTag(`product-${input.productId}`, "max")
   
   // Also revalidate the seller's store page
   const { data: sellerProfile } = await supabase
@@ -144,8 +146,12 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
     .eq("id", product.seller_id)
     .single()
   
+  revalidateTag("profiles", "max")
   if (sellerProfile?.username) {
-    revalidatePath(`/[locale]/${sellerProfile.username}`)
+    revalidateTag(`seller-${sellerProfile.username}`, "max")
+    const lower = sellerProfile.username.toLowerCase()
+    revalidateTag(`profile-${lower}`, "max")
+    revalidateTag(`profile-meta-${lower}`, "max")
   }
 
   return { 
@@ -307,8 +313,9 @@ async function deleteReview(reviewId: string): Promise<{ success: boolean; error
     return { success: false, error: "Failed to delete review" }
   }
 
-  // Revalidate product page
-  revalidatePath(`/[locale]/product/${review.product_id}`)
+  revalidateTag("reviews", "max")
+  revalidateTag("products", "max")
+  revalidateTag(`product-${review.product_id}`, "max")
 
   return { success: true }
 }

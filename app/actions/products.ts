@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidateTag } from "next/cache"
 import { z } from "zod"
 
 // Product validation schema - matches database columns
@@ -115,9 +115,8 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
       return { success: false, error: insertError.message || "Failed to create product" }
     }
     
-    // Revalidate dashboard pages
-    revalidatePath("/dashboard/products")
-    revalidatePath("/dashboard")
+    revalidateTag("products", "max")
+    revalidateTag(`seller-products-${user.id}`, "max")
     
     return { success: true, data: { id: product.id } }
   } catch (error) {
@@ -188,11 +187,11 @@ export async function updateProduct(
       console.error("[updateProduct] Update error:", updateError)
       return { success: false, error: "Failed to update product" }
     }
-    
-    // Revalidate pages
-    revalidatePath("/dashboard/products")
-    revalidatePath("/dashboard")
-    revalidatePath(`/product/${productId}`)
+
+    revalidateTag("products", "max")
+    revalidateTag(`product-${productId}`, "max")
+    revalidateTag(`seller-products-${user.id}`, "max")
+    revalidateTag(`seller-${user.id}`, "max")
     
     return { success: true }
   } catch (error) {
@@ -239,10 +238,11 @@ export async function deleteProduct(productId: string): Promise<ActionResult> {
       console.error("[deleteProduct] Delete error:", deleteError)
       return { success: false, error: "Failed to delete product" }
     }
-    
-    // Revalidate pages
-    revalidatePath("/dashboard/products")
-    revalidatePath("/dashboard")
+
+    revalidateTag("products", "max")
+    revalidateTag(`product-${productId}`, "max")
+    revalidateTag(`seller-products-${user.id}`, "max")
+    revalidateTag(`seller-${user.id}`, "max")
     
     return { success: true }
   } catch (error) {
@@ -282,10 +282,13 @@ export async function bulkUpdateProductStatus(
       console.error("[bulkUpdateProductStatus] Update error:", updateError)
       return { success: false, error: "Failed to update products" }
     }
-    
-    // Revalidate pages
-    revalidatePath("/dashboard/products")
-    revalidatePath("/dashboard")
+
+    revalidateTag("products", "max")
+    revalidateTag(`seller-products-${user.id}`, "max")
+    revalidateTag(`seller-${user.id}`, "max")
+    for (const row of data ?? []) {
+      if (row?.id) revalidateTag(`product-${row.id}`, "max")
+    }
     
     return { success: true, data: { updated: data?.length || 0 } }
   } catch (error) {
@@ -360,10 +363,10 @@ export async function setProductDiscountPrice(
       return { success: false, error: updateError.message || "Failed to update product" }
     }
 
-    revalidatePath("/account/selling")
-    revalidatePath("/[locale]/account/selling", "page")
-    revalidatePath(`/product/${parsed.data.productId}`)
-    revalidatePath(`/[locale]/product/${parsed.data.productId}`, "page")
+    revalidateTag("products", "max")
+    revalidateTag(`product-${parsed.data.productId}`, "max")
+    revalidateTag(`seller-products-${user.id}`, "max")
+    revalidateTag(`seller-${user.id}`, "max")
 
     return { success: true }
   } catch (error) {
@@ -428,10 +431,10 @@ export async function clearProductDiscount(
       return { success: false, error: updateError.message || "Failed to update product" }
     }
 
-    revalidatePath("/account/selling")
-    revalidatePath("/[locale]/account/selling", "page")
-    revalidatePath(`/product/${parsed.data.productId}`)
-    revalidatePath(`/[locale]/product/${parsed.data.productId}`, "page")
+    revalidateTag("products", "max")
+    revalidateTag(`product-${parsed.data.productId}`, "max")
+    revalidateTag(`seller-products-${user.id}`, "max")
+    revalidateTag(`seller-${user.id}`, "max")
 
     return { success: true }
   } catch (error) {
@@ -465,10 +468,13 @@ export async function bulkDeleteProducts(productIds: string[]): Promise<ActionRe
       console.error("[bulkDeleteProducts] Delete error:", deleteError)
       return { success: false, error: "Failed to delete products" }
     }
-    
-    // Revalidate pages
-    revalidatePath("/dashboard/products")
-    revalidatePath("/dashboard")
+
+    revalidateTag("products", "max")
+    revalidateTag(`seller-products-${user.id}`, "max")
+    revalidateTag(`seller-${user.id}`, "max")
+    for (const row of data ?? []) {
+      if (row?.id) revalidateTag(`product-${row.id}`, "max")
+    }
     
     return { success: true, data: { deleted: data?.length || 0 } }
   } catch (error) {
@@ -511,10 +517,11 @@ async function updateProductStock(
       console.error("[updateProductStock] Update error:", updateError)
       return { success: false, error: "Failed to update stock" }
     }
-    
-    // Revalidate pages
-    revalidatePath("/dashboard/products")
-    revalidatePath("/dashboard/inventory")
+
+    revalidateTag("products", "max")
+    revalidateTag(`product-${productId}`, "max")
+    revalidateTag(`seller-products-${user.id}`, "max")
+    revalidateTag(`seller-${user.id}`, "max")
     
     return { success: true }
   } catch (error) {
@@ -535,11 +542,14 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
     if (authError || !user) {
       return { success: false, error: "You must be logged in to duplicate a product" }
     }
+
+    const DUPLICATE_PRODUCT_SELECT =
+      'title,description,price,list_price,cost_price,sku,stock,track_inventory,category_id,weight,weight_unit,condition,images' as const
     
     // Fetch original product
     const { data: original, error: fetchError } = await supabase
       .from("products")
-      .select("*")
+      .select(DUPLICATE_PRODUCT_SELECT)
       .eq("id", productId)
       .eq("seller_id", user.id)
       .single()
@@ -584,9 +594,10 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
       console.error("[duplicateProduct] Insert error:", insertError)
       return { success: false, error: "Failed to duplicate product" }
     }
-    
-    // Revalidate pages
-    revalidatePath("/dashboard/products")
+
+    revalidateTag("products", "max")
+    revalidateTag(`seller-products-${user.id}`, "max")
+    revalidateTag(`seller-${user.id}`, "max")
     
     return { success: true, data: { id: duplicate.id } }
   } catch (error) {

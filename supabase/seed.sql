@@ -25,15 +25,25 @@ VALUES (
 )
 ON CONFLICT (id) DO NOTHING;
 
--- Create a seller profile
-INSERT INTO public.sellers (id, store_name, description, verified)
-VALUES (
-    '00000000-0000-0000-0000-000000000000',
-    'Tech Haven',
-    'Your one-stop shop for the latest gadgets and electronics.',
-    true
-)
-ON CONFLICT (id) DO NOTHING;
+-- If the unified seller identity fields exist on profiles, mark this user as a seller.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'is_seller'
+  ) THEN
+    EXECUTE $$
+      UPDATE public.profiles
+      SET
+        is_seller = TRUE,
+        verified = TRUE,
+        display_name = COALESCE(display_name, 'Tech Haven'),
+        bio = COALESCE(bio, 'Your one-stop shop for the latest gadgets and electronics.')
+      WHERE id = '00000000-0000-0000-0000-000000000000'::uuid
+    $$;
+  END IF;
+END $$;
 
 -- Seed Categories (from seed_categories.sql)
 INSERT INTO public.categories (name, slug, image_url)

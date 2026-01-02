@@ -48,6 +48,9 @@ const DEFAULT_PREFS: NotificationPreferences = {
   in_app_promotion: true,
 }
 
+const NOTIFICATIONS_SELECT =
+  'id,type,title,body,data,order_id,product_id,conversation_id,is_read,created_at'
+
 const isInAppEnabled = (prefs: NotificationPreferences, type: Notification["type"]) => {
   switch (type) {
     case "purchase":
@@ -187,7 +190,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
     const supabase = createClient()
     const { data, error } = await supabase
       .from("notifications")
-      .select("*")
+      .select(NOTIFICATIONS_SELECT)
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(10)

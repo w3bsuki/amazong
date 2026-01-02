@@ -4,6 +4,7 @@ import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
 // MobileSearchBar is now integrated into SiteHeader
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { getCategoryHierarchy } from "@/lib/data/categories";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 
@@ -50,6 +51,8 @@ export default async function MainLayout({
         user = data.user;
     }
 
+    const categories = await getCategoryHierarchy(null, 2);
+
     return (
         <CartProvider>
             <WishlistProvider>
@@ -62,7 +65,7 @@ export default async function MainLayout({
                     </Suspense>
                     
                     <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
-                        <SiteHeader user={user} />
+                        <SiteHeader user={user} categories={categories} />
                     </Suspense>
                     
                     <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
@@ -70,7 +73,7 @@ export default async function MainLayout({
                     </main>
                     
                     <SiteFooter />
-                    <MobileTabBar />
+                    <MobileTabBar categories={categories} />
                     <Toaster />
                     <CookieConsent />
                     <GeoWelcomeModal locale={locale} />

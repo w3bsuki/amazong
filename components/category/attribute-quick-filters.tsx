@@ -100,13 +100,15 @@ export function AttributeQuickFilters({ attributes, locale }: AttributeQuickFilt
   const attrName = locale === 'bg' && targetAttribute.name_bg ? targetAttribute.name_bg : targetAttribute.name
 
   return (
-    <div className="mb-4">
-      <h3 className="text-sm font-semibold mb-2 px-1">{attrName}</h3>
-      
+    <div className="mb-3">
+      <div className="mb-2">
+        <span className="text-xs font-semibold text-muted-foreground">{attrName}</span>
+      </div>
+
       <div className="relative group/container">
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth gap-2 py-1 pb-2 scroll-pl-1"
+          className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth gap-2 py-0.5 pb-1 scroll-pl-1"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {options.map((option) => {
@@ -117,13 +119,13 @@ export function AttributeQuickFilters({ attributes, locale }: AttributeQuickFilt
                 onClick={() => toggleValue(option)}
                 className={cn(
                   "flex items-center justify-center shrink-0 snap-start",
-                  "min-w-[48px] h-12 px-3 rounded-full border transition-all touch-action-manipulation",
+                  "h-8 px-3 rounded-full border transition-colors touch-action-manipulation",
                   isSelected 
                     ? "bg-primary text-primary-foreground border-primary font-semibold shadow-sm" 
                     : "bg-background text-foreground border-border hover:border-primary/50 hover:bg-secondary/50"
                 )}
               >
-                <span className="text-sm">{option}</span>
+                <span className="text-xs font-medium">{option}</span>
               </button>
             )
           })}

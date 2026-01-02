@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidateTag } from "next/cache"
 import type { OrderItemStatus, ShippingCarrier } from "@/lib/order-status"
 
 // =====================================================
@@ -129,10 +129,9 @@ export async function updateOrderItemStatus(
       return { success: false, error: "Failed to update order status" }
     }
 
-    // Revalidate relevant pages
-    revalidatePath('/[locale]/sell/orders', 'page')
-    revalidatePath('/[locale]/account/orders', 'page')
-    revalidatePath('/[locale]/chat', 'page')
+    revalidateTag('orders', 'max')
+    revalidateTag('messages', 'max')
+    revalidateTag('conversations', 'max')
 
     return { success: true }
   } catch (error) {
@@ -167,7 +166,7 @@ export async function getSellerOrders(
         order:orders(id, user_id, total_amount, status, shipping_address, created_at)
       `)
       .eq('seller_id', user.id)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false, foreignTable: 'orders' })
 
     // Apply status filter
     if (statusFilter && statusFilter !== 'all') {
@@ -198,10 +197,11 @@ export async function getSellerOrders(
     }
 
     // Attach buyer info to each order item
-    const ordersWithBuyers = orderItems?.map(item => ({
+    const ordersWithBuyers = (orderItems ?? []).map((item) => ({
       ...item,
-      buyer: item.order?.user_id ? buyersMap.get(item.order.user_id) : undefined
-    })) || []
+      created_at: item.order?.created_at ?? new Date().toISOString(),
+      buyer: item.order?.user_id ? buyersMap.get(item.order.user_id) : undefined,
+    }))
 
     return { orders: ordersWithBuyers as OrderItem[] }
   } catch (error) {
@@ -300,7 +300,7 @@ async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: string }
         order:orders(id, user_id, total_amount, status, shipping_address, created_at)
       `)
       .in('order_id', orderIds)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false, foreignTable: 'orders' })
 
     if (itemsError) {
       return { orders: [], error: "Failed to fetch order items" }
@@ -322,7 +322,12 @@ async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: string }
       })
     }
 
-    return { orders: orderItems as OrderItem[] }
+    const itemsWithCreatedAt = (orderItems ?? []).map((item) => ({
+      ...item,
+      created_at: item.order?.created_at ?? new Date().toISOString(),
+    }))
+
+    return { orders: itemsWithCreatedAt as OrderItem[] }
   } catch (error) {
     console.error('Error in getBuyerOrders:', error)
     return { orders: [], error: "An unexpected error occurred" }
@@ -424,9 +429,7 @@ export async function buyerConfirmDelivery(
       return { success: false, error: "Failed to confirm delivery" }
     }
 
-    // Revalidate pages
-    revalidatePath('/[locale]/account/orders', 'page')
-    revalidatePath('/[locale]/sell/orders', 'page')
+    revalidateTag('orders', 'max')
 
     return { success: true, sellerId: orderItem.seller_id }
   } catch (error) {
@@ -660,9 +663,7 @@ export async function requestOrderCancellation(
       // Don't fail the cancellation if notification fails
     }
 
-    // Revalidate pages
-    revalidatePath('/[locale]/account/orders', 'page')
-    revalidatePath('/[locale]/sell/orders', 'page')
+    revalidateTag('orders', 'max')
 
     return { success: true }
   } catch (error) {
@@ -820,9 +821,9 @@ export async function reportOrderIssue(
         conversation_id: conversationId,
       })
 
-    // Revalidate pages
-    revalidatePath('/[locale]/account/orders', 'page')
-    revalidatePath('/[locale]/chat', 'page')
+    revalidateTag('orders', 'max')
+    revalidateTag('messages', 'max')
+    revalidateTag('conversations', 'max')
 
     return { success: true, conversationId }
   } catch (error) {

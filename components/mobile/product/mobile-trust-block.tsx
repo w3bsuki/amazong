@@ -1,5 +1,3 @@
-"use client";
-
 import { ShieldCheck, RotateCcw, Truck, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 

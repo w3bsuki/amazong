@@ -47,7 +47,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   // Check if user has a seller profile (has username)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("*")
+    .select("id,username,display_name,business_name,commission_rate,created_at")
     .eq("id", user.id)
     .single()
 

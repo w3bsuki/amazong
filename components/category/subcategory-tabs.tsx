@@ -1,5 +1,3 @@
-"use client"
-
 import { SubcategoryCircles } from "@/components/category/subcategory-circles"
 
 interface Category {

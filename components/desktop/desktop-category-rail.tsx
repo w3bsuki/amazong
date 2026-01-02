@@ -2,8 +2,7 @@
 
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import { useCategoriesCache, getCategoryName } from "@/hooks/use-categories-cache"
-import type { Category } from "@/hooks/use-categories-cache"
+import { getCategoryName, type CategoryDisplay } from "@/lib/category-display"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { CaretLeft, CaretRight } from "@phosphor-icons/react"
 import {
@@ -24,10 +23,11 @@ const fallbackCategories = [
   { id: "6", name: "Sports", name_bg: "Спорт", slug: "sports", image_url: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=500&auto=format&fit=crop" },
   { id: "7", name: "Toys", name_bg: "Играчки", slug: "toys", image_url: "https://images.unsplash.com/photo-1566576912902-4b61e3785827?q=80&w=500&auto=format&fit=crop" },
   { id: "8", name: "Books", name_bg: "Книги", slug: "books", image_url: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?q=80&w=500&auto=format&fit=crop" },
-] as const satisfies Category[]
+] as const satisfies CategoryDisplay[]
 
 interface DesktopCategoryRailProps {
   locale: string
+  categories: CategoryDisplay[]
   tone?: "default" | "onBlue"
   showTitle?: boolean
   className?: string
@@ -36,13 +36,13 @@ interface DesktopCategoryRailProps {
 
 export function DesktopCategoryRail({
   locale,
+  categories,
   tone = "default",
   showTitle = true,
   className,
   hrefForCategory,
 }: DesktopCategoryRailProps) {
-  const { categories: fetchedCategories, isLoading } = useCategoriesCache()
-  const displayCategories = fetchedCategories.length > 0 ? fetchedCategories : fallbackCategories
+  const displayCategories = categories.length > 0 ? categories : fallbackCategories
 
   const isOnBlue = tone === "onBlue"
   // When we hide the title (home page usage), keep the rail visually compact.
@@ -92,68 +92,57 @@ export function DesktopCategoryRail({
           </CarouselPrevious>
           
           <CarouselContent className="-ml-3 select-none py-2">
-            {isLoading && fetchedCategories.length === 0 ? (
-              Array.from({ length: 15 }).map((_, i) => (
-                <CarouselItem key={i} className="pl-3 basis-auto shrink-0">
-                  <div className="flex flex-col items-center gap-3 shrink-0 w-20">
-                    <div className={cn("rounded-full bg-muted", circleSizeClass)} />
-                    <div className="h-4 w-16 bg-muted rounded" />
-                  </div>
-                </CarouselItem>
-              ))
-            ) : (
-              displayCategories.map((cat) => {
-                const categoryName = getCategoryName(cat, locale)
-                const href = hrefForCategory ? hrefForCategory(cat.slug) : `/categories/${cat.slug}`
-                return (
-                  <CarouselItem key={cat.slug} className="pl-3 basis-auto shrink-0">
-                    <Link
-                      href={href}
-                      title={categoryName}
-                      className={cn("group flex flex-col items-center shrink-0", itemWidthClass)}
+            {displayCategories.map((cat) => {
+              const categoryName = getCategoryName(cat, locale)
+              const href = hrefForCategory ? hrefForCategory(cat.slug) : `/categories/${cat.slug}`
+              return (
+                <CarouselItem key={cat.slug} className="pl-3 basis-auto shrink-0">
+                  <Link
+                    href={href}
+                    title={categoryName}
+                    className={cn("group flex flex-col items-center shrink-0", itemWidthClass)}
+                  >
+                    <div
+                      className={cn(
+                        "relative overflow-hidden rounded-full",
+                        circleSizeClass,
+                        isOnBlue
+                          ? "bg-cta-trust-blue-text/12 ring-1 ring-cta-trust-blue-text/25 group-hover:bg-cta-trust-blue-text/18"
+                          : "bg-brand ring-1 ring-brand/35 group-hover:bg-brand-dark"
+                      )}
                     >
-                      <div
-                        className={cn(
-                          "relative overflow-hidden rounded-full",
-                          circleSizeClass,
-                          isOnBlue
-                            ? "bg-cta-trust-blue-text/12 ring-1 ring-cta-trust-blue-text/25 group-hover:bg-cta-trust-blue-text/18"
-                            : "bg-brand ring-1 ring-brand/35 group-hover:bg-brand-dark"
-                        )}
-                      >
-                        <div className="flex items-center justify-center h-full">
-                          <span
-                            className={cn(
-                              isOnBlue
-                                ? "text-cta-trust-blue-text"
-                                : "text-primary-foreground"
-                            )}
-                          >
-                            {getCategoryIcon(cat.slug, { size: 24, weight: "regular" })}
-                          </span>
-                        </div>
-                      </div>
-                      <span
-                        className={cn(
-                          "font-medium text-center line-clamp-2 leading-tight mt-2",
-                          labelClass
-                        )}
-                      >
+                      <div className="flex items-center justify-center h-full">
                         <span
                           className={cn(
                             isOnBlue
-                              ? "text-cta-trust-blue-text/85 group-hover:text-cta-trust-blue-text group-hover:underline"
-                              : "text-foreground/80 group-hover:text-primary group-hover:underline"
+                              ? "text-cta-trust-blue-text"
+                              : "text-primary-foreground"
                           )}
                         >
-                          {categoryName}
+                          {getCategoryIcon(cat.slug, { size: 24, weight: "regular" })}
                         </span>
+                      </div>
+                    </div>
+                    <span
+                      className={cn(
+                        "font-medium text-center line-clamp-2 leading-tight mt-2",
+                        labelClass
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          isOnBlue
+                            ? "text-cta-trust-blue-text/85 group-hover:text-cta-trust-blue-text group-hover:underline"
+                            : "text-foreground/80 group-hover:text-primary group-hover:underline"
+                        )}
+                      >
+                        {categoryName}
                       </span>
-                    </Link>
-                  </CarouselItem>
-                )
-              })
-            )}
+                    </span>
+                  </Link>
+                </CarouselItem>
+              )
+            })}
           </CarouselContent>
 
           <CarouselNext 

@@ -2,7 +2,7 @@
 
 import { z } from "zod"
 import { sellFormSchemaV4 } from "@/lib/sell/schema-v4"
-import { createAdminClient, createClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 
 export type CreateListingResult =
   | {
@@ -93,8 +93,6 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     }
   }
 
-  const admin = createAdminClient()
-
   const form = parsed.data
 
   const imageUrls = (form.images || []).map((img) => img.url)
@@ -132,7 +130,7 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     attributes: attributesJson,
   }
 
-  const { data: product, error } = await admin
+  const { data: product, error } = await supabase
     .from("products")
     .insert(productData)
     .select()
@@ -159,7 +157,7 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
   }))
 
   if (imageRecords.length > 0) {
-    const { error: imagesError } = await admin.from("product_images").insert(imageRecords)
+    const { error: imagesError } = await supabase.from("product_images").insert(imageRecords)
     if (imagesError) {
       console.error("Product Images Insert Error:", imagesError)
     }
@@ -174,7 +172,7 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
       is_custom: attr.isCustom ?? false,
     }))
 
-    const { error: attrError } = await admin.from("product_attributes").insert(attributeRecords)
+    const { error: attrError } = await supabase.from("product_attributes").insert(attributeRecords)
     if (attrError) {
       console.error("Product Attributes Insert Error:", attrError)
     }
@@ -183,7 +181,7 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
   // Default city hint
   if (form.sellerCity) {
     try {
-      await admin
+      await supabase
         .from("profiles")
         .update({ default_city: form.sellerCity })
         .eq("id", user.id)

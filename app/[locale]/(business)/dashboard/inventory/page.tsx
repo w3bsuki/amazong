@@ -85,7 +85,7 @@ export default async function BusinessInventoryPage() {
                       </p>
                     </TableCell>
                     <TableCell className="text-muted-foreground font-mono text-sm">
-                      {product.sku || '-'}
+                      {(product as any).variant_count > 0 ? '-' : (product.sku || '-')}
                     </TableCell>
                     <TableCell className="font-medium text-emerald-600">
                       {formatCurrencyBGN(product.price)}
@@ -102,6 +102,11 @@ export default async function BusinessInventoryPage() {
                       >
                         {product.stock} units
                       </Badge>
+                      {(product as any).variant_count > 0 && (
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          {(product as any).variant_count} variants
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell>
                       {product.stock === 0 ? (

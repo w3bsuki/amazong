@@ -3,6 +3,9 @@ import { redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import { PaymentsContent } from "./payments-content"
 
+const PAYMENT_METHODS_SELECT =
+    'id,stripe_payment_method_id,card_brand,card_last4,card_exp_month,card_exp_year,is_default'
+
 export default async function PaymentsPage({
     params,
 }: {
@@ -25,7 +28,7 @@ export default async function PaymentsPage({
     // Fetch user payment methods
     const { data: paymentMethodsData } = await supabase
         .from('user_payment_methods')
-        .select('*')
+        .select(PAYMENT_METHODS_SELECT)
         .eq('user_id', user.id)
         .order('is_default', { ascending: false })
         .order('created_at', { ascending: false })

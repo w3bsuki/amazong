@@ -1,6 +1,6 @@
 
 import { NextResponse, type NextRequest } from "next/server"
-import { createRouteHandlerClient, createAdminClient } from "@/lib/supabase/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { z } from "zod"
 
 // Attribute schema
@@ -82,14 +82,13 @@ export async function POST(request: NextRequest) {
 
         const data = parseResult.data
 
-        // 2. Use Service Role to bypass RLS
-        const supabaseAdmin = createAdminClient()
+        // 2. Use the authenticated user client so RLS is enforced
 
         // 3. Products are always created as normal - boosting requires Stripe payment
         // The boost is applied via /api/boost/checkout -> /api/boost/webhook flow
 
         // 4. Insert product with validated data (always normal listing type)
-        const { data: product, error } = await supabaseAdmin
+        const { data: product, error } = await supabaseUser
             .from("products")
             .insert({
                 seller_id: user.id,
@@ -133,7 +132,7 @@ export async function POST(request: NextRequest) {
             is_primary: index === 0
         }))
 
-        const { error: imagesError } = await supabaseAdmin
+        const { error: imagesError } = await supabaseUser
             .from('product_images')
             .insert(imageRecords)
 
@@ -152,7 +151,7 @@ export async function POST(request: NextRequest) {
                 is_custom: attr.is_custom,
             }))
 
-            const { error: attrError } = await supabaseAdmin
+            const { error: attrError } = await supabaseUser
                 .from('product_attributes')
                 .insert(attributeRecords)
 

@@ -13,15 +13,6 @@ create table public.profiles (
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- SELLERS (Store details for users with role 'seller')
-create table public.sellers (
-  id uuid references public.profiles(id) on delete cascade not null primary key,
-  store_name text unique not null,
-  description text,
-  verified boolean default false,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
-
 -- CATEGORIES
 create table public.categories (
   id uuid default uuid_generate_v4() primary key,
@@ -35,7 +26,7 @@ create table public.categories (
 -- PRODUCTS
 create table public.products (
   id uuid default uuid_generate_v4() primary key,
-  seller_id uuid references public.sellers(id) not null,
+  seller_id uuid references public.profiles(id) not null,
   category_id uuid references public.categories(id),
   title text not null,
   description text,
@@ -75,14 +66,13 @@ create table public.order_items (
   id uuid default uuid_generate_v4() primary key,
   order_id uuid references public.orders(id) on delete cascade not null,
   product_id uuid references public.products(id) not null,
-  seller_id uuid references public.sellers(id) not null,
+  seller_id uuid references public.profiles(id) not null,
   quantity integer not null,
   price_at_purchase decimal(10, 2) not null
 );
 
 -- RLS POLICIES (Comprehensive Security)
 alter table public.profiles enable row level security;
-alter table public.sellers enable row level security;
 alter table public.categories enable row level security;
 alter table public.products enable row level security;
 alter table public.reviews enable row level security;
@@ -104,11 +94,6 @@ $$ language plpgsql security definer;
 create policy "Public profiles are viewable by everyone." on public.profiles for select using (true);
 create policy "Users can insert their own profile." on public.profiles for insert with check (auth.uid() = id);
 create policy "Users can update own profile." on public.profiles for update using (auth.uid() = id);
-
--- SELLERS
-create policy "Sellers are viewable by everyone." on public.sellers for select using (true);
-create policy "Users can create their own seller profile." on public.sellers for insert with check (auth.uid() = id);
-create policy "Sellers can update their own profile." on public.sellers for update using (auth.uid() = id);
 
 -- CATEGORIES
 create policy "Categories are viewable by everyone." on public.categories for select using (true);
@@ -160,23 +145,12 @@ begin
     end if;
   end if;
   
-  -- Protect 'verified' in sellers
-  if TG_TABLE_NAME = 'sellers' then
-    if new.verified is distinct from old.verified then
-      raise exception 'You cannot verify your own store.';
-    end if;
-  end if;
-  
   return new;
 end;
 $$ language plpgsql;
 
 create trigger protect_profiles_update
   before update on public.profiles
-  for each row execute procedure public.protect_sensitive_columns();
-
-create trigger protect_sellers_update
-  before update on public.sellers
   for each row execute procedure public.protect_sensitive_columns();
 
 -- FULL TEXT SEARCH TRIGGER

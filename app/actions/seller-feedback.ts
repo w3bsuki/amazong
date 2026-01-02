@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath, revalidateTag } from "next/cache"
+import { revalidateTag } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
 import { z } from "zod"
 
@@ -188,8 +188,6 @@ export async function submitSellerFeedback(
       data: { rating: data.rating, feedback_id: feedback.id },
     })
 
-    // Revalidate seller profile
-    revalidatePath(`/seller/${data.sellerId}`)
     revalidateTag(`seller-${data.sellerId}`, "max")
 
     return { success: true, data: { id: feedback.id } }
@@ -272,8 +270,6 @@ async function updateSellerFeedback(
     // Update seller stats
     await updateSellerStatsFromFeedback(supabase, feedback.seller_id)
 
-    // Revalidate seller profile
-    revalidatePath(`/seller/${feedback.seller_id}`)
     revalidateTag(`seller-${feedback.seller_id}`, "max")
 
     return { success: true }
@@ -342,8 +338,6 @@ async function deleteSellerFeedback(feedbackId: string): Promise<ActionResult> {
     // Update seller stats
     await updateSellerStatsFromFeedback(supabase, feedback.seller_id)
 
-    // Revalidate seller profile
-    revalidatePath(`/seller/${feedback.seller_id}`)
     revalidateTag(`seller-${feedback.seller_id}`, "max")
 
     return { success: true }

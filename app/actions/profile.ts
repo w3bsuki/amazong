@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient, createAdminClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidateTag } from "next/cache"
 import { z } from "zod"
 
 // =====================================================
@@ -139,8 +139,7 @@ export async function updateProfile(formData: FormData): Promise<{
       return { success: false, error: "Failed to update profile" }
     }
 
-    revalidatePath("/account")
-    revalidatePath("/account/profile")
+    revalidateTag("profiles", "max")
     return { success: true }
   } catch (error) {
     console.error("updateProfile error:", error)
@@ -225,8 +224,7 @@ export async function uploadAvatar(formData: FormData): Promise<{
       return { success: false, error: "Failed to update profile with new avatar" }
     }
 
-    revalidatePath("/account")
-    revalidatePath("/account/profile")
+    revalidateTag("profiles", "max")
     return { success: true, avatarUrl: publicUrl }
   } catch (error) {
     console.error("uploadAvatar error:", error)
@@ -280,8 +278,7 @@ export async function setAvatarUrl(formData: FormData): Promise<{
       return { success: false, error: "Failed to update avatar" }
     }
 
-    revalidatePath("/account")
-    revalidatePath("/account/profile")
+    revalidateTag("profiles", "max")
     return { success: true, avatarUrl }
   } catch (error) {
     console.error("setAvatarUrl error:", error)
@@ -340,8 +337,7 @@ export async function deleteAvatar(): Promise<{
       return { success: false, error: "Failed to update profile" }
     }
 
-    revalidatePath("/account")
-    revalidatePath("/account/profile")
+    revalidateTag("profiles", "max")
     return { success: true }
   } catch (error) {
     console.error("deleteAvatar error:", error)

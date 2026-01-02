@@ -3,7 +3,7 @@
 import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
-import { revalidatePath } from "next/cache"
+import { revalidateTag } from "next/cache"
 
 // =============================================================================
 // TYPES
@@ -38,6 +38,12 @@ export interface ActionResult<T = void> {
   error?: string
   data?: T
 }
+
+const PROFILE_SELECT_FOR_BILLING = "id,stripe_customer_id" as const
+const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
+  "id,name,tier,is_active,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,final_value_fee,commission_rate" as const
+const SUBSCRIPTION_SELECT_FOR_DETAILS =
+  "id,plan_type,status,billing_period,price_paid,currency,starts_at,expires_at,auto_renew,stripe_subscription_id,stripe_customer_id,created_at" as const
 
 // =============================================================================
 // HELPERS
@@ -84,7 +90,7 @@ export async function createSubscriptionCheckoutSession(args: {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("*")
+      .select(PROFILE_SELECT_FOR_BILLING)
       .eq("id", user.id)
       .single()
 
@@ -94,7 +100,7 @@ export async function createSubscriptionCheckoutSession(args: {
 
     const { data: plan } = await supabase
       .from("subscription_plans")
-      .select("*")
+      .select(SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT)
       .eq("id", planId)
       .eq("is_active", true)
       .single()
@@ -284,7 +290,7 @@ async function getSubscriptionDetails(): Promise<ActionResult<SubscriptionDetail
     // Get active subscription from database
     const { data: subscription, error } = await supabase
       .from("subscriptions")
-      .select("*")
+      .select(SUBSCRIPTION_SELECT_FOR_DETAILS)
       .eq("seller_id", user.id)
       .in("status", ["active", "cancelled"]) // Include cancelled but not yet expired
       .order("created_at", { ascending: false })
@@ -362,7 +368,7 @@ export async function cancelSubscription(): Promise<ActionResult> {
     // Get the active subscription
     const { data: subscription, error: fetchError } = await supabase
       .from("subscriptions")
-      .select("*")
+      .select("id,status,auto_renew,expires_at,stripe_subscription_id")
       .eq("seller_id", user.id)
       .eq("status", "active")
       .single()
@@ -399,7 +405,8 @@ export async function cancelSubscription(): Promise<ActionResult> {
       return { success: false, error: "Failed to update subscription" }
     }
 
-    revalidatePath("/account/plans")
+    revalidateTag("profiles", "max")
+    revalidateTag("subscriptions", "max")
     return { success: true }
   } catch (error) {
     console.error("cancelSubscription error:", error)
@@ -427,7 +434,7 @@ export async function reactivateSubscription(): Promise<ActionResult> {
     // Get subscription that's active but set to cancel
     const { data: subscription, error: fetchError } = await supabase
       .from("subscriptions")
-      .select("*")
+      .select("id,status,auto_renew,expires_at,stripe_subscription_id")
       .eq("seller_id", user.id)
       .eq("status", "active")
       .eq("auto_renew", false)
@@ -463,7 +470,8 @@ export async function reactivateSubscription(): Promise<ActionResult> {
       return { success: false, error: "Failed to update subscription" }
     }
 
-    revalidatePath("/account/plans")
+    revalidateTag("profiles", "max")
+    revalidateTag("subscriptions", "max")
     return { success: true }
   } catch (error) {
     console.error("reactivateSubscription error:", error)

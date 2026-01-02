@@ -105,6 +105,10 @@
   --page-inset-lg: 1rem;         /* 16px - Desktop */
   --icon-edge-offset: 0.25rem;   /* 4px - Negative margin for header icons to align with content */
 
+  /* === CATEGORY BROWSE TOKENS === */
+  /* Mobile category circle size (between 40px home and 56px drawers). */
+  --category-circle-mobile: 3.25rem; /* 52px */
+
   /* Form-specific spacing */
   --spacing-form: 1rem;
   --spacing-section: 1.5rem;

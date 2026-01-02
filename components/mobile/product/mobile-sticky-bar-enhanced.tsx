@@ -17,6 +17,8 @@ interface MobileStickyBarEnhancedProps {
     slug?: string;
     username?: string;
   };
+  variantId?: string;
+  variantName?: string;
   price: number;
   originalPrice?: number | null;
   currency?: string;
@@ -31,6 +33,8 @@ interface MobileStickyBarEnhancedProps {
  */
 export function MobileStickyBarEnhanced({
   product,
+  variantId,
+  variantName,
   price,
   originalPrice,
   currency = "BGN",
@@ -57,6 +61,8 @@ export function MobileStickyBarEnhanced({
     if (isOutOfStock) return;
     addToCart({
       id: product.id,
+      ...(variantId ? { variantId } : {}),
+      ...(variantName ? { variantName } : {}),
       title: product.title,
       price: Number(price ?? 0),
       image: product.image,
@@ -71,6 +77,8 @@ export function MobileStickyBarEnhanced({
     if (isOutOfStock) return;
     addToCart({
       id: product.id,
+      ...(variantId ? { variantId } : {}),
+      ...(variantName ? { variantName } : {}),
       title: product.title,
       price: Number(price ?? 0),
       image: product.image,

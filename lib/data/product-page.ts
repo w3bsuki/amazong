@@ -9,6 +9,7 @@ type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"]
 type CategoryRow = Database["public"]["Tables"]["categories"]["Row"]
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"]
 type ProductImageRow = Database["public"]["Tables"]["product_images"]["Row"]
+type ProductVariantRow = Database["public"]["Tables"]["product_variants"]["Row"]
 
 type ProductSeller = Pick<
   ProfileRow,
@@ -30,11 +31,18 @@ export type ProductPageProduct = ProductRow & {
   category: ProductCategory | null
   seller_stats: SellerStatsRow | null
   product_images?: ProductImage[]
+  product_variants?: ProductVariantRow[]
 }
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 const isUuid = (value: unknown): value is string => typeof value === 'string' && UUID_REGEX.test(value)
+
+const PRODUCT_SELECT =
+  'id,title,price,seller_id,category_id,slug,description,condition,brand_id,images,is_boosted,boost_expires_at,is_featured,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,created_at,updated_at,status,stock,tags,seller_city,listing_type,meta_title,meta_description,barcode,cost_price,sku,track_inventory,weight,weight_unit,attributes' as const
+
+const SELLER_STATS_SELECT =
+  'seller_id,active_listings,total_listings,total_sales,total_revenue,total_reviews,average_rating,five_star_reviews,positive_feedback_pct,response_rate_pct,response_time_hours,communication_pct,item_described_pct,shipped_on_time_pct,shipping_speed_pct,repeat_customer_pct,follower_count,first_sale_at,last_sale_at,updated_at' as const
 
 /**
  * Fetch product by seller username + product slug.
@@ -90,7 +98,7 @@ export async function fetchProductByUsernameAndSlug(
   const { data: product, error: productError } = await supabase
     .from("products")
     .select(`
-      *,
+      ${PRODUCT_SELECT},
       seller:profiles!products_seller_id_fkey (
         id, username, display_name, avatar_url, verified, is_seller, created_at
       ),
@@ -99,6 +107,15 @@ export async function fetchProductByUsernameAndSlug(
       ),
       product_images (
         id, image_url, thumbnail_url, display_order, is_primary
+      ),
+      product_variants (
+        id,
+        name,
+        sku,
+        stock,
+        price_adjustment,
+        is_default,
+        sort_order
       )
     `)
     .eq("slug", safeSlug)
@@ -130,7 +147,7 @@ export async function fetchProductByUsernameAndSlug(
     let fallbackProduct = (
       await supabase
         .from("products")
-        .select("*")
+        .select(PRODUCT_SELECT)
         .eq("slug", safeSlug)
         .eq("seller_id", profile.id)
         .maybeSingle()
@@ -142,7 +159,7 @@ export async function fetchProductByUsernameAndSlug(
       fallbackProduct = (
         await supabase
           .from("products")
-          .select("*")
+          .select(PRODUCT_SELECT)
           .eq("id", safeSlug)
           .eq("seller_id", profile.id)
           .maybeSingle()
@@ -163,7 +180,7 @@ export async function fetchProductByUsernameAndSlug(
 
     const { data: sellerStats } = await supabase
       .from("seller_stats")
-      .select("*")
+      .select(SELLER_STATS_SELECT)
       .eq("seller_id", profile.id)
       .single()
 
@@ -180,6 +197,15 @@ export async function fetchProductByUsernameAndSlug(
       category,
       seller_stats: sellerStats ?? null,
       product_images: productImages ?? [],
+      product_variants: (
+        (await supabase
+          .from("product_variants")
+          .select("id,name,sku,stock,price_adjustment,is_default,sort_order")
+          .eq("product_id", fallbackProduct.id)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true })
+        ).data ?? []
+      ) as unknown as ProductVariantRow[],
     }
 
     addEntityTags(enriched)
@@ -190,6 +216,7 @@ export async function fetchProductByUsernameAndSlug(
     seller: ProductSeller | null
     category: ProductCategory | null
     product_images?: ProductImage[]
+    product_variants?: Array<Pick<ProductVariantRow, "id" | "name" | "sku" | "stock" | "price_adjustment" | "is_default" | "sort_order">>
   })
 
   const seller = productWithRelations.seller
@@ -198,7 +225,7 @@ export async function fetchProductByUsernameAndSlug(
 
   const { data: sellerStats } = await supabase
     .from("seller_stats")
-    .select("*")
+    .select(SELLER_STATS_SELECT)
     .eq("seller_id", sellerId)
     .single()
 
@@ -208,6 +235,7 @@ export async function fetchProductByUsernameAndSlug(
     category: productWithRelations.category ?? null,
     seller_stats: sellerStats ?? null,
     product_images: productWithRelations.product_images ?? [],
+    product_variants: (productWithRelations.product_variants ?? []) as unknown as ProductVariantRow[],
   }
 
   addEntityTags(enriched)
@@ -238,9 +266,12 @@ export async function fetchSellerProducts(
 
   cacheTag(`seller-products-${sellerId}`)
 
+  const SELLER_PRODUCTS_SELECT =
+    'id,title,price,seller_id,category_id,slug,images,is_boosted,boost_expires_at,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,created_at,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,seller_city' as const
+
   let query = supabase
     .from("products")
-    .select("*")
+    .select(SELLER_PRODUCTS_SELECT)
     .eq("seller_id", sellerId)
     .order("created_at", { ascending: false })
     .limit(limit)

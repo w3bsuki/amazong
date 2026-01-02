@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { createRouteHandlerClient, createAdminClient } from "@/lib/supabase/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { z } from "zod"
 
 // Image schema - supports both URL string and object format (including isPrimary from form)
@@ -205,8 +205,7 @@ export async function POST(request: NextRequest) {
 
     const data = parseResult.data
 
-    // 4. Use Service Role to bypass RLS for insert
-    const supabaseAdmin = createAdminClient()
+    // 4. Use the authenticated user client so RLS is enforced
 
     // 5. Normalize images to URL array for products table
     // After transform, all images are objects with url property
@@ -254,7 +253,7 @@ export async function POST(request: NextRequest) {
       attributes: attributesJson,
     }
     
-    const { data: product, error } = await supabaseAdmin
+    const { data: product, error } = await supabaseUser
       .from("products")
       .insert(productData)
       .select()
@@ -286,7 +285,7 @@ export async function POST(request: NextRequest) {
       is_primary: index === 0
     }))
 
-    const { error: imagesError } = await supabaseAdmin
+    const { error: imagesError } = await supabaseUser
       .from('product_images')
       .insert(imageRecords)
 
@@ -305,7 +304,7 @@ export async function POST(request: NextRequest) {
         is_custom: attr.is_custom ?? false,
       }))
 
-      const { error: attrError } = await supabaseAdmin
+      const { error: attrError } = await supabaseUser
         .from('product_attributes')
         .insert(attributeRecords)
 
@@ -317,7 +316,7 @@ export async function POST(request: NextRequest) {
     // 11. Update user's default_city in profile (for future listings)
     if (data.sellerCity) {
       try {
-        await supabaseAdmin
+        await supabaseUser
           .from('profiles')
           .update({ default_city: data.sellerCity })
           .eq('id', user.id)

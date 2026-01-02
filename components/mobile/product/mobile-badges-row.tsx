@@ -1,5 +1,3 @@
-"use client";
-
 import { Package, Truck, Zap, AlertCircle, CheckCircle2, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 

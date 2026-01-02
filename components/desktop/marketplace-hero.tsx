@@ -1,5 +1,3 @@
-"use client"
-
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -11,7 +9,7 @@ import {
   User, 
   Heart, 
   Bell
-} from "@phosphor-icons/react"
+} from "@phosphor-icons/react/dist/ssr"
 
 interface Category {
   id: string

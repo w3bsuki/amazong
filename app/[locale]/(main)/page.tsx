@@ -3,7 +3,6 @@ import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { StartSellingBanner } from "@/components/sections/start-selling-banner"
-import { MobileCategoryRail } from "@/components/shared/category-rail"
 import { DesktopCategoryRail } from "@/components/desktop/desktop-category-rail"
 
 // Desktop-only components
@@ -21,6 +20,7 @@ import { SignInCTA } from "@/components/sections/sign-in-cta"
 // New components
 import { TabbedProductFeed, TabbedProductFeedSkeleton } from "@/components/sections/tabbed-product-feed"
 import { MobileHomeTabs } from "@/components/mobile/mobile-home-tabs"
+import { TrustBar } from "@/components/shared/trust-bar"
 
 // Local sections
 import { PromoCards } from "./_components/promo-cards"
@@ -29,7 +29,8 @@ import { MoreWaysToShop } from "./_components/more-ways-to-shop"
 // Local components
 import { SignInCtaSkeleton } from "./_components/sign-in-cta-skeleton"
 
-import { getNewestProducts, toUI, getFeedProducts } from "@/lib/data/products"
+import { createStaticClient } from "@/lib/supabase/server"
+import { getNewestProducts, toUI } from "@/lib/data/products"
 import { getCategoryHierarchy } from "@/lib/data/categories"
 
 export function generateStaticParams() {
@@ -55,22 +56,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params
   setRequestLocale(locale)
 
-  // Fetch categories with L1 children using server-side cache
-  // This prevents the client from making additional /api/categories calls
-  const [categoriesWithChildren, newestProducts, feedResult] = await Promise.all([
-    getCategoryHierarchy(null, 2), // depth=2 for L0+L1+L2
-    getNewestProducts(12),
-    getFeedProducts('all', { limit: 12 }) // Server-side initial feed for desktop
-  ])
-  
-  // Shallow categories for desktop hero (just need slugs/names)
-  const categories = categoriesWithChildren.map(c => ({
-    id: c.id,
-    name: c.name,
-    name_bg: c.name_bg,
-    slug: c.slug
-  }))
+  // Fetch categories WITH children for mobile subcategory circles + pills.
+  // L0 + L1 + L2 + L3 in one call (keeps mobile tabs fully server-driven).
+  const categoriesWithChildren = await getCategoryHierarchy(null, 3)
 
+  // Fetch initial products for mobile tabs
+  const newestProducts = await getNewestProducts(12)
   const initialProducts = newestProducts.map(p => toUI(p))
 
   return (
@@ -100,16 +91,21 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           <div className="container">
             <MarketplaceHero 
               locale={locale} 
-              categories={categories || []}
+              categories={categoriesWithChildren}
             />
             
-            {/* Category Rail - Clean & Aligned */}
-            <div className="mt-8">
+            <div className="mt-8 rounded-md border bg-card p-4 shadow-sm dark:bg-card">
               <DesktopCategoryRail
                 locale={locale}
+                categories={categoriesWithChildren}
                 showTitle={false}
                 className="max-w-full"
               />
+            </div>
+            
+            {/* Trust Bar - Below hero, above product feed */}
+            <div className="mt-6">
+              <TrustBar locale={locale} variant="desktop" />
             </div>
           </div>
         </div>
@@ -118,11 +114,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <div className="w-full bg-background pb-12">
           <div className="container">
             <Suspense fallback={<TabbedProductFeedSkeleton />}>
-              <TabbedProductFeed 
-                locale={locale} 
-                initialProducts={feedResult.products}
-                initialHasMore={feedResult.hasMore}
-              />
+              <TabbedProductFeed locale={locale} />
             </Suspense>
 
             {/* Promo + discovery */}

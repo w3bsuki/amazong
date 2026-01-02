@@ -100,6 +100,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       relatedProducts={viewModel.relatedProducts}
       reviews={reviews}
       viewModel={viewModel}
+      variants={productData.product_variants ?? []}
       submitReview={submitReview}
     />
   )

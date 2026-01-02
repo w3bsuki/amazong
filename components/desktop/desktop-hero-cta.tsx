@@ -1,5 +1,3 @@
-"use client"
-
 import type { ReactNode } from "react"
 import { Link } from "@/i18n/routing"
 import { Storefront, ShoppingBag, ArrowRight, Users } from "@phosphor-icons/react"

@@ -42,6 +42,9 @@ import { createClient } from "@/lib/supabase/client"
 import { AccountAddressesStats } from "../_components/account-addresses-stats"
 import { AccountAddressesGrid } from "../_components/account-addresses-grid"
 
+const USER_ADDRESSES_SELECT =
+    'id,label,full_name,phone,address_line1,address_line2,city,state,postal_code,country,is_default,created_at'
+
 interface Address {
     id: string
     label: string
@@ -199,7 +202,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
             // Refetch addresses
             const { data } = await supabase
                 .from('user_addresses')
-                .select('*')
+                .select(USER_ADDRESSES_SELECT)
                 .order('is_default', { ascending: false })
                 .order('created_at', { ascending: false })
             
@@ -232,7 +235,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
             // Refetch addresses
             const { data } = await supabase
                 .from('user_addresses')
-                .select('*')
+                .select(USER_ADDRESSES_SELECT)
                 .order('is_default', { ascending: false })
                 .order('created_at', { ascending: false })
             
@@ -261,7 +264,7 @@ export function AddressesContent({ locale, initialAddresses }: AddressesContentP
             // Refetch addresses
             const { data } = await supabase
                 .from('user_addresses')
-                .select('*')
+                .select(USER_ADDRESSES_SELECT)
                 .order('is_default', { ascending: false })
                 .order('created_at', { ascending: false })
             

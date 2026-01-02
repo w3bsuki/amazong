@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { revalidatePath, revalidateTag } from "next/cache"
+import { revalidateTag } from "next/cache"
 
 // =====================================================
 // BUYER FEEDBACK SERVER ACTIONS
@@ -144,10 +144,8 @@ export async function submitBuyerFeedback(
       return { success: false, error: "Failed to submit feedback" }
     }
 
-    // Revalidate caches
     revalidateTag("buyer-stats", "max")
-    revalidatePath(`/account/orders/${input.order_id}`)
-    revalidatePath("/sell/orders")
+    revalidateTag("orders", "max")
 
     return { success: true, data: data as unknown as BuyerFeedback }
   } catch (error) {

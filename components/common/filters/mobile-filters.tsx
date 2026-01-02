@@ -20,6 +20,8 @@ interface MobileFiltersProps {
   locale: string
   resultsCount?: number
   attributes?: CategoryAttribute[]
+  /** Override where filter query params are applied. Defaults to the current pathname. */
+  basePath?: string
 }
 
 // Attributes to hide from filters (too space-consuming as quick pills)
@@ -30,7 +32,7 @@ const HIDDEN_ATTRIBUTE_NAMES = [
   'vegan',
 ]
 
-export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: MobileFiltersProps) {
+export function MobileFilters({ locale, resultsCount = 0, attributes = [], basePath }: MobileFiltersProps) {
   // Filter out hidden attributes
   const visibleAttributes = attributes.filter(
     attr => !HIDDEN_ATTRIBUTE_NAMES.includes(attr.name)
@@ -48,8 +50,9 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
   const currentRating = searchParams.get("minRating")
   const currentAvailability = searchParams.get("availability")
 
-  // Determine the base path - use current pathname for category pages
-  const basePath = pathname.includes('/categories/') ? pathname : '/search'
+  // Determine the base path - default to current pathname.
+  // (This component is used on search, categories, and now mobile tabs.)
+  const resolvedBasePath = basePath || pathname
   
   // Get attribute display name
   const getAttrName = (attr: CategoryAttribute) => {
@@ -153,7 +156,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [] }: Mob
     }
 
     const queryString = params.toString()
-    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
+    router.push(`${resolvedBasePath}${queryString ? `?${queryString}` : ''}`)
   }
 
   // Count active filters (current URL) - used for trigger badge

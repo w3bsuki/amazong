@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server"
-import { createRouteHandlerClient, createAdminClient } from "@/lib/supabase/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 
 /**
  * @deprecated This route is deprecated. Users now get a username at signup.
@@ -40,11 +40,8 @@ export async function POST(request: NextRequest) {
             return applyCookies(NextResponse.json({ error: "Invalid account type" }, { status: 400 }))
         }
 
-        // 2. Use Service Role to bypass RLS
-        const supabaseAdmin = createAdminClient()
-
-        // 3. Get existing profile
-        const { data: existingProfile } = await supabaseAdmin
+        // 2. Get existing profile (RLS enforced)
+        const { data: existingProfile } = await supabaseUser
             .from("profiles")
             .select("id, display_name, username, account_type")
             .eq("id", user.id)
@@ -85,7 +82,7 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        const { data: profile, error: profileError } = await supabaseAdmin
+        const { data: profile, error: profileError } = await supabaseUser
             .from("profiles")
             .update(profileData)
             .eq("id", user.id)

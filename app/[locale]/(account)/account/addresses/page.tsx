@@ -3,6 +3,9 @@ import { redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import { AddressesContent } from "./addresses-content"
 
+const USER_ADDRESSES_SELECT =
+    'id,label,full_name,phone,address_line1,address_line2,city,state,postal_code,country,is_default,created_at'
+
 export default async function AddressesPage({
     params,
 }: {
@@ -25,7 +28,7 @@ export default async function AddressesPage({
     // Fetch user addresses
     const { data: addressesData } = await supabase
         .from('user_addresses')
-        .select('*')
+        .select(USER_ADDRESSES_SELECT)
         .eq('user_id', user.id)
         .order('is_default', { ascending: false })
         .order('created_at', { ascending: false })

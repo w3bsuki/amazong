@@ -73,6 +73,24 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const { page, limit: safeLimit, offset } = parsePaginationParams(searchParams)
   const category = searchParams.get("category")
+  const sort = searchParams.get("sort") || "newest"
+  const type = searchParams.get("type") || "newest"
+
+  const minPrice = searchParams.get("minPrice")
+  const maxPrice = searchParams.get("maxPrice")
+  const minRating = searchParams.get("minRating")
+  const availability = searchParams.get("availability")
+
+  // Extract attr_* params for attribute filtering.
+  // The UI sends keys like attr_Brand=Apple (multi-select uses repeated params).
+  const attributeFilters: Record<string, string[]> = {}
+  for (const [key] of searchParams.entries()) {
+    if (!key.startsWith('attr_')) continue
+    const name = key.slice('attr_'.length)
+    if (!name) continue
+    const values = searchParams.getAll(key).filter((v) => v && v.length > 0)
+    if (values.length > 0) attributeFilters[name] = values
+  }
   
   try {
     const supabase = createStaticClient()
@@ -143,11 +161,49 @@ export async function GET(request: NextRequest) {
       // Step 2: Query products using .filter() with raw PostgREST syntax
       // 'cs' = contains operator (@>), works with array columns
       // This uses the GIN index on category_ancestors for efficient lookups
-      const { data, error, count } = await supabase
+      let query = supabase
         .from('products')
         .select(productSelect, { count: 'exact' })
         .filter('category_ancestors', 'cs', `{${categoryData.id}}`)
-        .order('created_at', { ascending: false })
+
+      // Feed type filters
+      if (type === 'promoted') {
+        query = query.eq('is_boosted', true)
+      }
+
+      // Base filters
+      if (minPrice) query = query.gte('price', Number(minPrice))
+      if (maxPrice) query = query.lte('price', Number(maxPrice))
+      if (minRating) query = query.gte('rating', Number(minRating))
+      if (availability === 'instock') query = query.gt('stock', 0)
+
+      // Attribute filters (JSONB "attributes")
+      for (const [attrName, values] of Object.entries(attributeFilters)) {
+        if (values.length === 1) {
+          query = query.contains('attributes', { [attrName]: values[0] })
+        } else if (values.length > 1) {
+          query = query.in(`attributes->>${attrName}`, values)
+        }
+      }
+
+      // Sorting
+      switch (sort) {
+        case 'price-asc':
+          query = query.order('price', { ascending: true })
+          break
+        case 'price-desc':
+          query = query.order('price', { ascending: false })
+          break
+        case 'rating':
+          query = query.order('rating', { ascending: false, nullsFirst: false })
+          query = query.order('review_count', { ascending: false })
+          break
+        case 'newest':
+        default:
+          query = query.order('created_at', { ascending: false })
+      }
+
+      const { data, error, count } = await query
         .range(offset, offset + safeLimit - 1)
 
       if (error) {
@@ -166,10 +222,48 @@ export async function GET(request: NextRequest) {
       // ALL PRODUCTS (no category filter)
       // Simple query with pagination
       // =================================================================
-      const { data, error, count } = await supabase
+      let query = supabase
         .from('products')
         .select(productSelect, { count: 'exact' })
-        .order('created_at', { ascending: false })
+
+      // Feed type filters
+      if (type === 'promoted') {
+        query = query.eq('is_boosted', true)
+      }
+
+      // Base filters
+      if (minPrice) query = query.gte('price', Number(minPrice))
+      if (maxPrice) query = query.lte('price', Number(maxPrice))
+      if (minRating) query = query.gte('rating', Number(minRating))
+      if (availability === 'instock') query = query.gt('stock', 0)
+
+      // Attribute filters
+      for (const [attrName, values] of Object.entries(attributeFilters)) {
+        if (values.length === 1) {
+          query = query.contains('attributes', { [attrName]: values[0] })
+        } else if (values.length > 1) {
+          query = query.in(`attributes->>${attrName}`, values)
+        }
+      }
+
+      // Sorting
+      switch (sort) {
+        case 'price-asc':
+          query = query.order('price', { ascending: true })
+          break
+        case 'price-desc':
+          query = query.order('price', { ascending: false })
+          break
+        case 'rating':
+          query = query.order('rating', { ascending: false, nullsFirst: false })
+          query = query.order('review_count', { ascending: false })
+          break
+        case 'newest':
+        default:
+          query = query.order('created_at', { ascending: false })
+      }
+
+      const { data, error, count } = await query
         .range(offset, offset + safeLimit - 1)
 
       if (error) {

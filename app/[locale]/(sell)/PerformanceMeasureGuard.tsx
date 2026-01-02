@@ -8,20 +8,15 @@ import { useEffect } from 'react'
  */
 export function PerformanceMeasureGuard() {
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- globalThis.performance not typed in all envs
-    const perf = (globalThis as any).performance as undefined | {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Performance API params
-      measure?: (...args: any[]) => any
-    }
+    const perf: Performance | undefined = globalThis.performance
 
     if (!perf?.measure || typeof perf.measure !== 'function') return
 
     const original = perf.measure.bind(perf)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Performance API proxy
-    perf.measure = (name: any, ...args: any[]) => {
+    const patchedMeasure: Performance['measure'] = ((...args: Parameters<Performance['measure']>) => {
       try {
-        return original(name, ...args)
+        return original(...args)
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error)
 
@@ -31,12 +26,14 @@ export function PerformanceMeasureGuard() {
           message.includes("Failed to execute 'measure' on 'Performance'") &&
           message.includes('negative time stamp')
         ) {
-          return
+          return undefined as unknown as ReturnType<Performance['measure']>
         }
 
         throw error
       }
-    }
+    }) as Performance['measure']
+
+    perf.measure = patchedMeasure
 
     return () => {
       perf.measure = original

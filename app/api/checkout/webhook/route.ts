@@ -42,6 +42,20 @@ export async function POST(req: Request) {
     console.log('Processing checkout.session.completed:', session.id);
 
     try {
+      // Idempotency: avoid creating duplicate orders for the same payment intent.
+      if (session.payment_intent) {
+        const { data: existingOrder } = await supabase
+          .from('orders')
+          .select('id')
+          .eq('stripe_payment_intent_id', session.payment_intent as string)
+          .maybeSingle();
+
+        if (existingOrder?.id) {
+          console.log('Order already exists for payment intent:', session.payment_intent);
+          return NextResponse.json({ received: true });
+        }
+      }
+
       // Get line items for order details
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
 
@@ -90,7 +104,7 @@ export async function POST(req: Request) {
       // Create order items from line items
       if (lineItems.data.length > 0) {
         // Try to get items from metadata
-        let itemsData: { id: string; qty: number; price: number }[] = [];
+        let itemsData: { id: string; variantId?: string | null; qty: number; price: number }[] = [];
         try {
           if (session.metadata?.items_json) {
             itemsData = JSON.parse(session.metadata.items_json);
@@ -126,6 +140,7 @@ export async function POST(req: Request) {
               seller_id: productSellerMap.get(item.id)!,
               quantity: item.qty || 1,
               price_at_purchase: item.price,
+              ...(item.variantId ? { variant_id: item.variantId } : {}),
             }));
 
           if (validItems.length > 0) {
@@ -137,30 +152,6 @@ export async function POST(req: Request) {
               console.error('Error creating order items:', itemsError);
             } else {
               console.log('Order items created:', validItems.length);
-            }
-
-            // Decrement stock for each purchased product
-            for (const item of validItems) {
-              // Get current stock first
-              const { data: currentProduct } = await supabase
-                .from('products')
-                .select('stock, track_inventory')
-                .eq('id', item.product_id)
-                .single();
-
-              if (currentProduct && currentProduct.track_inventory !== false) {
-                const newStock = Math.max(0, (currentProduct.stock || 0) - item.quantity);
-                const { error: updateError } = await supabase
-                  .from('products')
-                  .update({ stock: newStock })
-                  .eq('id', item.product_id);
-
-                if (updateError) {
-                  console.error('Error decrementing stock for product:', item.product_id, updateError);
-                } else {
-                  console.log('Stock decremented for product:', item.product_id, 'from', currentProduct.stock, 'to', newStock);
-                }
-              }
             }
 
             // Create order conversations for buyer-seller communication

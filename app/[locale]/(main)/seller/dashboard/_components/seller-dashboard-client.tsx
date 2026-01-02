@@ -48,7 +48,7 @@ export default function SellerDashboardClient() {
 
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
-          .select("*")
+          .select("id,username,display_name,business_name,verified,created_at")
           .eq("id", session.user.id)
           .single()
 

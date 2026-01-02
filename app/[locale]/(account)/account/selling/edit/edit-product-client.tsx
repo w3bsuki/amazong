@@ -102,7 +102,9 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
       // Fetch product
       const { data, error } = await supabase
         .from("products")
-        .select("*")
+        .select(
+          "id,title,description,price,list_price,is_on_sale,sale_percent,sale_end_date,seller_city,stock,images,is_boosted,is_featured,ships_to_bulgaria,ships_to_europe,ships_to_usa,ships_to_worldwide"
+        )
         .eq("id", productId)
         .eq("seller_id", user.id)
         .single()

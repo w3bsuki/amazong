@@ -3,6 +3,8 @@
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
 
+const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
+
 // Boost pricing options (in BGN)
 const BOOST_PRICING = {
   '7': { price: 2.99, label: '7 days' },
@@ -45,7 +47,7 @@ export async function createBoostCheckoutSession(input: {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select(PROFILE_SELECT_FOR_STRIPE)
     .eq('id', user.id)
     .single()
 

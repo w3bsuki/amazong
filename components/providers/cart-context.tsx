@@ -7,6 +7,10 @@ import { safeJsonParse } from "@/lib/safe-json"
 
 export interface CartItem {
   id: string
+  /** Optional product variant id (for listings with variants). */
+  variantId?: string
+  /** Optional variant display name for UX (cart rendering). */
+  variantName?: string
   title: string
   price: number
   image: string
@@ -21,8 +25,8 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[]
   addToCart: (item: CartItem) => void
-  removeFromCart: (id: string) => void
-  updateQuantity: (id: string, quantity: number) => void
+  removeFromCart: (id: string, variantId?: string) => void
+  updateQuantity: (id: string, quantity: number, variantId?: string) => void
   clearCart: () => void
   totalItems: number
   subtotal: number
@@ -85,6 +89,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       .from("cart_items")
       .select(`
         product_id,
+        variant_id,
         quantity,
         products (
           title,
@@ -92,6 +97,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           images,
           slug,
           seller:profiles!products_seller_id_fkey(username)
+        ),
+        variant:product_variants!cart_items_variant_id_fkey(
+          id,
+          name
         )
       `)
       .eq("user_id", activeUserId)
@@ -106,6 +115,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const nextItems: CartItem[] = rows.map((row) => {
       const record = toRecord(row)
       const productId = asString(record?.product_id) ?? ""
+      const variantId = asString(record?.variant_id) ?? undefined
       const quantity = asNumber(record?.quantity) ?? 1
 
       const products = toRecord(record?.products)
@@ -119,8 +129,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const seller = toRecord(products?.seller)
       const username = asString(seller?.username)
 
+      const variant = toRecord(record?.variant)
+      const variantName = asString(variant?.name) ?? undefined
+
       return {
         id: productId,
+        ...(variantId ? { variantId } : {}),
+        ...(variantName ? { variantName } : {}),
         title,
         price,
         image,
@@ -151,6 +166,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.rpc("cart_add_item", {
         p_product_id: item.id,
         p_quantity: qty,
+        ...(item.variantId ? { p_variant_id: item.variantId } : {}),
       })
 
       if (error) {
@@ -237,10 +253,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
     
     setItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === itemWithValidPrice.id)
+      const existingItem = prevItems.find((item) =>
+        item.id === itemWithValidPrice.id && (item.variantId ?? null) === (itemWithValidPrice.variantId ?? null)
+      )
       if (existingItem) {
         return prevItems.map((item) =>
-          item.id === itemWithValidPrice.id ? { ...item, quantity: item.quantity + itemWithValidPrice.quantity } : item,
+          item.id === itemWithValidPrice.id && (item.variantId ?? null) === (itemWithValidPrice.variantId ?? null)
+            ? { ...item, quantity: item.quantity + itemWithValidPrice.quantity }
+            : item,
         )
       }
       return [...prevItems, itemWithValidPrice]
@@ -254,6 +274,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const { error } = await supabase.rpc("cart_add_item", {
           p_product_id: itemWithValidPrice.id,
           p_quantity: qty,
+          ...(itemWithValidPrice.variantId ? { p_variant_id: itemWithValidPrice.variantId } : {}),
         })
 
         if (error) {
@@ -263,8 +284,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const removeFromCart = (id: string) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== id))
+  const removeFromCart = (id: string, variantId?: string) => {
+    setItems((prevItems) => prevItems.filter((item) => !(item.id === id && (item.variantId ?? null) === (variantId ?? null))))
 
     if (userId) {
       void (async () => {
@@ -272,6 +293,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const { error } = await supabase.rpc("cart_set_quantity", {
           p_product_id: id,
           p_quantity: 0,
+          ...(variantId ? { p_variant_id: variantId } : {}),
         })
 
         if (error) {
@@ -281,12 +303,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = (id: string, quantity: number, variantId?: string) => {
     if (quantity <= 0) {
-      removeFromCart(id)
+      removeFromCart(id, variantId)
       return
     }
-    setItems((prevItems) => prevItems.map((item) => (item.id === id ? { ...item, quantity } : item)))
+    setItems((prevItems) => prevItems.map((item) =>
+      item.id === id && (item.variantId ?? null) === (variantId ?? null)
+        ? { ...item, quantity }
+        : item
+    ))
 
     if (userId) {
       void (async () => {
@@ -294,6 +320,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const { error } = await supabase.rpc("cart_set_quantity", {
           p_product_id: id,
           p_quantity: quantity,
+          ...(variantId ? { p_variant_id: variantId } : {}),
         })
 
         if (error) {

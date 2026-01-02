@@ -3,6 +3,7 @@ import { SiteFooter } from "@/components/layout/footer/site-footer";
 import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { getCategoryHierarchy } from "@/lib/data/categories";
 import { setRequestLocale } from "next-intl/server";
 
 import { AuthStateListener } from "@/components/providers/auth-state-listener";
@@ -42,6 +43,8 @@ export default async function UsernameLayout({
         user = data.user;
     }
 
+    const categories = await getCategoryHierarchy(null, 2);
+
     return (
         <CartProvider>
             <WishlistProvider>
@@ -54,7 +57,7 @@ export default async function UsernameLayout({
                     </Suspense>
                     
                     <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
-                        <SiteHeader user={user} hideSubheader hideOnMobile />
+                        <SiteHeader user={user} hideSubheader hideOnMobile categories={categories} />
                     </Suspense>
                     
                     <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
@@ -62,7 +65,7 @@ export default async function UsernameLayout({
                     </main>
                     
                     <SiteFooter />
-                    <MobileTabBar />
+                    <MobileTabBar categories={categories} />
                     <Toaster />
                     <CookieConsent />
                     <GeoWelcomeModal locale={locale} />

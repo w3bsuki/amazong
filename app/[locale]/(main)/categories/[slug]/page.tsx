@@ -25,8 +25,6 @@ import { searchProducts } from "./_lib/search-products"
 import type { Product } from "./_lib/types"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
 
-import { AttributeQuickFilters } from "@/components/category/attribute-quick-filters"
-
 // =============================================================================
 // CATEGORY PAGE - HYBRID CACHING STRATEGY
 // 
@@ -239,6 +237,13 @@ export default async function CategoryPage({
           
           {/* Main Content */}
           <div className="flex-1 min-w-0 lg:pl-5">
+
+            {/* Mobile category banner (deepest selection = current slug) */}
+            <div className="lg:hidden mb-3">
+              <div className="rounded-lg border border-border/50 bg-secondary/40 px-3 py-2">
+                <h1 className="text-base font-bold leading-tight">{categoryName}</h1>
+              </div>
+            </div>
             
             {/* Subcategory Circles - only show if subcategories exist */}
             {subcategories.length > 0 ? (
@@ -250,15 +255,7 @@ export default async function CategoryPage({
                   basePath="/categories"
                 />
               </Suspense>
-            ) : (
-              /* Show Attribute Quick Filters for leaf categories */
-              <Suspense>
-                <AttributeQuickFilters 
-                  attributes={filterableAttributes}
-                  locale={locale}
-                />
-              </Suspense>
-            )}
+            ) : null}
 
             {/* Filter & Sort Row - Consolidated toolbar with all filters */}
             <div className="mb-2 sm:mb-4 grid grid-cols-2 lg:flex lg:flex-wrap items-center gap-2">

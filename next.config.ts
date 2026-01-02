@@ -14,10 +14,17 @@ const nextConfig: NextConfig = {
   // ============================================
   // Next.js 16+ Configuration
   // ============================================
-  
+
+  // Remove console.log in production (keep error/warn for debugging)
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+
   // Enable cache components for e-commerce performance
   cacheComponents: true,
-  
+
   // Custom cache life profiles
   cacheLife: {
     // Categories: cached for 1 hour, serve stale for 5 min while revalidating

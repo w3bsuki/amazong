@@ -79,9 +79,12 @@ export async function GET(request: Request) {
       : [resolvedCategoryId]
 
     // Fetch attributes for requested category scope
+    const CATEGORY_ATTRIBUTES_SELECT =
+      "id, category_id, name, name_bg, attribute_type, options, options_bg, placeholder, placeholder_bg, is_filterable, is_required, sort_order, validation_rules, created_at" as const
+
     let query = supabase
       .from("category_attributes")
-      .select("*")
+      .select(CATEGORY_ATTRIBUTES_SELECT)
 
     if (includeGlobal) {
       // Supabase query builder doesn't support mixing `.in` and `.is` in a single OR chain cleanly,
@@ -92,12 +95,14 @@ export async function GET(request: Request) {
       query = query.in("category_id", categoryIds)
     }
 
-    const { data: attributes, error } = await query.order("sort_order")
+    const { data: attributesRaw, error } = await query.order("sort_order")
 
     if (error) {
       console.error("Error fetching category attributes:", error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
+
+    const attributes = attributesRaw || []
 
     // Deduplicate by a normalized key, preferring attributes from the most specific category.
     // Priority order: selected category -> its parents (walking up) -> global (null category_id).
@@ -113,7 +118,7 @@ export async function GET(request: Request) {
       return priorityByCategoryId.get(category_id) ?? 9_000
     }
 
-    const sortedAttributes = [...(attributes || [])].sort((a, b) => {
+    const sortedAttributes = [...attributes].sort((a, b) => {
       const pa = getPriority(a.category_id ?? null)
       const pb = getPriority(b.category_id ?? null)
       if (pa !== pb) return pa - pb

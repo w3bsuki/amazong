@@ -5,6 +5,10 @@ import { stripe } from '@/lib/stripe'
 import { getStripeSubscriptionWebhookSecret } from '@/lib/env'
 import type Stripe from 'stripe'
 
+const SUBSCRIPTION_SELECT_FOR_UPDATES = 'id,seller_id,status,expires_at'
+const SUBSCRIPTION_PLAN_SELECT_FOR_WEBHOOK =
+  'id,tier,price_monthly,price_yearly,commission_rate,final_value_fee,insertion_fee,per_order_fee'
+
 export async function POST(req: Request) {
   // Create admin client inside handler (not at module level)
   const supabase = createAdminClient()
@@ -39,7 +43,7 @@ export async function POST(req: Request) {
         // HANDLE LISTING BOOST PAYMENTS (one-time payment)
         // ============================================================
         if (session.metadata?.type === 'listing_boost' && session.mode === 'payment') {
-          const sellerId = session.metadata.seller_id
+          const sellerId = session.metadata.seller_id ?? session.metadata.profile_id
           const productId = session.metadata.product_id
           const durationDays = Number.parseInt(session.metadata.duration_days || '7')
           const amountPaid = (session.amount_total || 0) / 100 // Convert from stotinki
@@ -104,7 +108,7 @@ export async function POST(req: Request) {
             // Get plan details
             const { data: plan } = await supabase
               .from('subscription_plans')
-              .select('*')
+              .select(SUBSCRIPTION_PLAN_SELECT_FOR_WEBHOOK)
               .eq('tier', planTier)
               .single()
 
@@ -163,7 +167,7 @@ export async function POST(req: Request) {
         // Find the subscription in our database
         const { data: existingSub } = await supabase
           .from('subscriptions')
-          .select('*')
+          .select(SUBSCRIPTION_SELECT_FOR_UPDATES)
           .eq('stripe_subscription_id', stripeSubId)
           .single()
 
@@ -221,7 +225,7 @@ export async function POST(req: Request) {
         // Update subscription status
         const { data: existingSub } = await supabase
           .from('subscriptions')
-          .select('*')
+          .select(SUBSCRIPTION_SELECT_FOR_UPDATES)
           .eq('stripe_subscription_id', stripeSubId)
           .single()
 
@@ -267,7 +271,7 @@ export async function POST(req: Request) {
         if (subscriptionId) {
           const { data: existingSub } = await supabase
             .from('subscriptions')
-            .select('*')
+            .select(SUBSCRIPTION_SELECT_FOR_UPDATES)
             .eq('stripe_subscription_id', subscriptionId)
             .single()
 
@@ -309,7 +313,7 @@ export async function POST(req: Request) {
         if (subscriptionId) {
           const { data: existingSub } = await supabase
             .from('subscriptions')
-            .select('*')
+            .select(SUBSCRIPTION_SELECT_FOR_UPDATES)
             .eq('stripe_subscription_id', subscriptionId)
             .single()
 

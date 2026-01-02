@@ -14,14 +14,29 @@ const KNOWN_BAD_REMOTE_IMAGE_SUBSTRINGS = [
 
 export function normalizeImageUrl(url: string | null | undefined): string {
 	if (!url) return PLACEHOLDER_IMAGE_PATH;
-	if (url === PLACEHOLDER_IMAGE_PATH) return url;
-	if (url.startsWith("https://placehold.co/")) return PLACEHOLDER_IMAGE_PATH;
+	const trimmed = url.trim();
+	if (!trimmed) return PLACEHOLDER_IMAGE_PATH;
+	if (trimmed === PLACEHOLDER_IMAGE_PATH) return trimmed;
+	if (trimmed.startsWith("https://placehold.co/")) return PLACEHOLDER_IMAGE_PATH;
 
 	for (const badSubstring of KNOWN_BAD_REMOTE_IMAGE_SUBSTRINGS) {
-		if (url.includes(badSubstring)) return PLACEHOLDER_IMAGE_PATH;
+		if (trimmed.includes(badSubstring)) return PLACEHOLDER_IMAGE_PATH;
 	}
 
-	return url;
+	// Keep special schemes as-is (e.g. client-generated previews)
+	if (trimmed.startsWith("data:") || trimmed.startsWith("blob:")) return trimmed;
+
+	// Normalize protocol-relative URLs
+	if (trimmed.startsWith("//")) return `https:${trimmed}`;
+
+	// Keep absolute http(s) URLs
+	if (/^https?:\/\//i.test(trimmed)) return trimmed;
+
+	// Keep root-relative paths
+	if (trimmed.startsWith("/")) return trimmed;
+
+	// Fix common mistake: relative public asset paths like "placeholder.jpg"
+	return `/${trimmed}`;
 }
 
 /**
@@ -32,14 +47,22 @@ export function normalizeImageUrl(url: string | null | undefined): string {
  */
 export function normalizeOptionalImageUrl(url: string | null | undefined): string | null {
 	if (!url) return null;
-	if (url === PLACEHOLDER_IMAGE_PATH) return null;
-	if (url.startsWith("https://placehold.co/")) return null;
+	const trimmed = url.trim();
+	if (!trimmed) return null;
+	if (trimmed === PLACEHOLDER_IMAGE_PATH) return null;
+	if (trimmed.startsWith("https://placehold.co/")) return null;
 
 	for (const badSubstring of KNOWN_BAD_REMOTE_IMAGE_SUBSTRINGS) {
-		if (url.includes(badSubstring)) return null;
+		if (trimmed.includes(badSubstring)) return null;
 	}
 
-	return url;
+	if (trimmed.startsWith("data:") || trimmed.startsWith("blob:")) return trimmed;
+	if (trimmed.startsWith("//")) return `https:${trimmed}`;
+	if (/^https?:\/\//i.test(trimmed)) return trimmed;
+	if (trimmed.startsWith("/")) return trimmed;
+
+	const normalizedLocalPath = `/${trimmed}`;
+	return normalizedLocalPath === PLACEHOLDER_IMAGE_PATH ? null : normalizedLocalPath;
 }
 
 export function normalizeImageUrls(urls: Array<string | null | undefined>): string[] {

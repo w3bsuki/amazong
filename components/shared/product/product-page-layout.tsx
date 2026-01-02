@@ -17,6 +17,7 @@ import type { SubmitReviewFn } from "@/components/shared/product/write-review-di
 
 type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
+type ProductVariantRow = Database["public"]["Tables"]["product_variants"]["Row"];
 
 type ProductWithSellerStats = ProductRow & { seller_stats?: SellerStatsRow | null };
 
@@ -53,6 +54,7 @@ interface ProductPageLayoutProps {
   relatedProducts: ProductPageViewModel["relatedProducts"];
   reviews: CustomerReview[];
   viewModel: ProductPageViewModel;
+  variants?: ProductVariantRow[];
   submitReview?: SubmitReviewFn;
 }
 
@@ -69,6 +71,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
     relatedProducts,
     reviews,
     viewModel,
+    variants,
     submitReview,
   } = props;
 
@@ -97,6 +100,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
         relatedProducts={relatedProducts}
         reviews={reviews}
         viewModel={viewModel}
+        variants={variants ?? []}
         {...(submitReview && { submitReview })}
       />
 
@@ -192,6 +196,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                       />
                     ),
                   }}
+                  variants={variants ?? []}
                 />
 
                 <TrustBadges locale={locale} verifiedSeller={viewModel.sellerVerified} />

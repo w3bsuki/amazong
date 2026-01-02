@@ -143,7 +143,7 @@ export default function CartPageClient() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {items.map((item, index) => (
-              <Card key={item.id} className="border-0 overflow-hidden">
+              <Card key={`${item.id}:${item.variantId ?? ""}`} className="border-0 overflow-hidden">
                 <CardContent className="p-0">
                   <div className="flex gap-4 p-4">
                     {/* Product Image */}
@@ -171,6 +171,11 @@ export default function CartPageClient() {
                           >
                             {item.title}
                           </Link>
+                          {item.variantName ? (
+                            <div className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                              {item.variantName}
+                            </div>
+                          ) : null}
                           <div className="flex items-center gap-2 mt-1.5">
                             <Badge
                               variant="secondary"
@@ -205,7 +210,7 @@ export default function CartPageClient() {
                         <div className="flex items-center gap-1 bg-muted rounded-full p-1">
                           <button
                             onClick={() =>
-                              item.quantity > 1 && updateQuantity(item.id, item.quantity - 1)
+                              item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.variantId)
                             }
                             disabled={item.quantity <= 1}
                             className="size-8 flex items-center justify-center rounded-full hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -215,7 +220,7 @@ export default function CartPageClient() {
                           </button>
                           <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
                             disabled={item.quantity >= 10}
                             className="size-8 flex items-center justify-center rounded-full hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                             aria-label="Increase quantity"
@@ -233,7 +238,7 @@ export default function CartPageClient() {
                             <Heart className="size-4" />
                           </button>
                           <button
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => removeFromCart(item.id, item.variantId)}
                             className="size-9 flex items-center justify-center rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
                             aria-label={t("delete")}
                           >

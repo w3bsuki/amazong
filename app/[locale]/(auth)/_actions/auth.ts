@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation"
 import { headers } from "next/headers"
-import { createAdminClient, createClient, createStaticClient } from "@/lib/supabase/server"
+import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { loginSchema, signUpSchema } from "@/lib/validations/auth"
 import { z } from "zod"
 
@@ -180,21 +180,8 @@ export async function signUp(
     return { ...prevState, error: error.message, success: false }
   }
 
-  if (authData?.user?.id) {
-    try {
-      const admin = createAdminClient()
-      await admin
-        .from("profiles")
-        .update({
-          username: usernameLower,
-          display_name: parsed.data.name,
-          account_type: parsed.data.accountType,
-        })
-        .eq("id", authData.user.id)
-    } catch {
-      // best-effort; onboarding can still complete profile later
-    }
-  }
+  // NOTE: Do not use a service-role client here.
+  // The profile trigger should hydrate initial profile fields from auth metadata.
 
   redirect(withLocalePrefix(locale, "/auth/sign-up-success"))
 }

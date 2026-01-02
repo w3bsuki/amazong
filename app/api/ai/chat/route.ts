@@ -476,7 +476,6 @@ export async function POST(req: Request) {
       // Buy mode: 2 steps max (search + respond). Sell mode: 3 steps (auth + analyze + create).
       stopWhen: stepCountIs(isBuyMode ? 2 : 3),
       ...(modelCtx.providerOptions ? { providerOptions: modelCtx.providerOptions } : {}),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- AI SDK tool type inference requires cast; toolsForMode is a Record<string, Tool> but streamText expects specific tool shapes per mode
       tools: toolsForMode as Record<string, Tool>,
     })
 

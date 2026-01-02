@@ -86,7 +86,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   // Fetch order
   const { data: orderData, error: orderError } = await supabase
     .from("orders")
-    .select("*")
+    .select("id,user_id,total_amount,status,shipping_address,created_at,stripe_payment_intent_id")
     .eq("id", id)
     .eq("user_id", user.id)
     .single()
@@ -98,7 +98,9 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   // Fetch order items - cast to expected shape
   const { data: orderItemsRaw } = await supabase
     .from("order_items")
-    .select("*")
+    .select(
+      "id,order_id,product_id,seller_id,quantity,price_at_purchase,status,seller_received_at,tracking_number,shipping_carrier,shipped_at,delivered_at"
+    )
     .eq("order_id", id)
 
   const orderItemsData = (orderItemsRaw || []) as Array<{

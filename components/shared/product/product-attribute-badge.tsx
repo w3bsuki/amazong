@@ -42,8 +42,8 @@ export function ProductAttributeBadge({
       className={cn(
         // Subtle pill style - using specific category badge tokens from globals.css
         "inline-flex w-fit items-center rounded px-1.5 py-0.5",
-        "bg-category-badge-bg text-category-badge-text border border-category-badge-border",
-        "text-xs font-medium",
+        "bg-category-badge-bg text-category-badge-text",
+        "text-2xs font-medium",
         "max-w-full truncate",
         className
       )}

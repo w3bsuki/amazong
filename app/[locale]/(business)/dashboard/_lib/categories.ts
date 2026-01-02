@@ -105,9 +105,6 @@ export async function getBusinessDashboardCategories(): Promise<CategoryNode[]> 
   }
 
   const allCategories = [...rootCats, ...(l1Cats || []), ...l2Cats, ...l3Cats]
-  console.log(
-    `[ProductsPage] Fetched ${allCategories.length} categories (${rootCats.length} L0, ${l1Cats?.length || 0} L1, ${l2Cats.length} L2, ${l3Cats.length} L3)`
-  )
 
   return buildCategoryTree(allCategories)
 }

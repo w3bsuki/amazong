@@ -86,7 +86,7 @@ export function CartDropdown() {
           <>
             <div className="max-h-[300px] overflow-y-auto">
               {items.slice(0, 4).map((item) => (
-                <div key={item.id} className="flex gap-3 p-3 border-b border-border hover:bg-muted">
+                <div key={`${item.id}:${item.variantId ?? ""}`} className="flex gap-3 p-3 border-b border-border hover:bg-muted">
                   <Link href={buildProductUrl(item)} className="shrink-0">
                     <div className="w-16 h-16 bg-muted rounded overflow-hidden">
                       {item.image ? (
@@ -111,6 +111,11 @@ export function CartDropdown() {
                     >
                       {item.title}
                     </Link>
+                    {item.variantName ? (
+                      <div className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                        {item.variantName}
+                      </div>
+                    ) : null}
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-sm font-medium text-foreground">{formatPrice(item.price)}</span>
                       <span className="text-xs text-muted-foreground">× {item.quantity}</span>
@@ -120,9 +125,9 @@ export function CartDropdown() {
                         onClick={(e) => {
                           e.preventDefault()
                           if (item.quantity > 1) {
-                            updateQuantity(item.id, item.quantity - 1)
+                            updateQuantity(item.id, item.quantity - 1, item.variantId)
                           } else {
-                            removeFromCart(item.id)
+                            removeFromCart(item.id, item.variantId)
                           }
                         }}
                         className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
@@ -135,7 +140,7 @@ export function CartDropdown() {
                       <button
                         onClick={(e) => {
                           e.preventDefault()
-                          updateQuantity(item.id, item.quantity + 1)
+                          updateQuantity(item.id, item.quantity + 1, item.variantId)
                         }}
                         className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                       >
@@ -144,7 +149,7 @@ export function CartDropdown() {
                       <button
                         onClick={(e) => {
                           e.preventDefault()
-                          removeFromCart(item.id)
+                          removeFromCart(item.id, item.variantId)
                         }}
                         className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive ml-auto"
                       >

@@ -259,8 +259,11 @@ amazong/
 - Fix `function_search_path_mutable` warning
 - Enable leaked password protection
 - Optimize RLS with `(select auth.uid())` pattern
-- Add missing indexes (`cart_items.product_id`)
+- Add missing indexes (FK-covering indexes like `cart_items.product_id`)
 - Remove duplicate index on wishlists
+- Stop bypassing RLS in user-facing API routes (avoid service-role client)
+- Remove mock browser client fallback (fail fast on missing env)
+- Remove over-engineered RPC wrappers; keep types in sync
 
 **Status (verified):**
 - ✅ Resolved function `search_path` warning
@@ -268,6 +271,9 @@ amazong/
 - ✅ Added `cart_items(product_id)` index
 - ✅ Removed duplicate `wishlists` index
 - ✅ Optimized `storage.objects` delete policy (no bare `auth.uid()`)
+- ✅ Removed service-role usage from user-facing routes; RLS now enforced in API writes
+- ✅ Applied cleanup migration removing RPC wrappers + unused indexes; restored FK-covering indexes after advisor flagged gaps
+- ✅ Regenerated Supabase types and synced `lib/supabase/database.types.ts` to match live DB
 - ⬜ Leaked password protection still disabled (Dashboard action required)
 
 ### Phase 3: Tailwind v4

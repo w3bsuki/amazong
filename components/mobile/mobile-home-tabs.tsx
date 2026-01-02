@@ -5,13 +5,17 @@ import { useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getCategoryName, getCategoryShortName, type Category } from "@/hooks/use-categories-cache"
+import type { CategoryTreeNode } from "@/lib/category-tree"
+import { getCategoryName, getCategoryShortName } from "@/lib/category-display"
 import { CategoryCircle } from "@/components/shared/category/category-circle"
 import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import type { UIProduct } from "@/lib/data/products"
-import { CaretLeft, Megaphone, Clock, Sparkle, Storefront, TrendUp } from "@phosphor-icons/react"
+import { Link } from "@/i18n/routing"
+import { CaretLeft, CaretRight, Megaphone, Clock, Sparkle, Storefront, TrendUp } from "@phosphor-icons/react"
 import { usePathname, useSearchParams } from "next/navigation"
+
+type Category = CategoryTreeNode
 
 // =============================================================================
 // Types
@@ -25,6 +29,8 @@ interface MobileHomeTabsProps {
   defaultSubTab?: string | null
   showBanner?: boolean
   pageTitle?: string | null
+  /** Hide the L0 sticky tab header (useful when a parent layout already provides tabs). */
+  showL0Tabs?: boolean
 }
 
 interface TabData {
@@ -39,7 +45,7 @@ interface TabData {
 
 function ProductGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 gap-1.5 px-(--page-inset)">
+    <div className="grid grid-cols-2 gap-1 px-1">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="flex flex-col h-full">
           <Skeleton className="aspect-square w-full rounded-md mb-1" />
@@ -69,26 +75,27 @@ const ALL_TAB_FILTERS = [
 // Main Component
 // =============================================================================
 
-export function MobileHomeTabs({ 
-  initialProducts, 
+export function MobileHomeTabs({
+  initialProducts,
   initialCategories = [],
   defaultTab = null,
   defaultSubTab = null,
   showBanner = true,
   pageTitle = null,
+  showL0Tabs = true,
 }: MobileHomeTabsProps) {
   const locale = useLocale()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [headerHeight, setHeaderHeight] = useState(0)
-  
+
   // Categories from server (L0→L1→L2 pre-loaded, no client fetch needed)
   const displayCategories = initialCategories
 
   // Initialize from URL params or props
   const initialTab = defaultTab || searchParams.get('tab') || "all"
   const initialSubTab = defaultSubTab || searchParams.get('sub') || null
-  
+
   // ==========================================================================
   // Navigation State - Simple hierarchy: L0 → L1 → L2 → L3 (pill)
   // ==========================================================================
@@ -96,7 +103,7 @@ export function MobileHomeTabs({
   const [activeL1, setActiveL1] = useState<string | null>(initialSubTab) // L1 category slug
   const [activeL2, setActiveL2] = useState<string | null>(null)        // L2 category slug
   const [selectedPill, setSelectedPill] = useState<string | null>(null) // L3 pill slug
-  
+
   // Filter state for "All" tab
   const [activeAllFilter, setActiveAllFilter] = useState<string>("newest")
 
@@ -109,9 +116,6 @@ export function MobileHomeTabs({
       hasMore: initialProducts.length >= 12,
     }
   })
-
-  // L3 children cache (fetched on-demand via API)
-  const [l3ChildrenCache, setL3ChildrenCache] = useState<Record<string, Category[]>>({})
 
   const isAllTab = activeTab === "all"
 
@@ -126,49 +130,46 @@ export function MobileHomeTabs({
   // ==========================================================================
 
   // L0 category (Fashion, Electronics, etc.)
-  const currentL0 = useMemo(() => 
+  const currentL0 = useMemo(() =>
     displayCategories.find(c => c.slug === activeTab),
     [displayCategories, activeTab]
   )
 
   // L1 categories (children of L0: Men, Women, Kids for Fashion)
-  const l1Categories = useMemo(() => 
+  const l1Categories = useMemo(() =>
     currentL0?.children ?? [],
     [currentL0]
   )
 
   // Current L1 category
-  const currentL1 = useMemo(() => 
+  const currentL1 = useMemo(() =>
     l1Categories.find(c => c.slug === activeL1),
     [l1Categories, activeL1]
   )
 
   // L2 categories (children of L1: Clothing, Shoes, Accessories)
-  const l2Categories = useMemo(() => 
+  const l2Categories = useMemo(() =>
     currentL1?.children ?? [],
     [currentL1]
   )
 
   // Current L2 category
-  const currentL2 = useMemo(() => 
+  const currentL2 = useMemo(() =>
     l2Categories.find(c => c.slug === activeL2),
     [l2Categories, activeL2]
   )
 
-  // L3 categories (children of L2: T-shirts, Shirts, Pants) - from cache or server
+  // L3 categories (children of L2: T-shirts, Shirts, Pants) - fully server-provided
   const l3Categories = useMemo(() => {
     if (!activeL2) return []
-    // First check if L2 has children from server data
-    if (currentL2?.children?.length) return currentL2.children
-    // Otherwise use cached API response
-    return l3ChildrenCache[activeL2] ?? []
-  }, [activeL2, currentL2, l3ChildrenCache])
+    return currentL2?.children ?? []
+  }, [activeL2, currentL2])
 
   // Determine what to show
   const showL1Circles = !activeL1 && l1Categories.length > 0
   const showL2Circles = !!activeL1 && l2Categories.length > 0
   const circlesToDisplay = showL2Circles ? l2Categories : (showL1Circles ? l1Categories : [])
-  
+
   // Show L3 pills when L2 is selected
   const showPills = !!activeL2 && l3Categories.length > 0
 
@@ -225,14 +226,26 @@ export function MobileHomeTabs({
   // Fetch products for a slug
   const loadPage = useCallback(
     async (slug: string, nextPage: number) => {
-      let url = `/api/products/newest?page=${nextPage}&limit=12`
-      
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('page', String(nextPage))
+      params.set('limit', '12')
+
+      // Category selection (hierarchical handled server-side)
       if (slug !== "all") {
-        url += `&category=${slug}`
-      } else if (activeAllFilter === 'promoted') {
-        url = `/api/products/promoted?page=${nextPage}&limit=12`
+        params.set('category', slug)
+      } else {
+        params.delete('category')
       }
-      
+
+      // Home-only promoted filter maps to a feed type
+      if (slug === 'all' && activeAllFilter === 'promoted') {
+        params.set('type', 'promoted')
+      } else {
+        params.delete('type')
+      }
+
+      const url = `/api/products/newest?${params.toString()}`
+
       const response = await fetch(url)
       const data = await response.json()
       return data as {
@@ -240,26 +253,8 @@ export function MobileHomeTabs({
         hasMore?: boolean
       }
     },
-    [activeAllFilter]
+    [activeAllFilter, searchParams]
   )
-
-  // Fetch L3 children for an L2 category (only if not already in server data)
-  const loadL3Children = useCallback(async (l2Slug: string) => {
-    if (l3ChildrenCache[l2Slug]) return // Already cached
-    
-    try {
-      const response = await fetch(`/api/categories?parent=${l2Slug}&depth=1`)
-      const data = await response.json()
-      if (data.categories) {
-        setL3ChildrenCache(prev => ({
-          ...prev,
-          [l2Slug]: data.categories
-        }))
-      }
-    } catch (error) {
-      console.error(`Failed to load L3 children for ${l2Slug}:`, error)
-    }
-  }, [l3ChildrenCache])
 
   // Track which slugs have been loaded to prevent infinite loops
   const loadedSlugsRef = useRef<Set<string>>(new Set(["all"]))
@@ -268,7 +263,7 @@ export function MobileHomeTabs({
   useEffect(() => {
     // Skip if already loaded
     if (loadedSlugsRef.current.has(activeSlug)) return
-    
+
     // Mark as loading to prevent re-runs
     loadedSlugsRef.current.add(activeSlug)
 
@@ -304,17 +299,10 @@ export function MobileHomeTabs({
     return () => { cancelled = true }
   }, [activeSlug, loadPage])
 
-  // Load L3 children when L2 is selected (if server didn't provide them)
-  useEffect(() => {
-    if (activeL2 && !currentL2?.children?.length && !l3ChildrenCache[activeL2]) {
-      loadL3Children(activeL2)
-    }
-  }, [activeL2, currentL2, l3ChildrenCache, loadL3Children])
-
   // Load more products (infinite scroll)
   const loadMoreProducts = useCallback(async () => {
     if (isLoading || !activeFeed.hasMore) return
-    
+
     setIsLoading(true)
     try {
       const nextPage = (activeFeed.page || 0) + 1
@@ -336,7 +324,7 @@ export function MobileHomeTabs({
         const current = prev[activeSlug] || { products: [], page: 0, hasMore: true }
         const existingIds = new Set(current.products.map(p => p.id))
         const uniqueNewProducts = nextProducts.filter(p => !existingIds.has(p.id))
-        
+
         return {
           ...prev,
           [activeSlug]: {
@@ -378,15 +366,20 @@ export function MobileHomeTabs({
 
   // Update URL when state changes (shallow routing - no page reload)
   const updateUrl = useCallback((tab: string, l1: string | null) => {
-    const params = new URLSearchParams()
+    // Preserve existing search params (filters/sort) while updating tab/sub.
+    const params = new URLSearchParams(searchParams.toString())
     if (tab !== 'all') params.set('tab', tab)
+    else params.delete('tab')
     if (l1) params.set('sub', l1)
-    
+    else params.delete('sub')
+
+    // Navigation changes should reset pagination.
+    params.delete('page')
+
     const queryString = params.toString()
     const newUrl = queryString ? `${pathname}?${queryString}` : pathname
-    
     window.history.replaceState(null, '', newUrl)
-  }, [pathname])
+  }, [pathname, searchParams])
 
   // Handle L0 tab change
   const handleTabChange = (slug: string) => {
@@ -446,62 +439,28 @@ export function MobileHomeTabs({
       {/* 
         1. Sticky Tabs Header (L0)
       */}
-      <div 
-        className="sticky z-30 bg-background border-b border-border/40"
-        style={{ top: headerHeight }}
-      >
-        <div 
-          ref={tabsContainerRef}
-          className="relative flex items-center gap-3 overflow-x-auto no-scrollbar px-(--page-inset)"
-          role="tablist"
+      {showL0Tabs && (
+        <div
+          className="sticky z-30 bg-background border-b border-border/40"
+          style={{ top: headerHeight }}
         >
-          {/* "All" Tab */}
-          <button
-            type="button"
-            role="tab"
-            data-tab="all"
-            onClick={() => handleTabChange("all")}
-            aria-selected={activeTab === "all"}
-            className={cn(
-              "shrink-0 py-3 text-sm relative",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              "transition-colors",
-              activeTab === "all"
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            )}
+          <div
+            ref={tabsContainerRef}
+            className="relative flex items-center gap-3 overflow-x-auto no-scrollbar px-(--page-inset)"
+            role="tablist"
           >
-            {/* Zero-layout-shift technique: invisible bold text reserves width */}
-            <span className="relative inline-flex flex-col items-center">
-              <span className={cn(
-                "transition-[font-weight] duration-100",
-                activeTab === "all" ? "font-bold" : "font-medium"
-              )}>
-                {locale === "bg" ? "Всички" : "All"}
-              </span>
-              <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
-                {locale === "bg" ? "Всички" : "All"}
-              </span>
-              {activeTab === "all" && (
-                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
-              )}
-            </span>
-          </button>
-
-          {/* Category Tabs */}
-          {displayCategories.map((cat) => (
+            {/* "All" Tab */}
             <button
-              key={cat.id}
               type="button"
               role="tab"
-              data-tab={cat.slug}
-              onClick={() => handleTabChange(cat.slug)}
-              aria-selected={activeTab === cat.slug}
+              data-tab="all"
+              onClick={() => handleTabChange("all")}
+              aria-selected={activeTab === "all"}
               className={cn(
                 "shrink-0 py-3 text-sm relative",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 "transition-colors",
-                activeTab === cat.slug
+                activeTab === "all"
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
@@ -510,21 +469,57 @@ export function MobileHomeTabs({
               <span className="relative inline-flex flex-col items-center">
                 <span className={cn(
                   "transition-[font-weight] duration-100",
-                  activeTab === cat.slug ? "font-bold" : "font-medium"
+                  activeTab === "all" ? "font-bold" : "font-medium"
                 )}>
-                  {getCategoryName(cat, locale)}
+                  {locale === "bg" ? "Всички" : "All"}
                 </span>
                 <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
-                  {getCategoryName(cat, locale)}
+                  {locale === "bg" ? "Всички" : "All"}
                 </span>
-                {activeTab === cat.slug && (
+                {activeTab === "all" && (
                   <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
                 )}
               </span>
             </button>
-          ))}
+
+            {/* Category Tabs */}
+            {displayCategories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                role="tab"
+                data-tab={cat.slug}
+                onClick={() => handleTabChange(cat.slug)}
+                aria-selected={activeTab === cat.slug}
+                className={cn(
+                  "shrink-0 py-3 text-sm relative",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  "transition-colors",
+                  activeTab === cat.slug
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {/* Zero-layout-shift technique: invisible bold text reserves width */}
+                <span className="relative inline-flex flex-col items-center">
+                  <span className={cn(
+                    "transition-[font-weight] duration-100",
+                    activeTab === cat.slug ? "font-bold" : "font-medium"
+                  )}>
+                    {getCategoryName(cat, locale)}
+                  </span>
+                  <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
+                    {getCategoryName(cat, locale)}
+                  </span>
+                  {activeTab === cat.slug && (
+                    <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                  )}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 
         2. Full-bleed Seller Banner (All tab only) - Professional C2C marketplace style
@@ -578,56 +573,62 @@ export function MobileHomeTabs({
               })}
             </div>
           </div>
-        ) : (circlesToDisplay.length > 0 || showL2Circles) ? (
-          <div 
-            ref={subTabsContainerRef}
-            className="flex overflow-x-auto no-scrollbar gap-2 snap-x snap-mandatory items-start px-(--page-inset)"
-          >
-            {/* Back Button (when showing L2) */}
-            {showL2Circles && (
-              <div className="flex flex-col items-center gap-1 shrink-0 snap-start w-14">
-                <button
-                  type="button"
-                  onClick={handleBackToL1}
-                  className="size-10 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center hover:bg-brand/20 transition-colors duration-100"
-                >
-                  <CaretLeft size={20} weight="bold" className="text-brand" aria-hidden="true" />
-                  <span className="sr-only">{locale === "bg" ? "Назад" : "Back"}</span>
-                </button>
-                <span className="text-2xs text-center leading-tight text-muted-foreground w-full font-medium">
-                  {locale === "bg" ? "Назад" : "Back"}
-                </span>
+        ) : !isAllTab ? (
+          <div className="px-(--page-inset) flex items-start justify-between gap-3">
+            {(circlesToDisplay.length > 0 || showL2Circles) ? (
+              <div
+                ref={subTabsContainerRef}
+                className="flex-1 flex overflow-x-auto no-scrollbar gap-2 snap-x snap-mandatory items-start"
+              >
+                {/* Back Button (when showing L2) */}
+                {showL2Circles && (
+                  <div className="flex flex-col items-center gap-1 shrink-0 snap-start w-14">
+                    <button
+                      type="button"
+                      onClick={handleBackToL1}
+                      className="size-12 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center hover:bg-brand/20 transition-colors duration-100"
+                    >
+                      <CaretLeft size={22} weight="bold" className="text-brand" aria-hidden="true" />
+                      <span className="sr-only">{locale === "bg" ? "Назад" : "Back"}</span>
+                    </button>
+                    <span className="text-2xs text-center leading-tight text-muted-foreground w-full font-medium">
+                      {locale === "bg" ? "Назад" : "Back"}
+                    </span>
+                  </div>
+                )}
+
+                {circlesToDisplay.map((sub) => {
+                  const isActive = showL2Circles
+                    ? activeL2 === sub.slug
+                    : activeL1 === sub.slug
+
+                  const dimmed =
+                    (showL2Circles ? !!activeL2 : !!activeL1) && !isActive
+
+                  return (
+                    <CategoryCircle
+                      key={sub.slug}
+                      category={sub}
+                      onClick={() => handleCircleClick(sub)}
+                      active={isActive}
+                      dimmed={dimmed}
+                      circleClassName="size-(--category-circle-mobile)"
+                      fallbackIconSize={24}
+                      fallbackIconWeight={isActive ? "fill" : "regular"}
+                      variant="muted"
+                      label={getCategoryShortName(sub, locale)}
+                      className={cn("w-14", "transition-opacity duration-100")}
+                      labelClassName={cn(
+                        "text-2xs text-center leading-tight line-clamp-2 w-full font-medium",
+                        isActive ? "text-brand" : "text-muted-foreground"
+                      )}
+                    />
+                  )
+                })}
               </div>
+            ) : (
+              <div className="flex-1" />
             )}
-
-            {circlesToDisplay.map((sub) => {
-              const isActive = showL2Circles 
-                ? activeL2 === sub.slug
-                : activeL1 === sub.slug
-
-              const dimmed =
-                (showL2Circles ? !!activeL2 : !!activeL1) && !isActive
-
-              return (
-                <CategoryCircle
-                  key={sub.slug}
-                  category={sub}
-                  onClick={() => handleCircleClick(sub)}
-                  active={isActive}
-                  dimmed={dimmed}
-                  circleClassName="size-10"
-                  fallbackIconSize={20}
-                  fallbackIconWeight={isActive ? "fill" : "regular"}
-                  variant="muted"
-                  label={getCategoryShortName(sub, locale)}
-                  className={cn("w-14", "transition-opacity duration-100")}
-                  labelClassName={cn(
-                    "text-2xs text-center leading-tight line-clamp-2 w-full font-medium",
-                    isActive ? "text-brand" : "text-muted-foreground"
-                  )}
-                />
-              )
-            })}
           </div>
         ) : null}
       </div>
@@ -661,8 +662,8 @@ export function MobileHomeTabs({
                   onClick={() => handlePillClick(child)}
                   className={cn(
                     "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
-                    isSelected 
-                      ? "bg-primary text-primary-foreground border-primary" 
+                    isSelected
+                      ? "bg-primary text-primary-foreground border-primary"
                       : "bg-secondary text-secondary-foreground border-border/50 hover:bg-secondary/80"
                   )}
                 >
@@ -674,17 +675,42 @@ export function MobileHomeTabs({
         </div>
       )}
 
+      {!isAllTab && activeSlug !== "all" && (
+        <div className="bg-background px-(--page-inset) pt-2 pb-3 border-b border-border/40">
+          <Link
+            href={`/categories/${activeSlug}`}
+            aria-label={locale === "bg" ? "Виж всички" : "View all"}
+            className={cn(
+              "w-full",
+              "h-8 rounded-lg",
+              "inline-flex items-center justify-between gap-2",
+              "bg-secondary text-secondary-foreground",
+              "border border-border/50",
+              "px-3",
+              "text-xs font-medium",
+              "hover:bg-secondary/80",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+            )}
+          >
+            <span className="whitespace-nowrap">
+              {locale === "bg" ? "Виж всички" : "View all"}
+            </span>
+            <CaretRight size={14} weight="bold" aria-hidden="true" />
+          </Link>
+        </div>
+      )}
+
       {/* 
         4. Product Feed 
       */}
       <div className="pt-1">
         {activeFeed.products.length === 0 && !isLoading ? (
-          <EmptyStateCTA 
+          <EmptyStateCTA
             variant={isAllTab ? "no-listings" : "no-category"}
             {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
           />
         ) : (
-          <div className="grid grid-cols-2 gap-1.5 px-(--page-inset)">
+          <div className="grid grid-cols-2 gap-1 px-1">
             {activeFeed.products.map((product, index) => (
               <ProductCard
                 key={`${product.id}-${activeSlug}`}

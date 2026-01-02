@@ -66,3 +66,7 @@ tsc.err
 /cleanup/*.log
 /cleanup/*.txt
 /cleanup/archive/
+
+# Claude Code local settings (personal, not shared)
+.claude/settings.local.json
+CLAUDE.local.md

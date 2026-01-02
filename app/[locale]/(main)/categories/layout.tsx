@@ -1,4 +1,4 @@
-import { getRootCategories } from "./_lib/categories-data"
+import { getCategoryRootSlugMap, getRootCategories } from "./_lib/categories-data"
 import { MobileCategoryTabs } from "@/components/category/mobile-category-tabs"
 import { setRequestLocale } from "next-intl/server"
 import { validateLocale } from "@/i18n/routing"
@@ -15,12 +15,13 @@ export default async function CategoriesLayout({
   setRequestLocale(locale)
 
   const categories = await getRootCategories()
+  const rootSlugBySlug = await getCategoryRootSlugMap()
 
   return (
     <div className="min-h-[calc(100vh-52px-50px)] bg-background">
       {/* Mobile Tabs - Sticky Top (Horizontal) */}
       <div className="block md:hidden sticky top-[52px] z-30">
-        <MobileCategoryTabs categories={categories} locale={locale} />
+        <MobileCategoryTabs categories={categories} locale={locale} rootSlugBySlug={rootSlugBySlug} />
       </div>
 
       {/* Main Content Area */}

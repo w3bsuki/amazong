@@ -25,7 +25,7 @@ export default function CategoriesLoading() {
           <div className="flex overflow-x-auto no-scrollbar gap-2 px-2 py-2">
             {Array.from({ length: 12 }).map((_, i) => (
               <div key={i} className="flex flex-col items-center gap-1 shrink-0">
-                <Skeleton className="size-14 rounded-full" />
+                <Skeleton className="size-(--category-circle-mobile) rounded-full" />
                 <Skeleton className="h-3 w-12" />
               </div>
             ))}

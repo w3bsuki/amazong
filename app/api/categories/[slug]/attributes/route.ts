@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
 
-// Use service role for this public endpoint to bypass RLS
-const supabase = createAdminClient();
+// Public endpoint: use anon key so RLS is still enforced
+const supabase = createStaticClient();
 
 // Use the generated database type for category attributes
 type CategoryAttributeRow = Database["public"]["Tables"]["category_attributes"]["Row"];
+
+const CATEGORY_ATTRIBUTES_SELECT =
+  "id,category_id,name,name_bg,attribute_type,is_required,is_filterable,options,options_bg,placeholder,placeholder_bg,validation_rules,sort_order,created_at" as const;
 
 export async function GET(
   request: NextRequest,
@@ -47,7 +50,7 @@ export async function GET(
     // Fetch attributes for this category
     const { data: attributes, error } = await supabase
       .from("category_attributes")
-      .select("*")
+      .select(CATEGORY_ATTRIBUTES_SELECT)
       .eq("category_id", categoryId)
       .order("sort_order", { ascending: true });
 
@@ -72,7 +75,7 @@ export async function GET(
       // Recursively get parent attributes
       const { data: parentAttrs } = await supabase
         .from("category_attributes")
-        .select("*")
+        .select(CATEGORY_ATTRIBUTES_SELECT)
         .eq("category_id", category.parent_id)
         .order("sort_order", { ascending: true });
 

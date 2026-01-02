@@ -1,7 +1,7 @@
 "use server"
 
 import { stripe } from "@/lib/stripe"
-import { createClient, createAdminClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import type { CartItem } from "@/components/providers/cart-context"
 import type Stripe from "stripe"
 
@@ -53,6 +53,7 @@ export async function createCheckoutSession(items: CartItem[]) {
             ],
             metadata: {
               product_id: item.id,
+              ...(item.variantId ? { variant_id: item.variantId } : {}),
             },
           },
           unit_amount: Math.round(item.price * 100),
@@ -63,7 +64,7 @@ export async function createCheckoutSession(items: CartItem[]) {
       ...(userId ? { client_reference_id: userId } : {}),
       metadata: {
         user_id: userId || "guest",
-        items_json: JSON.stringify(items.map((i) => ({ id: i.id, qty: i.quantity, price: i.price }))),
+        items_json: JSON.stringify(items.map((i) => ({ id: i.id, variantId: i.variantId ?? null, qty: i.quantity, price: i.price }))),
       },
       success_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/cart`,
@@ -113,23 +114,18 @@ export async function verifyAndCreateOrder(sessionId: string) {
       return { error: "Payment not completed" }
     }
 
-    const adminClient = createAdminClient()
-    if (!adminClient) {
-      console.error("Admin client creation failed - check SUPABASE_SERVICE_ROLE_KEY")
-      return { error: "Database configuration error" }
-    }
-
-    const { data: existingOrder } = await adminClient
+    const { data: existingOrder } = await supabase
       .from("orders")
       .select("id")
       .eq("stripe_payment_intent_id", session.payment_intent as string)
+      .eq("user_id", user.id)
       .single()
 
     if (existingOrder) {
       return { success: true, orderId: existingOrder.id, message: "Order already exists" }
     }
 
-    let itemsData: { id: string; qty: number; price: number }[] = []
+    let itemsData: { id: string; variantId?: string | null; qty: number; price: number }[] = []
     try {
       if (session.metadata?.items_json) {
         itemsData = JSON.parse(session.metadata.items_json)
@@ -161,10 +157,7 @@ export async function verifyAndCreateOrder(sessionId: string) {
       stripe_payment_intent_id: session.payment_intent as string,
     }
 
-    const {
-      data: order,
-      error: orderError,
-    } = await adminClient.from("orders").insert(orderData).select().single()
+    const { data: order, error: orderError } = await supabase.from("orders").insert(orderData).select().single()
 
     if (orderError) {
       return { error: `Failed to create order: ${orderError.message}` }
@@ -172,7 +165,7 @@ export async function verifyAndCreateOrder(sessionId: string) {
 
     const productIds = itemsData.map((item) => item.id).filter(Boolean)
     if (productIds.length > 0) {
-      const { data: products } = await adminClient
+      const { data: products } = await supabase
         .from("products")
         .select("id, seller_id")
         .in("id", productIds)
@@ -185,24 +178,17 @@ export async function verifyAndCreateOrder(sessionId: string) {
           order_id: order.id,
           product_id: item.id,
           seller_id: productSellerMap.get(item.id)!,
+          ...(item.variantId ? { variant_id: item.variantId } : {}),
           quantity: item.qty || 1,
           price_at_purchase: item.price,
         }))
 
       if (validItems.length > 0) {
-        await adminClient.from("order_items").insert(validItems)
-
-        for (const item of validItems) {
-          const { data: currentProduct } = await adminClient
-            .from("products")
-            .select("stock, track_inventory")
-            .eq("id", item.product_id)
-            .single()
-
-          if (currentProduct && currentProduct.track_inventory !== false) {
-            const newStock = Math.max(0, (currentProduct.stock || 0) - item.quantity)
-            await adminClient.from("products").update({ stock: newStock }).eq("id", item.product_id)
-          }
+        // Stock decrement is enforced in the database on insert (trigger), so we don't
+        // need a service-role client here.
+        const { error: orderItemsError } = await supabase.from("order_items").insert(validItems)
+        if (orderItemsError) {
+          return { error: `Failed to create order items: ${orderItemsError.message}` }
         }
       }
     }

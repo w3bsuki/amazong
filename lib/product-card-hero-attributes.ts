@@ -86,6 +86,23 @@ export const HERO_ATTRIBUTE_CONFIGS: HeroAttributeConfig[] = [
   },
 ]
 
+const FALLBACK_MAX_LENGTH = 16
+
+function truncateLabel(label: string, maxLength: number): string {
+  if (label.length <= maxLength) return label
+  return label.slice(0, Math.max(0, maxLength - 1)) + "…"
+}
+
+function formatAttributeValue(value: unknown): string | null {
+  if (value === null || value === undefined) return null
+  if (typeof value === "number") return value.toString()
+  if (typeof value === "string") {
+    const trimmed = value.trim()
+    return trimmed ? trimmed : null
+  }
+  return null
+}
+
 /**
  * Get hero attribute config for a category
  */
@@ -122,21 +139,15 @@ export function buildHeroBadgeText(
     const parts: string[] = []
     
     for (const key of config.attributeKeys) {
-      const value = attributes[key]
-      if (value && typeof value === "string" && value.trim()) {
-        parts.push(value.trim())
-      }
+      const value = formatAttributeValue(attributes[key])
+      if (value) parts.push(value)
       // Stop after we have 2 meaningful parts
       if (parts.length >= 2) break
     }
     
     if (parts.length > 0) {
       const text = parts.join(config.separator)
-      // Truncate if too long
-      if (text.length > config.maxLength) {
-        return text.slice(0, config.maxLength - 1) + "…"
-      }
-      return text
+      return truncateLabel(text, config.maxLength)
     }
   }
   
@@ -149,7 +160,7 @@ export function buildHeroBadgeText(
       // Clean up hidden markers
       const clean = name.replace(/^\s*\[HIDDEN\]\s*/i, "").trim()
       if (clean) {
-        return clean.length > 16 ? clean.slice(0, 15) + "…" : clean
+        return truncateLabel(clean, FALLBACK_MAX_LENGTH)
       }
     }
   }

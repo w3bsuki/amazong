@@ -6,8 +6,6 @@ import { Link, useRouter } from "@/i18n/routing"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Spinner } from "@/components/common/spinner"
-import { ProductAttributeBadge } from "@/components/shared/product/product-attribute-badge"
 import { useCart } from "@/components/providers/cart-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { toast } from "sonner"
@@ -15,33 +13,25 @@ import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { productBlurDataURL, getImageLoadingStrategy } from "@/lib/image-utils"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import { buildHeroBadgeText } from "@/lib/product-card-hero-attributes"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Heart, ShoppingCart, Plus, Truck, Star, CurrencyEur } from "@phosphor-icons/react"
+import { Heart, ShoppingCart, Plus, Star, SealCheck, Truck } from "@phosphor-icons/react"
 
 // =============================================================================
-// DESIGN SYSTEM COMPLIANCE (_MASTER.md)
-// =============================================================================
-// Typography: Price 18px (mobile) / 20px (desktop), Title 13px, Meta 11px
-// Spacing: gap-1.5 (6px) grid, p-1.5 content
-// Touch targets: 24px min, 28px wishlist, 32px quick-add
-// Aspect ratio: 4:5 for grid cards (taller = more product visible)
-// No hover scale, no shimmer, no gradients
-
-// =============================================================================
-// CVA VARIANTS - Clean, Flat, Professional (eBay aesthetic)
+// CVA VARIANTS
 // =============================================================================
 
 const productCardVariants = cva(
-  "group relative block h-full min-w-0 cursor-pointer overflow-hidden",
+  "tap-transparent group relative block h-full min-w-0 cursor-pointer overflow-hidden bg-transparent focus-within:ring-2 focus-within:ring-ring/40 lg:rounded-md lg:border lg:border-transparent lg:bg-card lg:hover:border-border/60 lg:hover:shadow-sm",
   {
     variants: {
       variant: {
         default: "",
-        featured: "",
+        featured: "lg:border-primary/30 lg:bg-primary/[0.02]",
       },
       state: {
         default: "",
-        promoted: "",
+        promoted: "lg:border-amber-500/40",
         sale: "",
       },
     },
@@ -95,11 +85,15 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   currentUserId?: string | null
   inStock?: boolean
   className?: string
-  
-  // Legacy props (accepted but ignored for backwards compat)
+
+  // Rating & reviews (now displayed in Pro Commerce style)
   rating?: number
   reviews?: number
+
+  // Condition for C2C
   condition?: string
+
+  // Legacy props (accepted but ignored for backwards compat)
   brand?: string
   tags?: string[]
   location?: string
@@ -119,14 +113,9 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
 
 function getProductCardImageSrc(src: string): string {
   if (!src) return PLACEHOLDER_IMAGE_PATH
-  const isRemote = /^https?:\/\//i.test(src)
   const normalized = normalizeImageUrl(src)
   if (!normalized) return PLACEHOLDER_IMAGE_PATH
-  if (normalized === PLACEHOLDER_IMAGE_PATH) return normalized
-  if (process.env.NEXT_PUBLIC_E2E === "true" && isRemote) {
-    return PLACEHOLDER_IMAGE_PATH
-  }
-  return normalized
+  return normalized === PLACEHOLDER_IMAGE_PATH ? PLACEHOLDER_IMAGE_PATH : normalized
 }
 
 // =============================================================================
@@ -147,6 +136,7 @@ function ProductCard({
   sellerId,
   sellerName,
   sellerAvatarUrl,
+  sellerVerified,
   freeShipping = false,
   slug,
   username,
@@ -162,276 +152,272 @@ function ProductCard({
   ref,
   rating,
   reviews,
+  condition,
 }: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
-    const router = useRouter()
-    const { addToCart, items: cartItems } = useCart()
-    const { isInWishlist, toggleWishlist } = useWishlist()
-    const t = useTranslations("Product")
-    const tCart = useTranslations("Cart")
-    const locale = useLocale()
+  const router = useRouter()
+  const { addToCart, items: cartItems } = useCart()
+  const { isInWishlist, toggleWishlist } = useWishlist()
+  const t = useTranslations("Product")
+  const tCart = useTranslations("Cart")
+  const locale = useLocale()
 
-    const [isWishlistPending, setIsWishlistPending] = React.useState(false)
+  const [isWishlistPending, setIsWishlistPending] = React.useState(false)
 
-    // Derived values
-    const hasDiscount = originalPrice && originalPrice > price
-    const discountPercent = hasDiscount
-      ? Math.round(((originalPrice - price) / originalPrice) * 100)
-      : (salePercent ?? 0)
+  // Derived values
+  const hasDiscount = originalPrice && originalPrice > price
+  const discountPercent = hasDiscount
+    ? Math.round(((originalPrice - price) / originalPrice) * 100)
+    : (salePercent ?? 0)
 
-    // Resolve state
-    const resolvedState = state ?? (isOnSale || hasDiscount ? "sale" : "default")
+  // Resolve state
+  const resolvedState = state ?? (isOnSale || hasDiscount ? "sale" : "default")
 
-    // URLs
-    const productUrl = username ? `/${username}/${slug || id}` : "#"
-    // Seller display name (prefer sellerName, fallback to username)
-    const displaySellerName = showSeller ? (sellerName || username || null) : null
+  // URLs
+  const productUrl = username ? `/${username}/${slug || id}` : "#"
+  // Seller display name (prefer sellerName, fallback to username)
+  const displaySellerName = showSeller ? (sellerName || username || null) : null
 
-    const inWishlist = isInWishlist(id)
-    const inCart = React.useMemo(() => cartItems.some((item) => item.id === id), [cartItems, id])
+  const inWishlist = isInWishlist(id)
+  const inCart = React.useMemo(() => cartItems.some((item) => item.id === id), [cartItems, id])
 
-    const handleOpenProduct = React.useCallback(() => {
-      router.push(productUrl)
-    }, [router, productUrl])
+  const handleOpenProduct = React.useCallback(() => {
+    router.push(productUrl)
+  }, [router, productUrl])
 
-    // Loading strategy
-    const loadingStrategy = getImageLoadingStrategy(index, 4)
-    const imageSrc = React.useMemo(() => getProductCardImageSrc(image), [image])
+  // Loading strategy
+  const loadingStrategy = getImageLoadingStrategy(index, 4)
+  const imageSrc = React.useMemo(() => getProductCardImageSrc(image), [image])
 
-    // Check if own product
-    const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
+  // Check if own product
+  const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
 
-    // Price formatting
-    const formatPriceParts = (p: number) => {
-      const formatter = new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
-        style: "currency",
-        currency: "EUR",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      })
-      return formatter.formatToParts(p)
+  // Smart badge text (category-aware attributes)
+  const smartBadge = React.useMemo(() => {
+    return buildHeroBadgeText(categoryRootSlug, attributes, categoryPath, locale)
+  }, [categoryRootSlug, attributes, categoryPath, locale])
+
+  // Condition badge helper
+  const conditionLabel = React.useMemo(() => {
+    if (!condition) return null
+    const c = condition.toLowerCase()
+    if (c === "new" || c === "novo" || c === "ново") return locale === "bg" ? "Ново" : "New"
+    if (c === "like_new" || c === "like new" || c === "като ново") return locale === "bg" ? "Като ново" : "Like New"
+    if (c === "used" || c === "употребявано") return locale === "bg" ? "Употр." : "Used"
+    if (c === "refurbished" || c === "рефърбиш") return locale === "bg" ? "Рефърб." : "Refurb"
+    return condition.slice(0, 8)
+  }, [condition, locale])
+
+  // Price formatting
+  const priceFormatter = React.useMemo(() => {
+    return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+  }, [locale])
+
+  // Handlers
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (isOwnProduct) {
+      toast.error(t("cannotBuyOwnProduct"))
+      return
     }
-
-    const PriceDisplay = ({ price, className }: { price: number, className?: string }) => {
-      const parts = formatPriceParts(price)
-      const currency = parts.find(p => p.type === "currency")?.value
-      const value = parts.filter(p => p.type !== "currency").map(p => p.value).join("")
-      const isEuro = currency === "€" || currency === "EUR"
-      
-      return (
-        <span className={cn("flex items-center", className)}>
-          {currency && (
-            <span className="mr-0.5 flex items-center text-muted-foreground">
-              {isEuro ? (
-                <CurrencyEur size="0.85em" weight="bold" />
-              ) : (
-                <span className="text-[0.85em] font-bold">{currency}</span>
-              )}
-            </span>
-          )}
-          <span>{value}</span>
-        </span>
-      )
+    if (!inStock) {
+      toast.error(t("outOfStock"))
+      return
     }
+    addToCart({
+      id,
+      title,
+      price,
+      image,
+      quantity: 1,
+      ...(slug ? { slug } : {}),
+      ...(username ? { username } : {}),
+    })
+    toast.success(tCart("itemAdded"))
+  }
 
-    // Handlers
-    const handleAddToCart = (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      if (isOwnProduct) {
-        toast.error(t("cannotBuyOwnProduct"))
-        return
-      }
-      if (!inStock) {
-        toast.error(t("outOfStock"))
-        return
-      }
-      addToCart({
-        id,
-        title,
-        price,
-        image,
-        quantity: 1,
-        ...(slug ? { slug } : {}),
-        ...(username ? { username } : {}),
-      })
-      toast.success(tCart("itemAdded"))
+  const handleWishlist = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (isWishlistPending) return
+    setIsWishlistPending(true)
+    try {
+      await toggleWishlist({ id, title, price, image })
+    } finally {
+      setIsWishlistPending(false)
     }
+  }
 
-    const handleWishlist = async (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      if (isWishlistPending) return
-      setIsWishlistPending(true)
-      try {
-        await toggleWishlist({ id, title, price, image })
-      } finally {
-        setIsWishlistPending(false)
-      }
-    }
+  // Rating display helper
+  const hasRating = typeof rating === "number" && rating > 0
+  const reviewCount = reviews ?? 0
 
-    return (
-      <div
-        ref={ref}
-        className={cn(productCardVariants({ variant, state: resolvedState }), className)}
-        onClick={handleOpenProduct}
+  return (
+    <div
+      ref={ref}
+      className={cn(productCardVariants({ variant, state: resolvedState }), className)}
+      onClick={handleOpenProduct}
+    >
+      {/* Full-card link for accessibility */}
+      <Link
+        href={productUrl}
+        className="absolute inset-0 z-[1]"
+        aria-label={t("openProduct", { title })}
       >
-        {/* Full-card link for accessibility */}
-        <Link
-          href={productUrl}
-          className="absolute inset-0 z-1"
-          aria-label={t("openProduct", { title })}
-        >
-          <span className="sr-only">{title}</span>
-        </Link>
+        <span className="sr-only">{title}</span>
+      </Link>
 
-        {/* IMAGE SECTION - 4:5 aspect ratio per _MASTER.md */}
-        <div className="relative overflow-hidden rounded bg-muted">
-          <AspectRatio ratio={4 / 5}>
-            <Image
-              src={imageSrc}
-              alt={title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              placeholder="blur"
-              blurDataURL={productBlurDataURL()}
-              loading={loadingStrategy.loading}
-              priority={loadingStrategy.priority}
-            />
-          </AspectRatio>
+      {/* Image */}
+      <div className="relative overflow-hidden rounded-md bg-muted lg:rounded-none">
+        <AspectRatio ratio={4 / 5}>
+          <Image
+            src={imageSrc}
+            alt={title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            placeholder="blur"
+            blurDataURL={productBlurDataURL()}
+            loading={loadingStrategy.loading}
+            priority={loadingStrategy.priority}
+          />
+        </AspectRatio>
 
-          {/* Discount badge - 11px font-semibold per _MASTER.md */}
+        {/* Top-left badges stack: Discount, Condition */}
+        <div className="absolute left-0 top-1.5 z-10 flex flex-col gap-1">
           {hasDiscount && discountPercent >= 5 && (
-            <span className="absolute left-1.5 top-1.5 z-10 rounded bg-destructive px-2 py-0.5 text-tiny font-semibold text-destructive-foreground">
+            <span className="rounded-r-sm bg-red-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
               -{discountPercent}%
             </span>
           )}
+          {conditionLabel && (
+            <span className="rounded-r-sm bg-foreground/80 px-1.5 py-0.5 text-[10px] font-medium text-background">
+              {conditionLabel}
+            </span>
+          )}
+        </div>
 
-          {/* Wishlist - Top Right */}
-          {showWishlist && (
+        {/* Wishlist button - top right */}
+        {showWishlist && (
+          <button
+            type="button"
+            className={cn(
+              "absolute right-1.5 top-1.5 z-10 flex size-7 items-center justify-center rounded-full transition-colors duration-100",
+              inWishlist
+                ? "bg-red-500 text-white"
+                : "bg-black/30 text-white backdrop-blur-sm active:bg-red-500",
+              isWishlistPending && "opacity-50 pointer-events-none"
+            )}
+            onClick={handleWishlist}
+            disabled={isWishlistPending}
+            aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
+          >
+            <Heart size={14} weight={inWishlist ? "fill" : "bold"} />
+          </button>
+        )}
+
+        {/* Smart attribute badge - bottom of image */}
+        {smartBadge && (
+          <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/60 to-transparent px-1.5 pb-1 pt-4">
+            <span className="text-[11px] font-medium text-white drop-shadow-sm">
+              {smartBadge}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="relative z-[2] px-0.5 pt-1.5 pb-1 lg:p-1.5">
+        {/* Price row */}
+        <div className="flex flex-wrap items-baseline gap-x-1">
+          <span className={cn(
+            "text-base font-bold leading-none",
+            hasDiscount ? "text-red-600" : "text-foreground"
+          )}>
+            {priceFormatter.format(price)}
+          </span>
+          {hasDiscount && originalPrice && (
+            <span className="text-[10px] text-muted-foreground line-through">
+              {priceFormatter.format(originalPrice)}
+            </span>
+          )}
+          {freeShipping && (
+            <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600">
+              <Truck size={10} weight="bold" />
+            </span>
+          )}
+        </div>
+
+        {/* Title */}
+        <h3 className="mt-0.5 line-clamp-2 text-[13px] leading-tight text-foreground/90">
+          {title}
+        </h3>
+
+        {/* Rating row (if available) */}
+        {hasRating && (
+          <div className="mt-1 flex items-center gap-0.5">
+            <Star size={10} weight="fill" className="text-amber-400" />
+            <span className="text-[10px] text-muted-foreground">
+              {rating.toFixed(1)}
+              {reviewCount > 0 && <span className="ml-0.5">({reviewCount > 999 ? `${(reviewCount / 1000).toFixed(1)}k` : reviewCount})</span>}
+            </span>
+          </div>
+        )}
+
+        {/* Seller row + Quick-add */}
+        <div className="mt-1 flex items-center justify-between gap-1">
+          {displaySellerName ? (
+            <div className="flex min-w-0 items-center gap-1">
+              <Avatar className="size-4 shrink-0">
+                <AvatarImage src={sellerAvatarUrl || undefined} />
+                <AvatarFallback className="text-[6px] bg-muted">
+                  {displaySellerName.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="truncate text-[10px] text-muted-foreground">
+                {displaySellerName}
+              </span>
+              {sellerVerified && (
+                <SealCheck size={10} weight="fill" className="shrink-0 text-blue-500" />
+              )}
+            </div>
+          ) : (
+            <div />
+          )}
+
+          {showQuickAdd && (
             <button
               type="button"
-              className="absolute right-1.5 top-1.5 z-10 flex h-8 w-8 items-center justify-center"
-              onClick={handleWishlist}
-              aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
+              className={cn(
+                "flex size-6 shrink-0 items-center justify-center rounded transition-colors duration-100",
+                inCart
+                  ? "bg-blue-600 text-white"
+                  : "bg-muted text-muted-foreground active:bg-blue-600 active:text-white"
+              )}
+              onClick={handleAddToCart}
+              disabled={isOwnProduct || !inStock}
+              aria-label={inCart ? "In cart" : "Add to cart"}
             >
-              <span
-                className={cn(
-                  "flex h-7 w-7 items-center justify-center rounded-full border border-border/50 bg-background/90 shadow-sm backdrop-blur-sm transition-transform active:scale-95",
-                  inWishlist && "bg-cta-trust-blue/10 border-cta-trust-blue/20"
-                )}
-              >
-                {isWishlistPending ? (
-                  <Spinner className="h-4 w-4" />
-                ) : (
-                  <Heart
-                    size={16}
-                    weight={inWishlist ? "fill" : "regular"}
-                    className={inWishlist ? "text-cta-trust-blue" : "text-muted-foreground"}
-                  />
-                )}
-              </span>
+              {inCart ? (
+                <ShoppingCart size={12} weight="fill" />
+              ) : (
+                <Plus size={12} weight="bold" />
+              )}
             </button>
           )}
         </div>
-
-        {/* CONTENT SECTION */}
-        <div className="relative z-10 flex flex-col gap-1 p-1.5">
-          {/* Category/attribute badge - TOP position */}
-          <ProductAttributeBadge
-            categoryRootSlug={categoryRootSlug}
-            attributes={attributes}
-            categoryPath={categoryPath}
-            locale={locale}
-          />
-
-          {/* Title */}
-          <h3 className="line-clamp-2 text-sm font-medium leading-tight text-foreground">
-            {title}
-          </h3>
-
-          {/* Rating (if available) */}
-          {!!(rating || reviews) && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <div className="flex items-center text-warning">
-                <Star weight="fill" size={12} />
-                <span className="ml-0.5 font-medium text-foreground">{rating?.toFixed(1) || "4.5"}</span>
-              </div>
-              <span>({reviews || 0})</span>
-            </div>
-          )}
-
-          <div className="mt-1 flex items-end justify-between gap-1">
-            <div className="flex flex-col gap-0.5">
-              {/* Price - Prominent */}
-              <div className="flex items-center gap-1">
-                <PriceDisplay 
-                  price={price} 
-                  className={cn(
-                    "text-base font-bold leading-none",
-                    hasDiscount ? "text-price-sale" : "text-foreground"
-                  )} 
-                />
-                {hasDiscount && originalPrice && (
-                  <span className="text-xs text-muted-foreground line-through opacity-70">
-                    <PriceDisplay price={originalPrice} className="text-[10px]" />
-                  </span>
-                )}
-              </div>
-
-              {/* Seller - Subtle */}
-              {displaySellerName && (
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <Avatar className="h-3.5 w-3.5 border border-border/50">
-                    <AvatarImage src={sellerAvatarUrl || undefined} alt={displaySellerName} />
-                    <AvatarFallback className="text-[6px] font-medium">
-                      {displaySellerName.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="truncate text-xs max-w-[100px]">
-                    {displaySellerName}
-                  </span>
-                </div>
-              )}
-
-              {/* Free shipping */}
-              {freeShipping && (
-                <div className="flex items-center gap-1 text-[10px] font-medium text-success">
-                  <Truck size={10} weight="bold" />
-                  <span>{t("freeShipping")}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Quick Add Button - Bottom Right */}
-            {showQuickAdd && (
-              <button
-                type="button"
-                className={cn(
-                  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all active:scale-95",
-                  inCart 
-                    ? "border-cta-trust-blue bg-cta-trust-blue text-cta-trust-blue-text shadow-sm" 
-                    : "border-border bg-background hover:bg-muted text-foreground hover:border-foreground/20"
-                )}
-                onClick={handleAddToCart}
-                disabled={isOwnProduct || !inStock}
-                aria-label={inCart ? t("inCart") : t("addToCart")}
-              >
-                {inCart ? (
-                  <ShoppingCart size={18} weight="fill" />
-                ) : (
-                  <ShoppingCart size={18} weight="bold" />
-                )}
-              </button>
-            )}
-          </div>
-        </div>
       </div>
-    )
+    </div>
+  )
 }
 
 // =============================================================================
-// PRODUCT GRID - Dense Marketplace Style (_MASTER.md compliant)
+// PRODUCT GRID
 // =============================================================================
 
 interface ProductGridProps {
@@ -443,9 +429,9 @@ interface ProductGridProps {
 
 /**
  * ProductGrid - Responsive CSS Grid
- * Mobile: 2 cols, gap-1.5 (6px), px-2 (8px)
- * Tablet: 3 cols, gap-2 (8px)
- * Desktop: 4-5 cols, gap-3 (12px)
+ * Mobile: 2 cols, gap-1 (4px), px-1 (4px)
+ * Tablet: 3 cols, gap-1 (4px)
+ * Desktop: 4-5 cols, gap-1.5 (6px)
  */
 function ProductGrid({ children, density = "default", className }: ProductGridProps) {
   const densityClasses = {
@@ -457,7 +443,7 @@ function ProductGrid({ children, density = "default", className }: ProductGridPr
   return (
     <div
       className={cn(
-        "grid gap-1.5 px-2 sm:gap-2 sm:px-3 lg:gap-3 lg:px-4",
+        "grid gap-1 px-1 lg:gap-1.5 lg:px-2",
         densityClasses[density],
         className
       )}
@@ -470,7 +456,7 @@ function ProductGrid({ children, density = "default", className }: ProductGridPr
 ProductGrid.displayName = "ProductGrid"
 
 // =============================================================================
-// SKELETON - Clean, no shimmer per _MASTER.md
+// SKELETON
 // =============================================================================
 
 interface ProductCardSkeletonProps {
@@ -479,27 +465,24 @@ interface ProductCardSkeletonProps {
 
 function ProductCardSkeleton({ className }: ProductCardSkeletonProps) {
   return (
-    <div className={cn("h-full overflow-hidden", className)}>
-      {/* Image skeleton - 4:5 aspect */}
-      <div className="rounded bg-muted">
+    <div className={cn("h-full", className)}>
+      {/* Image */}
+      <div className="overflow-hidden rounded-md bg-muted lg:rounded-none">
         <AspectRatio ratio={4 / 5}>
           <Skeleton className="h-full w-full rounded-none" />
         </AspectRatio>
       </div>
-      {/* Content skeleton */}
-      <div className="flex flex-1 flex-col gap-1.5 px-2 py-2">
-        <Skeleton className="h-3 w-16" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-3/4" />
-        
-        <div className="flex-1" />
-        
-        <div className="mt-1 flex items-end justify-between">
-          <div className="flex flex-col gap-1">
-            <Skeleton className="h-5 w-20" />
-            <Skeleton className="h-3 w-24" />
+      {/* Content */}
+      <div className="px-0.5 pt-1.5 pb-1 lg:p-1.5">
+        <Skeleton className="h-4 w-14" />
+        <Skeleton className="mt-0.5 h-3.5 w-full" />
+        <Skeleton className="mt-0.5 h-3.5 w-2/3" />
+        <div className="mt-1 flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <Skeleton className="size-4 rounded-full" />
+            <Skeleton className="h-2.5 w-12" />
           </div>
-          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="size-6 rounded" />
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use server"
 
 import { createClient, createAdminClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
+import { revalidateTag } from "next/cache"
 import { z } from "zod"
 
 // =====================================================
@@ -113,6 +113,8 @@ export async function setUsername(username: string): Promise<{
       .select("username, last_username_change")
       .eq("id", user.id)
       .single()
+
+    const previousUsername = profile?.username ? profile.username.toLowerCase().trim() : null
     
     // Check if this is a change (not first time)
     if (profile?.username) {
@@ -164,10 +166,17 @@ export async function setUsername(username: string): Promise<{
       console.error("setUsername error:", updateError)
       return { success: false, error: "Failed to update username" }
     }
-    
-    revalidatePath("/account")
-    revalidatePath("/account/profile")
-    revalidatePath(`/${normalizedUsername}`)
+
+    revalidateTag("profiles", "max")
+    revalidateTag(`profile-${normalizedUsername}`, "max")
+    revalidateTag(`profile-meta-${normalizedUsername}`, "max")
+    revalidateTag(`seller-${user.id}`, "max")
+    revalidateTag(`seller-${normalizedUsername}`, "max")
+    if (previousUsername) {
+      revalidateTag(`profile-${previousUsername}`, "max")
+      revalidateTag(`profile-meta-${previousUsername}`, "max")
+      revalidateTag(`seller-${previousUsername}`, "max")
+    }
     
     return { success: true }
   } catch (error) {
@@ -234,19 +243,7 @@ export async function updatePublicProfile(data: z.infer<typeof publicProfileSche
       return { success: false, error: "Failed to update profile" }
     }
     
-    // Get username for revalidation
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", user.id)
-      .single()
-    
-    revalidatePath("/account")
-    revalidatePath("/account/profile")
-    if (profile?.username) {
-      revalidatePath(`/${profile.username}`)
-    }
-    revalidatePath("/members")
+    revalidateTag("profiles", "max")
     
     return { success: true }
   } catch (error) {
@@ -325,8 +322,8 @@ export async function uploadBanner(formData: FormData): Promise<{
       console.error("uploadBanner profile error:", updateError)
       return { success: false, error: "Failed to save banner URL" }
     }
-    
-    revalidatePath("/account/profile")
+
+    revalidateTag("profiles", "max")
     
     return { success: true, bannerUrl }
   } catch (error) {
@@ -400,19 +397,19 @@ export async function upgradeToBusinessAccount(data: z.infer<typeof businessUpgr
     }
 
     // Create business_verification record for future verification
-    const adminClient = createAdminClient()
-    await adminClient
+    await supabase
       .from("business_verification")
-      .upsert({
-        seller_id: user.id,
-        legal_name: data.business_name,
-        vat_number: data.vat_number || null,
-        verification_level: 0,
-      }, { onConflict: "seller_id" })
+      .upsert(
+        {
+          seller_id: user.id,
+          legal_name: data.business_name,
+          vat_number: data.vat_number || null,
+          verification_level: 0,
+        },
+        { onConflict: "seller_id" }
+      )
     
-    revalidatePath("/account")
-    revalidatePath("/account/profile")
-    revalidatePath("/dashboard")
+    revalidateTag("profiles", "max")
     
     return { success: true }
   } catch (error) {
@@ -440,8 +437,7 @@ export async function downgradeToPersonalAccount(): Promise<{
     }
 
     // Check for active business subscription
-    const adminClient = createAdminClient()
-    const { data: subscription } = await adminClient
+    const { data: subscription } = await supabase
       .from("subscriptions")
       .select("id, status, plan_type")
       .eq("seller_id", user.id)
@@ -471,9 +467,7 @@ export async function downgradeToPersonalAccount(): Promise<{
       return { success: false, error: "Failed to downgrade account" }
     }
     
-    revalidatePath("/account")
-    revalidatePath("/account/profile")
-    revalidatePath("/dashboard")
+    revalidateTag("profiles", "max")
     
     return { success: true }
   } catch (error) {
@@ -581,7 +575,28 @@ async function getCurrentUserProfile() {
     
     const { data: profile } = await supabase
       .from("profiles")
-      .select("*")
+      .select(
+        [
+          "id",
+          "username",
+          "display_name",
+          "avatar_url",
+          "banner_url",
+          "bio",
+          "account_type",
+          "is_seller",
+          "is_verified_business",
+          "verified",
+          "location",
+          "business_name",
+          "website_url",
+          "social_links",
+          "created_at",
+          "last_username_change",
+          "tier",
+          "vat_number",
+        ].join(",")
+      )
       .eq("id", user.id)
       .single()
     

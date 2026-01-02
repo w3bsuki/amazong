@@ -24,9 +24,12 @@ export async function GET() {
       return NextResponse.json({ error: "Database unavailable" }, { status: 503 })
     }
     
+    const SUBSCRIPTION_PLANS_SELECT =
+      "id,name,tier,account_type,description,description_bg,features,price_monthly,price_yearly,currency,commission_rate,final_value_fee,insertion_fee,per_order_fee,max_listings,boosts_included,analytics_access,badge_type,priority_support,stripe_price_monthly_id,stripe_price_yearly_id,is_active,created_at" as const
+
     const { data: plans, error } = await supabase
       .from("subscription_plans")
-      .select("*")
+      .select(SUBSCRIPTION_PLANS_SELECT)
       .eq("is_active", true)
       .order("account_type", { ascending: true })
       .order("price_monthly", { ascending: true })

@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { createClient } from "@/lib/supabase/client"
 import type { RealtimeChannel } from "@supabase/supabase-js"
 
+const MESSAGE_SELECT = 'id, conversation_id, sender_id, content, message_type, is_read, read_at, created_at'
+
 // Types
 export interface Conversation {
   id: string
@@ -452,11 +454,10 @@ export function MessageProvider({ children }: MessageProviderProps) {
         .insert({
           conversation_id: currentConversation.id,
           sender_id: userData.user.id,
-          content: content.trim(),
+          content: attachmentUrl ? attachmentUrl : content.trim(),
           message_type: attachmentUrl ? "image" : "text",
-          attachment_url: attachmentUrl
         })
-        .select("*")
+        .select(MESSAGE_SELECT)
         .single()
 
       if (sendError) throw sendError
@@ -641,7 +642,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
               // Fetch full message with sender info
               const { data } = await supabase
                 .from("messages")
-                .select("*")
+                .select(MESSAGE_SELECT)
                 .eq("id", newMessage.id)
                 .single()
 

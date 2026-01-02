@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { createClient, createAdminClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
 
@@ -66,6 +66,40 @@ export interface BusinessSellerWithSubscription extends BusinessSeller {
   hasDashboardAccess: boolean
 }
 
+type VariantSummary = {
+  variantCount: number
+  variantStock: number
+}
+
+async function getVariantSummaryByProductId(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  productIds: string[]
+): Promise<Map<string, VariantSummary>> {
+  if (productIds.length === 0) return new Map()
+
+  const { data, error } = await supabase
+    .from('product_variants')
+    .select('product_id, stock')
+    .in('product_id', productIds)
+
+  if (error || !data) return new Map()
+
+  const summary = new Map<string, VariantSummary>()
+  for (const row of data) {
+    const productId = row.product_id as string
+    const stock = Number(row.stock ?? 0)
+
+    const existing = summary.get(productId)
+    if (existing) {
+      existing.variantCount += 1
+      existing.variantStock += stock
+    } else {
+      summary.set(productId, { variantCount: 1, variantStock: stock })
+    }
+  }
+  return summary
+}
+
 /**
  * Verifies the current user is authenticated and has a business seller account.
  * MUST be called in server components only.
@@ -87,12 +121,9 @@ export async function requireBusinessSeller(redirectTo: string = "/account"): Pr
   
   const userId = user.id
   const userEmail = user.email
-  
-  // Use admin client to bypass any RLS caching issues
-  const adminClient = createAdminClient()
-  
+
   // Check profile for account type and seller status
-  const { data: profile, error: profileError } = await adminClient
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select(`
       id, 
@@ -141,10 +172,16 @@ export async function requireBusinessSeller(redirectTo: string = "/account"): Pr
  * Returns null if no active subscription exists.
  */
 export async function getActiveSubscription(sellerId: string): Promise<BusinessSubscription | null> {
-  const adminClient = createAdminClient()
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user || user.id !== sellerId) return null
   
   // First get the subscription
-  const { data: subscription } = await adminClient
+  const { data: subscription } = await supabase
     .from('subscriptions')
     .select(`
       id,
@@ -163,7 +200,7 @@ export async function getActiveSubscription(sellerId: string): Promise<BusinessS
   if (!subscription) return null
   
   // Then get the matching plan details separately (no FK relation exists)
-  const { data: plan } = await adminClient
+  const { data: plan } = await supabase
     .from('subscription_plans')
     .select('name, tier, account_type, price_monthly, features')
     .eq('tier', subscription.plan_type)
@@ -248,10 +285,16 @@ async function getBusinessSellerWithSubscription(
   sellerId: string
 ): Promise<BusinessSellerWithSubscription | null> {
   await connection()
+
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user || user.id !== sellerId) return null
   
-  const adminClient = createAdminClient()
-  
-  const { data: profile } = await adminClient
+  const { data: profile } = await supabase
     .from('profiles')
     .select(`
       id, 
@@ -530,6 +573,9 @@ export async function getBusinessProducts(
   
   const { data, count, error } = await query
 
+  const productIds = (data || []).map((p) => p.id)
+  const variantsSummary = await getVariantSummaryByProductId(supabase, productIds)
+
   // Fetch categories for products
   const categoryIds = (data || []).map(p => p.category_id).filter((id): id is string => id !== null)
   let categories: { id: string; name: string; slug: string }[] = []
@@ -540,6 +586,11 @@ export async function getBusinessProducts(
   const categoriesMap = new Map(categories.map(c => [c.id, c]))
   const productsWithCategories = (data || []).map(p => ({
     ...p,
+    stock: (() => {
+      const summary = variantsSummary.get(p.id)
+      return summary && summary.variantStock > 0 ? summary.variantStock : p.stock
+    })(),
+    variant_count: variantsSummary.get(p.id)?.variantCount ?? 0,
     category: p.category_id ? categoriesMap.get(p.category_id) ?? null : null,
   }))
 
@@ -687,19 +738,40 @@ export async function getBusinessInventory(
     .range((page - 1) * limit, page * limit - 1)
   
   const { data, count, error } = await query
+
+  const productIds = (data || []).map((p) => p.id)
+  const variantsSummary = await getVariantSummaryByProductId(supabase, productIds)
+
+  const products = (data || []).map((p) => {
+    const summary = variantsSummary.get(p.id)
+    const totalStock = summary && summary.variantStock > 0 ? summary.variantStock : p.stock
+    return {
+      ...p,
+      stock: totalStock,
+      variant_count: summary?.variantCount ?? 0,
+    }
+  })
   
   // Get stock summary
-  const { data: stockSummary } = await supabase
+  const { data: stockBaseRows } = await supabase
     .from('products')
-    .select('stock')
+    .select('id, stock')
     .eq('seller_id', sellerId)
-  
-  const totalStock = stockSummary?.reduce((sum, p) => sum + (p.stock || 0), 0) || 0
-  const lowStockCount = stockSummary?.filter(p => (p.stock || 0) > 0 && (p.stock || 0) <= 10).length || 0
-  const outOfStockCount = stockSummary?.filter(p => (p.stock || 0) === 0).length || 0
+
+  const baseProductIds = (stockBaseRows || []).map((p) => p.id)
+  const allVariantsSummary = await getVariantSummaryByProductId(supabase, baseProductIds)
+
+  const computedStocks = (stockBaseRows || []).map((p) => {
+    const summary = allVariantsSummary.get(p.id)
+    return summary && summary.variantStock > 0 ? summary.variantStock : (p.stock || 0)
+  })
+
+  const totalStock = computedStocks.reduce((sum, s) => sum + s, 0)
+  const lowStockCount = computedStocks.filter((s) => s > 0 && s <= 10).length
+  const outOfStockCount = computedStocks.filter((s) => s === 0).length
   
   return {
-    products: data || [],
+    products,
     total: count || 0,
     page,
     limit,
@@ -708,7 +780,7 @@ export async function getBusinessInventory(
       totalStock,
       lowStockCount,
       outOfStockCount,
-      totalProducts: stockSummary?.length || 0,
+      totalProducts: stockBaseRows?.length || 0,
     },
     error,
   }
