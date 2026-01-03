@@ -4,9 +4,23 @@ import { Gift, UserPlus } from "@phosphor-icons/react/dist/ssr"
 import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-breadcrumb"
 import { routing, validateLocale } from "@/i18n/routing"
 import { setRequestLocale, getTranslations } from "next-intl/server"
+import type { Metadata } from "next"
 
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }))
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale: localeParam } = await params
+    const locale = validateLocale(localeParam)
+    setRequestLocale(locale)
+    const t = await getTranslations("RegistryPage")
+
+    return {
+        title: t("heroTitle"),
+        description: t("heroSubtitle"),
+        robots: { index: false, follow: false },
+    }
 }
 
 export default async function RegistryPage({

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker";
 import { ProductGalleryHybrid } from "@/components/shared/product/product-gallery-hybrid";
 import { ProductBuyBox } from "@/components/shared/product/product-buy-box";
@@ -9,6 +10,7 @@ import { CategoryBadge } from "@/components/shared/product/category-badge";
 import { SellerBanner } from "@/components/shared/product/seller-banner";
 import { SellersNote } from "@/components/shared/product/sellers-note";
 import { TrustBadges } from "@/components/shared/product/trust-badges";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
 import type { Database } from "@/lib/supabase/database.types";
@@ -41,6 +43,64 @@ type CategorySummary = {
 
 // Mobile-specific imports
 import { MobileProductPage } from "@/components/mobile/product/mobile-product-page";
+
+// Loading skeletons for Suspense boundaries
+function RelatedProductsSkeleton() {
+  return (
+    <div className="mt-10 space-y-4">
+      <Skeleton className="h-6 w-48" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="bg-card rounded-lg border border-border p-3">
+            <Skeleton className="aspect-square w-full rounded-lg mb-3" />
+            <Skeleton className="h-4 w-full mb-1" />
+            <Skeleton className="h-4 w-2/3 mb-2" />
+            <Skeleton className="h-5 w-20" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ReviewsSkeleton() {
+  return (
+    <div className="pb-8">
+      <div className="rounded-md bg-muted/20 p-4 border border-border/50">
+        <div className="flex items-center justify-between mb-8">
+          <Skeleton className="h-7 w-40" />
+          <Skeleton className="h-4 w-16" />
+        </div>
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[320px_1fr]">
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-24 w-24 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-28" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="p-4 rounded-md border border-border/50 space-y-3">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                </div>
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface ProductPageLayoutProps {
   locale: string;
@@ -204,24 +264,28 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
             </div>
           </div>
 
-          {/* More from Seller */}
-          <SellerProductsGrid
-            products={relatedProducts}
-            sellerUsername={username}
-          />
-
-          {/* Reviews */}
-          <div className="pb-8">
-            <CustomerReviewsHybrid
-              rating={Number(product.rating ?? 0)}
-              reviewCount={Number(product.review_count ?? 0)}
-              reviews={reviews}
-              productId={product.id}
-              productTitle={product.title}
-              locale={locale}
-              {...(submitReview && { submitReview })}
+          {/* More from Seller - Wrapped in Suspense for streaming */}
+          <Suspense fallback={<RelatedProductsSkeleton />}>
+            <SellerProductsGrid
+              products={relatedProducts}
+              sellerUsername={username}
             />
-          </div>
+          </Suspense>
+
+          {/* Reviews - Wrapped in Suspense for streaming */}
+          <Suspense fallback={<ReviewsSkeleton />}>
+            <div className="pb-8">
+              <CustomerReviewsHybrid
+                rating={Number(product.rating ?? 0)}
+                reviewCount={Number(product.review_count ?? 0)}
+                reviews={reviews}
+                productId={product.id}
+                productTitle={product.title}
+                locale={locale}
+                {...(submitReview && { submitReview })}
+              />
+            </div>
+          </Suspense>
         </div>
       </div>
     </>

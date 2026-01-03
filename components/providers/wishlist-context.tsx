@@ -171,7 +171,21 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     refreshWishlist()
 
     const supabase = createClient()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Handle SIGNED_OUT immediately without waiting for getUser()
+      if (event === 'SIGNED_OUT') {
+        setItems([])
+        setUserId(null)
+        setIsLoading(false)
+        return
+      }
+      
+      // For SIGNED_IN, we can get the user directly from the session
+      if (event === 'SIGNED_IN' && session?.user) {
+        setUserId(session.user.id)
+      }
+      
+      // Refresh wishlist for all other events
       refreshWishlist()
     })
 

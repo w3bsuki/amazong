@@ -63,10 +63,11 @@ export function AuthStateListener() {
                 })
             }, 500)
         } else if (event === "SIGNED_OUT") {
-            // For sign-out, always do a hard redirect to ensure clean state
-            if (!isAuthPage) {
-                window.location.href = `/${locale}`
-            }
+            // NOTE: Do NOT redirect here! The component that called signOut() will handle
+            // the redirect. Redirecting here causes a race condition where the page
+            // navigates away before signOut() completes, causing the button to hang.
+            // Other providers (Wishlist, Cart, etc.) will react to SIGNED_OUT by clearing
+            // their state, which is safe.
         } else if (event === "TOKEN_REFRESHED") {
             // Silently handle token refresh
             safeRefresh("TOKEN_REFRESHED")

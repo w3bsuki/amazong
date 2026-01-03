@@ -98,19 +98,19 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
               
               {/* Category Circles Grid - 4 columns with proper spacing */}
               <div className="grid grid-cols-4 gap-y-4 gap-x-2">
-                {categories.slice(0, 16).map((cat) => {
+                {categories.slice(0, 20).map((cat) => {
                   return (
                     <CategoryCircle
                       key={cat.slug}
                       category={cat}
                       href={`/categories/${cat.slug}`}
                       onClick={() => setOpen(false)}
-                      circleClassName="size-(--category-circle-mobile)"
-                      fallbackIconSize={26}
+                      circleClassName="size-12"
+                      fallbackIconSize={20}
                       fallbackIconWeight="regular"
                       variant="menu"
                       label={getShortName(cat)}
-                      labelClassName="text-2xs font-medium text-center text-muted-foreground leading-tight line-clamp-2 max-w-[72px] mt-1"
+                      labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 max-w-16"
                     />
                   )
                 })}

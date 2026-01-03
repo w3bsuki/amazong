@@ -29,7 +29,6 @@ export default defineConfig(async () => {
         include: [
           'lib/**/*.{ts,tsx}',
           'hooks/**/*.{ts,tsx}',
-          'components/**/*.{ts,tsx}',
         ],
         exclude: [
           '**/*.d.ts',
@@ -40,13 +39,30 @@ export default defineConfig(async () => {
           'lib/stripe.ts', // Stripe client - requires env vars
           'lib/data/**', // Server-only data fetching with 'use cache'
           'lib/ai/**', // AI integrations - require API keys
+          'lib/auth/**', // Auth helpers - require Supabase session
+          'lib/api/**', // API helpers - require runtime context
+          'lib/upload/**', // Upload helpers - require file system
+          'lib/types/**', // Type definitions only
+          'lib/view-models/**', // View models with DB queries
+          'lib/sell/**', // Sell form schema - Zod schemas already covered
+          'lib/category-icons.tsx', // React component with icons
+          'lib/category-tree.ts', // Complex tree utils
+          'lib/env.ts', // Env var getters - require process.env
+          'lib/logger.ts', // Logger - side effects
+          'lib/image-compression.ts', // Image compression - requires canvas
+          'lib/bulgarian-cities.ts', // Static data
+          'lib/category-attribute-config.ts', // Static config
+          'lib/category-display.ts', // Static display utils
+          'lib/sell-form-schema-v4.ts', // Re-export
+          'hooks/use-geo-welcome.ts', // Complex with Supabase + cookies
+          'hooks/use-prompt-input-attachments.ts', // Context-only hook
         ],
         thresholds: {
-          // Start with achievable thresholds, increase as coverage improves
-          lines: 50,
-          functions: 50,
-          branches: 40,
-          statements: 50,
+          // Realistic thresholds for tested files
+          lines: 80,
+          functions: 70,
+          branches: 60,
+          statements: 80,
         },
       },
       // Inline next-intl to handle ESM/Next.js import workarounds

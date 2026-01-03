@@ -239,7 +239,19 @@ export default async function CategoryPage({
 
   return (
     <>
-      {/* Mobile: MobileHomeTabs with instant client-side navigation */}
+      {/* Mobile: MobileHomeTabs with page navigation for proper SEO URLs
+          
+          tabsNavigateToPages=true ensures clicking L0 category tabs navigates
+          to /categories/[slug] instead of adding ?tab=X query params.
+          
+          circlesNavigateToPages=true ensures clicking subcategory circles navigates
+          to /categories/[slug] with:
+          - Clean SEO-friendly URLs (no ?tab=X&sub=Y query params)
+          - Server-side filter fetching (proper filterableAttributes)
+          - Shareable deep links
+          
+          Trade-off: Full page reload vs instant client-side navigation
+          Decision: SEO and proper filters > instant navigation UX */}
       <div className="lg:hidden">
         <MobileHomeTabs 
           initialProducts={mobileInitialProducts} 
@@ -250,7 +262,8 @@ export default async function CategoryPage({
           defaultL3={defaultL3}
           showBanner={false}
           l0Style="pills"
-          circlesNavigateToPages
+          tabsNavigateToPages={true}
+          circlesNavigateToPages={true}
           locale={locale}
           filterableAttributes={filterableAttributes}
         />

@@ -7,7 +7,6 @@ import { useTranslations } from "next-intl"
 import { User } from "@supabase/supabase-js"
 import { SpinnerGap, UserCircle } from "@phosphor-icons/react"
 import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 
 interface AccountDropdownProps {
@@ -21,18 +20,6 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
   const tOrders = useTranslations("ReturnsDropdown")
   const tSelling = useTranslations("SellingDropdown")
   const [isSigningOut, setIsSigningOut] = useState(false)
-
-  const handleSignOut = async () => {
-    try {
-      setIsSigningOut(true)
-      const supabase = createClient()
-      await supabase.auth.signOut()
-      window.location.href = "/"
-    } catch (error) {
-      console.error("Sign out error:", error)
-      setIsSigningOut(false)
-    }
-  }
 
   // For non-authenticated users with icon variant, show a simple Sign In link
   if (!user && variant === "icon") {
@@ -111,20 +98,22 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
                 <p className="text-sm font-medium">
                   {t("hello")}, {user.email}
                 </p>
-                <Button
-                  onClick={handleSignOut}
-                  disabled={isSigningOut}
-                  className="w-56 h-[30px] text-xs bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text disabled:opacity-70"
-                >
-                  {isSigningOut ? (
-                    <>
-                      <SpinnerGap className="size-4 mr-2" />
-                      {t("signingOut") || "Signing out..."}
-                    </>
-                  ) : (
-                    t("signOut")
-                  )}
-                </Button>
+                <form action="/api/auth/signout" method="post" onSubmit={() => setIsSigningOut(true)}>
+                  <Button
+                    type="submit"
+                    disabled={isSigningOut}
+                    className="w-56 h-[30px] text-xs bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text disabled:opacity-70"
+                  >
+                    {isSigningOut ? (
+                      <>
+                        <SpinnerGap className="size-4 mr-2" />
+                        {t("signingOut") || "Signing out..."}
+                      </>
+                    ) : (
+                      t("signOut")
+                    )}
+                  </Button>
+                </form>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-0 p-5">

@@ -615,10 +615,13 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
 
   const currentAttributes = (attributesResult.data || []).map(toCategoryAttribute)
 
-  // Default behavior: show ONLY the current category's filterable attributes.
-  // If the category has none, inherit parent's (legacy behavior).
-  let attributes = currentAttributes
-
+  // ---------------------------------------------------------------------------
+  // Attribute Inheritance: Always merge parent/ancestor attrs with current.
+  // This ensures universal filters (Condition, Brand, Size, Color) are inherited.
+  // Priority: current category attrs > parent attrs > grandparent (L0) attrs
+  // ---------------------------------------------------------------------------
+  
+  // Fetch parent attributes
   let parentAttributes: CategoryAttribute[] = []
   if (current.parent_id) {
     const { data: parentAttributesRaw } = await supabase
@@ -630,17 +633,52 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     parentAttributes = (parentAttributesRaw || []).map(toCategoryAttribute)
   }
 
-  if (attributes.length === 0 && parentAttributes.length > 0) {
-    attributes = parentAttributes
-  } else if (attributes.length > 0 && parentAttributes.length > 0) {
-    // Targeted fallback: if a current-category attribute is missing options,
-    // borrow options/type from the parent attribute with the same name.
-    const parentByName = new Map(parentAttributes.map(a => [normalizeAttributeName(a.name), a]))
-    attributes = attributes.map(attr => {
-      const fallback = parentByName.get(normalizeAttributeName(attr.name))
-      return fallback ? withFallbackOptions(attr, fallback) : attr
-    })
+  // If parent has no attrs (e.g., fashion-womens L1), fetch grandparent (L0) attrs
+  const parentData = Array.isArray(current.parent) ? current.parent[0] : current.parent
+  let ancestorAttributes = parentAttributes
+  
+  if (parentAttributes.length === 0 && parentData?.parent_id) {
+    const { data: grandparentAttrsRaw } = await supabase
+      .from('category_attributes')
+      .select(CATEGORY_ATTRIBUTES_SELECT)
+      .eq('category_id', parentData.parent_id)
+      .eq('is_filterable', true)
+      .order('sort_order')
+    ancestorAttributes = (grandparentAttrsRaw || []).map(toCategoryAttribute)
   }
+
+  // Merge: ancestor attrs first, current attrs win on duplicates
+  const attrMap = new Map<string, CategoryAttribute>()
+  
+  for (const attr of ancestorAttributes) {
+    attrMap.set(normalizeAttributeName(attr.name), attr)
+  }
+  for (const attr of currentAttributes) {
+    // Current category attrs override ancestors, but borrow options if missing
+    const existing = attrMap.get(normalizeAttributeName(attr.name))
+    attrMap.set(
+      normalizeAttributeName(attr.name),
+      existing ? withFallbackOptions(attr, existing) : attr
+    )
+  }
+
+  // Sort: universal filters first, then by sort_order
+  const PRIORITY_ATTRS = ['condition', 'brand', 'size', 'color', 'material', 'make', 'model', 'year']
+  
+  const attributes = Array.from(attrMap.values()).sort((a, b) => {
+    const aName = normalizeAttributeName(a.name)
+    const bName = normalizeAttributeName(b.name)
+    const aIdx = PRIORITY_ATTRS.indexOf(aName)
+    const bIdx = PRIORITY_ATTRS.indexOf(bName)
+    
+    // Priority attrs come first in defined order
+    if (aIdx !== -1 && bIdx === -1) return -1
+    if (bIdx !== -1 && aIdx === -1) return 1
+    if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx
+    
+    // Then by sort_order
+    return (a.sort_order ?? 999) - (b.sort_order ?? 999)
+  })
   
   return {
     current: {

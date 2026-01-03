@@ -31,13 +31,9 @@ import {
     Question,
     SignOut,
     SpinnerGap,
-    SquaresFour,
-    MagnifyingGlass,
-    ChartLineUp,
-    PlusCircle
+    ChartLineUp
 } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -50,9 +46,8 @@ import { useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { User as SupabaseUser } from "@supabase/supabase-js"
 import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase/client"
 import { getCategoryName } from "@/lib/category-display"
-import { getCategoryIcon } from "@/lib/category-icons"
+import { CategoryCircle } from "@/components/shared/category/category-circle"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
 interface SidebarMenuProps {
@@ -92,43 +87,31 @@ function HamburgerCategoryCirclesInner({
     return (
         <section id="sidebar-categories" className="px-(--page-inset) py-3">
             {categories.length === 0 ? (
-                <div className="grid grid-cols-4 gap-y-6 gap-x-2">
+                <div className="grid grid-cols-4 gap-y-4 gap-x-2">
                     {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="flex flex-col items-center gap-2">
-                            <div className="size-12 rounded-full bg-muted" />
-                            <div className="h-2 w-10 rounded bg-muted" />
+                        <div key={i} className="flex flex-col items-center gap-1.5">
+                            <div className="size-12 rounded-full bg-muted animate-pulse" />
+                            <div className="h-2 w-10 rounded bg-muted animate-pulse" />
                         </div>
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-4 gap-y-6 gap-x-2">
+                <div className="grid grid-cols-4 gap-y-4 gap-x-2">
                     {displayCategories.map((cat) => {
                         const name = getCategoryName(cat, locale)
                         return (
-                            <Link
+                            <CategoryCircle
                                 key={cat.slug}
+                                category={cat}
                                 href={`/categories/${cat.slug}`}
                                 onClick={onNavigate}
-                                aria-label={name}
-                                className="flex flex-col items-center gap-2 group touch-action-manipulation"
-                            >
-                                <div
-                                    className={cn(
-                                        "rounded-full flex items-center justify-center",
-                                        "size-12",
-                                        "bg-brand",
-                                        "transition-colors duration-200",
-                                        "group-hover:bg-brand-dark"
-                                    )}
-                                >
-                                    <span className="text-white">
-                                        {getCategoryIcon(cat.slug, { size: 20, weight: "regular" })}
-                                    </span>
-                                </div>
-                                <span className="text-tiny font-medium text-center text-foreground leading-tight line-clamp-2 max-w-[60px] group-hover:text-brand transition-colors duration-150">
-                                    {name}
-                                </span>
-                            </Link>
+                                circleClassName="size-12"
+                                fallbackIconSize={20}
+                                fallbackIconWeight="regular"
+                                variant="menu"
+                                label={name}
+                                labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 max-w-16"
+                            />
                         )
                     })}
                 </div>
@@ -143,15 +126,6 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
     const t = useTranslations('Sidebar')
     const locale = useLocale()
 
-    const scrollToCategories = (event?: React.MouseEvent) => {
-        const categoriesSection = document.getElementById("sidebar-categories")
-        if (!categoriesSection) return false
-
-        event?.preventDefault()
-        categoriesSection.scrollIntoView({ behavior: "smooth", block: "start" })
-        return true
-    }
-
     // Get display name from user metadata or email
     const getUserDisplayName = () => {
         if (!user) return null
@@ -163,37 +137,6 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
 
     const displayName = getUserDisplayName()
     const isLoggedIn = !!user
-
-    const handleSignOut = async () => {
-        setIsSigningOut(true)
-        setOpen(false)
-        try {
-            const supabase = createClient()
-            await supabase.auth.signOut()
-            // Force hard navigation to clear all state
-            window.location.href = '/'
-        } catch {
-            setIsSigningOut(false)
-        }
-    }
-
-    const guestQuickLinks = [
-        {
-            icon: <SquaresFour size={20} weight="fill" />,
-            label: locale === 'bg' ? 'Категории' : 'Categories',
-            href: '/categories',
-        },
-        {
-            icon: <MagnifyingGlass size={20} weight="regular" />,
-            label: locale === 'bg' ? 'Разгледай' : 'Browse',
-            href: '/search',
-        },
-        {
-            icon: <PlusCircle size={20} weight="regular" />,
-            label: locale === 'bg' ? 'Продай' : 'Sell',
-            href: '/sell',
-        },
-    ]
 
     return (
         <Drawer open={open} onOpenChange={setOpen} direction="left">
@@ -320,154 +263,81 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                     </div>
                 </div>
 
-                <HamburgerCategoryCircles
-                    open={open}
-                    locale={locale}
-                    categories={categories}
-                    onNavigate={() => setOpen(false)}
-                />
-
-                {/* Search Bar */}
-                <div className="px-(--page-inset) py-2 bg-background border-b border-border/40">
-                    <div className="relative group">
-                        <MagnifyingGlass size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-brand transition-colors" />
-                        <Input
-                            type="search"
-                            placeholder={locale === 'bg' ? 'Търси в категории...' : 'Search categories...'}
-                            aria-label={locale === 'bg' ? 'Търси в категории' : 'Search categories'}
-                            className="h-10 pl-10 pr-4 rounded-md border-border/60 bg-muted/30 focus:bg-background transition-colors placeholder:text-muted-foreground/70"
-                        />
+                {/* Quick Actions - Only when logged in, BEFORE categories */}
+                {isLoggedIn && (
+                    <div className="px-(--page-inset) py-3 border-b border-border/40 shrink-0">
+                        <div className="grid grid-cols-4 gap-3">
+                            <Link
+                                href="/account/orders"
+                                onClick={() => setOpen(false)}
+                                className="flex flex-col items-center gap-2 group"
+                            >
+                                <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                    <Receipt size={24} weight="regular" />
+                                </div>
+                                <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
+                            </Link>
+                            <Link
+                                href="/account/sales"
+                                onClick={() => setOpen(false)}
+                                className="flex flex-col items-center gap-2 group"
+                            >
+                                <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                    <ChartLineUp size={24} weight="regular" />
+                                </div>
+                                <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Продажби' : 'Sales'}</span>
+                            </Link>
+                            <Link
+                                href="/wishlist"
+                                onClick={() => setOpen(false)}
+                                className="flex flex-col items-center gap-2 group"
+                            >
+                                <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                    <Heart size={24} weight="regular" />
+                                </div>
+                                <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Любими' : 'Saved'}</span>
+                            </Link>
+                            <Link
+                                href="/chat"
+                                onClick={() => setOpen(false)}
+                                className="flex flex-col items-center gap-2 group"
+                            >
+                                <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
+                                    <ChatCircleText size={24} weight="regular" />
+                                </div>
+                                <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Чат' : 'Chat'}</span>
+                            </Link>
+                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Main content */}
+                {/* Main content - Categories scroll area */}
                 <div
                     data-vaul-no-drag
                     className="flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar touch-pan-y [-webkit-overflow-scrolling:touch]"
                 >
-                    <div className="flex flex-col pb-8">
-                        {/* Auth Actions - Only when not logged in */}
-                        {!isLoggedIn && (
-                            <div className="px-(--page-inset) py-3 border-b border-border/40">
-                                <div className="grid grid-cols-2 gap-3">
-                                    <Link
-                                        href="/auth/login"
-                                        className="flex items-center justify-center gap-2 py-2.5 bg-brand text-white rounded-lg text-sm font-bold hover:bg-brand-dark transition-colors"
-                                        onClick={() => setOpen(false)}
-                                    >
-                                        <SignInIcon size={18} weight="bold" />
-                                        {locale === 'bg' ? 'Влез' : 'Sign In'}
-                                    </Link>
-                                    <Link
-                                        href="/auth/sign-up"
-                                        className="flex items-center justify-center gap-2 py-2.5 bg-background border border-border rounded-lg text-sm font-semibold text-foreground hover:bg-muted transition-colors"
-                                        onClick={() => setOpen(false)}
-                                    >
-                                        {locale === 'bg' ? 'Регистрация' : 'Register'}
-                                    </Link>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Quick Actions */}
-                        <div className="px-(--page-inset) py-3 border-b border-border/40">
-                            {isLoggedIn ? (
-                                <div className="grid grid-cols-4 gap-3">
-                                    <Link
-                                        href="/account/orders"
-                                        onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center gap-2 group"
-                                    >
-                                        <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
-                                            <Receipt size={24} weight="regular" />
-                                        </div>
-                                        <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Поръчки' : 'Orders'}</span>
-                                    </Link>
-                                    <Link
-                                        href="/account/sales"
-                                        onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center gap-2 group"
-                                    >
-                                        <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
-                                            <ChartLineUp size={24} weight="regular" />
-                                        </div>
-                                        <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Продажби' : 'Sales'}</span>
-                                    </Link>
-                                    <Link
-                                        href="/wishlist"
-                                        onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center gap-2 group"
-                                    >
-                                        <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
-                                            <Heart size={24} weight="regular" />
-                                        </div>
-                                        <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Любими' : 'Saved'}</span>
-                                    </Link>
-                                    <Link
-                                        href="/chat"
-                                        onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center gap-2 group"
-                                    >
-                                        <div className="size-12 rounded-lg bg-secondary text-foreground flex items-center justify-center transition-colors group-hover:bg-secondary/80">
-                                            <ChatCircleText size={24} weight="regular" />
-                                        </div>
-                                        <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">{locale === 'bg' ? 'Чат' : 'Chat'}</span>
-                                    </Link>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-3 gap-3">
-                                    {guestQuickLinks.map((link, i) => (
-                                        <Link
-                                            key={i}
-                                            href={link.href}
-                                            onClick={(event) => {
-                                                if (link.href === "/categories") {
-                                                    const scrolled = scrollToCategories(event)
-                                                    if (scrolled) return
-                                                }
-                                                setOpen(false)
-                                            }}
-                                            className="flex flex-col items-center gap-2 group"
-                                        >
-                                            <div className="size-12 rounded-lg bg-muted/50 flex items-center justify-center group-hover:bg-muted transition-colors">
-                                                {link.icon}
-                                            </div>
-                                            <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">
-                                                {link.label}
-                                            </span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Browse */}
-                        <div className="pt-2">
-                            <HamburgerCategoryCircles
-                                open={open}
-                                locale={locale}
-                                categories={categories}
-                                onNavigate={() => setOpen(false)}
-                            />
-                        </div>
-
-                    </div>
+                    <HamburgerCategoryCircles
+                        open={open}
+                        locale={locale}
+                        categories={categories}
+                        onNavigate={() => setOpen(false)}
+                    />
                 </div>
 
                 {/* Footer actions */}
                 <div className="shrink-0 border-t border-border/50 bg-muted/10 pb-safe">
                     <div className="px-(--page-inset) py-2">
-                        <div className="grid grid-cols-2 gap-3">
-                            <Link
-                                href="/customer-service"
-                                onClick={() => setOpen(false)}
-                                className="flex items-center justify-center gap-2 h-10 rounded-lg bg-background border border-border/50 text-sm font-medium text-foreground hover:bg-muted transition-colors"
-                            >
-                                <Question size={18} weight="regular" className="text-muted-foreground" />
-                                <span>{locale === 'bg' ? 'Помощ' : 'Help'}</span>
-                            </Link>
+                        {isLoggedIn ? (
+                            <div className="grid grid-cols-2 gap-3">
+                                <Link
+                                    href="/customer-service"
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center justify-center gap-2 h-10 rounded-lg bg-background border border-border/50 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                                >
+                                    <Question size={18} weight="regular" className="text-muted-foreground" />
+                                    <span>{locale === 'bg' ? 'Помощ' : 'Help'}</span>
+                                </Link>
 
-                            {isLoggedIn ? (
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
                                         <button
@@ -499,16 +369,42 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                                             <AlertDialogCancel>
                                                 {locale === "bg" ? "Отказ" : "Cancel"}
                                             </AlertDialogCancel>
-                                            <AlertDialogAction onClick={handleSignOut}>
+                                            <AlertDialogAction
+                                                onClick={() => {
+                                                    setIsSigningOut(true)
+                                                    // Create and submit hidden form
+                                                    const form = document.createElement('form')
+                                                    form.method = 'POST'
+                                                    form.action = '/api/auth/signout'
+                                                    document.body.appendChild(form)
+                                                    form.submit()
+                                                }}
+                                            >
                                                 {locale === "bg" ? "Изход" : "Sign Out"}
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
                                 </AlertDialog>
-                            ) : (
-                                <div /> /* Spacer if needed or just empty */
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 gap-3">
+                                <Link
+                                    href="/auth/login"
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center justify-center gap-2 h-10 rounded-lg bg-brand text-white text-sm font-bold hover:bg-brand-dark transition-colors"
+                                >
+                                    <SignInIcon size={18} weight="bold" />
+                                    <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
+                                </Link>
+                                <Link
+                                    href="/auth/sign-up"
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center justify-center gap-2 h-10 rounded-lg bg-background border border-border/50 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+                                >
+                                    <span>{locale === 'bg' ? 'Регистрация' : 'Register'}</span>
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             </DrawerContent>

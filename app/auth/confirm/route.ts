@@ -10,6 +10,10 @@ import type { EmailOtpType } from "@supabase/supabase-js"
  * 2. Token hash flow: /auth/confirm?token_hash=xxx&type=email
  * 
  * This route handles both and exchanges them for a session.
+ * 
+ * Post-confirmation behavior:
+ * - New users (onboarding_completed=false): Redirect to home with ?onboarding=true
+ * - Existing users: Redirect to intended destination
  */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -46,22 +50,22 @@ export async function GET(request: Request) {
     
     if (!error) {
       // Check if this is a new user (first time confirming email)
-      // Redirect to welcome page for onboarding
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user) {
         // Check if user has completed onboarding
-        // Note: onboarding_completed column may be added to database later
         const { data: profile } = await supabase
           .from("profiles")
-          .select("id")
+          .select("onboarding_completed")
           .eq("id", user.id)
           .single()
         
-        // If onboarding not completed, redirect to welcome page
-        const profileData = profile as { onboarding_completed?: boolean } | null
+        // Cast to expected shape (column may not be in generated types yet)
+        const profileData = profile as { onboarding_completed?: boolean | null } | null
+        
+        // If onboarding not completed, redirect to home with onboarding modal trigger
         if (!profileData?.onboarding_completed) {
-          return NextResponse.redirect(`${redirectTo}/en/auth/welcome`)
+          return NextResponse.redirect(`${redirectTo}/en/?onboarding=true`)
         }
       }
       
@@ -88,13 +92,15 @@ export async function GET(request: Request) {
         if (user) {
           const { data: profile } = await supabase
             .from("profiles")
-            .select("id")
+            .select("onboarding_completed")
             .eq("id", user.id)
             .single()
           
-          const profileData = profile as { onboarding_completed?: boolean } | null
+          // Cast to expected shape
+          const profileData = profile as { onboarding_completed?: boolean | null } | null
+          
           if (!profileData?.onboarding_completed) {
-            return NextResponse.redirect(`${redirectTo}/en/auth/welcome`)
+            return NextResponse.redirect(`${redirectTo}/en/?onboarding=true`)
           }
         }
         return NextResponse.redirect(`${redirectTo}/en${next}`)

@@ -4,7 +4,7 @@ const KNOWN_BAD_REMOTE_IMAGE_SUBSTRINGS = [
 	"images.unsplash.com/photo-1558584673-90d3e2c6f626",
 	"images.unsplash.com/photo-1472851294608-062f824d29cc",
 	"images.unsplash.com/photo-1493711662062-fa541f7f3d24",
-	"images.unsplash.com/photo-1565108966740-99699699f32c",
+	// Removed: photo-1565108966740-99699699f32c (bulgarian-traditional category uses this)
 	"images.unsplash.com/photo-1558171013-50be2d0e6b94",
 	"images.unsplash.com/photo-1543512214-318c77a07298",
 	"images.unsplash.com/photo-1585837146751-f8e5d8b43d5d",

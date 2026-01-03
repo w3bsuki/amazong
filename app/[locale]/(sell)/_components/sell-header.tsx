@@ -33,7 +33,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { createClient } from "@/lib/supabase/client";
 
 /**
  * Props for the SellHeader component.
@@ -90,13 +89,6 @@ export function SellHeader({
 
   const confirmExit = () => {
     setShowExitDialog(false);
-    router.push("/");
-  };
-
-  const handleSignOut = async () => {
-    setIsSigningOut(true);
-    const supabase = createClient();
-    await supabase.auth.signOut();
     router.push("/");
   };
   
@@ -199,13 +191,18 @@ export function SellHeader({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={handleSignOut}
-                    disabled={isSigningOut}
-                    className="text-destructive focus:text-destructive"
-                  >
-                    <SignOut className="size-4 mr-2" />
-                    {isSigningOut ? "Signing out..." : "Sign Out"}
+                  <DropdownMenuItem asChild className="p-0">
+                    <form action="/api/auth/signout" method="post" className="w-full">
+                      <button
+                        type="submit"
+                        disabled={isSigningOut}
+                        className="flex w-full items-center gap-2 px-2 py-1.5 text-sm text-destructive hover:bg-accent focus:bg-accent cursor-pointer disabled:pointer-events-none disabled:opacity-50"
+                        onClick={() => setIsSigningOut(true)}
+                      >
+                        <SignOut className="size-4" />
+                        {isSigningOut ? "Signing out..." : "Sign Out"}
+                      </button>
+                    </form>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

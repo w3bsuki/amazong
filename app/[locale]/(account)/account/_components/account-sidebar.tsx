@@ -52,7 +52,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { useSidebar } from "@/components/layout/sidebar/sidebar"
-import { createClient } from "@/lib/supabase/client"
 
 const getAccountNavItems = (locale: string) => [
   {
@@ -156,12 +155,6 @@ function AccountNavUser({
   const locale = useLocale()
   const initials = user.email ? user.email.slice(0, 2).toUpperCase() : "??"
 
-  const handleSignOut = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    window.location.href = `/${locale}`
-  }
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -216,9 +209,16 @@ function AccountNavUser({
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
-              <IconLogout className="mr-2 size-4" />
-              {locale === 'bg' ? 'Изход' : 'Sign Out'}
+            <DropdownMenuItem asChild className="p-0">
+              <form action="/api/auth/signout" method="post" className="w-full">
+                <button
+                  type="submit"
+                  className="flex w-full items-center gap-2 px-2 py-1.5 text-sm text-destructive hover:bg-accent focus:bg-accent cursor-pointer"
+                >
+                  <IconLogout className="size-4" />
+                  {locale === 'bg' ? 'Изход' : 'Sign Out'}
+                </button>
+              </form>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

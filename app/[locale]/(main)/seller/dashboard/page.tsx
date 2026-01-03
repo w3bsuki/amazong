@@ -1,19 +1,28 @@
-import { routing, validateLocale } from "@/i18n/routing"
-import { setRequestLocale } from "next-intl/server"
-
-import SellerDashboardClient from "./_components/seller-dashboard-client"
+import { redirect } from "next/navigation"
+import { routing } from "@/i18n/routing"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
 
-export default async function SellerDashboardPage({
+/**
+ * Old Seller Dashboard - Redirects to new Business Dashboard
+ * 
+ * The business dashboard at /dashboard has more features (Shopify-style):
+ * - Setup guide for new sellers
+ * - Quick actions
+ * - Live activity tracking
+ * - Performance scores
+ * - Revenue charts
+ * - Task management
+ * 
+ * This redirect ensures users always reach the canonical dashboard URL.
+ */
+export default async function OldSellerDashboard({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale: localeParam } = await params
-  const locale = validateLocale(localeParam)
-  setRequestLocale(locale)
-  return <SellerDashboardClient />
+  const { locale } = await params
+  redirect(`/${locale}/dashboard`)
 }

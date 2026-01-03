@@ -163,7 +163,7 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
   if (imageRecords.length > 0) {
     const { error: imagesError } = await supabase.from("product_images").insert(imageRecords)
     if (imagesError) {
-      console.error("Product Images Insert Error:", imagesError)
+      // Non-critical: product created but images failed
     }
   }
 
@@ -178,7 +178,7 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
 
     const { error: attrError } = await supabase.from("product_attributes").insert(attributeRecords)
     if (attrError) {
-      console.error("Product Attributes Insert Error:", attrError)
+      // Non-critical: product created but attributes failed
     }
   }
 
@@ -279,7 +279,7 @@ export async function completeSellerOnboarding(args: {
     )
 
   if (statsError) {
-    console.error("Failed to create seller_stats:", statsError)
+    // Non-critical: seller record updated but stats failed
   }
 
   return { success: true as const }

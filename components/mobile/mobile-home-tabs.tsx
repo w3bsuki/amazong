@@ -11,7 +11,7 @@ import { CategoryCircle } from "@/components/shared/category/category-circle"
 import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import type { UIProduct } from "@/lib/data/products"
-import { Link } from "@/i18n/routing"
+import { Link, useRouter } from "@/i18n/routing"
 import { CaretLeft, CaretRight, Megaphone, Clock, Sparkle, Storefront, TrendUp, ListBullets } from "@phosphor-icons/react"
 import { usePathname, useSearchParams } from "next/navigation"
 import { MobileFilters } from "@/components/shared/filters/mobile-filters"
@@ -38,8 +38,13 @@ interface MobileHomeTabsProps {
   /** L0 navigation style: "tabs" (default underline tabs) or "pills" (compact quick pills) */
   l0Style?: "tabs" | "pills"
   /**
+   * When true, clicking L0 tabs navigates to a category page URL
+   * (e.g. `/categories/{slug}`) instead of updating query params.
+   */
+  tabsNavigateToPages?: boolean
+  /**
    * When true, clicking L1/L2 circles navigates to a category page URL
-   * (e.g. `/categories/{root}/{child}`) instead of drilling down within tabs.
+   * (e.g. `/categories/{slug}`) instead of drilling down within tabs.
    */
   circlesNavigateToPages?: boolean
   /** Locale from server - avoids useLocale() hydration issues */
@@ -130,6 +135,7 @@ export function MobileHomeTabs({
   pageTitle = null,
   showL0Tabs = true,
   l0Style = "tabs",
+  tabsNavigateToPages = false,
   circlesNavigateToPages = false,
   locale: localeProp,
   filterableAttributes = [],
@@ -138,6 +144,7 @@ export function MobileHomeTabs({
   const locale = localeProp || intlLocale
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [headerHeight, setHeaderHeight] = useState(0)
 
   // Categories from server (L0→L1→L2 pre-loaded, L3 lazy-loaded on demand)
@@ -563,6 +570,19 @@ export function MobileHomeTabs({
   // Handle L0 tab change
   const handleTabChange = (slug: string) => {
     if (slug === activeTab) return
+    
+    // When tabsNavigateToPages is true, navigate to proper category page
+    // for correct server-side filter fetching (SEO + proper filters)
+    if (tabsNavigateToPages) {
+      if (slug === 'all') {
+        router.push('/categories')
+      } else {
+        router.push(`/categories/${slug}`)
+      }
+      return
+    }
+    
+    // Client-side state update (fast UX but no server-side filter fetch)
     setActiveTab(slug)
     setActiveL1(null)
     setActiveL2(null)
@@ -862,8 +882,10 @@ export function MobileHomeTabs({
                   const dimmed =
                     (showL2Circles ? !!activeL2 : !!activeL1) && !isActive
 
+                  // When circlesNavigateToPages is true, navigate to the category's own page
+                  // NOT a nested URL - just /categories/{slug} since that's our route structure
                   const href = circlesNavigateToPages && activeTab !== "all"
-                    ? (`/categories/${activeTab}/${sub.slug}` as const)
+                    ? (`/categories/${sub.slug}` as const)
                     : undefined
 
                   return (

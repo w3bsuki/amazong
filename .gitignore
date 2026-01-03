@@ -70,3 +70,7 @@ tsc.err
 # Claude Code local settings (personal, not shared)
 .claude/settings.local.json
 CLAUDE.local.md
+
+# Capacitor native projects (rebuild with `pnpm cap:sync`)
+/android/
+/ios/

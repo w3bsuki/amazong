@@ -101,8 +101,7 @@ export function SubcategoryCircles({
                 className={cn(
                   "rounded-full flex items-center justify-center overflow-hidden",
                   "size-14 sm:size-[90px] md:size-[100px]",
-                  "bg-primary",
-                  "border-2 border-primary"
+                  "bg-primary"
                 )}
               >
                 <span className="text-white text-2xs sm:text-sm font-medium text-center px-1 leading-tight">
@@ -136,12 +135,12 @@ export function SubcategoryCircles({
                   index === validSubcategories.length - 1 && "mr-4"
                 )}
               >
-              {/* Circle with image or icon */}
+              {/* Circle with image or icon - NO border when image present */}
               <div
                 className={cn(
                   "rounded-full relative flex items-center justify-center overflow-hidden",
                   "size-14 sm:size-[90px] md:size-[100px]",
-                  "bg-muted border border-border/50"
+                  "bg-muted"
                 )}
               >
                 {showImage ? (

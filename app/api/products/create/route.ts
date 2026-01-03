@@ -54,7 +54,6 @@ const uuidOrEmpty = z.string().transform(val => {
     return val
   }
   // Not a valid UUID - return null (database will handle missing category)
-  console.warn(`Invalid UUID provided for category/brand: ${val}`)
   return null
 })
 
@@ -191,10 +190,6 @@ export async function POST(request: NextRequest) {
     if (!parseResult.success) {
       const errors = parseResult.error.flatten().fieldErrors
       const formErrors = parseResult.error.flatten().formErrors
-      console.error("[Products Create] Validation failed!")
-      console.error("[Products Create] Field errors:", JSON.stringify(errors, null, 2))
-      console.error("[Products Create] Form errors:", formErrors)
-      console.error("[Products Create] Zod issues:", JSON.stringify(parseResult.error.issues, null, 2))
       return applyCookies(NextResponse.json({ 
         error: "Validation failed", 
         details: errors,
@@ -260,8 +255,6 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error("Product Creation Error:", error)
-      
       // Check for listing limit error (raised by check_listing_limit trigger)
       if (error.message?.includes('LISTING_LIMIT_REACHED') || error.code === 'P0001') {
         return applyCookies(NextResponse.json({ 
@@ -290,8 +283,7 @@ export async function POST(request: NextRequest) {
       .insert(imageRecords)
 
     if (imagesError) {
-      console.error("Product Images Insert Error:", imagesError)
-      // Product was created, log error but don't fail
+      // Product was created, images failed but don't fail the whole request
     }
 
     // 10. Save product attributes (Item Specifics) to separate table
@@ -309,7 +301,7 @@ export async function POST(request: NextRequest) {
         .insert(attributeRecords)
 
       if (attrError) {
-        console.error("Product Attributes Insert Error:", attrError)
+        // Attributes failed but product was created - non-fatal
       }
     }
 
@@ -333,7 +325,6 @@ export async function POST(request: NextRequest) {
       product 
     }))
   } catch (error: unknown) {
-    console.error("Product Creation Error:", error)
     return NextResponse.json({ 
       error: error instanceof Error ? error.message : "An unexpected error occurred" 
     }, { status: 500 })

@@ -21,6 +21,9 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { Category, CategoryPathItem } from "../../../_lib/types";
 
+// ============================================================================
+// Types
+// ============================================================================
 interface CategoryModalProps {
   categories: Category[];
   value: string;
@@ -36,6 +39,137 @@ interface FlatCategory extends Category {
   searchText: string;
 }
 
+// ============================================================================
+// Shared Sub-Components (DRY)
+// ============================================================================
+
+/** Reusable search input for category search */
+function CategorySearchInput({
+  value,
+  onChange,
+  locale,
+  compact = false,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  locale: string;
+  compact?: boolean;
+}) {
+  return (
+    <div className="relative">
+      <MagnifyingGlass 
+        className={cn(
+          "absolute top-1/2 -translate-y-1/2 text-muted-foreground",
+          compact ? "left-2.5 size-4" : "left-3.5 size-5 text-muted-foreground/50"
+        )} 
+        weight="bold" 
+      />
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={locale === "bg" ? (compact ? "Търси..." : "Търси категория...") : (compact ? "Search..." : "Search category...")}
+        className={cn(
+          compact 
+            ? "pl-9 h-9 text-sm" 
+            : "pl-11 h-12 text-base font-medium rounded-md border-border bg-muted/20 focus:bg-background transition-all"
+        )}
+      />
+    </div>
+  );
+}
+
+/** Reusable empty state when no search results */
+function CategoryEmptyState({ locale, compact = false }: { locale: string; compact?: boolean }) {
+  if (compact) {
+    return (
+      <div className="py-8 text-center text-muted-foreground">
+        <p className="text-sm">
+          {locale === "bg" ? "Няма резултати" : "No results"}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="py-12 text-center">
+      <div className="size-16 rounded-full bg-muted/30 flex items-center justify-center mx-auto mb-4">
+        <MagnifyingGlass className="size-8 text-muted-foreground/30" />
+      </div>
+      <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
+        {locale === "bg" ? "Няма намерени резултати" : "No results found"}
+      </p>
+    </div>
+  );
+}
+
+/** Reusable search results list */
+function CategorySearchResults({
+  results,
+  selectedValue,
+  onSelect,
+  locale,
+  compact = false,
+}: {
+  results: FlatCategory[];
+  selectedValue: string;
+  onSelect: (cat: FlatCategory) => void;
+  locale: string;
+  compact?: boolean;
+}) {
+  const getName = (cat: FlatCategory) =>
+    locale === "bg" && cat.name_bg ? cat.name_bg : cat.name;
+
+  if (compact) {
+    return (
+      <div className="space-y-1">
+        {results.map((cat) => (
+          <button
+            key={cat.id}
+            type="button"
+            onClick={() => onSelect(cat)}
+            className={cn(
+              "w-full flex flex-col items-start gap-0.5 px-3 py-2 rounded-md text-left transition-colors",
+              "hover:bg-muted",
+              selectedValue === cat.id && "bg-primary/10"
+            )}
+          >
+            <span className="text-sm font-medium">{getName(cat)}</span>
+            <span className="text-xs text-muted-foreground truncate w-full">
+              {cat.fullPath}
+            </span>
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-2">
+      {results.map((cat) => (
+        <button
+          key={cat.id}
+          type="button"
+          onClick={() => onSelect(cat)}
+          className={cn(
+            "w-full flex flex-col items-start gap-0.5 px-4 py-2.5 rounded-md border text-left transition-all active:scale-[0.98]",
+            selectedValue === cat.id 
+              ? "border-primary bg-primary/5 shadow-xs" 
+              : "border-border bg-background hover:border-primary/30"
+          )}
+        >
+          <span className="text-sm font-bold text-foreground">{getName(cat)}</span>
+          <span className="text-2xs font-bold text-muted-foreground uppercase tracking-wider truncate w-full">
+            {cat.fullPath}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
 function toPathItem(cat: Category): CategoryPathItem {
   return {
     id: cat.id,
@@ -386,15 +520,7 @@ function CategoryModalContent({
         <div className="flex flex-col border-b border-border/50 bg-background shrink-0">
           {/* Search Row */}
           <div className="px-4 py-3">
-            <div className="relative">
-              <MagnifyingGlass className="absolute left-3.5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground/50" weight="bold" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={locale === "bg" ? "Търси категория..." : "Search category..."}
-                className="pl-11 h-12 text-base font-medium rounded-md border-border bg-muted/20 focus:bg-background transition-all"
-              />
-            </div>
+            <CategorySearchInput value={searchQuery} onChange={setSearchQuery} locale={locale} />
           </div>
 
           {/* Step & Breadcrumb Row */}
@@ -442,37 +568,14 @@ function CategoryModalContent({
           <div className="p-4">
             {searchQuery.trim() ? (
               searchResults.length === 0 ? (
-                <div className="py-12 text-center">
-                  <div className="size-16 rounded-full bg-muted/30 flex items-center justify-center mx-auto mb-4">
-                    <MagnifyingGlass className="size-8 text-muted-foreground/30" />
-                  </div>
-                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
-                    {locale === "bg" ? "Няма намерени резултати" : "No results found"}
-                  </p>
-                </div>
+                <CategoryEmptyState locale={locale} />
               ) : (
-                <div className="grid gap-2">
-                  {searchResults.map((cat) => (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => handleSearchSelect(cat)}
-                      className={cn(
-                        "w-full flex flex-col items-start gap-0.5 px-4 py-2.5 rounded-md border text-left transition-all active:scale-[0.98]",
-                        value === cat.id 
-                          ? "border-primary bg-primary/5 shadow-xs" 
-                          : "border-border bg-background hover:border-primary/30"
-                      )}
-                    >
-                      <span className="text-sm font-bold text-foreground">
-                        {getName(cat)}
-                      </span>
-                      <span className="text-2xs font-bold text-muted-foreground uppercase tracking-wider truncate w-full">
-                        {cat.fullPath}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+                <CategorySearchResults
+                  results={searchResults}
+                  selectedValue={value}
+                  onSelect={handleSearchSelect}
+                  locale={locale}
+                />
               )
             ) : (
               <div className="grid grid-cols-2 gap-3">
@@ -527,15 +630,7 @@ function CategoryModalContent({
       <div className="flex-1 flex flex-col">
         {/* Search */}
         <div className="px-3 py-2 border-b">
-          <div className="relative">
-            <MagnifyingGlass className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={locale === "bg" ? "Търси..." : "Search..."}
-              className="pl-9 h-9 text-sm"
-            />
-          </div>
+          <CategorySearchInput value={searchQuery} onChange={setSearchQuery} locale={locale} compact />
         </div>
 
         {/* Content */}
@@ -543,33 +638,15 @@ function CategoryModalContent({
           <div className="p-3">
             {searchQuery.trim() ? (
               searchResults.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground">
-                  <p className="text-sm">
-                    {locale === "bg" ? "Няма резултати" : "No results"}
-                  </p>
-                </div>
+                <CategoryEmptyState locale={locale} compact />
               ) : (
-                <div className="space-y-1">
-                  {searchResults.map((cat) => (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => handleSearchSelect(cat)}
-                      className={cn(
-                        "w-full flex flex-col items-start gap-0.5 px-3 py-2 rounded-md text-left transition-colors",
-                        "hover:bg-muted",
-                        value === cat.id && "bg-primary/10"
-                      )}
-                    >
-                      <span className="text-sm font-medium">
-                        {getName(cat)}
-                      </span>
-                      <span className="text-xs text-muted-foreground truncate w-full">
-                        {cat.fullPath}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+                <CategorySearchResults
+                  results={searchResults}
+                  selectedValue={value}
+                  onSelect={handleSearchSelect}
+                  locale={locale}
+                  compact
+                />
               )
             ) : (
               <div className="grid grid-cols-3 gap-2">

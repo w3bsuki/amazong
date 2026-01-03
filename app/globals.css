@@ -293,6 +293,13 @@
   --color-link: oklch(0.48 0.20 260);
   --color-link-hover: oklch(0.40 0.22 260);
 
+  /* Social Platform Tokens */
+  --color-social-instagram: oklch(0.60 0.22 350);
+  --color-social-tiktok: oklch(0.15 0 0);
+  --color-social-youtube: oklch(0.55 0.25 27);
+  --color-social-twitter: oklch(0.15 0 0);
+  --color-social-generic: var(--color-primary);
+
   /* Semantic */
   --color-success: oklch(0.60 0.18 145);
   --color-warning: oklch(0.75 0.16 85);

@@ -5,6 +5,8 @@
     "app/**/layout.tsx",
     "app/**/route.ts",
     "app/api/**/*.ts",
+    "app/actions/**/*.ts",
+    "lib/auth/**/*.ts",
     "middleware.entry.ts"
   ],
   "project": ["**/*.{ts,tsx}"],

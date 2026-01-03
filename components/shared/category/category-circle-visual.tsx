@@ -47,27 +47,39 @@ export function CategoryCircleVisual({
   const imageUrl = hasMeaningfulImageUrl(category.image_url) ? category.image_url : null
   const icon = hasMeaningfulIcon(category.icon) ? category.icon : null
 
-  // Unified styling: brand-tinted backgrounds for visibility
-  const base =
-    variant === "menu"
-      ? "bg-brand/10 border border-brand/20 text-brand"
-      : variant === "rail"
-        ? "bg-brand/10 border border-brand/20 text-brand"
-        : "bg-brand/10 border border-brand/20 text-brand" // muted now uses brand tint
+  // Variant-specific styling
+  // - muted: Light bg, brand icon (default browse)
+  // - menu: Brand bg, white icon (hamburger menu - prominent)
+  // - rail: Minimal styling for dense lists
+  const variantStyles = {
+    muted: {
+      bg: "bg-muted",
+      iconColor: "text-brand",
+    },
+    menu: {
+      bg: "bg-brand",
+      iconColor: "text-white",
+    },
+    rail: {
+      bg: "bg-muted/50",
+      iconColor: "text-muted-foreground",
+    },
+  }
+
+  const styles = variantStyles[variant]
+  const hasVisualContent = !!imageUrl
 
   const activeStyles = active
-    ? "bg-brand text-white border-brand shadow-sm"
+    ? "ring-2 ring-brand ring-offset-2 shadow-sm"
     : ""
 
   return (
     <div
       className={cn(
         "rounded-full flex items-center justify-center overflow-hidden",
-        "transition-colors duration-150",
-        base,
+        "transition-all duration-150",
+        styles.bg,
         activeStyles,
-        // hover states (avoid when active)
-        !active && "hover:bg-brand/20 hover:border-brand/30",
         className
       )}
     >
@@ -80,7 +92,7 @@ export function CategoryCircleVisual({
           className="h-full w-full object-cover"
         />
       ) : icon ? (
-        <span className="text-lg leading-none" aria-hidden="true">
+        <span className={cn("text-lg leading-none", styles.iconColor)} aria-hidden="true">
           {icon}
         </span>
       ) : (
@@ -88,7 +100,7 @@ export function CategoryCircleVisual({
           {getCategoryIcon(category.slug, {
             size: fallbackIconSize,
             weight: fallbackIconWeight,
-            className: cn(active ? "text-white" : "text-brand"),
+            className: styles.iconColor,
           })}
         </span>
       )}
