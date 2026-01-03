@@ -26,14 +26,9 @@ export function ItemSpecifics({ attributes, condition, categoryName, parentCateg
     }));
   }
 
-  // Combine standard fields with dynamic attributes - avoid duplicate "Condition"
-  const hasConditionInAttributes = dynamicSpecs.some(spec => 
-    spec.label.toLowerCase() === "condition"
-  );
-
   const allSpecs = [
-    // Only add Condition if not already in attributes
-    ...(!hasConditionInAttributes && condition ? [{ label: "Condition", value: condition }] : []),
+    // Condition from dedicated column (not in attributes anymore)
+    ...(condition ? [{ label: "Condition", value: condition }] : []),
     ...(parentCategoryName ? [{ label: "Department", value: parentCategoryName }] : []),
     ...(categoryName ? [{ label: "Category", value: categoryName }] : []),
     ...dynamicSpecs

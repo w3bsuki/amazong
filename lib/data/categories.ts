@@ -217,19 +217,23 @@ function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[]
 // The caching is applied to data fetching, NOT to pages/layouts that use getTranslations().
 
 /**
- * Fetch full category hierarchy starting from a slug or all root categories.
- * Uses recursive CTE via RPC for O(1) query instead of N+1.
+ * Fetch category hierarchy starting from root categories.
  * 
- * @param slug - Category slug to start from (null = all root categories)
- * @param depth - How many levels deep to fetch (default: 3)
- * @returns Nested category tree structure
+ * PERFORMANCE OPTIMIZATION (Jan 2026):
+ * - Fetches L0 → L1 → L2 only (~3,400 categories, ~60KB gzipped)
+ * - L3 categories (~9,700) are lazy-loaded via /api/categories/[parentId]/children
+ * - This reduces initial payload by ~80% (from ~400KB to ~60KB)
+ * 
+ * @param slug - Reserved for future use (currently ignored)
+ * @param depth - Max depth: 0=L0 only, 1=L0+L1, 2=L0+L1+L2 (default & max)
+ * @returns Nested category tree structure (L0 → L1 → L2, no L3)
  */
 export async function getCategoryHierarchy(
-  slug?: string | null, 
-  depth: number = 3
+  _slug?: string | null, 
+  depth: number = 2
 ): Promise<CategoryWithChildren[]> {
   'use cache'
-  cacheTag('categories', slug ? `category-hierarchy-${slug}` : 'category-hierarchy-all')
+  cacheTag('categories', 'category-hierarchy-all')
   cacheLife('categories')
   
   const supabase = createStaticClient()
@@ -238,9 +242,8 @@ export async function getCategoryHierarchy(
     return []
   }
   
-  // NOTE: Supabase RPC has a hardcoded 1000 row limit in PostgREST that cannot
-  // be overridden from the client (.limit() and .range() don't work on RPCs).
-  // For large datasets like categories (3000+ rows), we use direct queries instead.
+  // Clamp depth to max 2 (L3 is always lazy-loaded)
+  const effectiveDepth = Math.min(depth, 2)
   
   // Fetch L0 categories (root)
   const { data: rootCats, error: rootError } = await supabase
@@ -255,7 +258,7 @@ export async function getCategoryHierarchy(
     return []
   }
 
-  if (depth === 0) {
+  if (effectiveDepth === 0) {
     return (rootCats || []).map(cat => ({
       ...cat,
       image_url: normalizeOptionalImageUrl(cat.image_url),
@@ -278,7 +281,7 @@ export async function getCategoryHierarchy(
 
   // Fetch L2 categories if depth >= 2 (batched to avoid large IN clauses)
   let l2Cats: typeof l1Cats = []
-  if (depth >= 2 && l1Cats && l1Cats.length > 0) {
+  if (effectiveDepth >= 2 && l1Cats && l1Cats.length > 0) {
     const l1Ids = l1Cats.map(c => c.id)
     const BATCH_SIZE = 50
     
@@ -306,42 +309,15 @@ export async function getCategoryHierarchy(
     }
   }
 
-  // Fetch L3 categories if depth >= 3 (batched to avoid large IN clauses)
-  let l3Cats: typeof l1Cats = []
-  if (depth >= 3 && l2Cats && l2Cats.length > 0) {
-    const l2Ids = l2Cats.map(c => c.id)
-    const BATCH_SIZE = 50
-    
-    // Use Promise.all for parallel fetching
-    const batches = []
-    for (let i = 0; i < l2Ids.length; i += BATCH_SIZE) {
-      batches.push(l2Ids.slice(i, i + BATCH_SIZE))
-    }
-    
-    const results = await Promise.all(
-      batches.map(batchIds => 
-        supabase
-          .from("categories")
-          .select("id, name, name_bg, slug, parent_id, icon, image_url, display_order")
-          .in("parent_id", batchIds)
-          .lt("display_order", 9000)
-          .order("display_order", { ascending: true })
-      )
-    )
-    
-    for (const result of results) {
-      if (result.data) {
-        l3Cats.push(...result.data)
-      }
-    }
-  }
+  // NOTE: L3 categories are NOT fetched here.
+  // They are lazy-loaded via /api/categories/[parentId]/children when L2 is clicked.
+  // This reduces initial payload from ~400KB to ~60KB (13K → 3.4K categories).
 
-  // Combine and build tree (L0 + L1 + L2 + L3)
-  const allCats = [...(rootCats || []), ...(l1Cats || []), ...l2Cats, ...l3Cats]
+  // Combine and build tree (L0 + L1 + L2 only)
+  const allCats = [...(rootCats || []), ...(l1Cats || []), ...l2Cats]
   
   // Create sets for efficient depth lookups
   const l1Ids = new Set((l1Cats || []).map(c => c.id))
-  const l2Ids = new Set(l2Cats.map(c => c.id))
   
   const rows: CategoryHierarchyRow[] = allCats.map(cat => {
     // Calculate depth based on parent membership
@@ -352,8 +328,6 @@ export async function getCategoryHierarchy(
       catDepth = 1  // L1 (parent is L0)
     } else if (l1Ids.has(cat.parent_id)) {
       catDepth = 2  // L2 (parent is L1)
-    } else if (l2Ids.has(cat.parent_id)) {
-      catDepth = 3  // L3 (parent is L2)
     }
     
     return {
@@ -412,6 +386,53 @@ export async function getCategoryBySlug(slug: string): Promise<CategoryWithParen
     ...data,
     parent: parentData as Category | null
   }
+}
+
+/**
+ * Get full ancestry path for a category.
+ * Returns an array of slugs from root (L0) to the target category.
+ * 
+ * @param slug - Category slug to get ancestry for
+ * @returns Array of slugs [L0, L1, L2?, L3?] or null if not found
+ */
+export async function getCategoryAncestry(slug: string): Promise<string[] | null> {
+  'use cache'
+  cacheTag('categories', `ancestry-${slug}`)
+  cacheLife('categories')
+  
+  const supabase = createStaticClient()
+  if (!supabase) {
+    console.error('getCategoryAncestry: Database connection failed')
+    return null
+  }
+  
+  // Recursively fetch category and its ancestors
+  const ancestry: string[] = []
+  let currentSlug: string | null = slug
+  
+  while (currentSlug) {
+    const result = await supabase
+      .from('categories')
+      .select(`
+        slug,
+        parent:parent_id (slug)
+      `)
+      .eq('slug', currentSlug)
+      .single()
+    
+    if (result.error || !result.data) {
+      break
+    }
+    
+    const catData = result.data as { slug: string; parent: { slug: string } | { slug: string }[] | null }
+    ancestry.unshift(catData.slug) // Add to beginning (building from leaf to root)
+    
+    // Get parent slug if exists
+    const parentData = Array.isArray(catData.parent) ? catData.parent[0] : catData.parent
+    currentSlug = parentData?.slug ?? null
+  }
+  
+  return ancestry.length > 0 ? ancestry : null
 }
 
 /**

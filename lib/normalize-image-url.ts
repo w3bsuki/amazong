@@ -12,7 +12,7 @@ const KNOWN_BAD_REMOTE_IMAGE_SUBSTRINGS = [
 	"images.unsplash.com/photo-1461896836934-28e9b70b7d32",
 ] as const;
 
-export function normalizeImageUrl(url: string | null | undefined): string {
+export function normalizeImageUrl(url?: string | null): string {
 	if (!url) return PLACEHOLDER_IMAGE_PATH;
 	const trimmed = url.trim();
 	if (!trimmed) return PLACEHOLDER_IMAGE_PATH;
@@ -45,7 +45,7 @@ export function normalizeImageUrl(url: string | null | undefined): string {
  * Category UIs usually have better fallbacks (emoji/icon) than a generic
  * placeholder image, so returning a placeholder here degrades the UI.
  */
-export function normalizeOptionalImageUrl(url: string | null | undefined): string | null {
+export function normalizeOptionalImageUrl(url?: string | null): string | null {
 	if (!url) return null;
 	const trimmed = url.trim();
 	if (!trimmed) return null;

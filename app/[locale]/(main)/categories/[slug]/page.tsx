@@ -20,10 +20,14 @@ import {
   getCategoryBySlug,
   getCategoryContext,
   getRootCategoriesWithChildren,
+  getCategoryHierarchy,
+  getCategoryAncestry,
 } from "@/lib/data/categories"
 import { searchProducts } from "./_lib/search-products"
 import type { Product } from "./_lib/types"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
+import { MobileHomeTabs } from "@/components/mobile/mobile-home-tabs"
+import { getNewestProducts, toUI } from "@/lib/data/products"
 
 // =============================================================================
 // CATEGORY PAGE - HYBRID CACHING STRATEGY
@@ -207,19 +211,63 @@ export default async function CategoryPage({
   // Get translations for category page UI
   const t = await getTranslations('SearchFilters')
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="container px-2 sm:px-4 py-1">
-        {/* No breadcrumb needed - sidebar provides all navigation context:
-            - Category title at top
-            - Back link to parent/all categories  
-            - Subcategory navigation
-            Breadcrumb would be redundant (Amazon pattern) */}
+  // ==========================================================================
+  // MOBILE: Use MobileHomeTabs with pre-selected category state
+  // This provides instant client-side navigation (no page reloads)
+  // ==========================================================================
+  
+  // Get category ancestry to determine L0, L1, L2, L3 levels
+  const ancestry = await getCategoryAncestry(slug)
+  
+  // Fetch category hierarchy for MobileHomeTabs (L0→L1→L2 only, ~60KB)
+  // L3 categories are lazy-loaded when L2 is clicked
+  const categoriesWithChildren = await getCategoryHierarchy(null, 2)
+  
+  // Get initial products for MobileHomeTabs
+  const newestProducts = await getNewestProducts(12)
+  const mobileInitialProducts = newestProducts.map(p => toUI(p))
+  
+  // Map ancestry to tab state: [L0, L1?, L2?, L3?]
+  // L0 = activeTab (defaultTab)
+  // L1 = activeL1 (defaultSubTab) 
+  // L2 = activeL2 (defaultL2)
+  // L3 = selectedPill (defaultL3)
+  const defaultTab = ancestry?.[0] ?? null
+  const defaultSubTab = ancestry?.[1] ?? null
+  const defaultL2 = ancestry?.[2] ?? null
+  const defaultL3 = ancestry?.[3] ?? null
 
-        {/* Layout: Sidebar (desktop) + Main Content */}
-        <div className="flex gap-0">
-          {/* Sidebar Filters - Desktop Only */}
-          <aside className="w-56 hidden lg:block shrink-0 border-r border-border">
+  return (
+    <>
+      {/* Mobile: MobileHomeTabs with instant client-side navigation */}
+      <div className="lg:hidden">
+        <MobileHomeTabs 
+          initialProducts={mobileInitialProducts} 
+          initialCategories={categoriesWithChildren}
+          defaultTab={defaultTab}
+          defaultSubTab={defaultSubTab}
+          defaultL2={defaultL2}
+          defaultL3={defaultL3}
+          showBanner={false}
+          l0Style="pills"
+          circlesNavigateToPages
+          locale={locale}
+        />
+      </div>
+      
+      {/* Desktop: Full filter/sort/pagination experience */}
+      <div className="hidden lg:block min-h-screen bg-background">
+        <div className="container px-2 sm:px-4 py-1">
+          {/* No breadcrumb needed - sidebar provides all navigation context:
+              - Category title at top
+              - Back link to parent/all categories  
+              - Subcategory navigation
+              Breadcrumb would be redundant (Amazon pattern) */}
+
+          {/* Layout: Sidebar (desktop) + Main Content */}
+          <div className="flex gap-0">
+            {/* Sidebar Filters - Desktop Only */}
+            <aside className="w-56 shrink-0 border-r border-border">
             <div className="sticky top-16 pr-4 py-1 max-h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar">
               <Suspense>
                 <SearchFilters
@@ -359,6 +407,7 @@ export default async function CategoryPage({
         </div>
         {/* End flex container */}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

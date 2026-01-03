@@ -56,9 +56,10 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params
   setRequestLocale(locale)
 
-  // Fetch categories WITH children for mobile subcategory circles + pills.
-  // L0 + L1 + L2 + L3 in one call (keeps mobile tabs fully server-driven).
-  const categoriesWithChildren = await getCategoryHierarchy(null, 3)
+  // Fetch categories with children for mobile subcategory circles.
+  // L0 + L1 + L2 only (~3,400 categories, ~60KB gzipped).
+  // L3 (~9,700 categories) are lazy-loaded when L2 is clicked.
+  const categoriesWithChildren = await getCategoryHierarchy(null, 2)
 
   // Fetch initial products for mobile tabs
   const newestProducts = await getNewestProducts(12)

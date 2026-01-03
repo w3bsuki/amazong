@@ -97,9 +97,11 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
 
   const imageUrls = (form.images || []).map((img) => img.url)
 
+  // Build attributes JSONB - condition goes in dedicated column, not here
   const attributesJson: Record<string, string> = {}
-  if (form.condition) attributesJson.condition = form.condition
   for (const attr of form.attributes || []) {
+    // Skip condition - it has its own column
+    if (attr.name.toLowerCase() === "condition") continue
     attributesJson[attr.name.toLowerCase().replaceAll(/\s+/g, "_")] = attr.value
   }
 
@@ -127,6 +129,8 @@ export async function createListing(args: { sellerId: string; data: unknown }): 
     ships_to_worldwide: form.shipsToWorldwide ?? false,
     pickup_only: form.pickupOnly ?? false,
     free_shipping: form.freeShipping ?? false,
+    // Set condition column to match attributes.condition (avoid duplicate)
+    condition: form.condition || "new",
     attributes: attributesJson,
   }
 

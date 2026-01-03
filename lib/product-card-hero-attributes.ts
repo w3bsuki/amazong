@@ -107,7 +107,7 @@ function formatAttributeValue(value: unknown): string | null {
  * Get hero attribute config for a category
  */
 export function getHeroAttributeConfig(
-  categoryRootSlug: string | undefined | null
+  categoryRootSlug?: string | null
 ): HeroAttributeConfig | null {
   if (!categoryRootSlug) return null
   

@@ -93,7 +93,11 @@ function toRecord(value: unknown): Record<string, unknown> {
 
 function buildItemSpecificsDetails(attributes: unknown, condition?: string | null) {
   const details: ItemSpecificDetail[] = [];
-  if (condition) details.push({ label: "Condition", value: condition });
+  
+  // Condition comes from dedicated column only (not attributes JSONB)
+  if (condition) {
+    details.push({ label: "Condition", value: condition });
+  }
 
   const attrs = toRecord(attributes);
   for (const [key, value] of Object.entries(attrs)) {

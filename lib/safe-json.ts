@@ -1,4 +1,4 @@
-export function safeJsonParse<T>(input: string | null | undefined): T | undefined {
+export function safeJsonParse<T>(input?: string | null): T | undefined {
   if (!input) return undefined;
   try {
     return JSON.parse(input) as T;

@@ -14,6 +14,8 @@ import type { UIProduct } from "@/lib/data/products"
 import { Link } from "@/i18n/routing"
 import { CaretLeft, CaretRight, Megaphone, Clock, Sparkle, Storefront, TrendUp } from "@phosphor-icons/react"
 import { usePathname, useSearchParams } from "next/navigation"
+import { MobileFilters } from "@/components/shared/filters/mobile-filters"
+import { SortSelect } from "@/components/shared/search/sort-select"
 
 type Category = CategoryTreeNode
 
@@ -23,20 +25,36 @@ type Category = CategoryTreeNode
 
 interface MobileHomeTabsProps {
   initialProducts: UIProduct[]
-  /** Categories with children from server (L0→L1→L2 pre-loaded) */
+  /** Categories with children from server (L0→L1→L2 pre-loaded, L3 lazy) */
   initialCategories?: Category[]
   defaultTab?: string | null
   defaultSubTab?: string | null
+  defaultL2?: string | null
+  defaultL3?: string | null
   showBanner?: boolean
   pageTitle?: string | null
   /** Hide the L0 sticky tab header (useful when a parent layout already provides tabs). */
   showL0Tabs?: boolean
+  /** L0 navigation style: "tabs" (default underline tabs) or "pills" (compact quick pills) */
+  l0Style?: "tabs" | "pills"
+  /**
+   * When true, clicking L1/L2 circles navigates to a category page URL
+   * (e.g. `/categories/{root}/{child}`) instead of drilling down within tabs.
+   */
+  circlesNavigateToPages?: boolean
+  /** Locale from server - avoids useLocale() hydration issues */
+  locale?: string
 }
 
 interface TabData {
   products: UIProduct[]
   page: number
   hasMore: boolean
+}
+
+// L3 children fetched on demand (lazy-loaded)
+interface L3Cache {
+  [parentId: string]: Category[]
 }
 
 // =============================================================================
@@ -54,6 +72,16 @@ function ProductGridSkeleton({ count = 6 }: { count?: number }) {
             <Skeleton className="h-2.5 w-2/3 rounded-sm" />
           </div>
         </div>
+      ))}
+    </div>
+  )
+}
+
+function PillsSkeleton() {
+  return (
+    <div className="flex gap-2 items-center animate-pulse">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Skeleton key={i} className="h-8 w-20 rounded-full" />
       ))}
     </div>
   )
@@ -80,39 +108,71 @@ export function MobileHomeTabs({
   initialCategories = [],
   defaultTab = null,
   defaultSubTab = null,
+  defaultL2 = null,
+  defaultL3 = null,
   showBanner = true,
   pageTitle = null,
   showL0Tabs = true,
+  l0Style = "tabs",
+  circlesNavigateToPages = false,
+  locale: localeProp,
 }: MobileHomeTabsProps) {
-  const locale = useLocale()
+  const intlLocale = useLocale()
+  const locale = localeProp || intlLocale
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [headerHeight, setHeaderHeight] = useState(0)
 
-  // Categories from server (L0→L1→L2 pre-loaded, no client fetch needed)
+  // Categories from server (L0→L1→L2 pre-loaded, L3 lazy-loaded on demand)
   const displayCategories = initialCategories
+  
+  // L3 cache: lazy-loaded children keyed by parent L2 id
+  const [l3Cache, setL3Cache] = useState<L3Cache>({})
+  const [l3Loading, setL3Loading] = useState<string | null>(null)
 
-  // Initialize from URL params or props
-  const initialTab = defaultTab || searchParams.get('tab') || "all"
-  const initialSubTab = defaultSubTab || searchParams.get('sub') || null
+  // Initialize from URL params or props.
+  // IMPORTANT: On `/categories` we want the quick pills + circles experience by default.
+  // If there's no `?tab=`, prefer the first root category (pills mode) instead of "all"
+  // (which would render the homepage-like "All" feed and no circles).
+  const urlInitialTab = searchParams.get('tab')
+  const urlInitialSubTab = searchParams.get('sub')
+  const pillsDefaultTab =
+    l0Style === "pills" && displayCategories.length > 0
+      ? displayCategories[0]!.slug
+      : "all"
+
+  const initialTab = defaultTab || urlInitialTab || pillsDefaultTab
+  const initialSubTab = defaultSubTab || urlInitialSubTab || null
+  const initialL2 = defaultL2 ?? null
+  const initialL3 = defaultL3 ?? null
+  const initialActiveSlug = initialL3 ?? initialL2 ?? initialSubTab ?? initialTab
 
   // ==========================================================================
   // Navigation State - Simple hierarchy: L0 → L1 → L2 → L3 (pill)
   // ==========================================================================
   const [activeTab, setActiveTab] = useState<string>(initialTab)       // L0 category slug
   const [activeL1, setActiveL1] = useState<string | null>(initialSubTab) // L1 category slug
-  const [activeL2, setActiveL2] = useState<string | null>(null)        // L2 category slug
-  const [selectedPill, setSelectedPill] = useState<string | null>(null) // L3 pill slug
+  const [activeL2, setActiveL2] = useState<string | null>(initialL2)        // L2 category slug
+  const [selectedPill, setSelectedPill] = useState<string | null>(initialL3) // L3 pill slug
 
   // Sync state with URL params when they change (e.g. from drawer navigation)
-  const urlTab = searchParams.get('tab') || 'all'
-  const urlSub = searchParams.get('sub') || null
+  // IMPORTANT: Only sync from URL when the URL actually provides `tab`.
+  // Category pages like `/[locale]/categories/[slug]` pass defaults via props but
+  // do not include `?tab=...`; treating missing `tab` as `all` causes a hydration
+  // flip after ~1s ("works then breaks") when the effect runs.
+  const urlTab = searchParams.get('tab')
+  const urlSub = searchParams.get('sub')
   useEffect(() => {
+    // If `tab` is absent, defaults are driving initial state; do not override.
+    if (urlTab === null) return
+
     if (urlTab !== activeTab) {
       setActiveTab(urlTab)
       setActiveL2(null)
       setSelectedPill(null)
     }
+
+    // When URL controls state, treat missing `sub` as "no sub".
     if (urlSub !== activeL1) {
       setActiveL1(urlSub)
       setActiveL2(null)
@@ -123,13 +183,27 @@ export function MobileHomeTabs({
   // Filter state for "All" tab
   const [activeAllFilter, setActiveAllFilter] = useState<string>("newest")
 
+  // Detect filter/sort URL changes (ignore tab/sub/page, which are controlled internally).
+  // When these change, we need to refetch products; otherwise the UI would show stale results.
+  const filterQueryKey = useMemo(() => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('tab')
+    params.delete('sub')
+    params.delete('page')
+    return params.toString()
+  }, [searchParams])
+
   // Product feed state
   const [isLoading, setIsLoading] = useState(false)
-  const [tabData, setTabData] = useState<Record<string, TabData>>({
-    all: {
+  const [tabData, setTabData] = useState<Record<string, TabData>>(() => {
+    const seed: TabData = {
       products: initialProducts,
       page: 1,
       hasMore: initialProducts.length >= 12,
+    }
+    return {
+      all: seed,
+      ...(initialActiveSlug !== "all" ? { [initialActiveSlug]: seed } : null),
     }
   })
 
@@ -175,19 +249,53 @@ export function MobileHomeTabs({
     [l2Categories, activeL2]
   )
 
-  // L3 categories (children of L2: T-shirts, Shirts, Pants) - fully server-provided
+  // L3 categories - LAZY LOADED from cache (not server-provided)
+  // This reduces initial payload from ~400KB to ~60KB (13K → 3.4K categories)
   const l3Categories = useMemo(() => {
-    if (!activeL2) return []
-    return currentL2?.children ?? []
-  }, [activeL2, currentL2])
+    if (!currentL2) return []
+    // Check cache first, otherwise return empty (will trigger fetch)
+    return l3Cache[currentL2.id] ?? []
+  }, [currentL2, l3Cache])
+
+  // Fetch L3 children when L2 is selected (lazy loading)
+  useEffect(() => {
+    if (!currentL2) return
+    
+    // Already cached or loading
+    if (l3Cache[currentL2.id] || l3Loading === currentL2.id) return
+    
+    const fetchL3 = async () => {
+      setL3Loading(currentL2.id)
+      try {
+        // Use existing /api/categories/[slug]/children endpoint
+        // The "slug" param accepts a category ID for fetching children
+        const res = await fetch(`/api/categories/${currentL2.id}/children`)
+        if (!res.ok) throw new Error('Failed to fetch L3 categories')
+        const data = await res.json()
+        setL3Cache(prev => ({
+          ...prev,
+          [currentL2.id]: data.children || []
+        }))
+      } catch (err) {
+        console.error('Failed to load L3 categories:', err)
+        // Cache empty array to prevent retry spam
+        setL3Cache(prev => ({ ...prev, [currentL2.id]: [] }))
+      } finally {
+        setL3Loading(null)
+      }
+    }
+    
+    fetchL3()
+  }, [currentL2, l3Cache, l3Loading])
 
   // Determine what to show
   const showL1Circles = !activeL1 && l1Categories.length > 0
   const showL2Circles = !!activeL1 && l2Categories.length > 0
   const circlesToDisplay = showL2Circles ? l2Categories : (showL1Circles ? l1Categories : [])
 
-  // Show L3 pills when L2 is selected
-  const showPills = !!activeL2 && l3Categories.length > 0
+  // Show L3 pills when L2 is selected (either loading or has data)
+  const isL3Loading = !!currentL2 && l3Loading === currentL2.id
+  const showPills = !!activeL2 && (l3Categories.length > 0 || isL3Loading)
 
   // Effective category slug for fetching products (most specific selection)
   const activeSlug = useMemo(() => {
@@ -214,13 +322,38 @@ export function MobileHomeTabs({
 
   // Measure header height for sticky positioning
   useEffect(() => {
+    const header = document.querySelector("header")
+
     const update = () => {
-      const header = document.querySelector("header")
-      setHeaderHeight(header ? header.offsetHeight : 0)
+      if (!(header instanceof HTMLElement)) {
+        setHeaderHeight(0)
+        return
+      }
+
+      // The site header is typically `position: sticky` and already occupies space
+      // in normal document flow. Applying its height as a sticky `top` offset would
+      // make our own sticky bars become "stuck" immediately and visually slide down,
+      // causing the quick pills to appear under the circles (and creating a blank gap).
+      const headerPosition = getComputedStyle(header).position
+      setHeaderHeight(headerPosition === "fixed" ? header.offsetHeight : 0)
     }
+
     update()
+
+    // Header height can change after hydration (auth, country, subheader, etc.).
+    // ResizeObserver keeps sticky offsets stable instead of "breaking" after a few seconds.
+    const ro =
+      header && typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => update())
+        : null
+
+    if (ro && header) ro.observe(header)
+
     window.addEventListener("resize", update)
-    return () => window.removeEventListener("resize", update)
+    return () => {
+      window.removeEventListener("resize", update)
+      ro?.disconnect()
+    }
   }, [])
 
   // Auto-scroll selected tab to left edge (respecting container padding)
@@ -274,6 +407,19 @@ export function MobileHomeTabs({
 
   // Track which slugs have been loaded to prevent infinite loops
   const loadedSlugsRef = useRef<Set<string>>(new Set(["all"]))
+
+  const lastFilterQueryKeyRef = useRef<string>(filterQueryKey)
+  useEffect(() => {
+    if (lastFilterQueryKeyRef.current === filterQueryKey) return
+    lastFilterQueryKeyRef.current = filterQueryKey
+
+    // Reset only the currently active feed; keep other tabs cached.
+    loadedSlugsRef.current.delete(activeSlug)
+    setTabData((prev) => ({
+      ...prev,
+      [activeSlug]: { products: [], page: 0, hasMore: true },
+    }))
+  }, [filterQueryKey, activeSlug])
 
   // Load initial products for a slug if empty
   useEffect(() => {
@@ -410,6 +556,7 @@ export function MobileHomeTabs({
 
   // Handle circle click (L1 or L2)
   const handleCircleClick = (category: Category) => {
+    if (circlesNavigateToPages) return
     if (!activeL1) {
       // Currently showing L1 circles - click selects L1, shows L2 circles
       setActiveL1(category.slug)
@@ -423,7 +570,25 @@ export function MobileHomeTabs({
     }
   }
 
-  // Handle back button (go from L2 back to L1)
+  // Handle back button - goes back one level at a time
+  const handleBack = () => {
+    if (selectedPill) {
+      // Go back from L3 pill to L2 level
+      setSelectedPill(null)
+    } else if (activeL2) {
+      // Go back from L2 to L1 level
+      setActiveL2(null)
+      setSelectedPill(null)
+    } else if (activeL1) {
+      // Go back from L1 to L0 level
+      setActiveL1(null)
+      setActiveL2(null)
+      setSelectedPill(null)
+      updateUrl(activeTab, null)
+    }
+  }
+
+  // Handle back button (go from L2 back to L1) - legacy, kept for compatibility
   const handleBackToL1 = () => {
     setActiveL1(null)
     setActiveL2(null)
@@ -453,9 +618,9 @@ export function MobileHomeTabs({
   return (
     <div className="w-full min-h-screen bg-background">
       {/* 
-        1. Sticky Tabs Header (L0)
+        1. Sticky Tabs Header (L0) - Two variants: tabs (underline) or pills (compact)
       */}
-      {showL0Tabs && (
+      {showL0Tabs && l0Style === "tabs" && (
         <div
           className="sticky z-30 bg-background border-b border-border/40"
           style={{ top: headerHeight }}
@@ -538,6 +703,63 @@ export function MobileHomeTabs({
       )}
 
       {/* 
+        1b. Quick Pills variant for L0 (compact rounded pills)
+      */}
+      {showL0Tabs && l0Style === "pills" && (
+        <div
+          className="sticky z-30 bg-background border-b border-border/40"
+          style={{ top: headerHeight }}
+        >
+          <div
+            ref={tabsContainerRef}
+            className="flex items-center gap-1.5 overflow-x-auto no-scrollbar px-(--page-inset) py-2"
+            role="tablist"
+          >
+            {/* "All" Pill */}
+            <button
+              type="button"
+              role="tab"
+              data-tab="all"
+              onClick={() => handleTabChange("all")}
+              aria-selected={activeTab === "all"}
+              className={cn(
+                "shrink-0 h-7 px-3 text-xs font-medium rounded-full whitespace-nowrap",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                "transition-colors",
+                activeTab === "all"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              {locale === "bg" ? "Всички" : "All"}
+            </button>
+
+            {/* Category Pills */}
+            {displayCategories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                role="tab"
+                data-tab={cat.slug}
+                onClick={() => handleTabChange(cat.slug)}
+                aria-selected={activeTab === cat.slug}
+                className={cn(
+                  "shrink-0 h-7 px-3 text-xs font-medium rounded-full whitespace-nowrap",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "transition-colors",
+                  activeTab === cat.slug
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                {getCategoryName(cat, locale)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 
         2. Full-bleed Seller Banner (All tab only) - Professional C2C marketplace style
       */}
       {showBanner && isAllTab && (
@@ -556,6 +778,7 @@ export function MobileHomeTabs({
       {/* 
         3. Subcategory Circles (L1 or L2) OR "All" Tab Quick Filters
         Positioned below the banner so filters affect products below
+        Note: All-tab quick filters should be available in both styles.
       */}
       <div className={cn(
         "bg-background border-b border-border/40",
@@ -591,17 +814,18 @@ export function MobileHomeTabs({
           </div>
         ) : !isAllTab ? (
           <div className="px-(--page-inset) flex items-start justify-between gap-3">
-            {(circlesToDisplay.length > 0 || showL2Circles) ? (
+            {/* Always show back button when deeper than L0, even if no circles to display */}
+            {(circlesToDisplay.length > 0 || activeL1) ? (
               <div
                 ref={subTabsContainerRef}
                 className="flex-1 flex overflow-x-auto no-scrollbar gap-2 snap-x snap-mandatory items-start"
               >
-                {/* Back Button (when showing L2) */}
-                {showL2Circles && (
+                {/* Back Button - shows when L1 or deeper is selected */}
+                {activeL1 && (
                   <div className="flex flex-col items-center gap-1 shrink-0 snap-start w-14">
                     <button
                       type="button"
-                      onClick={handleBackToL1}
+                      onClick={handleBack}
                       className="size-12 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center hover:bg-brand/20 transition-colors duration-100"
                     >
                       <CaretLeft size={22} weight="bold" className="text-brand" aria-hidden="true" />
@@ -621,11 +845,15 @@ export function MobileHomeTabs({
                   const dimmed =
                     (showL2Circles ? !!activeL2 : !!activeL1) && !isActive
 
+                  const href = circlesNavigateToPages && activeTab !== "all"
+                    ? (`/categories/${activeTab}/${sub.slug}` as const)
+                    : undefined
+
                   return (
                     <CategoryCircle
                       key={sub.slug}
                       category={sub}
-                      onClick={() => handleCircleClick(sub)}
+                      {...(href ? { href } : { onClick: () => handleCircleClick(sub) })}
                       active={isActive}
                       dimmed={dimmed}
                       circleClassName="size-(--category-circle-mobile)"
@@ -651,47 +879,74 @@ export function MobileHomeTabs({
 
       {/* 
         3. Deep Navigation Pills (L3)
-        Revealed when L2 is selected and has children.
+        Revealed when L2 is selected. Lazy-loaded from API.
+        Must appear ABOVE the filter/sort row per design.
       */}
       {showPills && (
         <div className="bg-background py-3 px-(--page-inset) overflow-x-auto no-scrollbar" ref={pillsContainerRef}>
-          <div className="flex gap-2 items-center">
-            {/* "All" Pill */}
-            <button
-              onClick={() => setSelectedPill(null)}
-              className={cn(
-                "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
-                selectedPill === null
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-secondary text-secondary-foreground border-border/50 hover:bg-secondary/80"
-              )}
-            >
-              {locale === "bg" ? "Всички" : "All"}
-            </button>
+          {isL3Loading ? (
+            <PillsSkeleton />
+          ) : (
+            <div className="flex gap-2 items-center">
+              {/* "All" Pill */}
+              <button
+                onClick={() => setSelectedPill(null)}
+                className={cn(
+                  "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+                  selectedPill === null
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-secondary text-secondary-foreground border-border/50 hover:bg-secondary/80"
+                )}
+              >
+                {locale === "bg" ? "Всички" : "All"}
+              </button>
 
-            {/* L3 Pills */}
-            {l3Categories.map((child) => {
-              const isSelected = selectedPill === child.slug
-              return (
-                <button
-                  key={child.slug}
-                  onClick={() => handlePillClick(child)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
-                    isSelected
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-secondary text-secondary-foreground border-border/50 hover:bg-secondary/80"
-                  )}
-                >
-                  {getCategoryName(child, locale)}
-                </button>
-              )
-            })}
+              {/* L3 Pills */}
+              {l3Categories.map((child) => {
+                const isSelected = selectedPill === child.slug
+                return (
+                  <button
+                    key={child.slug}
+                    onClick={() => handlePillClick(child)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+                      isSelected
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-secondary text-secondary-foreground border-border/50 hover:bg-secondary/80"
+                    )}
+                  >
+                    {getCategoryName(child, locale)}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/*
+        Mobile Filter + Sort toolbar with results count
+        - Required on /categories (quick pills + circles) so users can filter/sort the feed.
+        - Keep it off the homepage default tabs mode to avoid clutter.
+        - Appears BELOW the quick pills per design.
+      */}
+      {l0Style === "pills" && (
+        <div className="bg-background border-b border-border/40 px-(--page-inset) py-2">
+          <div className="flex items-center gap-2">
+            <MobileFilters locale={locale} />
+            <SortSelect />
+            <span className="text-xs text-muted-foreground whitespace-nowrap ml-auto">
+              {activeFeed.products.length} {locale === "bg" ? "резултата" : "results"}
+            </span>
           </div>
         </div>
       )}
 
-      {!isAllTab && activeSlug !== "all" && (
+      {/*
+        "View all" link - ONLY on HOMEPAGE (tabs mode) to navigate to /categories
+        This makes no sense on /categories page itself - you're already there!
+      */}
+      {l0Style === "tabs" && !isAllTab && activeSlug !== "all" && (
         <div className="bg-background px-(--page-inset) pt-2 pb-3 border-b border-border/40">
           <Link
             href={`/categories/${activeSlug}`}

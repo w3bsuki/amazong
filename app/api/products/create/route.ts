@@ -211,14 +211,12 @@ export async function POST(request: NextRequest) {
     // After transform, all images are objects with url property
     const imageUrls = data.images.map(img => img.url)
 
-    // 6. Build condition attribute for JSONB
+    // 6. Build attributes JSONB - condition goes in dedicated column, not here
     const attributesJson: Record<string, string> = {}
-    if (data.condition) {
-      attributesJson.condition = data.condition
-    }
-    // Add any custom attributes
     if (data.attributes) {
       for (const attr of data.attributes) {
+        // Skip condition - it has its own column
+        if (attr.name.toLowerCase() === "condition") continue
         attributesJson[attr.name.toLowerCase().replaceAll(/\s+/g, '_')] = attr.value
       }
     }
@@ -250,6 +248,8 @@ export async function POST(request: NextRequest) {
       ships_to_worldwide: data.shipsToWorldwide ?? false,
       pickup_only: data.pickupOnly ?? false,
       free_shipping: data.freeShipping ?? false,
+      // Set condition column to match attributes.condition (avoid duplicate)
+      condition: data.condition || "new",
       attributes: attributesJson,
     }
     
