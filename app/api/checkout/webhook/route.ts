@@ -39,8 +39,6 @@ export async function POST(req: Request) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    console.log('Processing checkout.session.completed:', session.id);
-
     try {
       // Idempotency: avoid creating duplicate orders for the same payment intent.
       if (session.payment_intent) {
@@ -51,7 +49,6 @@ export async function POST(req: Request) {
           .maybeSingle();
 
         if (existingOrder?.id) {
-          console.log('Order already exists for payment intent:', session.payment_intent);
           return NextResponse.json({ received: true });
         }
       }
@@ -99,8 +96,6 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Order creation failed' }, { status: 500 });
       }
 
-      console.log('Order created successfully:', order.id);
-
       // Create order items from line items
       if (lineItems.data.length > 0) {
         // Try to get items from metadata
@@ -110,7 +105,7 @@ export async function POST(req: Request) {
             itemsData = JSON.parse(session.metadata.items_json);
           }
         } catch {
-          console.warn('Could not parse items_json from metadata');
+          // Items JSON not available in metadata
         }
 
         // Get product details including seller_id for each item
@@ -150,28 +145,16 @@ export async function POST(req: Request) {
 
             if (itemsError) {
               console.error('Error creating order items:', itemsError);
-            } else {
-              console.log('Order items created:', validItems.length);
             }
 
             // Create order conversations for buyer-seller communication
             // This is handled by the create_order_conversation trigger on orders table
-            // Sellers will see the new order in their dashboard and can message buyers
-            console.log('Order created - conversation trigger should fire for order:', order.id);
-            
-            // Log seller IDs that will receive the order
-            const sellerIds = [...new Set(validItems.map(item => item.seller_id))];
-            console.log('Sellers notified via order:', sellerIds.join(', '));
           }
         }
       }
 
-      // Send buyer confirmation email
-      // Future: Integrate with Resend or SendGrid when email service is set up
-      // await sendOrderConfirmationEmail(session.customer_details.email, order);
-      if (session.customer_details?.email) {
-        console.log('Order confirmation pending email setup:', session.customer_details.email);
-      }
+      // TODO: Send buyer confirmation email when email service is set up
+      // await sendOrderConfirmationEmail(session.customer_details?.email, order);
 
     } catch (error) {
       console.error('Error processing checkout session:', error);
@@ -181,8 +164,7 @@ export async function POST(req: Request) {
 
   // Handle payment_intent.succeeded for additional verification
   if (event.type === 'payment_intent.succeeded') {
-    const paymentIntent = event.data.object as Stripe.PaymentIntent;
-    console.log('Payment succeeded:', paymentIntent.id);
+    // Payment verified - order creation handled in checkout.session.completed
   }
 
   // Handle payment failures

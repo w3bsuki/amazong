@@ -252,6 +252,7 @@ export default async function CategoryPage({
           l0Style="pills"
           circlesNavigateToPages
           locale={locale}
+          filterableAttributes={filterableAttributes}
         />
       </div>
       

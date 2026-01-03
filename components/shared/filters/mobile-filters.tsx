@@ -234,7 +234,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
         variant="ghost"
         onClick={() => setIsOpen(true)}
         className={cn(
-          "h-8 rounded-full px-3 gap-1 text-sm bg-secondary hover:bg-secondary/80 hover:text-foreground transition-colors border border-border/50",
+          "h-8 w-full rounded-full px-3 gap-1 text-sm bg-secondary hover:bg-secondary/80 hover:text-foreground transition-colors border border-border/50",
           filterCount > 0 && "bg-primary/10 text-primary border-primary/20"
         )}
       >

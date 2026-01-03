@@ -164,7 +164,7 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
 // GET PRODUCT REVIEWS
 // ============================================================================
 
-async function getProductReviews(productId: string): Promise<Review[]> {
+export async function getProductReviews(productId: string): Promise<Review[]> {
   const supabase = await createClient()
   
   if (!supabase) {
@@ -210,7 +210,7 @@ interface CanReviewResult {
   existingReviewId?: string
 }
 
-async function canUserReview(productId: string): Promise<CanReviewResult> {
+export async function canUserReview(productId: string): Promise<CanReviewResult> {
   const supabase = await createClient()
   
   if (!supabase) {
@@ -252,7 +252,7 @@ async function canUserReview(productId: string): Promise<CanReviewResult> {
 // INCREMENT HELPFUL COUNT
 // ============================================================================
 
-async function markReviewHelpful(reviewId: string): Promise<{ success: boolean; newCount?: number; error?: string }> {
+export async function markReviewHelpful(reviewId: string): Promise<{ success: boolean; newCount?: number; error?: string }> {
   const supabase = await createClient()
   
   if (!supabase) {
@@ -276,7 +276,7 @@ async function markReviewHelpful(reviewId: string): Promise<{ success: boolean; 
 // DELETE REVIEW (own review only)
 // ============================================================================
 
-async function deleteReview(reviewId: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteReview(reviewId: string): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient()
   
   if (!supabase) {

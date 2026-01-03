@@ -83,8 +83,6 @@ export async function POST(req: Request) {
             if (productError) {
               console.error('Error updating product boost status:', productError)
             }
-
-            console.log(`✅ Boost activated for product ${productId}: ${durationDays} days, paid ${amountPaid} BGN`)
           }
           break
         }
@@ -153,8 +151,6 @@ export async function POST(req: Request) {
             if (profileError) {
               console.error('Error updating profile:', profileError)
             }
-
-            console.log(`✅ Subscription activated for profile ${profileId}: ${planTier}, FVF: ${plan.final_value_fee || plan.commission_rate}%`)
           }
         }
         break
@@ -208,10 +204,6 @@ export async function POST(req: Request) {
                 per_order_fee: 0,
               })
               .eq('id', existingSub.seller_id)
-            
-            console.log(`⬇️ Subscription ${newStatus} for profile ${existingSub.seller_id} - downgraded to free tier`)
-          } else if (newStatus === 'active' && !autoRenew) {
-            console.log(`⏳ Subscription scheduled for cancellation at ${expiresAt} for profile ${existingSub.seller_id}`)
           }
         }
         break
@@ -250,8 +242,6 @@ export async function POST(req: Request) {
               per_order_fee: 0,
             })
             .eq('id', existingSub.seller_id)
-          
-          console.log(`🔚 Subscription ended for profile ${existingSub.seller_id} - downgraded to free tier`)
         }
         break
       }
@@ -292,8 +282,6 @@ export async function POST(req: Request) {
                 updated_at: new Date().toISOString(),
               })
               .eq('id', existingSub.id)
-
-            console.log(`💰 Invoice paid for subscription ${subscriptionId}, extended to ${newExpiresAt}`)
           }
         }
         break
@@ -326,8 +314,6 @@ export async function POST(req: Request) {
                 updated_at: new Date().toISOString(),
               })
               .eq('id', existingSub.id)
-            
-            console.log(`❌ Invoice payment failed for subscription ${subscriptionId}`)
           }
         }
         break

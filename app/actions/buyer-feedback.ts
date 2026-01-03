@@ -157,7 +157,7 @@ export async function submitBuyerFeedback(
 // =====================================================
 // CHECK IF SELLER CAN RATE BUYER
 // =====================================================
-async function canSellerRateBuyer(
+export async function canSellerRateBuyer(
   orderId: string
 ): Promise<{ canRate: boolean; reason?: string; buyerId?: string }> {
   try {
@@ -218,7 +218,7 @@ async function canSellerRateBuyer(
 // =====================================================
 // GET BUYER'S RECEIVED RATINGS (for /account/ratings page)
 // =====================================================
-async function getBuyerReceivedRatings(
+export async function getBuyerReceivedRatings(
   options?: {
     limit?: number
     offset?: number
@@ -285,7 +285,7 @@ async function getBuyerReceivedRatings(
 // =====================================================
 // GET FEEDBACK FOR A SPECIFIC BUYER (public view)
 // =====================================================
-async function getPublicBuyerFeedback(
+export async function getPublicBuyerFeedback(
   buyerId: string,
   options?: { limit?: number; offset?: number }
 ): Promise<{
@@ -368,7 +368,7 @@ async function getPublicBuyerFeedback(
 // =====================================================
 // GET FEEDBACK SELLER LEFT FOR BUYERS (seller dashboard)
 // =====================================================
-async function getSellerGivenFeedback(
+export async function getSellerGivenFeedback(
   options?: { limit?: number; offset?: number }
 ): Promise<{
   success: boolean
@@ -422,7 +422,7 @@ async function getSellerGivenFeedback(
 // =====================================================
 // UPDATE BUYER FEEDBACK (edit within time window)
 // =====================================================
-async function updateBuyerFeedback(
+export async function updateBuyerFeedback(
   feedbackId: string,
   updates: Partial<Pick<BuyerFeedbackInput, "rating" | "comment" | "payment_promptness" | "communication" | "reasonable_expectations">>
 ): Promise<{ success: boolean; error?: string }> {
@@ -487,7 +487,7 @@ async function updateBuyerFeedback(
 // =====================================================
 // DELETE BUYER FEEDBACK
 // =====================================================
-async function deleteBuyerFeedback(
+export async function deleteBuyerFeedback(
   feedbackId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {

@@ -129,9 +129,9 @@ export async function updateOrderItemStatus(
       return { success: false, error: "Failed to update order status" }
     }
 
-    revalidateTag('orders', 'max')
-    revalidateTag('messages', 'max')
-    revalidateTag('conversations', 'max')
+    revalidateTag('orders', "max")
+    revalidateTag('messages', "max")
+    revalidateTag('conversations', "max")
 
     return { success: true }
   } catch (error) {
@@ -264,7 +264,7 @@ export async function getSellerOrderStats(): Promise<{
 /**
  * Get all orders for the current buyer
  */
-async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: string }> {
+export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: string }> {
   try {
     const supabase = await createClient()
     if (!supabase) {
@@ -429,7 +429,7 @@ export async function buyerConfirmDelivery(
       return { success: false, error: "Failed to confirm delivery" }
     }
 
-    revalidateTag('orders', 'max')
+    revalidateTag('orders', "max")
 
     return { success: true, sellerId: orderItem.seller_id }
   } catch (error) {
@@ -663,7 +663,7 @@ export async function requestOrderCancellation(
       // Don't fail the cancellation if notification fails
     }
 
-    revalidateTag('orders', 'max')
+    revalidateTag('orders', "max")
 
     return { success: true }
   } catch (error) {
@@ -821,9 +821,9 @@ export async function reportOrderIssue(
         conversation_id: conversationId,
       })
 
-    revalidateTag('orders', 'max')
-    revalidateTag('messages', 'max')
-    revalidateTag('conversations', 'max')
+    revalidateTag('orders', "max")
+    revalidateTag('messages', "max")
+    revalidateTag('conversations', "max")
 
     return { success: true, conversationId }
   } catch (error) {
@@ -835,7 +835,7 @@ export async function reportOrderIssue(
 /**
  * Get detailed order information for a buyer
  */
-async function getBuyerOrderDetails(
+export async function getBuyerOrderDetails(
   orderId: string
 ): Promise<{ 
   order: {

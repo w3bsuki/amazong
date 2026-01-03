@@ -12,7 +12,7 @@ import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import type { UIProduct } from "@/lib/data/products"
 import { Link } from "@/i18n/routing"
-import { CaretLeft, CaretRight, Megaphone, Clock, Sparkle, Storefront, TrendUp } from "@phosphor-icons/react"
+import { CaretLeft, CaretRight, Megaphone, Clock, Sparkle, Storefront, TrendUp, ListBullets } from "@phosphor-icons/react"
 import { usePathname, useSearchParams } from "next/navigation"
 import { MobileFilters } from "@/components/shared/filters/mobile-filters"
 import { SortSelect } from "@/components/shared/search/sort-select"
@@ -44,6 +44,22 @@ interface MobileHomeTabsProps {
   circlesNavigateToPages?: boolean
   /** Locale from server - avoids useLocale() hydration issues */
   locale?: string
+  /** Filterable attributes for the current category (for filter drawer) */
+  filterableAttributes?: Array<{
+    id: string
+    category_id: string | null
+    name: string
+    name_bg: string | null
+    attribute_type: 'select' | 'multiselect' | 'boolean' | 'number' | 'text'
+    options: string[] | null
+    options_bg: string[] | null
+    placeholder?: string | null
+    placeholder_bg?: string | null
+    is_filterable: boolean | null
+    is_required: boolean | null
+    sort_order: number | null
+    validation_rules?: unknown | null
+  }>
 }
 
 interface TabData {
@@ -116,6 +132,7 @@ export function MobileHomeTabs({
   l0Style = "tabs",
   circlesNavigateToPages = false,
   locale: localeProp,
+  filterableAttributes = [],
 }: MobileHomeTabsProps) {
   const intlLocale = useLocale()
   const locale = localeProp || intlLocale
@@ -933,10 +950,15 @@ export function MobileHomeTabs({
       {l0Style === "pills" && (
         <div className="bg-background border-b border-border/40 px-(--page-inset) py-2">
           <div className="flex items-center gap-2">
-            <MobileFilters locale={locale} />
-            <SortSelect />
-            <span className="text-xs text-muted-foreground whitespace-nowrap ml-auto">
-              {activeFeed.products.length} {locale === "bg" ? "резултата" : "results"}
+            <div className="flex-1">
+              <MobileFilters locale={locale} attributes={filterableAttributes} />
+            </div>
+            <div className="flex-1">
+              <SortSelect />
+            </div>
+            <span className="text-xs text-muted-foreground whitespace-nowrap flex items-center gap-1">
+              <ListBullets size={14} aria-hidden="true" />
+              {activeFeed.products.length}
             </span>
           </div>
         </div>

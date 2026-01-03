@@ -47,7 +47,7 @@ export async function blockUser(userId: string, reason?: string) {
 /**
  * Unblock a user
  */
-async function unblockUser(userId: string) {
+export async function unblockUser(userId: string) {
   const supabase = await createClient()
   if (!supabase) return { success: false, error: "Not authenticated" }
 
@@ -70,7 +70,7 @@ async function unblockUser(userId: string) {
 /**
  * Get list of blocked users
  */
-async function getBlockedUsers(): Promise<{ data: BlockedUser[] | null; error: string | null }> {
+export async function getBlockedUsers(): Promise<{ data: BlockedUser[] | null; error: string | null }> {
   const supabase = await createClient()
   if (!supabase) return { data: null, error: "Not authenticated" }
 
@@ -87,7 +87,7 @@ async function getBlockedUsers(): Promise<{ data: BlockedUser[] | null; error: s
 /**
  * Check if a user is blocked
  */
-async function isUserBlocked(userId: string): Promise<boolean> {
+export async function isUserBlocked(userId: string): Promise<boolean> {
   const supabase = await createClient()
   if (!supabase) return false
 

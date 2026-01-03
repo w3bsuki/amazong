@@ -479,7 +479,7 @@ export async function downgradeToPersonalAccount(): Promise<{
 // =====================================================
 // GET PUBLIC PROFILE BY USERNAME
 // =====================================================
-async function getPublicProfile(username: string): Promise<{
+export async function getPublicProfile(username: string): Promise<{
   success: boolean
   data?: {
     id: string
@@ -565,7 +565,7 @@ async function getPublicProfile(username: string): Promise<{
 // =====================================================
 // GET CURRENT USER PROFILE (Full)
 // =====================================================
-async function getCurrentUserProfile() {
+export async function getCurrentUserProfile() {
   try {
     const supabase = await createClient()
     if (!supabase) return null
@@ -609,7 +609,7 @@ async function getCurrentUserProfile() {
 // =====================================================
 // CHECK IF USERNAME IS SET
 // =====================================================
-async function hasUsername(): Promise<boolean> {
+export async function hasUsername(): Promise<boolean> {
   try {
     const supabase = await createClient()
     if (!supabase) return false

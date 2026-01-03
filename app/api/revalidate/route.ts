@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     // Revalidate single tag
     if (tag) {
       try {
-        revalidateTag(tag, 'max') // 'max' = stale-while-revalidate (recommended)
+        revalidateTag(tag, "max")
         revalidatedTags.push(tag)
       } catch (error) {
         console.error(`Failed to revalidate tag: ${tag}`, error)
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     if (tags && tags.length > 0) {
       for (const t of tags) {
         try {
-          revalidateTag(t, 'max') // 'max' = stale-while-revalidate (recommended)
+          revalidateTag(t, "max")
           revalidatedTags.push(t)
         } catch (error) {
           console.error(`Failed to revalidate tag: ${t}`, error)
