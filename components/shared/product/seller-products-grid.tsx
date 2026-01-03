@@ -90,9 +90,9 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
   if (!hasProducts) return null;
 
   return (
-    <div className="mt-6 pt-6 border-t border-border/50">
+    <div className="mt-4 pt-3 border-t border-border/50">
       {/* Header with chevrons */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-foreground">
           {t("moreFromSeller") || `More from ${products[0]?.sellerName || "this seller"}`}
         </h2>
@@ -135,7 +135,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
           <Link
             key={product.id}
             href={getProductHref(product)}
-            className="group flex-none w-[130px] sm:w-[150px] snap-start"
+            className="group flex-none w-32 sm:w-[150px] snap-start"
           >
             <div className="aspect-square bg-muted/30 rounded-md overflow-hidden border border-border/50 relative shadow-sm group-hover:shadow-md transition-shadow">
               {product.image && (
@@ -149,15 +149,15 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
               )}
               {/* Condition badge */}
               {product.condition && (
-                <div className="absolute top-2 left-2 bg-background/95 backdrop-blur-sm px-2 py-0.5 rounded-lg text-2xs font-bold text-foreground shadow-sm border border-border/30 uppercase tracking-wide">
+                <div className="absolute top-2 left-2 bg-background/95 backdrop-blur-sm px-2 py-0.5 rounded-lg text-2xs font-bold text-foreground shadow-sm border border-border/30">
                   {product.condition.replaceAll('-', " ")}
                 </div>
               )}
             </div>
-            <h3 className="text-xs font-semibold text-foreground leading-tight mt-2.5 group-hover:text-[var(--color-link)] line-clamp-2 transition-colors">
+            <h3 className="text-xs font-semibold text-foreground leading-tight mt-1.5 group-hover:text-[var(--color-link)] line-clamp-2 transition-colors">
               {product.title}
             </h3>
-            <p className="text-sm font-bold text-foreground mt-1">
+            <p className="text-base font-bold text-foreground mt-1">
               {new Intl.NumberFormat(locale, { 
                 style: "currency", 
                 currency: locale === "bg" ? "BGN" : "EUR", 

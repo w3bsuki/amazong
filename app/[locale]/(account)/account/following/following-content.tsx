@@ -16,6 +16,7 @@ import {
 } from "@phosphor-icons/react"
 import { toast } from "sonner"
 import { unfollowSeller } from "@/app/actions/seller-follows"
+import { safeAvatarSrc } from "@/lib/utils"
 
 function shouldBypassNextImage(src: string) {
   // Next/Image will 400 on remote SVGs (e.g. Dicebear) unless dangerouslyAllowSVG is enabled.
@@ -119,6 +120,7 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
           
           const seller = follow.seller
           const stats = follow.seller_stats
+          const avatarUrl = safeAvatarSrc(seller.profile?.avatar_url)
 
           return (
             <Card key={follow.seller_id} className="overflow-hidden">
@@ -126,16 +128,16 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
                 <div className="flex items-start gap-3">
                   {/* Avatar */}
                   <div className="relative size-14 rounded-full overflow-hidden bg-muted shrink-0">
-                    {seller.profile?.avatar_url ? (
-                      shouldBypassNextImage(seller.profile.avatar_url) ? (
+                    {avatarUrl ? (
+                      shouldBypassNextImage(avatarUrl) ? (
                         <img
-                          src={seller.profile.avatar_url}
+                          src={avatarUrl}
                           alt={seller.store_name}
                           className="size-full object-cover"
                         />
                       ) : (
                         <Image
-                          src={seller.profile.avatar_url}
+                          src={avatarUrl}
                           alt={seller.store_name}
                           fill
                           sizes="56px"

@@ -54,7 +54,8 @@ export const loginSchema = z.object({
   password: z
     .string()
     .min(1, { message: "Password is required" })
-    .min(6, { message: "Password must be at least 6 characters" }),
+    .min(8, { message: "Password must be at least 8 characters" })
+    .max(72, { message: "Password must be less than 72 characters" }),
 })
 
 type LoginFormData = z.infer<typeof loginSchema>
@@ -81,7 +82,7 @@ export const signUpSchema = z
     password: z
       .string()
       .min(1, { message: "Password is required" })
-      .min(6, { message: "Password must be at least 6 characters" })
+      .min(8, { message: "Password must be at least 8 characters" })
       .max(72, { message: "Password must be less than 72 characters" })
       .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
       .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
@@ -104,8 +105,8 @@ export function getPasswordStrength(password: string): {
 } {
   let score = 0
 
-  if (password.length >= 6) score++
   if (password.length >= 8) score++
+  if (password.length >= 10) score++
   if (/[A-Z]/.test(password)) score++
   if (/[a-z]/.test(password)) score++
   if (/[0-9]/.test(password)) score++

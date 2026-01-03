@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { WriteReviewDialog, type SubmitReviewFn } from "./write-review-dialog";
+import { safeAvatarSrc } from "@/lib/utils";
 
 export interface CustomerReview {
   id: string;
@@ -65,7 +66,7 @@ export function CustomerReviewsHybrid({
 
   return (
     <section className="mt-4 rounded-md bg-muted/20 p-3 border border-border/50">
-      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+      <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
         <h2 className="text-lg font-bold text-foreground tracking-tight">{t.title}</h2>
         <div className="flex items-center gap-3">
           {productId && submitReview && (
@@ -92,7 +93,7 @@ export function CustomerReviewsHybrid({
         {/* Summary */}
         <div className="space-y-3">
           <div className="flex items-center gap-2.5">
-            <div className="relative flex h-16 w-16 items-center justify-center rounded-full border-4 border-primary text-2xl font-bold text-foreground">
+            <div className="relative flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary text-xl font-bold text-foreground">
               {safeRating.toFixed(1)}
             </div>
             <div>
@@ -128,7 +129,7 @@ export function CustomerReviewsHybrid({
         {/* Reviews */}
         <div>
           {reviews.length === 0 ? (
-            <div className="rounded-md border border-border/50 bg-background p-4 text-center">
+            <div className="rounded-md border border-border/50 bg-background p-3 text-center">
               <p className="text-sm text-muted-foreground mb-3">{t.noReviews}</p>
               {productId && submitReview && (
                 <WriteReviewDialog
@@ -164,7 +165,7 @@ export function CustomerReviewsHybrid({
 
                       <div className="flex items-center gap-2 mb-2">
                         <Avatar className="h-6 w-6 border border-border">
-                          <AvatarImage src={review.user?.avatar_url || undefined} alt={author} />
+                          <AvatarImage src={safeAvatarSrc(review.user?.avatar_url)} alt={author} />
                           <AvatarFallback className="text-2xs">{initials(author)}</AvatarFallback>
                         </Avatar>
                         <span className="font-medium text-foreground text-sm truncate">{author}</span>

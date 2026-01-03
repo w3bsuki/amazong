@@ -43,8 +43,8 @@ export function MobilePriceBlock({
     <div className="flex flex-col gap-0.5">
       {/* Price Row */}
       <div className="flex items-baseline gap-1.5 flex-wrap">
-        {/* Sale Price - text-xl (20px) bold - balanced for mobile */}
-        <span className={`text-xl font-bold ${hasDiscount ? "text-red-600 dark:text-red-500" : "text-foreground"}`}>
+        {/* Sale Price - text-base (16px) bold per design system */}
+        <span className={`text-base font-bold ${hasDiscount ? "text-red-600 dark:text-red-500" : "text-foreground"}`}>
           {formatPrice(salePrice)}
           {showVat && <span className="text-xs font-normal text-muted-foreground ml-1">{t.inclVat}</span>}
         </span>
@@ -60,7 +60,7 @@ export function MobilePriceBlock({
         {hasDiscount && discountPercent > 0 && (
           <Badge 
             variant="secondary"
-            className="h-5 px-1.5 text-[10px] font-bold rounded-sm bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-100 border-none shadow-none"
+            className="h-5 px-1.5 text-2xs font-bold rounded-sm bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-100 border-none shadow-none"
           >
             -{discountPercent}%
           </Badge>
@@ -70,7 +70,7 @@ export function MobilePriceBlock({
       {/* Savings Text - text-tiny (11px) */}
       {showSavings && hasDiscount && savingsAmount > 0 && (
         <div className="flex items-center gap-1">
-          <Sparkles className="size-3 text-price-savings" />
+          <Sparkles className="size-3.5 text-price-savings" />
           <span className="text-tiny font-medium text-price-savings">
             {t.youSave} {formatPrice(savingsAmount)}
           </span>

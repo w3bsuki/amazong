@@ -52,6 +52,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { IconDotsVertical } from "@tabler/icons-react"
 import { useSidebar } from "@/components/layout/sidebar/sidebar"
+import { safeAvatarSrc } from "@/lib/utils"
 
 const getAccountNavItems = (locale: string) => [
   {
@@ -165,7 +166,7 @@ function AccountNavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
+                {user.avatar && <AvatarImage src={safeAvatarSrc(user.avatar)} alt={user.name} />}
                 <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
                   {initials}
                 </AvatarFallback>
@@ -188,7 +189,7 @@ function AccountNavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
+                  {user.avatar && <AvatarImage src={safeAvatarSrc(user.avatar)} alt={user.name} />}
                   <AvatarFallback className="rounded-lg bg-primary/10 text-primary">
                     {initials}
                   </AvatarFallback>

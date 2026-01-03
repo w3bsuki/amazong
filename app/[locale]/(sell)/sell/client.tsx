@@ -23,7 +23,7 @@ interface SellPageClientProps {
   initialSeller: Seller | null;
   initialNeedsOnboarding?: boolean;
   initialUsername?: string | null;
-  initialAccountType?: "personal" | "business" | null;
+  initialAccountType?: "personal" | "business";  // Always set in DB
   initialDisplayName?: string | null;
   initialBusinessName?: string | null;
   categories: Category[];
@@ -34,7 +34,7 @@ export function SellPageClient({
   initialSeller,
   initialNeedsOnboarding = false,
   initialUsername = null,
-  initialAccountType = null,
+  initialAccountType = "personal",  // Default personal, but always comes from DB
   initialDisplayName = null,
   initialBusinessName = null,
   categories // Pre-fetched from server
@@ -44,7 +44,7 @@ export function SellPageClient({
   const [isAuthChecking, setIsAuthChecking] = useState(!initialUser);
   const [needsOnboarding, setNeedsOnboarding] = useState(initialNeedsOnboarding);
   const [username, setUsername] = useState<string | null>(initialUsername);
-  const [accountType, setAccountType] = useState<"personal" | "business" | null>(initialAccountType);
+  const [accountType, setAccountType] = useState<"personal" | "business">(initialAccountType);
   const [displayName, setDisplayName] = useState<string | null>(initialDisplayName);
   const [businessName, setBusinessName] = useState<string | null>(initialBusinessName);
   
@@ -86,9 +86,8 @@ export function SellPageClient({
         
         if (profileData?.username) {
           setUsername(profileData.username);
-          // Only set account_type if it's a valid value
-          const accountTypeValue = profileData.account_type;
-          setAccountType(accountTypeValue === "personal" || accountTypeValue === "business" ? accountTypeValue : null);
+          // account_type is always set in DB, defaults to 'personal'
+          setAccountType(profileData.account_type === "business" ? "business" : "personal");
           setDisplayName(profileData.display_name || null);
           setBusinessName(profileData.business_name || null);
           

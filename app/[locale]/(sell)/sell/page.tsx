@@ -31,7 +31,7 @@ async function getSellerData(userId: string) {
       store_slug: data.username,
       is_seller: data.is_seller ?? false,
       username: data.username,
-      account_type: (data.account_type || "personal") as string,
+      account_type: data.account_type === "business" ? "business" : "personal",  // Always set in DB
       display_name: data.display_name ?? null,
       business_name: data.business_name ?? null,
     };
@@ -84,7 +84,7 @@ export default async function SellPage({
       initialSeller={seller && seller.is_seller ? { id: seller.id, store_name: seller.store_name } : null}
       initialNeedsOnboarding={needsOnboarding ?? false}
       initialUsername={seller?.username ?? null}
-      initialAccountType={(seller?.account_type === "personal" || seller?.account_type === "business") ? seller.account_type : null}
+      initialAccountType={seller?.account_type === "business" ? "business" : "personal"}
       initialDisplayName={seller?.display_name ?? null}
       initialBusinessName={seller?.business_name ?? null}
       categories={categories}

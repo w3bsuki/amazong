@@ -2,7 +2,7 @@ import { BadgeCheck, MessageCircle } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { cn, safeAvatarSrc } from "@/lib/utils"
 
 type Seller = {
   id: string
@@ -51,7 +51,7 @@ export function SellerBanner(props: {
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <Avatar className="h-11 w-11 border border-border shrink-0">
-            <AvatarImage src={seller.avatar_url || undefined} alt={displayName} />
+            <AvatarImage src={safeAvatarSrc(seller.avatar_url)} alt={displayName} />
             <AvatarFallback className="text-xs">{initials(displayName)}</AvatarFallback>
           </Avatar>
 

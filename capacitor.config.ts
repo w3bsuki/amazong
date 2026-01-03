@@ -7,9 +7,9 @@ const config: CapacitorConfig = {
   
   // Server configuration for development
   server: {
-    // For live reload during development (optional)
-    // url: 'http://localhost:3000',
-    // cleartext: true,
+    // Live reload during development
+    url: 'http://192.168.1.4:3000',
+    cleartext: true,
   },
   
   // iOS-specific configuration

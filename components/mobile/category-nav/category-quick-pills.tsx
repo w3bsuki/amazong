@@ -1,0 +1,114 @@
+"use client"
+
+import { useRef, useEffect } from "react"
+import type { CategoryTreeNode } from "@/lib/category-tree"
+import { getCategoryName } from "@/lib/category-display"
+import { CategoryNavItem } from "./category-nav-item"
+
+type Category = CategoryTreeNode
+
+// =============================================================================
+// Types
+// =============================================================================
+
+export interface CategoryQuickPillsProps {
+  categories: Category[]
+  activeTab: string
+  locale: string
+  headerHeight: number
+  tabsNavigateToPages: boolean
+  onTabChange: (slug: string) => void
+}
+
+// =============================================================================
+// Component
+// =============================================================================
+
+export function CategoryQuickPills({
+  categories,
+  activeTab,
+  locale,
+  headerHeight,
+  tabsNavigateToPages,
+  onTabChange,
+}: CategoryQuickPillsProps) {
+  const tabsContainerRef = useRef<HTMLDivElement>(null)
+
+  // Auto-scroll selected tab to left edge
+  useEffect(() => {
+    if (tabsContainerRef.current) {
+      const container = tabsContainerRef.current
+      const activeBtn = container.querySelector(
+        `[data-tab="${activeTab}"]`
+      ) as HTMLElement
+      if (activeBtn) {
+        const padding = Number.parseFloat(getComputedStyle(container).paddingLeft)
+        container.scrollLeft = Math.max(0, activeBtn.offsetLeft - padding)
+      }
+    }
+  }, [activeTab])
+
+  const allLabel = locale === "bg" ? "Всички" : "All"
+
+  return (
+    <div
+      className="sticky z-30 bg-background border-b border-border/40"
+      style={{ top: headerHeight }}
+    >
+      <div
+        ref={tabsContainerRef}
+        className="flex items-center gap-0.5 overflow-x-auto no-scrollbar px-(--page-inset) py-1"
+        role="tablist"
+      >
+        {/* "All" Pill */}
+        {tabsNavigateToPages ? (
+          <CategoryNavItem
+            href="/categories"
+            isActive={activeTab === "all"}
+            variant="pill"
+            data-tab="all"
+          >
+            {allLabel}
+          </CategoryNavItem>
+        ) : (
+          <CategoryNavItem
+            onClick={() => onTabChange("all")}
+            isActive={activeTab === "all"}
+            variant="pill"
+            data-tab="all"
+          >
+            {allLabel}
+          </CategoryNavItem>
+        )}
+
+        {/* Category Pills */}
+        {categories.map((cat) => {
+          const label = getCategoryName(cat, locale)
+          const isActive = activeTab === cat.slug
+
+          return tabsNavigateToPages ? (
+            <CategoryNavItem
+              key={cat.id}
+              href={`/categories/${cat.slug}`}
+              isActive={isActive}
+              variant="pill"
+              data-tab={cat.slug}
+            >
+              {label}
+            </CategoryNavItem>
+          ) : (
+            <CategoryNavItem
+              key={cat.id}
+              onClick={() => onTabChange(cat.slug)}
+              isActive={isActive}
+              variant="pill"
+              data-tab={cat.slug}
+            >
+              {label}
+            </CategoryNavItem>
+          )
+        })}
+      </div>
+    </div>
+  )
+}

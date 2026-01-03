@@ -44,11 +44,11 @@ export function SortSelect() {
       <SelectTrigger 
         size="sm"
         className={cn(
-          "!h-8 !py-0 px-3 w-full rounded-full gap-1",
-          "bg-secondary hover:bg-secondary/80 hover:text-foreground border border-border/50",
-          "active:bg-secondary/80",
+          "!h-7 !py-0 px-2.5 w-full rounded-lg gap-1.5",
+          "bg-muted/50 hover:bg-muted/70 hover:text-foreground border border-border/40",
+          "active:bg-muted/70",
           isSorted && "bg-primary/10 text-primary border-primary/20",
-          "text-sm text-foreground",
+          "text-xs font-medium text-foreground",
           "focus:ring-2 focus:ring-offset-1 focus:ring-ring",
           "[&_svg[data-slot=select-icon]]:size-3"
         )}

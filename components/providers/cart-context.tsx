@@ -1,9 +1,10 @@
 "use client"
 
 import type React from "react"
-import { createContext, useCallback, useContext, useEffect, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useState, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { safeJsonParse } from "@/lib/safe-json"
+import { useAuth } from "./auth-state-manager"
 
 export interface CartItem {
   id: string
@@ -62,24 +63,9 @@ function asStringArray(value: unknown): string[] | null {
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { user, isLoading: authLoading } = useAuth()
   const [items, setItems] = useState<CartItem[]>([])
-  const [userId, setUserId] = useState<string | null>(null)
-
-  // Load cart from local storage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem("cart")
-    try {
-      const parsed = safeJsonParse<CartItem[]>(savedCart)
-      if (parsed) {
-        setItems(parsed)
-      } else if (savedCart) {
-        // Corrupt/partial data: clear it so it can't break the app or tests.
-        localStorage.removeItem("cart")
-      }
-    } catch {
-      // Ignore storage access errors
-    }
-  }, [])
+  const hasSyncedRef = useRef<string | null>(null)
 
   const loadServerCart = useCallback(async (activeUserId: string) => {
     const supabase = createClient()
@@ -179,53 +165,45 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("cart")
   }, [])
 
-  // Keep cart in sync with auth state (prefer server cart when signed in)
+  // Load from localStorage immediately (for SSR hydration)
   useEffect(() => {
-    const supabase = createClient()
-    let cancelled = false
+    const savedCart = localStorage.getItem("cart")
+    try {
+      const parsed = safeJsonParse<CartItem[]>(savedCart)
+      if (parsed) {
+        setItems(parsed)
+      } else if (savedCart) {
+        // Corrupt/partial data: clear it so it can't break the app or tests.
+        localStorage.removeItem("cart")
+      }
+    } catch {
+      // Ignore storage access errors
+    }
+  }, [])
 
-    const bootstrap = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+  // Sync with server when auth state settles
+  useEffect(() => {
+    if (authLoading) return // Wait for auth to settle
 
-      if (cancelled) return
-
+    const syncCart = async () => {
       if (!user) {
-        setUserId(null)
+        // User logged out - keep localStorage cart, reset sync ref
+        hasSyncedRef.current = null
         return
       }
 
-      setUserId(user.id)
+      // Already synced for this user
+      if (hasSyncedRef.current === user.id) return
+      hasSyncedRef.current = user.id
+
+      // Sync local → server
       await syncLocalCartToServer(user.id)
+      // Load server → state
       await loadServerCart(user.id)
     }
 
-    void bootstrap()
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      const nextUserId = session?.user?.id ?? null
-      setUserId(nextUserId)
-
-      if (!nextUserId) {
-        // On logout, fall back to whatever local cart exists.
-        const savedCart = localStorage.getItem("cart")
-        const parsed = safeJsonParse<CartItem[]>(savedCart) || []
-        setItems(parsed)
-        return
-      }
-
-      await syncLocalCartToServer(nextUserId)
-      await loadServerCart(nextUserId)
-    })
-
-    return () => {
-      cancelled = true
-      subscription.unsubscribe()
-    }
-  }, [loadServerCart, syncLocalCartToServer])
+    syncCart()
+  }, [user, authLoading, loadServerCart, syncLocalCartToServer])
 
   // Save cart to local storage whenever it changes.
   // This keeps the cart resilient across route-group layout boundaries and
@@ -267,7 +245,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     })
 
     // Server-side cart (best-effort)
-    if (userId) {
+    if (user?.id) {
       const qty = itemWithValidPrice.quantity
       void (async () => {
         const supabase = createClient()
@@ -287,7 +265,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removeFromCart = (id: string, variantId?: string) => {
     setItems((prevItems) => prevItems.filter((item) => !(item.id === id && (item.variantId ?? null) === (variantId ?? null))))
 
-    if (userId) {
+    if (user?.id) {
       void (async () => {
         const supabase = createClient()
         const { error } = await supabase.rpc("cart_set_quantity", {
@@ -314,7 +292,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         : item
     ))
 
-    if (userId) {
+    if (user?.id) {
       void (async () => {
         const supabase = createClient()
         const { error } = await supabase.rpc("cart_set_quantity", {
@@ -333,7 +311,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clearCart = () => {
     setItems([])
 
-    if (userId) {
+    if (user?.id) {
       void (async () => {
         const supabase = createClient()
         const { error } = await supabase.rpc("cart_clear")

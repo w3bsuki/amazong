@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
     let totalCount = 0
 
     // Common select fields for product queries
-    // Note: category_ancestors exists in DB but may not be in generated types
+    // OPTIMIZED: Flat category join - no 4-level nesting!
     const productSelect = `
       id, 
       title, 
@@ -119,8 +119,8 @@ export async function GET(request: NextRequest) {
       created_at, 
       slug,
       attributes,
-      seller:profiles(username),
-      categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))
+      seller:profiles(id,username,avatar_url,tier),
+      categories(id,slug,name,name_bg,icon)
     `
 
     if (category) {

@@ -4,6 +4,9 @@ import { getMessages, setRequestLocale } from 'next-intl/server'
 
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { IntlClientProvider } from './intl-client-provider'
+import { AuthStateManager } from '@/components/providers/auth-state-manager'
+import { CartProvider } from '@/components/providers/cart-context'
+import { WishlistProvider } from '@/components/providers/wishlist-context'
 
 export default async function LocaleProviders({
   locale,
@@ -27,7 +30,13 @@ export default async function LocaleProviders({
         storageKey="treido-theme"
         disableTransitionOnChange
       >
-        {children}
+        <AuthStateManager>
+          <CartProvider>
+            <WishlistProvider>
+              {children}
+            </WishlistProvider>
+          </CartProvider>
+        </AuthStateManager>
       </ThemeProvider>
     </IntlClientProvider>
   )

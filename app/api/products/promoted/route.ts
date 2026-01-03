@@ -37,8 +37,8 @@ export async function GET(request: NextRequest) {
         created_at,
         slug,
         attributes,
-        seller:profiles(username),
-        categories!inner(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))
+        seller:profiles(id,username,avatar_url,tier),
+        categories!inner(id,slug,name,name_bg,icon)
       `,
         { count: "exact" }
       )

@@ -5,7 +5,6 @@ import { routing } from "@/i18n/routing";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AccountLayoutContent } from "./account-layout-content";
-import { CartProvider } from "@/components/providers/cart-context";
 import { headers } from "next/headers";
 
 // Generate static params for all supported locales
@@ -90,13 +89,11 @@ export default async function AccountLayout({
     const userFullName = (user as { user_metadata?: { full_name?: string } } | null)?.user_metadata?.full_name ?? "";
 
     return (
-        <CartProvider>
-            <Suspense fallback={<AccountLayoutSkeleton>{children}</AccountLayoutSkeleton>}>
-                <AccountLayoutContent modal={modal} initialUser={{ email: userEmail, fullName: userFullName }}>
-                    {children}
-                </AccountLayoutContent>
-            </Suspense>
-        </CartProvider>
+        <Suspense fallback={<AccountLayoutSkeleton>{children}</AccountLayoutSkeleton>}>
+            <AccountLayoutContent modal={modal} initialUser={{ email: userEmail, fullName: userFullName }}>
+                {children}
+            </AccountLayoutContent>
+        </Suspense>
     );
 }
 

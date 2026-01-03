@@ -4,8 +4,6 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  User,
-  Buildings,
   ShoppingBag,
   Storefront,
   Check,
@@ -59,12 +57,12 @@ interface PostSignupOnboardingModalProps {
   userId: string
   username: string
   displayName?: string | null
+  accountType: "personal" | "business"  // From signup - already set in profile!
   locale?: string
 }
 
-type OnboardingStep = "intent" | "account-type" | "profile" | "social" | "business" | "complete"
+type OnboardingStep = "intent" | "profile" | "social" | "business" | "complete"
 type UserIntent = "sell" | "shop" | "browse" | null
-type AccountType = "personal" | "business" | null
 
 const translations = {
   en: {
@@ -76,15 +74,6 @@ const translations = {
     wantToShop: "I want to shop",
     wantToShopDesc: "Browse and buy amazing products",
     justBrowse: "Just browsing for now",
-    // Account type step
-    accountTypeTitle: "How will you be selling?",
-    accountTypeSubtitle: "Choose your seller account type",
-    personal: "Personal Seller",
-    personalDesc: "Sell personal items, crafts, or occasional sales",
-    personalFeatures: ["Free to start", "Perfect for beginners", "Upgrade anytime"],
-    business: "Business Seller",
-    businessDesc: "For registered businesses or professional sellers",
-    businessFeatures: ["Business badge", "Tax invoice support", "Advanced analytics"],
     // Profile step
     profileTitle: "Set up your store",
     profileSubtitle: "Help buyers get to know you",
@@ -137,15 +126,6 @@ const translations = {
     wantToShop: "Искам да пазарувам",
     wantToShopDesc: "Разгледайте и купете страхотни продукти",
     justBrowse: "Само разглеждам засега",
-    // Account type step
-    accountTypeTitle: "Как ще продавате?",
-    accountTypeSubtitle: "Изберете типа на акаунта си",
-    personal: "Личен продавач",
-    personalDesc: "Продавайте лични вещи, занаяти или случайни продажби",
-    personalFeatures: ["Безплатно начало", "Перфектно за начинаещи", "Надградете по всяко време"],
-    business: "Бизнес продавач",
-    businessDesc: "За регистрирани фирми или професионални продавачи",
-    businessFeatures: ["Бизнес значка", "Фактури", "Разширена аналитика"],
     // Profile step
     profileTitle: "Настройте магазина си",
     profileSubtitle: "Помогнете на купувачите да ви опознаят",
@@ -197,6 +177,7 @@ export function PostSignupOnboardingModal({
   userId,
   username,
   displayName: initialDisplayName,
+  accountType,  // From profile - already set at signup!
   locale = "en",
 }: PostSignupOnboardingModalProps) {
   const router = useRouter()
@@ -209,7 +190,7 @@ export function PostSignupOnboardingModal({
   
   // User choices
   const [intent, setIntent] = useState<UserIntent>(null)
-  const [accountType, setAccountType] = useState<AccountType>(null)
+  // accountType comes from props - already set at signup!
   
   // Profile data
   const [storeName, setStoreName] = useState(initialDisplayName || "")
@@ -262,19 +243,16 @@ export function PostSignupOnboardingModal({
   const handleIntentSelect = (selectedIntent: UserIntent) => {
     setIntent(selectedIntent)
     if (selectedIntent === "sell") {
-      setStep("account-type")
+      // Skip account-type step - already set at signup!
+      setStep("profile")
     } else {
       // For shop or browse, complete immediately
       handleComplete(selectedIntent, null)
     }
   }
 
-  const handleAccountTypeSelect = (type: AccountType) => {
-    setAccountType(type)
-    setStep("profile")
-  }
-
   const handleProfileNext = () => {
+    // accountType from props determines next step
     if (accountType === "personal") {
       setStep("social")
     } else {
@@ -282,10 +260,10 @@ export function PostSignupOnboardingModal({
     }
   }
 
-  const handleComplete = async (finalIntent?: UserIntent, finalAccountType?: AccountType) => {
+  const handleComplete = async (finalIntent?: UserIntent, _unused?: null) => {
     setError(null)
     const useIntent = finalIntent ?? intent
-    const useAccountType = finalAccountType ?? accountType
+    // Use accountType from props - already set at signup!
 
     const socialLinks: Record<string, string> = {}
     if (instagram.trim()) socialLinks.instagram = instagram.trim()
@@ -297,11 +275,11 @@ export function PostSignupOnboardingModal({
     const data: OnboardingData = {
       userId,
       intent: useIntent || "browse",
-      accountType: useAccountType,
+      accountType,  // From props - already set at signup!
       displayName: storeName.trim() || null,
       bio: bio.trim() || null,
-      businessName: useAccountType === "business" ? businessName.trim() || null : null,
-      website: useAccountType === "business" ? website.trim() || null : null,
+      businessName: accountType === "business" ? businessName.trim() || null : null,
+      website: accountType === "business" ? website.trim() || null : null,
       location: location.trim() || null,
       socialLinks: Object.keys(socialLinks).length > 0 ? socialLinks : null,
       avatarType: useCustomAvatar ? "custom" : "generated",
@@ -338,11 +316,9 @@ export function PostSignupOnboardingModal({
 
   const goBack = () => {
     switch (step) {
-      case "account-type":
-        setStep("intent")
-        break
       case "profile":
-        setStep("account-type")
+        // Go back to intent - no more account-type step!
+        setStep("intent")
         break
       case "social":
       case "business":
@@ -417,117 +393,6 @@ export function PostSignupOnboardingModal({
                   className="w-full py-3 text-sm text-primary/70 hover:text-primary font-medium hover:underline underline-offset-2 transition-colors"
                 >
                   {t.justBrowse}
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* STEP: Account Type Selection */}
-          {step === "account-type" && (
-            <motion.div
-              key="account-type"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              className="p-4 sm:p-5"
-            >
-              <button
-                onClick={goBack}
-                className="flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 font-medium mb-3 sm:mb-4 transition-colors"
-              >
-                <ArrowLeft className="size-4" weight="bold" />
-                {t.back}
-              </button>
-
-              <DialogHeader className="mb-4 sm:mb-5">
-                <DialogTitle className="text-lg sm:text-xl font-semibold">{t.accountTypeTitle}</DialogTitle>
-                <DialogDescription className="text-muted-foreground">{t.accountTypeSubtitle}</DialogDescription>
-              </DialogHeader>
-
-              <div className="space-y-3">
-                {/* Personal option */}
-                <button
-                  type="button"
-                  onClick={() => handleAccountTypeSelect("personal")}
-                  className={cn(
-                    "w-full p-3 sm:p-4 rounded-lg border-2 text-left transition-all",
-                    accountType === "personal"
-                      ? "border-primary bg-primary/5 shadow-sm"
-                      : "border-input bg-card hover:border-primary/30 hover:bg-primary/5"
-                  )}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={cn(
-                      "size-10 sm:size-11 rounded-lg flex items-center justify-center shrink-0 transition-colors",
-                      accountType === "personal" ? "bg-primary shadow-sm" : "bg-primary/10"
-                    )}>
-                      <User
-                        weight="fill"
-                        className={cn("size-5", accountType === "personal" ? "text-primary-foreground" : "text-primary")}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-foreground">{t.personal}</span>
-                        {accountType === "personal" && (
-                          <div className="size-5 rounded-full bg-primary flex items-center justify-center">
-                            <Check weight="bold" className="size-3 text-primary-foreground" />
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground mb-2">{t.personalDesc}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {t.personalFeatures.map((f, i) => (
-                          <span key={i} className="text-xs px-2 py-0.5 bg-primary/10 rounded-full text-primary font-medium">
-                            {f}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </button>
-
-                {/* Business option */}
-                <button
-                  type="button"
-                  onClick={() => handleAccountTypeSelect("business")}
-                  className={cn(
-                    "w-full p-3 sm:p-4 rounded-lg border-2 text-left transition-all",
-                    accountType === "business"
-                      ? "border-primary bg-primary/5 shadow-sm"
-                      : "border-input bg-card hover:border-primary/30 hover:bg-primary/5"
-                  )}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={cn(
-                      "size-10 sm:size-11 rounded-lg flex items-center justify-center shrink-0 transition-colors",
-                      accountType === "business" ? "bg-primary shadow-sm" : "bg-primary/10"
-                    )}>
-                      <Buildings
-                        weight="fill"
-                        className={cn("size-5", accountType === "business" ? "text-primary-foreground" : "text-primary")}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-foreground">{t.business}</span>
-                        {accountType === "business" && (
-                          <div className="size-5 rounded-full bg-primary flex items-center justify-center">
-                            <Check weight="bold" className="size-3 text-primary-foreground" />
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground mb-2">{t.businessDesc}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {t.businessFeatures.map((f, i) => (
-                          <span key={i} className="text-xs px-2 py-0.5 bg-primary/10 rounded-full text-primary font-medium">
-                            {f}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
                 </button>
               </div>
             </motion.div>

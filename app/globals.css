@@ -106,8 +106,8 @@
   --icon-edge-offset: 0.25rem;   /* 4px - Negative margin for header icons to align with content */
 
   /* === CATEGORY BROWSE TOKENS === */
-  /* Mobile category circle size (between 40px home and 56px drawers). */
-  --category-circle-mobile: 3.25rem; /* 52px */
+  /* Mobile category circle size (compact for dense nav). */
+  --category-circle-mobile: 2.75rem; /* 44px */
 
   /* Form-specific spacing */
   --spacing-form: 1rem;

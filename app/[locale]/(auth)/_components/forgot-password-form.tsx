@@ -3,81 +3,89 @@
 import { useActionState } from "react"
 import { useFormStatus } from "react-dom"
 import { ArrowLeft, Check, Envelope, SpinnerGap } from "@phosphor-icons/react"
+import { useTranslations } from "next-intl"
 
+import { AuthCard } from "@/components/auth/auth-card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { Link } from "@/i18n/routing"
+import { cn } from "@/lib/utils"
 import { requestPasswordReset, type AuthActionState } from "../_actions/auth"
 
-function SubmitButton({ locale }: { locale: string }) {
+function SubmitButton({ pendingLabel, label }: { pendingLabel: string; label: string }) {
   const { pending } = useFormStatus()
 
   return (
-    <button
+    <Button
       type="submit"
+      size="lg"
+      className="w-full h-10"
       disabled={pending}
-      className="w-full py-2.5 px-4 bg-primary text-primary-foreground font-medium rounded-md hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
     >
       {pending ? (
         <>
           <SpinnerGap className="size-5 animate-spin" weight="bold" />
-          {locale === "bg" ? "Изпращане..." : "Sending..."}
+          {pendingLabel}
         </>
-      ) : locale === "bg" ? (
-        "Изпрати линк"
       ) : (
-        "Send reset link"
+        label
       )}
-    </button>
+    </Button>
   )
 }
 
 export function ForgotPasswordForm({ locale }: { locale: string }) {
+  const t = useTranslations("Auth")
   const initialState: AuthActionState = { fieldErrors: {}, success: false }
   const [state, formAction] = useActionState(requestPasswordReset.bind(null, locale), initialState)
 
   if (state?.success) {
     return (
-      <div className="w-full max-w-sm mx-auto text-center">
-        <div className="flex flex-col items-center gap-4 mb-6">
-          <div className="size-16 bg-success/10 rounded-full flex items-center justify-center">
-            <Check className="size-8 text-success" weight="bold" />
+      <div className="min-h-svh flex items-center justify-center bg-muted/30 p-4">
+        <div className="w-full max-w-sm text-center">
+          <div className="flex flex-col items-center gap-4 mb-6">
+            <div className="size-16 bg-success/10 rounded-full flex items-center justify-center">
+              <Check className="size-8 text-success" weight="bold" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">{t("checkYourEmailTitle")}</h1>
+            <p className="text-sm text-muted-foreground">
+              {t("resetLinkSent")}
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-foreground">{locale === "bg" ? "Проверете имейла си" : "Check your email"}</h1>
-          <p className="text-sm text-muted-foreground">
-            {locale === "bg" ? "Изпратихме ви линк за възстановяване на паролата." : "We sent you a password reset link."}
-          </p>
+          <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
+            <ArrowLeft className="size-4" />
+            {t("backToLogin")}
+          </Link>
         </div>
-        <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
-          <ArrowLeft className="size-4" />
-          {locale === "bg" ? "Обратно към вход" : "Back to login"}
-        </Link>
       </div>
     )
   }
 
-  return (
-    <div className="w-full max-w-sm mx-auto">
-      <div className="text-center mb-8">
-        <div className="size-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Envelope className="size-6 text-primary" weight="bold" />
-        </div>
-        <h1 className="text-2xl font-bold text-foreground">{locale === "bg" ? "Забравена парола" : "Forgot password"}</h1>
-        <p className="text-sm text-muted-foreground mt-2">
-          {locale === "bg"
-            ? "Въведете имейла си и ще ви изпратим линк за възстановяване."
-            : "Enter your email and we'll send you a reset link."}
-        </p>
-      </div>
+  const footer = (
+    <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
+      <ArrowLeft className="size-4" />
+      {t("backToLogin")}
+    </Link>
+  )
 
+  return (
+    <AuthCard
+      title={t("forgotPasswordTitle")}
+      description={t("forgotPasswordDescription")}
+      footer={footer}
+      showLogo={true}
+    >
       <form action={formAction} className="space-y-4">
         {state?.error && (
-          <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">{state.error}</div>
+          <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+            {state.error}
+          </div>
         )}
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
-            {locale === "bg" ? "Имейл адрес" : "Email address"}
-          </label>
-          <input
+        <div className="space-y-1">
+          <Label htmlFor="email">{t("emailAddress")}</Label>
+          <Input
             id="email"
             name="email"
             type="email"
@@ -85,20 +93,15 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
             required
             placeholder="you@example.com"
             aria-invalid={!!state?.fieldErrors?.email}
-            className={`w-full px-3 py-2 border rounded-md shadow-sm bg-background text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${state?.fieldErrors?.email ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
+            className={cn(state?.fieldErrors?.email && "border-destructive focus-visible:ring-destructive/20")}
           />
-          {state?.fieldErrors?.email && <p className="text-xs text-destructive mt-1">{state.fieldErrors.email}</p>}
+          {state?.fieldErrors?.email && (
+            <p className="text-xs text-destructive">{state.fieldErrors.email}</p>
+          )}
         </div>
 
-        <SubmitButton locale={locale} />
+        <SubmitButton label={t("sendResetLink")} pendingLabel={t("sending")} />
       </form>
-
-      <div className="mt-6 text-center">
-        <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
-          <ArrowLeft className="size-4" />
-          {locale === "bg" ? "Обратно към вход" : "Back to login"}
-        </Link>
-      </div>
-    </div>
+    </AuthCard>
   )
 }

@@ -5,6 +5,7 @@ import { Suspense } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { getPublicProfileData, getProfileMetadata } from "@/lib/data/profile-page"
 import { PublicProfileClient } from "./profile-client"
+import { routing } from "@/i18n/routing"
 
 // =============================================================================
 // SEO-OPTIMIZED PROFILE PAGE - HYBRID CACHING
@@ -15,7 +16,19 @@ import { PublicProfileClient } from "./profile-client"
 // - Profile data is PUBLIC and CACHED via 'use cache' in getPublicProfileData
 // - User-specific data (isOwnProfile, isFollowing) is DYNAMIC (requires auth)
 // - Uses Suspense to stream dynamic content while showing cached content fast
+// 
+// ISR OPTIMIZATION:
+// - generateStaticParams returns placeholder only (no pre-generation of all users)
+// - This prevents ISR write explosion from pre-generating all usernames
+// - Note: dynamicParams is not compatible with cacheComponents in Next.js 16
 // =============================================================================
+
+// Return placeholder - users are rendered on-demand, not pre-built
+// This prevents ISR write explosion from trying to pre-generate all usernames
+export function generateStaticParams() {
+  // Only generate locale variants, actual usernames are dynamic
+  return routing.locales.map((locale) => ({ locale, username: '__placeholder__' }))
+}
 
 // Proper types for products and reviews - must match profile-client.tsx
 interface ProfileProduct {
@@ -153,6 +166,11 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
   // NO connection() - uses cached getPublicProfileData function
   const { username, locale } = await params
   setRequestLocale(locale)
+
+  // Handle placeholder from generateStaticParams
+  if (username === '__placeholder__') {
+    notFound()
+  }
 
   // Fetch ALL public profile data from CACHED function (single call)
   const profileData = await getPublicProfileData(username)

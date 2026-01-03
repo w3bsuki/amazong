@@ -8,11 +8,8 @@ import { getCategoryHierarchy } from "@/lib/data/categories";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 
-import { AuthStateListener } from "@/components/providers/auth-state-listener";
-import { CartProvider } from "@/components/providers/cart-context";
-import { Toaster } from "@/components/providers/sonner";
-import { WishlistProvider } from "@/components/providers/wishlist-context";
 import { OnboardingProvider } from "@/components/providers/onboarding-provider";
+import { Toaster } from "@/components/providers/sonner";
 import { GeoWelcomeModal } from "@/components/shared/geo-welcome-modal";
 import { CookieConsent } from "@/components/layout/cookie-consent";
 
@@ -55,33 +52,25 @@ export default async function MainLayout({
     const categories = await getCategoryHierarchy(null, 2);
 
     return (
-        <CartProvider>
-            <WishlistProvider>
-                <OnboardingProvider locale={locale}>
-                    <div className="bg-secondary min-h-screen flex flex-col">
-                        {/* Skip Links - Accessibility */}
-                        <SkipLinks />
+        <OnboardingProvider locale={locale}>
+            <div className="bg-secondary min-h-screen flex flex-col">
+                {/* Skip Links - Accessibility */}
+                <SkipLinks />
 
-                        <Suspense fallback={null}>
-                            <AuthStateListener />
-                        </Suspense>
+                <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
+                    <SiteHeader user={user} categories={categories} />
+                </Suspense>
 
-                        <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
-                            <SiteHeader user={user} categories={categories} />
-                        </Suspense>
+                <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
+                    {children}
+                </main>
 
-                        <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">
-                            {children}
-                        </main>
-
-                        <SiteFooter />
-                        <MobileTabBar categories={categories} />
-                        <Toaster />
-                        <CookieConsent />
-                        <GeoWelcomeModal locale={locale} />
-                    </div>
-                </OnboardingProvider>
-            </WishlistProvider>
-        </CartProvider>
+                <SiteFooter />
+                <MobileTabBar categories={categories} />
+                <Toaster />
+                <CookieConsent />
+                <GeoWelcomeModal locale={locale} />
+            </div>
+        </OnboardingProvider>
     );
 }

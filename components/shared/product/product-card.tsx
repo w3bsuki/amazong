@@ -10,7 +10,7 @@ import { useCart } from "@/components/providers/cart-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
 import { toast } from "sonner"
 import { useLocale, useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
+import { cn, safeAvatarSrc } from "@/lib/utils"
 import { productBlurDataURL, getImageLoadingStrategy } from "@/lib/image-utils"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 import { buildHeroBadgeText } from "@/lib/product-card-hero-attributes"
@@ -43,7 +43,7 @@ const productCardVariants = cva(
 )
 
 // =============================================================================
-// TYPES - Essential props only
+// TYPES - Essential props + B2B support
 // =============================================================================
 
 interface ProductCardProps extends VariantProps<typeof productCardVariants> {
@@ -67,6 +67,7 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   sellerId?: string | null
   sellerName?: string
   sellerAvatarUrl?: string | null
+  sellerVerified?: boolean
 
   // Shipping
   freeShipping?: boolean
@@ -86,12 +87,19 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   inStock?: boolean
   className?: string
 
-  // Rating & reviews (now displayed in Pro Commerce style)
+  // Rating & social proof (Pro Commerce style)
   rating?: number
   reviews?: number
+  soldCount?: number
 
   // Condition for C2C
-  condition?: string
+  condition?: "new" | "like_new" | "used" | "refurbished" | string
+
+  // B2B specific
+  minOrderQuantity?: number
+  bulkPricing?: { qty: number; price: number }[]
+  businessVerified?: boolean
+  samplesAvailable?: boolean
 
   // Legacy props (accepted but ignored for backwards compat)
   brand?: string
@@ -103,7 +111,6 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   year?: string | number | null
   color?: string | null
   size?: string | null
-  sellerVerified?: boolean
   sellerRating?: number
   sellerTier?: "basic" | "premium" | "business"
   initialIsFollowingSeller?: boolean
@@ -118,8 +125,18 @@ function getProductCardImageSrc(src: string): string {
   return normalized === PLACEHOLDER_IMAGE_PATH ? PLACEHOLDER_IMAGE_PATH : normalized
 }
 
+/**
+ * Format count with K suffix for thousands (1234 → "1.2K")
+ */
+function formatCount(count: number): string {
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1)}K`
+  }
+  return count.toString()
+}
+
 // =============================================================================
-// PRODUCT CARD COMPONENT - Clean, Minimal, Price-First
+// PRODUCT CARD COMPONENT - Pro Commerce: Temu Density + eBay Trust + Shein Polish
 // =============================================================================
 
 function ProductCard({
@@ -152,7 +169,12 @@ function ProductCard({
   ref,
   rating,
   reviews,
+  soldCount,
   condition,
+  // B2B props
+  minOrderQuantity,
+  businessVerified,
+  samplesAvailable,
 }: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
   const router = useRouter()
   const { addToCart, items: cartItems } = useCart()
@@ -196,7 +218,7 @@ function ProductCard({
     return buildHeroBadgeText(categoryRootSlug, attributes, categoryPath, locale)
   }, [categoryRootSlug, attributes, categoryPath, locale])
 
-  // Condition badge helper
+  // Condition badge helper (C2C feature)
   const conditionLabel = React.useMemo(() => {
     if (!condition) return null
     const c = condition.toLowerCase()
@@ -207,18 +229,28 @@ function ProductCard({
     return condition.slice(0, 8)
   }, [condition, locale])
 
-  // Price formatting
-  const priceFormatter = React.useMemo(() => {
+  // Price formatting (memoized for performance)
+  const formattedPrice = React.useMemo(() => {
     return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
       style: "currency",
       currency: "EUR",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })
-  }, [locale])
+      maximumFractionDigits: 2,
+    }).format(price)
+  }, [price, locale])
 
-  // Handlers
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const formattedOriginalPrice = React.useMemo(() => {
+    if (!originalPrice) return null
+    return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(originalPrice)
+  }, [originalPrice, locale])
+
+  // Handlers (stable callbacks for performance)
+  const handleAddToCart = React.useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     if (isOwnProduct) {
@@ -239,9 +271,9 @@ function ProductCard({
       ...(username ? { username } : {}),
     })
     toast.success(tCart("itemAdded"))
-  }
+  }, [id, title, price, image, slug, username, isOwnProduct, inStock, addToCart, t, tCart])
 
-  const handleWishlist = async (e: React.MouseEvent) => {
+  const handleWishlist = React.useCallback(async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     if (isWishlistPending) return
@@ -251,11 +283,12 @@ function ProductCard({
     } finally {
       setIsWishlistPending(false)
     }
-  }
+  }, [id, title, price, image, isWishlistPending, toggleWishlist])
 
-  // Rating display helper
+  // Rating & social proof
   const hasRating = typeof rating === "number" && rating > 0
   const reviewCount = reviews ?? 0
+  const hasSoldCount = typeof soldCount === "number" && soldCount > 0
 
   return (
     <div
@@ -272,7 +305,7 @@ function ProductCard({
         <span className="sr-only">{title}</span>
       </Link>
 
-      {/* Image */}
+      {/* Image Container - 4:5 aspect ratio for optimal mobile display */}
       <div className="relative overflow-hidden rounded-md bg-muted lg:rounded-none">
         <AspectRatio ratio={4 / 5}>
           <Image
@@ -288,21 +321,14 @@ function ProductCard({
           />
         </AspectRatio>
 
-        {/* Top-left badges stack: Discount, Condition */}
-        <div className="absolute left-0 top-1.5 z-10 flex flex-col gap-1">
-          {hasDiscount && discountPercent >= 5 && (
-            <span className="rounded-r-sm bg-red-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
-              -{discountPercent}%
-            </span>
-          )}
-          {conditionLabel && (
-            <span className="rounded-r-sm bg-foreground/80 px-1.5 py-0.5 text-[10px] font-medium text-background">
-              {conditionLabel}
-            </span>
-          )}
-        </div>
+        {/* Condition Badge - Top Left (C2C feature) */}
+        {conditionLabel && (
+          <span className="absolute left-1.5 top-1.5 z-10 rounded-sm bg-foreground/90 px-1.5 py-0.5 text-2xs font-semibold uppercase tracking-wide text-background">
+            {conditionLabel}
+          </span>
+        )}
 
-        {/* Wishlist button - top right */}
+        {/* Wishlist button - Top Right */}
         {showWishlist && (
           <button
             type="button"
@@ -310,8 +336,8 @@ function ProductCard({
               "absolute right-1.5 top-1.5 z-10 flex size-7 items-center justify-center rounded-full transition-colors duration-100",
               inWishlist
                 ? "bg-red-500 text-white"
-                : "bg-black/30 text-white backdrop-blur-sm active:bg-red-500",
-              isWishlistPending && "opacity-50 pointer-events-none"
+                : "bg-black/30 text-white backdrop-blur-sm hover:bg-black/50 active:bg-red-500",
+              isWishlistPending && "pointer-events-none opacity-50"
             )}
             onClick={handleWishlist}
             disabled={isWishlistPending}
@@ -321,65 +347,117 @@ function ProductCard({
           </button>
         )}
 
-        {/* Smart attribute badge - bottom of image */}
-        {smartBadge && (
+        {/* Discount Badge - Bottom Right with gradient (only show if >= 5%) */}
+        {hasDiscount && discountPercent >= 5 && (
+          <>
+            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/50 to-transparent" />
+            <span className="absolute bottom-1.5 right-1.5 z-10 text-2xs font-bold text-white drop-shadow-sm">
+              -{discountPercent}%
+            </span>
+          </>
+        )}
+
+        {/* Smart attribute badge - bottom left over gradient */}
+        {smartBadge && !hasDiscount && (
           <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/60 to-transparent px-1.5 pb-1 pt-4">
-            <span className="text-[11px] font-medium text-white drop-shadow-sm">
+            <span className="text-xs font-medium text-white drop-shadow-sm">
               {smartBadge}
             </span>
           </div>
         )}
       </div>
 
-      {/* Content */}
-      <div className="relative z-[2] px-0.5 pt-1.5 pb-1 lg:p-1.5">
-        {/* Price row */}
-        <div className="flex flex-wrap items-baseline gap-x-1">
-          <span className={cn(
-            "text-base font-bold leading-none",
-            hasDiscount ? "text-red-600" : "text-foreground"
-          )}>
-            {priceFormatter.format(price)}
+      {/* Content Area */}
+      <div className="relative z-[2] px-1 pb-1.5 pt-1.5 lg:p-2">
+        {/* HERO: Price Row - Maximum prominence */}
+        <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+          {/* Current Price - HERO element */}
+          <span
+            className={cn(
+              "text-lg font-bold leading-tight tracking-tight lg:text-xl",
+              hasDiscount ? "text-red-600" : "text-foreground"
+            )}
+          >
+            {formattedPrice}
           </span>
-          {hasDiscount && originalPrice && (
-            <span className="text-[10px] text-muted-foreground line-through">
-              {priceFormatter.format(originalPrice)}
+
+          {/* Original Price (crossed out) */}
+          {hasDiscount && formattedOriginalPrice && (
+            <span className="text-xs text-muted-foreground line-through">
+              {formattedOriginalPrice}
             </span>
           )}
+
+          {/* Free Shipping Badge */}
           {freeShipping && (
-            <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600">
+            <span className="inline-flex items-center gap-0.5 rounded-sm bg-emerald-50 px-1 py-px text-2xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
               <Truck size={10} weight="bold" />
+              <span className="hidden xs:inline">Free</span>
             </span>
           )}
         </div>
 
-        {/* Title */}
-        <h3 className="mt-0.5 line-clamp-2 text-[13px] leading-tight text-foreground/90">
+        {/* Title - 2 lines max, professional typography */}
+        <h3 className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-foreground/90 lg:text-sm">
           {title}
         </h3>
 
-        {/* Rating row (if available) */}
-        {hasRating && (
-          <div className="mt-1 flex items-center gap-0.5">
-            <Star size={10} weight="fill" className="text-amber-400" />
-            <span className="text-[10px] text-muted-foreground">
-              {rating.toFixed(1)}
-              {reviewCount > 0 && <span className="ml-0.5">({reviewCount > 999 ? `${(reviewCount / 1000).toFixed(1)}k` : reviewCount})</span>}
-            </span>
+        {/* Social Proof Row: Rating + Sold Count */}
+        {(hasRating || hasSoldCount) && (
+          <div className="mt-0.5 flex items-center gap-1 text-2xs text-muted-foreground">
+            {hasRating && (
+              <>
+                <Star size={10} weight="fill" className="text-amber-400" />
+                <span className="font-medium text-foreground/80">
+                  {rating.toFixed(1)}
+                </span>
+                {reviewCount > 0 && <span>({formatCount(reviewCount)})</span>}
+              </>
+            )}
+
+            {hasRating && hasSoldCount && (
+              <span className="text-border">·</span>
+            )}
+
+            {hasSoldCount && (
+              <span>{formatCount(soldCount)} sold</span>
+            )}
           </div>
         )}
 
-        {/* Seller row + Quick-add */}
+        {/* B2B Badges (if applicable) */}
+        {(minOrderQuantity && minOrderQuantity > 1) || businessVerified || samplesAvailable ? (
+          <div className="mt-0.5 flex flex-wrap gap-1">
+            {minOrderQuantity && minOrderQuantity > 1 && (
+              <span className="rounded-sm bg-blue-50 px-1 py-px text-2xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-400">
+                MOQ:{minOrderQuantity}
+              </span>
+            )}
+            {samplesAvailable && (
+              <span className="rounded-sm bg-amber-50 px-1 py-px text-2xs font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-400">
+                Samples
+              </span>
+            )}
+            {businessVerified && (
+              <span className="rounded-sm bg-emerald-50 px-1 py-px text-2xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+                Verified
+              </span>
+            )}
+          </div>
+        ) : null}
+
+        {/* Seller Row + Quick-Add */}
         <div className="mt-1 flex items-center justify-between gap-1">
+          {/* Seller Info */}
           {displaySellerName ? (
             <div className="flex min-w-0 items-center gap-1">
-              <Avatar className="size-4 shrink-0">
-                <AvatarImage src={sellerAvatarUrl || undefined} />
-                <AvatarFallback className="text-[6px] bg-muted">
+              <Avatar className="size-5 shrink-0 ring-1 ring-border/50">
+                <AvatarImage src={safeAvatarSrc(sellerAvatarUrl)} />
+                <AvatarFallback className="bg-muted text-[8px] font-medium">
                   {displaySellerName.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="truncate text-[10px] text-muted-foreground">
+              <span className="truncate text-2xs text-muted-foreground">
                 {displaySellerName}
               </span>
               {sellerVerified && (
@@ -387,26 +465,27 @@ function ProductCard({
               )}
             </div>
           ) : (
-            <div />
+            <div className="flex-1" />
           )}
 
+          {/* Quick-Add Button - 28px (size-7), matched with wishlist */}
           {showQuickAdd && (
             <button
               type="button"
               className={cn(
-                "flex size-6 shrink-0 items-center justify-center rounded transition-colors duration-100",
+                "flex size-7 shrink-0 items-center justify-center rounded transition-colors duration-100",
                 inCart
-                  ? "bg-blue-600 text-white"
-                  : "bg-muted text-muted-foreground active:bg-blue-600 active:text-white"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground active:bg-primary active:text-primary-foreground"
               )}
               onClick={handleAddToCart}
               disabled={isOwnProduct || !inStock}
               aria-label={inCart ? "In cart" : "Add to cart"}
             >
               {inCart ? (
-                <ShoppingCart size={12} weight="fill" />
+                <ShoppingCart size={14} weight="fill" />
               ) : (
-                <Plus size={12} weight="bold" />
+                <Plus size={14} weight="bold" />
               )}
             </button>
           )}
@@ -417,7 +496,7 @@ function ProductCard({
 }
 
 // =============================================================================
-// PRODUCT GRID
+// PRODUCT GRID - Responsive CSS Grid with density options
 // =============================================================================
 
 interface ProductGridProps {
@@ -429,9 +508,9 @@ interface ProductGridProps {
 
 /**
  * ProductGrid - Responsive CSS Grid
- * Mobile: 2 cols, gap-1 (4px), px-1 (4px)
- * Tablet: 3 cols, gap-1 (4px)
- * Desktop: 4-5 cols, gap-1.5 (6px)
+ * Mobile: 2 cols, gap-1.5 (6px), px-1 (4px)
+ * Tablet: 3 cols, gap-2 (8px)
+ * Desktop: 4-5 cols, gap-3 (12px)
  */
 function ProductGrid({ children, density = "default", className }: ProductGridProps) {
   const densityClasses = {
@@ -443,7 +522,7 @@ function ProductGrid({ children, density = "default", className }: ProductGridPr
   return (
     <div
       className={cn(
-        "grid gap-1 px-1 lg:gap-1.5 lg:px-2",
+        "grid gap-1.5 px-1 sm:gap-2 sm:px-2 lg:gap-3 lg:px-3",
         densityClasses[density],
         className
       )}
@@ -456,7 +535,7 @@ function ProductGrid({ children, density = "default", className }: ProductGridPr
 ProductGrid.displayName = "ProductGrid"
 
 // =============================================================================
-// SKELETON
+// SKELETON - Matches new Pro design structure
 // =============================================================================
 
 interface ProductCardSkeletonProps {
@@ -466,23 +545,34 @@ interface ProductCardSkeletonProps {
 function ProductCardSkeleton({ className }: ProductCardSkeletonProps) {
   return (
     <div className={cn("h-full", className)}>
-      {/* Image */}
+      {/* Image - 4:5 aspect ratio */}
       <div className="overflow-hidden rounded-md bg-muted lg:rounded-none">
         <AspectRatio ratio={4 / 5}>
           <Skeleton className="h-full w-full rounded-none" />
         </AspectRatio>
       </div>
       {/* Content */}
-      <div className="px-0.5 pt-1.5 pb-1 lg:p-1.5">
-        <Skeleton className="h-4 w-14" />
-        <Skeleton className="mt-0.5 h-3.5 w-full" />
-        <Skeleton className="mt-0.5 h-3.5 w-2/3" />
+      <div className="px-1 pb-1.5 pt-1.5 lg:p-2">
+        {/* Price row */}
+        <div className="flex items-baseline gap-1.5">
+          <Skeleton className="h-5 w-16" />
+          <Skeleton className="h-3 w-10" />
+        </div>
+        {/* Title (2 lines) */}
+        <Skeleton className="mt-1 h-4 w-full" />
+        <Skeleton className="mt-0.5 h-4 w-2/3" />
+        {/* Rating row */}
+        <div className="mt-1 flex items-center gap-1">
+          <Skeleton className="size-3 rounded-full" />
+          <Skeleton className="h-2.5 w-16" />
+        </div>
+        {/* Seller + Quick-add */}
         <div className="mt-1 flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <Skeleton className="size-4 rounded-full" />
-            <Skeleton className="h-2.5 w-12" />
+            <Skeleton className="size-5 rounded-full" />
+            <Skeleton className="h-2.5 w-14" />
           </div>
-          <Skeleton className="size-6 rounded" />
+          <Skeleton className="size-7 rounded" />
         </div>
       </div>
     </div>

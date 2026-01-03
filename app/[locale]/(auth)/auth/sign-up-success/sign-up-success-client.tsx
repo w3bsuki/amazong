@@ -3,9 +3,51 @@
 import { Link } from "@/i18n/routing"
 import { CheckCircle, EnvelopeSimple } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
+import { useCallback, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
 
 export default function SignUpSuccessClient() {
   const t = useTranslations("Auth")
+  const [isResending, setIsResending] = useState(false)
+
+  const handleResend = useCallback(async () => {
+    if (isResending) return
+
+    let email: string | null = null
+    let locale: string | null = null
+
+    try {
+      email = sessionStorage.getItem("lastSignupEmail")
+      locale = sessionStorage.getItem("lastSignupLocale")
+    } catch {
+      email = null
+      locale = null
+    }
+
+    // If we don't have an email (e.g. direct navigation), fall back to sign-in.
+    if (!email) return
+
+    setIsResending(true)
+    try {
+      const supabase = createClient()
+      const origin = window.location.origin
+      const resolvedLocale = locale || "en"
+
+      // Resend a signup confirmation email.
+      // Note: Supabase may not send emails for existing/confirmed accounts.
+      await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: {
+          emailRedirectTo: `${origin}/auth/confirm?locale=${encodeURIComponent(resolvedLocale)}&next=${encodeURIComponent("/")}`,
+        },
+      })
+    } catch (e) {
+      console.error("Failed to resend confirmation email:", e)
+    } finally {
+      setIsResending(false)
+    }
+  }, [isResending])
 
   return (
     <div className="min-h-svh flex items-center justify-center bg-muted p-4">
@@ -56,7 +98,12 @@ export default function SignUpSuccessClient() {
 
           <p className="text-xs text-center text-muted-foreground mt-4">
             {t("didNotReceiveEmail")} {" "}
-            <button type="button" className="text-primary hover:underline">
+            <button
+              type="button"
+              className="text-primary hover:underline disabled:opacity-60"
+              onClick={handleResend}
+              disabled={isResending}
+            >
               {t("resendEmail")}
             </button>
           </p>

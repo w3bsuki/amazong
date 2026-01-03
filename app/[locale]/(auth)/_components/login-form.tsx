@@ -4,9 +4,14 @@ import { useActionState, useEffect, useMemo, useState } from "react"
 import { useFormStatus } from "react-dom"
 import { Eye, EyeSlash, SpinnerGap } from "@phosphor-icons/react"
 import { useTranslations } from "next-intl"
-import Image from "next/image"
 
+import { AuthCard } from "@/components/auth/auth-card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Link } from "@/i18n/routing"
+import { cn } from "@/lib/utils"
 import { login } from "../_actions/auth"
 import type { AuthActionState } from "../_actions/auth"
 
@@ -28,10 +33,11 @@ function SubmitButton({
 }) {
   const { pending } = useFormStatus()
   return (
-    <button
+    <Button
       type="submit"
+      size="lg"
+      className="w-full h-10"
       disabled={pending || disabled}
-      className="w-full h-10 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
     >
       {pending ? (
         <span className="inline-flex items-center gap-2">
@@ -41,7 +47,7 @@ function SubmitButton({
       ) : (
         label
       )}
-    </button>
+    </Button>
   )
 }
 
@@ -70,9 +76,6 @@ export function LoginForm({
   const showClientEmailError = emailHasValue && !emailLooksValid
   const isSubmittable = emailHasValue && passwordHasValue && !showClientEmailError
 
-  const clientInvalidEmailMessage =
-    locale === "bg" ? "Моля, въведете валиден имейл адрес." : "Please enter a valid email address."
-
   useEffect(() => {
     try {
       const savedRememberMe = localStorage.getItem("remember-me") === "true"
@@ -94,148 +97,156 @@ export function LoginForm({
     }
   }
 
-  return (
-    <div className="min-h-svh flex items-center justify-center bg-muted/30 p-4">
-      <div className="w-full max-w-sm bg-card rounded-md border border-border relative">
-        <div className="p-6">
-          <div className="flex flex-col items-center mb-6">
-            <Link href="/" className="mb-4 hover:opacity-80 transition-opacity">
-              <Image src="/icon.svg" width={40} height={40} alt="Treido" priority />
-            </Link>
-            <h1 className="text-xl font-semibold text-foreground">{t("signIn")}</h1>
-            <p className="text-sm text-muted-foreground mt-1 text-center">{t("signInDescription")}</p>
-          </div>
-
-          <form action={formAction} onSubmit={onSubmit} className="space-y-4">
-            {state?.error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">{state.error}</div>
-            )}
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
-                {t("emailOrPhone")}
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("emailPlaceholder")}
-                aria-invalid={showClientEmailError || !!state?.fieldErrors?.email}
-                aria-describedby={showClientEmailError || state?.fieldErrors?.email ? "email-error" : undefined}
-                className={`w-full h-10 px-3 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${showClientEmailError || state?.fieldErrors?.email ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
-              />
-              {(showClientEmailError || state?.fieldErrors?.email) && (
-                <p id="email-error" className="text-xs text-destructive mt-1" role="alert">
-                  {state?.fieldErrors?.email ?? clientInvalidEmailMessage}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <label htmlFor="password" className="text-sm font-medium text-foreground">
-                  {t("password")}
-                </label>
-                <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline min-h-[28px] flex items-center">
-                  {t("forgotPassword")}
-                </Link>
-              </div>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  placeholder={t("passwordPlaceholder")}
-                  aria-invalid={!!state?.fieldErrors?.password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full h-10 px-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground bg-background border rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-colors ${state?.fieldErrors?.password ? "border-destructive focus-visible:ring-destructive" : "border-input"}`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 size-9 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors"
-                  aria-label={showPassword ? t("hidePassword") : t("showPassword")}
-                >
-                  {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
-                </button>
-              </div>
-              {state?.fieldErrors?.password && <p className="text-xs text-destructive mt-1">{state.fieldErrors.password}</p>}
-            </div>
-
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm text-muted-foreground min-h-[36px] cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="size-5 rounded border-input accent-primary cursor-pointer"
-                />
-                {t("rememberMe")}
-              </label>
-            </div>
-
-            <div className="pt-1">
-              <SubmitButton
-                label={t("signIn")}
-                pendingLabel={t("signingIn")}
-                disabled={!isSubmittable}
-              />
-            </div>
-          </form>
-
-          <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
-            {t("byContinuing")} {" "}
-            <Link href="/terms" className="text-primary hover:underline">
-              {t("conditionsOfUse")}
-            </Link>{" "}
-            {t("and")} {" "}
-            <Link href="/privacy" className="text-primary hover:underline">
-              {t("privacyNotice")}
-            </Link>
-            .
-          </p>
-
-          <div className="mt-6">
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-border" />
-              <p className="text-xs text-muted-foreground">{t("newToAmazon")}</p>
-              <div className="h-px flex-1 bg-border" />
-            </div>
-
-            <Link href="/auth/sign-up" className="block mt-3">
-              <button
-                type="button"
-                className="w-full h-10 bg-background border border-input text-foreground text-sm font-medium rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-center"
-              >
-                {t("createAccount")}
-              </button>
-            </Link>
-          </div>
-        </div>
-
-        <div className="px-6 py-4 bg-muted/30 border-t border-border rounded-b-xl">
-          <div className="flex justify-center gap-2 text-xs text-muted-foreground">
-            <Link href="/terms" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
-              {t("conditionsOfUse")}
-            </Link>
-            <Link href="/privacy" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
-              {t("privacyNotice")}
-            </Link>
-            <Link href="/help" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
-              {t("help")}
-            </Link>
-          </div>
-          <p className="text-xs text-center text-muted-foreground/70 mt-2">{t("copyright", { year: new Date().getFullYear() })}</p>
-        </div>
+  const footer = (
+    <>
+      <div className="flex justify-center gap-2 text-xs text-muted-foreground">
+        <Link href="/terms" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
+          {t("conditionsOfUse")}
+        </Link>
+        <Link href="/privacy" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
+          {t("privacyNotice")}
+        </Link>
+        <Link href="/help" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
+          {t("help")}
+        </Link>
       </div>
-    </div>
+      <p className="text-xs text-center text-muted-foreground/70">{t("copyright", { year: new Date().getFullYear() })}</p>
+    </>
+  )
+
+  return (
+    <AuthCard
+      title={t("signIn")}
+      description={t("signInDescription")}
+      footer={footer}
+    >
+      <form action={formAction} onSubmit={onSubmit} className="space-y-4">
+        {state?.error && (
+          <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+            {state.error}
+          </div>
+        )}
+
+        {/* Email Field */}
+        <div className="space-y-1">
+          <Label htmlFor="email">{t("emailOrPhone")}</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={t("emailPlaceholder")}
+            aria-invalid={showClientEmailError || !!state?.fieldErrors?.email}
+            aria-describedby={showClientEmailError || state?.fieldErrors?.email ? "email-error" : undefined}
+            className={cn(
+              (showClientEmailError || state?.fieldErrors?.email) && "border-destructive focus-visible:ring-destructive/20"
+            )}
+          />
+          {(showClientEmailError || state?.fieldErrors?.email) && (
+            <p id="email-error" className="text-xs text-destructive" role="alert">
+              {state?.fieldErrors?.email ?? t("invalidEmail")}
+            </p>
+          )}
+        </div>
+
+        {/* Password Field */}
+        <div className="space-y-1">
+          <div className="flex justify-between items-center">
+            <Label htmlFor="password">{t("password")}</Label>
+            <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline min-h-[28px] flex items-center">
+              {t("forgotPassword")}
+            </Link>
+          </div>
+          <div className="relative">
+            <Input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              required
+              value={password}
+              placeholder={t("passwordPlaceholder")}
+              aria-invalid={!!state?.fieldErrors?.password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={cn(
+                "pr-10",
+                state?.fieldErrors?.password && "border-destructive focus-visible:ring-destructive/20"
+              )}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-1 top-1/2 -translate-y-1/2 size-9 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors"
+              aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+            >
+              {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
+            </button>
+          </div>
+          {state?.fieldErrors?.password && (
+            <p className="text-xs text-destructive">{state.fieldErrors.password}</p>
+          )}
+        </div>
+
+        {/* Remember Me */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 min-h-[36px]">
+            <Checkbox
+              id="remember-me"
+              checked={rememberMe}
+              onCheckedChange={(checked) => setRememberMe(checked === true)}
+            />
+            <Label
+              htmlFor="remember-me"
+              className="text-sm text-muted-foreground cursor-pointer font-normal"
+            >
+              {t("rememberMe")}
+            </Label>
+          </div>
+        </div>
+
+        <div className="pt-1">
+          <SubmitButton
+            label={t("signIn")}
+            pendingLabel={t("signingIn")}
+            disabled={!isSubmittable}
+          />
+        </div>
+      </form>
+
+      <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
+        {t("byContinuing")}{" "}
+        <Link href="/terms" className="text-primary hover:underline">
+          {t("conditionsOfUse")}
+        </Link>{" "}
+        {t("and")}{" "}
+        <Link href="/privacy" className="text-primary hover:underline">
+          {t("privacyNotice")}
+        </Link>
+        .
+      </p>
+
+      <div className="mt-6">
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-border" />
+          <p className="text-xs text-muted-foreground">{t("newToAmazon")}</p>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
+        <Link href="/auth/sign-up" className="block mt-3">
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className="w-full h-10"
+          >
+            {t("createAccount")}
+          </Button>
+        </Link>
+      </div>
+    </AuthCard>
   )
 }
 

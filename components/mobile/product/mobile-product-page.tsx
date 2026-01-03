@@ -157,7 +157,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24 pt-12 lg:hidden">
+    <div className="min-h-screen bg-background pb-24 pt-14 lg:hidden">
       {/* Mobile Product Header - Back, Search, Share, Wishlist, Cart */}
       <MobileProductHeader />
 
@@ -207,7 +207,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
       </div>
 
       {/* Badges Row - Moved up for quick scanning */}
-      <div className="-ml-1">
+      <div>
         <MobileBadgesRow
           condition={product.condition}
           freeShipping={!product.pickup_only}

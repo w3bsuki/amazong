@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
-import { Sliders, Star, Check, CaretRight, CaretLeft, CaretUp } from "@phosphor-icons/react"
+import { Sliders, Star, Check, CaretRight, CaretLeft, CaretUp, ArrowsDownUp } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -234,20 +234,20 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
         variant="ghost"
         onClick={() => setIsOpen(true)}
         className={cn(
-          "h-8 w-full rounded-full px-3 gap-1 text-sm bg-secondary hover:bg-secondary/80 hover:text-foreground transition-colors border border-border/50",
-          filterCount > 0 && "bg-primary/10 text-primary border-primary/20"
+          "h-7 w-full rounded-lg px-2.5 gap-1.5 text-xs font-medium",
+          "bg-muted/50 hover:bg-muted/70 hover:text-foreground transition-colors border border-border/40",
+          filterCount > 0 && "bg-primary/10 text-primary border-primary/30"
         )}
       >
         <Sliders size={14} weight="regular" className={cn(
-          filterCount > 0 ? "text-primary" : "text-muted-foreground"
+          filterCount > 0 ? "text-primary" : "text-muted-foreground",
+          "shrink-0"
         )} />
         <span className={cn(filterCount > 0 ? "text-primary" : "text-foreground")}>{t('filters')}</span>
-        {filterCount > 0 ? (
-          <span className="bg-primary text-primary-foreground text-xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center ml-0.5 text-[10px]">
+        {filterCount > 0 && (
+          <span className="bg-primary text-primary-foreground text-xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center text-[10px]">
             {filterCount}
           </span>
-        ) : (
-          <CaretUp size={12} weight="bold" className="text-muted-foreground" />
         )}
       </Button>
 

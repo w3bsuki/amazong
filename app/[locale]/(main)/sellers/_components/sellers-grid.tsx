@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
+import { safeAvatarSrc } from "@/lib/utils"
 
 import type { Seller } from "../_lib/top-sellers-types"
 
@@ -14,24 +15,27 @@ export default function SellersGrid({
 }) {
   return (
     <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
-      {sellers.map((seller) => (
-        <Link href={`/search?seller=${seller.id}`} key={seller.id}>
-          <Card className="h-full cursor-pointer border-border rounded-lg overflow-hidden group">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3 mb-3">
-                <div className="size-14 rounded-full bg-brand flex items-center justify-center text-white font-bold text-xl shrink-0 overflow-hidden">
-                  {seller.avatar_url ? (
-                    <Image
-                      src={seller.avatar_url}
-                      alt={seller.store_name}
-                      width={56}
-                      height={56}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    seller.store_name.charAt(0).toUpperCase()
-                  )}
-                </div>
+      {sellers.map((seller) => {
+        const avatarUrl = safeAvatarSrc(seller.avatar_url)
+
+        return (
+          <Link href={`/search?seller=${seller.id}`} key={seller.id}>
+            <Card className="h-full cursor-pointer border-border rounded-lg overflow-hidden group">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="size-14 rounded-full bg-brand flex items-center justify-center text-white font-bold text-xl shrink-0 overflow-hidden">
+                    {avatarUrl ? (
+                      <Image
+                        src={avatarUrl}
+                        alt={seller.store_name}
+                        width={56}
+                        height={56}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      seller.store_name.charAt(0).toUpperCase()
+                    )}
+                  </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
@@ -89,8 +93,9 @@ export default function SellersGrid({
               </div>
             </CardContent>
           </Card>
-        </Link>
-      ))}
+          </Link>
+        )
+      })}
     </div>
   )
 }

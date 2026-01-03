@@ -286,14 +286,25 @@ export function ChatInterface({
     )
   }
 
-  // Get other party info
-  const otherParty = currentConversation.seller?.profile || currentConversation.buyer
-  const displayName =
-    currentConversation.seller?.business_name || otherParty?.full_name || t("unknownUser")
-  const avatarUrl = otherParty?.avatar_url
-  const initials = displayName
+  // Get other party info based on whether current user is buyer or seller
+  const isBuyer = currentUserId === currentConversation.buyer_id
+  const otherProfile = isBuyer 
+    ? currentConversation.seller_profile 
+    : currentConversation.buyer_profile
+  
+  // Fall back to legacy fields if new profile fields not available
+  // Type guard for seller_profile which has business_name
+  const sellerProfile = currentConversation.seller_profile
+  const displayName = isBuyer
+    ? (sellerProfile?.business_name || otherProfile?.display_name || otherProfile?.full_name || currentConversation.seller?.business_name || t("unknownUser"))
+    : (otherProfile?.display_name || otherProfile?.full_name || currentConversation.buyer?.full_name || t("unknownUser"))
+  
+  const avatarUrl = otherProfile?.avatar_url || 
+    (isBuyer ? currentConversation.seller?.profile?.avatar_url : currentConversation.buyer?.avatar_url)
+  
+  const initials = (displayName || "?")
     .split(" ")
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join("")
     .toUpperCase()
     .slice(0, 2)
@@ -502,8 +513,7 @@ export function ChatInterface({
                 const nextItem = messagesWithSeparators[index + 1]
                 if (nextItem?.type === "message") {
                   const isNextOrderNotification =
-                    (nextItem.message.message_type === "system" ||
-                      nextItem.message.message_type === "order_update") &&
+                    nextItem.message.message_type === "system" &&
                     (nextItem.message.content.includes("New Order") ||
                       nextItem.message.content.includes("Нова поръчка"))
                   if (isNextOrderNotification) {
@@ -522,8 +532,7 @@ export function ChatInterface({
 
               const message = item.message
               const isOwn = message.sender_id === currentUserId
-              const isSystemMessage =
-                message.message_type === "system" || message.message_type === "order_update"
+              const isSystemMessage = message.message_type === "system"
 
               // Check if this is the last message in a group from same sender
               const nextItem = messagesWithSeparators[index + 1]

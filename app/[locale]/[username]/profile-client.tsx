@@ -31,6 +31,7 @@ import {
 } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { FollowSellerButton } from "@/components/seller/follow-seller-button"
+import { safeAvatarSrc } from "@/lib/utils"
 
 // =============================================================================
 // Types - Match the data shape from lib/data/profile-page.ts
@@ -184,7 +185,7 @@ export function PublicProfileClient({
           {/* Avatar */}
           <div className="relative">
             <Avatar className="size-28 sm:size-36 border-4 border-background shadow-none">
-              <AvatarImage src={profile.avatar_url || undefined} alt={displayName} />
+              <AvatarImage src={safeAvatarSrc(profile.avatar_url)} alt={displayName} />
               <AvatarFallback className="text-3xl bg-primary text-primary-foreground">
                 {initials}
               </AvatarFallback>
@@ -445,7 +446,7 @@ export function PublicProfileClient({
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
                           <Avatar className="size-10">
-                            <AvatarImage src={review.buyer?.avatar_url ?? undefined} />
+                            <AvatarImage src={safeAvatarSrc(review.buyer?.avatar_url)} />
                             <AvatarFallback>
                               {(review.buyer?.display_name || review.buyer?.username || "?").slice(0, 2).toUpperCase()}
                             </AvatarFallback>
@@ -510,7 +511,7 @@ export function PublicProfileClient({
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
                           <Avatar className="size-10">
-                            <AvatarImage src={review.seller?.avatar_url ?? undefined} />
+                            <AvatarImage src={safeAvatarSrc(review.seller?.avatar_url)} />
                             <AvatarFallback>
                               {(review.seller?.display_name || review.seller?.username || "?").slice(0, 2).toUpperCase()}
                             </AvatarFallback>

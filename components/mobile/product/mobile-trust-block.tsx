@@ -60,7 +60,7 @@ export function MobileTrustBlock({
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-2 py-3 px-3 bg-muted/30 mx-4 my-2 rounded-md border border-border/50">
+    <div className="grid grid-cols-4 gap-2 py-2.5 px-3 bg-muted/30 rounded-md border border-border/50">
       {trustItems.map((item, index) => (
         <div
           key={index}

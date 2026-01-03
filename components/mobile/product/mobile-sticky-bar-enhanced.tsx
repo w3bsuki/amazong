@@ -116,24 +116,24 @@ export function MobileStickyBarEnhanced({
           />
         </Button>
 
-        {/* Add to Cart - Secondary CTA (40px max per design system) */}
+        {/* Add to Cart - Secondary CTA */}
         <Button
           type="button"
           variant="outline"
           onClick={handleAddToCart}
           disabled={isOutOfStock}
-          className="flex-1 h-10 px-2 text-sm font-bold gap-1.5 border-primary text-primary hover:bg-primary/5 rounded-full"
+          className="flex-1 h-10 px-3 text-sm font-semibold gap-2 border border-primary text-primary hover:bg-primary/5 rounded-full"
         >
           <ShoppingCart className="size-5" weight="bold" />
           <span>{t("addToCart")}</span>
         </Button>
 
-        {/* Buy Now - Primary CTA (40px max per design system) */}
+        {/* Buy Now - Primary CTA */}
         <Button
           type="button"
           onClick={handleBuyNow}
           disabled={isOutOfStock}
-          className="flex-1 h-10 px-2 text-sm font-bold bg-brand hover:bg-brand-dark text-white rounded-full shadow-sm"
+          className="flex-1 h-10 px-3 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-full"
         >
           {isOutOfStock
             ? locale === "bg"

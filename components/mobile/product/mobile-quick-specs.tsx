@@ -34,7 +34,7 @@ export function MobileQuickSpecs({
   return (
     <div className="py-2">
       {/* Section Header */}
-      <div className="flex items-center gap-1.5 mb-2">
+      <div className="flex items-center gap-2 mb-2">
         <Info className="size-3.5 text-muted-foreground" />
         <span className="text-xs font-medium text-muted-foreground">
           {t.keyDetails}
@@ -45,12 +45,12 @@ export function MobileQuickSpecs({
         {visibleSpecs.map((attr, index) => (
           <div
             key={index}
-            className="flex flex-col px-3 py-1.5 bg-muted/50 border border-border/50 rounded-lg shrink-0 snap-start min-w-[90px] max-w-[130px]"
+            className="flex flex-col px-2 py-1 bg-muted/50 border border-border/50 rounded-lg shrink-0 snap-start min-w-20 max-w-32"
           >
             <span className="text-2xs text-muted-foreground leading-tight">
               {attr.label}
             </span>
-            <span className="text-xs text-foreground font-medium truncate mt-0.5 leading-tight">
+            <span className="text-2xs text-foreground font-medium truncate mt-0.5 leading-tight">
               {attr.value}
             </span>
           </div>

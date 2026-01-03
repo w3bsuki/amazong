@@ -269,11 +269,12 @@ export async function getProductsByCategorySlug(
   const supabase = createStaticClient()
   if (!supabase) return []
 
-  // Inner join categories so the slug filter is applied reliably.
+  // OPTIMIZED: Flat category join - no 4-level nesting!
+  // Use getCategoryPath() separately when breadcrumbs are needed.
   let query = supabase
     .from('products')
     .select(
-      'id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories!inner(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))'
+      'id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,avatar_url,tier), categories!inner(id,slug,name,name_bg,icon)'
     )
     .eq('categories.slug', categorySlug)
     .order('created_at', { ascending: false })
@@ -319,10 +320,11 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   const supabase = createStaticClient()
   if (!supabase) return []
 
-  // Join categories to get the slug for category-aware badge display
+  // OPTIMIZED: Flat category join - no 4-level nesting!
+  // Use getCategoryPath() separately when breadcrumbs are needed.
   let query = supabase
     .from('products')
-    .select('id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))')
+    .select('id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,avatar_url,tier), categories(id,slug,name,name_bg,icon)')
 
   // Apply shipping zone filter (WW = show all, so no filter)
   if (zone && zone !== 'WW') {
@@ -645,8 +647,8 @@ export async function getFeedProducts(
       product_images(image_url,thumbnail_url,display_order,is_primary),
       product_attributes(name,value),
       is_boosted, boost_expires_at, created_at, slug, attributes,
-      seller:profiles(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),
-      categories!inner(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon,parent:categories(id,slug,name,name_bg,icon))))
+      seller:profiles(id,username,avatar_url,tier),
+      categories!inner(id,slug,name,name_bg,icon)
     `, { count: 'exact' })
 
   // Apply category filter

@@ -54,6 +54,19 @@ export async function updateSession(request: NextRequest, response?: NextRespons
     return response || NextResponse.next({ request })
   }
 
+  // OPTIMIZATION: Only check auth for protected routes!
+  // Public pages don't need session validation in middleware.
+  const needsAuthCheck = 
+    isAccountPath(pathname) || 
+    isSellPath(pathname) || 
+    isChatPath(pathname) ||
+    pathname.startsWith("/protected")
+
+  // Skip auth check entirely for public pages - huge edge request savings!
+  if (!needsAuthCheck) {
+    return response || NextResponse.next({ request })
+  }
+
   let supabaseResponse = response || NextResponse.next({
     request,
   })

@@ -1,0 +1,98 @@
+"use client"
+
+import { useRef } from "react"
+import type { CategoryTreeNode } from "@/lib/category-tree"
+import { getCategoryName } from "@/lib/category-display"
+import { cn } from "@/lib/utils"
+import { Skeleton } from "@/components/ui/skeleton"
+
+type Category = CategoryTreeNode
+
+// =============================================================================
+// Types
+// =============================================================================
+
+export interface CategoryL3PillsProps {
+  categories: Category[]
+  selectedPill: string | null
+  locale: string
+  isLoading: boolean
+  onPillClick: (category: Category) => void
+  onAllClick: () => void
+}
+
+// =============================================================================
+// Loading Skeleton
+// =============================================================================
+
+function PillsSkeleton() {
+  return (
+    <div className="flex gap-1 items-center animate-pulse">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <Skeleton key={i} className="h-6 w-14 rounded-full" />
+      ))}
+    </div>
+  )
+}
+
+// =============================================================================
+// Component
+// =============================================================================
+
+export function CategoryL3Pills({
+  categories,
+  selectedPill,
+  locale,
+  isLoading,
+  onPillClick,
+  onAllClick,
+}: CategoryL3PillsProps) {
+  const pillsContainerRef = useRef<HTMLDivElement>(null)
+
+  const allLabel = locale === "bg" ? "Всички" : "All"
+
+  return (
+    <div
+      className="bg-background py-1 px-(--page-inset) overflow-x-auto no-scrollbar border-b border-border/30"
+      ref={pillsContainerRef}
+    >
+      {isLoading ? (
+        <PillsSkeleton />
+      ) : (
+        <div className="flex gap-1 items-center">
+          {/* "All" Pill - L3 level (subtle styling) */}
+          <button
+            onClick={onAllClick}
+            className={cn(
+              "h-6 px-2.5 rounded-full text-2xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+              selectedPill === null
+                ? "bg-primary/15 text-primary border-primary/40"
+                : "bg-muted/50 text-muted-foreground border-border/30 hover:bg-muted/70"
+            )}
+          >
+            {allLabel}
+          </button>
+
+          {/* L3 Pills - subtle filter style */}
+          {categories.map((child) => {
+            const isSelected = selectedPill === child.slug
+            return (
+              <button
+                key={child.slug}
+                onClick={() => onPillClick(child)}
+                className={cn(
+                  "h-6 px-2.5 rounded-full text-2xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+                  isSelected
+                    ? "bg-primary/15 text-primary border-primary/40"
+                    : "bg-muted/50 text-muted-foreground border-border/30 hover:bg-muted/70"
+                )}
+              >
+                {getCategoryName(child, locale)}
+              </button>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}

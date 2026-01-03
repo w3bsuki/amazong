@@ -3,17 +3,24 @@
 import { useEffect, useCallback, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
-import { createClient } from "@/lib/supabase/client"
-import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
-import { useLocale } from "next-intl"
+import { useAuth } from "./auth-state-manager"
 
+/**
+ * AuthStateListener is a component that handles route refreshes on auth state changes.
+ * It now relies on the centralized AuthStateManager for auth state rather than
+ * maintaining its own onAuthStateChange listener.
+ * 
+ * NOTE: This component is kept for backward compatibility but may be removed
+ * in a future refactor as the AuthStateManager handles most of its responsibilities.
+ */
 export function AuthStateListener() {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
-    const locale = useLocale()
+    const { user, isAuthenticated } = useAuth()
 
     const lastRefreshAtRef = useRef(0)
+    const prevAuthenticatedRef = useRef<boolean | null>(null)
 
     const safeRefresh = useCallback((reason: string) => {
         // Avoid refresh storms and common transient failures (tab hidden/offline)
@@ -34,66 +41,27 @@ export function AuthStateListener() {
         }
     }, [router])
 
-    // Memoized refresh handler that's more aggressive on mobile
-    const handleAuthChange = useCallback((event: AuthChangeEvent, session: Session | null) => {
+    // Trigger refresh when auth state changes
+    useEffect(() => {
+        // Skip on first render
+        if (prevAuthenticatedRef.current === null) {
+            prevAuthenticatedRef.current = isAuthenticated
+            return
+        }
+
+        // Skip if auth state hasn't changed
+        if (prevAuthenticatedRef.current === isAuthenticated) return
+        prevAuthenticatedRef.current = isAuthenticated
+
         // Skip refresh on auth pages to avoid conflicts with their own redirect logic
         const isAuthPage = pathname?.includes('/auth/')
-        
-        if (event === "SIGNED_IN" && !isAuthPage) {
-            // For sign-in events outside of auth pages, do a soft refresh
-            // This helps with mobile where the router refresh can be flaky
+        if (isAuthPage) return
+
+        if (isAuthenticated) {
             safeRefresh("SIGNED_IN")
-            
-            // Check if this is after email verification (welcome=true in URL)
-            const isWelcome = searchParams?.get('welcome') === 'true'
-            if (isWelcome && session?.user?.email_confirmed_at) {
-                // User just verified their email - they're now fully authenticated
-            }
-            
-            // If we're still on a protected page after refresh, force a hard reload
-            // This is a fallback for mobile browsers
-            setTimeout(() => {
-                // Check if we need to update the UI by fetching fresh auth state
-                const supabase = createClient()
-                supabase.auth.getSession().then(({ data: { session: currentSession } }: { data: { session: Session | null } }) => {
-                    if (currentSession && !document.hidden) {
-                        // Session exists but page might not have updated - trigger another refresh
-                        safeRefresh("SIGNED_IN (delayed)")
-                    }
-                })
-            }, 500)
-        } else if (event === "SIGNED_OUT") {
-            // NOTE: Do NOT redirect here! The component that called signOut() will handle
-            // the redirect. Redirecting here causes a race condition where the page
-            // navigates away before signOut() completes, causing the button to hang.
-            // Other providers (Wishlist, Cart, etc.) will react to SIGNED_OUT by clearing
-            // their state, which is safe.
-        } else if (event === "TOKEN_REFRESHED") {
-            // Silently handle token refresh
-            safeRefresh("TOKEN_REFRESHED")
-        } else if (event === "USER_UPDATED") {
-            // User was updated (e.g., email verified, profile updated)
-            // This fires when email is confirmed via the link
-            safeRefresh("USER_UPDATED")
-            
-            // If user just confirmed their email, the session will now have email_confirmed_at
-            if (session?.user?.email_confirmed_at) {
-                // Email confirmed - session updated
-            }
         }
-    }, [pathname, searchParams, locale, safeRefresh])
-
-    useEffect(() => {
-        const supabase = createClient()
-
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange(handleAuthChange)
-
-        return () => {
-            subscription.unsubscribe()
-        }
-    }, [handleAuthChange])
+        // Note: We don't redirect on sign out - the component that called signOut handles it
+    }, [isAuthenticated, pathname, safeRefresh])
 
     return null
 }

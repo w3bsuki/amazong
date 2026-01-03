@@ -1,10 +1,10 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, Suspense, type ReactNode } from "react"
+import { createContext, useContext, useEffect, useState, Suspense, useRef, type ReactNode } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { PostSignupOnboardingModal } from "@/components/auth/post-signup-onboarding-modal"
 import { useParams, useSearchParams } from "next/navigation"
-import type { User } from "@supabase/supabase-js"
+import { useAuthOptional } from "./auth-state-manager"
 
 interface OnboardingContextValue {
   showOnboarding: () => void
@@ -34,6 +34,7 @@ interface ProfileData {
   username: string | null
   display_name: string | null
   onboarding_completed: boolean | null
+  account_type: "personal" | "business"
 }
 
 // Type for raw profile data from Supabase (may not have full type info)
@@ -41,38 +42,49 @@ interface RawProfileData {
   username?: string | null
   display_name?: string | null
   onboarding_completed?: boolean | null
+  account_type?: string | null
 }
 
 // Inner component that uses useSearchParams (requires Suspense)
 function OnboardingProviderInner({ children, locale: propLocale }: OnboardingProviderProps) {
   const params = useParams()
   const searchParams = useSearchParams()
+  const auth = useAuthOptional()
   const locale = propLocale ?? (typeof params?.locale === "string" ? params.locale : "en")
   
-  const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<ProfileData | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [_isChecking, setIsChecking] = useState(true)
+  const hasCheckedRef = useRef<string | null>(null)
 
-  // Check if we should show onboarding on initial load
+  // Get user from auth context
+  const user = auth?.user ?? null
+  const authLoading = auth?.isLoading ?? true
+
+  // Check if we should show onboarding when user changes
   useEffect(() => {
-    const checkOnboarding = async () => {
-      const supabase = createClient()
-      
-      // Get current user
-      const { data: { user: currentUser } } = await supabase.auth.getUser()
-      setUser(currentUser)
+    if (authLoading) return // Wait for auth to settle
 
-      if (!currentUser) {
+    const checkOnboarding = async () => {
+      if (!user) {
+        setProfile(null)
+        setIsModalOpen(false)
+        hasCheckedRef.current = null
         setIsChecking(false)
         return
       }
 
+      // Already checked for this user
+      if (hasCheckedRef.current === user.id) return
+      hasCheckedRef.current = user.id
+
+      const supabase = createClient()
+
       // Get profile - cast to unknown first for type safety
       const { data: rawProfile } = await supabase
         .from("profiles")
-        .select("username, display_name, onboarding_completed")
-        .eq("id", currentUser.id)
+        .select("username, display_name, onboarding_completed, account_type")
+        .eq("id", user.id)
         .single()
 
       const profileData = rawProfile as RawProfileData | null
@@ -82,6 +94,7 @@ function OnboardingProviderInner({ children, locale: propLocale }: OnboardingPro
           username: profileData.username ?? null,
           display_name: profileData.display_name ?? null,
           onboarding_completed: profileData.onboarding_completed ?? null,
+          account_type: (profileData.account_type as "personal" | "business") ?? "personal",
         })
 
         // Check if onboarding is needed
@@ -100,45 +113,7 @@ function OnboardingProviderInner({ children, locale: propLocale }: OnboardingPro
     }
 
     checkOnboarding()
-
-    // Listen for auth state changes
-    const supabase = createClient()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session?.user) {
-        setUser(session.user)
-        
-        // Re-fetch profile
-        const { data: rawProfile } = await supabase
-          .from("profiles")
-          .select("username, display_name, onboarding_completed")
-          .eq("id", session.user.id)
-          .single()
-
-        const profileData = rawProfile as RawProfileData | null
-
-        if (profileData) {
-          setProfile({
-            username: profileData.username ?? null,
-            display_name: profileData.display_name ?? null,
-            onboarding_completed: profileData.onboarding_completed ?? null,
-          })
-
-          // Check if new sign-in needs onboarding
-          if (!profileData.onboarding_completed && profileData.username) {
-            setTimeout(() => setIsModalOpen(true), 500)
-          }
-        }
-      } else if (event === "SIGNED_OUT") {
-        setUser(null)
-        setProfile(null)
-        setIsModalOpen(false)
-      }
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [searchParams])
+  }, [user, authLoading, searchParams])
 
   const showOnboarding = () => setIsModalOpen(true)
   const hideOnboarding = () => setIsModalOpen(false)
@@ -163,6 +138,7 @@ function OnboardingProviderInner({ children, locale: propLocale }: OnboardingPro
           userId={user.id}
           username={profile.username}
           displayName={profile.display_name}
+          accountType={profile.account_type}
           locale={locale}
         />
       )}

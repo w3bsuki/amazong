@@ -4,12 +4,44 @@ import { redirect } from "next/navigation"
 import { headers } from "next/headers"
 import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { loginSchema, signUpSchema } from "@/lib/validations/auth"
+import { logger } from "@/lib/logger"
 import { z } from "zod"
 
 export type AuthActionState = {
   error?: string
   fieldErrors?: Record<string, string>
   success?: boolean
+}
+
+/**
+ * Sanitize Supabase auth errors to prevent information leakage.
+ * Maps internal error messages to generic user-friendly messages.
+ */
+function sanitizeAuthError(error: Error | { message: string }): string {
+  const msg = error.message.toLowerCase()
+
+  if (msg.includes("invalid login credentials")) {
+    return "Invalid email or password"
+  }
+  if (msg.includes("email not confirmed")) {
+    return "Please verify your email before signing in"
+  }
+  if (msg.includes("rate limit") || msg.includes("too many requests")) {
+    return "Too many attempts. Please try again later."
+  }
+  if (msg.includes("user already registered") || msg.includes("already been registered")) {
+    return "An account with this email may already exist. Try signing in or resetting your password."
+  }
+  if (msg.includes("password")) {
+    return error.message // Password-specific errors are safe to show
+  }
+  if (msg.includes("network") || msg.includes("timeout") || msg.includes("fetch")) {
+    return "Connection error. Please check your internet and try again."
+  }
+
+  // Log unexpected errors for debugging but return generic message
+  logger.error("[Auth] Unexpected error", error, { originalMessage: error.message })
+  return "An error occurred. Please try again."
 }
 
 async function getSiteUrlFromHeaders(): Promise<string | null> {
@@ -124,7 +156,7 @@ export async function login(
   })
 
   if (error) {
-    return { ...prevState, error: error.message, success: false }
+    return { ...prevState, error: sanitizeAuthError(error), success: false }
   }
 
   const safe = safeRedirectPath(redirectPath) || "/"
@@ -167,7 +199,9 @@ export async function signUp(
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${siteUrl}/auth/confirm`,
+      // Include locale/next as query params so the non-locale /auth/confirm route
+      // can redirect users back into the correct locale after verification.
+      emailRedirectTo: `${siteUrl}/auth/confirm?locale=${encodeURIComponent(locale)}&next=${encodeURIComponent("/")}`,
       data: {
         full_name: parsed.data.name,
         username: usernameLower,
@@ -176,9 +210,15 @@ export async function signUp(
     },
   })
 
+  // Handle Supabase edge cases for existing users
   if (error) {
-    return { ...prevState, error: error.message, success: false }
+    return { ...prevState, error: sanitizeAuthError(error), success: false }
   }
+
+  // IMPORTANT: Supabase intentionally avoids revealing whether an email is registered.
+  // For existing emails, signUp may succeed but return null user/session and send no email.
+  // We always redirect to a neutral success page that instructs users to check email or sign in.
+  void authData
 
   // NOTE: Do not use a service-role client here.
   // The profile trigger should hydrate initial profile fields from auth metadata.
@@ -207,43 +247,8 @@ export async function requestPasswordReset(
   })
 
   if (error) {
-    return { ...prevState, error: error.message, success: false }
+    return { ...prevState, error: sanitizeAuthError(error), success: false }
   }
 
   return { success: true }
-}
-
-async function resetPassword(
-  locale: string,
-  prevState: AuthActionState,
-  formData: FormData
-): Promise<AuthActionState> {
-  const parsed = resetPasswordSchema.safeParse({
-    password: formData.get("password"),
-    confirmPassword: formData.get("confirmPassword"),
-  })
-
-  if (!parsed.success) {
-    const fieldErrors: Record<string, string> = {}
-    for (const issue of parsed.error.issues) {
-      const key = issue.path[0]
-      if (typeof key === "string") fieldErrors[key] = issue.message
-    }
-    return { fieldErrors, success: false }
-  }
-
-  const supabase = await createClient()
-  const { data: userData } = await supabase.auth.getUser()
-
-  if (!userData.user) {
-    return { ...prevState, error: "Your reset session has expired. Please request a new link.", success: false }
-  }
-
-  const { error } = await supabase.auth.updateUser({ password: parsed.data.password })
-
-  if (error) {
-    return { ...prevState, error: error.message, success: false }
-  }
-
-  redirect(withLocalePrefix(locale, "/auth/login"))
 }

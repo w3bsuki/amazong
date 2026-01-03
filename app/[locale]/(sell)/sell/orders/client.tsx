@@ -13,7 +13,7 @@ import { OrderStatusActions } from "@/components/orders/order-status-actions"
 import { SellerRateBuyerActions } from "@/components/seller/seller-rate-buyer-actions"
 import { getSellerOrders, getSellerOrderStats, getOrderConversation, type OrderItem } from "@/app/actions/orders"
 import { type OrderItemStatus } from "@/lib/order-status"
-import { cn } from "@/lib/utils"
+import { cn, safeAvatarSrc } from "@/lib/utils"
 import { formatDistanceToNow } from "date-fns"
 
 interface SellerOrdersClientProps {
@@ -223,7 +223,7 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                             {item.buyer && (
                               <div className="flex items-center gap-2 mb-3 text-sm">
                                 <Avatar className="h-6 w-6">
-                                  <AvatarImage src={item.buyer.avatar_url || undefined} />
+                                  <AvatarImage src={safeAvatarSrc(item.buyer.avatar_url)} />
                                   <AvatarFallback>
                                     {item.buyer.full_name?.charAt(0) || 'U'}
                                   </AvatarFallback>

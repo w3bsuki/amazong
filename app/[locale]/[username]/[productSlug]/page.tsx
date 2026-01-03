@@ -14,6 +14,23 @@ import {
   buildProductPageViewModel,
   isUuid,
 } from "@/lib/view-models/product-page"
+import { routing } from "@/i18n/routing"
+
+// =============================================================================
+// ISR OPTIMIZATION - Prevent cache explosion
+// =============================================================================
+// generateStaticParams returns placeholder only - products are rendered on-demand
+// This prevents ISR write explosion from pre-generating all product URLs
+// Note: dynamicParams is not compatible with cacheComponents in Next.js 16
+
+export function generateStaticParams() {
+  // Only generate locale variants with placeholder - actual products are dynamic
+  return routing.locales.map((locale) => ({ 
+    locale, 
+    username: '__placeholder__',
+    productSlug: '__placeholder__'
+  }))
+}
 
 interface ProductPageProps {
   params: Promise<{
@@ -47,6 +64,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const { username, productSlug, locale } = await params
   setRequestLocale(locale)
+
+  // Handle placeholder from generateStaticParams
+  if (username === '__placeholder__' || productSlug === '__placeholder__') {
+    notFound()
+  }
 
   const supabase = createStaticClient()
   if (!supabase) notFound()

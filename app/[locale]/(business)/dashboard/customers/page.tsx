@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { safeAvatarSrc } from "@/lib/utils"
 import {
   Table,
   TableBody,
@@ -181,7 +182,7 @@ export default async function BusinessCustomersPage() {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="size-8">
-                        <AvatarImage src={customer.avatar_url || undefined} />
+                        <AvatarImage src={safeAvatarSrc(customer.avatar_url)} />
                         <AvatarFallback className="text-xs">
                           {(customer.full_name || customer.email || "?").charAt(0).toUpperCase()}
                         </AvatarFallback>

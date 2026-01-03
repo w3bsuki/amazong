@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   return applyCookies(response)
 }
 
-// Also support GET for easier testing, but POST is preferred
 export async function GET(req: NextRequest) {
-  return POST(req)
+  // Avoid CSRF-able sign-out via cross-site GET. Only POST mutates session.
+  return NextResponse.redirect(new URL("/", req.url), { status: 302 })
 }

@@ -31,6 +31,7 @@ export function ConversationList({
   const {
     conversations,
     currentConversation,
+    currentUserId,
     isLoading,
     loadConversations,
     selectConversation,
@@ -46,21 +47,22 @@ export function ConversationList({
     let filtered = conversations
 
     // Apply filter type
-    if (filter !== "all") {
+    if (filter !== "all" && currentUserId) {
       filtered = filtered.filter((conv) => {
         switch (filter) {
-          case "unread":
-            // Show conversations with unread messages
-            return (
-              (conv.buyer_unread_count || 0) > 0 ||
-              (conv.seller_unread_count || 0) > 0
-            )
+          case "unread": {
+            // Show conversations with unread messages for current user
+            const isBuyer = conv.buyer_id === currentUserId
+            return isBuyer 
+              ? (conv.buyer_unread_count || 0) > 0
+              : (conv.seller_unread_count || 0) > 0
+          }
           case "buying":
-            // Show conversations where user is the buyer (has buyer field but not seller)
-            return conv.buyer && !conv.seller
+            // Show conversations where user is the buyer
+            return conv.buyer_id === currentUserId
           case "selling":
             // Show conversations where user is the seller
-            return conv.seller !== null && conv.seller !== undefined
+            return conv.seller_id === currentUserId
           default:
             return true
         }
@@ -71,15 +73,14 @@ export function ConversationList({
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter((conv) => {
-        const displayName =
-          conv.seller?.business_name ||
-          conv.seller?.profile?.full_name ||
-          conv.buyer?.full_name ||
-          ""
+        // Use new profile fields for search
+        const buyerName = conv.buyer_profile?.display_name || conv.buyer_profile?.full_name || conv.buyer?.full_name || ""
+        const sellerName = conv.seller_profile?.business_name || conv.seller_profile?.display_name || conv.seller_profile?.full_name || conv.seller?.business_name || ""
         const productTitle = conv.product?.title || ""
         const lastMessage = conv.last_message?.content || ""
         return (
-          displayName.toLowerCase().includes(query) ||
+          buyerName.toLowerCase().includes(query) ||
+          sellerName.toLowerCase().includes(query) ||
           productTitle.toLowerCase().includes(query) ||
           lastMessage.toLowerCase().includes(query)
         )
@@ -87,7 +88,7 @@ export function ConversationList({
     }
 
     return filtered
-  }, [conversations, searchQuery, filter])
+  }, [conversations, searchQuery, filter, currentUserId])
 
   const handleSelectConversation = async (conversationId: string) => {
     await selectConversation(conversationId)
@@ -145,6 +146,7 @@ export function ConversationList({
         <ConversationItem
           key={conversation.id}
           conversation={conversation}
+          currentUserId={currentUserId}
           isSelected={currentConversation?.id === conversation.id}
           onClick={() => handleSelectConversation(conversation.id)}
           locale={locale}
@@ -156,6 +158,7 @@ export function ConversationList({
 
 interface ConversationItemProps {
   conversation: Conversation
+  currentUserId: string | null
   isSelected: boolean
   onClick: () => void
   locale: string
@@ -163,6 +166,7 @@ interface ConversationItemProps {
 
 function ConversationItem({
   conversation,
+  currentUserId,
   isSelected,
   onClick,
   locale,
@@ -170,23 +174,41 @@ function ConversationItem({
   const t = useTranslations("Messages")
   const dateLocale = locale === "bg" ? bg : enUS
 
-  const otherParty = conversation.seller?.profile || conversation.buyer
-  const displayName =
-    conversation.seller?.business_name || otherParty?.full_name || t("unknownUser")
-  const avatarUrl = otherParty?.avatar_url
-  const initials = displayName
+  // Determine if current user is buyer or seller in this conversation
+  const isBuyer = currentUserId === conversation.buyer_id
+  
+  // Get the other party's profile using new structure
+  const otherProfile = isBuyer 
+    ? conversation.seller_profile 
+    : conversation.buyer_profile
+  
+  // Build display name from profile data
+  // Type guard for seller_profile which has business_name
+  const sellerProfile = conversation.seller_profile
+  const displayName = isBuyer
+    ? (sellerProfile?.business_name || otherProfile?.display_name || otherProfile?.full_name || conversation.seller?.business_name || t("unknownUser"))
+    : (otherProfile?.display_name || otherProfile?.full_name || conversation.buyer?.full_name || t("unknownUser"))
+  
+  // Get avatar URL from new profile structure with fallback
+  const avatarUrl = otherProfile?.avatar_url || 
+    (isBuyer ? conversation.seller?.profile?.avatar_url : conversation.buyer?.avatar_url)
+    
+  const initials = (displayName || "?")
     .split(" ")
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join("")
     .toUpperCase()
     .slice(0, 2)
 
-  const unreadCount = conversation.buyer_unread_count || conversation.seller_unread_count
+  // Get unread count for current user's side
+  const unreadCount = isBuyer 
+    ? (conversation.buyer_unread_count || 0)
+    : (conversation.seller_unread_count || 0)
   const hasUnread = unreadCount > 0
 
   const lastMessage = conversation.last_message
-  // Stub: Need to expose currentUserId from message-context to compare with last_message.sender_id
-  const isOwnMessage = false
+  // Check if last message was sent by current user
+  const isOwnMessage = lastMessage?.sender_id === currentUserId
 
   // Format last message preview
   let lastMessagePreview = ""

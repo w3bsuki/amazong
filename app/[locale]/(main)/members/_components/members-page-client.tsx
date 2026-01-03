@@ -26,6 +26,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { safeAvatarSrc } from "@/lib/utils"
 
 interface Member {
   id: string
@@ -65,7 +66,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
           <div className="flex items-start gap-3">
             <div className="relative">
               <Avatar className="size-14 border-2 border-background shadow">
-                <AvatarImage src={member.avatar_url ?? undefined} alt={displayName} />
+                <AvatarImage src={safeAvatarSrc(member.avatar_url)} alt={displayName} />
                 <AvatarFallback className="text-lg bg-primary/10 text-primary">{initials}</AvatarFallback>
               </Avatar>
               {(member.is_verified_business || member.verified) && (

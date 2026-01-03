@@ -1,7 +1,7 @@
 import { Star, ShieldCheck, ChevronRight } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { cn, safeAvatarSrc } from "@/lib/utils";
 
 interface MobileSellerTrustLineProps {
   sellerName: string;
@@ -51,12 +51,12 @@ export function MobileSellerTrustLine({
   return (
     <Link
       href={href}
-      className="flex items-center gap-2.5 py-2.5 px-4 bg-seller-banner active:bg-seller-banner/90 group my-2"
+      className="flex items-center gap-2.5 py-2.5 px-3 bg-seller-banner group my-2"
     >
       {/* Avatar */}
-      <Avatar className="size-9 border-2 border-white/30 shrink-0">
-        <AvatarImage src={sellerAvatarUrl} alt={sellerName} />
-        <AvatarFallback className="text-xs font-medium bg-white/20 text-white">
+      <Avatar className="size-8 border-2 border-white/30 shrink-0">
+        <AvatarImage src={safeAvatarSrc(sellerAvatarUrl)} alt={sellerName} />
+        <AvatarFallback className="text-2xs font-medium bg-white/20 text-white">
           {sellerName.slice(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>

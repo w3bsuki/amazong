@@ -37,7 +37,7 @@ export function MobileProductHeader() {
 
   return (
     <>
-    <header className="fixed top-0 left-0 right-0 z-60 h-12 bg-brand flex items-center justify-between px-1 lg:hidden">
+    <header className="fixed top-0 left-0 right-0 z-60 h-12 bg-brand flex items-center justify-between px-2 lg:hidden">
       {/* Back button */}
       <Link 
         href="/" 
@@ -45,7 +45,7 @@ export function MobileProductHeader() {
         aria-label={labels.back} 
         title={labels.back}
       >
-        <ArrowLeft className="size-5" aria-hidden="true" />
+        <ArrowLeft className="size-6" aria-hidden="true" />
       </Link>
       
       {/* Action buttons */}
@@ -58,7 +58,7 @@ export function MobileProductHeader() {
           title={labels.search}
           onClick={() => setIsSearchOpen(true)}
         >
-          <Search className="size-5" aria-hidden="true" />
+          <Search className="size-6" aria-hidden="true" />
         </Button>
         <Button
           variant="ghost"
@@ -68,7 +68,7 @@ export function MobileProductHeader() {
           title={labels.share}
           onClick={handleShare}
         >
-          <Share2 className="size-5" aria-hidden="true" />
+          <Share2 className="size-6" aria-hidden="true" />
         </Button>
         <Button
           variant="ghost"
@@ -77,7 +77,7 @@ export function MobileProductHeader() {
           aria-label={labels.wishlist}
           title={labels.wishlist}
         >
-          <Heart className="size-5" aria-hidden="true" />
+          <Heart className="size-6" aria-hidden="true" />
         </Button>
         <Link
           href="/cart"
@@ -85,7 +85,7 @@ export function MobileProductHeader() {
           aria-label={labels.cart}
           title={labels.cart}
         >
-          <ShoppingCart className="size-5" aria-hidden="true" />
+          <ShoppingCart className="size-6" aria-hidden="true" />
           {totalItems > 0 && (
             <Badge 
               aria-hidden="true" 

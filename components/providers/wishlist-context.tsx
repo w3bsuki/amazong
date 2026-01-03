@@ -1,9 +1,10 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useState, useEffect, useCallback, useOptimistic } from "react"
+import { createContext, useContext, useState, useEffect, useCallback, useOptimistic, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { useAuth } from "./auth-state-manager"
 
 // Detect locale from cookie (same pattern as Next-intl)
 function getLocale(): "en" | "bg" {
@@ -59,9 +60,10 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined)
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
+  const { user, isLoading: authLoading } = useAuth()
   const [items, setItems] = useState<WishlistItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [userId, setUserId] = useState<string | null>(null)
+  const hasSyncedRef = useRef<string | null>(null)
 
   // useOptimistic for instant heart toggle feedback
   type OptimisticAction = 
@@ -89,18 +91,14 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   )
 
   const refreshWishlist = useCallback(async () => {
+    if (!user) {
+      setItems([])
+      setIsLoading(false)
+      return
+    }
+
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (!user) {
-        setItems([])
-        setUserId(null)
-        setIsLoading(false)
-        return
-      }
-
-      setUserId(user.id)
 
       // Best-effort cleanup: if a product is sold/out_of_stock for > 1 day,
       // remove it from the wishlist server-side.
@@ -164,35 +162,26 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [user])
 
-  // Load wishlist on mount and auth state change
+  // Sync with server when auth state settles
   useEffect(() => {
-    refreshWishlist()
+    if (authLoading) return // Wait for auth to settle
 
-    const supabase = createClient()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Handle SIGNED_OUT immediately without waiting for getUser()
-      if (event === 'SIGNED_OUT') {
-        setItems([])
-        setUserId(null)
-        setIsLoading(false)
-        return
-      }
-      
-      // For SIGNED_IN, we can get the user directly from the session
-      if (event === 'SIGNED_IN' && session?.user) {
-        setUserId(session.user.id)
-      }
-      
-      // Refresh wishlist for all other events
-      refreshWishlist()
-    })
-
-    return () => {
-      subscription.unsubscribe()
+    if (!user) {
+      // User logged out - clear wishlist
+      setItems([])
+      hasSyncedRef.current = null
+      setIsLoading(false)
+      return
     }
-  }, [refreshWishlist])
+
+    // Already synced for this user
+    if (hasSyncedRef.current === user.id) return
+    hasSyncedRef.current = user.id
+
+    refreshWishlist()
+  }, [user, authLoading, refreshWishlist])
 
   const isInWishlist = useCallback((productId: string) => {
     return optimisticItems.some(item => item.product_id === productId)
@@ -202,7 +191,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     const locale = getLocale()
     const t = messages[locale]
     
-    if (!userId) {
+    if (!user?.id) {
       toast.error(t.signInRequired, {
         action: {
           label: locale === "bg" ? "Вход" : "Sign In",
@@ -223,7 +212,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase
         .from("wishlists")
         .insert({
-          user_id: userId,
+          user_id: user.id,
           product_id: product.id,
         })
         .select("id, created_at")
@@ -257,7 +246,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const removeFromWishlist = async (productId: string) => {
     const t = messages[getLocale()]
     
-    if (!userId) return
+    if (!user?.id) return
 
     // Apply optimistic update BEFORE server call for instant feedback
     applyOptimistic({ type: "remove", productId })
@@ -267,7 +256,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase
         .from("wishlists")
         .delete()
-        .eq("user_id", userId)
+        .eq("user_id", user.id)
         .eq("product_id", productId)
 
       if (error) {
