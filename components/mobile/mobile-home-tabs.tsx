@@ -667,74 +667,137 @@ export function MobileHomeTabs({
             className="relative flex items-center gap-3 overflow-x-auto no-scrollbar px-(--page-inset)"
             role="tablist"
           >
-            {/* "All" Tab */}
-            <button
-              type="button"
-              role="tab"
-              data-tab="all"
-              onClick={() => handleTabChange("all")}
-              aria-selected={activeTab === "all"}
-              className={cn(
-                "shrink-0 py-3 text-sm relative",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-                "transition-colors",
-                activeTab === "all"
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {/* Zero-layout-shift technique: invisible bold text reserves width */}
-              <span className="relative inline-flex flex-col items-center">
-                <span className={cn(
-                  "transition-[font-weight] duration-100",
-                  activeTab === "all" ? "font-bold" : "font-medium"
-                )}>
-                  {locale === "bg" ? "Всички" : "All"}
-                </span>
-                <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
-                  {locale === "bg" ? "Всички" : "All"}
-                </span>
-                {activeTab === "all" && (
-                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
-                )}
-              </span>
-            </button>
-
-            {/* Category Tabs */}
-            {displayCategories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
+            {/* "All" Tab - Use Link when navigating to pages for prefetch */}
+            {tabsNavigateToPages ? (
+              <Link
+                href="/categories"
                 role="tab"
-                data-tab={cat.slug}
-                onClick={() => handleTabChange(cat.slug)}
-                aria-selected={activeTab === cat.slug}
+                data-tab="all"
+                aria-selected={activeTab === "all"}
                 className={cn(
                   "shrink-0 py-3 text-sm relative",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   "transition-colors",
-                  activeTab === cat.slug
+                  activeTab === "all"
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                {/* Zero-layout-shift technique: invisible bold text reserves width */}
                 <span className="relative inline-flex flex-col items-center">
                   <span className={cn(
                     "transition-[font-weight] duration-100",
-                    activeTab === cat.slug ? "font-bold" : "font-medium"
+                    activeTab === "all" ? "font-bold" : "font-medium"
                   )}>
-                    {getCategoryName(cat, locale)}
+                    {locale === "bg" ? "Всички" : "All"}
                   </span>
                   <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
-                    {getCategoryName(cat, locale)}
+                    {locale === "bg" ? "Всички" : "All"}
                   </span>
-                  {activeTab === cat.slug && (
+                  {activeTab === "all" && (
+                    <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                  )}
+                </span>
+              </Link>
+            ) : (
+              <button
+                type="button"
+                role="tab"
+                data-tab="all"
+                onClick={() => handleTabChange("all")}
+                aria-selected={activeTab === "all"}
+                className={cn(
+                  "shrink-0 py-3 text-sm relative",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  "transition-colors",
+                  activeTab === "all"
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <span className="relative inline-flex flex-col items-center">
+                  <span className={cn(
+                    "transition-[font-weight] duration-100",
+                    activeTab === "all" ? "font-bold" : "font-medium"
+                  )}>
+                    {locale === "bg" ? "Всички" : "All"}
+                  </span>
+                  <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
+                    {locale === "bg" ? "Всички" : "All"}
+                  </span>
+                  {activeTab === "all" && (
                     <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
                   )}
                 </span>
               </button>
-            ))}
+            )}
+
+            {/* Category Tabs - Use Link when navigating to pages for prefetch */}
+            {displayCategories.map((cat) => 
+              tabsNavigateToPages ? (
+                <Link
+                  key={cat.id}
+                  href={`/categories/${cat.slug}`}
+                  role="tab"
+                  data-tab={cat.slug}
+                  aria-selected={activeTab === cat.slug}
+                  className={cn(
+                    "shrink-0 py-3 text-sm relative",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    "transition-colors",
+                    activeTab === cat.slug
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <span className="relative inline-flex flex-col items-center">
+                    <span className={cn(
+                      "transition-[font-weight] duration-100",
+                      activeTab === cat.slug ? "font-bold" : "font-medium"
+                    )}>
+                      {getCategoryName(cat, locale)}
+                    </span>
+                    <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
+                      {getCategoryName(cat, locale)}
+                    </span>
+                    {activeTab === cat.slug && (
+                      <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                    )}
+                  </span>
+                </Link>
+              ) : (
+                <button
+                  key={cat.id}
+                  type="button"
+                  role="tab"
+                  data-tab={cat.slug}
+                  onClick={() => handleTabChange(cat.slug)}
+                  aria-selected={activeTab === cat.slug}
+                  className={cn(
+                    "shrink-0 py-3 text-sm relative",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    "transition-colors",
+                    activeTab === cat.slug
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <span className="relative inline-flex flex-col items-center">
+                    <span className={cn(
+                      "transition-[font-weight] duration-100",
+                      activeTab === cat.slug ? "font-bold" : "font-medium"
+                    )}>
+                      {getCategoryName(cat, locale)}
+                    </span>
+                    <span className="font-bold invisible h-0 overflow-hidden" aria-hidden="true">
+                      {getCategoryName(cat, locale)}
+                    </span>
+                    {activeTab === cat.slug && (
+                      <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
+                    )}
+                  </span>
+                </button>
+              )
+            )}
           </div>
         </div>
       )}
@@ -752,46 +815,87 @@ export function MobileHomeTabs({
             className="flex items-center gap-1.5 overflow-x-auto no-scrollbar px-(--page-inset) py-2"
             role="tablist"
           >
-            {/* "All" Pill */}
-            <button
-              type="button"
-              role="tab"
-              data-tab="all"
-              onClick={() => handleTabChange("all")}
-              aria-selected={activeTab === "all"}
-              className={cn(
-                "shrink-0 h-7 px-3 text-xs font-medium rounded-full whitespace-nowrap",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                "transition-colors",
-                activeTab === "all"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              {locale === "bg" ? "Всички" : "All"}
-            </button>
-
-            {/* Category Pills */}
-            {displayCategories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
+            {/* "All" Pill - Use Link when navigating to pages for prefetch */}
+            {tabsNavigateToPages ? (
+              <Link
+                href="/categories"
                 role="tab"
-                data-tab={cat.slug}
-                onClick={() => handleTabChange(cat.slug)}
-                aria-selected={activeTab === cat.slug}
+                data-tab="all"
+                aria-selected={activeTab === "all"}
                 className={cn(
                   "shrink-0 h-7 px-3 text-xs font-medium rounded-full whitespace-nowrap",
+                  "flex items-center justify-center",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                   "transition-colors",
-                  activeTab === cat.slug
+                  activeTab === "all"
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
-                {getCategoryName(cat, locale)}
+                {locale === "bg" ? "Всички" : "All"}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                role="tab"
+                data-tab="all"
+                onClick={() => handleTabChange("all")}
+                aria-selected={activeTab === "all"}
+                className={cn(
+                  "shrink-0 h-7 px-3 text-xs font-medium rounded-full whitespace-nowrap",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                  "transition-colors",
+                  activeTab === "all"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                {locale === "bg" ? "Всички" : "All"}
               </button>
-            ))}
+            )}
+
+            {/* Category Pills - Use Link when navigating to pages for prefetch */}
+            {displayCategories.map((cat) =>
+              tabsNavigateToPages ? (
+                <Link
+                  key={cat.id}
+                  href={`/categories/${cat.slug}`}
+                  role="tab"
+                  data-tab={cat.slug}
+                  aria-selected={activeTab === cat.slug}
+                  className={cn(
+                    "shrink-0 h-7 px-3 text-xs font-medium rounded-full whitespace-nowrap",
+                    "flex items-center justify-center",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                    "transition-colors",
+                    activeTab === cat.slug
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  {getCategoryName(cat, locale)}
+                </Link>
+              ) : (
+                <button
+                  key={cat.id}
+                  type="button"
+                  role="tab"
+                  data-tab={cat.slug}
+                  onClick={() => handleTabChange(cat.slug)}
+                  aria-selected={activeTab === cat.slug}
+                  className={cn(
+                    "shrink-0 h-7 px-3 text-xs font-medium rounded-full whitespace-nowrap",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                    "transition-colors",
+                    activeTab === cat.slug
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  {getCategoryName(cat, locale)}
+                </button>
+              )
+            )}
           </div>
         </div>
       )}

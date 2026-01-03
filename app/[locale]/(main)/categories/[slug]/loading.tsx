@@ -3,7 +3,52 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function CategorySlugLoading() {
   return (
     <div className="min-h-screen bg-background">
-      <div className="container px-2 sm:px-4 py-1">
+      {/* MOBILE Loading State */}
+      <div className="lg:hidden">
+        {/* Pills/Tabs skeleton */}
+        <div className="sticky top-0 z-30 bg-background border-b border-border/40">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar px-4 py-2">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Skeleton key={i} className="shrink-0 h-7 w-20 rounded-full" />
+            ))}
+          </div>
+        </div>
+        
+        {/* Subcategory circles skeleton */}
+        <div className="px-4 py-3">
+          <div className="flex gap-3 overflow-x-auto no-scrollbar">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex flex-col items-center gap-1.5 shrink-0">
+                <Skeleton className="size-14 rounded-full" />
+                <Skeleton className="h-3 w-12" />
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Filter/Sort row skeleton */}
+        <div className="px-4 py-2 flex items-center gap-2">
+          <Skeleton className="h-9 w-24 rounded-lg" />
+          <Skeleton className="h-9 w-32 rounded-lg" />
+          <div className="ml-auto">
+            <Skeleton className="h-5 w-12" />
+          </div>
+        </div>
+        
+        {/* Product grid skeleton */}
+        <div className="px-4 grid grid-cols-2 gap-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="aspect-square w-full rounded-lg" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* DESKTOP Loading State */}
+      <div className="hidden lg:block container px-2 sm:px-4 py-1">
         <div className="flex gap-0">
           {/* Sidebar Filters - Desktop Only */}
           <aside className="w-56 hidden lg:block shrink-0 border-r border-border">

@@ -158,24 +158,21 @@ export default async function CategoryPage({
   // ============================================================================
   // PHASE 2: Use cached data fetching functions (Next.js 16+ 'use cache' pattern)
   // These functions use cacheTag and cacheLife for granular cache invalidation
+  // PARALLEL FETCH for faster page load
   // ============================================================================
 
-  // Fetch category context (current, parent, siblings, children, attributes) - CACHED
-  const categoryContext = await getCategoryContext(slug)
+  // Fetch category context AND root categories in parallel
+  const [categoryContext, allCategoriesWithSubs] = await Promise.all([
+    getCategoryContext(slug),
+    getRootCategoriesWithChildren(),
+  ])
 
   if (!categoryContext) {
     notFound()
   }
 
   const { current: currentCategory, parent: parentCategory, children: subcategories } = categoryContext
-
-  // Fetch ALL categories for the sidebar - use cached function
-  const allCategoriesWithSubs = await getRootCategoriesWithChildren()
   const allCategories = allCategoriesWithSubs.map(c => c.category)
-
-  // Products still use direct Supabase query (dynamic, user-specific filters)
-  let products: Product[] = []
-  let totalProducts = 0
 
   // Get products from this category AND all its subcategories
   const categoryIds = [currentCategory.id, ...subcategories.map(s => s.id)]
@@ -189,17 +186,29 @@ export default async function CategoryPage({
     }
   }
 
-  const result = await searchProducts(supabase, categoryIds, {
-    minPrice: searchParams.minPrice,
-    maxPrice: searchParams.maxPrice,
-    tag: searchParams.tag,
-    minRating: searchParams.minRating,
-    availability: searchParams.availability,
-    sort: searchParams.sort,
-    attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
-  }, currentPage, ITEMS_PER_PAGE, shippingFilter)
-  products = result.products
-  totalProducts = result.total
+  // ==========================================================================
+  // PARALLEL FETCH: Get products, mobile data, and translations at once
+  // This significantly speeds up page load by avoiding sequential awaits
+  // ==========================================================================
+  const [result, ancestry, categoriesWithChildren, newestProducts, t] = await Promise.all([
+    searchProducts(supabase, categoryIds, {
+      minPrice: searchParams.minPrice,
+      maxPrice: searchParams.maxPrice,
+      tag: searchParams.tag,
+      minRating: searchParams.minRating,
+      availability: searchParams.availability,
+      sort: searchParams.sort,
+      attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
+    }, currentPage, ITEMS_PER_PAGE, shippingFilter),
+    getCategoryAncestry(slug),
+    getCategoryHierarchy(null, 2),
+    getNewestProducts(12),
+    getTranslations('SearchFilters'),
+  ])
+
+  const products = result.products
+  const totalProducts = result.total
+  const mobileInitialProducts = newestProducts.map(p => toUI(p))
 
   const categoryName = locale === 'bg' && currentCategory.name_bg
     ? currentCategory.name_bg
@@ -207,25 +216,6 @@ export default async function CategoryPage({
 
   // Extract filterable attributes for the filter toolbar
   const filterableAttributes = categoryContext.attributes.filter(attr => attr.is_filterable)
-
-  // Get translations for category page UI
-  const t = await getTranslations('SearchFilters')
-
-  // ==========================================================================
-  // MOBILE: Use MobileHomeTabs with pre-selected category state
-  // This provides instant client-side navigation (no page reloads)
-  // ==========================================================================
-  
-  // Get category ancestry to determine L0, L1, L2, L3 levels
-  const ancestry = await getCategoryAncestry(slug)
-  
-  // Fetch category hierarchy for MobileHomeTabs (L0→L1→L2 only, ~60KB)
-  // L3 categories are lazy-loaded when L2 is clicked
-  const categoriesWithChildren = await getCategoryHierarchy(null, 2)
-  
-  // Get initial products for MobileHomeTabs
-  const newestProducts = await getNewestProducts(12)
-  const mobileInitialProducts = newestProducts.map(p => toUI(p))
   
   // Map ancestry to tab state: [L0, L1?, L2?, L3?]
   // L0 = activeTab (defaultTab)
