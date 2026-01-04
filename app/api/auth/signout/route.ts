@@ -1,5 +1,4 @@
 import { createRouteHandlerClient } from "@/lib/supabase/server"
-import { revalidatePath } from "next/cache"
 import { type NextRequest, NextResponse } from "next/server"
 
 /**
@@ -22,9 +21,6 @@ export async function POST(req: NextRequest) {
   if (user) {
     await supabase.auth.signOut()
   }
-
-  // Revalidate the entire layout to ensure fresh data
-  revalidatePath("/", "layout")
 
   // Redirect to homepage after sign-out
   const response = NextResponse.redirect(new URL("/", req.url), {

@@ -1,6 +1,10 @@
+import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig(async () => {
+  const projectRoot = dirname(fileURLToPath(import.meta.url))
+
   // Vitest may load config in a CJS context, and these plugins are ESM-only.
   // Dynamic import works in both environments.
   const [{ default: react }, { default: tsconfigPaths }] = await Promise.all([
@@ -10,6 +14,11 @@ export default defineConfig(async () => {
 
   return {
     plugins: [tsconfigPaths(), react()],
+    resolve: {
+      alias: {
+        '@': projectRoot,
+      },
+    },
     test: {
       environment: 'jsdom',
       setupFiles: ['./test/setup.ts'],

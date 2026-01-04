@@ -20,7 +20,7 @@ export async function searchProducts(
   let dbQuery = supabase
     .from("products")
     .select(
-      "*, profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business), attributes, categories(slug)"
+      "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,attributes,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),categories:categories!products_category_id_fkey(slug)"
     )
 
   if (shippingFilter) {

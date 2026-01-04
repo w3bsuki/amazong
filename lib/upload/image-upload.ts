@@ -106,6 +106,9 @@ export async function handleImageUpload(
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('product-images')
       .upload(fileName, webpBuffer, {
+        // Files are content-addressed by a unique name (timestamp+random) and never mutated.
+        // Cache aggressively at the CDN to reduce repeat egress.
+        cacheControl: '31536000',
         contentType: 'image/webp',
         upsert: false,
       })
@@ -139,6 +142,7 @@ export async function handleImageUpload(
       const { error: thumbError } = await supabase.storage
         .from('product-images')
         .upload(thumbnailName, thumbnailBuffer, {
+          cacheControl: '31536000',
           contentType: 'image/webp',
           upsert: false,
         })

@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, Suspense, useRef, type ReactNode } from "react"
+import { createContext, useEffect, useState, Suspense, useRef, type ReactNode } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { PostSignupOnboardingModal } from "@/components/auth/post-signup-onboarding-modal"
 import { useParams, useSearchParams } from "next/navigation"
@@ -12,18 +12,6 @@ interface OnboardingContextValue {
 }
 
 const OnboardingContext = createContext<OnboardingContextValue | null>(null)
-
-export function useOnboarding() {
-  const context = useContext(OnboardingContext)
-  if (!context) {
-    // Return a no-op implementation when used outside provider (e.g., in non-main layouts)
-    return {
-      showOnboarding: () => {},
-      hideOnboarding: () => {},
-    }
-  }
-  return context
-}
 
 interface OnboardingProviderProps {
   children: ReactNode

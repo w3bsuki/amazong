@@ -51,18 +51,9 @@ interface CategoryWithChildren {
 function buildCategoryTree(rows: CategoryHierarchyRow[]): CategoryWithChildren[] {
   const categoryMap = new Map<string, CategoryWithChildren>()
   const rootCategories: CategoryWithChildren[] = []
-
-  const isDev = process.env.NODE_ENV !== "production"
-  if (isDev) console.log(`[buildCategoryTree] Input rows: ${rows.length}`)
   
   // Filter out deprecated categories (display_order >= 9000)
   const activeRows = rows.filter(row => (row.display_order ?? 0) < 9000)
-  
-  if (isDev) console.log(`[buildCategoryTree] Active rows after filter: ${activeRows.length}`)
-  
-  // Log root categories before building tree
-  const rootRowsBefore = activeRows.filter(r => r.depth === 0)
-  if (isDev) console.log(`[buildCategoryTree] Root rows (depth=0): ${rootRowsBefore.length}`)
 
   // First pass: create all category objects
   for (const row of activeRows) {

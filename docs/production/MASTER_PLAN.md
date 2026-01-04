@@ -1,22 +1,46 @@
 # 🚀 Production Master Plan
 
 > **Goal:** Ship a clean, production-ready Bulgarian marketplace  
-> **Target:** amazong.bg  
+> **Target:** treido.eu  
 > **Launch:** ASAP after completing this checklist  
-> **Last Updated:** December 27, 2025
+> **Last Updated:** January 4, 2026
+
+## 📦 Tech Stack (Current Versions)
+
+| Package | Version | Status |
+|---------|---------|--------|
+| Next.js | 16.0.7 | ✅ Latest |
+| React | 19.2.1 | ✅ Latest |
+| Tailwind CSS | 4.1.17 | ✅ v4 CSS-first |
+| @supabase/ssr | 0.8.0 | ✅ Latest |
+| next-intl | 4.5.5 | ✅ Latest |
+| shadcn/ui | New York style | ✅ Configured |
 
 ---
 
-## 📊 Current State (Verified)
+## 📊 Current State (Verified January 2026)
 
 | Check | Status | Notes |
 |-------|--------|-------|
 | `pnpm lint` | ✅ | Zero errors |
 | `pnpm typecheck` | ✅ | Zero errors |
 | `pnpm test:unit` | ✅ | 4/4 passing |
-| `pnpm test:e2e` | ⚠️ | 9/10 passing (1 skip) |
+| `pnpm test:e2e` | ⚠️ | 9/10 passing (1 Performance API issue) |
 | `pnpm build` | ✅ | Builds successfully |
-| Dev Server | ✅ | Responding on localhost:3000 (`/en` and `/bg` return 200; `/` should redirect to a locale) |
+| Dev Server | ✅ | `/en` and `/bg` return 200 |
+
+### Implementation Status Summary
+
+| Area | Status | Notes |
+|------|--------|-------|
+| **Next.js 16** | ✅ Implemented | Cache components, async params, proxy.ts |
+| **Supabase** | ✅ Implemented | SSR client, RLS optimized, getUser() in middleware |
+| **Tailwind v4** | ✅ Implemented | CSS-first config, OKLCH colors, custom tokens |
+| **shadcn/ui** | ✅ Implemented | 42+ components, New York style |
+| **i18n** | ✅ Complete | next-intl 4.x, EN/BG, locale routing |
+| **Testing** | ⚠️ Partial | Unit + E2E setup, needs coverage expansion |
+| **Security** | ✅ Implemented | RLS, auth validation, env separation |
+| **Performance** | ⚠️ Needs Audit | Config ready, needs Lighthouse verification |
 
 ---
 
@@ -24,66 +48,63 @@
 
 | # | Phase | File | Status | Priority | Est. Time |
 |---|-------|------|--------|----------|-----------|
-| 0 | File Cleanup | [00-file-cleanup.md](./00-file-cleanup.md) | ⬜ | 🔴 Critical | 2-3 hrs |
-| 1 | Next.js 16 | [01-nextjs.md](./01-nextjs.md) | ⬜ | 🔴 Critical | 2-4 hrs |
-| 2 | Supabase | [02-supabase.md](./02-supabase.md) | ⚠️ | 🔴 Critical | 2-4 hrs |
-| 3 | Tailwind v4 | [03-tailwind.md](./03-tailwind.md) | ⬜ | 🟡 Medium | 2-3 hrs |
-| 4 | shadcn/ui | [04-shadcn.md](./04-shadcn.md) | ⬜ | 🟡 Medium | 1-2 hrs |
+| 0 | File Cleanup | [00-file-cleanup.md](./00-file-cleanup.md) | ⚠️ Partial | 🟡 Medium | 1-2 hrs |
+| 1 | Next.js 16 | [01-nextjs.md](./01-nextjs.md) | ✅ Done | - | - |
+| 2 | Supabase | [02-supabase.md](./02-supabase.md) | ✅ Done | - | - |
+| 3 | Tailwind v4 | [03-tailwind.md](./03-tailwind.md) | ⚠️ Partial | 🟡 Medium | 2-3 hrs |
+| 4 | shadcn/ui | [04-shadcn.md](./04-shadcn.md) | ✅ Done | - | - |
 | 5 | i18n | [05-i18n.md](./05-i18n.md) | ✅ Done | - | - |
-| 6 | Testing | [06-testing.md](./06-testing.md) | ⬜ | 🟡 Medium | 2-3 hrs |
-| 7 | Performance | [07-performance.md](./07-performance.md) | ⬜ | 🔴 Critical | 2-3 hrs |
-| 8 | Security | [08-security.md](./08-security.md) | ⬜ | 🔴 Critical | 2-4 hrs |
-| 9 | Go-Live | [09-go-live.md](./09-go-live.md) | ⬜ | 🔴 Critical | 1-2 hrs |
+| 6 | Testing | [06-testing.md](./06-testing.md) | ⚠️ Partial | 🟡 Medium | 2-3 hrs |
+| 7 | Performance | [07-performance.md](./07-performance.md) | ⬜ Audit Needed | 🔴 Critical | 2-3 hrs |
+| 8 | Security | [08-security.md](./08-security.md) | ⚠️ Dashboard Action | 🔴 Critical | 1 hr |
+| 9 | Go-Live | [09-go-live.md](./09-go-live.md) | ⬜ Ready | 🔴 Critical | 2-4 hrs |
 
-**Total Estimated Time:** 15-25 hours
+**Remaining Work:** ~10-15 hours
+
+### What's Actually Left:
+
+1. **File Cleanup (Phase 0)** - Remove dead code, console.logs, duplicate configs
+2. **Tailwind Palette (Phase 3)** - Fix ~1000 hardcoded color violations
+3. **Testing Coverage (Phase 6)** - Fix E2E test, add more unit tests
+4. **Performance Audit (Phase 7)** - Run Lighthouse, verify metrics
+5. **Security Dashboard (Phase 8)** - Enable leaked password protection in Supabase
+6. **Go-Live (Phase 9)** - DNS, env vars, deploy
 
 ---
 
-## 🏃 Execution Order (Optimized)
+## 🏃 Execution Order (Updated)
 
-The phases are **dependency-ordered** - complete in this exact sequence:
+Since most tech stack phases are complete, focus on the remaining items:
 
-### Sprint 1: Tech Stack Audit (Day 1-2)
+### Sprint 1: Cleanup & Testing (Day 1)
 ```
-Phase 1 → Phase 2 → Phase 8
+Phase 0 → Phase 6
 ```
-1. **Phase 1 - Next.js 16** (2-4 hrs)  
-   Server/client boundaries, caching strategy, async params
+1. **Phase 0 - File Cleanup** (1-2 hrs)  
+   Remove dead files, console.logs, merge vitest configs
 
-2. **Phase 2 - Supabase** (2-4 hrs)  
-   Apply security fixes, optimize RLS policies, add indexes
+2. **Phase 6 - Testing** (2-3 hrs)  
+   Fix failing E2E test, add coverage thresholds
 
-3. **Phase 8 - Security** (2-4 hrs)  
-   RLS audit, auth validation, env var check - **DO BEFORE PUBLIC**
-
-> **Why tech stack first?** Refactoring reveals dead code. You'll discover what's actually used vs orphaned.
-
-### Sprint 2: Polish & Testing (Day 2-3)
+### Sprint 2: Performance & Security (Day 2)
 ```
-Phase 3 → Phase 4 → Phase 6
+Phase 7 → Phase 8
 ```
-4. **Phase 3 - Tailwind v4** (2-3 hrs)  
-   Fix palette violations, add semantic tokens
+3. **Phase 7 - Performance** (2-3 hrs)  
+   Run Lighthouse, verify Core Web Vitals, check bundle size
 
-5. **Phase 4 - shadcn/ui** (1-2 hrs)  
-   Update components, add accessibility fixes
+4. **Phase 8 - Security** (1 hr)  
+   Enable leaked password protection in Supabase Dashboard
 
-6. **Phase 6 - Testing** (2-3 hrs)  
-   Fix failing E2E test, add missing unit tests
-
-### Sprint 3: Cleanup & Launch (Day 3)
+### Sprint 3: Polish & Launch (Day 2-3)
 ```
-Phase 0 → Phase 7 → Phase 9
+Phase 3 → Phase 9
 ```
-7. **Phase 0 - File Cleanup** (30 min)  
-   Delete noise files, merge vitest configs, remove console.logs  
-   > **Now we know exactly what's dead code vs still needed**
+5. **Phase 3 - Tailwind** (2-3 hrs, optional)  
+   Fix palette violations in high-traffic components
 
-8. **Phase 7 - Performance** (2-3 hrs)  
-   Lighthouse audit, image optimization, bundle analysis
-
-9. **Phase 9 - Go-Live** (1-2 hrs)  
-   DNS, Vercel config, Supabase production, final checks
+6. **Phase 9 - Go-Live** (2-4 hrs)  
+   Configure Vercel, DNS, Supabase production, deploy
 
 ---
 
@@ -236,27 +257,31 @@ amazong/
 
 ## 📝 Phase Summaries
 
-### Phase 0: File Cleanup
+### Phase 0: File Cleanup ⚠️ Partial
 **Goal:** Remove noise before production  
+**Status:** Dead code identified, cleanup pending  
 **Key Actions:**
-- Delete `cleanup/` folder (superseded by `production/`)
-- Delete output files (`*-output.txt`, `*.json` reports)
-- Merge vitest configs (keep `.mts`, delete `.ts`)
+- Delete unused files (4 files from knip-report)
 - Remove development console.logs
-- Add `removeConsole` to next.config.ts
+- Merge vitest configs
+- Run `pnpm clean:artifacts`
 
-### Phase 1: Next.js 16
+### Phase 1: Next.js 16 ✅ Complete
 **Goal:** Best practices for server/client, caching  
-**Key Actions:**
-- Audit `"use client"` directives (push down)
-- Implement `'use cache'` with custom cacheLife profiles
-- Fix async `params` handling
-- Add `<Suspense>` boundaries for streaming
+**Status:** Implemented correctly
+- `cacheComponents: true` enabled
+- Custom `cacheLife` profiles configured
+- `proxy.ts` middleware with async params
+- Server/client boundaries correct
 
-### Phase 2: Supabase
+### Phase 2: Supabase ✅ Complete
 **Goal:** Secure, optimized database  
-**Key Actions:**
-- Fix `function_search_path_mutable` warning
+**Status:** All code fixes applied
+- ✅ Fixed `function_search_path_mutable` warning
+- ✅ Optimized RLS with `(select auth.uid())` pattern
+- ✅ Added `cart_items(product_id)` index
+- ✅ Removed duplicate wishlists index
+- ⚠️ **Dashboard action needed:** Enable leaked password protection
 - Enable leaked password protection
 - Optimize RLS with `(select auth.uid())` pattern
 - Add missing indexes (FK-covering indexes like `cart_items.product_id`)

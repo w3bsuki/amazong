@@ -88,7 +88,7 @@ export interface UIProduct {
   /** Root (L0) category slug (e.g. fashion, electronics, automotive) */
   categoryRootSlug?: string
   /** Category path from L0 -> leaf, includes both EN and BG labels */
-  categoryPath?: Array<{ slug: string; name: string; nameBg?: string | null; icon?: string | null }>
+  categoryPath?: { slug: string; name: string; nameBg?: string | null; icon?: string | null }[]
   slug?: string | null
   storeSlug?: string | null
   sellerId?: string | null
@@ -96,95 +96,60 @@ export interface UIProduct {
   sellerAvatarUrl?: string | null
   sellerTier?: 'basic' | 'premium' | 'business'
   sellerVerified?: boolean
-  /** Normalized item specifics / attributes for UI rendering */
+
   attributes?: Record<string, string>
-  /** Item condition (new, like-new, good, fair, poor) */
   condition?: string
-  /** Brand name */
   brand?: string
-  /** Vehicle/Product make (for automotive) */
   make?: string
-  /** Vehicle/Product model */
   model?: string
-  /** Year (for vehicles, electronics) */
   year?: string
-  /** Location (for real estate, services) */
   location?: string
 }
 
-/** Type for normalized category - self-referencing for parent chain */
-interface NormalizedCategory {
-  id?: string
-  slug?: string
-  name?: string
-  name_bg?: string | null
-  icon?: string | null
-  parent?: NormalizedCategory | null
-}
+function normalizeCategoryNode(input: unknown): Product['categories'] {
+  if (!input) return null
 
-function normalizeCategoryNode(
-  input: unknown
-): NormalizedCategory | null | undefined {
-  if (!input || typeof input !== 'object') return input as null | undefined
+  const node = Array.isArray(input) ? input[0] : input
+  if (!node || typeof node !== 'object') return null
 
-  // Supabase can return nested relations as arrays depending on FK metadata.
-  // Our UI expects a single parent chain, so we take the first item when arrays appear.
-  if (Array.isArray(input)) {
-    return normalizeCategoryNode(input[0])
+  const raw = node as Record<string, unknown>
+
+  const parent = raw.parent
+  const normalizedParent = parent ? normalizeCategoryNode(parent) : null
+
+  return {
+    ...(typeof raw.id === 'string' ? { id: raw.id } : {}),
+    ...(typeof raw.slug === 'string' ? { slug: raw.slug } : {}),
+    ...(typeof raw.name === 'string' ? { name: raw.name } : {}),
+    ...(typeof raw.name_bg === 'string' || raw.name_bg === null ? { name_bg: raw.name_bg as string | null } : {}),
+    ...(typeof raw.icon === 'string' || raw.icon === null ? { icon: raw.icon as string | null } : {}),
+    ...(normalizedParent ? { parent: normalizedParent } : {}),
   }
-
-  const node = input as Record<string, unknown>
-  const normalized: NormalizedCategory = {
-    parent: normalizeCategoryNode(node.parent) ?? null,
-    ...(typeof node.id === "string" ? { id: node.id } : {}),
-    ...(typeof node.slug === "string" ? { slug: node.slug } : {}),
-    ...(typeof node.name === "string" ? { name: node.name } : {}),
-    ...(
-      typeof node.name_bg === "string" || node.name_bg === null
-        ? { name_bg: node.name_bg as string | null }
-        : {}
-    ),
-    ...(
-      typeof node.icon === "string" || node.icon === null
-        ? { icon: node.icon as string | null }
-        : {}
-    ),
-  }
-
-  return normalized
 }
 
 function buildCategoryPath(
-  leaf: Product["categories"] | null | undefined
-): UIProduct["categoryPath"] {
+  leaf: Product['categories']
+): { slug: string; name: string; nameBg?: string | null; icon?: string | null }[] | undefined {
   if (!leaf) return undefined
-  const path: NonNullable<UIProduct["categoryPath"]> = []
-  const visited = new Set<string>()
 
-  // Normalize first to get proper typed parent chain
-  const normalizedLeaf = normalizeCategoryNode(leaf)
-  let node: NormalizedCategory | null | undefined = normalizedLeaf
-  while (node && typeof node === "object") {
-    const slug = node.slug
-    const name = node.name
-    if (!slug || !name) break
-    if (visited.has(slug)) break
-    visited.add(slug)
+  const out: { slug: string; name: string; nameBg?: string | null; icon?: string | null }[] = []
 
-    const cleanName = name.replace(/^\s*\[HIDDEN\]\s*/i, "").trim()
-    const cleanNameBg = (node.name_bg || "").replace(/^\s*\[HIDDEN\]\s*/i, "").trim()
-
-    path.unshift({
-      slug,
-      name: cleanName,
-      nameBg: cleanNameBg || null,
-      icon: node.icon ?? null,
-    })
-
-    node = node.parent
+  let current: Product['categories'] | null | undefined = leaf
+  // Guard against cycles / absurd depth.
+  for (let i = 0; i < 8 && current; i++) {
+    if (typeof current.slug === 'string' && typeof current.name === 'string') {
+      out.push({
+        slug: current.slug,
+        name: current.name,
+        ...(current.name_bg != null ? { nameBg: current.name_bg } : {}),
+        ...(current.icon != null ? { icon: current.icon } : {}),
+      })
+    }
+    current = (current.parent as Product['categories'] | null | undefined) ?? null
   }
 
-  return path.length ? path : undefined
+  out.reverse()
+  return out.length ? out : undefined
 }
 
 function normalizeAttributeKey(input: string): string {
@@ -263,7 +228,7 @@ export async function getProductsByCategorySlug(
   zone?: ShippingRegion
 ): Promise<Product[]> {
   'use cache'
-  cacheTag('products', `category:${categorySlug}`)
+  cacheTag('products:list', `products:category:${categorySlug}`, 'products', `category:${categorySlug}`)
   cacheLife('products')
 
   const supabase = createStaticClient()
@@ -274,7 +239,7 @@ export async function getProductsByCategorySlug(
   let query = supabase
     .from('products')
     .select(
-      'id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,avatar_url,tier), categories!inner(id,slug,name,name_bg,icon)'
+      'id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,avatar_url,tier), categories!inner(id,slug,name,name_bg,icon)'
     )
     .eq('categories.slug', categorySlug)
     .order('created_at', { ascending: false })
@@ -314,7 +279,7 @@ export async function getProductsByCategorySlug(
  */
 export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRegion): Promise<Product[]> {
   'use cache'
-  cacheTag('products', type)
+  cacheTag('products:list', `products:type:${type}`, 'products', type)
   cacheLife('products')
 
   const supabase = createStaticClient()
@@ -324,7 +289,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   // Use getCategoryPath() separately when breadcrumbs are needed.
   let query = supabase
     .from('products')
-    .select('id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), product_attributes(name,value), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,avatar_url,tier), categories(id,slug,name,name_bg,icon)')
+    .select('id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,avatar_url,tier), categories(id,slug,name,name_bg,icon)')
 
   // Apply shipping zone filter (WW = show all, so no filter)
   if (zone && zone !== 'WW') {
@@ -592,137 +557,6 @@ function toCarouselProducts(products: Product[], options?: { isBoosted?: boolean
       ...(ui.location ? { location: ui.location } : {}),
     }
   })
-}
-
-// =============================================================================
-// Feed Products - Server-side function for TabbedProductFeed initial data
-// =============================================================================
-
-export type FeedType = 
-  | 'all' 
-  | 'newest' 
-  | 'promoted' 
-  | 'deals' 
-  | 'top_rated' 
-  | 'best_sellers' 
-  | 'most_viewed' 
-  | 'price_low'
-
-export interface FeedResult {
-  products: UIProduct[]
-  hasMore: boolean
-  totalCount: number
-}
-
-/**
- * Server-side feed fetcher for initial page load.
- * Mirrors the API route logic but runs at build/request time.
- */
-export async function getFeedProducts(
-  type: FeedType = 'all',
-  options: {
-    limit?: number
-    page?: number
-    categorySlug?: string | null
-  } = {}
-): Promise<FeedResult> {
-  'use cache'
-  cacheTag('products', `feed-${type}`, options.categorySlug ? `category:${options.categorySlug}` : 'no-category')
-  cacheLife('products')
-
-  const { limit = 12, page = 1, categorySlug } = options
-  const offset = (page - 1) * limit
-  const nowIso = new Date().toISOString()
-
-  const supabase = createStaticClient()
-  if (!supabase) {
-    return { products: [], hasMore: false, totalCount: 0 }
-  }
-
-  let query = supabase
-    .from('products')
-    .select(`
-      id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date,
-      rating, review_count, images, 
-      product_images(image_url,thumbnail_url,display_order,is_primary),
-      product_attributes(name,value),
-      is_boosted, boost_expires_at, created_at, slug, attributes,
-      seller:profiles(id,username,avatar_url,tier),
-      categories!inner(id,slug,name,name_bg,icon)
-    `, { count: 'exact' })
-
-  // Apply category filter
-  if (categorySlug && categorySlug !== 'all') {
-    query = query.eq('categories.slug', categorySlug)
-  }
-
-  // Apply type-specific filters
-  switch (type) {
-    case 'promoted':
-      query = query.eq('is_boosted', true)
-      query = query.order('created_at', { ascending: false })
-      break
-
-    case 'deals':
-      query = query
-        .eq('is_on_sale', true)
-        .gt('sale_percent', 0)
-        .or(`sale_end_date.is.null,sale_end_date.gt.${nowIso}`)
-      query = query.order('created_at', { ascending: false })
-      break
-
-    case 'top_rated':
-      query = query.gte('rating', 4)
-      query = query.order('rating', { ascending: false })
-      query = query.order('review_count', { ascending: false })
-      break
-
-    case 'most_viewed':
-      query = query.order('review_count', { ascending: false })
-      query = query.order('rating', { ascending: false })
-      break
-
-    case 'best_sellers':
-      query = query.order('review_count', { ascending: false })
-      query = query.order('created_at', { ascending: false })
-      break
-
-    case 'price_low':
-      query = query.order('price', { ascending: true })
-      break
-
-    case 'newest':
-    case 'all':
-    default:
-      query = query.order('created_at', { ascending: false })
-      break
-  }
-
-  const { data, error, count } = await query.range(offset, offset + limit - 1)
-
-  if (error) {
-    console.error(`[getFeedProducts:${type}]`, error.message)
-    return { products: [], hasMore: false, totalCount: 0 }
-  }
-
-  const products = (data || []).map((p) => {
-    const row = p as unknown as Record<string, unknown>
-    const categories = normalizeCategoryNode(row.categories)
-    const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
-
-    return toUI({
-      ...(p as unknown as Product),
-      categories,
-      category_slug: categories?.slug ?? null,
-      store_slug: (typeof seller?.username === 'string') ? seller.username : null,
-      seller_profile: (row.seller as Product['seller_profile']) ?? null,
-    } as Product)
-  })
-
-  const totalCount = count || 0
-  const hasMore = offset + products.length < totalCount
-
-  return { products, hasMore, totalCount }
 }
 
 // =============================================================================

@@ -52,6 +52,12 @@ tsconfig.tsbuildinfo
 /knip-output.json
 /tsc-files.txt
 
+# Local audit/report outputs (regenerate as needed)
+/knip-report.txt
+/tsc-report.txt
+/dev-e2e.log
+/e2e.log
+
 # Typecheck/task outputs
 tsc.task.out
 tsc.err
@@ -74,3 +80,7 @@ CLAUDE.local.md
 # Capacitor native projects (rebuild with `pnpm cap:sync`)
 /android/
 /ios/
+
+# Supabase temp artifacts
+/supabase/.temp/
+/prompts/_archive/

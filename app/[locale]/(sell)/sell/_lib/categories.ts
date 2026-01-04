@@ -143,12 +143,6 @@ export async function getSellCategories(): Promise<CategoryNode[]> {
 
     const allCategories = [...rootCats, ...(l1Cats || []), ...l2Cats, ...l3Cats];
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(
-        `[SellPage] Fetched ${allCategories.length} categories (${rootCats.length} root, ${l1Cats?.length || 0} L1, ${l2Cats.length} L2, ${l3Cats.length} L3)`
-      );
-    }
-
     return buildCategoryTree(allCategories);
   } catch (error) {
     console.error("[SellPage] Error in getSellCategories:", error);

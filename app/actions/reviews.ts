@@ -136,7 +136,7 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
 
   // 9. Revalidate cached product/review data
   revalidateTag("reviews", "max")
-  revalidateTag("products", "max")
+  revalidateTag("products:list", "max")
   revalidateTag(`product-${input.productId}`, "max")
   
   // Also revalidate the seller's store page
@@ -314,7 +314,7 @@ export async function deleteReview(reviewId: string): Promise<{ success: boolean
   }
 
   revalidateTag("reviews", "max")
-  revalidateTag("products", "max")
+  revalidateTag("products:list", "max")
   revalidateTag(`product-${review.product_id}`, "max")
 
   return { success: true }

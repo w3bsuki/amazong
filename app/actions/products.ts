@@ -115,7 +115,7 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
       return { success: false, error: insertError.message || "Failed to create product" }
     }
     
-    revalidateTag("products", "max")
+    revalidateTag("products:list", "max")
     revalidateTag(`seller-products-${user.id}`, "max")
     
     return { success: true, data: { id: product.id } }
@@ -188,7 +188,7 @@ export async function updateProduct(
       return { success: false, error: "Failed to update product" }
     }
 
-    revalidateTag("products", "max")
+    revalidateTag("products:list", "max")
     revalidateTag(`product-${productId}`, "max")
     revalidateTag(`seller-products-${user.id}`, "max")
     revalidateTag(`seller-${user.id}`, "max")
@@ -239,7 +239,7 @@ export async function deleteProduct(productId: string): Promise<ActionResult> {
       return { success: false, error: "Failed to delete product" }
     }
 
-    revalidateTag("products", "max")
+    revalidateTag("products:list", "max")
     revalidateTag(`product-${productId}`, "max")
     revalidateTag(`seller-products-${user.id}`, "max")
     revalidateTag(`seller-${user.id}`, "max")
@@ -283,7 +283,7 @@ export async function bulkUpdateProductStatus(
       return { success: false, error: "Failed to update products" }
     }
 
-    revalidateTag("products", "max")
+    revalidateTag("products:list", "max")
     revalidateTag(`seller-products-${user.id}`, "max")
     revalidateTag(`seller-${user.id}`, "max")
     for (const row of data ?? []) {
@@ -363,7 +363,7 @@ export async function setProductDiscountPrice(
       return { success: false, error: updateError.message || "Failed to update product" }
     }
 
-    revalidateTag("products", "max")
+    revalidateTag("products:list", "max")
     revalidateTag(`product-${parsed.data.productId}`, "max")
     revalidateTag(`seller-products-${user.id}`, "max")
     revalidateTag(`seller-${user.id}`, "max")
@@ -431,7 +431,7 @@ export async function clearProductDiscount(
       return { success: false, error: updateError.message || "Failed to update product" }
     }
 
-    revalidateTag("products", "max")
+    revalidateTag("products:list", "max")
     revalidateTag(`product-${parsed.data.productId}`, "max")
     revalidateTag(`seller-products-${user.id}`, "max")
     revalidateTag(`seller-${user.id}`, "max")
@@ -469,7 +469,7 @@ export async function bulkDeleteProducts(productIds: string[]): Promise<ActionRe
       return { success: false, error: "Failed to delete products" }
     }
 
-    revalidateTag("products", "max")
+    revalidateTag("products:list", "max")
     revalidateTag(`seller-products-${user.id}`, "max")
     revalidateTag(`seller-${user.id}`, "max")
     for (const row of data ?? []) {
@@ -518,7 +518,7 @@ async function updateProductStock(
       return { success: false, error: "Failed to update stock" }
     }
 
-    revalidateTag("products", "max")
+    revalidateTag("products:list", "max")
     revalidateTag(`product-${productId}`, "max")
     revalidateTag(`seller-products-${user.id}`, "max")
     revalidateTag(`seller-${user.id}`, "max")
@@ -595,7 +595,7 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
       return { success: false, error: "Failed to duplicate product" }
     }
 
-    revalidateTag("products", "max")
+    revalidateTag("products:list", "max")
     revalidateTag(`seller-products-${user.id}`, "max")
     revalidateTag(`seller-${user.id}`, "max")
     

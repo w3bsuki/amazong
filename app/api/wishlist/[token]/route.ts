@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { noStoreJson } from "@/lib/api/response-helpers"
+import { cachedJsonResponse, noStoreJson } from "@/lib/api/response-helpers"
 import type { Database } from "@/lib/supabase/database.types"
 
 type SharedWishlistRow = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
@@ -40,5 +40,5 @@ export async function GET(
     added_at: row.added_at,
   }))
 
-  return noStoreJson({ meta, items })
+  return cachedJsonResponse({ meta, items }, "shared")
 }

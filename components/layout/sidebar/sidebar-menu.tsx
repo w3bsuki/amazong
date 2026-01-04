@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { User as SupabaseUser } from "@supabase/supabase-js"
 import { cn } from "@/lib/utils"
@@ -125,8 +125,13 @@ function HamburgerCategoryCirclesInner({
 export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuProps) {
     const [open, setOpen] = useState(false)
     const [isSigningOut, setIsSigningOut] = useState(false)
+    const [mounted, setMounted] = useState(false)
     const t = useTranslations('Sidebar')
     const locale = useLocale()
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     // Get display name from user metadata or email
     const getUserDisplayName = () => {
@@ -147,6 +152,29 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
     const displayName = getUserDisplayName()
     const firstName = getFirstName()
     const isLoggedIn = !!user
+
+    // Vaul (drawer) uses portals + ids that can differ between SSR and the first client render,
+    // which causes hydration mismatch console errors in Next.js dev and breaks strict E2E.
+    // Render a stable trigger button until mounted, then enable the full drawer UI.
+    if (!mounted) {
+        return (
+            <Button
+                type="button"
+                variant="ghost"
+                size="icon-lg"
+                className={cn(
+                    "rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent",
+                    triggerClassName
+                )}
+                aria-label={locale === "bg" ? "Меню" : "Menu"}
+                data-testid="mobile-menu-trigger"
+                disabled
+                aria-disabled="true"
+            >
+                <List size={28} weight="bold" />
+            </Button>
+        )
+    }
 
     return (
         <Drawer open={open} onOpenChange={setOpen} direction="left">

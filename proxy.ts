@@ -62,10 +62,13 @@ export async function proxy(request: NextRequest) {
 export default proxy;
 
 export const config = {
-  // Match all pathnames except:
-  // - API routes (/api/*)
-  // - Next.js internals (/_next/*, /_vercel/*)
-  // - Auth callbacks and confirm routes
-  // - Static files (files with extensions like .ico, .png, etc.)
-  matcher: ['/((?!api|_next|_vercel|auth/callback|auth/confirm|.*\\..*).*)']
+  // Run middleware only for actual app routes.
+  // Avoid executing on:
+  // - API routes
+  // - Next.js internals
+  // - common static files (icons, images, maps, etc.)
+  // - robots/sitemap
+  matcher: [
+    '/((?!api(?:/|$)|_next(?:/|$)|_vercel(?:/|$)|favicon\.ico$|robots\.txt$|sitemap\.xml$|manifest\.webmanifest$|.*\\.(?:png|jpg|jpeg|gif|webp|avif|svg|ico|css|js|mjs|map|txt|xml|json|woff|woff2|ttf|otf)$).*)',
+  ],
 };

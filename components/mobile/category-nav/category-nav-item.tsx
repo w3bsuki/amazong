@@ -51,7 +51,7 @@ export const CategoryNavItem = forwardRef<
 
   // Pill variant: compact rounded pill (L0 - bold and prominent vs subtle L3)
   const pillStyles = cn(
-    "shrink-0 h-7 px-3 text-xs font-bold rounded-full whitespace-nowrap",
+    "shrink-0 h-8 px-3.5 text-xs font-bold rounded-full whitespace-nowrap",
     "flex items-center justify-center",
     "border",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",

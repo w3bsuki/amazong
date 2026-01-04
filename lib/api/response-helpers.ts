@@ -11,6 +11,8 @@ export const CACHE_PROFILES = {
   deals: { ttl: 120, swr: 30 },
   /** Categories: 10 min cache, 2 min stale-while-revalidate (rarely changes) */
   categories: { ttl: 600, swr: 120 },
+  /** Shared/tokenized views: 1 min cache, 30s stale-while-revalidate */
+  shared: { ttl: 60, swr: 30 },
   /** User data: no cache */
   private: { ttl: 0, swr: 0 },
 } as const
@@ -90,24 +92,6 @@ export function parsePaginationParams(
 }
 
 /**
- * Build standard paginated response.
- */
-export function paginatedResponse<T>(
-  items: T[],
-  totalCount: number,
-  page: number,
-  offset: number,
-  profile: CacheProfile = "products"
-): NextResponse {
-  return cachedJsonResponse({
-    products: items,
-    hasMore: offset + items.length < totalCount,
-    totalCount,
-    page,
-  }, profile)
-}
-
-/**
  * Create a JSON response with no-store cache headers.
  * Use for private/user-specific data that should never be cached.
  */
@@ -119,19 +103,3 @@ export function noStoreJson(data: unknown, init?: ResponseInit): NextResponse {
   return res
 }
 
-/**
- * Require authenticated user from Supabase.
- * Returns [null, errorResponse] if unauthenticated, [user, null] otherwise.
- */
-export async function requireAuth(
-  supabase: { auth: { getUser: () => Promise<{ data: { user: { id: string; email?: string | undefined } | null }; error: unknown }> } } | null
-): Promise<[{ id: string; email?: string | undefined } | null, NextResponse | null]> {
-  if (!supabase) {
-    return [null, NextResponse.json({ error: "Not authenticated" }, { status: 401 })]
-  }
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    return [null, NextResponse.json({ error: "Not authenticated" }, { status: 401 })]
-  }
-  return [user, null]
-}

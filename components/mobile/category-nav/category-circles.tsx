@@ -54,11 +54,11 @@ export function CategoryCircles({
         <button
           type="button"
           onClick={onBack}
-          className="size-7 shrink-0 rounded-full bg-muted/60 flex items-center justify-center hover:bg-muted transition-colors duration-100"
+          className="size-9 shrink-0 rounded-full bg-muted/60 flex items-center justify-center hover:bg-muted transition-colors duration-100"
           aria-label={locale === "bg" ? "Назад" : "Back"}
         >
           <CaretLeft
-            size={16}
+            size={18}
             weight="bold"
             className="text-muted-foreground"
             aria-hidden="true"

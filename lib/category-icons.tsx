@@ -351,18 +351,4 @@ export function getCategoryIcon(
 // Use getCategoryIcon(slug, { size: 20, className: "mega-menu-icon" }) for mega menu icons
 // The getCategoryIcon function above handles all icon lookups with a unified API.
 
-/**
- * Get subheader icon (size 16)
- * @deprecated Use getCategoryIcon(slug, { size: 16 }) directly
- */
-export function getSubheaderIcon(slug: string): React.ReactNode {
-  return getCategoryIcon(slug, { size: 16 })
-}
 
-/**
- * Get mega menu icon (size 20 with mega-menu-icon class)
- * @deprecated Use getCategoryIcon(slug, { size: 20, className: "mega-menu-icon" }) directly
- */
-export function getMegaMenuIcon(slug: string): React.ReactNode {
-  return getCategoryIcon(slug, { size: 20, className: "mega-menu-icon" })
-}

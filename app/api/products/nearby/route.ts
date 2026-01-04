@@ -39,7 +39,6 @@ export async function GET(request: NextRequest) {
         review_count,
         images,
         product_images(image_url,thumbnail_url,display_order,is_primary),
-        product_attributes(name,value),
         is_boosted,
         boost_expires_at,
         created_at,

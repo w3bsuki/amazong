@@ -1,7 +1,7 @@
 "use client"
 
 import { CaretDown, ArrowsDownUp } from "@phosphor-icons/react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { useCallback } from "react"
@@ -16,9 +16,16 @@ import {
 
 export function SortSelect() {
   const t = useTranslations('SearchFilters')
+  const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  const normalizedPathname = pathname.startsWith(`/${locale}/`)
+    ? pathname.slice(locale.length + 1)
+    : pathname === `/${locale}`
+      ? '/'
+      : pathname
   
   // Get current sort from URL, default to "featured"
   const currentSort = searchParams.get('sort') || 'featured'
@@ -34,8 +41,8 @@ export function SortSelect() {
     }
     
     const queryString = params.toString()
-    router.push(queryString ? `${pathname}?${queryString}` : pathname)
-  }, [router, pathname, searchParams])
+    router.push(queryString ? `${normalizedPathname}?${queryString}` : normalizedPathname)
+  }, [router, normalizedPathname, searchParams])
 
   const isSorted = currentSort !== 'featured'
 
@@ -44,7 +51,7 @@ export function SortSelect() {
       <SelectTrigger 
         size="sm"
         className={cn(
-          "!h-7 !py-0 px-2.5 w-full rounded-lg gap-1.5",
+          "!h-8 !py-0 px-3 w-full rounded-lg gap-2",
           "bg-muted/50 hover:bg-muted/70 hover:text-foreground border border-border/40",
           "active:bg-muted/70",
           isSorted && "bg-primary/10 text-primary border-primary/20",

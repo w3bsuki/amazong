@@ -29,7 +29,7 @@ function PillsSkeleton() {
   return (
     <div className="flex gap-1 items-center animate-pulse">
       {Array.from({ length: 6 }).map((_, i) => (
-        <Skeleton key={i} className="h-6 w-14 rounded-full" />
+        <Skeleton key={i} className="h-7 w-14 rounded-full" />
       ))}
     </div>
   )
@@ -64,7 +64,7 @@ export function CategoryL3Pills({
           <button
             onClick={onAllClick}
             className={cn(
-              "h-6 px-2.5 rounded-full text-2xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+              "h-7 px-3 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
               selectedPill === null
                 ? "bg-primary/15 text-primary border-primary/40"
                 : "bg-muted/50 text-muted-foreground border-border/30 hover:bg-muted/70"
@@ -81,7 +81,7 @@ export function CategoryL3Pills({
                 key={child.slug}
                 onClick={() => onPillClick(child)}
                 className={cn(
-                  "h-6 px-2.5 rounded-full text-2xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+                  "h-7 px-3 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
                   isSelected
                     ? "bg-primary/15 text-primary border-primary/40"
                     : "bg-muted/50 text-muted-foreground border-border/30 hover:bg-muted/70"

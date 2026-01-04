@@ -20,6 +20,7 @@
     "test/**"
   ],
   "ignoreDependencies": [
+    "@capacitor/ios",
     "tailwindcss",
     "tailwindcss-animate"
   ],

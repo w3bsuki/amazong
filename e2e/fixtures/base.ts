@@ -47,6 +47,11 @@ const IGNORED_CONSOLE_PATTERNS = [
   // Next.js dev server noise (not bugs)
   /Fast Refresh/i,
   /Download the React DevTools/i,
+  // Turbopack/webpack dev HMR websocket can occasionally log connection errors during navigation
+  // (especially when reusing an existing server). This is dev-only noise, not an app/runtime bug.
+  /WebSocket connection to .*\/_next\/(?:webpack-hmr|turbopack-hmr).*failed/i,
+  /\/_next\/(?:webpack-hmr|turbopack-hmr)/i,
+  /net::ERR_CONNECTION_REFUSED/i,
   // Browser/extension noise (not our code)
   /Third-party cookie/i,
   // Source maps (dev tooling)
