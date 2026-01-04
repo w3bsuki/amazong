@@ -88,6 +88,10 @@ export function DesktopFilters({ attributes = [], categorySlug }: DesktopFilters
   // Check if we have any attributes to show the filter modal
   const hasAttributes = attributes.length > 0
 
+  const pillBase = "inline-flex items-center gap-2 h-8 px-3.5 rounded-md"
+  const pillText = "text-sm font-medium transition-colors border"
+  const pillCaret = "transition-transform duration-100"
+
   return (
     <>
       {/* Price Filter - Quick Pill */}
@@ -95,18 +99,18 @@ export function DesktopFilters({ attributes = [], categorySlug }: DesktopFilters
         <PopoverTrigger asChild>
           <button
             className={cn(
-              "inline-flex items-center gap-2 h-9 px-4 rounded-full",
-              "text-sm font-medium transition-colors border border-border/50",
+              pillBase,
+              pillText,
               hasPriceFilter
                 ? "bg-primary/10 text-primary border-primary/20"
-                : "bg-secondary hover:bg-secondary/80 text-foreground"
+                : "bg-secondary hover:bg-secondary/80 text-foreground border-border/50 hover:border-border"
             )}
           >
             <span>{getPriceLabel()}</span>
-            <CaretDown size={16} weight="regular" className={cn("transition-transform", priceOpen && "rotate-180")} />
+            <CaretDown size={16} weight="regular" className={cn(pillCaret, priceOpen && "rotate-180")} />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-48 p-1 rounded-lg shadow-dropdown border-border/50" align="start">
+        <PopoverContent className="w-56 p-2 rounded-md shadow-dropdown border-border/50" align="start">
           {priceRanges.map(({ label, min, max }) => {
             const isActive = currentMinPrice === min && currentMaxPrice === max
             return (
@@ -144,19 +148,19 @@ export function DesktopFilters({ attributes = [], categorySlug }: DesktopFilters
         <PopoverTrigger asChild>
           <button
             className={cn(
-              "inline-flex items-center gap-2 h-9 px-4 rounded-full",
-              "text-sm font-medium transition-colors border border-border/50",
+              pillBase,
+              pillText,
               hasRatingFilter
                 ? "bg-primary/10 text-primary border-primary/20"
-                : "bg-secondary hover:bg-secondary/80 text-foreground"
+                : "bg-secondary hover:bg-secondary/80 text-foreground border-border/50 hover:border-border"
             )}
           >
             <Star size={16} weight={hasRatingFilter ? "fill" : "regular"} className={hasRatingFilter ? "text-current" : ""} />
             <span>{getRatingLabel()}</span>
-            <CaretDown size={16} weight="regular" className={cn("transition-transform", ratingOpen && "rotate-180")} />
+            <CaretDown size={16} weight="regular" className={cn(pillCaret, ratingOpen && "rotate-180")} />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-52 p-1 rounded-lg shadow-dropdown border-border/50" align="start">
+        <PopoverContent className="w-56 p-2 rounded-md shadow-dropdown border-border/50" align="start">
           {[4, 3, 2, 1].map((stars) => {
             const isActive = currentRating === stars.toString()
             return (

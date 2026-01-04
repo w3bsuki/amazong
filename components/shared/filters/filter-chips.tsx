@@ -116,7 +116,7 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
           key={chip.key}
           onClick={() => removeParam(chip.key, chip.key2)}
           className={cn(
-            "inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-sm whitespace-nowrap",
+            "inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-sm whitespace-nowrap",
             "border group",
             "hover:bg-destructive/10 hover:border-destructive/20 hover:text-destructive",
             chip.color || "bg-secondary text-foreground border-border hover:bg-secondary/80"
@@ -144,7 +144,7 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
             }
           }}
           className={cn(
-            "inline-flex items-center gap-1 px-3 h-8 rounded-full text-sm whitespace-nowrap",
+            "inline-flex items-center gap-1 px-3 h-8 rounded-md text-sm whitespace-nowrap",
             "text-muted-foreground hover:text-destructive font-medium"
           )}
         >

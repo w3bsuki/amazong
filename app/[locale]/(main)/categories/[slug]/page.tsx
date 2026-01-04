@@ -19,7 +19,6 @@ import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
 import {
   getCategoryBySlug,
   getCategoryContext,
-  getRootCategoriesWithChildren,
   getCategoryHierarchy,
   getCategoryAncestry,
 } from "@/lib/data/categories"
@@ -27,7 +26,7 @@ import { searchProducts } from "./_lib/search-products"
 import type { Product } from "./_lib/types"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
 import { MobileHomeTabs } from "@/components/mobile/mobile-home-tabs"
-import { getNewestProducts, toUI } from "@/lib/data/products"
+import type { UIProduct } from "@/lib/data/products"
 
 // =============================================================================
 // CATEGORY PAGE - HYBRID CACHING STRATEGY
@@ -162,9 +161,9 @@ export default async function CategoryPage({
   // ============================================================================
 
   // Fetch category context AND root categories in parallel
-  const [categoryContext, allCategoriesWithSubs] = await Promise.all([
+  const [categoryContext, categoriesWithChildren] = await Promise.all([
     getCategoryContext(slug),
-    getRootCategoriesWithChildren(),
+    getCategoryHierarchy(null, 2),
   ])
 
   if (!categoryContext) {
@@ -172,7 +171,11 @@ export default async function CategoryPage({
   }
 
   const { current: currentCategory, parent: parentCategory, children: subcategories } = categoryContext
-  const allCategories = allCategoriesWithSubs.map(c => c.category)
+  const allCategoriesWithSubs = categoriesWithChildren.map((c) => ({
+    category: c,
+    subs: c.children ?? [],
+  }))
+  const allCategories = allCategoriesWithSubs.map((c) => c.category)
 
   // Get products from this category AND all its subcategories
   const categoryIds = [currentCategory.id, ...subcategories.map(s => s.id)]
@@ -190,7 +193,7 @@ export default async function CategoryPage({
   // PARALLEL FETCH: Get products, mobile data, and translations at once
   // This significantly speeds up page load by avoiding sequential awaits
   // ==========================================================================
-  const [result, ancestry, categoriesWithChildren, newestProducts, t] = await Promise.all([
+  const [result, ancestry, t] = await Promise.all([
     searchProducts(supabase, categoryIds, {
       minPrice: searchParams.minPrice,
       maxPrice: searchParams.maxPrice,
@@ -201,14 +204,12 @@ export default async function CategoryPage({
       attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
     }, currentPage, ITEMS_PER_PAGE, shippingFilter),
     getCategoryAncestry(slug),
-    getCategoryHierarchy(null, 2),
-    getNewestProducts(12),
     getTranslations('SearchFilters'),
   ])
 
   const products = result.products
   const totalProducts = result.total
-  const mobileInitialProducts = newestProducts.map(p => toUI(p))
+  const mobileInitialProducts: UIProduct[] = []
 
   const categoryName = locale === 'bg' && currentCategory.name_bg
     ? currentCategory.name_bg

@@ -132,11 +132,11 @@ export function SellerOnboardingWizard({
 
   return (
     <div className="w-full max-w-lg mx-auto py-6 px-4">
-      <div className="bg-white rounded-md border border-gray-200 overflow-hidden">
+      <div className="bg-surface-card rounded-md border border-border overflow-hidden">
         {/* Progress indicator - step 2 = 66%, step 3 = 100% */}
-        <div className="h-1 bg-gray-100">
+        <div className="h-1 bg-muted">
           <motion.div
-            className="h-full bg-blue-600"
+            className="h-full bg-brand"
             initial={{ width: "0%" }}
             animate={{ width: `${(step / 3) * 100}%` }}
             transition={{ duration: 0.3 }}
@@ -158,13 +158,13 @@ export function SellerOnboardingWizard({
               >
                 {/* Header */}
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-md bg-purple-600 mb-4">
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-md bg-brand mb-4">
                     <Sparkle weight="bold" className="w-7 h-7 text-white" />
                   </div>
-                  <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
+                  <h1 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">
                     {t.step2Title}
                   </h1>
-                  <p className="text-sm text-gray-500">{t.step2Subtitle}</p>
+                  <p className="text-sm text-muted-foreground">{t.step2Subtitle}</p>
                 </div>
 
                 {/* Form */}
@@ -172,7 +172,7 @@ export function SellerOnboardingWizard({
                   {/* Business Name (business accounts only) */}
                   {accountType === "business" && (
                     <div className="space-y-1.5">
-                      <label className="text-sm font-medium text-gray-700">
+                      <label className="text-sm font-medium">
                         {t.businessNameLabel}
                       </label>
                       <Input
@@ -183,13 +183,13 @@ export function SellerOnboardingWizard({
                         maxLength={80}
                         className="h-11"
                       />
-                      <p className="text-xs text-gray-500">{t.businessNameHint}</p>
+                      <p className="text-xs text-muted-foreground">{t.businessNameHint}</p>
                     </div>
                   )}
 
                   {/* Display Name */}
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium">
                       {t.displayNameLabel}
                     </label>
                     <Input
@@ -200,12 +200,12 @@ export function SellerOnboardingWizard({
                       maxLength={50}
                       className="h-11"
                     />
-                    <p className="text-xs text-gray-500">{t.displayNameHint}</p>
+                    <p className="text-xs text-muted-foreground">{t.displayNameHint}</p>
                   </div>
 
                   {/* Bio */}
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-gray-700">
+                    <label className="text-sm font-medium">
                       {t.bioLabel}
                     </label>
                     <Textarea
@@ -217,15 +217,15 @@ export function SellerOnboardingWizard({
                       className="resize-none"
                     />
                     <div className="flex justify-between">
-                      <p className="text-xs text-gray-500">{t.bioHint}</p>
-                      <p className="text-xs text-gray-400">{bio.length}/160</p>
+                      <p className="text-xs text-muted-foreground">{t.bioHint}</p>
+                      <p className="text-xs text-muted-foreground/70">{bio.length}/160</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Error */}
                 {error && (
-                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+                  <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
                     {error}
                   </div>
                 )}
@@ -234,7 +234,7 @@ export function SellerOnboardingWizard({
                 <Button
                   onClick={handleComplete}
                   disabled={isPending}
-                  className="w-full h-11 bg-blue-600 hover:bg-blue-700"
+                  className="w-full h-11 bg-brand hover:bg-brand-dark"
                 >
                   {isPending ? (
                     <>
@@ -266,31 +266,31 @@ export function SellerOnboardingWizard({
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", delay: 0.1 }}
-                    className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-500 mb-4"
+                    className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-success mb-4"
                   >
                     <Check weight="bold" className="w-10 h-10 text-white" />
                   </motion.div>
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h1 className="text-2xl font-bold text-foreground mb-2">
                     {t.step3Title}
                   </h1>
-                  <p className="text-gray-500">{t.step3Subtitle}</p>
+                  <p className="text-muted-foreground">{t.step3Subtitle}</p>
                 </div>
 
                 {/* Profile URL */}
-                <div className="mb-6 p-4 bg-gray-50 rounded-md border border-gray-200">
-                  <p className="text-sm text-gray-500 mb-1">{t.profileUrl}</p>
-                  <p className="font-medium text-gray-900">treido.eu/u/{username}</p>
+                <div className="mb-6 p-4 bg-muted rounded-md border border-border">
+                  <p className="text-sm text-muted-foreground mb-1">{t.profileUrl}</p>
+                  <p className="font-medium text-foreground">treido.eu/u/{username}</p>
                 </div>
 
                 {/* What's next */}
                 <div className="mb-6">
-                  <p className="text-sm text-gray-600">{t.readyMessage}</p>
+                  <p className="text-sm text-muted-foreground">{t.readyMessage}</p>
                 </div>
 
                 {/* Action */}
                 <Button
                   onClick={onComplete}
-                  className="w-full h-12 bg-amber-500 hover:bg-amber-600 text-white font-medium"
+                  className="w-full h-12 bg-warning hover:bg-warning/90 text-white font-medium"
                 >
                   <Storefront className="mr-2 size-5" weight="fill" />
                   {t.startSelling}
@@ -302,8 +302,8 @@ export function SellerOnboardingWizard({
 
         {/* Footer */}
         {step < 3 && (
-          <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
-            <p className="text-xs text-center text-gray-500">{t.freeToStart}</p>
+          <div className="px-6 py-4 bg-muted border-t border-border">
+            <p className="text-xs text-center text-muted-foreground">{t.freeToStart}</p>
           </div>
         )}
       </div>

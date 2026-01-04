@@ -10,14 +10,19 @@ export async function searchProducts(
   limit: number = ITEMS_PER_PAGE,
   shippingFilter: string = ""
 ): Promise<{ products: Product[]; total: number }> {
+  const debug = process.env.DEBUG_CATEGORY_SEARCH === "1"
+  const t0 = debug ? Date.now() : 0
   const offset = (page - 1) * limit
 
-  let countQuery = supabase.from("products").select("*", { count: "exact", head: true })
-  let dbQuery = supabase
-    .from("products")
-    .select(
-      "*, profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)"
-    )
+  // Avoid `select('*')` which can be very expensive on wide tables.
+  // For counts, selecting a single column is sufficient.
+  let countQuery = supabase.from("products").select("id", { count: "exact", head: true })
+
+  // Select only fields needed by the category page cards.
+  // IMPORTANT: keep this as a literal string so Supabase types can infer the row shape.
+  let dbQuery = supabase.from("products").select(
+    "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,attributes,created_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)"
+  )
 
   if (categoryIds.length > 0) {
     countQuery = countQuery.in("category_id", categoryIds)
@@ -70,7 +75,15 @@ export async function searchProducts(
     }
   }
 
+  const tCount0 = debug ? Date.now() : 0
   const { count: total } = await countQuery
+  if (debug) {
+    console.log(
+      `[category:searchProducts] count=${total ?? 0} in ${Date.now() - tCount0}ms ` +
+        `(cats=${categoryIds.length}, page=${page}, limit=${limit}, ` +
+        `shipping=${shippingFilter ? "y" : "n"}, attrs=${filters.attributes ? Object.keys(filters.attributes).length : 0}, sort=${filters.sort ?? "default"})`
+    )
+  }
 
   switch (filters.sort) {
     case "newest":
@@ -91,9 +104,43 @@ export async function searchProducts(
 
   dbQuery = dbQuery.range(offset, offset + limit - 1)
 
+  const tData0 = debug ? Date.now() : 0
   const { data } = await dbQuery
+  if (debug) {
+    console.log(
+      `[category:searchProducts] rows=${(data || []).length} in ${Date.now() - tData0}ms (total ${Date.now() - t0}ms)`
+    )
+  }
 
-  const products: Product[] = (data || []).map((p) => {
+  type DbSellerProfile = {
+    id: string | null
+    username: string | null
+    display_name: string | null
+    business_name: string | null
+    avatar_url: string | null
+    tier: string | null
+    account_type: string | null
+    is_verified_business: boolean | null
+  }
+
+  type DbProductRow = {
+    id: string
+    title: string
+    price: number
+    list_price: number | null
+    images: string[] | null
+    rating: number | null
+    review_count: number | null
+    category_id: string | null
+    slug: string | null
+    tags: string[] | null
+    attributes: unknown
+    profiles: DbSellerProfile | DbSellerProfile[] | null
+  }
+
+  const rows = (data || []) as unknown as DbProductRow[]
+
+  const products: Product[] = rows.map((p) => {
     const profile = p.profiles && !Array.isArray(p.profiles) ? p.profiles : null
     return {
       id: p.id,
@@ -119,7 +166,7 @@ export async function searchProducts(
           }
         : null,
       attributes: p.attributes as Record<string, string> | null,
-      tags: Array.isArray(p.tags) ? p.tags.filter((t): t is string => typeof t === "string") : [],
+      tags: Array.isArray(p.tags) ? p.tags.filter((t) => typeof t === "string") : [],
     }
   })
 

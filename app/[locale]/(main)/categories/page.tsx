@@ -33,21 +33,21 @@ export default async function CategoriesPage({
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Header */}
-      <div className="bg-gradient-to-b from-primary/5 to-background border-b border-border/30">
-        <div className="px-(--page-inset) pt-4 pb-5">
-          <h1 className="text-xl font-bold text-foreground">
-            {locale === 'bg' ? 'Разгледай всички категории' : 'Browse all categories'}
+      {/* Header */}
+      <div className="bg-primary/5 border-b border-border/30">
+        <div className="px-(--page-inset) py-2.5">
+          <h1 className="text-base font-bold text-foreground">
+            {locale === 'bg' ? 'Категории' : 'Categories'}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-2xs text-muted-foreground">
             {locale === 'bg' 
-              ? `${categoriesWithChildren.length} категории • Хиляди продукти` 
-              : `${categoriesWithChildren.length} categories • Thousands of products`}
+              ? `${categoriesWithChildren.length} категории` 
+              : `${categoriesWithChildren.length} categories`}
           </p>
         </div>
       </div>
 
-      {/* Category List - Mobile optimized with tap targets */}
+      {/* Category List */}
       <div className="divide-y divide-border/30">
         {categoriesWithChildren.map((cat) => {
           const children = cat.children ?? []
@@ -57,78 +57,61 @@ export default async function CategoriesPage({
             <Link
               key={cat.slug}
               href={`/categories/${cat.slug}`}
-              className="flex items-center gap-3 px-(--page-inset) py-3 hover:bg-muted/30 active:bg-muted/50 transition-colors"
+              className="flex items-center gap-2 px-(--page-inset) min-h-touch-lg active:bg-muted/50"
             >
-              {/* Category Icon */}
-              <div className="shrink-0">
-                <CategoryCircleVisual
-                  category={cat}
-                  active={false}
-                  className="size-11"
-                  fallbackIconSize={24}
-                  fallbackIconWeight="regular"
-                  variant="muted"
-                />
-              </div>
+              <CategoryCircleVisual
+                category={cat}
+                active={false}
+                className="size-10 shrink-0"
+                fallbackIconSize={20}
+                fallbackIconWeight="regular"
+                variant="muted"
+              />
               
-              {/* Category Info */}
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-sm text-foreground">
+              <div className="flex-1 min-w-0 py-2">
+                <div className="font-medium text-sm text-foreground">
                   {getCategoryShortName(cat, locale)}
                 </div>
                 {hasChildren && (
-                  <div className="text-xs text-muted-foreground mt-0.5 truncate">
+                  <div className="text-2xs text-muted-foreground truncate">
                     {children.slice(0, 3).map(c => getCategoryShortName(c, locale)).join(' • ')}
                     {children.length > 3 && ` +${children.length - 3}`}
                   </div>
                 )}
               </div>
               
-              {/* Arrow */}
-              <CaretRight 
-                size={16} 
-                weight="bold" 
-                className="text-muted-foreground/60 shrink-0" 
-              />
+              <CaretRight size={14} weight="bold" className="text-muted-foreground/50 shrink-0" />
             </Link>
           )
         })}
       </div>
 
-      {/* Quick Actions Footer */}
-      <div className="px-(--page-inset) py-6 bg-muted/20 border-t border-border/30 mt-4">
-        <div className="grid grid-cols-2 gap-3">
+      {/* Quick Actions */}
+      <div className="px-(--page-inset) py-3 bg-muted/20 border-t border-border/30">
+        <div className="grid grid-cols-2 gap-2">
           <Link
             href="/sell"
-            className="flex items-center gap-2 p-3 bg-background rounded-xl border border-border/40 hover:border-primary/30 hover:bg-primary/5 transition-colors"
+            className="flex items-center gap-2 p-2 bg-background rounded-md border border-border/40"
           >
-            <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Storefront size={18} weight="fill" className="text-primary" />
+            <div className="size-8 rounded-md bg-primary/10 flex items-center justify-center">
+              <Storefront size={16} weight="fill" className="text-primary" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-foreground">
-                {locale === 'bg' ? 'Продай' : 'Sell'}
-              </div>
-              <div className="text-2xs text-muted-foreground">
-                {locale === 'bg' ? 'Безплатно' : 'Free listing'}
-              </div>
+              <div className="text-sm font-medium">{locale === 'bg' ? 'Продай' : 'Sell'}</div>
+              <div className="text-2xs text-muted-foreground">{locale === 'bg' ? 'Безплатно' : 'Free'}</div>
             </div>
           </Link>
           
           <Link
             href="/todays-deals"
-            className="flex items-center gap-2 p-3 bg-background rounded-xl border border-border/40 hover:border-deal/30 hover:bg-deal/5 transition-colors"
+            className="flex items-center gap-2 p-2 bg-background rounded-md border border-border/40"
           >
-            <div className="size-9 rounded-lg bg-deal/10 flex items-center justify-center">
-              <Sparkle size={18} weight="fill" className="text-deal" />
+            <div className="size-8 rounded-md bg-deal/10 flex items-center justify-center">
+              <Sparkle size={16} weight="fill" className="text-deal" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-foreground">
-                {locale === 'bg' ? 'Оферти' : 'Deals'}
-              </div>
-              <div className="text-2xs text-muted-foreground">
-                {locale === 'bg' ? 'До -70%' : 'Up to -70%'}
-              </div>
+              <div className="text-sm font-medium">{locale === 'bg' ? 'Оферти' : 'Deals'}</div>
+              <div className="text-2xs text-muted-foreground">{locale === 'bg' ? 'До -70%' : 'Up to 70%'}</div>
             </div>
           </Link>
         </div>

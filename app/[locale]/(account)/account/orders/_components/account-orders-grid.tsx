@@ -110,19 +110,19 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
   const getStatusColor = (status: OrderStatus | null) => {
     switch (status) {
       case "paid":
-        return "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800"
+        return "bg-success/10 text-success border-success/20"
       case "pending":
-        return "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-950/50 dark:text-yellow-400 dark:border-yellow-800"
+        return "bg-warning/10 text-warning border-warning/20"
       case "processing":
-        return "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-800"
+        return "bg-order-processing/10 text-order-processing border-order-processing/20"
       case "shipped":
         return "bg-account-info-soft text-account-info border-account-stat-border"
       case "delivered":
-        return "bg-green-100 text-green-700 border-green-200 dark:bg-green-950/50 dark:text-green-400 dark:border-green-800"
+        return "bg-success/10 text-success border-success/20"
       case "cancelled":
-        return "bg-red-100 text-red-700 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800"
+        return "bg-error/10 text-error border-error/20"
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-950/50 dark:text-gray-400 dark:border-gray-800"
+        return "bg-muted text-muted-foreground border-border"
     }
   }
 

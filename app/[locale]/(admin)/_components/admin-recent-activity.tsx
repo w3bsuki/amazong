@@ -54,30 +54,30 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
   const getStatusColor = (status: string | null) => {
     switch (status) {
       case "paid":
-        return "bg-emerald-100 text-emerald-700 border-emerald-200"
+        return "bg-success/10 text-success border-success/20"
       case "pending":
-        return "bg-yellow-100 text-yellow-700 border-yellow-200"
+        return "bg-warning/10 text-warning border-warning/20"
       case "processing":
-        return "bg-blue-100 text-blue-700 border-blue-200"
+        return "bg-order-processing/10 text-order-processing border-order-processing/20"
       case "shipped":
-        return "bg-purple-100 text-purple-700 border-purple-200"
+        return "bg-account-info-soft text-account-info border-account-stat-border"
       case "delivered":
-        return "bg-green-100 text-green-700 border-green-200"
+        return "bg-success/10 text-success border-success/20"
       case "cancelled":
-        return "bg-red-100 text-red-700 border-red-200"
+        return "bg-destructive/10 text-destructive border-destructive/20"
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200"
+        return "bg-muted text-muted-foreground border-border"
     }
   }
 
   const getRoleBadge = (role: string | null) => {
     switch (role) {
       case "admin":
-        return "bg-red-100 text-red-700 border-red-200"
+        return "bg-destructive/10 text-destructive border-destructive/20"
       case "seller":
-        return "bg-blue-100 text-blue-700 border-blue-200"
+        return "bg-brand/10 text-brand border-brand/20"
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200"
+        return "bg-muted text-muted-foreground border-border"
     }
   }
 
@@ -140,7 +140,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
                         {formatDistanceToNow(new Date(product.created_at), { addSuffix: true })}
                       </p>
                     </div>
-                    <span className="text-sm font-medium text-emerald-600">{formatCurrency(product.price)}</span>
+                    <span className="text-sm font-medium text-success">{formatCurrency(product.price)}</span>
                   </div>
                 ))
               )}

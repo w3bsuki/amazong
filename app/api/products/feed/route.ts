@@ -33,13 +33,11 @@ export async function GET(request: NextRequest) {
         sale_end_date,
         rating, 
         review_count, 
-        images, 
-        product_images(image_url,thumbnail_url,display_order,is_primary),
+        images,
         is_boosted,
         boost_expires_at,
         created_at, 
         slug,
-        attributes,
         seller:profiles(id,username,avatar_url,tier),
         categories!inner(id,slug,name,name_bg,icon)
       `, { count: 'exact' })

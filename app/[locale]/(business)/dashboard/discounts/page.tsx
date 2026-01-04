@@ -67,13 +67,13 @@ export default async function BusinessDiscountsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
-        return <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">Active</Badge>
+        return <Badge variant="outline" className="bg-success/10 text-success border-success/20">Active</Badge>
       case 'scheduled':
-        return <Badge className="bg-blue-100 text-blue-700 border-blue-200">Scheduled</Badge>
+        return <Badge variant="outline" className="bg-brand/10 text-brand border-brand/20">Scheduled</Badge>
       case 'expired':
-        return <Badge className="bg-gray-100 text-gray-700 border-gray-200">Expired</Badge>
+        return <Badge variant="outline" className="bg-muted text-muted-foreground border-border">Expired</Badge>
       case 'disabled':
-        return <Badge className="bg-red-100 text-red-700 border-red-200">Disabled</Badge>
+        return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">Disabled</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
@@ -101,11 +101,11 @@ export default async function BusinessDiscountsPage() {
                 <span className="tabular-nums">{total}</span>
                 <span className="opacity-70">codes</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-success/10 text-success border border-success/20">
                 <span className="tabular-nums">{activeDiscounts}</span>
                 <span className="opacity-70">active</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-brand/10 text-brand border border-brand/20">
                 <IconUsers className="size-3" />
                 <span className="tabular-nums">{totalUsage}</span>
                 <span className="opacity-70">uses</span>
@@ -146,10 +146,10 @@ export default async function BusinessDiscountsPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-2">
-              <IconPercentage className="size-4 text-emerald-600" />
+              <IconPercentage className="size-4 text-success" />
               Active
             </CardDescription>
-            <CardTitle className="text-2xl tabular-nums text-emerald-600">
+            <CardTitle className="text-2xl tabular-nums text-success">
               {activeDiscounts.toLocaleString()}
             </CardTitle>
           </CardHeader>

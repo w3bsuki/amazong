@@ -918,25 +918,25 @@ export function AIChatbot({
                         <button
                           type="button"
                           onClick={() => setMobileTab("results")}
-                          className="group flex w-full items-center justify-between gap-3 rounded-md border border-green-500/20 bg-green-500/5 p-4 text-left transition-colors hover:bg-green-500/10 md:cursor-default"
+                          className="group flex w-full items-center justify-between gap-3 rounded-md border border-success/20 bg-success/10 p-4 text-left transition-colors hover:bg-success/20 md:cursor-default"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="flex size-10 items-center justify-center rounded-md bg-green-500/20 text-green-600">
+                            <div className="flex size-10 items-center justify-center rounded-md bg-success/20 text-success">
                               <Search className="size-5" />
                             </div>
                             <div>
-                              <div className="text-sm font-bold text-green-700 dark:text-green-400">
+                              <div className="text-sm font-bold text-success">
                                 {locale === "bg" 
                                   ? `Намерени ${products.length} продукта`
                                   : `Found ${products.length} product${products.length === 1 ? "" : "s"}`
                                 }
                               </div>
-                              <div className="mt-0.5 text-xs font-medium text-green-600/70 dark:text-green-400/70 md:hidden">
+                              <div className="mt-0.5 text-xs font-medium text-success/70 md:hidden">
                                 {locale === "bg" ? "Натиснете за преглед" : "Tap to view results"}
                               </div>
                             </div>
                           </div>
-                          <div className="flex size-8 items-center justify-center rounded-full bg-green-500/10 text-green-600 md:hidden">
+                          <div className="flex size-8 items-center justify-center rounded-full bg-success/10 text-success md:hidden">
                             <ChevronDown className="size-5 -rotate-90" />
                           </div>
                         </button>
@@ -972,22 +972,22 @@ export function AIChatbot({
                         <button
                           type="button"
                           onClick={() => setMobileTab("results")}
-                          className="flex w-full items-center justify-between gap-3 rounded-lg border border-green-500/30 bg-green-500/10 p-3 text-left transition-colors hover:bg-green-500/20 md:cursor-default"
+                          className="flex w-full items-center justify-between gap-3 rounded-lg border border-success/20 bg-success/10 p-3 text-left transition-colors hover:bg-success/20 md:cursor-default"
                         >
                           <div className="flex items-center gap-2">
-                            <div className="flex size-8 items-center justify-center rounded-full bg-green-500/20">
-                              <Tag className="size-4 text-green-600" />
+                            <div className="flex size-8 items-center justify-center rounded-full bg-success/20">
+                              <Tag className="size-4 text-success" />
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-green-700 dark:text-green-400">
+                              <div className="text-sm font-medium text-success">
                                 {locale === "bg" ? "Обявата е създадена!" : "Listing created!"}
                               </div>
-                              <div className="text-xs text-green-600/80 dark:text-green-400/80 md:hidden">
+                              <div className="text-xs text-success/80 md:hidden">
                                 {locale === "bg" ? "Натиснете за преглед" : "Tap to view"}
                               </div>
                             </div>
                           </div>
-                          <ChevronDown className="size-5 -rotate-90 text-green-600 md:hidden" />
+                          <ChevronDown className="size-5 -rotate-90 text-success md:hidden" />
                         </button>
                       )}
                     </div>
@@ -1004,14 +1004,14 @@ export function AIChatbot({
 
                 {/* Error message with retry */}
                 {error && (
-                  <div className="w-full max-w-5xl rounded-md border border-red-500/30 bg-red-500/10 p-3 sm:p-4">
+                  <div className="w-full max-w-5xl rounded-md border border-destructive/20 bg-destructive/10 p-3 sm:p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 text-sm font-medium text-red-700 dark:text-red-400">
+                        <div className="flex items-center gap-2 text-sm font-medium text-destructive">
                           <AlertCircle className="size-4 shrink-0" />
                           {locale === "bg" ? "Грешка" : "Error"}
                         </div>
-                        <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                        <p className="mt-1 text-sm text-destructive">
                           {isNoProviderError
                             ? locale === "bg"
                               ? "Няма конфигуриран AI доставчик. Задайте AI_GATEWAY_API_KEY (препоръчано) или ключ за OpenAI/Google/Groq."
@@ -1024,7 +1024,7 @@ export function AIChatbot({
                         </p>
 
                         {process.env.NODE_ENV !== "production" && errorMessage && !isQuotaError && (
-                          <p className="mt-1 text-xs text-red-600/80 dark:text-red-400/80">
+                          <p className="mt-1 text-xs text-destructive/80">
                             {errorMessage}
                           </p>
                         )}
@@ -1034,7 +1034,7 @@ export function AIChatbot({
                         variant="outline"
                         size="sm"
                         onClick={handleRetry}
-                        className="shrink-0 gap-1.5 border-red-500/30 text-red-700 hover:bg-red-500/10 dark:text-red-400"
+                        className="shrink-0 gap-1.5 border-destructive/30 text-destructive hover:bg-destructive/10"
                       >
                         <RotateCcw className="size-3.5" />
                         {locale === "bg" ? "Опитай" : "Retry"}
@@ -1102,14 +1102,14 @@ export function AIChatbot({
 
                   {/* Listing Success State */}
                   {latestListingResult?.success && latestListingResult.url && (
-                    <div className="rounded-md border border-green-500/20 bg-green-500/5 p-3 text-center">
-                      <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-green-500/20">
-                        <Tag className="size-8 text-green-600" />
+                    <div className="rounded-md border border-success/20 bg-success/10 p-3 text-center">
+                      <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-success/20">
+                        <Tag className="size-8 text-success" />
                       </div>
-                      <h3 className="text-lg font-bold tracking-tight text-green-700 dark:text-green-400">
+                      <h3 className="text-lg font-bold tracking-tight text-success">
                         {locale === "bg" ? "Обявата е създадена!" : "Listing Created!"}
                       </h3>
-                      <p className="mt-2 text-sm font-medium text-green-600/80 dark:text-green-400/80">
+                      <p className="mt-2 text-sm font-medium text-success/80">
                         {locale === "bg" 
                           ? "Вашата обява е публикувана успешно." 
                           : "Your listing has been published successfully."}

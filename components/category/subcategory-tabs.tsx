@@ -57,7 +57,7 @@ function CategoryBanner({ category }: { category: Category }) {
   const name = locale === 'bg' && category.name_bg ? category.name_bg : category.name
   
   return (
-    <div className="mb-4 rounded-xl overflow-hidden bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-border/50">
+    <div className="mb-4 rounded-xl overflow-hidden bg-primary/5 border border-border/50">
       <div className="flex items-center gap-4 p-4">
         {/* Category Icon or Image */}
         <div className="shrink-0 size-14 rounded-full bg-primary/10 flex items-center justify-center">

@@ -57,7 +57,7 @@ export function ProductPrice({
       aria-label={showAccessibleLabel ? `Price: ${accessiblePrice}${hasDiscount ? `, was ${accessibleOriginal}` : ''}` : undefined}
     >
       <span className={cn(
-        "flex items-baseline gap-0.5",
+        "flex items-baseline gap-0.5 tabular-nums",
         hasDiscount ? "text-price-sale" : "text-price-regular"
       )}>
         {priceParts.symbolPosition === 'before' && (
@@ -97,7 +97,7 @@ export function ProductPrice({
       
       {hasDiscount && originalPrice && (
         <span 
-          className={cn("text-price-original line-through", classes.original)}
+          className={cn("text-price-original line-through tabular-nums", classes.original)}
           aria-hidden="true"
         >
           {formatPrice(originalPrice, locale)}
@@ -118,7 +118,7 @@ function InlinePrice({
   className?: string
 }) {
   return (
-    <span className={cn("text-price-regular font-medium", className)}>
+    <span className={cn("text-price-regular font-medium tabular-nums", className)}>
       {formatPrice(price, locale)}
     </span>
   )

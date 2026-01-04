@@ -11,6 +11,17 @@ type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"]
 type ProductImageRow = Database["public"]["Tables"]["product_images"]["Row"]
 type ProductVariantRow = Database["public"]["Tables"]["product_variants"]["Row"]
 
+type SellerStatsSummary = Pick<
+  SellerStatsRow,
+  | "seller_id"
+  | "average_rating"
+  | "total_reviews"
+  | "positive_feedback_pct"
+  | "follower_count"
+  | "total_sales"
+  | "response_time_hours"
+>
+
 type ProductSeller = Pick<
   ProfileRow,
   "id" | "username" | "display_name" | "avatar_url" | "verified" | "is_seller" | "created_at"
@@ -18,18 +29,18 @@ type ProductSeller = Pick<
 
 type ProductCategory = Pick<
   CategoryRow,
-  "id" | "name" | "name_bg" | "slug" | "parent_id" | "icon" | "image_url"
+  "id" | "name" | "name_bg" | "slug" | "parent_id" | "icon"
 >
 
 type ProductImage = Pick<
   ProductImageRow,
-  "id" | "image_url" | "thumbnail_url" | "display_order" | "is_primary"
+  "id" | "image_url" | "display_order" | "is_primary"
 >
 
 export type ProductPageProduct = ProductRow & {
   seller: ProductSeller
   category: ProductCategory | null
-  seller_stats: SellerStatsRow | null
+  seller_stats: SellerStatsSummary | null
   product_images?: ProductImage[]
   product_variants?: ProductVariantRow[]
 }
@@ -39,10 +50,10 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 const isUuid = (value: unknown): value is string => typeof value === 'string' && UUID_REGEX.test(value)
 
 const PRODUCT_SELECT =
-  'id,title,price,seller_id,category_id,slug,description,condition,brand_id,images,is_boosted,boost_expires_at,is_featured,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,created_at,updated_at,status,stock,tags,seller_city,listing_type,meta_title,meta_description,barcode,cost_price,sku,track_inventory,weight,weight_unit,attributes' as const
+  'id,title,slug,price,list_price,description,condition,images,attributes,sku,meta_description,rating,review_count,stock,pickup_only,seller_id,category_id' as const
 
 const SELLER_STATS_SELECT =
-  'seller_id,active_listings,total_listings,total_sales,total_revenue,total_reviews,average_rating,five_star_reviews,positive_feedback_pct,response_rate_pct,response_time_hours,communication_pct,item_described_pct,shipped_on_time_pct,shipping_speed_pct,repeat_customer_pct,follower_count,first_sale_at,last_sale_at,updated_at' as const
+  'seller_id,average_rating,total_reviews,positive_feedback_pct,follower_count,total_sales,response_time_hours' as const
 
 /**
  * Fetch product by seller username + product slug.
@@ -103,10 +114,10 @@ export async function fetchProductByUsernameAndSlug(
         id, username, display_name, avatar_url, verified, is_seller, created_at
       ),
       category:categories (
-        id, name, name_bg, slug, parent_id, icon, image_url
+        id, name, name_bg, slug, parent_id, icon
       ),
       product_images (
-        id, image_url, thumbnail_url, display_order, is_primary
+        id, image_url, display_order, is_primary
       ),
       product_variants (
         id,
@@ -187,7 +198,7 @@ export async function fetchProductByUsernameAndSlug(
     // Fetch product_images for the fallback path
     const { data: productImages } = await supabase
       .from("product_images")
-      .select("id, image_url, thumbnail_url, display_order, is_primary")
+      .select("id, image_url, display_order, is_primary")
       .eq("product_id", fallbackProduct.id)
       .order("display_order", { ascending: true })
 
@@ -267,7 +278,7 @@ export async function fetchSellerProducts(
   cacheTag(`seller-products-${sellerId}`)
 
   const SELLER_PRODUCTS_SELECT =
-    'id,title,price,seller_id,category_id,slug,images,is_boosted,boost_expires_at,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,created_at,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,seller_city' as const
+    'id,title,slug,price,list_price,images,condition' as const
 
   let query = supabase
     .from("products")

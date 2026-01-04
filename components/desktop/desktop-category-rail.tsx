@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { getCategoryName, type CategoryDisplay } from "@/lib/category-display"
@@ -44,6 +45,38 @@ export function DesktopCategoryRail({
 }: DesktopCategoryRailProps) {
   const displayCategories = categories.length > 0 ? categories : fallbackCategories
 
+  const railRef = React.useRef<HTMLDivElement | null>(null)
+
+  const getRailItems = React.useCallback(() => {
+    const root = railRef.current
+    if (!root) return []
+    return Array.from(root.querySelectorAll<HTMLAnchorElement>('a[data-rail-item="true"]'))
+  }, [])
+
+  const handleItemFocus = React.useCallback((e: React.FocusEvent<HTMLAnchorElement>) => {
+    // Keep focused item visible when tabbing through a horizontally scrollable rail.
+    e.currentTarget.scrollIntoView({ block: "nearest", inline: "center" })
+  }, [])
+
+  const handleItemKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLAnchorElement>) => {
+    // Add optional arrow-key navigation without changing default tab order.
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return
+
+    const items = getRailItems()
+    if (items.length === 0) return
+
+    const current = e.currentTarget
+    const idx = items.indexOf(current)
+    if (idx < 0) return
+
+    const delta = e.key === "ArrowRight" ? 1 : -1
+    const next = items[idx + delta]
+    if (!next) return
+
+    e.preventDefault()
+    next.focus()
+  }, [getRailItems])
+
   const isOnBlue = tone === "onBlue"
   // When we hide the title (home page usage), keep the rail visually compact.
   const isCompact = !showTitle
@@ -78,7 +111,7 @@ export function DesktopCategoryRail({
         }}
         className="w-full"
       >
-        <div className="flex items-center gap-2">
+        <div ref={railRef} className="flex items-center gap-2">
           <CarouselPrevious 
             variant="outline" 
             className={cn(
@@ -87,6 +120,7 @@ export function DesktopCategoryRail({
                 ? "border-cta-trust-blue-text/20 bg-cta-trust-blue-text/10 text-cta-trust-blue-text hover:bg-cta-trust-blue-text/20 hover:text-cta-trust-blue-text disabled:opacity-30" 
                 : "border-border/70 bg-background text-foreground hover:bg-muted disabled:opacity-30"
             )} 
+            aria-label={locale === "bg" ? "Скролирай категориите наляво" : "Scroll categories left"}
           >
             <CaretLeft size={16} weight="bold" />
           </CarouselPrevious>
@@ -100,7 +134,14 @@ export function DesktopCategoryRail({
                   <Link
                     href={href}
                     title={categoryName}
-                    className={cn("group flex flex-col items-center shrink-0", itemWidthClass)}
+                    data-rail-item="true"
+                    className={cn(
+                      "group flex flex-col items-center shrink-0",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      itemWidthClass
+                    )}
+                    onFocus={handleItemFocus}
+                    onKeyDown={handleItemKeyDown}
                   >
                     <div
                       className={cn(
@@ -153,6 +194,7 @@ export function DesktopCategoryRail({
                 ? "border-cta-trust-blue-text/20 bg-cta-trust-blue-text/10 text-cta-trust-blue-text hover:bg-cta-trust-blue-text/20 hover:text-cta-trust-blue-text disabled:opacity-30" 
                 : "border-border/70 bg-background text-foreground hover:bg-muted disabled:opacity-30"
             )} 
+            aria-label={locale === "bg" ? "Скролирай категориите надясно" : "Scroll categories right"}
           >
             <CaretRight size={16} weight="bold" />
           </CarouselNext>

@@ -96,8 +96,8 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
 
               {/* Intentionally no debug UI / query toggles here. */}
               
-              {/* Category Circles Grid - 4 columns with proper spacing */}
-              <div className="grid grid-cols-4 gap-y-4 gap-x-2">
+              {/* Category Circles Grid - 3 columns (better label fit on mobile) */}
+              <div className="grid grid-cols-3 gap-y-4 gap-x-2">
                 {categories.slice(0, 20).map((cat) => {
                   return (
                     <CategoryCircle
@@ -110,7 +110,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                       fallbackIconWeight="regular"
                       variant="menu"
                       label={getShortName(cat)}
-                      labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 max-w-16"
+                      labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 w-full max-w-none break-words hyphens-auto"
                     />
                   )
                 })}

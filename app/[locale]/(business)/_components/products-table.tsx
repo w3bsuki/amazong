@@ -387,13 +387,13 @@ export function ProductsTable({
                   <span className="opacity-70">total</span>
                 </span>
                 {statusCounts.active > 0 && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-success/10 text-success border border-success/20">
                     <span className="tabular-nums">{statusCounts.active}</span>
                     <span className="opacity-70">active</span>
                   </span>
                 )}
                 {statusCounts.draft > 0 && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-400">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-warning/10 text-warning border border-warning/20">
                     <span className="tabular-nums">{statusCounts.draft}</span>
                     <span className="opacity-70">draft</span>
                   </span>
@@ -492,24 +492,24 @@ export function ProductsTable({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
                     <DropdownMenuItem onClick={() => handleBulkStatusUpdate("active")}>
-                      <span className="size-2 rounded-full bg-green-500 mr-2" />
+                      <span className="size-2 rounded-full bg-success mr-2" />
                       Active
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleBulkStatusUpdate("draft")}>
-                      <span className="size-2 rounded-full bg-gray-400 mr-2" />
+                      <span className="size-2 rounded-full bg-muted-foreground/50 mr-2" />
                       Draft
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleBulkStatusUpdate("archived")}>
-                      <span className="size-2 rounded-full bg-red-500 mr-2" />
+                      <span className="size-2 rounded-full bg-destructive mr-2" />
                       Archived
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleBulkStatusUpdate("out_of_stock")}>
-                      <span className="size-2 rounded-full bg-amber-500 mr-2" />
+                      <span className="size-2 rounded-full bg-warning mr-2" />
                       Out of Stock
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <Button variant="outline" size="sm" className="h-7 text-xs text-red-600 hover:text-red-700" onClick={handleBulkDelete} disabled={isLoading}>
+                <Button variant="outline" size="sm" className="h-7 text-xs text-destructive hover:text-destructive/90" onClick={handleBulkDelete} disabled={isLoading}>
                   <IconTrash className="size-3 mr-1" />
                   Delete
                 </Button>
@@ -622,11 +622,11 @@ export function ProductsTable({
                     <TableCell>
                       <span className={cn(
                         "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
-                        product.status === "active" && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-                        product.status === "draft" && "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400",
-                        product.status === "archived" && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-                        product.status === "out_of_stock" && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-                        !product.status && "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                        product.status === "active" && "bg-success/10 text-success border border-success/20",
+                        product.status === "draft" && "bg-muted text-muted-foreground border border-border",
+                        product.status === "archived" && "bg-destructive/10 text-destructive border border-destructive/20",
+                        product.status === "out_of_stock" && "bg-warning/10 text-warning border border-warning/20",
+                        !product.status && "bg-muted text-muted-foreground border border-border"
                       )}>
                         {product.status === "out_of_stock" ? "Out of Stock" : 
                          product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "Draft"}
@@ -635,8 +635,8 @@ export function ProductsTable({
                     <TableCell>
                       <span className={cn(
                         "text-sm tabular-nums",
-                        product.stock === 0 && "text-red-600 font-medium",
-                        product.stock > 0 && product.stock <= 5 && "text-amber-600",
+                        product.stock === 0 && "text-destructive font-medium",
+                        product.stock > 0 && product.stock <= 5 && "text-warning",
                       )}>
                         {product.stock === 0 ? "Out of stock" : `${product.stock} in stock`}
                       </span>
@@ -688,7 +688,7 @@ export function ProductsTable({
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            className="text-red-600"
+                            className="text-destructive"
                             onClick={() => handleDelete(product.id)}
                             disabled={isLoading}
                           >

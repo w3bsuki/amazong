@@ -19,7 +19,8 @@ import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
 import { DesktopSearch } from "@/components/desktop/desktop-search"
 import { Button } from "@/components/ui/button"
-import { Search, Camera, ChevronLeft, ScanLine } from "lucide-react"
+import { Search, ChevronLeft, ScanLine } from "lucide-react"
+import { Camera } from "@phosphor-icons/react"
 
 // Utilities
 import { getCountryName } from "@/lib/geolocation"
@@ -124,7 +125,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
             "flex items-center shrink-0 min-h-touch -ml-2",
             isProductPage && "ml-0"
           )}>
-            <span className="text-xl font-bold tracking-tight text-header-text">Treido</span>
+            <span className="text-xl font-bold tracking-tight leading-none text-header-text">Treido</span>
           </Link>
           <div className="flex-1" />
           <div className="flex items-center">
@@ -173,7 +174,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
           {/* Left Section - Logo + Location */}
           <div className="flex items-center gap-1">
             <Link href="/" prefetch={true} className="flex items-center shrink-0 outline-none">
-              <span className="text-xl font-bold tracking-tight text-header-text">Treido</span>
+              <span className="text-xl font-bold tracking-tight leading-none text-header-text">Treido</span>
             </Link>
             <div className="hidden lg:block">
               <AccountDropdown user={user} variant="full" />
@@ -209,7 +210,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
                       className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
                     >
                       <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
-                      <Camera size={20} aria-hidden="true" />
+                      <Camera weight="regular" aria-hidden="true" />
                     </Button>
                   </Link>
                 </div>
@@ -247,7 +248,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
                       className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
                     >
                       <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
-                      <Camera size={20} aria-hidden="true" />
+                      <Camera weight="regular" aria-hidden="true" />
                     </Button>
                   </Link>
                 </div>

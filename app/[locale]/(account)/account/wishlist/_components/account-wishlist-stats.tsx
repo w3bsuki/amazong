@@ -56,10 +56,10 @@ export function AccountWishlistStats({ stats, locale }: WishlistStatsProps) {
           <span className="text-account-stat-label">{t.items}</span>
         </div>
         {stats.inStock > 0 && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 dark:bg-emerald-950/30 dark:border-emerald-800">
-            <span className="size-2 rounded-full bg-emerald-500" />
-            <span className="font-semibold text-emerald-600 dark:text-emerald-400">{stats.inStock}</span>
-            <span className="text-emerald-600/70 dark:text-emerald-400/70">{t.ready}</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-success/10 border border-success/20">
+            <span className="size-2 rounded-full bg-success" />
+            <span className="font-semibold text-success">{stats.inStock}</span>
+            <span className="text-success/70">{t.ready}</span>
           </div>
         )}
       </div>
@@ -89,12 +89,12 @@ export function AccountWishlistStats({ stats, locale }: WishlistStatsProps) {
               <IconPackage className="size-4 shrink-0" />
               <span className="truncate">{t.inStock}</span>
             </CardDescription>
-            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.inStock > 0 ? 'text-emerald-600 dark:text-emerald-400' : ''}`}>
+            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.inStock > 0 ? 'text-success' : ''}`}>
               {stats.inStock.toLocaleString()}
             </CardTitle>
             <CardAction>
               {stats.inStock > 0 ? (
-                <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-400">
+                <Badge variant="outline" className="text-success border-success/20 bg-success/10">
                   {t.available}
                 </Badge>
               ) : (
@@ -112,12 +112,12 @@ export function AccountWishlistStats({ stats, locale }: WishlistStatsProps) {
               <IconPackageOff className="size-4 shrink-0" />
               <span className="truncate">{t.outOfStock}</span>
             </CardDescription>
-            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.outOfStock > 0 ? 'text-orange-600 dark:text-orange-400' : ''}`}>
+            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.outOfStock > 0 ? 'text-warning' : ''}`}>
               {stats.outOfStock.toLocaleString()}
             </CardTitle>
             <CardAction>
               {stats.outOfStock > 0 ? (
-                <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 dark:bg-orange-950/50 dark:border-orange-800 dark:text-orange-400">
+                <Badge variant="outline" className="text-warning border-warning/20 bg-warning/10">
                   {t.unavailable}
                 </Badge>
               ) : (

@@ -84,7 +84,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (category?.parent_id) {
     const { data: parent } = await supabase
       .from("categories")
-      .select("id, name, name_bg, slug, icon, parent_id, image_url")
+      .select("id, name, name_bg, slug, icon, parent_id")
       .eq("id", category.parent_id)
       .maybeSingle()
     parentCategory = (parent as unknown as ProductPageProduct["category"] | null) ?? null

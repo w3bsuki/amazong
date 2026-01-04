@@ -239,7 +239,7 @@ export async function getProductsByCategorySlug(
   let query = supabase
     .from('products')
     .select(
-      'id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,avatar_url,tier), categories!inner(id,slug,name,name_bg,icon)'
+      'id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, seller:profiles(id,username,avatar_url,tier), categories!inner(id,slug,name,name_bg,icon)'
     )
     .eq('categories.slug', categorySlug)
     .order('created_at', { ascending: false })
@@ -289,7 +289,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   // Use getCategoryPath() separately when breadcrumbs are needed.
   let query = supabase
     .from('products')
-    .select('id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, product_images(image_url,thumbnail_url,display_order,is_primary), is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, attributes, seller:profiles(id,username,avatar_url,tier), categories(id,slug,name,name_bg,icon)')
+    .select('id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, seller:profiles(id,username,avatar_url,tier), categories(id,slug,name,name_bg,icon)')
 
   // Apply shipping zone filter (WW = show all, so no filter)
   if (zone && zone !== 'WW') {

@@ -27,7 +27,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
       <Link href="/auth/login">
         <Button
           variant="ghost"
-            className={cn("h-11 px-3 text-sm font-medium border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover", className)}
+            className={cn("h-10 px-3 text-sm font-medium border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover", className)}
         >
           {t("signIn")}
         </Button>
@@ -38,13 +38,13 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
   const triggerContent = variant === "full" ? (
     <div
       className={cn(
-        "h-11 px-3 text-xs font-semibold border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover transition-all flex items-center cursor-pointer",
+        "h-10 px-3 text-xs font-semibold leading-none border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover transition-all flex items-center cursor-pointer",
         className
       )}
     >
       <div className="flex items-center gap-1.5" aria-hidden="true">
         <div className="flex items-center justify-center text-header-text/90">
-          <UserCircle weight="fill" className="size-5" />
+          <UserCircle weight="fill" className="size-6" />
         </div>
         <div className="flex flex-col items-start leading-none gap-0.5">
           <span className="text-2xs text-header-text/70 font-normal">

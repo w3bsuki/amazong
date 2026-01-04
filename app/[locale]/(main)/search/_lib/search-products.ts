@@ -20,7 +20,7 @@ export async function searchProducts(
   let dbQuery = supabase
     .from("products")
     .select(
-      "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,attributes,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),categories:categories!products_category_id_fkey(slug)"
+      "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business),categories:categories!products_category_id_fkey(slug)"
     )
 
   if (shippingFilter) {
@@ -139,7 +139,6 @@ export async function searchProducts(
         }
       : null,
     categories: p.categories && !Array.isArray(p.categories) ? p.categories : null,
-    attributes: p.attributes as Record<string, string> | null,
   }))
 
   return { products, total: total || 0 }

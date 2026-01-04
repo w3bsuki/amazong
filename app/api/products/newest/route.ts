@@ -16,7 +16,7 @@ interface ProductRowWithRelations {
   rating: number | null
   review_count: number | null
   images: string[] | null
-  product_images: Array<{
+  product_images?: Array<{
     image_url: string
     thumbnail_url: string | null
     display_order: number | null
@@ -27,7 +27,7 @@ interface ProductRowWithRelations {
   boost_expires_at: string | null
   created_at: string
   slug: string | null
-  attributes: Record<string, unknown> | null
+  attributes?: Record<string, unknown> | null
   category_ancestors: string[] | null
   seller: { username: string | null } | null
   categories: {
@@ -112,12 +112,10 @@ export async function GET(request: NextRequest) {
       review_count, 
       images,
       category_ancestors, 
-      product_images(image_url,thumbnail_url,display_order,is_primary),
       is_boosted,
       boost_expires_at,
       created_at, 
       slug,
-      attributes,
       seller:profiles(id,username,avatar_url,tier),
       categories(id,slug,name,name_bg,icon)
     `

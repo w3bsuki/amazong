@@ -134,11 +134,11 @@ export function CategorySubheader({ categories }: CategorySubheaderProps) {
             aria-expanded={isFullMenuOpen}
             aria-haspopup="menu"
           >
-            <List weight="bold" size={16} aria-hidden="true" />
+            <List weight="bold" size={18} aria-hidden="true" />
             <span className="hidden xl:inline">{locale === "bg" ? "Всички категории" : "All Categories"}</span>
             <span className="xl:hidden">{locale === "bg" ? "Меню" : "Menu"}</span>
             <CaretDown
-              size={10}
+              size={12}
               weight="fill"
               className={cn("opacity-60", isFullMenuOpen && "rotate-180")}
               aria-hidden="true"
@@ -527,7 +527,7 @@ function CategoryNavItem({ category, isActive, getName, onMouseEnter, onMouseLea
         <span>{getName(category)}</span>
         {hasChildren && (
           <CaretDown
-            size={10}
+            size={12}
             weight="fill"
             className={cn("opacity-60", isActive && "rotate-180")}
             aria-hidden="true"

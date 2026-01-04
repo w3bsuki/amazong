@@ -353,7 +353,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                   const { data } = await supabase
                     .from("products")
                     .select(
-                      "images, product_images(image_url,thumbnail_url,display_order,is_primary)"
+                      "images, product_images(image_url,display_order,is_primary)"
                     )
                     .eq("id", productId)
                     .maybeSingle()
@@ -361,7 +361,6 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                   // Type-safe access to the joined product_images
                   type ProductImage = {
                     image_url: string | null
-                    thumbnail_url: string | null
                     is_primary: boolean | null
                     display_order: number | null
                   }
@@ -373,7 +372,6 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                     productImages?.slice().sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))[0]
 
                   const imageUrl =
-                    primary?.thumbnail_url ??
                     primary?.image_url ??
                     legacyImages?.[0] ??
                     null

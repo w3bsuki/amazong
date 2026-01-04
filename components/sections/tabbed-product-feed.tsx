@@ -329,7 +329,7 @@ export function TabbedProductFeed({
               <div className="overflow-x-auto no-scrollbar pb-1">
                 <TabsList
                   aria-label={locale === "bg" ? "Филтър на обявите" : "Listings filter"}
-                  className="h-auto w-max min-w-full justify-start gap-1 rounded-full border border-border bg-muted/30 p-1 md:w-full md:justify-center"
+                  className="h-auto w-max min-w-full justify-start gap-4 rounded-none border-0 border-b border-border/50 bg-transparent p-0 pb-1 md:w-full md:justify-center"
                 >
                   {tabs.map((tab) => {
                     return (
@@ -337,9 +337,12 @@ export function TabbedProductFeed({
                         key={tab.id}
                         value={tab.id}
                         className={cn(
-                          "h-touch-sm flex-none rounded-full border-none px-4 text-sm md:text-base font-semibold",
-                          "text-muted-foreground hover:text-foreground hover:bg-background/50",
-                          "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
+                          "relative h-touch-sm flex-none rounded-none border-none bg-transparent px-1 py-2 text-sm md:text-base font-semibold",
+                          "text-muted-foreground hover:text-foreground",
+                          "data-[state=active]:bg-transparent data-[state=active]:text-foreground",
+                          "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:rounded-full",
+                          "after:bg-primary after:scale-x-0 after:transition-transform after:duration-100",
+                          "data-[state=active]:after:scale-x-100",
                           "md:flex-1 md:justify-center"
                         )}
                       >

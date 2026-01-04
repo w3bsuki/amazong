@@ -107,7 +107,7 @@
 
   /* === CATEGORY BROWSE TOKENS === */
   /* Mobile category circle size (compact for dense nav). */
-  --category-circle-mobile: 2.75rem; /* 44px */
+  --category-circle-mobile: 3rem; /* 48px */
 
   /* Form-specific spacing */
   --spacing-form: 1rem;

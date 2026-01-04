@@ -48,29 +48,23 @@ export function CategoryCircles({
   }
 
   return (
-    <div className="px-(--page-inset) flex items-center gap-2">
-      {/* Back Button - shows when L1 or deeper is selected */}
+    <div className="px-(--page-inset) flex items-center gap-1.5">
+      {/* Back Button - compact 32px touch target */}
       {activeL1 && (
         <button
           type="button"
           onClick={onBack}
-          className="size-9 shrink-0 rounded-full bg-muted/60 flex items-center justify-center hover:bg-muted transition-colors duration-100"
+          className="size-touch shrink-0 rounded-full bg-muted/50 flex items-center justify-center"
           aria-label={locale === "bg" ? "Назад" : "Back"}
         >
-          <CaretLeft
-            size={18}
-            weight="bold"
-            className="text-muted-foreground"
-            aria-hidden="true"
-          />
+          <CaretLeft size={16} weight="bold" className="text-muted-foreground" />
         </button>
       )}
 
       <div
         ref={subTabsContainerRef}
-        className="flex-1 flex overflow-x-auto no-scrollbar gap-1.5 snap-x snap-mandatory items-start"
+        className="flex-1 flex overflow-x-auto no-scrollbar gap-1.5 snap-x snap-mandatory items-center"
       >
-        {/* Subcategory Circles */}
         {circles.map((sub) => {
           const isActive = showL2Circles
             ? activeL2 === sub.slug
@@ -79,7 +73,6 @@ export function CategoryCircles({
           const dimmed =
             (showL2Circles ? !!activeL2 : !!activeL1) && !isActive
 
-          // When circlesNavigateToPages is true, navigate to the category's own page
           const href =
             circlesNavigateToPages && activeTab !== "all"
               ? (`/categories/${sub.slug}` as const)
@@ -97,10 +90,10 @@ export function CategoryCircles({
               fallbackIconWeight={isActive ? "fill" : "regular"}
               variant="muted"
               label={getCategoryShortName(sub, locale)}
-              className={cn("w-12", "transition-opacity duration-100")}
+              className="w-16 shrink-0"
               labelClassName={cn(
-                "text-2xs text-center leading-tight line-clamp-2 w-full font-medium",
-                isActive ? "text-brand" : "text-muted-foreground"
+                "w-full text-2xs text-center leading-tight line-clamp-2",
+                isActive ? "text-brand font-semibold" : "text-muted-foreground"
               )}
             />
           )

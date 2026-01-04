@@ -34,7 +34,7 @@ type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
 type ProductVariantRow = Database["public"]["Tables"]["product_variants"]["Row"];
 
 type ProductWithSellerStats = ProductRow & {
-  seller_stats?: SellerStatsRow | null;
+  seller_stats?: Partial<SellerStatsRow> | null;
   viewers_count?: number | null;
   sold_count?: number | null;
 };

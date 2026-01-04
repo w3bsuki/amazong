@@ -22,7 +22,7 @@ import { Heart, ShoppingCart, Plus, Star, SealCheck, Truck } from "@phosphor-ico
 // =============================================================================
 
 const productCardVariants = cva(
-  "tap-transparent group relative block h-full min-w-0 cursor-pointer overflow-hidden bg-transparent focus-within:ring-2 focus-within:ring-ring/40 lg:rounded-md lg:border lg:border-transparent lg:bg-card lg:hover:border-border/60 lg:hover:shadow-sm",
+  "tap-transparent group relative block h-full min-w-0 cursor-pointer overflow-hidden bg-transparent focus-within:ring-2 focus-within:ring-ring/40 lg:rounded-md lg:border lg:border-transparent lg:bg-card lg:transition-[border-color,box-shadow] lg:duration-100 lg:hover:border-border lg:hover:shadow-sm",
   {
     variants: {
       variant: {
@@ -306,13 +306,16 @@ function ProductCard({
       </Link>
 
       {/* Image Container - 4:5 aspect ratio for optimal mobile display */}
-      <div className="relative overflow-hidden rounded-md bg-muted lg:rounded-none">
+      <div className={cn(
+        "relative overflow-hidden rounded-md bg-muted lg:rounded-none",
+        !inStock && "after:absolute after:inset-0 after:bg-background/60"
+      )}>
         <AspectRatio ratio={4 / 5}>
           <Image
             src={imageSrc}
             alt={title}
             fill
-            className="object-cover"
+            className={cn("object-cover", !inStock && "grayscale")}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             placeholder="blur"
             blurDataURL={productBlurDataURL()}
@@ -321,22 +324,32 @@ function ProductCard({
           />
         </AspectRatio>
 
+        {/* Out of Stock overlay */}
+        {!inStock && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center">
+            <span className="rounded-sm bg-foreground/80 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-background">
+              {t("outOfStock")}
+            </span>
+          </div>
+        )}
+
         {/* Condition Badge - Top Left (C2C feature) */}
-        {conditionLabel && (
-          <span className="absolute left-1.5 top-1.5 z-10 rounded-sm bg-foreground/90 px-1.5 py-0.5 text-2xs font-semibold uppercase tracking-wide text-background">
+        {conditionLabel && inStock && (
+          <span className="absolute left-1.5 top-1.5 z-10 rounded-sm bg-foreground/90 px-1.5 py-0.5 text-2xs font-semibold uppercase tracking-wider text-background">
             {conditionLabel}
           </span>
         )}
 
-        {/* Wishlist button - Top Right */}
+        {/* Wishlist button - Top Right (WCAG 2.2 AA: min 24px, using 28px) */}
         {showWishlist && (
           <button
             type="button"
             className={cn(
-              "absolute right-1.5 top-1.5 z-10 flex size-7 items-center justify-center rounded-full transition-colors duration-100",
+              "absolute right-1.5 top-1.5 z-10 flex min-h-touch-sm min-w-touch-sm size-7 items-center justify-center rounded-full outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
+              !inWishlist && "lg:pointer-events-none lg:opacity-0 lg:group-hover:pointer-events-auto lg:group-hover:opacity-100 lg:transition-opacity lg:duration-100",
               inWishlist
-                ? "bg-red-500 text-white"
-                : "bg-black/30 text-white backdrop-blur-sm hover:bg-black/50 active:bg-red-500",
+                ? "bg-product-wishlist-active text-white"
+                : "bg-overlay-dark text-white backdrop-blur-sm hover:bg-foreground/50 active:bg-product-wishlist",
               isWishlistPending && "pointer-events-none opacity-50"
             )}
             onClick={handleWishlist}
@@ -350,7 +363,7 @@ function ProductCard({
         {/* Discount Badge - Bottom Right with gradient (only show if >= 5%) */}
         {hasDiscount && discountPercent >= 5 && (
           <>
-            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/50 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-10 bg-overlay-dark" />
             <span className="absolute bottom-1.5 right-1.5 z-10 text-2xs font-bold text-white drop-shadow-sm">
               -{discountPercent}%
             </span>
@@ -359,7 +372,7 @@ function ProductCard({
 
         {/* Smart attribute badge - bottom left over gradient */}
         {smartBadge && !hasDiscount && (
-          <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/60 to-transparent px-1.5 pb-1 pt-4">
+          <div className="absolute inset-x-0 bottom-0 z-10 bg-overlay-dark px-1.5 py-1">
             <span className="text-xs font-medium text-white drop-shadow-sm">
               {smartBadge}
             </span>
@@ -374,8 +387,8 @@ function ProductCard({
           {/* Current Price - HERO element */}
           <span
             className={cn(
-              "text-lg font-bold leading-tight tracking-tight lg:text-xl",
-              hasDiscount ? "text-red-600" : "text-foreground"
+              "text-price font-bold leading-tight tracking-tight lg:text-lg",
+              hasDiscount ? "text-price-sale" : "text-price-regular"
             )}
           >
             {formattedPrice}
@@ -383,14 +396,14 @@ function ProductCard({
 
           {/* Original Price (crossed out) */}
           {hasDiscount && formattedOriginalPrice && (
-            <span className="text-xs text-muted-foreground line-through">
+            <span className="text-xs text-price-original line-through">
               {formattedOriginalPrice}
             </span>
           )}
 
           {/* Free Shipping Badge */}
           {freeShipping && (
-            <span className="inline-flex items-center gap-0.5 rounded-sm bg-emerald-50 px-1 py-px text-2xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+            <span className="inline-flex items-center gap-0.5 rounded-sm bg-shipping-free/10 px-1 py-px text-2xs font-medium text-shipping-free">
               <Truck size={10} weight="bold" />
               <span className="hidden xs:inline">Free</span>
             </span>
@@ -398,7 +411,7 @@ function ProductCard({
         </div>
 
         {/* Title - 2 lines max, professional typography */}
-        <h3 className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-foreground/90 lg:text-sm">
+        <h3 className="mt-0.5 line-clamp-2 text-body leading-snug text-foreground/90">
           {title}
         </h3>
 
@@ -407,7 +420,7 @@ function ProductCard({
           <div className="mt-0.5 flex items-center gap-1 text-2xs text-muted-foreground">
             {hasRating && (
               <>
-                <Star size={10} weight="fill" className="text-amber-400" />
+                <Star size={10} weight="fill" className="text-rating" />
                 <span className="font-medium text-foreground/80">
                   {rating.toFixed(1)}
                 </span>
@@ -429,17 +442,17 @@ function ProductCard({
         {(minOrderQuantity && minOrderQuantity > 1) || businessVerified || samplesAvailable ? (
           <div className="mt-0.5 flex flex-wrap gap-1">
             {minOrderQuantity && minOrderQuantity > 1 && (
-              <span className="rounded-sm bg-blue-50 px-1 py-px text-2xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-400">
+              <span className="rounded-sm bg-info/10 px-1 py-px text-2xs font-medium text-info">
                 MOQ:{minOrderQuantity}
               </span>
             )}
             {samplesAvailable && (
-              <span className="rounded-sm bg-amber-50 px-1 py-px text-2xs font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-400">
+              <span className="rounded-sm bg-warning/10 px-1 py-px text-2xs font-medium text-warning">
                 Samples
               </span>
             )}
             {businessVerified && (
-              <span className="rounded-sm bg-emerald-50 px-1 py-px text-2xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+              <span className="rounded-sm bg-success/10 px-1 py-px text-2xs font-medium text-success">
                 Verified
               </span>
             )}
@@ -453,7 +466,7 @@ function ProductCard({
             <div className="flex min-w-0 items-center gap-1">
               <Avatar className="size-5 shrink-0 ring-1 ring-border/50">
                 <AvatarImage src={safeAvatarSrc(sellerAvatarUrl)} />
-                <AvatarFallback className="bg-muted text-[8px] font-medium">
+                <AvatarFallback className="bg-muted text-2xs font-medium">
                   {displaySellerName.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -461,22 +474,23 @@ function ProductCard({
                 {displaySellerName}
               </span>
               {sellerVerified && (
-                <SealCheck size={10} weight="fill" className="shrink-0 text-blue-500" />
+                <SealCheck size={10} weight="fill" className="shrink-0 text-verified" />
               )}
             </div>
           ) : (
             <div className="flex-1" />
           )}
 
-          {/* Quick-Add Button - 28px (size-7), matched with wishlist */}
+          {/* Quick-Add Button - 28px (size-7), WCAG 2.2 AA compliant */}
           {showQuickAdd && (
             <button
               type="button"
               className={cn(
-                "flex size-7 shrink-0 items-center justify-center rounded transition-colors duration-100",
+                "flex min-h-touch-sm min-w-touch-sm size-7 shrink-0 items-center justify-center rounded outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
                 inCart
                   ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground active:bg-primary active:text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary active:bg-primary active:text-primary-foreground",
+                (!inStock || isOwnProduct) && "cursor-not-allowed opacity-40"
               )}
               onClick={handleAddToCart}
               disabled={isOwnProduct || !inStock}
@@ -522,7 +536,7 @@ function ProductGrid({ children, density = "default", className }: ProductGridPr
   return (
     <div
       className={cn(
-        "grid gap-1.5 px-1 sm:gap-2 sm:px-2 lg:gap-3 lg:px-3",
+        "grid gap-1.5 px-(--page-inset) sm:gap-2 sm:px-(--page-inset-md) lg:gap-3 lg:px-(--page-inset-lg)",
         densityClasses[density],
         className
       )}

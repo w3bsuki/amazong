@@ -31,7 +31,6 @@ export async function GET(request: Request) {
         title,
         price,
         images,
-        product_images(image_url,thumbnail_url,display_order,is_primary),
         slug,
         seller:profiles(username)
       `)
@@ -46,21 +45,7 @@ export async function GET(request: Request) {
 
     // Transform to include storeSlug at top level for easier client consumption
     const transformedProducts = (products || []).map((p) => {
-      const productImages = p.product_images
-
-      const normalizedImages = Array.isArray(p.images) && p.images.length > 0
-        ? p.images
-        : (productImages || [])
-            .filter((img) => !!img?.image_url)
-            .sort((a, b) => {
-              const ap = a.is_primary ? 1 : 0
-              const bp = b.is_primary ? 1 : 0
-              if (ap !== bp) return bp - ap
-              const ao = a.display_order ?? 0
-              const bo = b.display_order ?? 0
-              return ao - bo
-            })
-            .map((img) => img.image_url)
+      const normalizedImages = Array.isArray(p.images) ? p.images : []
 
       return {
         id: p.id,

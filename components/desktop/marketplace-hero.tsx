@@ -1,14 +1,9 @@
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
 import { 
   Storefront, 
-  ShoppingBag, 
-  ArrowRight, 
-  Users, 
-  User, 
-  Heart, 
-  Bell
+  ShoppingBag,
+  Users
 } from "@phosphor-icons/react/dist/ssr"
 
 interface Category {
@@ -30,17 +25,7 @@ export function MarketplaceHero({ locale, categories }: MarketplaceHeroProps) {
     <div className="w-full">
       {/* Main Hero Banner - Full Width */}
       <div className="relative w-full overflow-hidden rounded-md bg-cta-trust-blue shadow-sm">
-        {/* Background Solid Color */}
-        <div className="absolute inset-0 bg-cta-trust-blue z-0" />
-        <div
-          className="absolute right-0 top-0 h-full w-1/2 bg-cover bg-center opacity-10 mix-blend-overlay"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=1000&auto=format&fit=crop')",
-          }}
-        />
-        
-        <div className="relative z-10 px-6 py-6 lg:px-8 lg:py-8">
+        <div className="relative px-6 py-5 lg:px-8 lg:py-6">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             {/* Left Content */}
             <div className="text-center lg:text-left max-w-2xl">

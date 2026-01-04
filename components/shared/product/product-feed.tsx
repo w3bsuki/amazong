@@ -2,9 +2,8 @@
 
 import { useRef, useEffect, useCallback, useState } from "react"
 import type { UIProduct } from "@/lib/data/products"
-import { ProductCard } from "@/components/shared/product/product-card"
+import { ProductCard, ProductCardSkeletonGrid, ProductGrid } from "@/components/shared/product/product-card"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
-import { Skeleton } from "@/components/ui/skeleton"
 
 // =============================================================================
 // Types
@@ -28,34 +27,16 @@ export interface ProductFeedProps {
 }
 
 // =============================================================================
-// Loading Skeleton
-// =============================================================================
-
-function ProductGridSkeleton({ count = 6 }: { count?: number }) {
-  return (
-    <div className="grid grid-cols-2 gap-1 px-1">
-      {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="flex flex-col h-full">
-          <Skeleton className="aspect-square w-full rounded-md mb-1" />
-          <div className="space-y-1 flex-1 px-0.5">
-            <Skeleton className="h-2.5 w-full rounded-sm" />
-            <Skeleton className="h-2.5 w-2/3 rounded-sm" />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// =============================================================================
 // End of Results
 // =============================================================================
 
-function EndOfResults({ locale }: { locale: string }) {
+function EndOfResults({ locale, count }: { locale: string; count: number }) {
   return (
     <div className="flex items-center justify-center gap-2 py-4 text-xs text-muted-foreground">
       <span className="h-px w-12 bg-border" />
-      <span>{locale === "bg" ? "Край на резултатите" : "End of results"}</span>
+      <span>
+        {locale === "bg" ? `${count} продукта` : `${count} products`}
+      </span>
       <span className="h-px w-12 bg-border" />
     </div>
   )
@@ -76,6 +57,14 @@ export function ProductFeed({
   onLoadMore,
 }: ProductFeedProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null)
+
+  const categoryAnnouncement = activeCategoryName
+    ? (locale === "bg"
+        ? `Показване на ${activeCategoryName}`
+        : `Now showing ${activeCategoryName}`)
+    : null
+
+  const loadingLabel = locale === "bg" ? "Зареждане на продукти" : "Loading products"
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
@@ -98,13 +87,25 @@ export function ProductFeed({
 
   return (
     <div className="pt-1">
+      {/* Announce category changes for screen readers */}
+      <div role="status" aria-live="polite" className="sr-only">
+        {categoryAnnouncement}
+      </div>
+
+      <div aria-busy={isLoading} aria-label={isLoading ? loadingLabel : undefined}>
       {products.length === 0 && !isLoading ? (
         <EmptyStateCTA
           variant={isAllTab ? "no-listings" : "no-category"}
           {...(activeCategoryName ? { categoryName: activeCategoryName } : {})}
         />
+      ) : isLoading && products.length === 0 ? (
+        <ProductCardSkeletonGrid
+          count={6}
+          density="compact"
+          className="py-1"
+        />
       ) : (
-        <div className="grid grid-cols-2 gap-1 px-1">
+        <ProductGrid density="compact" className="py-1">
           {products.map((product, index) => (
             <ProductCard
               key={`${product.id}-${activeSlug}`}
@@ -138,12 +139,22 @@ export function ProductFeed({
               {...(product.attributes ? { attributes: product.attributes } : {})}
             />
           ))}
-        </div>
+        </ProductGrid>
       )}
 
+      </div>
+
       <div ref={loadMoreRef} className="py-3">
-        {isLoading && <ProductGridSkeleton count={4} />}
-        {!hasMore && products.length > 0 && <EndOfResults locale={locale} />}
+        {isLoading && products.length > 0 && (
+          <ProductCardSkeletonGrid
+            count={4}
+            density="compact"
+            className="py-1"
+          />
+        )}
+        {!hasMore && products.length > 0 && (
+          <EndOfResults locale={locale} count={products.length} />
+        )}
       </div>
     </div>
   )

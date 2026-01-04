@@ -49,7 +49,7 @@ export function CategoryCircleVisual({
 
   // Variant-specific styling
   // - muted: Light bg, brand icon (default browse)
-  // - menu: Brand bg, white icon (hamburger menu - prominent)
+  // - menu: Neutral bg for drawers/menus (avoid loud/glowy look)
   // - rail: Minimal styling for dense lists
   const variantStyles = {
     muted: {
@@ -57,8 +57,8 @@ export function CategoryCircleVisual({
       iconColor: "text-brand",
     },
     menu: {
-      bg: "bg-brand",
-      iconColor: "text-white",
+      bg: "bg-muted",
+      iconColor: "text-brand",
     },
     rail: {
       bg: "bg-muted/50",
@@ -67,17 +67,15 @@ export function CategoryCircleVisual({
   }
 
   const styles = variantStyles[variant]
-  const hasVisualContent = !!imageUrl
-
-  const activeStyles = active
-    ? "ring-2 ring-brand ring-offset-2 shadow-sm"
-    : ""
+  const activeStyles = active ? "border-primary" : "border-border/40"
 
   return (
     <div
       className={cn(
         "rounded-full flex items-center justify-center overflow-hidden",
-        "transition-all duration-150",
+        "border-2",
+        "shadow-none",
+        "transition-colors duration-100",
         styles.bg,
         activeStyles,
         className

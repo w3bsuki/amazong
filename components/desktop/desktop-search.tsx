@@ -52,8 +52,8 @@ export function DesktopSearch() {
   } = useProductSearch(6)
 
   const handleSearch = useCallback((e: React.FormEvent<HTMLFormElement>) => {
-    // For maximum reliability (including E2E), allow the native GET form
-    // submission to navigate. We still record the search and close UI.
+    // Navigate via next-intl router so we always land on /[locale]/search.
+    // This also avoids relying on middleware redirects in dev/E2E.
     const raw = new FormData(e.currentTarget).get("q")
     const q = (typeof raw === "string" ? raw : (inputRef.current?.value ?? query)).trim()
     if (!q) {
@@ -61,9 +61,11 @@ export function DesktopSearch() {
       return
     }
 
+    e.preventDefault()
     saveSearch(q)
     setIsOpen(false)
-  }, [query, saveSearch])
+    router.push(buildSearchHref(q))
+  }, [buildSearchHref, query, router, saveSearch])
 
   const handleSelectSearch = useCallback((search: string) => {
     setQuery(search)
@@ -160,9 +162,9 @@ export function DesktopSearch() {
             <Button
               type="submit"
               aria-label={t("searchPlaceholder")}
-              className="h-8 w-8 my-auto mr-1 bg-brand hover:bg-brand/90 text-primary-foreground rounded-full p-0 border-none flex items-center justify-center shrink-0"
+              className="size-9 my-auto mr-1 bg-brand hover:bg-brand/90 text-primary-foreground rounded-full p-0 border-none flex items-center justify-center shrink-0"
             >
-              <MagnifyingGlass size={14} weight="bold" />
+              <MagnifyingGlass size={16} weight="bold" />
             </Button>
           </form>
         </PopoverAnchor>

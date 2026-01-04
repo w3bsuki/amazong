@@ -297,7 +297,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
                     <button
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
-                      className="w-full flex items-center justify-between px-4 h-touch active:bg-muted/50 transition-colors text-left"
+                      className="w-full flex items-center justify-between px-4 h-12 active:bg-muted/50 transition-colors text-left"
                     >
                       <div className="flex flex-col">
                         <span className="font-medium text-sm text-foreground">{section.label}</span>

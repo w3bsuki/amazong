@@ -89,7 +89,7 @@ function HamburgerCategoryCirclesInner({
     return (
         <section id="sidebar-categories" className="px-3 py-2.5">
             {categories.length === 0 ? (
-                <div className="grid grid-cols-4 gap-y-3 gap-x-2">
+                <div className="grid grid-cols-3 gap-y-3 gap-x-2">
                     {Array.from({ length: 8 }).map((_, i) => (
                         <div key={i} className="flex flex-col items-center gap-1.5">
                             <div className="size-[52px] rounded-full bg-muted animate-pulse" />
@@ -98,7 +98,7 @@ function HamburgerCategoryCirclesInner({
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-4 gap-y-3 gap-x-2">
+                <div className="grid grid-cols-3 gap-y-3 gap-x-2">
                     {displayCategories.map((cat) => {
                         const name = getCategoryName(cat, locale)
                         return (
@@ -112,7 +112,7 @@ function HamburgerCategoryCirclesInner({
                                 fallbackIconWeight="regular"
                                 variant="menu"
                                 label={name}
-                                labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 max-w-16"
+                                labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 w-full max-w-none break-words hyphens-auto"
                             />
                         )
                     })}

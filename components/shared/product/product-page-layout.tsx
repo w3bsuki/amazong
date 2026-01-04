@@ -21,7 +21,7 @@ type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 type SellerStatsRow = Database["public"]["Tables"]["seller_stats"]["Row"];
 type ProductVariantRow = Database["public"]["Tables"]["product_variants"]["Row"];
 
-type ProductWithSellerStats = ProductRow & { seller_stats?: SellerStatsRow | null };
+type ProductWithSellerStats = ProductRow & { seller_stats?: Partial<SellerStatsRow> | null };
 
 type SellerSummary = {
   id: string;
