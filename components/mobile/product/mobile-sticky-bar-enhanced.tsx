@@ -112,7 +112,7 @@ export function MobileStickyBarEnhanced({
         >
           <Heart 
             weight={inWishlist ? "fill" : "regular"} 
-            className={`size-6 ${inWishlist ? "text-red-500" : "text-muted-foreground"}`} 
+            className={`size-6 ${inWishlist ? "text-destructive" : "text-muted-foreground"}`} 
           />
         </Button>
 

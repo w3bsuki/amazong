@@ -44,7 +44,7 @@ export function MobilePriceBlock({
       {/* Price Row */}
       <div className="flex items-baseline gap-1.5 flex-wrap">
         {/* Sale Price - text-base (16px) bold per design system */}
-        <span className={`text-base font-bold ${hasDiscount ? "text-red-600 dark:text-red-500" : "text-foreground"}`}>
+        <span className={`text-base font-bold ${hasDiscount ? "text-price-sale" : "text-foreground"}`}>
           {formatPrice(salePrice)}
           {showVat && <span className="text-xs font-normal text-muted-foreground ml-1">{t.inclVat}</span>}
         </span>
@@ -60,7 +60,7 @@ export function MobilePriceBlock({
         {hasDiscount && discountPercent > 0 && (
           <Badge 
             variant="secondary"
-            className="h-5 px-1.5 text-2xs font-bold rounded-sm bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-100 border-none shadow-none"
+            className="h-5 px-1.5 text-2xs font-bold rounded-sm bg-deal-light text-deal dark:bg-deal/20 dark:text-deal hover:bg-deal-light border-none shadow-none"
           >
             -{discountPercent}%
           </Badge>

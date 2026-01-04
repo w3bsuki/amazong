@@ -16,7 +16,9 @@ export async function searchProducts(
 
   // Avoid `select('*')` which can be very expensive on wide tables.
   // For counts, selecting a single column is sufficient.
-  let countQuery = supabase.from("products").select("id", { count: "exact", head: true })
+  // NOTE: exact counts can be very expensive (esp. with shipping OR filters).
+  // We use a planned count for much faster response time.
+  let countQuery = supabase.from("products").select("id", { count: "planned", head: true })
 
   // Select only fields needed by the category page cards.
   // IMPORTANT: keep this as a literal string so Supabase types can infer the row shape.
@@ -75,16 +77,6 @@ export async function searchProducts(
     }
   }
 
-  const tCount0 = debug ? Date.now() : 0
-  const { count: total } = await countQuery
-  if (debug) {
-    console.log(
-      `[category:searchProducts] count=${total ?? 0} in ${Date.now() - tCount0}ms ` +
-        `(cats=${categoryIds.length}, page=${page}, limit=${limit}, ` +
-        `shipping=${shippingFilter ? "y" : "n"}, attrs=${filters.attributes ? Object.keys(filters.attributes).length : 0}, sort=${filters.sort ?? "default"})`
-    )
-  }
-
   switch (filters.sort) {
     case "newest":
       dbQuery = dbQuery.order("created_at", { ascending: false })
@@ -104,11 +96,12 @@ export async function searchProducts(
 
   dbQuery = dbQuery.range(offset, offset + limit - 1)
 
-  const tData0 = debug ? Date.now() : 0
-  const { data } = await dbQuery
+  const tParallel0 = debug ? Date.now() : 0
+  const [{ count: totalCount }, { data }] = await Promise.all([countQuery, dbQuery])
   if (debug) {
     console.log(
-      `[category:searchProducts] rows=${(data || []).length} in ${Date.now() - tData0}ms (total ${Date.now() - t0}ms)`
+      `[category:searchProducts] count+rows in ${Date.now() - tParallel0}ms ` +
+        `(rows=${(data || []).length}, total=${totalCount ?? 0}, overall ${Date.now() - t0}ms)`
     )
   }
 
@@ -170,5 +163,5 @@ export async function searchProducts(
     }
   })
 
-  return { products, total: total || 0 }
+  return { products, total: totalCount || 0 }
 }

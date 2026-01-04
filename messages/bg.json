@@ -1505,9 +1505,9 @@
     "GeoWelcome": {
         "title": "Здравейте! Установихме, че посещавате от {country}",
         "description": "Разгледайте Treido {region} за да видите продукти, които доставят до вашата локация",
-        "selectRegion": "Изберете вашия регион",
-        "confirmButton": "Да, покажи {region} продукти",
-        "declineButton": "Не, покажи всички продукти",
+        "selectRegion": "Изберете регион",
+        "confirmButton": "Да, продължи с {region}",
+        "declineButton": "Покажи всички продукти",
         "changeAnytime": "Можете да промените това по всяко време в настройките",
         "regions": {
             "BG": "България",

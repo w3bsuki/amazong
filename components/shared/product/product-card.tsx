@@ -31,7 +31,7 @@ const productCardVariants = cva(
       },
       state: {
         default: "",
-        promoted: "lg:border-amber-500/40",
+        promoted: "lg:border-top-rated/40",
         sale: "",
       },
     },

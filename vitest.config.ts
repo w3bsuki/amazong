@@ -64,7 +64,6 @@ export default defineConfig(async () => {
           'lib/category-display.ts', // Static display utils
           'lib/sell-form-schema-v4.ts', // Re-export
           'hooks/use-geo-welcome.ts', // Complex with Supabase + cookies
-          'hooks/use-prompt-input-attachments.ts', // Context-only hook
         ],
         thresholds: {
           // Realistic thresholds for tested files

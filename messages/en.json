@@ -1505,9 +1505,9 @@
     "GeoWelcome": {
         "title": "Hello! We detected you're visiting from {country}",
         "description": "View Treido {region} to see products that ship to your location",
-        "selectRegion": "Select your region",
-        "confirmButton": "Yes, show {region} products",
-        "declineButton": "No, show all products",
+        "selectRegion": "Select region",
+        "confirmButton": "Continue with {region}",
+        "declineButton": "Show all products",
         "changeAnytime": "You can change this anytime in settings",
         "regions": {
             "BG": "Bulgaria",

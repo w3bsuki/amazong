@@ -34,22 +34,7 @@ import { cn } from "@/lib/utils"
 import { completePostSignupOnboarding, type OnboardingData } from "@/app/actions/onboarding"
 import Image from "next/image"
 import Avatar from "boring-avatars"
-
-// Avatar style options
-const AVATAR_VARIANTS = ["beam", "marble", "pixel", "sunset", "ring", "bauhaus"] as const
-type AvatarVariant = (typeof AVATAR_VARIANTS)[number]
-
-const COLOR_PALETTES = [
-  ["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"],
-  ["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7"],
-  ["#6C5CE7", "#A29BFE", "#FD79A8", "#FDCB6E", "#00B894"],
-] as const
-
-const DEFAULT_PALETTE = COLOR_PALETTES[0]
-
-function getColorPalette(index: number): string[] {
-  return [...(COLOR_PALETTES[index] ?? DEFAULT_PALETTE)]
-}
+import { AVATAR_VARIANTS, type AvatarVariant, getColorPalette } from "@/lib/avatar-palettes"
 
 interface PostSignupOnboardingModalProps {
   isOpen: boolean

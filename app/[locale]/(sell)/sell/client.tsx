@@ -13,10 +13,7 @@ import {
   type Category,
   type Seller
 } from "../_components";
-import { AiSellAssistant } from "@/components/ai/ai-sell-assistant";
 import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Sparkles, FileText, ArrowLeft } from "lucide-react";
 
 interface SellPageClientProps {
   initialUser: { id: string; email?: string } | null;
@@ -47,9 +44,6 @@ export function SellPageClient({
   const [accountType, setAccountType] = useState<"personal" | "business">(initialAccountType);
   const [displayName, setDisplayName] = useState<string | null>(initialDisplayName);
   const [businessName, setBusinessName] = useState<string | null>(initialBusinessName);
-  
-  // AI-first mode toggle (default: AI assistant)
-  const [useAiAssistant, setUseAiAssistant] = useState(true);
   
   const params = useParams();
   const locale = typeof params?.locale === "string" ? params.locale : "en";
@@ -204,75 +198,11 @@ export function SellPageClient({
   }
 
   // =========================================================================
-  // MAIN CONTENT: AI-First or Traditional Form
+  // MAIN CONTENT: Traditional Form
   // =========================================================================
   
-  // AI Assistant Mode (default)
-  if (useAiAssistant) {
-    return (
-      <div className="flex h-dvh flex-col bg-background">
-        {/* Minimal header with toggle - Modernized with backdrop-blur and refined spacing */}
-        <header className="safe-top sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
-          <div className="container-content flex items-center justify-between py-3">
-            <div className="flex items-center gap-3">
-              <Link 
-                href={`/${locale}`}
-                className="flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-all active:scale-95"
-              >
-                <ArrowLeft className="size-5" />
-              </Link>
-              <div className="flex items-center gap-2.5">
-                <div className="flex size-9 items-center justify-center rounded-md bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20">
-                  <Sparkles className="size-4.5" />
-                </div>
-                <div className="flex flex-col">
-                  <h1 className="text-sm font-bold tracking-tight leading-none">
-                    {isBg ? "Създай обява" : "Create Listing"}
-                  </h1>
-                  <p className="mt-1 text-2xs font-medium uppercase tracking-wider text-muted-foreground/80">
-                    {isBg ? "с AI асистент" : "with AI assistant"}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setUseAiAssistant(false)}
-              className="h-9 gap-1.5 rounded-full border-border/60 bg-background/50 px-4 font-medium shadow-xs transition-all hover:bg-muted active:scale-95"
-            >
-              <FileText className="size-4 text-muted-foreground" />
-              <span className="hidden xs:inline">
-                {isBg ? "Ръчен формуляр" : "Manual Form"}
-              </span>
-            </Button>
-          </div>
-        </header>
-        
-        {/* AI Chatbot takes full remaining space */}
-        <div className="flex-1 min-h-0">
-          <AiSellAssistant embedded className="container-content h-full" />
-        </div>
-      </div>
-    );
-  }
-
-  // Traditional Form Mode - Uses UnifiedSellForm which handles responsive layouts internally
   return (
     <SellErrorBoundary sellerId={seller.id}>
-      {/* Floating button to switch back to AI (desktop only) */}
-      <div className="fixed bottom-4 right-4 z-50 hidden lg:block lg:bottom-6 lg:right-6">
-        <Button
-          onClick={() => setUseAiAssistant(true)}
-          className="gap-2 shadow-sm"
-          size="lg"
-        >
-          <Sparkles className="size-4" />
-          {isBg ? "Използвай AI" : "Try AI Assistant"}
-        </Button>
-      </div>
-      
       {/* UnifiedSellForm handles both desktop and mobile layouts */}
       <UnifiedSellForm 
         sellerId={seller.id}

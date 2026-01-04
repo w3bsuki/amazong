@@ -83,7 +83,7 @@ export function ComingSoonPage({
           <p className="text-lg text-muted-foreground mb-4">{description}</p>
 
           {/* Timeline badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-800 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-urgency-stock-bg text-urgency-stock-text rounded-full text-sm font-medium mb-4">
             <RocketLaunch className="size-4" weight="fill" />
             {labels.expectedLaunch}: {timeline}
           </div>
@@ -124,7 +124,7 @@ export function ComingSoonPage({
                   </div>
                 </form>
               ) : (
-                <div className="flex items-center justify-center gap-3 text-green-600">
+                <div className="flex items-center justify-center gap-3 text-status-success">
                   <CheckCircle className="size-6" weight="fill" />
                   <span className="font-medium">{labels.subscribed}</span>
                 </div>

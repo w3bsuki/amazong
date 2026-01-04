@@ -155,7 +155,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
       <DialogContent 
-        className="w-full max-w-sm rounded-md border border-border bg-background p-0"
+        className="w-full max-w-sm rounded-lg border border-border bg-background p-0"
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">
@@ -165,10 +165,13 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
           {t('title', { country: countryName })}
         </DialogDescription>
 
-        <div className="p-6">
+        <div className="p-5">
           {/* Header */}
-          <div className="flex flex-col gap-2 mb-6 text-center">
-            <h1 className="text-lg font-semibold text-foreground">
+          <div className="flex flex-col gap-1.5 mb-5 text-center">
+            <div className="mx-auto mb-2 size-12 rounded-full bg-brand/10 flex items-center justify-center">
+              <Globe size={24} weight="duotone" className="text-brand" />
+            </div>
+            <h1 className="text-base font-semibold text-foreground">
               {locale === 'bg' ? 'Добре дошли!' : 'Welcome!'}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -177,8 +180,8 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
           </div>
 
           {/* Region Selection */}
-          <div className="space-y-4">
-            <div className="space-y-1">
+          <div className="space-y-3">
+            <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">
                 {t('selectRegion')}
               </label>
@@ -188,7 +191,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
                 onValueChange={(value) => setSelectedRegion(value as ShippingRegion)}
               >
                 <SelectTrigger
-                  className="w-full h-10"
+                  className="w-full h-10 rounded-lg"
                   aria-label={t('selectRegion')}
                 >
                   <SelectValue>
@@ -218,7 +221,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
             {/* Confirm Button */}
             <button
               onClick={confirmRegion}
-              className="w-full h-10 bg-cta-trust-blue text-cta-trust-blue-text text-sm font-medium rounded-lg transition-colors hover:bg-cta-trust-blue/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="w-full h-10 bg-cta-trust-blue text-cta-trust-blue-text text-sm font-semibold rounded-lg transition-colors hover:bg-cta-trust-blue-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               {t('confirmButton', { region: t(`regions.${selectedRegion}`) })}
             </button>
@@ -226,13 +229,13 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
             {/* Secondary - Show all */}
             <button
               onClick={declineAndShowAll}
-              className="w-full h-10 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="w-full h-9 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
             >
               {t('declineButton')}
             </button>
 
             {/* Footer note */}
-            <p className="text-xs text-muted-foreground text-center">
+            <p className="text-xs text-muted-foreground text-center pt-1">
               {t('changeAnytime')}
             </p>
           </div>

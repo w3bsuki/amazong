@@ -32,7 +32,6 @@ import {
     SpinnerGap,
     ChartLineUp,
     Gear,
-    Globe,
     CaretDown
 } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -163,7 +162,7 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                 variant="ghost"
                 size="icon-lg"
                 className={cn(
-                    "rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent",
+                    "rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
                     triggerClassName
                 )}
                 aria-label={locale === "bg" ? "Меню" : "Menu"}
@@ -184,7 +183,7 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                     variant="ghost"
                     size="icon-lg"
                     className={cn(
-                        "rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent",
+                        "rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
                         triggerClassName
                     )}
                     aria-label={locale === "bg" ? "Меню" : "Menu"}
@@ -196,7 +195,7 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
             <DrawerContent
                 className="p-0 bg-background text-foreground gap-0 flex flex-col h-full data-[vaul-drawer-direction=left]:w-full data-[vaul-drawer-direction=left]:max-w-full data-[vaul-drawer-direction=left]:sm:max-w-full border-none rounded-none shadow-none"
             >
-                {/* Header - Matches main app header h-10 */}
+                {/* Header - Compact with auth controls */}
                 <div className="relative bg-brand shrink-0">
                     <DrawerTitle className="sr-only">
                         {locale === 'bg' ? 'Навигационно меню' : 'Navigation menu'}
@@ -205,28 +204,64 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                         {locale === 'bg' ? 'Навигационно меню' : 'Navigation menu'}
                     </DrawerDescription>
                     
-                    {/* Profile row - exactly h-10 like main header */}
-                    <div className="h-10 px-2 flex items-center gap-2">
-                        <div className="size-7 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
-                            <UserCircle size={20} weight="fill" className="text-white" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                            {isLoggedIn ? (
-                                <p className="text-white text-sm font-semibold truncate leading-tight">
-                                    {locale === 'bg' ? 'Здравей, ' : 'Hello, '}{firstName || displayName}
-                                </p>
-                            ) : (
-                                <p className="text-white text-sm font-semibold leading-tight">
-                                    {locale === 'bg' ? 'Здравей!' : 'Hello!'}
-                                </p>
-                            )}
-                        </div>
+                    <div className="h-12 px-2 flex items-center gap-2">
+                        {isLoggedIn ? (
+                            <>
+                                {/* Logged in: Avatar + Name + Account link */}
+                                <Link 
+                                    href="/account"
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center gap-2 min-w-0 flex-1 h-9 px-1 -ml-1 rounded-lg hover:bg-white/10 transition-colors"
+                                >
+                                    <div className="size-7 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
+                                        <UserCircle size={18} weight="fill" className="text-white" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-white text-sm font-semibold truncate leading-tight">
+                                            {firstName || displayName}
+                                        </p>
+                                        <p className="text-white/70 text-2xs leading-tight">
+                                            {locale === 'bg' ? 'Виж акаунта' : 'View account'}
+                                        </p>
+                                    </div>
+                                </Link>
+                                {/* Settings icon */}
+                                <Link 
+                                    href="/account/settings"
+                                    onClick={() => setOpen(false)}
+                                    className="size-9 shrink-0 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
+                                    aria-label={locale === 'bg' ? 'Настройки' : 'Settings'}
+                                >
+                                    <Gear size={20} weight="bold" />
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                {/* Logged out: Sign In button prominent */}
+                                <Link
+                                    href="/auth/login"
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center gap-2 h-8 px-3 rounded-full bg-white text-brand text-sm font-semibold hover:bg-white/90 transition-colors"
+                                >
+                                    <SignInIcon size={16} weight="bold" />
+                                    <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
+                                </Link>
+                                <Link
+                                    href="/auth/sign-up"
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center h-8 px-3 rounded-full text-white/90 text-sm font-medium hover:bg-white/10 transition-colors"
+                                >
+                                    <span>{locale === 'bg' ? 'Регистрация' : 'Register'}</span>
+                                </Link>
+                                <div className="flex-1" />
+                            </>
+                        )}
                         <DrawerClose asChild>
                             <Button
                                 type="button"
                                 variant="ghost"
                                 size="icon"
-                                className="size-8 shrink-0 text-white/80 hover:text-white hover:bg-white/10 rounded-full"
+                                className="size-9 shrink-0 text-white/80 hover:text-white hover:bg-white/10 rounded-full"
                             >
                                 <X size={20} weight="bold" />
                                 <span className="sr-only">{t('close')}</span>
@@ -234,30 +269,8 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                         </DrawerClose>
                     </div>
                 </div>
-                
-                {/* Account & Settings row - in white section like search bar */}
-                {isLoggedIn && (
-                    <div className="px-2 py-2 flex items-center gap-2 border-b border-border/40 shrink-0">
-                        <Link 
-                            href="/account"
-                            onClick={() => setOpen(false)}
-                            className="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-lg bg-brand text-white text-xs font-semibold transition-colors hover:bg-brand-dark"
-                        >
-                            <UserCircle size={16} weight="bold" />
-                            {locale === 'bg' ? 'Моят акаунт' : 'My account'}
-                        </Link>
-                        <Link 
-                            href="/account/settings"
-                            onClick={() => setOpen(false)}
-                            className="flex items-center justify-center size-9 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground transition-colors"
-                            aria-label={locale === 'bg' ? 'Настройки' : 'Settings'}
-                        >
-                            <Gear size={18} weight="bold" />
-                        </Link>
-                    </div>
-                )}
 
-                {/* Quick Actions - Only when logged in, BEFORE categories */}
+                {/* Quick Actions - Only when logged in */}
                 {isLoggedIn && (
                     <div className="px-3 py-2.5 border-b border-border/40 shrink-0">
                         <div className="grid grid-cols-4 gap-2">
@@ -318,53 +331,56 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                     />
                 </div>
 
-                {/* Footer actions */}
+                {/* Compact Footer - Help | Language | Sign Out */}
                 <div className="shrink-0 border-t border-border/50 bg-muted/30 pb-safe">
-                    <div className="px-3 py-2.5 space-y-2">
-                        {/* Locale Selector - Prominent position */}
+                    <div className="h-12 px-3 flex items-center gap-1">
+                        {/* Help */}
+                        <Link
+                            href="/customer-service"
+                            onClick={() => setOpen(false)}
+                            className="flex items-center gap-1.5 h-9 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                        >
+                            <Question size={18} weight="regular" />
+                            <span>{locale === 'bg' ? 'Помощ' : 'Help'}</span>
+                        </Link>
+
+                        {/* Language Dropdown - Compact */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <button 
                                     type="button"
-                                    className="w-full flex items-center justify-between gap-2 h-10 px-3 rounded-lg bg-background border border-border/50 hover:bg-muted/50 transition-colors"
+                                    className="flex items-center gap-1.5 h-9 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                                 >
-                                    <div className="flex items-center gap-2.5">
-                                        <Globe size={18} weight="regular" className="text-muted-foreground" />
-                                        <div className="flex items-center gap-2">
-                                            <Image
-                                                src={locale === 'bg' ? "https://flagcdn.com/w40/bg.png" : "https://flagcdn.com/w40/gb.png"}
-                                                alt={locale === 'bg' ? 'BG' : 'EN'}
-                                                width={20}
-                                                height={14}
-                                                sizes="20px"
-                                                className="w-5 h-3.5 rounded-sm object-cover"
-                                            />
-                                            <span className="text-sm font-medium text-foreground">
-                                                {locale === 'bg' ? 'Български' : 'English'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <CaretDown size={14} weight="bold" className="text-muted-foreground" />
+                                    <Image
+                                        src={locale === 'bg' ? "https://flagcdn.com/w40/bg.png" : "https://flagcdn.com/w40/gb.png"}
+                                        alt={locale === 'bg' ? 'BG' : 'EN'}
+                                        width={18}
+                                        height={12}
+                                        sizes="18px"
+                                        className="w-[18px] h-3 rounded-sm object-cover"
+                                    />
+                                    <span>{locale === 'bg' ? 'BG' : 'EN'}</span>
+                                    <CaretDown size={12} weight="bold" />
                                 </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="w-[calc(85vw-24px)] max-w-[276px] rounded-lg p-1 border border-border/50">
+                            <DropdownMenuContent align="center" className="min-w-[140px] rounded-lg p-1 border border-border/50">
                                 <DropdownMenuItem asChild>
                                     <Link
                                         href="/"
                                         locale="en"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-md"
+                                        className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md"
                                     >
                                         <Image
                                             src="https://flagcdn.com/w40/gb.png"
                                             alt="EN"
-                                            width={20}
-                                            height={14}
-                                            sizes="20px"
-                                            className="w-5 h-3.5 rounded-sm object-cover"
+                                            width={18}
+                                            height={12}
+                                            sizes="18px"
+                                            className="w-[18px] h-3 rounded-sm object-cover"
                                         />
                                         <span className="text-sm font-medium">English</span>
-                                        {locale === 'en' && <span className="ml-auto text-brand font-bold text-sm">✓</span>}
+                                        {locale === 'en' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
@@ -372,110 +388,74 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                                         href="/"
                                         locale="bg"
                                         onClick={() => setOpen(false)}
-                                        className="flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-md"
+                                        className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md"
                                     >
                                         <Image
                                             src="https://flagcdn.com/w40/bg.png"
                                             alt="BG"
-                                            width={20}
-                                            height={14}
-                                            sizes="20px"
-                                            className="w-5 h-3.5 rounded-sm object-cover"
+                                            width={18}
+                                            height={12}
+                                            sizes="18px"
+                                            className="w-[18px] h-3 rounded-sm object-cover"
                                         />
                                         <span className="text-sm font-medium">Български</span>
-                                        {locale === 'bg' && <span className="ml-auto text-brand font-bold text-sm">✓</span>}
+                                        {locale === 'bg' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        {isLoggedIn ? (
-                            <div className="grid grid-cols-2 gap-2">
-                                <Link
-                                    href="/customer-service"
-                                    onClick={() => setOpen(false)}
-                                    className="flex items-center justify-center gap-2 h-10 rounded-lg bg-background border border-border/50 text-sm font-medium text-foreground hover:bg-muted/50 transition-colors"
-                                >
-                                    <Question size={18} weight="regular" className="text-muted-foreground" />
-                                    <span>{locale === 'bg' ? 'Помощ' : 'Help'}</span>
-                                </Link>
+                        <div className="flex-1" />
 
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <button
-                                            type="button"
-                                            disabled={isSigningOut}
-                                            className="flex items-center justify-center gap-2 h-10 rounded-lg bg-destructive/5 border border-destructive/20 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                        {/* Sign Out - Only when logged in */}
+                        {isLoggedIn && (
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <button
+                                        type="button"
+                                        disabled={isSigningOut}
+                                        className="flex items-center gap-1.5 h-9 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors"
+                                    >
+                                        {isSigningOut ? (
+                                            <SpinnerGap size={16} className="animate-spin" />
+                                        ) : (
+                                            <SignOut size={16} weight="regular" />
+                                        )}
+                                        <span>{locale === 'bg' ? 'Изход' : 'Sign Out'}</span>
+                                    </button>
+                                </AlertDialogTrigger>
+
+                                <AlertDialogContent className="max-w-sm rounded-lg border-border">
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle className="text-base font-semibold text-foreground">
+                                            {locale === "bg" ? "Изход от акаунта" : "Sign out"}
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription className="text-sm text-muted-foreground">
+                                            {locale === "bg"
+                                                ? "Ще излезете от акаунта си на това устройство."
+                                                : "You will be signed out on this device."}
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter className="flex-row gap-2 sm:flex-row">
+                                        <AlertDialogCancel className="flex-1 h-10 text-sm font-medium">
+                                            {locale === "bg" ? "Отказ" : "Cancel"}
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction
+                                            className="flex-1 h-10 text-sm font-medium bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text"
+                                            onClick={() => {
+                                                setIsSigningOut(true)
+                                                const form = document.createElement('form')
+                                                form.method = 'POST'
+                                                form.action = '/api/auth/signout'
+                                                document.body.appendChild(form)
+                                                form.submit()
+                                            }}
                                         >
-                                            {isSigningOut ? (
-                                                <SpinnerGap size={18} className="animate-spin" />
-                                            ) : (
-                                                <SignOut size={18} weight="regular" />
-                                            )}
-                                            <span>{locale === 'bg' ? 'Изход' : 'Sign Out'}</span>
-                                        </button>
-                                    </AlertDialogTrigger>
-
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>
-                                                {locale === "bg" ? "Сигурни ли сте?" : "Are you sure?"}
-                                            </AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                {locale === "bg"
-                                                    ? "Ще излезете от акаунта си на това устройство."
-                                                    : "You will be signed out on this device."}
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>
-                                                {locale === "bg" ? "Отказ" : "Cancel"}
-                                            </AlertDialogCancel>
-                                            <AlertDialogAction
-                                                onClick={() => {
-                                                    setIsSigningOut(true)
-                                                    // Create and submit hidden form
-                                                    const form = document.createElement('form')
-                                                    form.method = 'POST'
-                                                    form.action = '/api/auth/signout'
-                                                    document.body.appendChild(form)
-                                                    form.submit()
-                                                }}
-                                            >
-                                                {locale === "bg" ? "Изход" : "Sign Out"}
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </div>
-                        ) : (
-                            <div className="space-y-2">
-                                <Link
-                                    href="/auth/login"
-                                    onClick={() => setOpen(false)}
-                                    className="flex items-center justify-center gap-2 h-10 w-full rounded-lg bg-brand text-white text-sm font-bold hover:bg-brand-dark transition-colors"
-                                >
-                                    <SignInIcon size={18} weight="bold" />
-                                    <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
-                                </Link>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <Link
-                                        href="/auth/sign-up"
-                                        onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-2 h-10 rounded-lg bg-background border border-border/50 text-sm font-semibold text-foreground hover:bg-muted/50 transition-colors"
-                                    >
-                                        <span>{locale === 'bg' ? 'Регистрация' : 'Register'}</span>
-                                    </Link>
-                                    <Link
-                                        href="/customer-service"
-                                        onClick={() => setOpen(false)}
-                                        className="flex items-center justify-center gap-2 h-10 rounded-lg bg-background border border-border/50 text-sm font-medium text-foreground hover:bg-muted/50 transition-colors"
-                                    >
-                                        <Question size={18} weight="regular" className="text-muted-foreground" />
-                                        <span>{locale === 'bg' ? 'Помощ' : 'Help'}</span>
-                                    </Link>
-                                </div>
-                            </div>
+                                            {locale === "bg" ? "Да, излез" : "Yes, sign out"}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         )}
                     </div>
                 </div>
