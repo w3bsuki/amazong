@@ -226,7 +226,9 @@ export function AccountWishlistToolbar({
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0",
                   stockFilter !== "all"
-                    ? "bg-emerald-500 text-white shadow-sm"
+                    ? stockFilter === "in-stock"
+                      ? "bg-success text-white shadow-sm"
+                      : "bg-warning text-white shadow-sm"
                     : "bg-account-stat-bg border border-account-stat-border text-foreground hover:bg-account-card-hover"
                 )}
               >
@@ -258,7 +260,7 @@ export function AccountWishlistToolbar({
                   applyUrl({ q: query, category: categoryFilter, stock: "in-stock" })
                 }}
               >
-                <IconPackage className="size-4 mr-2 text-emerald-500" />
+                <IconPackage className="size-4 mr-2 text-success" />
                 <span className="flex-1">{labels.inStock}</span>
                 {stockFilter === "in-stock" && <IconCheck className="size-4 text-primary" />}
               </DropdownMenuItem>
@@ -268,7 +270,7 @@ export function AccountWishlistToolbar({
                   applyUrl({ q: query, category: categoryFilter, stock: "out-of-stock" })
                 }}
               >
-                <IconPackageOff className="size-4 mr-2 text-orange-500" />
+                <IconPackageOff className="size-4 mr-2 text-warning" />
                 <span className="flex-1">{labels.outOfStock}</span>
                 {stockFilter === "out-of-stock" && <IconCheck className="size-4 text-primary" />}
               </DropdownMenuItem>
@@ -357,8 +359,8 @@ export function AccountWishlistToolbar({
               variant={stockFilter !== "all" ? "default" : "outline"}
               className={cn(
                 "gap-2",
-                stockFilter === "in-stock" && "bg-emerald-500 hover:bg-emerald-600",
-                stockFilter === "out-of-stock" && "bg-orange-500 hover:bg-orange-600"
+                stockFilter === "in-stock" && "bg-success hover:bg-success/90",
+                stockFilter === "out-of-stock" && "bg-warning hover:bg-warning/90"
               )}
             >
               {stockFilter === "in-stock" ? (
@@ -389,7 +391,7 @@ export function AccountWishlistToolbar({
                 applyUrl({ q: query, category: categoryFilter, stock: "in-stock" })
               }}
             >
-              <IconPackage className="size-4 mr-2 text-emerald-500" />
+              <IconPackage className="size-4 mr-2 text-success" />
               <span className="flex-1">{labels.inStock}</span>
               {stockFilter === "in-stock" && <IconCheck className="size-4 text-primary" />}
             </DropdownMenuItem>
@@ -399,7 +401,7 @@ export function AccountWishlistToolbar({
                 applyUrl({ q: query, category: categoryFilter, stock: "out-of-stock" })
               }}
             >
-              <IconPackageOff className="size-4 mr-2 text-orange-500" />
+              <IconPackageOff className="size-4 mr-2 text-warning" />
               <span className="flex-1">{labels.outOfStock}</span>
               {stockFilter === "out-of-stock" && <IconCheck className="size-4 text-primary" />}
             </DropdownMenuItem>
@@ -447,8 +449,8 @@ export function AccountWishlistToolbar({
               className={cn(
                 "gap-1",
                 stockFilter === "in-stock"
-                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
-                  : "bg-orange-100 text-orange-700 dark:bg-orange-950/50 dark:text-orange-300"
+                  ? "bg-success/10 text-success"
+                  : "bg-warning/10 text-warning"
               )}
             >
               {stockFilter === "in-stock" ? labels.inStock : labels.outOfStock}

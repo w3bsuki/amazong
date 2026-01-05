@@ -52,13 +52,13 @@ export function BusinessRecentActivity({ products, orders }: BusinessRecentActiv
   const getStatusColor = (status: string | null) => {
     switch (status) {
       case 'active':
-        return 'bg-emerald-100 text-emerald-700 border-emerald-200'
+        return 'bg-success/10 text-success border-success/20'
       case 'draft':
-        return 'bg-gray-100 text-gray-700 border-gray-200'
+        return 'bg-muted text-foreground border-border'
       case 'sold':
-        return 'bg-blue-100 text-blue-700 border-blue-200'
+        return 'bg-info/10 text-info border-info/20'
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200'
+        return 'bg-muted text-foreground border-border'
     }
   }
 
@@ -101,7 +101,7 @@ export function BusinessRecentActivity({ products, orders }: BusinessRecentActiv
                       </p>
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                      <span className="text-sm font-medium text-emerald-600">
+                      <span className="text-sm font-medium text-success">
                         {formatCurrency(product.price)}
                       </span>
                       <Badge variant="outline" className={`text-xs ${getStatusColor(product.status)}`}>

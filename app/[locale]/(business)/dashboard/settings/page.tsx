@@ -135,7 +135,7 @@ export default async function BusinessSettingsPage() {
             <div className="grid gap-4 md:grid-cols-3">
               <div className="p-4 rounded-lg border">
                 <p className="text-sm text-muted-foreground mb-1">Account Type</p>
-                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                <Badge variant="outline" className="border-info/20 bg-info/10 text-info">
                   Business
                 </Badge>
               </div>
@@ -144,8 +144,8 @@ export default async function BusinessSettingsPage() {
                 <Badge 
                   variant="outline" 
                   className={sellerDetails?.is_verified_business 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                    ? 'border-success/20 bg-success/10 text-success'
+                    : 'border-warning/20 bg-warning/10 text-warning'
                   }
                 >
                   {sellerDetails?.is_verified_business ? 'Verified' : 'Pending'}
@@ -159,8 +159,8 @@ export default async function BusinessSettingsPage() {
               </div>
             </div>
             {!sellerDetails?.is_verified_business && (
-              <div className="mt-4 p-4 rounded-lg bg-yellow-50 border border-yellow-200">
-                <p className="text-sm text-yellow-800">
+              <div className="mt-4 p-4 rounded-lg border border-warning/20 bg-warning/10">
+                <p className="text-sm text-warning">
                   Your business verification is pending. Submit your business documents to get verified and unlock additional features.
                 </p>
                 <Button variant="outline" size="sm" className="mt-2">
@@ -226,7 +226,7 @@ export default async function BusinessSettingsPage() {
                   <p className="font-medium">New Orders</p>
                   <p className="text-sm text-muted-foreground">Get notified when you receive a new order</p>
                 </div>
-                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
                   Enabled
                 </Badge>
               </div>
@@ -235,7 +235,7 @@ export default async function BusinessSettingsPage() {
                   <p className="font-medium">Low Stock Alerts</p>
                   <p className="text-sm text-muted-foreground">Get notified when products are low on stock</p>
                 </div>
-                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
                   Enabled
                 </Badge>
               </div>
@@ -244,7 +244,7 @@ export default async function BusinessSettingsPage() {
                   <p className="font-medium">Customer Messages</p>
                   <p className="text-sm text-muted-foreground">Get notified when customers send you messages</p>
                 </div>
-                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
                   Enabled
                 </Badge>
               </div>

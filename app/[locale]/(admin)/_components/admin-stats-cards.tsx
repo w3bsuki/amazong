@@ -43,7 +43,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {totals.users.toLocaleString()}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50">
+            <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
               <IconTrendingUp className="size-3" />
               Active
             </Badge>
@@ -64,7 +64,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {totals.sellers.toLocaleString()}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="text-blue-600 border-blue-200 bg-blue-50">
+            <Badge variant="outline" className="border-info/20 bg-info/10 text-info">
               <IconTrendingUp className="size-3" />
               Active
             </Badge>
@@ -85,7 +85,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {totals.products.toLocaleString()}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="text-purple-600 border-purple-200 bg-purple-50">Listed</Badge>
+            <Badge variant="outline" className="border-primary/20 bg-primary/10 text-primary">Listed</Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
@@ -103,7 +103,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {totals.orders.toLocaleString()}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">Total</Badge>
+            <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">Total</Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
@@ -121,7 +121,7 @@ export function AdminStatsCards({ totals }: AdminStatsProps) {
             {formatCurrency(totals.revenue)}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50">
+            <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
               <IconTrendingUp className="size-3" />
               Paid
             </Badge>

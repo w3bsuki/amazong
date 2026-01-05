@@ -8,6 +8,19 @@ This plan is intentionally **small-batch** and **verification-first**: no redesi
 
 ## Current State Assessment
 
+### ✅ Recent Progress (2026-01-05)
+
+- Converted 10 high-impact palette offenders to semantic token utilities (success/warning/info/primary/destructive).
+- Latest palette scan (`pnpm -s exec node scripts/scan-tailwind-palette.mjs`): Totals: files=48 palette=238 gradient=13 fill=4.
+
+**Most recently cleaned (palette/token pass):**
+
+- `app/[locale]/(business)/_components/business-performance-score.tsx`
+- `app/[locale]/(main)/(support)/security/page.tsx`
+- `app/[locale]/(business)/_components/business-recent-activity.tsx`
+- `app/[locale]/(business)/dashboard/inventory/_components/inventory-header.tsx`
+- `app/[locale]/(business)/_components/business-notifications.tsx`
+
 ### ✅ What's Working Well
 
 - **globals.css**: Comprehensive theme tokens (OKLCH colors, spacing, radii)
@@ -20,7 +33,7 @@ This plan is intentionally **small-batch** and **verification-first**: no redesi
 
 Based on codebase analysis:
 
-1. **~65 files with Tailwind palette/gradient usage** (see `cleanup/palette-scan-report.txt`)
+1. **48 files with Tailwind palette/gradient usage** (see `cleanup/palette-scan-report.txt`)
 2. **100+ files with arbitrary values / hardcoded colors** (`[px]`, `[rem]`, `[#hex]`)
 3. **1 file using heavy shadows** (post-signup-onboarding-modal)
 3. **Inconsistent spacing** across route-specific components
@@ -82,9 +95,14 @@ Notes:
 - `app/[locale]/(business)/_components/business-stats-cards.tsx`
 - `app/[locale]/(business)/_components/products-table.tsx`
 - `app/[locale]/(business)/_components/orders-table.tsx`
+- `app/[locale]/(business)/_components/business-activity-feed.tsx`
+
+**Recently completed (palette/token pass)**:
+
 - `app/[locale]/(business)/_components/business-performance-score.tsx`
 - `app/[locale]/(business)/_components/business-notifications.tsx`
-- `app/[locale]/(business)/_components/business-activity-feed.tsx`
+- `app/[locale]/(business)/_components/business-recent-activity.tsx`
+- `app/[locale]/(business)/dashboard/inventory/_components/inventory-header.tsx`
 
 **Action**: Replace arbitrary values, ensure consistent card/table styling.
 

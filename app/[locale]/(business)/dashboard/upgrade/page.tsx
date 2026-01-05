@@ -172,7 +172,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 mb-4">
-          <div className="p-3 rounded-full bg-amber-500">
+          <div className="p-3 rounded-full bg-warning">
             <IconCrown className="size-8 text-white" />
           </div>
         </div>
@@ -183,18 +183,18 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
       </div>
 
       {/* Current Plan Notice */}
-      <Card className="border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800">
+      <Card className="border border-warning/20 bg-warning/10">
         <CardContent className="p-4 flex items-center gap-4">
-          <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-900/50">
-            <IconBuildingStore className="size-5 text-amber-600" />
+          <div className="p-2 rounded-full bg-warning/10">
+            <IconBuildingStore className="size-5 text-warning" />
           </div>
           <div className="flex-1">
-            <p className="font-medium">{t.currentPlan}: <span className="text-amber-600">{t.freeTier}</span></p>
+            <p className="font-medium">{t.currentPlan}: <span className="text-warning">{t.freeTier}</span></p>
             <p className="text-sm text-muted-foreground">
               {businessSeller.store_name} • {t.upgradeTo}
             </p>
           </div>
-          <Badge variant="outline" className="border-amber-300 text-amber-700">
+          <Badge variant="outline" className="border-warning/30 text-warning">
             {businessSeller.tier || 'free'}
           </Badge>
         </CardContent>
@@ -229,7 +229,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
             <div className="space-y-3">
               {t.proFeatures.map((feature, i) => (
                 <div key={i} className="flex items-start gap-2">
-                  <IconCheck className="size-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <IconCheck className="size-5 text-success shrink-0 mt-0.5" />
                   <span className="text-sm">{feature}</span>
                 </div>
               ))}
@@ -254,7 +254,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
           </div>
           <CardHeader className="pt-8">
             <CardTitle className="flex items-center gap-2">
-              <IconCrown className="size-5 text-amber-500" />
+              <IconCrown className="size-5 text-warning" />
               Business Enterprise
             </CardTitle>
             <CardDescription>
@@ -271,7 +271,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
             <div className="space-y-3">
               {t.enterpriseFeatures.map((feature, i) => (
                 <div key={i} className="flex items-start gap-2">
-                  <IconCheck className="size-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <IconCheck className="size-5 text-success shrink-0 mt-0.5" />
                   <span className="text-sm">{feature}</span>
                 </div>
               ))}
@@ -301,7 +301,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {t.dashboardFeatures.map((feature, i) => (
               <div key={i} className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
-                <IconCheck className="size-4 text-emerald-500 shrink-0" />
+                <IconCheck className="size-4 text-success shrink-0" />
                 <span className="text-sm">{feature}</span>
               </div>
             ))}
@@ -337,7 +337,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
                 </div>
               ))}
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <IconX className="size-4 text-red-400 shrink-0" />
+                <IconX className="size-4 text-destructive shrink-0" />
                 {locale === 'bg' ? 'Без достъп до таблото' : 'No dashboard access'}
               </div>
             </div>

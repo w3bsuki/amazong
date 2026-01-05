@@ -63,17 +63,17 @@ export default async function BusinessCustomersPage() {
             <h1 className="text-2xl font-bold tracking-tight">Customers</h1>
             {/* Customer metrics as badges */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-info/20 bg-info/10 text-info">
                 <IconUsers className="size-3" />
                 <span className="tabular-nums">{total.toLocaleString()}</span>
                 <span className="opacity-70">total</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-success/20 bg-success/10 text-success">
                 <IconTrendingUp className="size-3" />
                 <span className="tabular-nums">{repeatCustomers}</span>
                 <span className="opacity-70">repeat ({returnRate}%)</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-950/50 dark:text-purple-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-primary/20 bg-primary/10 text-primary">
                 <IconCurrencyDollar className="size-3" />
                 <span className="tabular-nums">{formatCurrency(totalRevenue)}</span>
                 <span className="opacity-70">lifetime</span>
@@ -108,10 +108,10 @@ export default async function BusinessCustomersPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-2">
-              <IconTrendingUp className="size-4 text-emerald-600" />
+              <IconTrendingUp className="size-4 text-success" />
               Repeat Customers
             </CardDescription>
-            <CardTitle className="text-2xl tabular-nums text-emerald-600">
+            <CardTitle className="text-2xl tabular-nums text-success">
               {repeatCustomers.toLocaleString()}
             </CardTitle>
           </CardHeader>

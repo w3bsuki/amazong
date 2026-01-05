@@ -421,25 +421,25 @@ export function ProductFormModal({
               <SelectContent>
                 <SelectItem value="draft">
                   <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-gray-400" />
+                    <div className="size-2 rounded-full bg-muted-foreground/40" />
                     Draft
                   </div>
                 </SelectItem>
                 <SelectItem value="active">
                   <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-emerald-500" />
+                    <div className="size-2 rounded-full bg-success" />
                     Active
                   </div>
                 </SelectItem>
                 <SelectItem value="out_of_stock">
                   <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-amber-500" />
+                    <div className="size-2 rounded-full bg-warning" />
                     Out of Stock
                   </div>
                 </SelectItem>
                 <SelectItem value="archived">
                   <div className="flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-red-400" />
+                    <div className="size-2 rounded-full bg-destructive" />
                     Archived
                   </div>
                 </SelectItem>
@@ -486,16 +486,16 @@ export function ProductFormModal({
                 <div className="bg-background rounded-lg p-4 sm:p-4 space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="title" className="text-sm font-medium">
-                      Title <span className="text-red-500">*</span>
+                      Title <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="title"
                       placeholder="e.g. Nike Air Max 90"
                       {...register("title")}
-                      className={cn("h-10", errors.title && "border-red-500")}
+                      className={cn("h-10", errors.title && "border-destructive")}
                     />
                     {errors.title && (
-                      <p className="text-xs text-red-500">{errors.title.message}</p>
+                      <p className="text-xs text-destructive">{errors.title.message}</p>
                     )}
                   </div>
 
@@ -545,7 +545,7 @@ export function ProductFormModal({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="size-7 bg-white/90 hover:bg-white text-red-600"
+                            className="size-7 bg-white/90 hover:bg-white text-destructive"
                             onClick={() => removeImage(index)}
                           >
                             <IconTrash className="size-3.5" />
@@ -583,7 +583,7 @@ export function ProductFormModal({
                     
                     <div className="space-y-3">
                       <div className="space-y-1.5">
-                        <Label htmlFor="price" className="text-xs">Price <span className="text-red-500">*</span></Label>
+                        <Label htmlFor="price" className="text-xs">Price <span className="text-destructive">*</span></Label>
                         <div className="relative">
                           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">BGN</span>
                           <Input
@@ -591,7 +591,7 @@ export function ProductFormModal({
                             type="number"
                             step="0.01"
                             placeholder="0.00"
-                            className={cn("pl-12 h-9", errors.price && "border-red-500")}
+                            className={cn("pl-12 h-9", errors.price && "border-destructive")}
                             {...register("price")}
                           />
                         </div>
@@ -611,7 +611,7 @@ export function ProductFormModal({
                           />
                         </div>
                         {compareAtPrice && compareAtPrice > 0 && price && compareAtPrice > price && (
-                          <p className="text-xs text-emerald-600 font-medium">
+                          <p className="text-xs text-success font-medium">
                             {Math.round(((compareAtPrice - price) / compareAtPrice) * 100)}% off
                           </p>
                         )}
@@ -633,8 +633,8 @@ export function ProductFormModal({
                       </div>
 
                       {profitMargin && (
-                        <div className="p-2 rounded bg-emerald-50 dark:bg-emerald-950/30 text-xs">
-                          <span className="text-emerald-700 dark:text-emerald-400 font-medium">
+                        <div className="p-2 rounded bg-success/10 text-xs">
+                          <span className="text-success font-medium">
                             Profit: {profitMargin.profit.toFixed(2)} BGN ({profitMargin.margin.toFixed(0)}%)
                           </span>
                         </div>
@@ -684,7 +684,7 @@ export function ProductFormModal({
                             type="number"
                             min="0"
                             placeholder="0"
-                            className={cn("h-9 w-24", errors.stock && "border-red-500")}
+                            className={cn("h-9 w-24", errors.stock && "border-destructive")}
                             {...register("stock")}
                           />
                         </div>
@@ -783,9 +783,9 @@ export function ProductFormModal({
                 )}
 
                 {/* Tips */}
-                <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 text-xs text-blue-800 dark:text-blue-200">
-                  <p className="font-medium mb-2">Tips for better listings</p>
-                  <ul className="space-y-1 text-blue-700 dark:text-blue-300">
+                <div className="rounded-lg border border-info/20 bg-info/10 p-4 text-xs text-foreground">
+                  <p className="mb-2 font-medium text-info">Tips for better listings</p>
+                  <ul className="space-y-1 text-muted-foreground">
                     <li>• Add 4+ high-quality images</li>
                     <li>• Write detailed descriptions</li>
                     <li>• Use SKU for inventory tracking</li>

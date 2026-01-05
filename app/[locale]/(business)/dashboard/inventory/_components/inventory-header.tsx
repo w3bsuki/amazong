@@ -21,20 +21,20 @@ export function InventoryHeader({ summary }: { summary: InventorySummary }) {
               <span className="tabular-nums">{summary.totalStock.toLocaleString()}</span>
               <span className="opacity-70">total units</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
               <IconCheck className="size-3" />
               <span className="tabular-nums">{inStockCount}</span>
               <span className="opacity-70">in stock</span>
             </span>
             {summary.lowStockCount > 0 && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-warning/10 text-warning">
                 <IconAlertTriangle className="size-3" />
                 <span className="tabular-nums">{summary.lowStockCount}</span>
                 <span className="opacity-70">low</span>
               </span>
             )}
             {summary.outOfStockCount > 0 && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-destructive/10 text-destructive">
                 <IconX className="size-3" />
                 <span className="tabular-nums">{summary.outOfStockCount}</span>
                 <span className="opacity-70">out</span>

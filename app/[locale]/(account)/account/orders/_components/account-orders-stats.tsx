@@ -56,10 +56,10 @@ export function AccountOrdersStats({ stats, locale }: OrdersStatsProps) {
           <span className="text-muted-foreground">{locale === 'bg' ? 'поръчки' : 'orders'}</span>
         </div>
         {stats.pending > 0 && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-200 dark:bg-orange-950/30 dark:border-orange-800">
-            <span className="size-2 rounded-full bg-orange-500 animate-pulse" />
-            <span className="font-semibold text-orange-600 dark:text-orange-400">{stats.pending}</span>
-            <span className="text-orange-600/70 dark:text-orange-400/70">{locale === 'bg' ? 'активни' : 'active'}</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-warning/20 bg-warning/10">
+            <span className="size-2 rounded-full bg-warning animate-pulse" />
+            <span className="font-semibold text-warning">{stats.pending}</span>
+            <span className="text-warning/70">{locale === 'bg' ? 'активни' : 'active'}</span>
           </div>
         )}
       </div>
@@ -89,12 +89,12 @@ export function AccountOrdersStats({ stats, locale }: OrdersStatsProps) {
               <IconClock className="size-4 shrink-0" />
               <span className="truncate">{t.inProgress}</span>
             </CardDescription>
-            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.pending > 0 ? 'text-orange-600 dark:text-orange-400' : ''}`}>
+            <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${stats.pending > 0 ? 'text-warning' : ''}`}>
               {stats.pending.toLocaleString()}
             </CardTitle>
             <CardAction>
               {stats.pending > 0 ? (
-                <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 dark:bg-orange-950/50 dark:border-orange-800 dark:text-orange-400">
+                <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
                   {t.pending}
                 </Badge>
               ) : (
@@ -112,11 +112,11 @@ export function AccountOrdersStats({ stats, locale }: OrdersStatsProps) {
               <IconTruckDelivery className="size-4 shrink-0" />
               <span className="truncate">{t.delivered}</span>
             </CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums text-emerald-600 dark:text-emerald-400 @[250px]/card:text-3xl">
+            <CardTitle className="text-2xl font-semibold tabular-nums text-success @[250px]/card:text-3xl">
               {stats.delivered.toLocaleString()}
             </CardTitle>
             <CardAction>
-              <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-400">
+              <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
                 {t.completed}
               </Badge>
             </CardAction>

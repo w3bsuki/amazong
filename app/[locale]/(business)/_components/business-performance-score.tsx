@@ -51,18 +51,18 @@ const getTrendIcon = (trend?: "up" | "down" | "neutral") => {
 const getTrendColor = (trend?: "up" | "down" | "neutral") => {
   switch (trend) {
     case "up":
-      return "text-emerald-600"
+      return "text-success"
     case "down":
-      return "text-red-600"
+      return "text-destructive"
     default:
       return "text-muted-foreground"
   }
 }
 
 const getScoreColor = (score: number) => {
-  if (score >= 80) return "text-emerald-600"
-  if (score >= 60) return "text-yellow-600"
-  return "text-red-600"
+  if (score >= 80) return "text-success"
+  if (score >= 60) return "text-warning"
+  return "text-destructive"
 }
 
 const getScoreLabel = (score: number) => {
@@ -139,9 +139,11 @@ export function BusinessPerformanceScore({
               variant="outline" 
               className={cn(
                 "mb-1",
-                overallScore >= 80 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                overallScore >= 60 ? "bg-yellow-50 text-yellow-700 border-yellow-200" :
-                "bg-red-50 text-red-700 border-red-200"
+                overallScore >= 80
+                  ? "bg-success/10 text-success border-success/20"
+                  : overallScore >= 60
+                    ? "bg-warning/10 text-warning border-warning/20"
+                    : "bg-destructive/10 text-destructive border-destructive/20"
               )}
             >
               {getScoreLabel(overallScore)}

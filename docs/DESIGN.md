@@ -2,18 +2,17 @@
 
 > ⚠️ **This file has been moved!**
 > 
-> The complete design system documentation is now at:
-> **[docs/design-system/DESIGN.md](./design-system/DESIGN.md)**
+> The complete design system documentation is now in:
+> **[styling/STYLE_GUIDE.md](../styling/STYLE_GUIDE.md)**
 
 ---
 
 ## Quick Links
 
-- **[Complete Design Spec](./design-system/DESIGN.md)** — Typography, spacing, colors, components
-- **[Tokens Reference](./design-system/tokens.md)** — All CSS variables
-- **[UI Patterns](./design-system/patterns.md)** — Reusable patterns
-- **[Screen Recipes](./design-system/recipes.md)** — Page-level guidance
-- **[Audit Tasks](./design-system/AUDIT_TASKS.md)** — Current fixes needed
+- **[Style Guide](../styling/STYLE_GUIDE.md)** — Typography, spacing, colors, components
+- **[Approved Patterns](../styling/PATTERNS.md)** — Copy-paste patterns from good components
+- **[Anti-Patterns](../styling/ANTI_PATTERNS.md)** — What not to do
+- **[Refactor Plan](../styling/REFACTOR_PLAN.md)** — Scan-driven cleanup tasks
 
 ---
 

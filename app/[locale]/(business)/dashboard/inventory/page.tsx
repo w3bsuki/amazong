@@ -87,17 +87,17 @@ export default async function BusinessInventoryPage() {
                     <TableCell className="text-muted-foreground font-mono text-sm">
                       {(product as any).variant_count > 0 ? '-' : (product.sku || '-')}
                     </TableCell>
-                    <TableCell className="font-medium text-emerald-600">
+                    <TableCell className="font-medium text-success">
                       {formatCurrencyBGN(product.price)}
                     </TableCell>
                     <TableCell>
                       <Badge 
                         variant="outline" 
                         className={product.stock > 10 
-                          ? 'bg-green-100 text-green-700 border-green-200' 
+                          ? 'border-success/20 bg-success/10 text-success' 
                           : product.stock > 0
-                            ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
-                            : 'bg-red-100 text-red-700 border-red-200'
+                            ? 'border-warning/20 bg-warning/10 text-warning'
+                            : 'border-destructive/20 bg-destructive/10 text-destructive'
                         }
                       >
                         {product.stock} units
@@ -110,17 +110,17 @@ export default async function BusinessInventoryPage() {
                     </TableCell>
                     <TableCell>
                       {product.stock === 0 ? (
-                        <Badge variant="outline" className="bg-red-100 text-red-700 border-red-200">
+                        <Badge variant="outline" className="border-destructive/20 bg-destructive/10 text-destructive">
                           <IconX className="size-3 mr-1" />
                           Out of Stock
                         </Badge>
                       ) : product.stock <= 10 ? (
-                        <Badge variant="outline" className="bg-yellow-100 text-yellow-700 border-yellow-200">
+                        <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
                           <IconAlertTriangle className="size-3 mr-1" />
                           Low Stock
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="bg-emerald-100 text-emerald-700 border-emerald-200">
+                        <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
                           <IconCheck className="size-3 mr-1" />
                           In Stock
                         </Badge>

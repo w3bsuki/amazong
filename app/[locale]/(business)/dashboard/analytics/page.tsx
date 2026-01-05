@@ -42,17 +42,17 @@ export default async function BusinessAnalyticsPage() {
             <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
             {/* Key metrics as compact badges */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-success/20 bg-success/10 text-success">
                 <IconCurrencyDollar className="size-3" />
                 <span className="tabular-nums">{formatCurrency(stats.totals.revenue)}</span>
                 <span className="opacity-70">revenue</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-info/20 bg-info/10 text-info">
                 <IconEye className="size-3" />
                 <span className="tabular-nums">{stats.totals.views.toLocaleString()}</span>
                 <span className="opacity-70">views</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-950/50 dark:text-purple-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-primary/20 bg-primary/10 text-primary">
                 <IconTrendingUp className="size-3" />
                 <span className="tabular-nums">{conversionRate.toFixed(1)}%</span>
                 <span className="opacity-70">conversion</span>
@@ -168,7 +168,7 @@ export default async function BusinessAnalyticsPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Total Revenue</span>
-                <span className="font-medium text-emerald-600">{formatCurrency(stats.totals.revenue)}</span>
+                <span className="font-medium text-success">{formatCurrency(stats.totals.revenue)}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Store Rating</span>
@@ -192,7 +192,7 @@ export default async function BusinessAnalyticsPage() {
             <div className="space-y-3">
               {stats.totals.products < 10 && (
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                  <IconChartBar className="size-5 text-blue-600 mt-0.5" />
+                  <IconChartBar className="size-5 text-info mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">Add more products</p>
                     <p className="text-xs text-muted-foreground">
@@ -203,7 +203,7 @@ export default async function BusinessAnalyticsPage() {
               )}
               {stats.totals.views < 100 && (
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                  <IconEye className="size-5 text-purple-600 mt-0.5" />
+                  <IconEye className="size-5 text-primary mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">Boost your listings</p>
                     <p className="text-xs text-muted-foreground">
@@ -214,7 +214,7 @@ export default async function BusinessAnalyticsPage() {
               )}
               {conversionRate < 2 && (
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                  <IconTrendingUp className="size-5 text-emerald-600 mt-0.5" />
+                  <IconTrendingUp className="size-5 text-success mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">Improve product photos</p>
                     <p className="text-xs text-muted-foreground">

@@ -89,11 +89,11 @@ export default async function AdminSellersPage() {
   const getTierBadge = (tier: string | null) => {
     switch (tier) {
       case 'business':
-        return 'bg-purple-100 text-purple-700 border-purple-200'
+        return 'border-primary/20 bg-primary/10 text-primary'
       case 'premium':
-        return 'bg-amber-100 text-amber-700 border-amber-200'
+        return 'border-warning/20 bg-warning/10 text-warning'
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200'
+        return 'border-border bg-muted text-muted-foreground'
     }
   }
 
@@ -162,12 +162,12 @@ export default async function AdminSellersPage() {
                   <TableCell>
                     <div className="flex gap-2">
                       {seller.verified ? (
-                        <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200">
+                        <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
                           <IconCheck className="size-3 mr-1" />
                           Verified
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="bg-gray-100 text-gray-500 border-gray-200">
+                        <Badge variant="outline" className="border-border bg-muted text-muted-foreground">
                           <IconX className="size-3 mr-1" />
                           Not verified
                         </Badge>

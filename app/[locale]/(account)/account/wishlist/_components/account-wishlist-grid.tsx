@@ -221,11 +221,11 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 />
                 {/* Stock indicator badge */}
                 {item.stock > 0 ? (
-                  <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-emerald-500">
+                  <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-success">
                     <Package weight="fill" className="size-3.5 text-white" />
                   </div>
                 ) : (
-                  <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500">
+                  <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-warning">
                     <XCircle weight="fill" className="size-3 text-white" />
                     <span className="text-2xs font-semibold text-white">{labels.outOfStock}</span>
                   </div>
@@ -316,12 +316,12 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">{labels.availability}</span>
                     {item.stock > 0 ? (
-                      <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-400">
+                      <Badge variant="outline" className="border-success/20 bg-success/10 text-success">
                         <Package weight="fill" className="size-3 mr-1" />
                         {item.stock} {labels.inStock}
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 dark:bg-orange-950/50 dark:border-orange-800 dark:text-orange-400">
+                      <Badge variant="outline" className="border-warning/20 bg-warning/10 text-warning">
                         <XCircle weight="fill" className="size-3 mr-1" />
                         {labels.outOfStock}
                       </Badge>
@@ -406,12 +406,12 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
 
               {/* Stock indicator */}
               {item.stock > 0 ? (
-                <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500">
+                <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success">
                   <Package weight="fill" className="size-3.5 text-white" />
                   <span className="text-xs font-semibold text-white">{item.stock}</span>
                 </div>
               ) : (
-                <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500">
+                <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning">
                   <XCircle weight="fill" className="size-3.5 text-white" />
                   <span className="text-xs font-semibold text-white">{labels.outOfStock}</span>
                 </div>
@@ -427,7 +427,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 <div className="flex items-center gap-2">
                   <Button
                     size="sm"
-                    className="bg-white text-foreground hover:bg-gray-100"
+                    className="bg-background text-foreground hover:bg-muted"
                     asChild
                   >
                     <Link

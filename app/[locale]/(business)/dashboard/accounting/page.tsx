@@ -83,7 +83,7 @@ export default async function BusinessAccountingPage() {
             <h1 className="text-2xl font-bold tracking-tight">Finances</h1>
             {/* Key financial metrics as badges */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-success/20 bg-success/10 text-success">
                 <IconCurrencyDollar className="size-3" />
                 <span className="tabular-nums">{formatCurrency(accountingData.netEarnings)}</span>
                 <span className="opacity-70">net</span>
@@ -93,7 +93,7 @@ export default async function BusinessAccountingPage() {
                 <span className="tabular-nums">{accountingData.ordersCount}</span>
                 <span className="opacity-70">orders</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-950/50 dark:text-orange-400">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-warning/20 bg-warning/10 text-warning">
                 <IconPercentage className="size-3" />
                 <span className="tabular-nums">{accountingData.commissionRate}%</span>
                 <span className="opacity-70">fee</span>
@@ -158,7 +158,7 @@ export default async function BusinessAccountingPage() {
               <IconCalculator className="size-4" />
               Total Commission
             </CardDescription>
-            <CardTitle className="text-2xl tabular-nums text-red-600">
+            <CardTitle className="text-2xl tabular-nums text-destructive">
               -{formatCurrency(accountingData.totalCommission)}
             </CardTitle>
           </CardHeader>
@@ -175,7 +175,7 @@ export default async function BusinessAccountingPage() {
               <IconReceipt className="size-4" />
               Net Earnings
             </CardDescription>
-            <CardTitle className="text-2xl tabular-nums text-emerald-600">
+            <CardTitle className="text-2xl tabular-nums text-success">
               {formatCurrency(accountingData.netEarnings)}
             </CardTitle>
           </CardHeader>
@@ -265,11 +265,11 @@ export default async function BusinessAccountingPage() {
             </div>
             <div className="flex items-center justify-between py-2 border-b">
               <span className="text-muted-foreground">Commission ({accountingData.commissionRate}%)</span>
-              <span className="font-medium tabular-nums text-red-600">-{formatCurrency(accountingData.totalCommission)}</span>
+              <span className="font-medium tabular-nums text-destructive">-{formatCurrency(accountingData.totalCommission)}</span>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="font-bold">Net Earnings</span>
-              <span className="font-bold text-xl tabular-nums text-emerald-600">{formatCurrency(accountingData.netEarnings)}</span>
+              <span className="font-bold text-xl tabular-nums text-success">{formatCurrency(accountingData.netEarnings)}</span>
             </div>
           </div>
         </CardContent>
@@ -300,7 +300,7 @@ export default async function BusinessAccountingPage() {
               <Badge 
                 variant="outline" 
                 className={businessSeller.is_verified_business 
-                  ? 'mt-1 bg-emerald-50 text-emerald-700 border-emerald-200' 
+                  ? 'mt-1 border-success/20 bg-success/10 text-success' 
                   : 'mt-1'
                 }
               >

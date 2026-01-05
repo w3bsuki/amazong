@@ -38,37 +38,37 @@ const badgeVariants = cva(
           "border-border bg-background text-foreground font-medium",
         
         // === MARKETPLACE: SHIPPING BADGES ===
-        // Free shipping: Emerald/green - positive signal
+        // Free shipping: semantic success / badge shipping tokens
         shipping:
-          "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400",
-        // Express: Blue - premium service
+          "border-badge-shipping-border bg-badge-shipping-bg text-badge-shipping-text",
+        // Express: semantic info
         "shipping-express":
-          "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400",
+          "border-info/20 bg-info/10 text-info",
         
         // === MARKETPLACE: STOCK STATUS BADGES ===
-        // In stock: Subtle green
+        // In stock: semantic success
         "stock-available":
-          "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400",
-        // Low stock: Amber/orange - urgency
+          "border-success/20 bg-success/10 text-success",
+        // Low stock: semantic warning
         "stock-low":
-          "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-400",
+          "border-warning/20 bg-warning/10 text-warning",
         // Out of stock: Neutral gray - disabled feel
         "stock-out":
           "border-border bg-muted text-muted-foreground",
         
         // === MARKETPLACE: DEAL/SALE BADGES ===
-        // Deal: Solid red bg for maximum attention
+        // Deal: semantic deal token
         deal:
-          "border-transparent bg-red-600 text-white font-semibold dark:bg-red-700",
-        // Sale: Lighter red variant
+          "border-transparent bg-deal text-white font-semibold",
+        // Sale: lighter deal tint
         sale:
-          "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-400",
+          "border-deal/20 bg-deal/10 text-deal",
         
         // === MARKETPLACE: TRUST BADGES ===
         verified:
-          "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400",
+          "border-verified/20 bg-verified/10 text-verified",
         "top-rated":
-          "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-400",
+          "border-warning/20 bg-warning/10 text-warning",
         
         // === MARKETPLACE: CATEGORY/INFO BADGES ===
         // Neutral for category/attribute info

@@ -56,11 +56,11 @@ const notificationIcons: Record<NotificationType, React.ElementType> = {
 }
 
 const notificationColors: Record<NotificationType, string> = {
-  order: "bg-blue-100 text-blue-600",
-  inventory: "bg-orange-100 text-orange-600",
-  review: "bg-amber-100 text-amber-600",
-  alert: "bg-red-100 text-red-600",
-  success: "bg-emerald-100 text-emerald-600",
+  order: "bg-info/10 text-info",
+  inventory: "bg-primary/10 text-primary",
+  review: "bg-warning/10 text-warning",
+  alert: "bg-destructive/10 text-destructive",
+  success: "bg-success/10 text-success",
 }
 
 // Demo notifications - in production, these would come from a real notifications system
@@ -132,7 +132,7 @@ export function BusinessNotifications({
           <IconBell className="size-4" />
           {unreadCount > 0 && (
             <Badge 
-              className="absolute -top-1 -right-1 size-4 p-0 flex items-center justify-center text-2xs bg-red-500"
+              className="absolute -top-1 -right-1 size-4 p-0 flex items-center justify-center text-2xs bg-destructive text-destructive-foreground"
             >
               {unreadCount > 9 ? "9+" : unreadCount}
             </Badge>
