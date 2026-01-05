@@ -56,11 +56,11 @@ export function MobilePriceBlock({
           </span>
         )}
 
-        {/* Discount Badge - text-[10px] */}
+        {/* Discount Badge - using deal variant */}
         {hasDiscount && discountPercent > 0 && (
           <Badge 
-            variant="secondary"
-            className="h-5 px-1.5 text-2xs font-bold rounded-sm bg-deal-light text-deal dark:bg-deal/20 dark:text-deal hover:bg-deal-light border-none shadow-none"
+            variant="sale"
+            className="h-5 px-1.5 text-2xs font-bold rounded-sm"
           >
             -{discountPercent}%
           </Badge>

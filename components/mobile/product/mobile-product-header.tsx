@@ -4,12 +4,24 @@ import { useState } from "react"
 import { ArrowLeft, Search, Share2, ShoppingCart, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Link } from "@/i18n/routing"
 import { useLocale } from "next-intl"
 import { useCart } from "@/components/providers/cart-context"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
+import { safeAvatarSrc } from "@/lib/utils"
 
-export function MobileProductHeader() {
+interface MobileProductHeaderProps {
+  sellerName?: string;
+  sellerUsername?: string;
+  sellerAvatarUrl?: string;
+}
+
+export function MobileProductHeader({ 
+  sellerName,
+  sellerUsername,
+  sellerAvatarUrl,
+}: MobileProductHeaderProps) {
   const locale = useLocale()
   const { totalItems } = useCart()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -35,18 +47,41 @@ export function MobileProductHeader() {
     }
   }
 
+  const sellerHref = sellerUsername ? `/${sellerUsername}` : "/"
+
   return (
     <>
     <header className="fixed top-0 left-0 right-0 z-60 h-12 bg-brand flex items-center justify-between px-2 lg:hidden">
-      {/* Back button */}
-      <Link 
-        href="/" 
-        className="flex items-center justify-center size-10 rounded-full text-header-text hover:bg-header-hover active:bg-header-active transition-colors" 
-        aria-label={labels.back} 
-        title={labels.back}
-      >
-        <ArrowLeft className="size-6" aria-hidden="true" />
-      </Link>
+      {/* Left side: Back + Seller */}
+      <div className="flex items-center gap-1">
+        <Link 
+          href="/" 
+          className="flex items-center justify-center size-10 rounded-full text-header-text hover:bg-header-hover active:bg-header-active transition-colors" 
+          aria-label={labels.back} 
+          title={labels.back}
+        >
+          <ArrowLeft className="size-5" aria-hidden="true" />
+        </Link>
+        
+        {/* Seller avatar - quick link to seller profile */}
+        {sellerUsername && (
+          <Link 
+            href={sellerHref}
+            className="flex items-center gap-1.5 pl-0.5 pr-2 py-1 rounded-full hover:bg-header-hover active:bg-header-active transition-colors"
+            title={sellerName || sellerUsername}
+          >
+            <Avatar className="size-7 border-2 border-white/30">
+              <AvatarImage src={safeAvatarSrc(sellerAvatarUrl)} alt={sellerName || sellerUsername} />
+              <AvatarFallback className="text-2xs font-semibold bg-white/20 text-white">
+                {(sellerName || sellerUsername || "S").slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-xs font-medium text-header-text truncate max-w-20">
+              {sellerName || sellerUsername}
+            </span>
+          </Link>
+        )}
+      </div>
       
       {/* Action buttons */}
       <div className="flex items-center">
@@ -58,7 +93,7 @@ export function MobileProductHeader() {
           title={labels.search}
           onClick={() => setIsSearchOpen(true)}
         >
-          <Search className="size-6" aria-hidden="true" />
+          <Search className="size-5" aria-hidden="true" />
         </Button>
         <Button
           variant="ghost"
@@ -68,7 +103,7 @@ export function MobileProductHeader() {
           title={labels.share}
           onClick={handleShare}
         >
-          <Share2 className="size-6" aria-hidden="true" />
+          <Share2 className="size-5" aria-hidden="true" />
         </Button>
         <Button
           variant="ghost"
@@ -77,7 +112,7 @@ export function MobileProductHeader() {
           aria-label={labels.wishlist}
           title={labels.wishlist}
         >
-          <Heart className="size-6" aria-hidden="true" />
+          <Heart className="size-5" aria-hidden="true" />
         </Button>
         <Link
           href="/cart"
@@ -85,7 +120,7 @@ export function MobileProductHeader() {
           aria-label={labels.cart}
           title={labels.cart}
         >
-          <ShoppingCart className="size-6" aria-hidden="true" />
+          <ShoppingCart className="size-5" aria-hidden="true" />
           {totalItems > 0 && (
             <Badge 
               aria-hidden="true" 

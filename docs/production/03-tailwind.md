@@ -1,4 +1,8 @@
-# Phase 3: Tailwind CSS v4 Best Practices Audit ⚠️ PARTIAL
+# Phase 3: Tailwind CSS v4 Best Practices Audit ⚠️ PARTIAL (Deprecated Copy)
+
+> Canonical doc: `styling/03-tailwind.md` (../../styling/03-tailwind.md)
+>
+> This file is kept for backwards-compatible links from older plans.
 
 > **Priority:** 🟡 Medium  
 > **Status:** Config complete, ~1000 palette violations need cleanup  
@@ -20,22 +24,21 @@
 - [x] Touch target tokens (WCAG 2.1 AA compliant)
 - [x] Dense spacing scale for marketplace UI
 
-### ⚠️ Needs Attention (From Palette Scan)
-```
-Top offenders (current scan results):
-- app/[locale]/(main)/seller/dashboard/_components/seller-dashboard-client.tsx  ~39
-- app/[locale]/(business)/_components/products-table.tsx  ~37
-- app/[locale]/(account)/account/orders/_components/account-orders-grid.tsx  ~36
-- app/[locale]/(account)/account/selling/page.tsx  ~33
-- app/[locale]/(admin)/_components/admin-recent-activity.tsx  ~31
---------------------------------
-Totals: files=80 palette=1019 gradient=16 fill=0
-Full report: treat prior scan output as an artifact (it may be deleted in Phase 0). Regenerate any time with:
+### ⚠️ Needs Attention (From Scan Reports)
+
+This repo uses **scan reports** as the source of truth for what to fix next:
 
 ```bash
+# Tailwind palette colors + gradients
 pnpm -s exec node scripts/scan-tailwind-palette.mjs
+
+# Arbitrary values (e.g. w-[560px]) + hardcoded hex colors
+pnpm -s exec node scripts/scan-tailwind-arbitrary.mjs
 ```
-```
+
+Reports:
+- `cleanup/palette-scan-report.txt`
+- `cleanup/arbitrary-scan-report.txt`
 
 ---
 
@@ -258,23 +261,11 @@ Before introducing a parallel `--color-text-*` system, decide whether existing t
 
 ### 7. Gradient Color Stops (v4 OKLCH Interpolation)
 
-**Best Practice:** Use OKLCH interpolation for better gradients
-
-```html
-<!-- ⚠️ Baseline: no explicit interpolation -->
-<div class="bg-linear-to-r from-indigo-500 to-teal-400">
-
-<!-- ✅ BEST: OKLCH interpolation (vibrant throughout) -->
-<div class="bg-linear-to-r/oklch from-indigo-500 to-teal-400">
-
-<!-- ✅ Even better for brand gradients -->
-<div class="bg-linear-to-r/oklch from-brand to-brand-light">
-```
+**Repo rule:** Gradients are **not allowed** in the marketplace UI.
 
 **Action Items:**
-- [ ] Audit 16 gradient usages found in scan
-- [ ] Convert to `bg-linear-to-*/oklch` where appropriate
-- [ ] Define brand gradient tokens if used repeatedly
+- [ ] Audit gradient usages found in scan reports
+- [ ] Replace gradients with solid semantic tokens (e.g. `bg-card`, `bg-muted`, `bg-cta-trust-blue`)
 
 ---
 
@@ -367,13 +358,7 @@ Before introducing a parallel `--color-text-*` system, decide whether existing t
 <div className="bg-[#f3f4f6] text-[#1f2937] border-[#e5e7eb]">
 
 // ✅ Use semantic tokens
-<div className="bg-surface-card text-foreground border-border">
-
-// ❌ Arbitrary gradients  
-<div className="bg-linear-to-r from-[#6366f1] to-[#8b5cf6]">
-
-// ✅ Use brand tokens
-<div className="bg-linear-to-r/oklch from-brand to-brand-light">
+<div className="bg-card text-foreground border-border">
 ```
 
 ---
@@ -472,7 +457,7 @@ pnpm build
 - [ ] Prefer `(--var)` syntax over legacy `[...]` CSS-variable references like `[--var]`
 
 ### Performance
-- [ ] Gradients use OKLCH interpolation
+- [ ] No gradients (replace with solid tokens)
 - [ ] Animations defined in `@theme` for tree-shaking
 - [ ] CSS bundle < 50KB gzipped
 
@@ -486,4 +471,4 @@ pnpm build
 
 ## 🏁 Next Step
 
-→ Proceed to [Phase 4: shadcn/ui](./04-shadcn.md)
+→ Proceed to [Phase 4: shadcn/ui](../../styling/04-shadcn.md)

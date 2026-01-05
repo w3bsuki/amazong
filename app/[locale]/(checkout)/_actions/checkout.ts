@@ -11,6 +11,19 @@ export async function createCheckoutSession(items: CartItem[]) {
     return { error: "Stripe configuration is missing. Please check your server logs." }
   }
 
+  // Validate items before proceeding
+  if (!items || items.length === 0) {
+    return { error: "No items in cart" }
+  }
+
+  // Validate each item has required fields
+  for (const item of items) {
+    if (!item.id || !item.title || typeof item.price !== "number" || item.price <= 0) {
+      console.error("Invalid cart item:", item)
+      return { error: "Invalid cart item data. Please refresh and try again." }
+    }
+  }
+
   try {
     const supabase = await createClient()
     let userId: string | undefined
@@ -49,7 +62,7 @@ export async function createCheckoutSession(items: CartItem[]) {
             images: [
               item.image.startsWith("http")
                 ? item.image
-                : `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}${item.image}`,
+                : `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}${item.image}`,
             ],
             metadata: {
               product_id: item.id,
@@ -66,8 +79,8 @@ export async function createCheckoutSession(items: CartItem[]) {
         user_id: userId || "guest",
         items_json: JSON.stringify(items.map((i) => ({ id: i.id, variantId: i.variantId ?? null, qty: i.quantity, price: i.price }))),
       },
-      success_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/cart`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/cart`,
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams)
@@ -75,6 +88,20 @@ export async function createCheckoutSession(items: CartItem[]) {
     return { url: session.url }
   } catch (error) {
     console.error("Error creating checkout session:", error)
+    // Return more specific error messages for debugging
+    if (error instanceof Error) {
+      // Check for common Stripe errors
+      if (error.message.includes("API key")) {
+        return { error: "Stripe API key configuration error. Please contact support." }
+      }
+      if (error.message.includes("Invalid")) {
+        return { error: `Stripe validation error: ${error.message}` }
+      }
+      // In development, show the actual error; in production, show generic message
+      if (process.env.NODE_ENV === "development") {
+        return { error: `Checkout error: ${error.message}` }
+      }
+    }
     return { error: "Failed to create checkout session. Please try again." }
   }
 }

@@ -71,7 +71,7 @@ export function BusinessRecentActivity({ products, orders }: BusinessRecentActiv
           <CardDescription>Your latest listings this week</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <ScrollArea className="h-[300px]">
+          <ScrollArea className="h-(--spacing-scroll-md)">
             <div className="divide-y">
               {products.length === 0 ? (
                 <p className="p-4 text-sm text-muted-foreground">No recent products</p>
@@ -123,7 +123,7 @@ export function BusinessRecentActivity({ products, orders }: BusinessRecentActiv
           <CardDescription>Latest orders you've received</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <ScrollArea className="h-[300px]">
+          <ScrollArea className="h-(--spacing-scroll-md)">
             <div className="divide-y">
               {orders.length === 0 ? (
                 <p className="p-4 text-sm text-muted-foreground">No recent orders</p>

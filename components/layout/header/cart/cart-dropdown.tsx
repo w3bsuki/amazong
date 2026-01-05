@@ -23,7 +23,6 @@ export function CartDropdown() {
 
   const displayItems = mounted ? totalItems : 0
 
-  // Build SEO-friendly product URL
   const buildProductUrl = useCallback((item: CartItem) => {
     if (!item.storeSlug) return "#"
     return `/${item.storeSlug}/${item.slug || item.id}`
@@ -41,14 +40,14 @@ export function CartDropdown() {
       <HoverCardTrigger asChild>
         <Link href="/cart" className="block" aria-label={`${tNav("cart")}${mounted && displayItems > 0 ? ` (${displayItems} items)` : ""}`}>
           <div
-            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer"
+            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-5 cursor-pointer"
           >
             <span className="relative" aria-hidden="true">
               <ShoppingCart weight="regular" />
               {mounted && displayItems > 0 && (
                 <CountBadge
                   count={displayItems}
-                  className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
+                  className="absolute -top-1 -right-1.5 bg-destructive text-white ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
                   aria-hidden="true"
                 />
               )}
@@ -57,49 +56,47 @@ export function CartDropdown() {
         </Link>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-[380px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-md"
+        className="w-(--container-dropdown) p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-md"
         align="end"
         sideOffset={8}
         collisionPadding={10}
       >
-        <div className="flex items-center justify-between p-4 bg-muted border-b border-border">
-          <div className="flex items-center gap-2">
-            <ShoppingCart size={20} weight="regular" className="text-muted-foreground" />
-            <h3 className="font-semibold text-base text-foreground">{t("title")}</h3>
-            <span className="text-sm text-muted-foreground">
-              ({totalItems} {totalItems === 1 ? t("item") : t("items")})
-            </span>
+        <div className="flex items-center justify-between px-3 py-2 bg-muted border-b border-border">
+          <div className="flex items-center gap-1.5">
+            <ShoppingCart size={16} weight="regular" className="text-muted-foreground" />
+            <h3 className="font-semibold text-sm text-foreground">{t("title")}</h3>
+            <span className="text-xs text-muted-foreground">({totalItems})</span>
           </div>
         </div>
 
         {items.length === 0 ? (
           <div className="p-4 text-center">
-            <ShoppingCart size={48} weight="light" className="text-muted-foreground/30 mx-auto mb-3" />
-            <p className="text-muted-foreground text-sm mb-4">{t("empty")}</p>
+            <ShoppingCart size={36} weight="light" className="text-muted-foreground/30 mx-auto mb-2" />
+            <p className="text-muted-foreground text-sm mb-3">{t("empty")}</p>
             <Link href="/search">
-              <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+              <Button variant="cta" size="default" className="w-full">
                 {t("startShopping")}
               </Button>
             </Link>
           </div>
         ) : (
           <>
-            <div className="max-h-[300px] overflow-y-auto">
+            <div className="max-h-(--spacing-scroll-md) overflow-y-auto">
               {items.slice(0, 4).map((item) => (
-                <div key={`${item.id}:${item.variantId ?? ""}`} className="flex gap-3 p-3 border-b border-border hover:bg-muted">
+                <div key={`${item.id}:${item.variantId ?? ""}`} className="flex gap-2 p-2 border-b border-border hover:bg-muted/50">
                   <Link href={buildProductUrl(item)} className="shrink-0">
-                    <div className="w-16 h-16 bg-muted rounded overflow-hidden">
+                    <div className="size-12 bg-muted rounded-md overflow-hidden border border-border">
                       {item.image ? (
                         <Image
                           src={item.image}
                           alt={item.title}
-                          width={64}
-                          height={64}
-                          className="w-full h-full object-cover"
+                          width={48}
+                          height={48}
+                          className="size-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                          <Package size={24} weight="regular" />
+                        <div className="size-full flex items-center justify-center text-muted-foreground">
+                          <Package size={18} weight="regular" />
                         </div>
                       )}
                     </div>
@@ -107,20 +104,20 @@ export function CartDropdown() {
                   <div className="flex-1 min-w-0">
                     <Link
                       href={buildProductUrl(item)}
-                      className="text-sm font-normal text-foreground hover:text-brand line-clamp-2"
+                      className="text-sm text-foreground hover:text-brand line-clamp-2 leading-snug"
                     >
                       {item.title}
                     </Link>
-                    {item.variantName ? (
+                    {item.variantName && (
                       <div className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
                         {item.variantName}
                       </div>
-                    ) : null}
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-sm font-medium text-foreground">{formatPrice(item.price)}</span>
+                    )}
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-sm font-semibold text-foreground">{formatPrice(item.price)}</span>
                       <span className="text-xs text-muted-foreground">× {item.quantity}</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-1 mt-1">
                       <button
                         onClick={(e) => {
                           e.preventDefault()
@@ -130,11 +127,11 @@ export function CartDropdown() {
                             removeFromCart(item.id, item.variantId)
                           }
                         }}
-                        className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                        className="size-5 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                       >
-                        <Minus size={12} weight="bold" />
+                        <Minus size={10} weight="bold" />
                       </button>
-                      <span className="text-xs font-medium text-foreground min-w-5 text-center">
+                      <span className="text-xs font-medium text-foreground w-4 text-center">
                         {item.quantity}
                       </span>
                       <button
@@ -142,43 +139,43 @@ export function CartDropdown() {
                           e.preventDefault()
                           updateQuantity(item.id, item.quantity + 1, item.variantId)
                         }}
-                        className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                        className="size-5 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                       >
-                        <Plus size={12} weight="bold" />
+                        <Plus size={10} weight="bold" />
                       </button>
                       <button
                         onClick={(e) => {
                           e.preventDefault()
                           removeFromCart(item.id, item.variantId)
                         }}
-                        className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive ml-auto"
+                        className="size-5 flex items-center justify-center rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive ml-auto"
                       >
-                        <Trash size={14} weight="regular" />
+                        <Trash size={12} weight="regular" />
                       </button>
                     </div>
                   </div>
                 </div>
               ))}
               {items.length > 4 && (
-                <div className="p-3 text-center text-sm text-muted-foreground bg-muted">
+                <div className="px-2 py-1.5 text-center text-xs text-muted-foreground bg-muted">
                   +{items.length - 4} {t("moreItems")}
                 </div>
               )}
             </div>
 
-            <div className="p-4 bg-muted border-t border-border">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm text-muted-foreground">{t("subtotal")}</span>
-                <span className="text-lg font-medium text-foreground">{formatPrice(subtotal)}</span>
+            <div className="px-3 py-2 bg-muted border-t border-border">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-muted-foreground">{t("subtotal")}</span>
+                <span className="text-base font-semibold text-foreground">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex gap-2">
                 <Link href="/cart" className="flex-1">
-                  <Button variant="outline" className="w-full h-10 text-sm">
+                  <Button variant="outline" size="default" className="w-full">
                     {t("viewCart")}
                   </Button>
                 </Link>
                 <Link href="/checkout" className="flex-1">
-                  <Button className="w-full h-10 text-sm bg-cta-buy-now hover:bg-cta-buy-now/90 text-foreground">
+                  <Button variant="cta" size="default" className="w-full">
                     {t("checkout")}
                   </Button>
                 </Link>

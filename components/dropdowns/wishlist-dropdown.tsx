@@ -43,14 +43,14 @@ export function WishlistDropdown() {
       <HoverCardTrigger asChild>
         <Link href="/account/wishlist" className="block" aria-label={`${tNav("wishlist")}${mounted && displayItems > 0 ? ` (${displayItems})` : ""}`}>
           <div
-            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer"
+            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-5 cursor-pointer"
           >
             <span className="relative" aria-hidden="true">
               <Heart weight="regular" />
               {mounted && displayItems > 0 && (
                 <CountBadge
                   count={displayItems}
-                  className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
+                  className="absolute -top-1 -right-1.5 bg-destructive text-white ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
                   aria-hidden="true"
                 />
               )}
@@ -60,36 +60,34 @@ export function WishlistDropdown() {
       </HoverCardTrigger>
 
       <HoverCardContent
-        className="w-[380px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-md"
+        className="w-(--container-dropdown) p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-md"
         align="end"
         sideOffset={8}
         collisionPadding={10}
       >
-        <div className="flex items-center justify-between p-4 bg-muted border-b border-border">
-          <div className="flex items-center gap-2">
-            <Heart size={20} weight="regular" className="text-muted-foreground" />
-            <h3 className="font-semibold text-base text-foreground">{t("title")}</h3>
-            <span className="text-sm text-muted-foreground">
-              ({totalItems} {totalItems === 1 ? t("item") : t("items")})
-            </span>
+        <div className="flex items-center justify-between px-3 py-2 bg-muted border-b border-border">
+          <div className="flex items-center gap-1.5">
+            <Heart size={16} weight="regular" className="text-muted-foreground" />
+            <h3 className="font-semibold text-sm text-foreground">{t("title")}</h3>
+            <span className="text-xs text-muted-foreground">({totalItems})</span>
           </div>
         </div>
 
         {isLoading ? (
-          <div className="p-4 text-center text-muted-foreground">{t("loading")}</div>
+          <div className="p-4 text-center text-muted-foreground text-sm">{t("loading")}</div>
         ) : items.length === 0 ? (
           <div className="p-4 text-center">
-            <Heart size={48} weight="light" className="text-muted-foreground/30 mx-auto mb-3" />
-            <p className="text-muted-foreground text-sm mb-4">{t("empty")}</p>
+            <Heart size={36} weight="light" className="text-muted-foreground/30 mx-auto mb-2" />
+            <p className="text-muted-foreground text-sm mb-3">{t("empty")}</p>
             <Link href="/search">
-              <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+              <Button variant="cta" size="default" className="w-full">
                 {t("startBrowsing")}
               </Button>
             </Link>
           </div>
         ) : (
           <>
-            <div className="max-h-[300px] overflow-y-auto">
+            <div className="max-h-(--spacing-scroll-md) overflow-y-auto">
               {topItems.map((item) => (
                 <DropdownProductItem
                   key={item.id}
@@ -106,15 +104,15 @@ export function WishlistDropdown() {
                 />
               ))}
               {items.length > 4 && (
-                <div className="p-3 text-center text-sm text-muted-foreground bg-muted">
+                <div className="px-2 py-1.5 text-center text-xs text-muted-foreground bg-muted">
                   +{items.length - 4} {t("moreItems")}
                 </div>
               )}
             </div>
 
-            <div className="p-4 bg-muted border-t border-border">
+            <div className="px-3 py-2 bg-muted border-t border-border">
               <Link href="/account/wishlist" className="w-full">
-                <Button className="w-full h-10 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
+                <Button variant="cta" size="default" className="w-full">
                   {t("viewAll")}
                 </Button>
               </Link>

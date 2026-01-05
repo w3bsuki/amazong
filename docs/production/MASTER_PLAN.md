@@ -51,8 +51,8 @@
 | 0 | File Cleanup | [00-file-cleanup.md](./00-file-cleanup.md) | ⚠️ Partial | 🟡 Medium | 1-2 hrs |
 | 1 | Next.js 16 | [01-nextjs.md](./01-nextjs.md) | ✅ Done | - | - |
 | 2 | Supabase | [02-supabase.md](./02-supabase.md) | ✅ Done | - | - |
-| 3 | Tailwind v4 | [03-tailwind.md](./03-tailwind.md) | ⚠️ Partial | 🟡 Medium | 2-3 hrs |
-| 4 | shadcn/ui | [04-shadcn.md](./04-shadcn.md) | ✅ Done | - | - |
+| 3 | Tailwind v4 | [../../styling/03-tailwind.md](../../styling/03-tailwind.md) | ⚠️ Partial | 🟡 Medium | 2-3 hrs |
+| 4 | shadcn/ui | [../../styling/04-shadcn.md](../../styling/04-shadcn.md) | ✅ Done | - | - |
 | 5 | i18n | [05-i18n.md](./05-i18n.md) | ✅ Done | - | - |
 | 6 | Testing | [06-testing.md](./06-testing.md) | ⚠️ Partial | 🟡 Medium | 2-3 hrs |
 | 7 | Performance | [07-performance.md](./07-performance.md) | ⬜ Audit Needed | 🔴 Critical | 2-3 hrs |

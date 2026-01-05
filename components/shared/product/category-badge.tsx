@@ -1,4 +1,4 @@
-import { Tag, Folder } from "lucide-react"
+import { Folder } from "lucide-react"
 
 import { Badge } from "../../ui/badge"
 import { cn } from "@/lib/utils"
@@ -21,10 +21,16 @@ function isEmojiLike(value: string) {
   return value.length <= 4 && /[^\p{L}\p{N}\s]/u.test(value)
 }
 
+/**
+ * CategoryBadge - Professional category display
+ * 
+ * Uses NEUTRAL background with dark text for proper contrast
+ * NO blue-on-blue, NO gradient-looking opacity layers
+ */
 export function CategoryBadge(props: {
   locale: string
   category: Category | null
-  subcategory?: Category | null
+  subcategory?: Category | null | undefined
   size?: "sm" | "md" | "lg"
   className?: string
 }) {
@@ -37,13 +43,13 @@ export function CategoryBadge(props: {
   const icon = category.icon?.trim()
 
   const sizeClass =
-    size === "lg" ? "text-sm px-3.5 py-2" : size === "md" ? "text-xs px-3 py-1.5" : "text-xs px-2.5 py-1"
+    size === "lg" ? "text-sm px-3.5 py-2 h-9" : size === "md" ? "text-xs px-3 py-1.5 h-7" : "text-xs px-2.5 py-1 h-6"
 
   return (
     <Badge
-      variant="outline"
+      variant="category"
       className={cn(
-        "inline-flex items-center gap-2 rounded-md border-border/60 bg-muted/50 text-foreground hover:bg-muted transition-colors cursor-pointer",
+        "inline-flex items-center gap-2 rounded-md hover:bg-muted transition-colors cursor-pointer",
         sizeClass,
         className
       )}
@@ -53,9 +59,9 @@ export function CategoryBadge(props: {
           {icon}
         </span>
       ) : (
-        <Folder className={cn("text-muted-foreground", size === "lg" ? "h-4 w-4" : "h-3.5 w-3.5")} />
+        <Folder className={cn("text-category-badge-icon", size === "lg" ? "size-4" : "size-3.5")} />
       )}
-      <span className="font-semibold">
+      <span className="font-medium">
         {label}
         {subLabel ? <span className="text-muted-foreground font-normal"> · {subLabel}</span> : null}
       </span>

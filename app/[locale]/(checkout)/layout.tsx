@@ -32,7 +32,7 @@ export default async function CheckoutLayout({
   setRequestLocale(locale)
 
   return (
-    <div className="min-h-screen flex flex-col bg-muted">
+    <div className="min-h-screen flex flex-col bg-background">
       <CheckoutHeader />
       <main className="flex-1">
         {children}

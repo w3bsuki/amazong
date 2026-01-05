@@ -1,5 +1,4 @@
 import { ShieldCheck, RotateCcw, Truck, Lock } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface MobileTrustBlockProps {
   locale?: string;
@@ -9,75 +8,43 @@ interface MobileTrustBlockProps {
 }
 
 /**
- * MobileTrustBlock - Trust signals row
+ * MobileTrustBlock - Clean inline trust indicators
  * 
- * Uses neutral backgrounds with colored icons for proper contrast
- * per WCAG 2.2 AA (avoiding blue-on-blue, green-on-green patterns)
+ * Design principles:
+ * - Single consistent icon color (muted-foreground)
+ * - No colored icon circus
+ * - Horizontal strip instead of cramped grid
+ * - Larger text for readability
  */
 export function MobileTrustBlock({
   locale = "en",
-  verifiedSeller,
   freeShipping,
   freeReturns,
 }: MobileTrustBlockProps) {
   const t = {
-    buyerProtection: locale === "bg" ? "Защита" : "Protected",
-    buyerProtectionDesc: locale === "bg" ? "Пари назад" : "Money back",
-    returns: locale === "bg" ? "Връщане" : "Returns",
-    returnsDesc: locale === "bg" ? "30 дни" : "30 days",
-    shipping: locale === "bg" ? "Доставка" : "Shipping",
-    shippingDescFree: locale === "bg" ? "Безплатна" : "Free",
-    shippingDescStd: locale === "bg" ? "Проследяване" : "Tracked",
-    securePayment: locale === "bg" ? "Плащане" : "Payment",
-    securePaymentDesc: locale === "bg" ? "Сигурно" : "Secure",
+    protection: locale === "bg" ? "Защита на купувача" : "Buyer Protection",
+    returns: locale === "bg" ? "30 дни връщане" : "30-day Returns",
+    shipping: freeShipping 
+      ? (locale === "bg" ? "Безплатна доставка" : "Free Shipping")
+      : (locale === "bg" ? "Проследяване" : "Tracked Shipping"),
+    payment: locale === "bg" ? "Сигурно плащане" : "Secure Payment",
   };
 
   const trustItems = [
-    {
-      icon: ShieldCheck,
-      label: t.buyerProtection,
-      desc: t.buyerProtectionDesc,
-      iconColor: "text-verified",
-    },
-    {
-      icon: RotateCcw,
-      label: t.returns,
-      desc: freeReturns ? (locale === "bg" ? "Безплатно" : "Free") : t.returnsDesc,
-      iconColor: "text-success",
-    },
-    {
-      icon: Truck,
-      label: t.shipping,
-      desc: freeShipping ? t.shippingDescFree : t.shippingDescStd,
-      iconColor: freeShipping ? "text-shipping-free" : "text-muted-foreground",
-    },
-    {
-      icon: Lock,
-      label: t.securePayment,
-      desc: t.securePaymentDesc,
-      iconColor: "text-info",
-    },
+    { icon: ShieldCheck, label: t.protection },
+    { icon: RotateCcw, label: t.returns },
+    { icon: Truck, label: t.shipping },
+    { icon: Lock, label: t.payment },
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-2 py-2.5 px-3 bg-muted/30 rounded-md border border-border/50">
+    <div className="flex items-center justify-between py-3 px-3 gap-2">
       {trustItems.map((item, index) => (
-        <div
-          key={index}
-          className="flex flex-col items-center text-center gap-1"
-        >
-          {/* Icon container: neutral bg with colored icon for proper contrast */}
-          <div className="size-8 rounded-md bg-muted flex items-center justify-center">
-            <item.icon className={cn("size-4", item.iconColor)} />
+        <div key={index} className="flex flex-col items-center text-center gap-1 flex-1">
+          <div className="size-9 rounded-lg bg-muted/50 flex items-center justify-center">
+            <item.icon className="size-4 text-muted-foreground" />
           </div>
-          <div className="flex flex-col">
-            <span className="text-2xs font-semibold text-foreground leading-tight">
-              {item.label}
-            </span>
-            <span className="text-2xs text-muted-foreground leading-tight">
-              {item.desc}
-            </span>
-          </div>
+          <span className="text-2xs font-medium text-foreground leading-tight">{item.label}</span>
         </div>
       ))}
     </div>

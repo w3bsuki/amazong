@@ -240,7 +240,7 @@ export function SignUpForm({ locale }: { locale: string }) {
               name="username"
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
               autoComplete="username"
               required
               placeholder={t("usernamePlaceholder")}

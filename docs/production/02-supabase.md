@@ -430,4 +430,4 @@ mcp_supabase_get_publishable_keys()
 3. **Before Launch:** Run full E2E auth flow tests
 4. **Post-Launch:** Review and clean up unused indexes
 
-→ Proceed to [Phase 3: Tailwind CSS](./03-tailwind.md)
+→ Proceed to [Phase 3: Tailwind CSS](../../styling/03-tailwind.md)

@@ -245,7 +245,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
         )} />
         <span className={cn(filterCount > 0 ? "text-primary" : "text-foreground")}>{t('filters')}</span>
         {filterCount > 0 && (
-          <span className="bg-primary text-primary-foreground text-xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center text-[10px]">
+          <span className="bg-primary text-primary-foreground text-2xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
             {filterCount}
           </span>
         )}

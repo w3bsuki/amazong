@@ -73,7 +73,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
         </Link>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-[560px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-md"
+        className="w-(--container-dropdown-lg) p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-md"
         align={variant === "full" ? "start" : "end"}
         sideOffset={8}
         collisionPadding={10}

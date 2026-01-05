@@ -78,7 +78,7 @@ export function LocaleDeliveryDropdown({ pathname, country, onCountryChange, cla
       </HoverCardTrigger>
 
       <HoverCardContent
-        className="w-[360px] p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
+        className="w-(--container-dropdown-sm) p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden"
         align="start"
         sideOffset={8}
       >

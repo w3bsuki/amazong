@@ -3,18 +3,15 @@
 import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { Link } from "@/i18n/routing"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
 import { verifyAndCreateOrder } from "../_actions/checkout"
 import {
   CheckCircle,
   XCircle,
   SpinnerGap,
   Package,
-  ChatCircleText,
+  Envelope,
   ArrowRight,
 } from "@phosphor-icons/react"
 
@@ -26,7 +23,6 @@ type SuccessState =
 
 export default function CheckoutSuccessPageClient() {
   const searchParams = useSearchParams()
-  const locale = useLocale()
   const t = useTranslations("CheckoutSuccessPage")
 
   const [state, setState] = useState<SuccessState>({ status: "idle" })
@@ -63,99 +59,87 @@ export default function CheckoutSuccessPageClient() {
     }
   }, [searchParams, t])
 
+  // Loading
+  if (state.status === "loading" || state.status === "idle") {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-3">
+        <div className="text-center">
+          <SpinnerGap className="size-8 text-primary animate-spin mx-auto mb-3" />
+          <p className="text-sm font-medium">{t("verifying")}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t("verifyingDescription")}</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error
+  if (state.status === "error") {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-3">
+        <div className="text-center max-w-sm">
+          <div className="size-14 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-3">
+            <XCircle className="size-7 text-destructive" weight="fill" />
+          </div>
+          <p className="text-sm font-semibold mb-1">{t("paymentFailed")}</p>
+          <p className="text-xs text-muted-foreground mb-4">{state.message}</p>
+          <div className="flex gap-2">
+            <Button asChild variant="outline" size="sm" className="flex-1 h-9">
+              <Link href="/cart">{t("backToCart")}</Link>
+            </Button>
+            <Button asChild size="sm" className="flex-1 h-9">
+              <Link href="/">{t("continueShopping")}</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Success
   return (
-    <div className="min-h-[70vh] flex items-center justify-center p-4">
-      <Card className="max-w-lg w-full border-0 shadow-sm">
-        <CardContent className="p-8">
-          {state.status === "loading" && (
-            <div className="text-center">
-              <div className="size-20 bg-brand/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                <SpinnerGap className="size-10 text-brand animate-spin" />
-              </div>
-              <h1 className="text-2xl font-semibold mb-2">{t("verifying")}</h1>
-              <p className="text-muted-foreground">{t("verifyingDescription")}</p>
-            </div>
-          )}
+    <div className="min-h-[60vh] flex items-center justify-center px-3">
+      <div className="text-center max-w-sm w-full">
+        {/* Success icon */}
+        <div className="size-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CheckCircle className="size-8 text-success" weight="fill" />
+        </div>
+        
+        <h1 className="text-lg font-semibold mb-1">{t("paymentSuccessful")}</h1>
+        <p className="text-sm text-muted-foreground mb-6">{t("thankYou")}</p>
 
-          {state.status === "error" && (
-            <div className="text-center">
-              <div className="size-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <XCircle className="size-10 text-destructive" weight="fill" />
-              </div>
-              <h1 className="text-2xl font-semibold mb-2">{t("paymentFailed")}</h1>
-              <p className="text-muted-foreground mb-6">{state.message}</p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button asChild variant="outline" className="rounded-full">
-                  <Link href="/cart">{t("backToCart")}</Link>
-                </Button>
-                <Button asChild className="rounded-full bg-brand hover:bg-brand/90 text-white">
-                  <Link href="/">{t("continueShopping")}</Link>
-                </Button>
-              </div>
-            </div>
-          )}
+        {/* Order info */}
+        {state.orderId && (
+          <div className="bg-muted/50 rounded-md px-3 py-2 mb-4 text-sm">
+            <span className="text-muted-foreground">{t("orderId", { id: "" })}</span>
+            <span className="font-mono font-medium ml-1">{state.orderId}</span>
+          </div>
+        )}
 
-          {state.status === "success" && (
-            <div>
-              <div className="text-center">
-                <div className="size-20 bg-brand-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle className="size-10 text-brand-success" weight="fill" />
-                </div>
-                <h1 className="text-2xl font-semibold mb-2">{t("paymentSuccessful")}</h1>
-                <p className="text-muted-foreground">{t("thankYou")}</p>
-              </div>
+        {/* Quick info */}
+        <div className="space-y-2 mb-6 text-left">
+          <div className="flex items-center gap-2 text-sm">
+            <Package className="size-4 text-primary shrink-0" weight="fill" />
+            <span className="text-muted-foreground">{t("orderCreatedDescription")}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <Envelope className="size-4 text-primary shrink-0" weight="fill" />
+            <span className="text-muted-foreground">{t("confirmationEmail")}</span>
+          </div>
+        </div>
 
-              <Separator className="my-6" />
-
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <Package className="size-5 text-brand" />
-                  <div>
-                    <p className="font-medium">{t("orderCreated")}</p>
-                    <p className="text-sm text-muted-foreground">{t("orderCreatedDescription")}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <ChatCircleText className="size-5 text-brand" />
-                  <div>
-                    <p className="font-medium">{t("sellerChat")}</p>
-                    <p className="text-sm text-muted-foreground">{t("sellerChatDescription")}</p>
-                  </div>
-                </div>
-
-                {state.orderId && (
-                  <div className="pt-1">
-                    <Badge variant="secondary" className="bg-brand/10 text-brand border-0">
-                      {t("orderId", { id: state.orderId })}
-                    </Badge>
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-7 flex flex-col sm:flex-row gap-3">
-                <Button asChild variant="outline" className="rounded-full flex-1">
-                  <Link href="/orders">{t("viewOrders")}</Link>
-                </Button>
-                <Button
-                  asChild
-                  className="rounded-full bg-brand hover:bg-brand/90 text-white flex-1"
-                >
-                  <Link href="/">
-                    {t("continueShopping")} <ArrowRight className="ml-1.5 size-4" />
-                  </Link>
-                </Button>
-              </div>
-
-              <p className="text-xs text-muted-foreground text-center mt-5">
-                {locale === "bg"
-                  ? "Ще получите имейл с потвърждение, ако е наличен."
-                  : "You’ll receive a confirmation email if available."}
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        {/* Actions */}
+        <div className="flex gap-2">
+          <Button asChild variant="outline" size="sm" className="flex-1 h-9">
+            <Link href="/orders">{t("viewOrders")}</Link>
+          </Button>
+          <Button asChild size="sm" className="flex-1 h-9">
+            <Link href="/">
+              {t("continueShopping")}
+              <ArrowRight className="size-3.5 ml-1" />
+            </Link>
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

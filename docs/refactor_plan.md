@@ -356,8 +356,8 @@ pnpm build         # Success
 | File Cleanup | `docs/production/00-file-cleanup.md` |
 | Next.js 16 | `docs/production/01-nextjs.md` |
 | Supabase | `docs/production/02-supabase.md` |
-| Tailwind v4 | `docs/production/03-tailwind.md` |
-| shadcn/ui | `docs/production/04-shadcn.md` |
+| Tailwind v4 | `styling/03-tailwind.md` |
+| shadcn/ui | `styling/04-shadcn.md` |
 | i18n | `docs/production/05-i18n.md` |
 | Testing | `docs/production/06-testing.md` |
 | Performance | `docs/production/07-performance.md` |

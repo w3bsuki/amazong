@@ -20,7 +20,7 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         // Marketplace CTA variants
-        cta: "bg-cta-trust-blue text-cta-trust-blue-text hover:bg-cta-trust-blue-hover",
+        cta: "bg-cta-trust-blue text-white hover:bg-cta-trust-blue-hover",
         deal: "bg-deal text-white hover:bg-deal/90",
       },
       size: {

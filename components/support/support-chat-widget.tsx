@@ -292,7 +292,7 @@ export function SupportChatWidget({
       )}
       <SheetContent
         side="right"
-        className="w-full sm:w-[400px] p-0 flex flex-col"
+        className="w-full sm:w-(--container-modal-sm) p-0 flex flex-col"
       >
         {/* Header */}
         <SheetHeader className="px-4 py-3 border-b bg-brand text-white">

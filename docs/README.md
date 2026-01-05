@@ -2,7 +2,9 @@
 
 > **Last Updated:** January 4, 2026
 
-This folder contains production planning docs. Use these as the **single source of truth**.
+This folder contains production planning docs. Use these as the **single source of truth for production execution**.
+
+For UI/styling rules and cleanup workflow, the canonical docs live in `/styling`.
 
 ## 🚀 Production Launch (Start Here)
 
@@ -18,8 +20,8 @@ This folder contains production planning docs. Use these as the **single source 
 | 0 | [production/00-file-cleanup.md](./production/00-file-cleanup.md) | ⚠️ Partial |
 | 1 | [production/01-nextjs.md](./production/01-nextjs.md) | ✅ Complete |
 | 2 | [production/02-supabase.md](./production/02-supabase.md) | ✅ Complete |
-| 3 | [production/03-tailwind.md](./production/03-tailwind.md) | ⚠️ Partial |
-| 4 | [production/04-shadcn.md](./production/04-shadcn.md) | ✅ Complete |
+| 3 | [../styling/03-tailwind.md](../styling/03-tailwind.md) | ⚠️ Partial |
+| 4 | [../styling/04-shadcn.md](../styling/04-shadcn.md) | ✅ Configured |
 | 5 | [production/05-i18n.md](./production/05-i18n.md) | ✅ Complete |
 | 6 | [production/06-testing.md](./production/06-testing.md) | ⚠️ Partial |
 | 7 | [production/07-performance.md](./production/07-performance.md) | ⬜ Audit Needed |

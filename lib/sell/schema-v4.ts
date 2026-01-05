@@ -93,8 +93,8 @@ export const sellFormSchemaV4 = z.object({
 	description: z.string()
 		.min(1, "Description is required")
 		.max(4000, "Description can't exceed 4,000 characters")
-		.refine((val) => val.trim().split(/\s+/).length >= 20, {
-			message: "Description must be at least 20 words",
+		.refine((val) => val.trim().length >= 50, {
+			message: "Description must be at least 50 characters",
 		})
 		.default(""),
 

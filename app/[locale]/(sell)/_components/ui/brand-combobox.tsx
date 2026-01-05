@@ -163,7 +163,7 @@ export function BrandCombobox({
         onValueChange={setSearchQuery}
         className="h-12 border-none focus:ring-0"
       />
-      <CommandList className={cn("overflow-y-auto", isMobile ? "max-h-[50vh]" : "max-h-[300px]")}>
+      <CommandList className={cn("overflow-y-auto", isMobile ? "max-h-[50vh]" : "max-h-(--spacing-scroll-md)")}>
         <CommandEmpty>
           {showCustomOption ? (
             <button

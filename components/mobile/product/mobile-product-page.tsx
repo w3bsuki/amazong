@@ -4,7 +4,6 @@ import { useMemo, useRef, useState } from "react";
 import { ProductGalleryHybrid } from "@/components/shared/product/product-gallery-hybrid";
 import { MobileProductHeader } from "./mobile-product-header";
 import { MobilePriceBlock } from "./mobile-price-block";
-import { MobileBadgesRow } from "./mobile-badges-row";
 import { MobileSellerTrustLine } from "./mobile-seller-trust-line";
 import { MobileUrgencyBanner } from "./mobile-urgency-banner";
 import { MobileQuickSpecs } from "./mobile-quick-specs";
@@ -158,8 +157,12 @@ export function MobileProductPage(props: MobileProductPageProps) {
 
   return (
     <div className="min-h-screen bg-background pb-24 pt-14 lg:hidden">
-      {/* Mobile Product Header - Back, Search, Share, Wishlist, Cart */}
-      <MobileProductHeader />
+      {/* Mobile Product Header - Back, Seller Avatar, Search, Share, Wishlist, Cart */}
+      <MobileProductHeader 
+        sellerName={sellerInfo.name}
+        sellerUsername={sellerInfo.username}
+        sellerAvatarUrl={sellerInfo.avatarUrl}
+      />
 
       {/* JSON-LD Structured Data for SEO */}
       <script
@@ -190,8 +193,20 @@ export function MobileProductPage(props: MobileProductPageProps) {
         <ProductGalleryHybrid images={viewModel.galleryImages} />
       </div>
 
-      {/* Title - FIRST for context (moved above price per UX best practices) */}
-      <div className="px-3 pt-3">
+      {/* Category Badge - FIRST after gallery for context */}
+      {(category || rootCategory) && (
+        <div className="px-3 pt-2">
+          <CategoryBadge
+            locale={locale}
+            category={rootCategory || category}
+            subcategory={category && rootCategory && category.slug !== rootCategory.slug ? category : null}
+            size="sm"
+          />
+        </div>
+      )}
+
+      {/* Title */}
+      <div className="px-3 pt-1.5">
         <h1 className="text-base font-medium leading-snug text-foreground line-clamp-3">
           {product.title}
         </h1>
@@ -206,17 +221,16 @@ export function MobileProductPage(props: MobileProductPageProps) {
         />
       </div>
 
-      {/* Badges Row - Moved up for quick scanning */}
-      <div>
-        <MobileBadgesRow
-          condition={product.condition}
-          freeShipping={!product.pickup_only}
-          stockQuantity={stockQuantity}
-          stockStatus={stockStatus}
-          isOnSale={displayRegularPrice != null && displayRegularPrice > displayPrice}
-          locale={locale}
-        />
-      </div>
+      {/* Seller Trust Line */}
+      <MobileSellerTrustLine
+        sellerName={sellerInfo.name}
+        sellerUsername={sellerInfo.username}
+        sellerAvatarUrl={sellerInfo.avatarUrl}
+        rating={sellerInfo.rating}
+        positivePercent={sellerInfo.positivePercent}
+        isVerified={sellerInfo.verified}
+        locale={locale}
+      />
 
       {/* Urgency Banner (Conditional) */}
       <div className="mx-3">
@@ -252,17 +266,6 @@ export function MobileProductPage(props: MobileProductPageProps) {
         </div>
       ) : null}
 
-      {/* Seller Trust Line */}
-      <MobileSellerTrustLine
-        sellerName={sellerInfo.name}
-        sellerUsername={sellerInfo.username}
-        sellerAvatarUrl={sellerInfo.avatarUrl}
-        rating={sellerInfo.rating}
-        positivePercent={sellerInfo.positivePercent}
-        isVerified={sellerInfo.verified}
-        locale={locale}
-      />
-
       {/* ===== BELOW THE FOLD ===== */}
 
       {/* Quick Specs Pills */}
@@ -276,22 +279,22 @@ export function MobileProductPage(props: MobileProductPageProps) {
         </div>
       )}
 
-      {/* Trust Block */}
-      <div className="border-t border-border/50 mt-2">
-        <MobileTrustBlock
-          locale={locale}
-          verifiedSeller={sellerInfo.verified}
-          freeShipping={!product.pickup_only}
-        />
-      </div>
-
       {/* Accordions */}
-      <div ref={accordionRef} className="border-t border-border mt-2">
+      <div ref={accordionRef} className="border-t border-border/50 mt-2">
         <MobileAccordions
           description={String(product.description ?? "")}
           details={viewModel.itemSpecifics.details}
           shippingText={!product.pickup_only ? (locale === "bg" ? "Безплатна доставка" : "Free shipping") : (locale === "bg" ? "Доставка при поръчка" : "Shipping calculated at checkout")}
           returnsText={locale === "bg" ? "30 дни връщане. Купувачът плаща за връщане." : "30 days returns. Buyer pays for return shipping."}
+        />
+      </div>
+
+      {/* Trust Block - After accordions */}
+      <div className="border-t border-border/50">
+        <MobileTrustBlock
+          locale={locale}
+          verifiedSeller={sellerInfo.verified}
+          freeShipping={!product.pickup_only}
         />
       </div>
 

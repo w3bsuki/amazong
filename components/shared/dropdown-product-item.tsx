@@ -18,14 +18,9 @@ interface DropdownProductItemProps {
   formatPrice: (price: number) => string
   onRemove: () => void
   removeLabel: string
-  /** Optional slot for extra content (e.g., quantity controls) */
   children?: ReactNode
 }
 
-/**
- * Shared product item component for dropdown menus (cart, wishlist).
- * Displays product image, title, price, and remove button with consistent styling.
- */
 export function DropdownProductItem({
   item,
   formatPrice,
@@ -34,20 +29,20 @@ export function DropdownProductItem({
   children,
 }: DropdownProductItemProps) {
   return (
-    <div className="flex gap-3 p-3 border-b border-border hover:bg-muted">
+    <div className="flex gap-2 p-2 border-b border-border hover:bg-muted/50">
       <Link href={item.href} className="shrink-0">
-        <div className="w-16 h-16 bg-muted rounded overflow-hidden">
+        <div className="size-12 bg-muted rounded-md overflow-hidden border border-border">
           {item.image ? (
             <Image
               src={item.image}
               alt={item.title}
-              width={64}
-              height={64}
-              className="w-full h-full object-cover"
+              width={48}
+              height={48}
+              className="size-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              <Package size={24} weight="regular" />
+            <div className="size-full flex items-center justify-center text-muted-foreground">
+              <Package size={18} weight="regular" />
             </div>
           )}
         </div>
@@ -55,12 +50,12 @@ export function DropdownProductItem({
       <div className="flex-1 min-w-0">
         <Link
           href={item.href}
-          className="text-sm font-normal text-foreground hover:text-brand line-clamp-2"
+          className="text-sm text-foreground hover:text-brand line-clamp-2 leading-snug"
         >
           {item.title}
         </Link>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-sm font-medium text-foreground">{formatPrice(item.price)}</span>
+        <div className="flex items-center gap-1.5 mt-0.5">
+          <span className="text-sm font-semibold text-foreground">{formatPrice(item.price)}</span>
         </div>
         {children}
       </div>
@@ -69,10 +64,10 @@ export function DropdownProductItem({
           e.preventDefault()
           onRemove()
         }}
-        className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive self-start"
+        className="size-6 flex items-center justify-center rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive self-start"
         aria-label={removeLabel}
       >
-        <Trash size={16} weight="regular" />
+        <Trash size={14} weight="regular" />
       </button>
     </div>
   )

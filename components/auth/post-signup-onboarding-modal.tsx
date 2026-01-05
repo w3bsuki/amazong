@@ -315,7 +315,7 @@ export function PostSignupOnboardingModal({
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent 
-        className="w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] sm:max-h-[90vh] overflow-y-auto p-0 bg-card border-0 shadow-xl"
+        className="w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] sm:max-h-[90vh] overflow-y-auto p-0 bg-card border-0 shadow-md"
         showCloseButton={false}
       >
         <AnimatePresence mode="wait">
@@ -431,7 +431,7 @@ export function PostSignupOnboardingModal({
                           />
                         )}
                       </div>
-                      <label className="absolute -bottom-1 -right-1 size-6 sm:size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors shadow-md">
+                      <label className="absolute -bottom-1 -right-1 size-6 sm:size-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors shadow-sm">
                         <Camera className="size-3 sm:size-3.5" weight="bold" />
                         <input
                           type="file"
@@ -818,7 +818,7 @@ export function PostSignupOnboardingModal({
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", delay: 0.1 }}
-                className="size-16 sm:size-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-lg"
+                className="size-16 sm:size-20 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-sm"
               >
                 <Check className="size-8 sm:size-10 text-primary-foreground" weight="bold" />
               </motion.div>
@@ -832,7 +832,7 @@ export function PostSignupOnboardingModal({
                 </DialogDescription>
               </DialogHeader>
 
-              <Button onClick={handleFinish} className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold shadow-md">
+              <Button onClick={handleFinish} className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold shadow-sm">
                 {intent === "sell" ? (
                   <>
                     <Storefront className="size-4 sm:size-5 mr-2" weight="fill" />

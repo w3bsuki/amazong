@@ -42,11 +42,12 @@ pnpm clean
 
 ## Project Structure
 
-See [STRUCTURE.md](./STRUCTURE.md) for the complete refactoring plan.
+See [agents.md](./agents.md) for code placement boundaries and day-to-day rules.
+For production readiness and refactoring plans, start with [docs/README.md](./docs/README.md).
 
 ## Where does this file go?
 
-Use these rules before adding new files (see [STRUCTURE.md](./STRUCTURE.md) for full details):
+Use these rules before adding new files (see [agents.md](./agents.md) for full details):
 
 - `app/[locale]/(group)/.../_components/*`: UI used only by a single route group (account/admin/auth/business/chat/checkout/main/plans/sell).
 - `app/[locale]/(group)/.../_actions/*`: server actions used only by that route group.

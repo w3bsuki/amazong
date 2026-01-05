@@ -89,7 +89,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
           <CardDescription>New registrations this week</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <ScrollArea className="h-[300px]">
+          <ScrollArea className="h-(--spacing-scroll-md)">
             <div className="divide-y">
               {users.length === 0 ? (
                 <p className="p-4 text-sm text-muted-foreground">No recent users</p>
@@ -124,7 +124,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
           <CardDescription>New listings this week</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <ScrollArea className="h-[300px]">
+          <ScrollArea className="h-(--spacing-scroll-md)">
             <div className="divide-y">
               {products.length === 0 ? (
                 <p className="p-4 text-sm text-muted-foreground">No recent products</p>
@@ -155,7 +155,7 @@ export function AdminRecentActivity({ users, products, orders }: AdminRecentActi
           <CardDescription>Latest orders placed</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <ScrollArea className="h-[300px]">
+          <ScrollArea className="h-(--spacing-scroll-md)">
             <div className="divide-y">
               {orders.length === 0 ? (
                 <p className="p-4 text-sm text-muted-foreground">No recent orders</p>

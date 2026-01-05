@@ -1,7 +1,11 @@
-# Phase 4: shadcn/ui Best Practices & Audit ✅ COMPLETE
+# Phase 4: shadcn/ui Best Practices & Audit ✅ CONFIGURED (Ongoing Maintenance) (Deprecated Copy)
 
-> **Priority:** ✅ Done  
-> **Status:** 42+ components installed, New York style configured  
+> Canonical doc: `styling/04-shadcn.md` (../../styling/04-shadcn.md)
+>
+> This file is kept for backwards-compatible links from older plans.
+
+> **Priority:** ✅ Configured  
+> **Status:** 42+ components installed, New York style configured; ongoing updates via shadcn CLI  
 > **Goal:** Ensure shadcn/ui follows latest v4 best practices, accessibility, and consistent patterns
 
 ---

@@ -190,7 +190,7 @@ export function DesktopFilterModal({
       </DialogTrigger>
 
       <DialogContent 
-        className="sm:max-w-[900px] h-[85vh] max-h-[85vh] p-0 gap-0 flex flex-col overflow-hidden"
+        className="sm:max-w-(--container-modal-lg) h-[85vh] max-h-[85vh] p-0 gap-0 flex flex-col overflow-hidden"
         showCloseButton={false}
       >
         <DialogDescription className="sr-only">Filter products by attributes</DialogDescription>

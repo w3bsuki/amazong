@@ -87,6 +87,22 @@
   --container-gallery: 36rem;   /* 576px - Professional product image size */
   --container-header-content: 72rem; /* 1152px - Header search/nav content max-width */
 
+  /* === DROPDOWN/POPOVER WIDTHS === */
+  --container-dropdown-sm: 22rem;  /* 352px - Compact dropdowns */
+  --container-dropdown: 24rem;     /* 384px - Standard dropdowns */
+  --container-dropdown-lg: 35rem;  /* 560px - Large dropdowns (account) */
+
+  /* === MODAL WIDTHS === */
+  --container-modal-sm: 25rem;     /* 400px - Compact modals */
+  --container-modal: 35rem;        /* 560px - Standard modals */
+  --container-modal-lg: 56.25rem;  /* 900px - Large modals (filters) */
+
+  /* === SCROLLABLE AREA HEIGHTS === */
+  --spacing-scroll-sm: 11.25rem;   /* 180px - Compact scroll areas */
+  --spacing-scroll-md: 18.75rem;   /* 300px - Standard scroll areas */
+  --spacing-scroll-lg: 25rem;      /* 400px - Large scroll areas */
+  --spacing-scroll-xl: 31.25rem;   /* 500px - Extra large scroll areas */
+
   /* === DIALOG/MODAL MAX HEIGHTS === */
   --dialog-max-h: 90dvh;         /* Default dialog max height */
   --dialog-max-h-sm: 75dvh;      /* Compact dialogs */
@@ -344,11 +360,31 @@
   --color-seller-banner: oklch(0.50 0.20 255);
   --color-seller-banner-text: oklch(1 0 0);
 
-  /* Category badge (product page) */
-  --color-category-badge-bg: oklch(0.95 0.02 250);
-  --color-category-badge-text: oklch(0.35 0.05 250);
-  --color-category-badge-border: oklch(0.88 0.02 250);
-  --color-category-badge-icon: oklch(0.50 0.15 250);
+  /* Category badge (product page) - NEUTRAL for proper contrast */
+  --color-category-badge-bg: oklch(0.97 0 0);           /* Near white, no blue tint */
+  --color-category-badge-text: oklch(0.25 0 0);         /* Near black for contrast */
+  --color-category-badge-border: oklch(0.88 0 0);       /* Neutral gray border */
+  --color-category-badge-icon: oklch(0.50 0.15 250);    /* Icon can stay brand color */
+
+  /* === PROFESSIONAL BADGE TOKENS (Mobile Product Page) === */
+  /* Condition badge - HIGH CONTRAST, most important */
+  --color-badge-condition-bg: oklch(0.97 0 0);          /* Near white */
+  --color-badge-condition-text: oklch(0.20 0 0);        /* Near black */
+  --color-badge-condition-border: oklch(0.82 0 0);      /* Visible gray */
+  
+  /* Shipping badge - Subtle, secondary info */
+  --color-badge-shipping-bg: oklch(0.96 0.015 160);     /* Very light teal */
+  --color-badge-shipping-text: oklch(0.30 0.08 160);    /* Dark teal */
+  --color-badge-shipping-border: oklch(0.88 0.02 160);  /* Teal-gray */
+  
+  /* Stock urgency badge - Amber for attention */
+  --color-badge-stock-bg: oklch(0.96 0.03 85);          /* Light amber */
+  --color-badge-stock-text: oklch(0.35 0.12 85);        /* Dark amber */
+  --color-badge-stock-border: oklch(0.88 0.04 85);      /* Amber-gray */
+  
+  /* Seller banner - FLAT, no opacity layers */
+  --color-seller-banner-pill-bg: oklch(1 0 0);          /* Solid white pill */
+  --color-seller-banner-pill-text: oklch(0.40 0.18 255);/* Brand blue text */
 
   /* Product Page Unified Container */
   --color-product-container-bg: oklch(1 0 0);
@@ -482,11 +518,27 @@
   --color-seller-banner: oklch(0.45 0.16 255);
   --color-seller-banner-text: oklch(1 0 0);
 
-  /* Category badge (product page) - dark mode */
-  --color-category-badge-bg: oklch(0.28 0.02 250);
-  --color-category-badge-text: oklch(0.85 0.04 250);
-  --color-category-badge-border: oklch(0.35 0.02 250);
-  --color-category-badge-icon: oklch(0.75 0.10 250);
+  /* Category badge (product page) - dark mode - NEUTRAL */
+  --color-category-badge-bg: oklch(0.25 0 0);           /* Dark neutral */
+  --color-category-badge-text: oklch(0.92 0 0);         /* Light text */
+  --color-category-badge-border: oklch(0.35 0 0);       /* Dark gray border */
+  --color-category-badge-icon: oklch(0.70 0.12 250);    /* Lighter brand icon */
+  
+  /* Professional badge tokens - dark mode */
+  --color-badge-condition-bg: oklch(0.25 0 0);
+  --color-badge-condition-text: oklch(0.92 0 0);
+  --color-badge-condition-border: oklch(0.38 0 0);
+  
+  --color-badge-shipping-bg: oklch(0.22 0.02 160);
+  --color-badge-shipping-text: oklch(0.80 0.06 160);
+  --color-badge-shipping-border: oklch(0.35 0.02 160);
+  
+  --color-badge-stock-bg: oklch(0.25 0.03 85);
+  --color-badge-stock-text: oklch(0.85 0.08 85);
+  --color-badge-stock-border: oklch(0.38 0.04 85);
+  
+  --color-seller-banner-pill-bg: oklch(0.20 0 0);
+  --color-seller-banner-pill-text: oklch(0.85 0.10 250);
 
   /* Product Page Unified Container - dark mode */
   --color-product-container-bg: oklch(0.18 0.01 250);

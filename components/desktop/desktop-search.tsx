@@ -176,7 +176,7 @@ export function DesktopSearch() {
           sideOffset={4}
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <div className="max-h-[500px] overflow-y-auto">
+          <div className="max-h-(--spacing-scroll-xl) overflow-y-auto">
             {/* Live Product Results */}
             {products.length > 0 && (
               <div className="border-b border-border">

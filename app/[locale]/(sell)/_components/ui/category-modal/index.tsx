@@ -599,7 +599,7 @@ function CategoryModalContent({
 
   // ===== DESKTOP LAYOUT (Two-Panel) =====
   return (
-    <div className="flex h-[400px]">
+    <div className="flex h-(--spacing-scroll-lg)">
       {/* Left Panel - L1 Categories */}
       <div className="w-48 border-r bg-muted/30">
         <ScrollArea className="h-full">

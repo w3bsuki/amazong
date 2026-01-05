@@ -195,7 +195,7 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
             <DrawerContent
                 className="p-0 bg-background text-foreground gap-0 flex flex-col h-full data-[vaul-drawer-direction=left]:w-full data-[vaul-drawer-direction=left]:max-w-full data-[vaul-drawer-direction=left]:sm:max-w-full border-none rounded-none shadow-none"
             >
-                {/* Header - Compact with auth controls */}
+                {/* Header - Language left, Auth middle, Close right (isolated) */}
                 <div className="relative bg-brand shrink-0">
                     <DrawerTitle className="sr-only">
                         {locale === 'bg' ? 'Навигационно меню' : 'Navigation menu'}
@@ -204,46 +204,90 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                         {locale === 'bg' ? 'Навигационно меню' : 'Navigation menu'}
                     </DrawerDescription>
                     
-                    <div className="h-12 px-2 flex items-center gap-2">
+                    <div className="h-12 px-2 flex items-center gap-1.5">
+                        {/* Language Selector - Left side */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button 
+                                    type="button"
+                                    className="flex items-center gap-1.5 h-8 px-2 rounded-lg text-sm font-medium text-white/90 hover:bg-white/10 transition-colors"
+                                >
+                                    <Image
+                                        src={locale === 'bg' ? "https://flagcdn.com/w40/bg.png" : "https://flagcdn.com/w40/gb.png"}
+                                        alt={locale === 'bg' ? 'BG' : 'EN'}
+                                        width={18}
+                                        height={12}
+                                        sizes="18px"
+                                        className="w-[18px] h-3 rounded-sm object-cover"
+                                    />
+                                    <span>{locale === 'bg' ? 'BG' : 'EN'}</span>
+                                    <CaretDown size={10} weight="bold" className="text-white/60" />
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="min-w-[140px] rounded-lg p-1 border border-border/50">
+                                <DropdownMenuItem asChild>
+                                    <Link
+                                        href="/"
+                                        locale="en"
+                                        onClick={() => setOpen(false)}
+                                        className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md"
+                                    >
+                                        <Image
+                                            src="https://flagcdn.com/w40/gb.png"
+                                            alt="EN"
+                                            width={18}
+                                            height={12}
+                                            sizes="18px"
+                                            className="w-[18px] h-3 rounded-sm object-cover"
+                                        />
+                                        <span className="text-sm font-medium">English</span>
+                                        {locale === 'en' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link
+                                        href="/"
+                                        locale="bg"
+                                        onClick={() => setOpen(false)}
+                                        className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md"
+                                    >
+                                        <Image
+                                            src="https://flagcdn.com/w40/bg.png"
+                                            alt="BG"
+                                            width={18}
+                                            height={12}
+                                            sizes="18px"
+                                            className="w-[18px] h-3 rounded-sm object-cover"
+                                        />
+                                        <span className="text-sm font-medium">Български</span>
+                                        {locale === 'bg' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
+                                    </Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        {/* Auth/Account - Middle */}
                         {isLoggedIn ? (
-                            <>
-                                {/* Logged in: Avatar + Name + Account link */}
-                                <Link 
-                                    href="/account"
-                                    onClick={() => setOpen(false)}
-                                    className="flex items-center gap-2 min-w-0 flex-1 h-9 px-1 -ml-1 rounded-lg hover:bg-white/10 transition-colors"
-                                >
-                                    <div className="size-7 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
-                                        <UserCircle size={18} weight="fill" className="text-white" />
-                                    </div>
-                                    <div className="min-w-0 flex-1">
-                                        <p className="text-white text-sm font-semibold truncate leading-tight">
-                                            {firstName || displayName}
-                                        </p>
-                                        <p className="text-white/70 text-2xs leading-tight">
-                                            {locale === 'bg' ? 'Виж акаунта' : 'View account'}
-                                        </p>
-                                    </div>
-                                </Link>
-                                {/* Settings icon */}
-                                <Link 
-                                    href="/account/settings"
-                                    onClick={() => setOpen(false)}
-                                    className="size-9 shrink-0 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-                                    aria-label={locale === 'bg' ? 'Настройки' : 'Settings'}
-                                >
-                                    <Gear size={20} weight="bold" />
-                                </Link>
-                            </>
+                            <Link 
+                                href="/account"
+                                onClick={() => setOpen(false)}
+                                className="flex items-center gap-2 min-w-0 h-8 px-2 rounded-lg hover:bg-white/10 transition-colors"
+                            >
+                                <div className="size-6 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
+                                    <UserCircle size={16} weight="fill" className="text-white" />
+                                </div>
+                                <span className="text-white text-sm font-semibold truncate max-w-[120px]">
+                                    {firstName || displayName}
+                                </span>
+                            </Link>
                         ) : (
                             <>
-                                {/* Logged out: Sign In button prominent */}
                                 <Link
                                     href="/auth/login"
                                     onClick={() => setOpen(false)}
-                                    className="flex items-center gap-2 h-8 px-3 rounded-full bg-white text-brand text-sm font-semibold hover:bg-white/90 transition-colors"
+                                    className="flex items-center gap-1.5 h-8 px-3 rounded-full bg-white text-brand text-sm font-semibold hover:bg-white/90 transition-colors"
                                 >
-                                    <SignInIcon size={16} weight="bold" />
+                                    <SignInIcon size={14} weight="bold" />
                                     <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
                                 </Link>
                                 <Link
@@ -253,9 +297,13 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                                 >
                                     <span>{locale === 'bg' ? 'Регистрация' : 'Register'}</span>
                                 </Link>
-                                <div className="flex-1" />
                             </>
                         )}
+
+                        {/* Spacer to push close button to far right */}
+                        <div className="flex-1 min-w-4" />
+
+                        {/* Close button - Isolated on right */}
                         <DrawerClose asChild>
                             <Button
                                 type="button"
@@ -331,79 +379,30 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                     />
                 </div>
 
-                {/* Compact Footer - Help | Language | Sign Out */}
+                {/* Compact Footer - Help | Sign Out */}
                 <div className="shrink-0 border-t border-border/50 bg-muted/30 pb-safe">
-                    <div className="h-12 px-3 flex items-center gap-1">
+                    <div className="h-11 px-3 flex items-center gap-1">
                         {/* Help */}
                         <Link
                             href="/customer-service"
                             onClick={() => setOpen(false)}
-                            className="flex items-center gap-1.5 h-9 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                         >
-                            <Question size={18} weight="regular" />
+                            <Question size={16} weight="regular" />
                             <span>{locale === 'bg' ? 'Помощ' : 'Help'}</span>
                         </Link>
 
-                        {/* Language Dropdown - Compact */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button 
-                                    type="button"
-                                    className="flex items-center gap-1.5 h-9 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                                >
-                                    <Image
-                                        src={locale === 'bg' ? "https://flagcdn.com/w40/bg.png" : "https://flagcdn.com/w40/gb.png"}
-                                        alt={locale === 'bg' ? 'BG' : 'EN'}
-                                        width={18}
-                                        height={12}
-                                        sizes="18px"
-                                        className="w-[18px] h-3 rounded-sm object-cover"
-                                    />
-                                    <span>{locale === 'bg' ? 'BG' : 'EN'}</span>
-                                    <CaretDown size={12} weight="bold" />
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="center" className="min-w-[140px] rounded-lg p-1 border border-border/50">
-                                <DropdownMenuItem asChild>
-                                    <Link
-                                        href="/"
-                                        locale="en"
-                                        onClick={() => setOpen(false)}
-                                        className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md"
-                                    >
-                                        <Image
-                                            src="https://flagcdn.com/w40/gb.png"
-                                            alt="EN"
-                                            width={18}
-                                            height={12}
-                                            sizes="18px"
-                                            className="w-[18px] h-3 rounded-sm object-cover"
-                                        />
-                                        <span className="text-sm font-medium">English</span>
-                                        {locale === 'en' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link
-                                        href="/"
-                                        locale="bg"
-                                        onClick={() => setOpen(false)}
-                                        className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md"
-                                    >
-                                        <Image
-                                            src="https://flagcdn.com/w40/bg.png"
-                                            alt="BG"
-                                            width={18}
-                                            height={12}
-                                            sizes="18px"
-                                            className="w-[18px] h-3 rounded-sm object-cover"
-                                        />
-                                        <span className="text-sm font-medium">Български</span>
-                                        {locale === 'bg' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
-                                    </Link>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        {/* Settings - Only when logged in */}
+                        {isLoggedIn && (
+                            <Link
+                                href="/account/settings"
+                                onClick={() => setOpen(false)}
+                                className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            >
+                                <Gear size={16} weight="regular" />
+                                <span>{locale === 'bg' ? 'Настройки' : 'Settings'}</span>
+                            </Link>
+                        )}
 
                         <div className="flex-1" />
 
@@ -414,12 +413,12 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                                     <button
                                         type="button"
                                         disabled={isSigningOut}
-                                        className="flex items-center gap-1.5 h-9 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors"
+                                        className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors"
                                     >
                                         {isSigningOut ? (
-                                            <SpinnerGap size={16} className="animate-spin" />
+                                            <SpinnerGap size={14} className="animate-spin" />
                                         ) : (
-                                            <SignOut size={16} weight="regular" />
+                                            <SignOut size={14} weight="regular" />
                                         )}
                                         <span>{locale === 'bg' ? 'Изход' : 'Sign Out'}</span>
                                     </button>

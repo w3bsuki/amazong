@@ -1,4 +1,4 @@
-import { Package, Truck, Zap, AlertCircle, CheckCircle2, Flame } from "lucide-react";
+import { Package, Truck, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface MobileBadgesRowProps {
@@ -12,18 +12,19 @@ interface MobileBadgesRowProps {
 }
 
 /**
- * MobileBadgesRow - WCAG 2.2 AA compliant badges
+ * MobileBadgesRow - Professional E-commerce Badge System
  * 
- * Uses light background + dark text pattern for ≥4.5:1 contrast ratio
- * at 10-12px text size per DESIGN.md badge tokens.
+ * Design principles:
+ * - MAX 3 badges visible (condition primary, others secondary)
+ * - High contrast OKLCH colors (no blue-on-blue, no gradients)
+ * - Larger text (text-xs = 12px) for mobile readability
+ * - h-6 (24px) height for proper touch targets
  */
 export function MobileBadgesRow({
   condition,
   freeShipping,
-  expressShipping,
   stockQuantity,
   stockStatus = "in_stock",
-  isOnSale,
   locale = "en",
 }: MobileBadgesRowProps) {
   const t = {
@@ -31,134 +32,83 @@ export function MobileBadgesRow({
     newWithTags: locale === "bg" ? "Ново с етикети" : "New with tags",
     likeNew: locale === "bg" ? "Като ново" : "Like new",
     used: locale === "bg" ? "Употребявано" : "Used",
+    usedExcellent: locale === "bg" ? "Отлично състояние" : "Excellent",
+    usedGood: locale === "bg" ? "Добро състояние" : "Good",
     refurbished: locale === "bg" ? "Обновено" : "Refurbished",
     freeShipping: locale === "bg" ? "Безплатна доставка" : "Free shipping",
-    expressDelivery: locale === "bg" ? "Експрес" : "Express",
-    inStock: locale === "bg" ? "В наличност" : "In stock",
     lowStock: locale === "bg" ? "Само" : "Only",
     left: locale === "bg" ? "бр!" : "left!",
-    outOfStock: locale === "bg" ? "Изчерпано" : "Out of stock",
-    onSale: locale === "bg" ? "Намаление" : "Sale",
   };
 
-  // Normalize condition string
-  const normalizeCondition = (cond: string) => {
+  // Normalize condition string to display name
+  const normalizeCondition = (cond: string): string => {
     const lower = cond.toLowerCase().replaceAll(/[-_]/g, " ");
     if (lower.includes("new with tag")) return t.newWithTags;
     if (lower.includes("like new") || lower.includes("as new")) return t.likeNew;
     if (lower.includes("refurbished") || lower.includes("renewed")) return t.refurbished;
+    if (lower.includes("used excellent") || lower.includes("excellent")) return t.usedExcellent;
+    if (lower.includes("used good") || lower.includes("good")) return t.usedGood;
     if (lower.includes("used") || lower.includes("pre-owned")) return t.used;
     if (lower === "new") return t.new;
     return cond;
   };
 
-  // Determine stock display
-  const isLowStock = stockStatus === "low_stock" || (stockQuantity !== null && stockQuantity !== undefined && stockQuantity > 0 && stockQuantity <= 5);
-  const isOutOfStock = stockStatus === "out_of_stock" || stockQuantity === 0;
+  // Determine if low stock (show urgency)
+  const isLowStock = stockStatus === "low_stock" || 
+    (stockQuantity !== null && stockQuantity !== undefined && stockQuantity > 0 && stockQuantity <= 3);
 
-  const badges = [];
+  const badges: React.ReactNode[] = [];
 
-  // Condition badge - FIRST (most important for C2C marketplace)
+  // 1. CONDITION BADGE - Always first, most important for C2C
   if (condition) {
     badges.push(
       <Badge
         key="condition"
-        variant="secondary"
-        className="bg-muted text-foreground text-2xs font-semibold px-2 h-5 rounded-sm border border-border gap-1 shrink-0"
+        variant="condition-pro"
+        className="h-6 px-2.5 text-xs gap-1.5 shrink-0"
       >
-        <Package className="size-3" />
+        <Package className="size-3.5" />
         {normalizeCondition(condition)}
       </Badge>
     );
   }
 
-  // Sale badge - Light red bg + dark red text (WCAG AA)
-  if (isOnSale) {
-    badges.push(
-      <Badge
-        key="sale"
-        variant="secondary"
-        className="bg-deal/10 text-deal text-2xs font-semibold px-2 h-5 rounded-sm border border-deal/20 gap-1 shrink-0"
-      >
-        <Flame className="size-3" />
-        {t.onSale}
-      </Badge>
-    );
-  }
-
-  // Free shipping badge - Light blue bg + dark blue text (WCAG AA)
+  // 2. SHIPPING BADGE - Secondary info
   if (freeShipping) {
     badges.push(
       <Badge
         key="shipping"
-        variant="secondary"
-        className="bg-shipping-free/10 text-shipping-free text-2xs font-semibold px-2 h-5 rounded-sm border border-shipping-free/20 gap-1 shrink-0"
+        variant="shipping-pro"
+        className="h-6 px-2.5 text-xs gap-1.5 shrink-0"
       >
-        <Truck className="size-3" />
+        <Truck className="size-3.5" />
         {t.freeShipping}
       </Badge>
     );
   }
 
-  // Express shipping badge - Light green bg + dark green text (WCAG AA)
-  if (expressShipping) {
-    badges.push(
-      <Badge
-        key="express"
-        variant="secondary"
-        className="bg-shipping-express/10 text-shipping-express text-2xs font-semibold px-2 h-5 rounded-sm border border-shipping-express/20 gap-1 shrink-0"
-      >
-        <Zap className="size-3" />
-        {t.expressDelivery}
-      </Badge>
-    );
-  }
-
-  // Stock status badge
-  if (isOutOfStock) {
+  // 3. STOCK URGENCY - Only if truly low (≤3 items)
+  if (isLowStock && stockQuantity !== null && stockQuantity !== undefined && stockQuantity > 0) {
     badges.push(
       <Badge
         key="stock"
-        variant="secondary"
-        className="bg-stock-out/10 text-stock-out text-2xs font-semibold px-2 h-5 rounded-sm border border-stock-out/20 gap-1 shrink-0"
+        variant="stock-urgent"
+        className="h-6 px-2.5 text-xs gap-1.5 shrink-0"
       >
-        <AlertCircle className="size-3" />
-        {t.outOfStock}
-      </Badge>
-    );
-  } else if (isLowStock && stockQuantity !== null && stockQuantity !== undefined) {
-    badges.push(
-      <Badge
-        key="stock"
-        variant="secondary"
-        className="bg-stock-urgent-bg text-stock-urgent-text text-2xs font-medium px-2 h-5 rounded-sm border border-stock-urgent-text/30 gap-1 shrink-0"
-      >
-        <AlertCircle className="size-3" />
+        <Clock className="size-3.5" />
         {t.lowStock} {stockQuantity} {t.left}
       </Badge>
     );
-  } else if (stockStatus === "in_stock" || (stockQuantity && stockQuantity > 5)) {
-    badges.push(
-      <Badge
-        key="stock"
-        variant="secondary"
-        className="bg-stock-available/10 text-stock-available text-2xs font-medium px-2 h-5 rounded-sm border border-stock-available/20 gap-1 shrink-0"
-      >
-        <CheckCircle2 className="size-3" />
-        {t.inStock}
-      </Badge>
-    );
   }
 
-  if (badges.length === 0) return null;
+  // Max 3 badges - truncate if needed
+  const visibleBadges = badges.slice(0, 3);
+
+  if (visibleBadges.length === 0) return null;
 
   return (
-    <div className="flex gap-1.5 overflow-x-auto scrollbar-hide px-3 py-1.5 snap-x">
-      {badges.map((badge, i) => (
-        <div key={i} className="snap-start">
-          {badge}
-        </div>
-      ))}
+    <div className="flex gap-2 overflow-x-auto scrollbar-hide px-3 py-2">
+      {visibleBadges}
     </div>
   );
 }
