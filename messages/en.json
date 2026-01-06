@@ -943,6 +943,8 @@
         "submitting": "Submitting...",
         "noReviews": "No reviews yet",
         "beFirst": "Be the first to review this product",
+        "anonymousUser": "User",
+        "noWrittenComment": "No written comment.",
         "purchaseRequiredTitle": "Purchase Required",
         "purchaseRequiredDescription": "You must purchase this product before you can write a review. Only verified buyers can leave reviews to ensure authenticity.",
         "selectRating": "Please select a rating",

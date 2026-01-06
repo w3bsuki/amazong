@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -89,12 +90,13 @@ export function WriteReviewDialog({
   const [comment, setComment] = useState("");
   const [isPending, startTransition] = useTransition();
 
-  const t = translations[locale as keyof typeof translations] || translations.en;
+  const tReviews = useTranslations("Reviews");
+  const tAuth = useTranslations("Auth");
   const activeRating = hoverRating || rating;
 
   const handleSubmit = () => {
     if (rating === 0) {
-      toast.error(t.selectRating);
+      toast.error(tReviews("selectRating"));
       return;
     }
 
@@ -107,23 +109,23 @@ export function WriteReviewDialog({
       });
 
       if (result.success) {
-        toast.success(t.success);
+        toast.success(tReviews("reviewSuccess"));
         setOpen(false);
         setRating(0);
         setComment("");
         onReviewSubmitted?.();
       } else {
         if (result.error?.includes("logged in")) {
-          toast.error(t.loginRequired, {
+          toast.error(tReviews("signInRequired"), {
             action: {
-              label: locale === "bg" ? "Вход" : "Sign In",
+              label: tAuth("signIn"),
               onClick: () => {
                 window.location.href = `/${locale}/auth/login`;
               },
             },
           });
         } else {
-          toast.error(result.error || t.error);
+          toast.error(result.error || tReviews("reviewFailed"));
         }
       }
     });
@@ -144,18 +146,18 @@ export function WriteReviewDialog({
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="outline" size="sm">
-            {t.writeReview}
+            {tReviews("writeReview")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t.title}</DialogTitle>
+          <DialogTitle>{tReviews("reviewThisProduct")}</DialogTitle>
           <DialogDescription>
             {productTitle ? (
               <span className="line-clamp-1">{productTitle}</span>
             ) : (
-              t.description
+              tReviews("shareThoughts")
             )}
           </DialogDescription>
         </DialogHeader>
@@ -163,7 +165,7 @@ export function WriteReviewDialog({
         <div className="grid gap-4 py-2">
           {/* Star Rating */}
           <div className="space-y-2">
-            <Label>{t.ratingLabel}</Label>
+            <Label>{tReviews("overallRating")}</Label>
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -173,7 +175,7 @@ export function WriteReviewDialog({
                   onMouseEnter={() => setHoverRating(star)}
                   onMouseLeave={() => setHoverRating(0)}
                   className="p-1 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-                  aria-label={`${star} ${locale === "bg" ? "звезди" : "stars"}`}
+                  aria-label={`${star} ${tReviews("star")}`}
                 >
                   <Star
                     className={`h-8 w-8 transition-colors ${
@@ -185,19 +187,14 @@ export function WriteReviewDialog({
                 </button>
               ))}
             </div>
-            {activeRating > 0 && (
-              <p className="text-sm text-muted-foreground">
-                {t.stars[activeRating - 1]}
-              </p>
-            )}
           </div>
 
           {/* Comment */}
           <div className="space-y-2">
-            <Label htmlFor="review-comment">{t.commentLabel}</Label>
+            <Label htmlFor="review-comment">{tReviews("reviewComment")}</Label>
             <Textarea
               id="review-comment"
-              placeholder={t.commentPlaceholder}
+              placeholder={tReviews("reviewCommentPlaceholder")}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={4}
@@ -217,14 +214,14 @@ export function WriteReviewDialog({
             onClick={() => setOpen(false)}
             disabled={isPending}
           >
-            {t.cancel}
+            {tReviews("cancel")}
           </Button>
           <Button
             type="button"
             onClick={handleSubmit}
             disabled={isPending || rating === 0}
           >
-            {isPending ? t.submitting : t.submit}
+            {isPending ? tReviews("submitting") : tReviews("submitReview")}
           </Button>
         </DialogFooter>
       </DialogContent>

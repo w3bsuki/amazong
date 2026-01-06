@@ -1,4 +1,7 @@
+"use client";
+
 import { Star, PencilLine } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -55,36 +58,29 @@ export function CustomerReviewsHybrid({
 
   const distribution = [1, 2, 3, 4, 5].map((s) => reviews.filter((r) => r.rating === s).length);
 
-  const t = {
-    title: locale === "bg" ? "Отзиви от клиенти" : "Customer Reviews",
-    total: locale === "bg" ? "общо" : "total",
-    basedOn: locale === "bg" ? "Базирано на" : "Based on",
-    reviews: locale === "bg" ? "отзива" : "reviews",
-    noReviews: locale === "bg" ? "Все още няма отзиви." : "No reviews yet.",
-    beFirst: locale === "bg" ? "Бъдете първият, който ще напише отзив!" : "Be the first to write a review!",
-  };
+  const t = useTranslations("Reviews");
 
   return (
     <section className="mt-4 rounded-md bg-muted/20 p-3 border border-border/50">
       <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
-        <h2 className="text-lg font-bold text-foreground tracking-tight">{t.title}</h2>
+        <h2 className="text-lg font-bold text-foreground tracking-tight">{t("customerReviews")}</h2>
         <div className="flex items-center gap-3">
           {productId && submitReview && (
             <WriteReviewDialog
               productId={productId}
-              productTitle={productTitle ?? "Product"}
+              {...(productTitle ? { productTitle } : {})}
               locale={locale}
               submitReview={submitReview}
               trigger={
                 <Button variant="default" size="sm" className="gap-2">
                   <PencilLine className="h-4 w-4" />
-                  {locale === "bg" ? "Напиши отзив" : "Write a Review"}
+                  {t("writeReview")}
                 </Button>
               }
             />
           )}
           <div className="text-xs text-muted-foreground font-semibold uppercase tracking-widest">
-            {safeCount} {t.total}
+            {t("globalRatings", { count: safeCount })}
           </div>
         </div>
       </div>
@@ -103,7 +99,7 @@ export function CustomerReviewsHybrid({
                 ))}
               </div>
               <div className="text-2xs text-muted-foreground font-medium">
-                {t.basedOn} {safeCount} {t.reviews}
+                {t("globalRatings", { count: safeCount })}
               </div>
             </div>
           </div>
@@ -130,16 +126,16 @@ export function CustomerReviewsHybrid({
         <div>
           {reviews.length === 0 ? (
             <div className="rounded-md border border-border/50 bg-background p-3 text-center">
-              <p className="text-sm text-muted-foreground mb-3">{t.noReviews}</p>
+              <p className="text-sm text-muted-foreground mb-3">{t("noReviews")}</p>
               {productId && submitReview && (
                 <WriteReviewDialog
                   productId={productId}
-                  productTitle={productTitle ?? "Product"}
+                  {...(productTitle ? { productTitle } : {})}
                   locale={locale}
                   submitReview={submitReview}
                   trigger={
                     <Button variant="outline" size="sm">
-                      {t.beFirst}
+                      {t("beFirst")}
                     </Button>
                   }
                 />
@@ -148,7 +144,10 @@ export function CustomerReviewsHybrid({
           ) : (
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               {reviews.map((review) => {
-                const author = review.user?.display_name || review.user?.username || "User";
+                const author =
+                  review.user?.display_name ||
+                  review.user?.username ||
+                  t("anonymousUser");
                 return (
                   <Card key={review.id} className="border border-border/50 bg-background rounded-md overflow-hidden">
                     <CardContent className="p-3">
@@ -176,7 +175,7 @@ export function CustomerReviewsHybrid({
                           {review.comment}
                         </p>
                       ) : (
-                        <p className="text-sm text-muted-foreground">No written comment.</p>
+                        <p className="text-sm text-muted-foreground">{t("noWrittenComment")}</p>
                       )}
                     </CardContent>
                   </Card>
