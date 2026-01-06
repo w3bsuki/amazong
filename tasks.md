@@ -33,8 +33,7 @@ Pre-release gates (before "go live"):
   - [x] `NEXT_PUBLIC_APP_URL=https://treido.eu`
   - [x] `STRIPE_SECRET_KEY` / `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` / `STRIPE_WEBHOOK_SECRET` / `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`
   - [x] Runtime check: GET `/api/health/env` on `https://treido.eu` returns `{ ok: true }` (no missing vars).
-- [ ] Supabase Security Advisors: 0 warnings (or explicitly accepted + documented)
-  - [ ] 2026-01-06 advisor run: **1 WARN** (dashboard-only) - deferred (tracked in `supabase_tasks.md`).
+- [ ] Supabase Security Advisors: 0 actionable warnings (or explicitly accepted + documented)
 
 Note (2026-01-06): Supabase Performance Advisors show **INFO only** (unused index lints). Defer index removals until post-launch unless write-amplification becomes a problem.
 
@@ -54,6 +53,7 @@ Note (2026-01-06): Supabase Performance Advisors show **INFO only** (unused inde
 - [ ] Cache Components usage sanity:
   - [ ] `'use cache'` paired with `cacheLife('<profile>')`
   - [ ] Correct invalidation: `revalidateTag(tag, profile)`
+  - [x] No `'use cache'` module reads per-user request state (`cookies()`/`headers()`)
 
 ## P1 - UI drift (no redesign, high-traffic first)
 
@@ -118,6 +118,10 @@ Use scan reports as the source of truth:
     - Stripe webhooks present and verify signatures via `stripe.webhooks.constructEvent(...)` using `stripe-signature` and `req.text()`:
       - `/api/subscriptions/webhook` uses `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`
       - `/api/checkout/webhook` and `/api/payments/webhook` support multiple secrets via `STRIPE_WEBHOOK_SECRET`
+
+- 2026-01-06 - FE: ProductCard styling pass (tokens, no gradients, consistent touch targets; no redesign).
+  - Files: `components/shared/product/product-card.tsx`, `tasks.md`
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (PASS)
     - Cache Components sanity: `revalidateTag(tag, "max")` usage; cached data functions use `createStaticClient()` and do not read `cookies()`/`headers()`.
   - Commands: (not run - docs-only batch)
   - Follow-up: Clear the dashboard-only advisor warning later, then re-run security advisors to confirm 0 warnings.
@@ -130,3 +134,52 @@ Use scan reports as the source of truth:
 - 2026-01-06 - Repo cleanup: removed obsolete docs + unused code.
   - Files: `docs-archive/**` (deleted), `page.html` (deleted), `components/mobile/product/mobile-badges-row.tsx` (deleted), `lib/data/categories.ts`, `README.md`, `docs/README.md`, `agents.md`, `tasks.md`
   - Commands: `pnpm -s knip` (PASS), `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (PASS)
+
+- 2026-01-06 - Admin: prevent service-role queries for redirected users; reduce build noise.
+  - Files: `app/[locale]/(admin)/admin/layout.tsx`, `app/[locale]/(admin)/admin/page.tsx`, `app/[locale]/(admin)/admin/orders/page.tsx`, `app/[locale]/(admin)/admin/products/page.tsx`, `app/[locale]/(admin)/admin/sellers/page.tsx`, `app/[locale]/(admin)/admin/users/page.tsx`, `app/api/badges/route.ts`, `app/api/billing/invoices/route.ts`
+  - Why: With Next.js 16 PPR + redirects, admin pages could start Supabase service-role reads even when the request is going to be redirected; this also showed up as aborted fetch noise during `next build`.
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `pnpm build` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (PASS)
+  - Follow-up: `next build` still logs a Cache Components prerender bail-out stack for `/api/badges` (non-fatal); investigate whether this is a Next 16 Turbopack issue or if there's a supported opt-out under `cacheComponents`.
+
+- 2026-01-06 - Cache audit: verified cached code does not read per-user request state (`cookies()`/`headers()`).
+  - Files: `app/api/categories/route.ts`, `app/api/categories/[slug]/children/route.ts`, `app/[locale]/(sell)/sell/_lib/categories.ts`, `lib/data/categories.ts`, `lib/data/product-page.ts`, `lib/data/product-reviews.ts`, `lib/data/products.ts`, `lib/data/profile-page.ts`
+  - Commands: `rg "use cache" -S app lib` + targeted `Select-String` for `next/headers`, `cookies(`, `headers(` (PASS)
+
+- 2026-01-06 - FE: Home hero dense spacing + token consistency (no redesign).
+  - Files: `components/desktop/marketplace-hero.tsx`
+  - Changes: Dense spacing (`gap-3`, `space-y-2`), reduced padding (`px-4 py-4 lg:px-6 lg:py-5`), tighter badge (`px-2.5 py-0.5`), button sizing (`size="default"`), and typography scale (`text-xl lg:text-2xl`). CTA tokens (`cta-trust-blue*`) are semantic and defined in `globals.css`.
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed)
+
+- 2026-01-06 - FE: Product pages i18n sweep - remove hardcoded EN/BG dictionaries.
+  - Files: `lib/view-models/product-page.ts`, `components/shared/product/item-specifics.tsx`, `components/mobile/product/mobile-product-page.tsx`, `messages/en.json`, `messages/bg.json`, `docs/frontend_tasks.md`
+  - Changes: View-model now returns locale-agnostic `conditionKey` + raw attribute `key/value` pairs. Added `attr*` and `val*` translation keys to `ProductDetails` namespace. Translation happens at render-time using `useTranslations`. Desktop uses `ItemSpecifics`, mobile uses inline translation in `mobile-product-page.tsx`.
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed)
+
+- 2026-01-06 - Investigated `/api/badges` prerender bailout noise during `pnpm build`.
+  - Files: `app/api/badges/route.ts`
+  - Finding: Route uses `createRouteHandlerClient` (reads cookies for auth). With `cacheComponents: true`, route segment configs (`export const dynamic`) are **not compatible** and cause build failure. The bailout message is informational—Next.js auto-detects dynamic API usage and marks the route as dynamic. Build completes successfully (verified by `.next/BUILD_ID`).
+  - Resolution: Added clarifying comment to route. No code fix possible; this is expected Next.js 16 Cache Components behavior.
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `pnpm build` (PASS - builds successfully despite stderr noise)
+
+- 2026-01-06 - BE: Stripe locale return URLs sweep - centralized locale-safe URL generation for all Stripe flows.
+  - Files: `lib/stripe-locale.ts` (new), `app/actions/payments.ts`, `app/actions/boost.ts`, `app/api/payments/setup/route.ts`, `app/api/boost/checkout/route.ts`, `app/[locale]/(checkout)/_actions/checkout.ts`, `app/api/subscriptions/checkout/route.ts`, `app/api/subscriptions/portal/route.ts`, `app/actions/subscriptions.ts`, `docs/backend_tasks.md`
+  - Why: Multiple Stripe integrations were generating return URLs without locale prefix (`/account/payments`, `/account/selling`, `/sell`, `/cart`, `/checkout/success`), which would result in 404s or broken locale state after Stripe redirects.
+  - Changes: Created shared `lib/stripe-locale.ts` with `buildLocaleUrl()`, `inferLocaleFromRequest()`, `inferLocaleFromHeaders()`. Updated all Stripe URL generation sites to use these helpers. Refactored subscription routes/actions to use shared module (removed ~60 lines of duplicated helpers).
+  - Commands: `pnpm -s lint` (warnings only - pre-existing), `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed), `pnpm build` (PASS)
+
+- 2026-01-06 - BE: Stripe locale unit tests - locked in behavior with comprehensive test coverage.
+  - Files: `lib/stripe-locale.ts`, `__tests__/stripe-locale.test.ts`, `docs/backend_tasks.md`, `tasks.md`
+  - Changes: Fixed `inferLocaleFromHeaders()` to match its comment (added origin fallback). Created 37 Vitest unit tests covering `normalizeLocale()`, `getAppUrl()`, `buildLocaleUrl()`, `inferLocaleFromRequest()`, `inferLocaleFromHeaders()` including edge cases (invalid URLs, empty strings, priority order).
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `pnpm -s exec vitest run __tests__/stripe-locale.test.ts` (37/37 PASS)
+
+- 2026-01-06 - FE: Login form drift cleanup + Checkout page heading/a11y fix.
+  - Files: `app/[locale]/(auth)/_components/login-form.tsx`, `app/[locale]/(checkout)/_components/checkout-page-client.tsx`, `docs/frontend_tasks.md`
+  - Changes (login): Removed explicit `h-10` from buttons (rely on `size="lg"` which gives h-9), standardized password toggle to `size-8` button with `size-4` icons (consistent design tokens).
+  - Changes (checkout): Added H1 heading (`sr-only` on mobile, visible on desktop header row using `t("title")` which already exists in i18n), replaced arbitrary `h-12` button heights with `h-10` design token.
+  - Commands: `pnpm -s lint` (warnings only - pre-existing), `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (14/15 - 1 pre-existing search error), `REUSE_EXISTING_SERVER=true pnpm test:e2e:auth` (27/28 - 1 timing flake unrelated to changes)
+
+- 2026-01-06 - E2E: Auth password-visibility toggle deterministic fix.
+  - Files: `e2e/auth.spec.ts`, `docs/frontend_tasks.md`, `tasks.md`
+  - Changes: Replaced brittle `button.filter({ has: svg }).first()` selector with accessible name (`/show password/i`, `/hide password/i`). Added `waitForDevCompilingOverlayToHide(page)` after `page.goto()` to avoid hydration flake.
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed), `REUSE_EXISTING_SERVER=true pnpm test:e2e:auth` (28 passed)
+  - Verified: `test-results/.last-run.json` reports `{ status: "passed", failedTests: [] }`

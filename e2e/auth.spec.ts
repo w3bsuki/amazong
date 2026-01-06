@@ -403,22 +403,26 @@ test.describe('Login Flow', () => {
 
   test('should toggle password visibility @auth @ui', async ({ page }) => {
     await page.goto(AUTH_ROUTES.login)
-    
+    await waitForDevCompilingOverlayToHide(page)
+
     const passwordInput = page.locator('input[autocomplete="current-password"]')
-    const toggleButton = page.locator('button').filter({ has: page.locator('svg') }).first()
-    
+    const showPasswordButton = page.getByRole('button', { name: /show password/i }).first()
+    const hidePasswordButton = page.getByRole('button', { name: /hide password/i }).first()
+
     // Initially password should be hidden
     await expect(passwordInput).toHaveAttribute('type', 'password')
-    
+
     // Fill in password
     await passwordInput.fill('TestPassword123!')
-    
-    // Click toggle to show password
-    await toggleButton.click()
+
+    // Click toggle to show password (using accessible name)
+    await expect(showPasswordButton).toBeVisible({ timeout: 10_000 })
+    await showPasswordButton.click()
     await expect(passwordInput).toHaveAttribute('type', 'text')
-    
-    // Click toggle to hide again
-    await toggleButton.click()
+
+    // Click toggle to hide again (using accessible name)
+    await expect(hidePasswordButton).toBeVisible({ timeout: 5_000 })
+    await hidePasswordButton.click()
     await expect(passwordInput).toHaveAttribute('type', 'password')
   })
 

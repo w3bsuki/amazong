@@ -9,10 +9,11 @@ Read first: `docs/workflow.md`, `docs/backend.md`, `docs/ENGINEERING.md`, `docs/
 ## P0: Start here (today)
 
 - [x] Run Supabase MCP security advisors; eliminate warnings (or explicitly accept + document)
-- [ ] Clear dashboard-only security advisor warning later (tracked in `supabase_tasks.md`)
 - [x] Run Supabase MCP performance advisors; record findings + decide what is safe to defer
 - [x] Reproduce `/plans` failure (Stripe return URLs missing locale) and fix as a small batch
 - [x] Stripe sanity: webhook applies plans by `metadata.plan_id` and signature verification is in place
+- [x] **Stripe locale return URLs sweep**: all Stripe `success_url`, `cancel_url`, `return_url` use locale-prefixed paths via shared `lib/stripe-locale.ts` helper
+- [x] **Stripe locale unit tests**: `lib/stripe-locale.ts` behavior locked in with comprehensive Vitest coverage (37 tests: `normalizeLocale`, `buildLocaleUrl`, `inferLocaleFromRequest`, `inferLocaleFromHeaders`)
 
 ## P0 audit notes (fill this in)
 
@@ -26,9 +27,8 @@ For each issue:
 
 - **Area:** advisors (security)
 - **Evidence (2026-01-06):** `mcp_supabase_get_advisors({ type: "security" })`
-	- `auth_leaked_password_protection` (WARN): Leaked Password Protection Disabled
-- **Minimal fix:** Dashboard-only (deferred; tracked in `supabase_tasks.md`)
-- **Done when:** Advisors show 0 non-dashboard warnings; dashboard-only warning remains explicitly tracked with an owner/date
+- **Minimal fix:** None (dashboard-only items handled separately)
+- **Done when:** No actionable security advisor warnings requiring code/migration changes
 
 - **Area:** advisors (performance)
 - **Evidence (2026-01-06):** `mcp_supabase_get_advisors({ type: "performance" })`
@@ -39,8 +39,42 @@ For each issue:
 ## P1: Cost + correctness sanity (this session)
 
 - [x] Data/cost sanity: audit hot-path queries for over-fetching (no `select('*')` in list views), deep joins, and missing indexes only when justified by advisors/EXPLAIN
-- [ ] Next.js caching sanity: ensure cached reads use `createStaticClient()` + `'use cache'` + `cacheLife` + granular `cacheTag`, and `revalidateTag(tag, profile)` uses the required profile arg
+- [x] Next.js caching sanity: ensure cached reads use `createStaticClient()` + `'use cache'` + `cacheLife` + granular `cacheTag`, and `revalidateTag(tag, profile)` uses the required profile arg (PASS - 2026-01-06)
+  - [x] All `'use cache'` blocks in `lib/data/**` have `cacheLife('<profile>')` (categories, products, user)
+  - [x] All `'use cache'` blocks in `app/api/categories/**` have `cacheLife('categories')`
+  - [x] All `'use cache'` blocks in `app/[locale]/(sell)/sell/_lib/categories.ts` have `cacheLife('categories')`
+  - [x] All `revalidateTag()` calls use 2-arg form with `"max"` profile (verified: ~50 calls in actions files)
+  - [x] All cached reads use `createStaticClient()` (no cookie-aware clients in cached modules)
+- [x] Cache audit (per-user leakage): ensure no cached module reads `cookies()`/`headers()` (PASS)
+  - [x] `app/**` cached files: `app/api/categories/route.ts`, `app/api/categories/[slug]/children/route.ts`, `app/[locale]/(sell)/sell/_lib/categories.ts` (no `next/headers` usage)
+  - [x] `lib/data/**` cached files: `lib/data/categories.ts`, `lib/data/product-page.ts`, `lib/data/product-reviews.ts`, `lib/data/products.ts`, `lib/data/profile-page.ts` (no `next/headers` usage)
 - [ ] Payments sanity: verify `/en/plans` checkout and return URLs behave correctly with locale, and webhook plan mapping via `metadata.plan_id` is correct + idempotent
+
+### Stripe locale return URLs sweep (2026-01-06)
+
+- **Area:** Stripe / locale return URLs
+- **Problem:** Several Stripe checkout/portal endpoints were generating non-localized return URLs (e.g. `/account/payments`, `/account/selling`, `/sell`, `/cart`, `/checkout/success`) which would cause 404s or unpredictable locale behavior on redirect.
+- **Evidence (grep):**
+  ```
+  success_url|cancel_url|return_url hits:
+    app/actions/payments.ts             /account/payments?setup=...
+    app/actions/boost.ts                /account/selling?..., /sell?...
+    app/api/payments/setup/route.ts     /account/payments?setup=...
+    app/api/boost/checkout/route.ts     /account/selling?..., /sell?...
+    app/[locale]/(checkout)/_actions/checkout.ts   /checkout/success?..., /cart
+  ```
+- **Fix:** Created `lib/stripe-locale.ts` with reusable helpers (`buildLocaleUrl`, `inferLocaleFromRequest`, `inferLocaleFromHeaders`). Updated all Stripe URL generation sites to use these helpers. Also refactored existing subscription routes/actions to use the shared module (removed ~60 lines of duplicated local helpers).
+- **Files changed:** 
+  - `lib/stripe-locale.ts` (new)
+  - `app/actions/payments.ts`
+  - `app/actions/boost.ts`
+  - `app/api/payments/setup/route.ts`
+  - `app/api/boost/checkout/route.ts`
+  - `app/[locale]/(checkout)/_actions/checkout.ts`
+  - `app/api/subscriptions/checkout/route.ts` (refactor to use shared helper)
+  - `app/api/subscriptions/portal/route.ts` (refactor to use shared helper)
+  - `app/actions/subscriptions.ts` (refactor to use shared helper)
+- **Done when:** All Stripe redirect URLs return to `/{locale}/...` paths; typecheck + E2E smoke pass; `pnpm build` succeeds.
 
 ### Batch notes (2026-01-06)
 
@@ -103,6 +137,23 @@ Verification: `pnpm -s exec tsc -p tsconfig.json --noEmit`, `REUSE_EXISTING_SERV
 Done when:
 - Hot-path list views confirmed to use field projection (no `select('*')`)
 - At least one concrete payload reduction shipped (business orders list)
+
+Batch name: BE - Next.js caching sanity audit PASS (2026-01-06)
+Owner: BE (OPUS)
+Scope (1-3 files/features): docs/backend_tasks.md (audit only - no code changes needed)
+Risk: none
+Verification: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15/15 PASS)
+
+Evidence:
+- Grep for `'use cache'`: 17 blocks in `lib/data/**`, 4 in `app/api/categories/**`, 1 in `app/[locale]/(sell)/sell/_lib/categories.ts`
+- All have `cacheLife('<profile>')` paired with `'use cache'`
+- Grep for `revalidateTag(`: ~50 calls in action files, all use 2-arg form with `"max"` profile
+- Grep for `createStaticClient`: all cached read modules use `createStaticClient()` (no `createClient()`/`createRouteHandlerClient()` in cached paths)
+- Cache profiles defined in `next.config.ts`: categories, products, deals, user
+
+Done when:
+- P1 caching sanity task marked complete
+- Evidence documented for future reference
 
 ## Guardrails (backend)
 

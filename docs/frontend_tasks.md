@@ -9,9 +9,14 @@ Read first: `docs/workflow.md`, `docs/frontend.md`, `docs/DESIGN.md`, `docs/ENGI
 ## P0: Start here (today)
 
 - [x] Run Playwright MCP audit on P0 flows (mobile 390x844 + desktop 1440x900) and write findings into the next section
-- [ ] Fix the single ugliest high-traffic surface first (1-3 files), then run `tsc` + `e2e:smoke` and log the batch in `tasks.md`
+- [x] Pick 1 issue from the findings below (home/search/product/checkout/login/toast) and ship it as a 1-3 file batch, then run `tsc` + `e2e:smoke` and log the batch in `tasks.md`
+  - Shipped: auth E2E password toggle deterministic fix (accessible name selectors + dev overlay wait)
 - [x] Home promo cards: eager-load the first promo image (LCP warning reduction)
-- [ ] Product pages i18n sweep: replace hardcoded strings, add missing keys to `messages/en.json` + `messages/bg.json`, and verify `/en` + `/bg` parity
+- [x] Product pages i18n sweep: replace hardcoded strings, add missing keys to `messages/en.json` + `messages/bg.json`, and verify `/en` + `/bg` parity
+  - Removed hardcoded EN/BG dictionaries from `lib/view-models/product-page.ts`
+  - View-model now returns locale-agnostic `conditionKey` + raw attribute `key/value` pairs
+  - Added `attr*` and `val*` translation keys to `ProductDetails` namespace in both message files
+  - Translation happens at render-time in `ItemSpecifics` (desktop) and `mobile-product-page.tsx` (mobile)
 - [ ] `/plans` UX fix: reproduce why plan checkout/creation doesn't work, identify whether it's UI state/validation vs server/action failure, and file a P0 batch
 
 ## P0 audit findings (fill this in)
@@ -24,10 +29,11 @@ For each issue:
 
 ### Findings (Jan 6, 2026)
 
-- Surface: `http://localhost:3000/en` @ 390x844
-	- What’s wrong: hero area feels “off-token” vs the rest of the app (palette drift hotspot from scan). This is likely where the first impression consistency breaks.
+- [x] Surface: `http://localhost:3000/en` @ 390x844 ✅ DONE (2026-01-06)
+	- What's wrong: hero area feels "off-token" vs the rest of the app (palette drift hotspot from scan). This is likely where the first impression consistency breaks.
 	- Candidate files: `components/desktop/marketplace-hero.tsx`
 	- Done when: hero uses semantic tokens only (no palette classes), dense spacing (`gap-2/3`), flat cards (`border`, `rounded-md`), and typography aligns with `docs/DESIGN.md`.
+	- Resolution: Applied dense spacing (`gap-3`, `space-y-2`), reduced padding, tighter badge, consistent button sizing (`size="default"`), and aligned typography scale (`text-xl lg:text-2xl`).
 
 - Surface: `http://localhost:3000/en/search` @ 390x844 + 1440x900
 	- What’s wrong: product surfaces are the “golden component” area — any drift here multiplies across search/home/category grids. Scan-driven next target.
@@ -39,15 +45,17 @@ For each issue:
 	- Candidate files: `app/[locale]/[username]/[productSlug]/page.tsx` (and any shared product detail components), plus `messages/en.json` + `messages/bg.json` for i18n.
 	- Done when: all customer-facing strings are next-intl keys with `/en` and `/bg` parity; spacing around price/VAT label reads cleanly.
 
-- Surface: `http://localhost:3000/en/checkout` @ 390x844 + 1440x900
-	- What’s wrong: checkout page lacks a clear H1/primary heading in the DOM (harder to orient + weak a11y). Also a top arbitrary-value offender in scan.
+- [x] Surface: `http://localhost:3000/en/checkout` @ 390x844 + 1440x900 ✅ DONE (2026-01-06)
+	- What's wrong: checkout page lacks a clear H1/primary heading in the DOM (harder to orient + weak a11y). Also a top arbitrary-value offender in scan.
 	- Candidate files: `app/[locale]/(checkout)/_components/checkout-page-client.tsx`
 	- Done when: clear page heading exists, form/summary spacing uses tokens (no arbitrary sizes), and layout is consistent across viewports.
+	- Resolution: Added H1 (`sr-only` on mobile, visible on desktop header row), replaced arbitrary `h-12` button heights with `h-10` design token.
 
-- Surface: `http://localhost:3000/en/auth/login` @ 390x844 + 1440x900
-	- What’s wrong: login form is an arbitrary-value drift hotspot; likely inconsistent control sizing vs the rest of app.
+- [x] Surface: `http://localhost:3000/en/auth/login` @ 390x844 + 1440x900 ✅ DONE (2026-01-06)
+	- What's wrong: login form is an arbitrary-value drift hotspot; likely inconsistent control sizing vs the rest of app.
 	- Candidate files: `app/[locale]/(auth)/_components/login-form.tsx`
 	- Done when: no arbitrary values in the form layout/sizing (where feasible), inputs/buttons match shared sizing conventions.
+	- Resolution: Removed explicit `h-10` from buttons (rely on `size="lg"`), standardized password toggle button to `size-8` with `size-4` icons for consistency.
 
 - Surface: hidden drift (scan-driven)
 	- What’s wrong: gradients exist in toast styling even if not visible in the basic route audit.
