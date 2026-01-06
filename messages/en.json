@@ -297,7 +297,13 @@
         "topRated": "Top Rated",
         "seller": "Seller",
         "businessSeller": "Business Seller",
-        "promoted": "Promoted"
+        "promoted": "Promoted",
+        "productDetails": "Product Details",
+        "shippingReturns": "Shipping & Returns",
+        "defaultShipping": "Shipping calculated at checkout",
+        "defaultReturns": "30 days returns. Buyer pays for return shipping.",
+        "noDescription": "No description provided",
+        "noDetails": "No details available"
     },
     "CustomerService": {
         "title": "Welcome to Treido Customer Service",

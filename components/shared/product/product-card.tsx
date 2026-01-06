@@ -345,7 +345,7 @@ function ProductCard({
           <button
             type="button"
             className={cn(
-              "absolute right-1.5 top-1.5 z-10 flex min-h-touch-sm min-w-touch-sm size-7 items-center justify-center rounded-full outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
+              "absolute right-1.5 top-1.5 z-10 flex size-touch-sm items-center justify-center rounded-full outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
               !inWishlist && "lg:pointer-events-none lg:opacity-0 lg:group-hover:pointer-events-auto lg:group-hover:opacity-100 lg:transition-opacity lg:duration-100",
               inWishlist
                 ? "bg-product-wishlist-active text-white"
@@ -405,7 +405,7 @@ function ProductCard({
           {freeShipping && (
             <span className="inline-flex items-center gap-0.5 rounded-sm bg-shipping-free/10 px-1 py-px text-2xs font-medium text-shipping-free">
               <Truck size={10} weight="bold" />
-              <span className="hidden xs:inline">Free</span>
+              <span className="hidden xs:inline">{t("freeShipping")}</span>
             </span>
           )}
         </div>
@@ -433,7 +433,7 @@ function ProductCard({
             )}
 
             {hasSoldCount && (
-              <span>{formatCount(soldCount)} sold</span>
+              <span>{formatCount(soldCount)} {t("sold")}</span>
             )}
           </div>
         )}
@@ -481,12 +481,12 @@ function ProductCard({
             <div className="flex-1" />
           )}
 
-          {/* Quick-Add Button - 28px (size-7), WCAG 2.2 AA compliant */}
+          {/* Quick-Add Button - 28px (size-touch-sm), WCAG 2.2 AA compliant */}
           {showQuickAdd && (
             <button
               type="button"
               className={cn(
-                "flex min-h-touch-sm min-w-touch-sm size-7 shrink-0 items-center justify-center rounded outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
+                "flex size-touch-sm shrink-0 items-center justify-center rounded outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
                 inCart
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary active:bg-primary active:text-primary-foreground",

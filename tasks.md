@@ -14,9 +14,9 @@ Pre-release gates (before "go live"):
 
 ## P0 - Ship blockers (must be done)
 
-- [ ] Stripe products/prices created (Premium/Business)
-- [ ] Dashboard step: Stripe Dashboard -> Products -> create `Premium` and `Business` products, add recurring prices (monthly/yearly as intended), then copy the Stripe Price IDs for the next checklist step.
-- [ ] Note: provided Stripe Product IDs (these are `prod_...`, not `price_...`):
+- [x] Stripe products/prices created (Premium/Business)
+- [x] Dashboard step: Stripe Dashboard -> Products -> create `Premium` and `Business` products, add recurring prices (monthly/yearly as intended), then copy the Stripe Price IDs for the next checklist step.
+- [x] Note: provided Stripe Product IDs (these are `prod_...`, not `price_...`):
   - `prod_TbEnIEvcfYvHFt`
   - `prod_TbEmxeW1Vci25c`
   - `prod_TbEkJVedgo8jis`
@@ -25,10 +25,10 @@ Pre-release gates (before "go live"):
   - `prod_TbEcyvXCMdfIGn`
   - `prod_TbEb7tYV8H9uFD`
 - [x] Supabase `subscription_plans` updated with Stripe price IDs
-- [ ] Dashboard step: copy the `price_...` IDs for Premium/Business monthly + yearly (needed for `subscription_plans.stripe_price_monthly_id` and `subscription_plans.stripe_price_yearly_id`).
-- [ ] Stripe webhook configured: `https://treido.eu/api/subscriptions/webhook`
+- [x] Dashboard step: copy the `price_...` IDs for Premium/Business monthly + yearly (needed for `subscription_plans.stripe_price_monthly_id` and `subscription_plans.stripe_price_yearly_id`).
+- [x] Stripe webhook configured: `https://treido.eu/api/subscriptions/webhook`
 - [x] Code step: `/api/subscriptions/webhook` accepts Stripe events and uses `metadata.plan_id` to apply the correct plan.
-- [ ] Dashboard step: Stripe -> Developers -> Webhooks -> endpoint points to `/api/subscriptions/webhook` and signing secret is set in Vercel as `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`.
+- [x] Dashboard step: Stripe -> Developers -> Webhooks -> endpoint points to `/api/subscriptions/webhook` and signing secret is set in Vercel as `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`.
 - [x] Vercel env vars set + verified at runtime:
   - [x] `NEXT_PUBLIC_APP_URL=https://treido.eu`
   - [x] `STRIPE_SECRET_KEY` / `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` / `STRIPE_WEBHOOK_SECRET` / `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`
@@ -183,3 +183,39 @@ Use scan reports as the source of truth:
   - Changes: Replaced brittle `button.filter({ has: svg }).first()` selector with accessible name (`/show password/i`, `/hide password/i`). Added `waitForDevCompilingOverlayToHide(page)` after `page.goto()` to avoid hydration flake.
   - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed), `REUSE_EXISTING_SERVER=true pnpm test:e2e:auth` (28 passed)
   - Verified: `test-results/.last-run.json` reports `{ status: "passed", failedTests: [] }`
+
+- 2026-01-06 - FE: /plans UX fix + admin orders prerender noise elimination.
+  - Files: `app/[locale]/(plans)/_components/plans-page-client.tsx`, `components/pricing/plans-modal.tsx`, `app/[locale]/(admin)/admin/orders/page.tsx`, `docs/frontend_tasks.md`, `tasks.md`
+  - Changes:
+    - Plans page: CTA now shows deterministic loading and displays specific error messages (from server action) instead of generic "Error" toast; handles edge case where no URL is returned without error
+    - Plans modal: Same error handling improvement, redirects to full /plans page on failure for clearer error display
+    - Admin orders: Calls `await connection()` (instead of route segment config) to prevent prerender fetch abort noise during `pnpm build` in cacheComponents mode
+  - Commands: `pnpm -s lint` (warnings only - pre-existing), `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed)
+
+- 2026-01-06 - BE: Subscription checkout hardening for production readiness.
+  - Files: `app/api/subscriptions/checkout/route.ts`, `docs/backend_tasks.md`, `tasks.md`, `supabase_tasks.md`
+  - Changes:
+    - Clean 4xx for bad input: explicit validation of `planId` (must be string) and `billingPeriod` (must be "monthly" or "yearly"), 400 for invalid JSON body
+    - Clear 5xx for Stripe failures: sanitized error logging (type + message only, no secrets), distinguishes Stripe errors ("Payment service error") from internal errors
+    - `stripe_price_*_id` guardrail: `validateStripePriceId()` returns explicit config error (500) if price ID is set but malformed (not `price_...` format); null/empty falls back to inline price_data
+    - Removed ~30 lines of duplicated locale helpers (now uses shared `lib/stripe-locale.ts`)
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed)
+
+- 2026-01-06 - FE: ProductCard token/spacing polish (no redesign, dense spacing).
+  - Files: `components/shared/product/product-card.tsx`, `app/globals.css`, `docs/frontend_tasks.md`, `tasks.md`
+  - Changes:
+    - Touch tokens: Replaced redundant `size-7 + min-h-touch-sm min-w-touch-sm` with unified `size-touch-sm` on wishlist and quick-add buttons
+    - Missing utilities: Added `min-w-touch-sm`, `w-touch-sm`, `size-touch-sm` to globals.css for complete touch target token coverage
+    - i18n: Replaced hardcoded "Free" text with `t("freeShipping")` and "sold" with `t("sold")` (both keys already existed in Product namespace)
+    - Comment fix: Updated comment from "size-7" to "size-touch-sm" for clarity
+  - Verified: Responsive check at 390x844 + 1440x900 shows consistent touch targets (28px), dense spacing preserved
+  - Commands: `pnpm -s lint` (warnings only - pre-existing), `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed)
+
+- 2026-01-06 - FE (Opus): Mobile accordions i18n fix - replaced hardcoded locale dictionary with useTranslations().
+  - Files: `components/shared/product/mobile-accordions.tsx`, `messages/en.json`, `messages/bg.json`
+  - Changes:
+    - Replaced inline `locale === "bg" ? "..." : "..."` dictionary with proper `useTranslations("Product")` calls
+    - Added 6 new keys to Product namespace in both message files: `productDetails`, `shippingReturns`, `defaultShipping`, `defaultReturns`, `noDescription`, `noDetails`
+    - Component now properly uses `t("key")` syntax instead of `t.key` object access
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed)
+  - Verified: Codex review pending

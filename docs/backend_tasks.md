@@ -14,6 +14,7 @@ Read first: `docs/workflow.md`, `docs/backend.md`, `docs/ENGINEERING.md`, `docs/
 - [x] Stripe sanity: webhook applies plans by `metadata.plan_id` and signature verification is in place
 - [x] **Stripe locale return URLs sweep**: all Stripe `success_url`, `cancel_url`, `return_url` use locale-prefixed paths via shared `lib/stripe-locale.ts` helper
 - [x] **Stripe locale unit tests**: `lib/stripe-locale.ts` behavior locked in with comprehensive Vitest coverage (37 tests: `normalizeLocale`, `buildLocaleUrl`, `inferLocaleFromRequest`, `inferLocaleFromHeaders`)
+- [x] **Subscription checkout hardening**: clean 4xx for bad input, clear 5xx for Stripe failures (no secrets logged), stripe_price_*_id guardrail (explicit config error for malformed IDs)
 
 ## P0 audit notes (fill this in)
 

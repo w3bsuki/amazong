@@ -17,7 +17,9 @@ Read first: `docs/workflow.md`, `docs/frontend.md`, `docs/DESIGN.md`, `docs/ENGI
   - View-model now returns locale-agnostic `conditionKey` + raw attribute `key/value` pairs
   - Added `attr*` and `val*` translation keys to `ProductDetails` namespace in both message files
   - Translation happens at render-time in `ItemSpecifics` (desktop) and `mobile-product-page.tsx` (mobile)
-- [ ] `/plans` UX fix: reproduce why plan checkout/creation doesn't work, identify whether it's UI state/validation vs server/action failure, and file a P0 batch
+- [x] `/plans` UX fix: reproduce why plan checkout/creation doesn't work, identify whether it's UI state/validation vs server/action failure, and file a P0 batch
+  - Fixed: CTA now shows deterministic loading and either redirects to Stripe or shows specific inline error (no dead click)
+  - Also: admin orders page calls `await connection()` to mark the route dynamic (cacheComponents-safe) and eliminate prerender fetch rejection noise
 
 ## P0 audit findings (fill this in)
 
@@ -35,10 +37,11 @@ For each issue:
 	- Done when: hero uses semantic tokens only (no palette classes), dense spacing (`gap-2/3`), flat cards (`border`, `rounded-md`), and typography aligns with `docs/DESIGN.md`.
 	- Resolution: Applied dense spacing (`gap-3`, `space-y-2`), reduced padding, tighter badge, consistent button sizing (`size="default"`), and aligned typography scale (`text-xl lg:text-2xl`).
 
-- Surface: `http://localhost:3000/en/search` @ 390x844 + 1440x900
-	- What’s wrong: product surfaces are the “golden component” area — any drift here multiplies across search/home/category grids. Scan-driven next target.
+- [x] Surface: `http://localhost:3000/en/search` @ 390x844 + 1440x900 ✅ DONE (2026-01-06)
+	- What's wrong: product surfaces are the "golden component" area — any drift here multiplies across search/home/category grids. Scan-driven next target.
 	- Candidate files: `components/shared/product/product-card.tsx`
 	- Done when: product card uses tokens only, no arbitrary values, consistent title/price/meta hierarchy, predictable touch targets, and no non-essential motion.
+	- Resolution: Replaced `size-7 + min-h-touch-sm min-w-touch-sm` with unified `size-touch-sm` token; added missing `min-w-touch-sm` + `w-touch-sm` + `size-touch-sm` utilities to globals.css; i18n-ed hardcoded "Free" and "sold" strings via existing `t("freeShipping")` and `t("sold")` keys.
 
 - Surface: `http://localhost:3000/en/tech_haven/office-suite-license` (product page) @ 390x844 + 1440x900
 	- What’s wrong: visible hardcoded English strings on the page (e.g. “Key Details”, “Description”, “Shipping & Returns”, “Buyer Protection”, “Write a Review”), and currency/price formatting feels cramped (“BGN 99.99incl. VAT”).

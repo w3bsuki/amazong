@@ -291,7 +291,13 @@
         "topRated": "Топ оценен",
         "seller": "Продавач",
         "businessSeller": "Бизнес продавач",
-        "promoted": "Промотирано"
+        "promoted": "Промотирано",
+        "productDetails": "Характеристики",
+        "shippingReturns": "Доставка и връщане",
+        "defaultShipping": "Доставката се изчислява при поръчка",
+        "defaultReturns": "30 дни връщане. Купувачът плаща за връщане.",
+        "noDescription": "Няма описание",
+        "noDetails": "Няма детайли"
     },
     "CustomerService": {
         "title": "Добре дошли в обслужването на клиенти на Treido",

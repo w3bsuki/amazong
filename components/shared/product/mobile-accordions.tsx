@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 
 interface MobileAccordionsProps {
   description: string;
@@ -23,17 +23,7 @@ interface MobileAccordionsProps {
  * Simplified styling per design system.
  */
 export function MobileAccordions({ description, details, shippingText, returnsText }: MobileAccordionsProps) {
-  const locale = useLocale();
-  
-  const t = {
-    description: locale === "bg" ? "Описание" : "Description",
-    productDetails: locale === "bg" ? "Характеристики" : "Product Details",
-    shippingReturns: locale === "bg" ? "Доставка и връщане" : "Shipping & Returns",
-    shipping: locale === "bg" ? "Доставка" : "Shipping",
-    returns: locale === "bg" ? "Връщане" : "Returns",
-    defaultShipping: locale === "bg" ? "Доставката се изчислява при поръчка" : "Shipping calculated at checkout",
-    defaultReturns: locale === "bg" ? "30 дни връщане. Купувачът плаща за връщане." : "30 days returns. Buyer pays for return shipping.",
-  };
+  const t = useTranslations("Product");
 
   return (
     <div className="lg:hidden">
@@ -45,12 +35,12 @@ export function MobileAccordions({ description, details, shippingText, returnsTe
               <div className="size-8 rounded-md bg-muted flex items-center justify-center">
                 <FileText className="size-4 text-info" />
               </div>
-              <span className="font-semibold text-foreground text-sm">{t.description}</span>
+              <span className="font-semibold text-foreground text-sm">{t("description")}</span>
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-3">
             <div className="bg-muted/30 rounded-md p-2.5 text-sm text-muted-foreground leading-relaxed">
-              <p>{description || (locale === "bg" ? "Няма описание" : "No description provided")}</p>
+              <p>{description || t("noDescription")}</p>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -62,7 +52,7 @@ export function MobileAccordions({ description, details, shippingText, returnsTe
               <div className="size-8 rounded-md bg-muted flex items-center justify-center">
                 <List className="size-4 text-verified" />
               </div>
-              <span className="font-semibold text-foreground text-sm">{t.productDetails}</span>
+              <span className="font-semibold text-foreground text-sm">{t("productDetails")}</span>
               {details.length > 0 && (
                 <span className="ml-auto mr-2 text-xs font-medium text-muted-foreground bg-background/80 px-1.5 py-0.5 rounded">
                   {details.length}
@@ -78,7 +68,7 @@ export function MobileAccordions({ description, details, shippingText, returnsTe
                   <span className="font-medium text-foreground text-right truncate">{detail.value}</span>
                 </div>
               )) : (
-                <p className="text-sm text-muted-foreground">{locale === "bg" ? "Няма детайли" : "No details available"}</p>
+                <p className="text-sm text-muted-foreground">{t("noDetails")}</p>
               )}
             </div>
           </AccordionContent>
@@ -91,18 +81,18 @@ export function MobileAccordions({ description, details, shippingText, returnsTe
               <div className="size-8 rounded-md bg-muted flex items-center justify-center">
                 <Truck className="size-4 text-shipping-free" />
               </div>
-              <span className="font-semibold text-foreground text-sm">{t.shippingReturns}</span>
+              <span className="font-semibold text-foreground text-sm">{t("shippingReturns")}</span>
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-3">
             <div className="bg-muted/30 rounded-md p-2.5 space-y-3">
               <div>
-                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">{t.shipping}</div>
-                <div className="text-sm text-foreground">{shippingText ?? t.defaultShipping}</div>
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">{t("shipping")}</div>
+                <div className="text-sm text-foreground">{shippingText ?? t("defaultShipping")}</div>
               </div>
               <div className="border-t border-border/50 pt-3">
-                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">{t.returns}</div>
-                <div className="text-sm text-foreground">{returnsText ?? t.defaultReturns}</div>
+                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">{t("returns")}</div>
+                <div className="text-sm text-foreground">{returnsText ?? t("defaultReturns")}</div>
               </div>
             </div>
           </AccordionContent>

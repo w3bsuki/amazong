@@ -1,44 +1,50 @@
 import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
+import { buildLocaleUrl, inferLocaleFromRequest } from '@/lib/stripe-locale'
 
 const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
 const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
   'id,tier,name,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,commission_rate,final_value_fee'
 
-function getAppUrl() {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL ||
-    process.env.NEXT_PUBLIC_URL ||
-    'http://localhost:3000'
-  ).replace(/\/$/, '')
-}
-
-function normalizeLocale(locale: unknown): 'en' | 'bg' {
-  return locale === 'bg' ? 'bg' : 'en'
-}
-
-function inferLocaleFromRequest(req: Request, bodyLocale?: unknown): 'en' | 'bg' {
-  if (bodyLocale) return normalizeLocale(bodyLocale)
-
-  const headerLocale = req.headers.get('x-next-intl-locale')
-  if (headerLocale) return normalizeLocale(headerLocale)
-
-  const referer = req.headers.get('referer')
-  if (referer) {
-    try {
-      const url = new URL(referer)
-      const firstSegment = url.pathname.split('/').filter(Boolean)[0]
-      if (firstSegment) return normalizeLocale(firstSegment)
-    } catch {
-      // ignore invalid referer
-    }
+/**
+ * Validate that a stripe_price_*_id is properly configured.
+ * Returns true if valid (starts with 'price_'), false if null/undefined/empty (fallback allowed),
+ * throws if malformed (non-empty but not a valid Stripe Price ID format).
+ */
+function validateStripePriceId(priceId: string | null | undefined, fieldName: string): boolean {
+  if (!priceId || priceId.trim() === '') {
+    // Empty/null = fallback to inline price_data is allowed
+    return false
   }
-
-  return 'en'
+  if (!priceId.startsWith('price_')) {
+    // Non-empty but malformed = explicit config error
+    throw new Error(`Invalid ${fieldName}: expected 'price_...' format, got '${priceId.slice(0, 20)}...'`)
+  }
+  return true
 }
 
 export async function POST(req: Request) {
+  // Parse body early to get locale for error URLs
+  let body: { planId?: string; billingPeriod?: 'monthly' | 'yearly'; locale?: 'en' | 'bg' } = {}
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+
+  const { planId, billingPeriod, locale } = body
+  const resolvedLocale = inferLocaleFromRequest(req, locale)
+  const accountPlansUrl = buildLocaleUrl('account/plans', resolvedLocale)
+
+  // Validate required fields (4xx for bad input)
+  if (!planId || typeof planId !== 'string') {
+    return NextResponse.json({ error: 'Missing or invalid planId' }, { status: 400 })
+  }
+  if (!billingPeriod || (billingPeriod !== 'monthly' && billingPeriod !== 'yearly')) {
+    return NextResponse.json({ error: 'Missing or invalid billingPeriod (expected "monthly" or "yearly")' }, { status: 400 })
+  }
+
   try {
     const supabase = await createClient()
     
@@ -51,16 +57,6 @@ export async function POST(req: Request) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-
-    const body = await req.json()
-    const { planId, billingPeriod, locale } = body as { planId: string; billingPeriod: 'monthly' | 'yearly'; locale?: 'en' | 'bg' }
-
-    if (!planId || !billingPeriod) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-    }
-
-    const resolvedLocale = inferLocaleFromRequest(req, locale)
-    const accountPlansUrl = `${getAppUrl()}/${resolvedLocale}/account/plans`
 
     // Get profile info
     const { data: profile } = await supabase
@@ -92,6 +88,22 @@ export async function POST(req: Request) {
 
     const price = billingPeriod === 'yearly' ? plan.price_yearly : plan.price_monthly
 
+    // Validate stripe_price_*_id configuration (guardrail: explicit config error if malformed)
+    const priceField = billingPeriod === 'yearly' ? 'stripe_price_yearly_id' : 'stripe_price_monthly_id'
+    const rawPriceId = billingPeriod === 'yearly' ? plan.stripe_price_yearly_id : plan.stripe_price_monthly_id
+
+    let useStripePriceId = false
+    try {
+      useStripePriceId = validateStripePriceId(rawPriceId, priceField)
+    } catch (configError) {
+      // Config error: price ID is set but malformed - this is a server-side config issue
+      console.error('[checkout] Config error:', configError instanceof Error ? configError.message : configError)
+      return NextResponse.json(
+        { error: 'Subscription plan configuration error. Please contact support.' },
+        { status: 500 }
+      )
+    }
+
     // Create or get Stripe customer
     let customerId = profile.stripe_customer_id
 
@@ -112,15 +124,10 @@ export async function POST(req: Request) {
         .eq('id', profile.id)
     }
 
-    // Check if we have a pre-configured Stripe Price ID (recommended for production)
-    const stripePriceId = billingPeriod === 'yearly' 
-      ? plan.stripe_price_yearly_id 
-      : plan.stripe_price_monthly_id
-
-    // Build line_items - use Price ID if available, otherwise create inline price
+    // Build line_items - use Price ID if available and valid, otherwise create inline price
     // Note: Bulgaria joins Eurozone Jan 2026, all prices in EUR
-    const lineItems = stripePriceId
-      ? [{ price: stripePriceId, quantity: 1 }]
+    const lineItems = useStripePriceId
+      ? [{ price: rawPriceId!, quantity: 1 }]
       : [{
           price_data: {
             currency: 'eur' as const,
@@ -159,9 +166,18 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ sessionId: session.id, url: session.url })
   } catch (error) {
-    console.error('Subscription checkout error:', error)
+    // Log error details server-side (no secrets - Stripe SDK doesn't expose keys in errors)
+    // Sanitize: only log error type + message, not full stack with potential request data
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorType = error instanceof Error ? error.constructor.name : typeof error
+    console.error(`[checkout] ${errorType}: ${errorMessage}`)
+
+    // Determine if this is a Stripe error vs other failure
+    const isStripeError = error instanceof Error &&
+      (error.message.includes('Stripe') || 'type' in error || 'statusCode' in error)
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { error: isStripeError ? 'Payment service error. Please try again.' : 'Internal server error' },
       { status: 500 }
     )
   }

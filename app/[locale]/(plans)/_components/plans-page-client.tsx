@@ -397,10 +397,16 @@ export default function PlansPageClient(props: {
           locale: locale === "bg" ? "bg" : "en",
         })
         if (res?.error) throw new Error(res.error)
-        if (res?.url) window.location.href = res.url
+        if (res?.url) {
+          window.location.href = res.url
+        } else {
+          // No URL returned but no error - unexpected state
+          throw new Error(locale === "bg" ? "Не успяхме да създадем сесия за плащане" : "Failed to create checkout session")
+        }
       }
-    } catch {
-      toast.error(locale === "bg" ? "Грешка" : "Error")
+    } catch (err) {
+      const message = err instanceof Error ? err.message : (locale === "bg" ? "Грешка" : "Error")
+      toast.error(message)
     } finally {
       setSubscribingId(null)
     }

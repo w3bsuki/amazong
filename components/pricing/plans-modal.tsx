@@ -158,10 +158,13 @@ export function PlansModal({
       // Redirect to Stripe
       if (url) {
         window.location.href = url
+      } else {
+        // No URL returned but no error - unexpected state, redirect to full page
+        throw new Error("No checkout URL returned")
       }
     } catch (error) {
       console.error('Checkout error:', error)
-      // On error, redirect to full plans page
+      // On error, redirect to full plans page where user can see clearer error
       setIsOpen(false)
       router.push(`/${locale}/plans`)
     } finally {

@@ -865,7 +865,10 @@
 .h-touch-xs { height: var(--spacing-touch-xs); }  /* 24px */
 .w-touch-xs { width: var(--spacing-touch-xs); }
 .h-touch-sm { height: var(--spacing-touch-sm); }  /* 28px */
+.w-touch-sm { width: var(--spacing-touch-sm); }
 .min-h-touch-sm { min-height: var(--spacing-touch-sm); }
+.min-w-touch-sm { min-width: var(--spacing-touch-sm); }
+.size-touch-sm { width: var(--spacing-touch-sm); height: var(--spacing-touch-sm); }
 .h-touch-lg { height: var(--spacing-touch-lg); }  /* 36px */
 
 /* Hero carousel touch behavior */
