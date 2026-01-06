@@ -82,9 +82,9 @@ To reduce ISR writes:
 - Don’t accidentally make “unique per user” pages static.
 
 References:
-- `docs/VERCEL_USAGE_OPTIMIZATION_PLAN.md`
-- `docs/production/01-nextjs.md`
-- `docs/production/07-performance.md`
+- `docs/ENGINEERING.md`
+- `docs/PRODUCTION.md`
+- Historical deep-dives: `docs-archive/` (not maintained)
 
 ## Vercel usage: what to optimize first
 
@@ -124,13 +124,14 @@ Supabase MCP quick calls (if available in your environment):
 - `mcp_supabase_apply_migration({ name: "...", query: "..." })` (DDL)
 
 References:
-- `docs/production/02-supabase.md`
+- `docs/ENGINEERING.md`
+- `docs/PRODUCTION.md`
 
 ## Refactoring strategy (how we stop writing poor code)
 
 Canonical plans:
-- `docs/production/MASTER_PLAN.md` (launch gates)
-- `docs/production/PRODUCTION_CLEANUP_PLAN.md` (phased cleanup)
+- `docs/PRODUCTION.md` (launch gates + “last 5%”)
+- `docs/ENGINEERING.md` (stack rules + boundaries)
 
 Strategy:
 - Work “layer-by-layer” where possible (data layer → actions → components → routes),

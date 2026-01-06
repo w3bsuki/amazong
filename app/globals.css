@@ -123,7 +123,7 @@
 
   /* === CATEGORY BROWSE TOKENS === */
   /* Mobile category circle size (compact for dense nav). */
-  --category-circle-mobile: 3rem; /* 48px */
+  --category-circle-mobile: 3.25rem; /* 52px - slightly larger for better touch */
 
   /* Form-specific spacing */
   --spacing-form: 1rem;
@@ -406,6 +406,24 @@
   /* === ACCOUNT DASHBOARD (simplified) === */
   --color-account-stat-bg: oklch(0.985 0 0);
   --color-account-stat-border: oklch(0.88 0 0);
+  /* Additional account tokens used by account route group components */
+  --color-account-section-bg: var(--color-background);
+  --color-account-card-hover: var(--color-muted);
+  --color-account-stat-icon-bg: var(--color-muted);
+  --color-account-stat-icon: var(--color-foreground);
+  --color-account-stat-label: var(--color-muted-foreground);
+  --color-account-stat-value: var(--color-foreground);
+
+  --color-account-accent: var(--color-primary);
+  --color-account-accent-soft: color-mix(in oklch, var(--color-primary) 12%, var(--color-background));
+  --color-account-info: var(--color-info);
+  --color-account-info-soft: color-mix(in oklch, var(--color-info) 12%, var(--color-background));
+  --color-account-success: var(--color-success);
+  --color-account-success-soft: color-mix(in oklch, var(--color-success) 12%, var(--color-background));
+  --color-account-warning: var(--color-warning);
+  --color-account-warning-soft: color-mix(in oklch, var(--color-warning) 12%, var(--color-background));
+  --color-account-error: var(--color-error);
+  --color-account-error-soft: color-mix(in oklch, var(--color-error) 12%, var(--color-background));
 
   /* === MOBILE PRODUCT PAGE TOKENS (simplified) === */
   --color-discount-badge-bg: oklch(0.55 0.22 27);
@@ -561,6 +579,23 @@
   /* Account dashboard (dark) */
   --color-account-stat-bg: oklch(0.22 0 0);
   --color-account-stat-border: oklch(0.35 0 0);
+  --color-account-section-bg: var(--color-background);
+  --color-account-card-hover: var(--color-muted);
+  --color-account-stat-icon-bg: var(--color-muted);
+  --color-account-stat-icon: var(--color-foreground);
+  --color-account-stat-label: var(--color-muted-foreground);
+  --color-account-stat-value: var(--color-foreground);
+
+  --color-account-accent: var(--color-primary);
+  --color-account-accent-soft: color-mix(in oklch, var(--color-primary) 18%, var(--color-background));
+  --color-account-info: var(--color-info);
+  --color-account-info-soft: color-mix(in oklch, var(--color-info) 18%, var(--color-background));
+  --color-account-success: var(--color-success);
+  --color-account-success-soft: color-mix(in oklch, var(--color-success) 18%, var(--color-background));
+  --color-account-warning: var(--color-warning);
+  --color-account-warning-soft: color-mix(in oklch, var(--color-warning) 18%, var(--color-background));
+  --color-account-error: var(--color-error);
+  --color-account-error-soft: color-mix(in oklch, var(--color-error) 18%, var(--color-background));
 
   /* Mobile product (dark) */
   --color-discount-badge-bg: oklch(0.55 0.20 27);

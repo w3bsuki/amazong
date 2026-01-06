@@ -1,46 +1,25 @@
-# Docs Index
+# Docs (Start Here)
 
-> **Last Updated:** January 4, 2026
+This repo previously accumulated a lot of planning/audit markdown. For execution, we keep the documentation surface area intentionally small.
 
-This folder contains production planning docs. Use these as the **single source of truth for production execution**.
+## Canonical docs (maintained)
 
-For UI/styling rules and cleanup workflow, the canonical docs live in `/styling`.
+- `docs/PRODUCTION.md` — “last 5%” plan: blockers, go-live gates, ops checklist.
+- `docs/ENGINEERING.md` — architecture rules, boundaries, caching + Supabase patterns.
+- `docs/DESIGN.md` — UI system rules (Tailwind v4 + shadcn), tokens, motion policy.
+- `docs/TESTING.md` — how to run/debug unit + E2E; what counts as “green”.
+- `docs/README.md` — this index.
 
-## 🚀 Production Launch (Start Here)
+Execution checklist: `tasks.md` (repo root).
 
-| Doc | Purpose | Status |
-|-----|---------|--------|
-| [production/MASTER_PLAN.md](./production/MASTER_PLAN.md) | Launch gates + execution order | **Primary guide** |
-| [production/09-go-live.md](./production/09-go-live.md) | Go-live runbook | Ready to execute |
+## Working rules (so we actually ship)
 
-## 📋 Phase Docs (In Order)
+- No rewrites / no redesigns. Work in small batches (1–3 files/features).
+- Don’t touch secrets. Don’t log keys/JWTs/full request bodies.
+- Every non-trivial batch must pass:
+  - `pnpm -s exec tsc -p tsconfig.json --noEmit`
+  - `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke`
 
-| Phase | Doc | Status |
-|-------|-----|--------|
-| 0 | [production/00-file-cleanup.md](./production/00-file-cleanup.md) | ⚠️ Partial |
-| 1 | [production/01-nextjs.md](./production/01-nextjs.md) | ✅ Complete |
-| 2 | [production/02-supabase.md](./production/02-supabase.md) | ✅ Complete |
-| 3 | [../styling/03-tailwind.md](../styling/03-tailwind.md) | ⚠️ Partial |
-| 4 | [../styling/04-shadcn.md](../styling/04-shadcn.md) | ✅ Configured |
-| 5 | [production/05-i18n.md](./production/05-i18n.md) | ✅ Complete |
-| 6 | [production/06-testing.md](./production/06-testing.md) | ⚠️ Partial |
-| 7 | [production/07-performance.md](./production/07-performance.md) | ⬜ Audit Needed |
-| 8 | [production/08-security.md](./production/08-security.md) | ⚠️ Dashboard Action |
-| 9 | [production/09-go-live.md](./production/09-go-live.md) | ⬜ Ready |
+## Archive
 
-## 🧹 Cleanup
-
-| Doc | Purpose |
-|-----|---------|
-| [CLEANUP_PLAN.md](./CLEANUP_PLAN.md) | Project bloat reduction plan |
-
-## 📐 Reference
-
-| Doc | Purpose |
-|-----|---------|
-| [DESIGN.md](./DESIGN.md) | UI/UX rules, design system |
-| [refactor_plan.md](./refactor_plan.md) | Broad refactor ideas (reference only) |
-
-## 📦 Archived
-
-Old/superseded docs are in `_archive/` for reference only.
+Everything else is moved out of `docs/` into `docs-archive/` for historical reference.

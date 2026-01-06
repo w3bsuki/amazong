@@ -361,7 +361,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground">
-                      <span className={product.stock < 5 && product.stock > 0 ? "text-amber-600 dark:text-amber-400 font-medium" : product.stock === 0 ? "text-destructive font-medium" : ""}>
+                      <span className={product.stock < 5 && product.stock > 0 ? "text-account-warning font-medium" : product.stock === 0 ? "text-account-error font-medium" : ""}>
                         {product.stock === 0 
                           ? (locale === 'bg' ? 'Изчерпан' : 'Out of stock')
                           : `${product.stock} ${locale === 'bg' ? 'в склад' : 'in stock'}`
@@ -427,9 +427,9 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       disabled={togglingId === product.id}
                     >
                       {product.status === 'draft' ? (
-                        <Play className="size-4 text-emerald-600" weight="fill" />
+                        <Play className="size-4 text-account-success" weight="fill" />
                       ) : (
-                        <Pause className="size-4 text-amber-600" weight="fill" />
+                        <Pause className="size-4 text-account-warning" weight="fill" />
                       )}
                     </Button>
                     <Button asChild variant="ghost" size="icon" className="size-8">
@@ -554,7 +554,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                     </span>
                   )}
                 </div>
-                <span className={product.stock < 5 && product.stock > 0 ? "text-amber-600 dark:text-amber-400 font-medium" : product.stock === 0 ? "text-destructive font-medium" : ""}>
+                <span className={product.stock < 5 && product.stock > 0 ? "text-account-warning font-medium" : product.stock === 0 ? "text-account-error font-medium" : ""}>
                   {product.stock === 0 
                     ? (locale === 'bg' ? 'Изчерпан' : 'Out of stock')
                     : `${product.stock} ${locale === 'bg' ? 'в склад' : 'in stock'}`
@@ -624,9 +624,9 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                 }
               >
                 {product.status === 'draft' ? (
-                  <Play className="size-4 text-emerald-600" weight="fill" />
+                  <Play className="size-4 text-account-success" weight="fill" />
                 ) : (
-                  <Pause className="size-4 text-amber-600" weight="fill" />
+                  <Pause className="size-4 text-account-warning" weight="fill" />
                 )}
               </Button>
               <Button asChild variant="ghost" size="icon" className="size-9">

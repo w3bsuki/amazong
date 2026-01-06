@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 
 interface AuthCardProps {
   title: string
@@ -28,9 +28,9 @@ export function AuthCard({
             </Link>
           )}
           <div className="space-y-1.5">
-            <CardTitle className="text-xl">{title}</CardTitle>
+            <h1 className="text-xl leading-none font-semibold">{title}</h1>
             {description && (
-              <CardDescription className="text-center">{description}</CardDescription>
+              <p className="text-center text-muted-foreground text-sm">{description}</p>
             )}
           </div>
         </CardHeader>

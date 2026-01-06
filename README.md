@@ -43,7 +43,7 @@ pnpm clean
 ## Project Structure
 
 See [agents.md](./agents.md) for code placement boundaries and day-to-day rules.
-For production readiness and refactoring plans, start with [docs/README.md](./docs/README.md).
+For production execution and the “last 5%” plan, start with [docs/README.md](./docs/README.md).
 
 ## Where does this file go?
 
@@ -60,17 +60,14 @@ Use these rules before adding new files (see [agents.md](./agents.md) for full d
 
 ## Documentation
 
-Docs are organized under `docs/`:
-
-- `docs/production/` — go-live, operations, env vars, production readiness
-- `docs/dev/` — testing and architecture notes
-- `docs/archive/` — older masterplans and superseded docs
+Docs are intentionally kept small and canonical under `docs/` (start at `docs/README.md`).
+Historical planning/audits live in `docs-archive/` (not maintained).
 
 ## Caching (Next.js 16)
 
 - Cache Components are enabled (`cacheComponents: true`) and cache profiles live in `next.config.ts` under `cacheLife` (`categories`, `products`, `deals`, `user`).
 - Cached server data fetchers should use `'use cache'` + `cacheLife()` + `cacheTag()` for targeted invalidation.
-- Reference guides: `docs/production/01-nextjs.md` and `docs/production/07-performance.md`.
+- Reference guide: `docs/ENGINEERING.md`.
 
 ## Environment Variables
 #### AI Search (optional)

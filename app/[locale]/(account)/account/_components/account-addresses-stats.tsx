@@ -106,11 +106,11 @@ export function AccountAddressesStats({ stats, locale }: AddressesStatsProps) {
               <House className="size-4 shrink-0" weight="duotone" />
               <span className="truncate">{t.home}</span>
             </CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums text-emerald-600 dark:text-emerald-400 @[250px]/card:text-3xl">
+            <CardTitle className="text-2xl font-semibold tabular-nums text-account-success @[250px]/card:text-3xl">
               {stats.homeCount.toLocaleString()}
             </CardTitle>
             <CardAction>
-              <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-400">
+              <Badge variant="outline" className="text-account-success border-account-success/20 bg-account-success-soft">
                 {t.personal}
               </Badge>
             </CardAction>

@@ -138,7 +138,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
                 <div className="flex items-center gap-1.5">
                   <span className="font-semibold">{seller.store_name}</span>
                   {seller.verified && (
-                    <Star weight="fill" className="size-3.5 text-emerald-500" />
+                    <Star weight="fill" className="size-3.5 text-success" />
                   )}
                 </div>
               </div>
@@ -159,10 +159,10 @@ export default async function SellingPage({ params }: SellingPageProps) {
               <span className="text-muted-foreground">{t.products}</span>
             </div>
             {lowStockProducts > 0 && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 dark:bg-amber-950/30 dark:border-amber-800">
-                <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
-                <span className="font-semibold text-amber-600 dark:text-amber-400">{lowStockProducts}</span>
-                <span className="text-amber-600/70 dark:text-amber-400/70">{t.lowStock}</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/10 border border-warning/20">
+                <span className="size-2 rounded-full bg-warning animate-pulse" />
+                <span className="font-semibold text-warning">{lowStockProducts}</span>
+                <span className="text-warning/70">{t.lowStock}</span>
               </div>
             )}
           </div>
@@ -178,7 +178,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-xl font-bold text-foreground">{seller.store_name}</h2>
                 {seller.verified && (
-                  <Badge variant="secondary" className="bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border-0">
+                  <Badge variant="secondary" className="bg-success/10 text-success border-0">
                     <Star weight="fill" className="size-3 mr-1" />
                     {locale === 'bg' ? 'Потвърден' : 'Verified'}
                   </Badge>
@@ -227,14 +227,14 @@ export default async function SellingPage({ params }: SellingPageProps) {
           <Card className="@container/card">
             <CardHeader className="p-4">
               <CardDescription className="flex items-center gap-1.5">
-                <CurrencyCircleDollar weight="duotone" className="size-4 shrink-0 text-emerald-500" />
+                <CurrencyCircleDollar weight="duotone" className="size-4 shrink-0 text-success" />
                 <span className="truncate">{locale === 'bg' ? 'Стойност' : 'Value'}</span>
               </CardDescription>
-              <CardTitle className="text-2xl font-semibold tabular-nums text-emerald-600 dark:text-emerald-400 @[250px]/card:text-3xl">
+              <CardTitle className="text-2xl font-semibold tabular-nums text-success @[250px]/card:text-3xl">
                 {formatCurrency(totalValue)}
               </CardTitle>
               <div className="pt-1">
-                <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-400">
+                <Badge variant="outline" className="text-success border-success/20 bg-success/10">
                   {locale === 'bg' ? 'Инвентар' : 'Inventory'}
                 </Badge>
               </div>
@@ -258,18 +258,18 @@ export default async function SellingPage({ params }: SellingPageProps) {
             </CardHeader>
           </Card>
 
-          <Card className={`@container/card ${lowStockProducts > 0 ? "border-amber-200 dark:border-amber-800" : ""}`}>
+          <Card className={`@container/card ${lowStockProducts > 0 ? "border-warning/20" : ""}`}>
             <CardHeader className="p-4">
               <CardDescription className="flex items-center gap-1.5">
                 <Warning weight="duotone" className="size-4 shrink-0" />
                 <span className="truncate">{locale === 'bg' ? 'Нисък склад' : 'Low Stock'}</span>
               </CardDescription>
-              <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${lowStockProducts > 0 ? 'text-amber-600 dark:text-amber-400' : ''}`}>
+              <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${lowStockProducts > 0 ? 'text-warning' : ''}`}>
                 {lowStockProducts.toLocaleString()}
               </CardTitle>
               <div className="pt-1">
                 {lowStockProducts > 0 ? (
-                  <Badge variant="outline" className="text-amber-600 border-amber-200 bg-amber-50 dark:bg-amber-950/50 dark:border-amber-800 dark:text-amber-400">
+                  <Badge variant="outline" className="text-warning border-warning/20 bg-warning/10">
                     {locale === 'bg' ? 'Внимание' : 'Attention'}
                   </Badge>
                 ) : (

@@ -10,12 +10,12 @@
 
 ### 1. Supabase Auth Configuration
 **Priority:** 🔴 CRITICAL - Users cannot sign up/verify email  
-**Status:** ⬜ Not Started
+**Status:** ✅ Done (2026-01-05)
 
 **Problem:** Email verification links point to old URL instead of treido.eu
 
 **Action Required (Dashboard):**
-1. Go to Supabase Dashboard → Authentication → URL Configuration
+1. Go to Supabase Dashboard -> Authentication -> URL Configuration
 2. Update **Site URL** to `https://treido.eu`
 3. Update **Redirect URLs** to include:
    - `https://treido.eu/**`
@@ -71,7 +71,7 @@ WHERE tier = 'business';
    - `customer.subscription.deleted`
    - `invoice.payment_succeeded`
    - `invoice.payment_failed`
-3. Copy webhook secret → set as `STRIPE_WEBHOOK_SECRET` env var
+3. Copy webhook secret -> set as `STRIPE_WEBHOOK_SECRET` env var
 
 #### D. Update Environment Variables
 ```env
@@ -90,7 +90,7 @@ NEXT_PUBLIC_APP_URL=https://treido.eu
 
 ### 3. Checkout URL Configuration
 **Priority:** 🔴 CRITICAL  
-**Status:** ⬜ Not Started
+**Status:** ✅ Done (2026-01-05)
 
 **Problem:** Stripe checkout success/cancel URLs may point to wrong domain
 
@@ -139,7 +139,7 @@ const showSocialLinks = profile.account_type === 'business' || profile.subscript
 
 ---
 
-### 5. Homepage Default Tab → Promoted
+### 5. Homepage Default Tab -> Promoted
 **Priority:** 🟡 HIGH  
 **Status:** ⬜ Not Started
 
@@ -284,19 +284,19 @@ const showLocation = profile.account_type === 'business' || profile.location
 
 ### Sprint 1: Critical Blockers (Day 1)
 ```
-Task 1 (Supabase Auth) → Task 2 (Stripe) → Task 3 (URLs)
+Task 1 (Supabase Auth) -> Task 2 (Stripe) -> Task 3 (URLs)
 ```
 **Estimated time:** 2-3 hours (mostly dashboard config)
 
 ### Sprint 2: Feature Changes (Day 1-2)
 ```
-Task 5 (Homepage tab) → Task 7 (Search bug) → Task 4 (Social links)
+Task 5 (Homepage tab) -> Task 7 (Search bug) -> Task 4 (Social links)
 ```
 **Estimated time:** 3-4 hours
 
 ### Sprint 3: Design & Polish (Day 2-3)
 ```
-Task 6 (Category ordering) → Task 8 (Typography) → Task 9 (Location)
+Task 6 (Category ordering) -> Task 8 (Typography) -> Task 9 (Location)
 ```
 **Estimated time:** 4-6 hours
 

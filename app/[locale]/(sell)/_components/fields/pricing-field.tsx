@@ -206,11 +206,13 @@ interface PricingFieldProps {
   className?: string;
   /** Category ID for price suggestions */
   categoryId?: string;
+  /** Prefix for DOM ids (prevents duplicates across layouts) */
+  idPrefix?: string;
   /** Use compact layout */
   compact?: boolean;
 }
 
-export function PricingField({ className, categoryId, compact = false }: PricingFieldProps) {
+export function PricingField({ className, categoryId, idPrefix = "sell-form", compact = false }: PricingFieldProps) {
   const { control, setValue, watch, formState: { errors } } = useSellForm();
   const { isBg } = useSellFormContext();
 
@@ -225,6 +227,8 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
   const compareAtPrice = watch("compareAtPrice");
 
   const [priceSuggestion, _setPriceSuggestion] = useState<PriceSuggestion | null>(null);
+  const priceInputId = `${idPrefix}-price`;
+  const comparePriceInputId = `${idPrefix}-compare-price`;
 
   // Fetch price suggestions (stub - would connect to API)
   useEffect(() => {
@@ -281,7 +285,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
             )}>
               <div className="relative flex-1 flex items-center px-4 min-w-0">
                 <label
-                  htmlFor="sell-form-price"
+                  htmlFor={priceInputId}
                   className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2"
                 >
                   {isBg ? "Цена:" : "Price:"} *
@@ -292,7 +296,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
                   </span>
                   <Input
                     {...field}
-                    id="sell-form-price"
+                    id={priceInputId}
                     type="text"
                     inputMode="decimal"
                     placeholder="0.00"
@@ -360,7 +364,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
         <div className="flex items-center h-12 rounded-md border border-border bg-background shadow-xs transition-all focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary/50 overflow-hidden">
           <div className="relative flex-1 flex items-center px-4 min-w-0">
             <label
-              htmlFor="sell-form-compare-price"
+              htmlFor={comparePriceInputId}
               className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2"
             >
               {isBg ? "Стара цена:" : "Old Price:"}
@@ -370,7 +374,7 @@ export function PricingField({ className, categoryId, compact = false }: Pricing
                 {CURRENCY_SYMBOLS[currency] || currency}
               </span>
               <Input
-                id="sell-form-compare-price"
+                id={comparePriceInputId}
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"

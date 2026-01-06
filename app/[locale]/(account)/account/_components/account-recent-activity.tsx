@@ -85,7 +85,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       case 'delivered':
         return 'bg-account-success-soft text-account-success border-transparent'
       case 'cancelled':
-        return 'bg-red-50 text-red-600 border-transparent dark:bg-red-950/30 dark:text-red-400'
+        return 'bg-account-error-soft text-account-error border-transparent'
       default:
         return 'bg-muted text-muted-foreground border-transparent'
     }
@@ -149,7 +149,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                     <Link 
                       key={order.id} 
                       href={withLocale(`/account/orders/${order.id}`)}
-                      className="flex flex-col w-[140px] rounded-md bg-account-stat-bg border border-account-stat-border p-3 active:scale-[0.98] transition-all"
+                      className="flex flex-col w-36 rounded-md bg-account-stat-bg border border-account-stat-border p-3 transition-colors"
                     >
                       {/* Order Image */}
                       <div className="relative w-full aspect-square rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border mb-3">
@@ -160,7 +160,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                               alt={`Order #${order.id.slice(0, 4)}`}
                               fill
                               className="object-cover"
-                              sizes="140px"
+                              sizes="144px"
                             />
                             {itemCount > 1 && (
                               <div className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-full bg-black/60 backdrop-blur-sm text-2xs font-bold text-white">
@@ -263,7 +263,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                 <Link 
                   key={product.id} 
                   href={withLocale(`/product/${product.id}`)}
-                  className="flex flex-col w-[140px] rounded-md bg-account-stat-bg border border-account-stat-border p-3 active:scale-[0.98] transition-all"
+                  className="flex flex-col w-36 rounded-md bg-account-stat-bg border border-account-stat-border p-3 transition-colors"
                 >
                   {/* Product Image */}
                   <div className="relative w-full aspect-square rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border mb-3">
@@ -273,7 +273,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                         alt={product.title}
                         fill
                         className="object-cover"
-                        sizes="140px"
+                        sizes="144px"
                       />
                     ) : (
                       <div className="flex size-full items-center justify-center">
@@ -359,13 +359,13 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                         sizes="44px"
                       />
                       {/* Quantity badge overlay */}
-                      <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-emerald-500 text-2xs font-bold text-white shadow-sm">
+                      <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-account-success text-2xs font-bold text-white shadow-sm">
                         {sale.quantity}
                       </div>
                     </>
                   ) : (
                     <div className="flex size-full items-center justify-center">
-                      <span className="text-sm font-bold text-emerald-500">x{sale.quantity}</span>
+                      <span className="text-sm font-bold text-account-success">x{sale.quantity}</span>
                     </div>
                   )}
                 </div>
@@ -379,7 +379,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                     </p>
                   )}
                 </div>
-                <span className="text-sm font-bold text-emerald-500">
+                <span className="text-sm font-bold text-account-success">
                   +{formatCurrency(sale.price_at_purchase * sale.quantity)}
                 </span>
               </div>

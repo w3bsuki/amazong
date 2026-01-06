@@ -62,8 +62,8 @@ export default async function CategoriesPage({
               <CategoryCircleVisual
                 category={cat}
                 active={false}
-                className="size-10 shrink-0"
-                fallbackIconSize={20}
+                className="size-(--category-circle-mobile) shrink-0"
+                fallbackIconSize={24}
                 fallbackIconWeight="regular"
                 variant="muted"
               />

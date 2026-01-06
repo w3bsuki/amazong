@@ -1,51 +1,38 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 async function getUsers() {
   const adminClient = createAdminClient()
-  
+
   const { data: users, error } = await adminClient
-    .from('profiles')
-    .select('id, email, full_name, role, created_at, phone')
-    .order('created_at', { ascending: false })
+    .from("profiles")
+    .select("id, email, full_name, role, created_at, phone")
+    .order("created_at", { ascending: false })
     .limit(100)
-  
+
   if (error) {
-    console.error('Failed to fetch users:', error)
+    console.error("Failed to fetch users:", error.message)
     return []
   }
-  
+
   return users
 }
 
 export default async function AdminUsersPage() {
   const users = await getUsers()
-  
+
   const getRoleBadge = (role: string | null) => {
     switch (role) {
-      case 'admin':
-        return 'bg-red-100 text-red-700 border-red-200'
-      case 'seller':
-        return 'bg-blue-100 text-blue-700 border-blue-200'
+      case "admin":
+        return "border-foreground/20 bg-foreground/10 text-foreground"
+      case "seller":
+        return "border-primary/20 bg-primary/10 text-primary"
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200'
+        return "border-border bg-muted text-muted-foreground"
     }
   }
 
@@ -54,9 +41,7 @@ export default async function AdminUsersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Users</h1>
-          <p className="text-muted-foreground">
-            Manage all registered users on the platform
-          </p>
+          <p className="text-muted-foreground">Manage all registered users on the platform</p>
         </div>
         <Badge variant="outline" className="text-base">
           {users.length} total
@@ -66,9 +51,7 @@ export default async function AdminUsersPage() {
       <Card>
         <CardHeader>
           <CardTitle>All Users</CardTitle>
-          <CardDescription>
-            A list of all users including their name, email, and role.
-          </CardDescription>
+          <CardDescription>A list of all users including their name, email, and role.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -87,27 +70,21 @@ export default async function AdminUsersPage() {
                     <div className="flex items-center gap-3">
                       <Avatar className="size-8">
                         <AvatarFallback className="text-xs">
-                          {(user.email || '??').slice(0, 2).toUpperCase()}
+                          {(user.email || "??").slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium">
-                          {user.full_name || 'No name'}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {user.email}
-                        </p>
+                        <p className="font-medium">{user.full_name || "No name"}</p>
+                        <p className="text-sm text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={getRoleBadge(user.role)}>
-                      {user.role || 'buyer'}
+                      {user.role || "buyer"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {user.phone || '-'}
-                  </TableCell>
+                  <TableCell className="text-muted-foreground">{user.phone || "-"}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatDistanceToNow(new Date(user.created_at), { addSuffix: true })}
                   </TableCell>

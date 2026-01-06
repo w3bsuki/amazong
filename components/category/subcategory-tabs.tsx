@@ -18,7 +18,7 @@ interface Category {
 interface SubcategoryTabsProps {
   currentCategory: Category | null
   subcategories: Category[]
-  parentCategory?: Category | null  // Kept for backward compatibility (not used here, breadcrumb is separate)
+  parentCategory?: Category | null // Kept for backward compatibility (not used here, breadcrumb is separate)
   basePath?: string // "/categories" or undefined for "/search?category="
 }
 
@@ -28,7 +28,7 @@ interface SubcategoryTabsProps {
  */
 export function SubcategoryTabs({ currentCategory, subcategories, basePath }: SubcategoryTabsProps) {
   const searchParams = useSearchParams()
-  
+
   if (!currentCategory) return null
 
   // At deepest level - show category banner instead of circles
@@ -54,11 +54,11 @@ export function SubcategoryTabs({ currentCategory, subcategories, basePath }: Su
  */
 function CategoryBanner({ category }: { category: Category }) {
   const locale = useLocale()
-  const name = locale === 'bg' && category.name_bg ? category.name_bg : category.name
-  
+  const name = locale === "bg" && category.name_bg ? category.name_bg : category.name
+
   return (
-    <div className="mb-4 rounded-xl overflow-hidden bg-primary/5 border border-border/50">
-      <div className="flex items-center gap-4 p-4">
+    <div className="mb-4 rounded-md bg-primary/5 border border-border/50">
+      <div className="flex items-center gap-3 p-3">
         {/* Category Icon or Image */}
         <div className="shrink-0 size-14 rounded-full bg-primary/10 flex items-center justify-center">
           {category.image_url ? (
@@ -70,17 +70,15 @@ function CategoryBanner({ category }: { category: Category }) {
               className="size-full object-cover rounded-full"
             />
           ) : (
-            getCategoryIcon(category.slug, { size: 28, weight: 'regular', className: 'text-primary' })
+            getCategoryIcon(category.slug, { size: 28, weight: "regular", className: "text-primary" })
           )}
         </div>
-        
+
         {/* Category Info */}
         <div className="flex-1 min-w-0">
-          <h2 className="text-lg font-bold text-foreground truncate">
-            {name}
-          </h2>
+          <h2 className="text-lg font-semibold text-foreground truncate">{name}</h2>
           <p className="text-sm text-muted-foreground">
-            {locale === 'bg' ? 'Разгледай продуктите в тази категория' : 'Browse products in this category'}
+            {locale === "bg" ? "????????? ?????????? ? ???? ?????????" : "Browse products in this category"}
           </p>
         </div>
       </div>

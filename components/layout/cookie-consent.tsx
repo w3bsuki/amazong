@@ -93,7 +93,7 @@ export function CookieConsent() {
                     <div className="flex flex-col gap-2.5">
                         <Button 
                             onClick={handleAccept}
-                            className="w-full h-10 bg-interactive hover:bg-interactive-hover text-white font-medium rounded-md"
+                            className="w-full h-10 bg-interactive hover:bg-interactive-hover text-cta-primary-text font-medium rounded-md"
                         >
                             {t('acceptAll')}
                         </Button>
@@ -146,7 +146,7 @@ export function CookieConsent() {
                             <Button 
                                 size="sm"
                                 onClick={handleAccept}
-                                className="bg-interactive hover:bg-interactive-hover text-white"
+                                className="bg-interactive hover:bg-interactive-hover text-cta-primary-text"
                             >
                                 {t('acceptAll')}
                             </Button>

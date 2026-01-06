@@ -81,7 +81,7 @@ export function SubcategoryCircles({
       {/* Title removed as requested */}
       
       {/* Container with circles - horizontal scroll on mobile, wrap on larger screens */}
-      <div className="relative [--circle-size:56px] sm:[--circle-size:90px] md:[--circle-size:100px] [--circle-top-pad:6px]">
+      <div className="relative">
         <div
           className="flex gap-2 sm:gap-4 py-1 pb-2 overflow-x-auto sm:flex-wrap sm:overflow-x-visible scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
@@ -92,7 +92,7 @@ export function SubcategoryCircles({
               href={buildUrl(currentCategory.slug)}
               prefetch={true}
               className={cn(
-                "flex flex-col items-center gap-1 min-w-[56px] sm:min-w-[100px] group shrink-0",
+                "flex flex-col items-center gap-1 min-w-14 sm:min-w-24 md:min-w-28 group shrink-0",
                 "touch-action-manipulation"
               )}
             >
@@ -100,7 +100,7 @@ export function SubcategoryCircles({
               <div
                 className={cn(
                   "rounded-full flex items-center justify-center overflow-hidden",
-                  "size-14 sm:size-[90px] md:size-[100px]",
+                  "size-14 sm:size-24 md:size-28",
                   "bg-primary"
                 )}
               >
@@ -112,7 +112,7 @@ export function SubcategoryCircles({
               {/* Label */}
               <span className={cn(
                 "text-2xs sm:text-sm font-medium text-center text-primary",
-                "max-w-[56px] sm:max-w-[100px] line-clamp-2 leading-tight"
+                "max-w-14 sm:max-w-24 md:max-w-28 line-clamp-2 leading-tight"
               )}>
                 {locale === "bg" ? "Всички продукти" : "All Products"}
               </span>
@@ -130,7 +130,7 @@ export function SubcategoryCircles({
                 href={buildUrl(subcat.slug)}
                 prefetch={true}
                 className={cn(
-                  "flex flex-col items-center gap-1 min-w-[56px] sm:min-w-[100px] group shrink-0",
+                  "flex flex-col items-center gap-1 min-w-14 sm:min-w-24 md:min-w-28 group shrink-0",
                   "touch-action-manipulation",
                   index === validSubcategories.length - 1 && "mr-4"
                 )}
@@ -139,7 +139,7 @@ export function SubcategoryCircles({
               <div
                 className={cn(
                   "rounded-full relative flex items-center justify-center overflow-hidden",
-                  "size-14 sm:size-[90px] md:size-[100px]",
+                  "size-14 sm:size-24 md:size-28",
                   "bg-muted"
                 )}
               >
@@ -168,7 +168,7 @@ export function SubcategoryCircles({
                 "text-2xs sm:text-sm font-medium text-center text-foreground",
                 "group-hover:text-primary group-hover:underline",
                 "line-clamp-2 leading-tight",
-                "max-w-[56px] sm:max-w-[100px]"
+                "max-w-14 sm:max-w-24 md:max-w-28"
               )}>
                 {getCategoryName(subcat)}
               </span>

@@ -16,6 +16,8 @@ import { useSellForm, useSellFormContext } from "../sell-form-provider";
 interface TitleFieldProps {
   /** Custom class name for the field wrapper */
   className?: string;
+  /** Prefix for DOM ids (prevents duplicates across layouts) */
+  idPrefix?: string;
   /** Minimum characters required */
   minLength?: number;
   /** Maximum characters allowed */
@@ -26,6 +28,7 @@ interface TitleFieldProps {
 
 export function TitleField({
   className,
+  idPrefix = "sell-form",
   minLength = 5,
   maxLength = 80,
   compact = false
@@ -35,6 +38,7 @@ export function TitleField({
 
   const currentValue = watch("title") || "";
   const charCount = currentValue.length;
+  const inputId = `${idPrefix}-title`;
 
   return (
     <Controller
@@ -80,14 +84,14 @@ export function TitleField({
               fieldState.invalid && "border-destructive bg-destructive/5"
             )}>
               <label
-                htmlFor="sell-form-title"
+                htmlFor={inputId}
                 className="text-2xs font-bold uppercase tracking-wider text-muted-foreground shrink-0 mr-2"
               >
                 {isBg ? "Заглавие:" : "Title:"}
               </label>
               <Input
                 {...field}
-                id="sell-form-title"
+                id={inputId}
                 aria-invalid={fieldState.invalid}
                 placeholder={isBg
                   ? "Напр. iPhone 15 Pro Max 256GB"

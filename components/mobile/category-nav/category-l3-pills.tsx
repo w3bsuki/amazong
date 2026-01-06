@@ -60,11 +60,11 @@ export function CategoryL3Pills({
         <PillsSkeleton />
       ) : (
         <div className="flex gap-1 items-center">
-          {/* "All" Pill - L3 level (subtle styling) */}
+          {/* "All" Pill - L3 level (subtle styling, uses h-touch-sm token = 28px) */}
           <button
             onClick={onAllClick}
             className={cn(
-              "h-7 px-3 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+              "h-touch-sm px-3 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
               selectedPill === null
                 ? "bg-primary/15 text-primary border-primary/40"
                 : "bg-muted/50 text-muted-foreground border-border/30 hover:bg-muted/70"
@@ -73,7 +73,7 @@ export function CategoryL3Pills({
             {allLabel}
           </button>
 
-          {/* L3 Pills - subtle filter style */}
+          {/* L3 Pills - subtle filter style (uses h-touch-sm token = 28px) */}
           {categories.map((child) => {
             const isSelected = selectedPill === child.slug
             return (
@@ -81,7 +81,7 @@ export function CategoryL3Pills({
                 key={child.slug}
                 onClick={() => onPillClick(child)}
                 className={cn(
-                  "h-7 px-3 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+                  "h-touch-sm px-3 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
                   isSelected
                     ? "bg-primary/15 text-primary border-primary/40"
                     : "bg-muted/50 text-muted-foreground border-border/30 hover:bg-muted/70"

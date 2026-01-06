@@ -201,9 +201,12 @@ test.describe("Mobile Responsiveness - Phase 11", () => {
       // Wait for page to load
       await page.waitForLoadState("networkidle")
       
-      // Back button should be visible in header (use specific aria-label)
-      const backButton = page.locator('button[aria-label="Go back"], button[aria-label="Назад"]').first()
-      await expect(backButton).toBeVisible({ timeout: 15000 })
+      // Back control should be visible in header (can be rendered as a link).
+      const backControl = page
+        .getByRole("link", { name: /go back|back|назад|обратно/i })
+        .or(page.getByRole("button", { name: /go back|back|назад|обратно/i }))
+        .first()
+      await expect(backControl).toBeVisible({ timeout: 15_000 })
     })
 
     test("product images are displayed on mobile", async ({ page }) => {

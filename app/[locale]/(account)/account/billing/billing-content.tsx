@@ -257,7 +257,7 @@ export function BillingContent({
       case 'paid':
       case 'succeeded':
         return (
-          <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+          <Badge variant="secondary" className="bg-success/10 text-success">
             <CheckCircle className="size-3 mr-1" weight="fill" />
             {t.paid}
           </Badge>
@@ -265,7 +265,7 @@ export function BillingContent({
       case 'open':
       case 'pending':
         return (
-          <Badge variant="secondary" className="bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400">
+          <Badge variant="secondary" className="bg-warning/10 text-warning">
             <Clock className="size-3 mr-1" weight="fill" />
             {t.open}
           </Badge>
@@ -273,7 +273,7 @@ export function BillingContent({
       case 'void':
       case 'failed':
         return (
-          <Badge variant="secondary" className="bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-400">
+          <Badge variant="secondary" className="bg-destructive/10 text-destructive">
             <XCircle className="size-3 mr-1" weight="fill" />
             {t.void}
           </Badge>
@@ -368,7 +368,7 @@ export function BillingContent({
                 <Badge 
                   variant={subscription.status === 'active' ? 'default' : 'secondary'}
                   className={cn(
-                    subscription.status === 'active' && 'bg-emerald-600'
+                    subscription.status === 'active' && 'bg-success'
                   )}
                 >
                   {subscription.status === 'active' ? t.active : 
@@ -384,15 +384,15 @@ export function BillingContent({
               <div className="grid gap-3">
                 <div className="flex items-center gap-3">
                   <div className={cn(
-                    "p-2.5 rounded-lg",
+                    "p-2.5 rounded-md",
                     seller.tier === 'business' ? "bg-primary/10" :
-                    seller.tier === 'premium' ? "bg-amber-500/10" :
+                    seller.tier === 'premium' ? "bg-warning/10" :
                     "bg-muted"
                   )}>
                     {seller.tier === 'business' ? (
                       <Sparkle className="size-5 text-primary" weight="fill" />
                     ) : seller.tier === 'premium' ? (
-                      <Crown className="size-5 text-amber-500" weight="fill" />
+                      <Crown className="size-5 text-warning" weight="fill" />
                     ) : (
                       <Package className="size-5 text-muted-foreground" />
                     )}
@@ -537,7 +537,7 @@ export function BillingContent({
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
-                                <Crown className="size-4 text-amber-500 shrink-0" />
+                                <Crown className="size-4 text-warning shrink-0" />
                                 <span className="truncate max-w-[200px]">
                                   {invoice.description || t.sellerSubscription}
                                   {invoice.number && (

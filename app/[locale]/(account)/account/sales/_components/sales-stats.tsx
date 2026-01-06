@@ -58,8 +58,8 @@ export function SalesStats({
               variant="outline"
               className={`text-xs ${
                 revenueGrowth >= 0
-                  ? "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800"
-                  : "bg-red-50 text-red-600 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800"
+                  ? "bg-success/10 text-success border-success/20"
+                  : "bg-destructive/10 text-destructive border-destructive/20"
               }`}
             >
               {revenueGrowth >= 0 ? <TrendUp className="size-3" /> : <TrendDown className="size-3" />}
@@ -79,7 +79,7 @@ export function SalesStats({
           <CardDescription className="text-xs sm:text-sm">
             {locale === "bg" ? "Нетни приходи" : "Net Revenue"}
           </CardDescription>
-          <CardTitle className="text-xl sm:text-2xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+          <CardTitle className="text-xl sm:text-2xl font-bold tabular-nums text-success">
             {formatCurrency(netRevenue)}
           </CardTitle>
         </CardHeader>
@@ -110,8 +110,8 @@ export function SalesStats({
               variant="outline"
               className={`text-xs ${
                 salesGrowth >= 0
-                  ? "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800"
-                  : "bg-red-50 text-red-600 border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800"
+                  ? "bg-success/10 text-success border-success/20"
+                  : "bg-destructive/10 text-destructive border-destructive/20"
               }`}
             >
               {salesGrowth >= 0 ? <TrendUp className="size-3" /> : <TrendDown className="size-3" />}

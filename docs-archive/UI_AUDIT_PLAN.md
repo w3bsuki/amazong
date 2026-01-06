@@ -1,6 +1,6 @@
 # UI/UX Audit Plan
 
-> Generated: 2026-01-05 | Status: ✅ Completed
+> Generated: 2026-01-05 | Status: Completed
 
 ## Overview
 
@@ -10,7 +10,7 @@ This plan addresses hardcoded values and design system drift found during the UI
 
 ## Phase 1: Add Missing Design Tokens
 
-**Status:** ✅ Complete
+**Status:** Complete
 
 Added semantic tokens to `app/globals.css`:
 
@@ -36,7 +36,7 @@ Added semantic tokens to `app/globals.css`:
 
 ## Phase 2: Fix Hardcoded Dropdown Widths
 
-**Status:** ✅ Complete
+**Status:** Complete
 
 | File | Before | After |
 |------|--------|-------|
@@ -49,7 +49,7 @@ Added semantic tokens to `app/globals.css`:
 
 ## Phase 3: Fix Hardcoded Modal/Dialog Sizes
 
-**Status:** ✅ Complete
+**Status:** Complete
 
 | File | Before | After |
 |------|--------|-------|
@@ -61,7 +61,7 @@ Added semantic tokens to `app/globals.css`:
 
 ## Phase 4: Fix Hardcoded Scroll Heights
 
-**Status:** ✅ Complete
+**Status:** Complete
 
 | File | Before | After |
 |------|--------|-------|
@@ -77,7 +77,7 @@ Added semantic tokens to `app/globals.css`:
 
 ## Phase 5: Replace text-[10px] with text-2xs
 
-**Status:** ✅ Complete
+**Status:** Complete
 
 | File | Before | After |
 |------|--------|-------|
@@ -87,7 +87,7 @@ Added semantic tokens to `app/globals.css`:
 
 ## Phase 6: Audit rounded-lg+ Usage (Low Priority)
 
-**Status:** ⏸️ Deferred
+**Status:** Deferred
 
 Many `rounded-lg` usages are in shadcn primitives where they're appropriate. No action needed.
 
@@ -95,8 +95,8 @@ Many `rounded-lg` usages are in shadcn primitives where they're appropriate. No 
 
 ## Verification
 
-- ✅ TypeScript compilation passes
-- ✅ No runtime errors introduced
+- ✅ TypeScript compilation passes (`pnpm -s exec tsc -p tsconfig.json --noEmit`)
+- ✅ E2E smoke passes (`REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke`)
 
 ---
 

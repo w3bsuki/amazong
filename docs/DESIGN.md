@@ -1,150 +1,46 @@
-# Design System
+# Design System (Production)
 
-> ⚠️ **This file has been moved!**
-> 
-> The complete design system documentation is now in:
-> **[styling/STYLE_GUIDE.md](../styling/STYLE_GUIDE.md)**
+Goal: a clean, dense marketplace UI that is consistent, fast, and easy to maintain.
 
----
+## Non-negotiables
 
-## Quick Links
+- No redesigns during production push.
+- No gradients.
+- Cards are flat: `border`, `rounded-md` max; avoid heavy shadows.
+- Avoid arbitrary Tailwind values (`h-[42px]`, `text-[13px]`) unless there is no token-based option.
+- Prefer semantic tokens/classes already present in `app/globals.css`.
 
-- **[Style Guide](../styling/STYLE_GUIDE.md)** — Typography, spacing, colors, components
-- **[Approved Patterns](../styling/PATTERNS.md)** — Copy-paste patterns from good components
-- **[Anti-Patterns](../styling/ANTI_PATTERNS.md)** — What not to do
-- **[Refactor Plan](../styling/REFACTOR_PLAN.md)** — Scan-driven cleanup tasks
+## Tokens (source of truth)
 
----
+- Colors/spacing/typography tokens live in `app/globals.css` under `@theme`.
+- Prefer semantic classes (examples): `bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`.
+- Tailwind v4 CSS var usage: `w-(--token)`, `max-h-(--token)`, etc.
 
-## Summary
+## Density defaults
 
-```
-Stack:        Tailwind v4 + shadcn/ui + OKLCH
-Philosophy:   Dense · Flat · Fast · Trustworthy · Mobile-first
-Typography:   14px body, 16-18px prices, 12px meta, 10px badges
-Spacing:      gap-1.5 mobile, gap-3 desktop (4px grid)
-Touch:        24px min, 32px standard, 40px max primary CTA
-Radius:       2-4px sharp (never >6px on cards)
-Shadows:      none default, shadow-sm hover, shadow-md modals
-Motion:       none default, ≤120ms opacity/translate only
-```
-    <h3 className="text-sm line-clamp-2">{title}</h3>
-    <p className="text-base font-semibold text-price-sale">${price}</p>
-    <p className="text-xs text-muted-foreground">{meta}</p>
-  </div>
-</article>
-```
+- Spacing: mobile `gap-2`, desktop `gap-3`.
+- Touch targets: 24px minimum; prefer `h-10` for primary actions and `h-9` for compact actions.
+- Typography baseline: `text-sm` body, `text-base` for prices/emphasis, `text-xs` for meta, `text-2xs` for tiny badges only.
 
-**Grid:**
-- Mobile: 2 columns, `gap-2`
-- Tablet: 3-4 columns, `gap-3`
-- Desktop: 4-6 columns, `gap-3`
+## Interaction + motion
 
-**List row alt (mobile speed):** image `w-24`, text stack with title/price/meta, right-side pill for status or bookmark.
+- Keep interactions predictable: subtle hover, clear active, visible focus ring.
+- Avoid gimmicks (scale/zoom hover). If motion exists, keep it minimal and respect `prefers-reduced-motion`.
 
----
+## Component boundaries (so styling stays sane)
 
-## Forms
+- `components/ui/**`: primitives only (shadcn style). No feature composites, no app hooks.
+- `components/common/**`: shared composites used across routes.
+- `components/layout/**`: shells (header/nav/sidebars).
+- Route-owned UI must live under its route group: `app/[locale]/(group)/**/_components/**`.
 
-```tsx
-// Input
-<Input className="h-8 text-sm" />
+## Quick “good defaults”
 
-// Label
-<Label className="text-sm font-medium" />
+- Card: `rounded-md border border-border bg-card p-3`
+- Section spacing: `space-y-3` (desktop) / `space-y-2` (mobile)
+- Muted surface: `bg-muted/50` + `text-muted-foreground` + `border-border`
 
-// Helper text
-<p className="text-xs text-muted-foreground" />
-```
+## Deep references
 
-**Mobile:** stack labels above inputs; keep helper text single line or collapse into `Tooltip`/`Accordion` for advanced fields.
-
-**Validation:** inline, no blocking modals; errors use `text-error` with `text-xs` and 4px top margin.
-
----
-
-## Accessibility (Practical)
-
-Target **WCAG 2.2 AA** with marketplace pragmatism:
-
-| Requirement | Implementation |
-|-------------|----------------|
-| Touch targets | 24px minimum (h-6), 28-32px standard |
-| Contrast | 4.5:1 for text, 3:1 for UI |
-| Focus | 2px ring, `ring-brand` |
-| Keyboard | Tab navigation works |
-
-**Skip:** Complex ARIA, skip links, keyboard shortcuts, live regions.
-
-**Focus clarity:** ring visible on dark and light surfaces; avoid relying on color-only cues—use icons for status.
-
----
-
-## Anti-Patterns
-
-❌ Don't:
-- Shadows heavier than `shadow-sm` on cards
-- Touch targets over 36px (h-9) except heroes
-- Gradients anywhere
-- Rounded corners over 6px on cards
-- Body text under 12px
-- Color-only indicators (add icons)
-- Arbitrary values (`h-[42px]`, `text-[13px]`)
-
-✅ Do:
-- Flat, solid colors
-- Dense spacing (p-2, gap-2)
-- Sharp corners (rounded-md max)
-- Consistent 4px grid
-- Semantic color tokens
-
----
-
-## Motion
-
-- Default: no animation / transition for taps; instant state changes.
-- Allowed: opacity or translateY(1-2px) ≤120ms for toasts/overlays if needed for clarity.
-- Disallowed: spring/bounce, long loaders, skeleton shimmer; use static placeholders.
-
----
-
-## Mobile Playbook (Temu-like efficiency, cleaner visuals)
-
-- **Above the fold:** sticky search, category chip scroller (`h-7` pills), quick filters in a bottom sheet.
-- **Product density:** 2-up grid with `gap-2`; show price, shipping badge, rating count; truncate title to 2 lines.
-- **Actions:** one primary CTA (Add/Save) visible; secondary actions tucked into `DropdownMenu` or long-press drawer.
-- **Filters/Sort:** mobile bottom sheet with large `h-8` rows and toggles; desktop left rail with checkboxes and range inputs.
-- **Detail pages:** gallery with swipe; info blocks as border-separated sections with `gap-2`; sticky add-to-cart bar.
-- **States:** loading uses static gray blocks (no shimmer); errors use inline banners with retry.
-
----
-
-## Desktop Scaling
-
-- Increase white space to `p-4` on shell; keep components dense.
-- Use 4–6 column grids; persist filters in left rail; add secondary column for promos/recs.
-- Table/list views: `text-base` body allowed; row heights 48–56px only for data tables; otherwise 32–36px.
-
----
-
-## Pattern Library (seed)
-
-- **Page shell:** sticky top search + category tabs; optional bottom action bar on mobile.
-- **Filter bar:** mobile bottom sheet, desktop horizontal bar with quick pills and advanced drawer.
-- **List row:** image left (96–112px), text stack, right badges/actions.
-- **Card:** border, `p-2`, `rounded-md`, image top, text stack, tertiary meta.
-- **Action bar:** single primary + ghost secondary; collapse extras into menu.
-- **Form section:** stacked labels, helper text `text-xs`, section dividers using `border-border`.
-
----
-
-## Quick Reference
-
-```
-Buttons:    h-7 (28px) → h-8 (32px) → h-9 (36px)
-Inputs:     h-8 (32px)
-Icons:      size-5 (20px) → size-6 (24px)
-Cards:      p-2, rounded-md, border, no shadow
-Text:       text-sm (body), text-base (prices)
-Spacing:    gap-2 (tight), gap-3 (standard)
-```
+- `styling/STYLE_GUIDE.md` (long-form patterns and examples)
+- `cleanup/palette-scan-report.txt` and `cleanup/arbitrary-scan-report.txt` (drift hotspots)

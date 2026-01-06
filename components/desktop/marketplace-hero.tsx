@@ -1,10 +1,6 @@
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { 
-  Storefront, 
-  ShoppingBag,
-  Users
-} from "@phosphor-icons/react/dist/ssr"
+import { Storefront, ShoppingBag, Users } from "@phosphor-icons/react/dist/ssr"
 
 interface Category {
   id: string
@@ -30,31 +26,25 @@ export function MarketplaceHero({ locale, categories }: MarketplaceHeroProps) {
             {/* Left Content */}
             <div className="text-center lg:text-left max-w-2xl">
               {/* Badge */}
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 backdrop-blur-sm px-3 py-1 text-xs font-medium text-white mb-3 border border-white/20 mx-auto lg:mx-0">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-cta-trust-blue-text/12 px-3 py-1 text-xs font-medium text-cta-trust-blue-text/95 mb-3 border border-cta-trust-blue-text/25 mx-auto lg:mx-0">
                 <Users weight="fill" className="size-3.5" />
                 <span>{isBg ? "10,000+ потребители" : "10,000+ users"}</span>
               </div>
 
-              <h1 className="text-2xl lg:text-3xl font-bold text-white tracking-tight mb-2 text-balance leading-tight">
-                {isBg 
-                  ? "Твоят нов онлайн пазар в България" 
-                  : "Your New Marketplace in Bulgaria"}
+              <h1 className="text-2xl lg:text-3xl font-bold text-cta-trust-blue-text tracking-tight mb-2 text-balance leading-tight">
+                {isBg ? "Твоят нов онлайн пазар в България" : "Your New Marketplace in Bulgaria"}
               </h1>
 
-              <p className="text-sm lg:text-base text-blue-50 font-normal mb-0 text-pretty leading-relaxed">
-                {isBg 
-                  ? "Купувай и продавай лесно. Безплатно публикуване, без такси за купувача." 
+              <p className="text-sm lg:text-base text-cta-trust-blue-text/90 font-normal mb-0 text-pretty leading-relaxed">
+                {isBg
+                  ? "Купувай и продавай лесно. Безплатно публикуване, без такси за купувача."
                   : "Buy and sell easily. Free listings, no buyer fees."}
               </p>
             </div>
 
             {/* Right Content - Buttons */}
             <div className="flex flex-wrap justify-center gap-3 shrink-0">
-              <Button
-                asChild
-                size="lg"
-                className="bg-white text-cta-trust-blue hover:bg-blue-50 shadow-sm border-0 font-bold h-10 px-6 text-sm"
-              >
+              <Button asChild size="lg" className="bg-cta-secondary text-cta-trust-blue hover:bg-cta-secondary-hover font-semibold">
                 <Link href="/sell">
                   <Storefront weight="fill" className="size-4 mr-2" />
                   {isBg ? "Започни да продаваш" : "Start Selling"}
@@ -65,7 +55,7 @@ export function MarketplaceHero({ locale, categories }: MarketplaceHeroProps) {
                 asChild
                 size="lg"
                 variant="outline"
-                className="bg-blue-600/30 text-white border-white/20 hover:bg-blue-600/50 hover:text-white backdrop-blur-sm h-10 px-6 text-sm font-medium"
+                className="border-cta-trust-blue-text/25 bg-cta-trust-blue-text/10 text-cta-trust-blue-text hover:bg-cta-trust-blue-text/15 hover:text-cta-trust-blue-text font-medium"
               >
                 <Link href="/search">
                   <ShoppingBag weight="fill" className="size-4 mr-2" />

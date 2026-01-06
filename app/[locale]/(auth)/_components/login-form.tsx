@@ -100,13 +100,13 @@ export function LoginForm({
   const footer = (
     <>
       <div className="flex justify-center gap-2 text-xs text-muted-foreground">
-        <Link href="/terms" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
+        <Link href="/terms" className="hover:text-primary transition-colors min-h-8 px-2 flex items-center">
           {t("conditionsOfUse")}
         </Link>
-        <Link href="/privacy" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
+        <Link href="/privacy" className="hover:text-primary transition-colors min-h-8 px-2 flex items-center">
           {t("privacyNotice")}
         </Link>
-        <Link href="/help" className="hover:text-primary transition-colors min-h-[32px] px-2 flex items-center">
+        <Link href="/help" className="hover:text-primary transition-colors min-h-8 px-2 flex items-center">
           {t("help")}
         </Link>
       </div>
@@ -156,7 +156,7 @@ export function LoginForm({
         <div className="space-y-1">
           <div className="flex justify-between items-center">
             <Label htmlFor="password">{t("password")}</Label>
-            <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline min-h-[28px] flex items-center">
+            <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline min-h-7 flex items-center">
               {t("forgotPassword")}
             </Link>
           </div>
@@ -192,7 +192,7 @@ export function LoginForm({
 
         {/* Remember Me */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 min-h-[36px]">
+          <div className="flex items-center gap-2 min-h-9">
             <Checkbox
               id="remember-me"
               checked={rememberMe}

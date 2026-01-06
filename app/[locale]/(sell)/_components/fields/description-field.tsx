@@ -14,6 +14,8 @@ import { useSellForm, useSellFormContext } from "../sell-form-provider";
 interface DescriptionFieldProps {
   /** Custom class name for the field wrapper */
   className?: string;
+  /** Prefix for DOM ids (prevents duplicates across layouts) */
+  idPrefix?: string;
   /** Maximum characters allowed */
   maxLength?: number;
   /** Minimum rows for the textarea */
@@ -24,6 +26,7 @@ interface DescriptionFieldProps {
 
 export function DescriptionField({
   className,
+  idPrefix = "sell-form",
   maxLength = 2000,
   minRows = 4,
   compact = false
@@ -33,6 +36,7 @@ export function DescriptionField({
 
   const currentValue = watch("description") || "";
   const charCount = currentValue.length;
+  const textareaId = `${idPrefix}-description`;
 
   return (
     <Controller
@@ -79,7 +83,7 @@ export function DescriptionField({
             )}>
               <div className="px-4 pt-3">
                 <label
-                  htmlFor="sell-form-description"
+                  htmlFor={textareaId}
                   className="text-2xs font-bold uppercase tracking-wider text-muted-foreground leading-none"
                 >
                   {isBg ? "Описание" : "Description"}
@@ -87,7 +91,7 @@ export function DescriptionField({
               </div>
               <textarea
                 {...field}
-                id="sell-form-description"
+                id={textareaId}
                 aria-invalid={fieldState.invalid}
                 placeholder={isBg
                   ? "Добавете описание на вашия продукт..."

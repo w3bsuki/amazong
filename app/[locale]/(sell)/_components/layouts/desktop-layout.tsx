@@ -151,11 +151,11 @@ export function DesktopLayout({
                   {isBg ? "Детайли" : "Details"}
                 </h2>
 
-                <TitleField compact />
+                <TitleField compact idPrefix="sell-form-desktop" />
                 <CategoryField compact />
                 <ConditionField compact />
                 <BrandField compact />
-                <DescriptionField compact />
+                <DescriptionField compact idPrefix="sell-form-desktop" />
                 <AttributesField compact />
               </section>
 
@@ -165,7 +165,7 @@ export function DesktopLayout({
                   {isBg ? "Цена и доставка" : "Pricing & Shipping"}
                 </h2>
 
-                <PricingField compact />
+                <PricingField compact idPrefix="sell-form-desktop" />
                 <ShippingField compact />
               </section>
 
