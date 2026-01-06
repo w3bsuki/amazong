@@ -263,6 +263,8 @@ export default function CheckoutPageClient() {
     <div className="bg-muted/30 min-h-screen">
       {/* Mobile */}
       <div className="lg:hidden pb-24">
+        {/* Accessible page title - sr-only on mobile since header shows step progress */}
+        <h1 className="sr-only">{t("title")}</h1>
         {/* Delivery */}
         <div className="bg-card px-4 pt-4 pb-3">
           <div className="flex items-center justify-between mb-3">
@@ -369,7 +371,7 @@ export default function CheckoutPageClient() {
           <Button 
             onClick={handleCheckout} 
             disabled={isProcessing || !isFormValid()} 
-            className="w-full h-12 font-semibold text-base"
+            className="w-full h-10 font-semibold text-sm"
           >
             {isProcessing ? (
               <>
@@ -389,9 +391,13 @@ export default function CheckoutPageClient() {
       {/* Desktop */}
       <div className="hidden lg:block py-6">
         <div className="container-narrow">
-          <Link href="/cart" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-5">
-            <ArrowLeft className="size-4" />{t("backToCart")}
-          </Link>
+          <div className="flex items-center justify-between mb-5">
+            <Link href="/cart" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="size-4" />{t("backToCart")}
+            </Link>
+            <h1 className="text-lg font-semibold">{t("title")}</h1>
+            <div className="w-20" aria-hidden="true" />{/* Spacer for centering */}
+          </div>
 
           <div className="grid grid-cols-12 gap-8">
             {/* Main */}
@@ -492,7 +498,7 @@ export default function CheckoutPageClient() {
                     onClick={handleCheckout} 
                     disabled={isProcessing || !isFormValid()} 
                     size="lg"
-                    className="w-full h-12 font-semibold text-base"
+                    className="w-full h-10 font-semibold text-sm"
                   >
                     {isProcessing ? (
                       <>

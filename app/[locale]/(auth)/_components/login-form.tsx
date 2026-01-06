@@ -36,7 +36,7 @@ function SubmitButton({
     <Button
       type="submit"
       size="lg"
-      className="w-full h-10"
+      className="w-full"
       disabled={pending || disabled}
     >
       {pending ? (
@@ -179,10 +179,10 @@ export function LoginForm({
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 size-9 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors"
+              className="absolute right-1 top-1/2 -translate-y-1/2 size-8 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md transition-colors"
               aria-label={showPassword ? t("hidePassword") : t("showPassword")}
             >
-              {showPassword ? <EyeSlash className="size-5" /> : <Eye className="size-5" />}
+              {showPassword ? <EyeSlash className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
           {state?.fieldErrors?.password && (
@@ -240,7 +240,7 @@ export function LoginForm({
             type="button"
             variant="outline"
             size="lg"
-            className="w-full h-10"
+            className="w-full"
           >
             {t("createAccount")}
           </Button>

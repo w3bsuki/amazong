@@ -222,6 +222,17 @@ Use scan reports as the source of truth:
   - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed)
   - Verified: Codex review pending
 
+- 2026-01-06 - FE (Opus): Login form drift cleanup + Checkout page H1/a11y.
+  - Files: `app/[locale]/(auth)/_components/login-form.tsx`, `app/[locale]/(checkout)/_components/checkout-page-client.tsx`
+  - Changes (login):
+    - Removed explicit `h-10` from Sign In + Create Account buttons (rely on `size="lg"` → h-9 design token)
+    - Standardized password toggle button to `size-8` with `size-4` icons for consistency
+  - Changes (checkout):
+    - Added semantic H1 (`sr-only` on mobile, visible on desktop header row) using existing `t("title")` i18n key
+    - Replaced arbitrary `h-12` button heights with `h-10` design token on both mobile footer and desktop sidebar CTAs
+  - Screenshots: login-before/after + checkout-before/after at 390×844 + 1440×900 in `.playwright-mcp/`
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed), `REUSE_EXISTING_SERVER=true pnpm test:e2e:auth` (28 passed)
+
 - 2026-01-06 - BE (Opus): Stripe subscription webhook robustness - production hardening.
   - Files: `app/api/subscriptions/webhook/route.ts`, `docs/backend_tasks.md`, `tasks.md`
   - Changes:
