@@ -20,7 +20,7 @@ export function MarketplaceHero({ locale, categories }: MarketplaceHeroProps) {
   return (
     <div className="w-full">
       {/* Main Hero Banner - Full Width */}
-      <div className="relative w-full overflow-hidden rounded-md bg-cta-trust-blue shadow-sm">
+      <div className="relative w-full overflow-hidden rounded-md border border-border bg-cta-trust-blue">
         <div className="relative px-6 py-5 lg:px-8 lg:py-6">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             {/* Left Content */}

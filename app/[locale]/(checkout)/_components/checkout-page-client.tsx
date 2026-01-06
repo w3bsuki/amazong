@@ -235,7 +235,7 @@ export default function CheckoutPageClient() {
   // Loading state
   if (!mounted) {
     return (
-      <div className="min-h-[50vh] flex items-center justify-center">
+      <div className="min-h-96 flex items-center justify-center">
         <SpinnerGap className="size-5 animate-spin text-muted-foreground" />
       </div>
     )
@@ -244,7 +244,7 @@ export default function CheckoutPageClient() {
   // Empty cart state
   if (items.length === 0) {
     return (
-      <div className="min-h-[50vh] flex items-center justify-center px-3">
+      <div className="min-h-96 flex items-center justify-center px-3">
         <div className="text-center">
           <div className="size-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
             <ShoppingCart className="size-6 text-muted-foreground" />
@@ -616,15 +616,19 @@ function AddressSection({
 
         {/* Address selector modal */}
         <Sheet open={showAddressSelector} onOpenChange={setShowAddressSelector}>
-          <SheetContent side="bottom" className="h-[80vh]">
+          <SheetContent side="bottom" className="h-5/6">
             <SheetHeader>
               <SheetTitle>{t("selectShippingAddress") || "Select shipping address"}</SheetTitle>
             </SheetHeader>
-            <div className="mt-6 space-y-3 overflow-auto max-h-[calc(80vh-120px)] pb-4">
-              <RadioGroup value={selectedAddressId || ""} onValueChange={(v) => {
-                setSelectedAddressId(v)
-                setShowAddressSelector(false)
-              }}>
+            <div className="mt-6 flex h-full flex-col gap-3 overflow-hidden pb-4">
+              <RadioGroup
+                value={selectedAddressId || ""}
+                onValueChange={(v) => {
+                  setSelectedAddressId(v)
+                  setShowAddressSelector(false)
+                }}
+                className="flex-1 space-y-3 overflow-auto"
+              >
                 {savedAddresses.map((addr) => {
                   const isSelected = addr.id === selectedAddressId
                   return (
@@ -632,7 +636,7 @@ function AddressSection({
                       key={addr.id}
                       htmlFor={`addr-${addr.id}`}
                       className={cn(
-                        "flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all",
+                        "flex items-start gap-3 p-4 rounded-md border-2 cursor-pointer transition-all",
                         isSelected
                           ? "border-brand bg-brand/5 shadow-sm"
                           : "border-border hover:border-brand/30"

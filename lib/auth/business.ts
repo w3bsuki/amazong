@@ -17,7 +17,7 @@ interface OrderRecord {
   id: string
   status: string | null
   created_at: string
-  shipping_address: Record<string, unknown> | null
+  shipping_address?: Record<string, unknown> | null
   user_id: string
   user?: UserRecord | null
 }
@@ -647,12 +647,12 @@ export async function getBusinessOrders(
   const { data, count, error } = await query
 
   // Fetch related orders and products
-  const orderIds = (data || []).map(i => i.order_id).filter(Boolean)
-  const productIds = (data || []).map(i => i.product_id).filter(Boolean)
+  const orderIds = Array.from(new Set((data || []).map((i) => i.order_id).filter(Boolean)))
+  const productIds = Array.from(new Set((data || []).map((i) => i.product_id).filter(Boolean)))
   let orders: OrderRecord[] = []
   let products: ProductRecord[] = []
   if (orderIds.length) {
-    const { data: o } = await supabase.from('orders').select('id, status, created_at, shipping_address, user_id').in('id', orderIds)
+    const { data: o } = await supabase.from('orders').select('id, status, created_at, user_id').in('id', orderIds)
     orders = (o || []) as OrderRecord[]
   }
   if (productIds.length) {
@@ -660,7 +660,7 @@ export async function getBusinessOrders(
     products = (p || []) as ProductRecord[]
   }
   // Fetch users for orders
-  const userIds = (orders || []).map(o => o.user_id).filter(Boolean)
+  const userIds = Array.from(new Set((orders || []).map((o) => o.user_id).filter(Boolean)))
   let users: UserRecord[] = []
   if (userIds.length) {
     const { data: u } = await supabase.from('profiles').select('id, email, full_name').in('id', userIds)
@@ -675,7 +675,7 @@ export async function getBusinessOrders(
     const product = productsMap.get(item.product_id) || null
     const user = orderBase ? usersMap.get(orderBase.user_id) || null : null
     // Nest user inside order for component compatibility
-    const order = orderBase ? { ...orderBase, user } : null
+    const order = orderBase ? { ...orderBase, shipping_address: null, user } : null
     return {
       ...item,
       order,

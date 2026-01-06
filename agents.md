@@ -84,7 +84,7 @@ To reduce ISR writes:
 References:
 - `docs/ENGINEERING.md`
 - `docs/PRODUCTION.md`
-- Historical deep-dives: `docs-archive/` (not maintained)
+
 
 ## Vercel usage: what to optimize first
 

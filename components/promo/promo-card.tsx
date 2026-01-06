@@ -10,6 +10,7 @@ interface PromoCardProps {
   href: string
   badge?: string         // "Deal of the Day" | "Hot Deal"
   variant?: "default" | "wide"
+  loading?: "eager" | "lazy"
 }
 
 export function PromoCard({ 
@@ -19,7 +20,8 @@ export function PromoCard({
   subtitle, 
   href, 
   badge,
-  variant = "default"
+  variant = "default",
+  loading
 }: PromoCardProps) {
   return (
     <Link 
@@ -39,6 +41,7 @@ export function PromoCard({
         fill
         className="absolute inset-0 size-full object-cover" 
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+        loading={loading}
       />
       
       {/* Flat overlay for text readability (no gradients) */}

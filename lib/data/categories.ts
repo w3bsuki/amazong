@@ -705,49 +705,4 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
  * 
  * @returns Array of root categories with subcategories
  */
-export async function getRootCategoriesWithChildren(): Promise<{ category: Category; subs: Category[] }[]> {
-  'use cache'
-  cacheTag('categories', 'root-with-children')
-  cacheLife('categories')
-  
-  const supabase = createStaticClient()
-  if (!supabase) {
-    console.error('getRootCategoriesWithChildren: Database connection failed')
-    return []
-  }
-  
-  // Get root categories (exclude hidden ones with display_order >= 9999)
-  const { data: rootCategories, error: rootError } = await supabase
-    .from('categories')
-    .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
-    .is('parent_id', null)
-    .lt('display_order', 9999)
-    .order('display_order')
-    .order('name')
-  
-  if (rootError || !rootCategories) {
-    console.error('getRootCategoriesWithChildren error:', rootError)
-    return []
-  }
-  
-  // Get L1 categories for all roots in one query (exclude hidden)
-  const rootIds = rootCategories.map(c => c.id)
-  const { data: level1Cats, error: l1Error } = await supabase
-    .from('categories')
-    .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
-    .in('parent_id', rootIds)
-    .lt('display_order', 9999)
-    .order('display_order')
-    .order('name')
-  
-  if (l1Error) {
-    console.error('getRootCategoriesWithChildren L1 error:', l1Error)
-  }
-  
-  return rootCategories.map(cat => ({
-    category: cat as Category,
-    subs: (level1Cats || []).filter(c => c.parent_id === cat.id) as Category[]
-  }))
-}
-
 

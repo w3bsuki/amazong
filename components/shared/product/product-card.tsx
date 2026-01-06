@@ -222,12 +222,12 @@ function ProductCard({
   const conditionLabel = React.useMemo(() => {
     if (!condition) return null
     const c = condition.toLowerCase()
-    if (c === "new" || c === "novo" || c === "ново") return locale === "bg" ? "Ново" : "New"
-    if (c === "like_new" || c === "like new" || c === "като ново") return locale === "bg" ? "Като ново" : "Like New"
-    if (c === "used" || c === "употребявано") return locale === "bg" ? "Употр." : "Used"
-    if (c === "refurbished" || c === "рефърбиш") return locale === "bg" ? "Рефърб." : "Refurb"
+    if (c === "new" || c === "novo" || c === "ново") return t("condition.new")
+    if (c === "like_new" || c === "like new" || c === "като ново") return t("condition.likeNew")
+    if (c === "used" || c === "употребявано") return t("condition.usedShort")
+    if (c === "refurbished" || c === "рефърбиш") return t("condition.refurbShort")
     return condition.slice(0, 8)
-  }, [condition, locale])
+  }, [condition, t])
 
   // Price formatting (memoized for performance)
   const formattedPrice = React.useMemo(() => {
@@ -299,7 +299,7 @@ function ProductCard({
       {/* Full-card link for accessibility */}
       <Link
         href={productUrl}
-        className="absolute inset-0 z-[1]"
+        className="absolute inset-0 z-1"
         aria-label={t("openProduct", { title })}
       >
         <span className="sr-only">{title}</span>
@@ -381,7 +381,7 @@ function ProductCard({
       </div>
 
       {/* Content Area */}
-      <div className="relative z-[2] px-1 pb-1.5 pt-1.5 lg:p-2">
+      <div className="relative z-2 px-1 pb-1.5 pt-1.5 lg:p-2">
         {/* HERO: Price Row - Maximum prominence */}
         <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
           {/* Current Price - HERO element */}

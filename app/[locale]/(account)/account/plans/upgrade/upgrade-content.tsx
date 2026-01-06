@@ -89,6 +89,7 @@ export function UpgradeContent({
       const { url, error } = await createSubscriptionCheckoutSession({
         planId: plan.id,
         billingPeriod,
+        locale: locale === 'bg' ? 'bg' : 'en',
       })
 
       if (error) {

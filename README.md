@@ -61,7 +61,6 @@ Use these rules before adding new files (see [agents.md](./agents.md) for full d
 ## Documentation
 
 Docs are intentionally kept small and canonical under `docs/` (start at `docs/README.md`).
-Historical planning/audits live in `docs-archive/` (not maintained).
 
 ## Caching (Next.js 16)
 

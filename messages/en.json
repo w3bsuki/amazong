@@ -175,6 +175,12 @@
         "freeDelivery": "FREE Delivery",
         "freeDeliveryDate": "FREE delivery {date}",
         "overnight": "Overnight",
+        "condition": {
+            "new": "New",
+            "likeNew": "Like New",
+            "usedShort": "Used",
+            "refurbShort": "Refurb"
+        },
         "addToCart": "Add to Cart",
         "addedToCart": "Added to cart successfully!",
         "inCart": "In cart",

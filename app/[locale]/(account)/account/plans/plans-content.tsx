@@ -210,6 +210,7 @@ export function PlansContent({
       const { url, error } = await createSubscriptionCheckoutSession({
         planId: plan.id,
         billingPeriod,
+        locale: locale === "bg" ? "bg" : "en",
       })
 
       if (error) {
@@ -219,8 +220,8 @@ export function PlansContent({
       if (url) {
         window.location.href = url
       }
-    } catch (error) {
-      console.error("Checkout error:", error)
+    } catch (err) {
+      console.error("Checkout error:", err)
       toast.error(
         locale === "bg" 
           ? "Грешка при създаване на плащане. Моля, опитайте отново." 
@@ -233,7 +234,9 @@ export function PlansContent({
 
   const handleManageSubscription = async () => {
     try {
-      const { url, error } = await createBillingPortalSession()
+      const { url, error } = await createBillingPortalSession({
+        locale: locale === "bg" ? "bg" : "en",
+      })
 
       if (error) {
         throw new Error(error)
@@ -242,8 +245,8 @@ export function PlansContent({
       if (url) {
         window.location.href = url
       }
-    } catch (error) {
-      console.error("Portal error:", error)
+    } catch (err) {
+      console.error("Portal error:", err)
       toast.error(
         locale === "bg" 
           ? "Грешка при отваряне на портала. Моля, опитайте отново." 

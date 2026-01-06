@@ -291,7 +291,9 @@ export function BillingContent({
   const handleManageSubscription = async () => {
     setIsPortalLoading(true)
     try {
-      const { url, error } = await createBillingPortalSession()
+      const { url, error } = await createBillingPortalSession({
+        locale: locale === 'bg' ? 'bg' : 'en',
+      })
 
       if (error) {
         throw new Error(error)

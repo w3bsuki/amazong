@@ -2,7 +2,37 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { stripe } from '@/lib/stripe'
 
-export async function POST() {
+function getAppUrl() {
+  return (
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.NEXT_PUBLIC_URL ||
+    'http://localhost:3000'
+  ).replace(/\/$/, '')
+}
+
+function normalizeLocale(locale: unknown): 'en' | 'bg' {
+  return locale === 'bg' ? 'bg' : 'en'
+}
+
+function inferLocaleFromRequest(req: Request): 'en' | 'bg' {
+  const headerLocale = req.headers.get('x-next-intl-locale')
+  if (headerLocale) return normalizeLocale(headerLocale)
+
+  const referer = req.headers.get('referer')
+  if (referer) {
+    try {
+      const url = new URL(referer)
+      const firstSegment = url.pathname.split('/').filter(Boolean)[0]
+      if (firstSegment) return normalizeLocale(firstSegment)
+    } catch {
+      // ignore invalid referer
+    }
+  }
+
+  return 'en'
+}
+
+export async function POST(req: Request) {
   try {
     const supabase = await createClient()
     
@@ -31,10 +61,13 @@ export async function POST() {
       )
     }
 
+    const locale = inferLocaleFromRequest(req)
+    const accountPlansUrl = `${getAppUrl()}/${locale}/account/plans`
+
     // Create a Stripe billing portal session
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: subscription.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/account/plans`,
+      return_url: accountPlansUrl,
     })
 
     return NextResponse.json({ url: portalSession.url })

@@ -10,6 +10,7 @@ export function PromoCards({ locale }: { locale: string }) {
           highlight="$200"
           subtitle={locale === "bg" ? "Apple устройства*" : "Apple devices*"}
           href="/search?category=electronics&brand=apple"
+          loading="eager"
         />
       </div>
       <div className="basis-2/3 shrink-0 snap-start sm:basis-auto">

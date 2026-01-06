@@ -148,6 +148,7 @@ export function PlansModal({
       const { url, error } = await createSubscriptionCheckoutSession({
         planId: plan.id,
         billingPeriod,
+        locale: locale === "bg" ? "bg" : "en",
       })
 
       if (error) {
@@ -162,11 +163,11 @@ export function PlansModal({
       console.error('Checkout error:', error)
       // On error, redirect to full plans page
       setIsOpen(false)
-      router.push("/plans")
+      router.push(`/${locale}/plans`)
     } finally {
       setSubscribingPlan(null)
     }
-  }, [currentTier, billingPeriod, router, setIsOpen])
+  }, [currentTier, billingPeriod, router, setIsOpen, locale])
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

@@ -12,9 +12,11 @@ import { revalidateTag } from "next/cache"
 export type BillingPeriod = "monthly" | "yearly"
 
 const billingPeriodSchema = z.enum(["monthly", "yearly"])
+const localeSchema = z.enum(["en", "bg"]).optional()
 const subscriptionCheckoutArgsSchema = z.object({
   planId: z.string().min(1),
   billingPeriod: billingPeriodSchema,
+  locale: localeSchema,
 })
 
 export interface SubscriptionDetails {
@@ -57,6 +59,16 @@ function getAppUrl() {
   )
 }
 
+function normalizeLocale(locale: unknown): "en" | "bg" {
+  return locale === "bg" ? "bg" : "en"
+}
+
+function getAbsoluteAccountPlansUrl(locale: unknown) {
+  const base = getAppUrl().replace(/\/$/, "")
+  const safeLocale = normalizeLocale(locale)
+  return `${base}/${safeLocale}/account/plans`
+}
+
 // =============================================================================
 // CHECKOUT & PORTAL SESSIONS
 // =============================================================================
@@ -64,6 +76,7 @@ function getAppUrl() {
 export async function createSubscriptionCheckoutSession(args: {
   planId: string
   billingPeriod: BillingPeriod
+  locale?: "en" | "bg"
 }): Promise<{ url?: string; error?: string }> {
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error("STRIPE_SECRET_KEY is missing")
@@ -75,7 +88,7 @@ export async function createSubscriptionCheckoutSession(args: {
     return { error: "Invalid input" }
   }
 
-  const { planId, billingPeriod } = parsedArgs.data
+  const { planId, billingPeriod, locale } = parsedArgs.data
 
   try {
     const supabase = await createClient()
@@ -156,7 +169,7 @@ export async function createSubscriptionCheckoutSession(args: {
           },
         ]
 
-    const appUrl = getAppUrl()
+    const accountPlansUrl = getAbsoluteAccountPlansUrl(locale)
 
     const session = await stripe.checkout.sessions.create({
       ...(customerId ? { customer: customerId } : {}),
@@ -172,8 +185,8 @@ export async function createSubscriptionCheckoutSession(args: {
       },
       allow_promotion_codes: true,
       billing_address_collection: "required",
-      success_url: `${appUrl}/account/plans?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/account/plans?canceled=true`,
+      success_url: `${accountPlansUrl}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${accountPlansUrl}?canceled=true`,
     })
 
     return session.url ? { url: session.url } : { error: "Failed to start checkout" }
@@ -183,7 +196,8 @@ export async function createSubscriptionCheckoutSession(args: {
   }
 }
 
-export async function createBillingPortalSession(): Promise<{ url?: string; error?: string }> {
+export async function createBillingPortalSession(args?: { locale?: "en" | "bg" }): Promise<{ url?: string; error?: string }> {
+    const accountPlansUrl = getAbsoluteAccountPlansUrl(args?.locale)
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error("STRIPE_SECRET_KEY is missing")
     return { error: "Stripe configuration is missing. Please check your server logs." }
@@ -225,7 +239,7 @@ export async function createBillingPortalSession(): Promise<{ url?: string; erro
 
       const portalSession = await stripe.billingPortal.sessions.create({
         customer: profile.stripe_customer_id,
-        return_url: `${getAppUrl()}/account/plans`,
+        return_url: accountPlansUrl,
       })
 
       return { url: portalSession.url }
@@ -233,7 +247,7 @@ export async function createBillingPortalSession(): Promise<{ url?: string; erro
 
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
-      return_url: `${getAppUrl()}/account/plans`,
+      return_url: accountPlansUrl,
     })
 
     return { url: portalSession.url }

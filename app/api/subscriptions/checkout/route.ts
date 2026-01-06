@@ -6,6 +6,38 @@ const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
 const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
   'id,tier,name,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,commission_rate,final_value_fee'
 
+function getAppUrl() {
+  return (
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.NEXT_PUBLIC_URL ||
+    'http://localhost:3000'
+  ).replace(/\/$/, '')
+}
+
+function normalizeLocale(locale: unknown): 'en' | 'bg' {
+  return locale === 'bg' ? 'bg' : 'en'
+}
+
+function inferLocaleFromRequest(req: Request, bodyLocale?: unknown): 'en' | 'bg' {
+  if (bodyLocale) return normalizeLocale(bodyLocale)
+
+  const headerLocale = req.headers.get('x-next-intl-locale')
+  if (headerLocale) return normalizeLocale(headerLocale)
+
+  const referer = req.headers.get('referer')
+  if (referer) {
+    try {
+      const url = new URL(referer)
+      const firstSegment = url.pathname.split('/').filter(Boolean)[0]
+      if (firstSegment) return normalizeLocale(firstSegment)
+    } catch {
+      // ignore invalid referer
+    }
+  }
+
+  return 'en'
+}
+
 export async function POST(req: Request) {
   try {
     const supabase = await createClient()
@@ -21,11 +53,14 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json()
-    const { planId, billingPeriod } = body as { planId: string, billingPeriod: 'monthly' | 'yearly' }
+    const { planId, billingPeriod, locale } = body as { planId: string; billingPeriod: 'monthly' | 'yearly'; locale?: 'en' | 'bg' }
 
     if (!planId || !billingPeriod) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
+
+    const resolvedLocale = inferLocaleFromRequest(req, locale)
+    const accountPlansUrl = `${getAppUrl()}/${resolvedLocale}/account/plans`
 
     // Get profile info
     const { data: profile } = await supabase
@@ -118,8 +153,8 @@ export async function POST(req: Request) {
       allow_promotion_codes: true,
       // Collect billing address for invoicing
       billing_address_collection: 'required',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/account/plans?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/account/plans?canceled=true`,
+      success_url: `${accountPlansUrl}?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${accountPlansUrl}?canceled=true`,
     })
 
     return NextResponse.json({ sessionId: session.id, url: session.url })

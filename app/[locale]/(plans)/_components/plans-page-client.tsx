@@ -55,7 +55,9 @@ interface SubscriptionPlanRow {
   boosts_included?: number | null
   priority_support?: boolean | null
   description?: string | null
+  description_bg?: string | null
   features?: unknown
+  analytics_access?: string | null
 }
 
 const planIcons: Record<string, React.ReactNode> = {
@@ -79,7 +81,19 @@ const content = {
     saveLabel: "Save 20%",
     getStarted: "Get Started",
     current: "Current",
+    popular: "Popular",
     feeLabel: "fee when sold",
+    period: {
+      mo: "mo",
+      yr: "yr",
+    },
+    planFeatures: {
+      listingsPerMonth: "listings/mo",
+      unlimitedListings: "∞ listings",
+      whenSoldShort: "when sold",
+      boostsShort: "boosts",
+      analytics: "Analytics",
+    },
     nav: {
       pricing: "Pricing",
       comparison: "Compare",
@@ -166,7 +180,19 @@ const content = {
     saveLabel: "Спестете 20%",
     getStarted: "Започни",
     current: "Текущ",
+    popular: "Популярен",
     feeLabel: "такса при продажба",
+    period: {
+      mo: "мес",
+      yr: "год",
+    },
+    planFeatures: {
+      listingsPerMonth: "обяви/месец",
+      unlimitedListings: "∞ обяви",
+      whenSoldShort: "при продажба",
+      boostsShort: "буста",
+      analytics: "Аналитика",
+    },
     nav: {
       pricing: "Цени",
       comparison: "Сравнение",
@@ -258,6 +284,43 @@ const featureIcons = {
   sparkle: Sparkle,
 }
 
+function formatInt(locale: string, value: number) {
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value)
+}
+
+function buildPlanFeatureList(
+  locale: string,
+  t: (typeof content)["en"],
+  plan: SubscriptionPlanRow
+): string[] {
+  const fee = plan.final_value_fee ?? plan.commission_rate
+  const boosts = plan.boosts_included ?? 0
+  const analytics = (plan.analytics_access || "").toLowerCase()
+
+  const features: string[] = []
+
+  if (plan.max_listings == null) {
+    features.push(t.planFeatures.unlimitedListings)
+  } else {
+    features.push(`${formatInt(locale, plan.max_listings)} ${t.planFeatures.listingsPerMonth}`)
+  }
+
+  if (typeof fee === "number") {
+    features.push(`${fee}% ${t.planFeatures.whenSoldShort}`)
+  }
+
+  if (boosts > 0) {
+    const boostsLabel = boosts >= 999 ? "∞" : formatInt(locale, boosts)
+    features.push(`${boostsLabel} ${t.planFeatures.boostsShort}`)
+  }
+
+  if (analytics && analytics !== "none" && analytics !== "-" && analytics !== "—") {
+    features.push(t.planFeatures.analytics)
+  }
+
+  return features
+}
+
 export default function PlansPageClient(props: {
   locale: string
   initialPlans: SubscriptionPlanRow[]
@@ -328,7 +391,11 @@ export default function PlansPageClient(props: {
         toast.success(locale === "bg" ? "Планът е сменен" : "Plan changed")
       } else {
         const billingPeriod = yearly ? "yearly" : "monthly"
-        const res = await createSubscriptionCheckoutSession({ planId, billingPeriod })
+        const res = await createSubscriptionCheckoutSession({
+          planId,
+          billingPeriod,
+          locale: locale === "bg" ? "bg" : "en",
+        })
         if (res?.error) throw new Error(res.error)
         if (res?.url) window.location.href = res.url
       }
@@ -447,9 +514,7 @@ export default function PlansPageClient(props: {
                   const isCurrent =
                     plan.tier === currentTier || (currentTier === "free" && plan.tier === "basic")
                   const isPopular = plan.tier === "premium"
-                  const features = Array.isArray(plan.features)
-                    ? (plan.features as string[]).slice(0, 5)
-                    : []
+                  const features = buildPlanFeatureList(locale, t, plan).slice(0, 5)
                   const fee = plan.final_value_fee ?? plan.commission_rate ?? 0
                   const icon =
                     planIcons[plan.tier?.toLowerCase() ?? "basic"] ?? (
@@ -464,7 +529,7 @@ export default function PlansPageClient(props: {
                             {icon}
                             <span>{plan.name}</span>
                           </PricingCard.PlanName>
-                          {isPopular && <PricingCard.Badge>Popular</PricingCard.Badge>}
+                          {isPopular && <PricingCard.Badge>{t.popular}</PricingCard.Badge>}
                           {isCurrent && <PricingCard.Badge>{t.current}</PricingCard.Badge>}
                         </PricingCard.Plan>
                         <PricingCard.Price>
@@ -475,12 +540,8 @@ export default function PlansPageClient(props: {
                             <PricingCard.Period>
                               /
                               {yearly
-                                ? locale === "bg"
-                                  ? "год"
-                                  : "yr"
-                                : locale === "bg"
-                                  ? "мес"
-                                  : "mo"}
+                                ? t.period.yr
+                                : t.period.mo}
                             </PricingCard.Period>
                           )}
                           {yearly && originalPrice && originalPrice > price && (
@@ -507,7 +568,9 @@ export default function PlansPageClient(props: {
                       </PricingCard.Header>
 
                       <PricingCard.Body>
-                        <PricingCard.Description>{plan.description}</PricingCard.Description>
+                        <PricingCard.Description>
+                          {locale === "bg" ? plan.description_bg : plan.description}
+                        </PricingCard.Description>
                         <PricingCard.List>
                           {features.map((feature, i) => (
                             <PricingCard.ListItem key={i}>

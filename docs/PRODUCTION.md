@@ -34,7 +34,7 @@ Execution checklist: `tasks.md`
 ### Supabase security
 
 - [ ] Supabase security advisors show **0 warnings** (or explicitly accepted + documented).
-- [ ] Enable **Leaked Password Protection** in Supabase Auth settings.
+- [ ] Dashboard-only Supabase Auth warning handled (enable later or explicitly accept + document).
 - [ ] Confirm middleware uses `getUser()` validation for protected routes.
 
 Reference: `supabase_tasks.md`
