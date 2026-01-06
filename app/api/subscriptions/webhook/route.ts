@@ -30,7 +30,8 @@ export async function POST(req: Request) {
       getStripeSubscriptionWebhookSecret()
     )
   } catch (err) {
-    console.error('Webhook signature verification failed:', err)
+    const message = err instanceof Error ? err.message : 'Webhook signature verification failed'
+    console.error('Webhook signature verification failed:', message)
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
@@ -92,65 +93,97 @@ export async function POST(req: Request) {
         // ============================================================
         if (session.mode === 'subscription') {
           const profileId = session.metadata?.profile_id || session.metadata?.seller_id // Support both for backwards compat
-          const planTier = session.metadata?.plan_tier as 'premium' | 'business'
-          const billingPeriod = session.metadata?.billing_period as 'monthly' | 'yearly'
-          const subscriptionId = session.subscription as string
+          const planId = session.metadata?.plan_id
+          const billingPeriod = session.metadata?.billing_period as 'monthly' | 'yearly' | undefined
+          const subscriptionId = typeof session.subscription === 'string' ? session.subscription : null
 
-          if (profileId && planTier && subscriptionId) {
-            // Get subscription details from Stripe
-            const subscriptionResponse = await stripe.subscriptions.retrieve(subscriptionId)
-            
-            // Calculate expiry date - Stripe.Subscription has current_period_end as a number
-            const expiresAt = new Date((subscriptionResponse as unknown as { current_period_end: number }).current_period_end * 1000).toISOString()
+          if (!profileId || !planId || !billingPeriod || !subscriptionId) break
 
-            // Get plan details
-            const { data: plan } = await supabase
-              .from('subscription_plans')
-              .select(SUBSCRIPTION_PLAN_SELECT_FOR_WEBHOOK)
-              .eq('tier', planTier)
-              .single()
+          // Get subscription details from Stripe (for period end + price id)
+          const subscriptionResponse = await stripe.subscriptions.retrieve(subscriptionId, {
+            expand: ['items.data.price'],
+          })
 
-            if (!plan) {
-              console.error('Plan not found:', planTier)
-              break
+          const currentPeriodEnd = (subscriptionResponse as unknown as { current_period_end: number }).current_period_end
+          const expiresAt = new Date(currentPeriodEnd * 1000).toISOString()
+          const stripePriceId = subscriptionResponse.items?.data?.[0]?.price?.id ?? null
+
+          // Get plan details by ID (this is the source of truth)
+          const { data: plan } = await supabase
+            .from('subscription_plans')
+            .select(SUBSCRIPTION_PLAN_SELECT_FOR_WEBHOOK)
+            .eq('id', planId)
+            .eq('is_active', true)
+            .single()
+
+          if (!plan) {
+            console.error('Plan not found for plan_id')
+            break
+          }
+
+          const pricePaid = billingPeriod === 'yearly' ? plan.price_yearly : plan.price_monthly
+
+          // Idempotency: if Stripe retries, don't create duplicates
+          const { data: existingSub } = await supabase
+            .from('subscriptions')
+            .select('id')
+            .eq('stripe_subscription_id', subscriptionId)
+            .maybeSingle()
+
+          if (existingSub?.id) {
+            const { error: updateError } = await supabase
+              .from('subscriptions')
+              .update({
+                seller_id: profileId,
+                plan_type: plan.tier,
+                status: 'active',
+                price_paid: pricePaid,
+                billing_period: billingPeriod,
+                expires_at: expiresAt,
+                stripe_customer_id: (typeof session.customer === 'string' ? session.customer : null),
+                stripe_price_id: stripePriceId,
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', existingSub.id)
+
+            if (updateError) {
+              console.error('Error updating subscription:', updateError.message)
             }
-
-            const price = billingPeriod === 'yearly' ? plan.price_yearly : plan.price_monthly
-
-            // Create subscription record
+          } else {
             const { error: subError } = await supabase
               .from('subscriptions')
               .insert({
                 seller_id: profileId,
-                plan_type: planTier,
+                plan_type: plan.tier,
                 status: 'active',
-                price_paid: price,
+                price_paid: pricePaid,
                 billing_period: billingPeriod,
                 starts_at: new Date().toISOString(),
                 expires_at: expiresAt,
-                stripe_customer_id: session.customer as string,
+                stripe_customer_id: (typeof session.customer === 'string' ? session.customer : null),
                 stripe_subscription_id: subscriptionId,
+                stripe_price_id: stripePriceId,
               })
 
             if (subError) {
-              console.error('Error creating subscription:', subError)
+              console.error('Error creating subscription:', subError.message)
             }
+          }
 
-            // Update profile tier and ALL fee fields from plan
-            const { error: profileError } = await supabase
-              .from('profiles')
-              .update({
-                tier: planTier,
-                commission_rate: plan.final_value_fee || plan.commission_rate || 12.00,
-                final_value_fee: plan.final_value_fee || plan.commission_rate || 12.00,
-                insertion_fee: plan.insertion_fee || 0,
-                per_order_fee: plan.per_order_fee || 0,
-              })
-              .eq('id', profileId)
+          // Update profile tier and fee fields from plan
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .update({
+              tier: plan.tier,
+              commission_rate: plan.final_value_fee || plan.commission_rate || 12.0,
+              final_value_fee: plan.final_value_fee || plan.commission_rate || 12.0,
+              insertion_fee: plan.insertion_fee || 0,
+              per_order_fee: plan.per_order_fee || 0,
+            })
+            .eq('id', profileId)
 
-            if (profileError) {
-              console.error('Error updating profile:', profileError)
-            }
+          if (profileError) {
+            console.error('Error updating profile:', profileError.message)
           }
         }
         break
