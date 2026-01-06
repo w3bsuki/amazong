@@ -28,7 +28,7 @@ Execution checklist: `tasks.md`
 - [ ] Create Stripe products/prices for paid tiers.
 - [ ] Set price IDs in Supabase `subscription_plans`.
 - [ ] Configure webhook endpoint: `https://treido.eu/api/subscriptions/webhook`
-- [ ] Set `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET` in Vercel.
+- [ ] Set `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET` in Vercel.
 - [ ] Verify checkout end-to-end (at least once in production env).
 
 ### Supabase security

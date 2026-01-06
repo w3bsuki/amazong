@@ -31,7 +31,7 @@ Pre-release gates (before “go live”):
 - [ ] Dashboard step: Stripe → Developers → Webhooks → endpoint points to `/api/subscriptions/webhook` and signing secret is set in Vercel as `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`.
 - [ ] Vercel env vars set + verified at runtime:
   - [ ] `NEXT_PUBLIC_APP_URL=https://treido.eu`
-  - [ ] `STRIPE_SECRET_KEY` / `STRIPE_PUBLISHABLE_KEY` / `STRIPE_WEBHOOK_SECRET`
+  - [ ] `STRIPE_SECRET_KEY` / `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` / `STRIPE_WEBHOOK_SECRET` / `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`
   - [ ] Runtime check: GET `/api/health/env` on `https://treido.eu` returns `{ ok: true }` (no missing vars).
 - [ ] Supabase Security Advisors: 0 warnings (or explicitly accepted + documented)
   - [ ] Enable Supabase Auth “Leaked Password Protection”

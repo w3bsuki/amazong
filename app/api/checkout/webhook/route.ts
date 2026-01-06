@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
-import { getStripeWebhookSecret } from '@/lib/env';
+import { getStripeWebhookSecrets } from '@/lib/env';
 import type Stripe from 'stripe';
 
 // PRODUCTION: Use centralized admin client for consistency
@@ -18,14 +18,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing signature' }, { status: 400 });
   }
 
-  let event: Stripe.Event;
+  let event: Stripe.Event | undefined;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      getStripeWebhookSecret()
-    );
+    const secrets = getStripeWebhookSecrets();
+    let lastError: unknown;
+
+    for (const secret of secrets) {
+      try {
+        event = stripe.webhooks.constructEvent(body, sig, secret);
+        lastError = undefined;
+        break;
+      } catch (err) {
+        lastError = err;
+      }
+    }
+
+    if (!event) {
+      throw lastError ?? new Error('Unknown error');
+    }
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
     console.error('Webhook signature verification failed:', errorMessage);

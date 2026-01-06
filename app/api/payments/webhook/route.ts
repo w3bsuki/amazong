@@ -2,7 +2,7 @@ import { stripe } from "@/lib/stripe"
 import { createAdminClient } from "@/lib/supabase/server"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
-import { getStripeWebhookSecret } from "@/lib/env"
+import { getStripeWebhookSecrets } from "@/lib/env"
 
 // PRODUCTION: Use centralized admin client for consistency
 const supabase = createAdminClient()
@@ -16,14 +16,25 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "No signature" }, { status: 400 })
     }
 
-    let event
+    let event: unknown
 
     try {
-        event = stripe.webhooks.constructEvent(
-            body,
-            signature,
-            getStripeWebhookSecret()
-        )
+        const secrets = getStripeWebhookSecrets()
+        let lastError: unknown
+
+        for (const secret of secrets) {
+            try {
+                event = stripe.webhooks.constructEvent(body, signature, secret)
+                lastError = undefined
+                break
+            } catch (err) {
+                lastError = err
+            }
+        }
+
+        if (!event) {
+            throw lastError ?? new Error("Webhook verification failed")
+        }
     } catch (error) {
         const message = error instanceof Error ? error.message : "Webhook verification failed"
         console.error("Webhook signature verification failed:", message)
@@ -31,9 +42,9 @@ export async function POST(request: Request) {
     }
 
     try {
-        switch (event.type) {
+        switch ((event as any).type) {
             case 'checkout.session.completed': {
-                const session = event.data.object
+            const session = (event as any).data.object
 
                 // Only handle setup mode sessions
                 if (session.mode !== 'setup') break
@@ -101,7 +112,7 @@ export async function POST(request: Request) {
             }
 
             case 'payment_method.detached': {
-                const paymentMethod = event.data.object
+                const paymentMethod = (event as any).data.object
                 
                 // Remove from database if it exists
                 await supabase

@@ -52,6 +52,14 @@ export function getStripeWebhookSecret(): string {
   return getRequiredEnvVar('STRIPE_WEBHOOK_SECRET')
 }
 
+export function getStripeWebhookSecrets(): string[] {
+  const raw = getRequiredEnvVar('STRIPE_WEBHOOK_SECRET')
+  return raw
+    .split(/[\n,]/g)
+    .map((s) => s.trim())
+    .filter(Boolean)
+}
+
 export function getStripeSubscriptionWebhookSecret(): string {
   return getRequiredEnvVar('STRIPE_SUBSCRIPTION_WEBHOOK_SECRET')
 }
