@@ -9,11 +9,40 @@ const SUBSCRIPTION_SELECT_FOR_UPDATES = 'id,seller_id,status,expires_at'
 const SUBSCRIPTION_PLAN_SELECT_FOR_WEBHOOK =
   'id,tier,price_monthly,price_yearly,commission_rate,final_value_fee,insertion_fee,per_order_fee'
 
+/** Sanitized error logging - never log full objects or secrets */
+function logWebhookError(context: string, err: unknown): void {
+  const type = err instanceof Error ? err.constructor.name : typeof err
+  const message = err instanceof Error ? err.message : 'Unknown error'
+  // Only log type + message, never full stack/object
+  console.error(`[webhook/${context}] ${type}: ${message}`)
+}
+
+/** Safe Stripe subscription retrieval - returns null on failure instead of throwing */
+async function safeRetrieveSubscription(
+  subscriptionId: string
+): Promise<Stripe.Subscription | null> {
+  try {
+    return await stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ['items.data.price'],
+    })
+  } catch (err) {
+    logWebhookError('stripe-retrieve', err)
+    return null
+  }
+}
+
 export async function POST(req: Request) {
   // Create admin client inside handler (not at module level)
   const supabase = createAdminClient()
-  
-  const body = await req.text()
+
+  let body: string
+  try {
+    body = await req.text()
+  } catch (err) {
+    logWebhookError('body-read', err)
+    return NextResponse.json({ received: true })
+  }
+
   const headersList = await headers()
   const sig = headersList.get('stripe-signature')
 
@@ -30,11 +59,12 @@ export async function POST(req: Request) {
       getStripeSubscriptionWebhookSecret()
     )
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Webhook signature verification failed'
-    console.error('Webhook signature verification failed:', message)
+    logWebhookError('signature', err)
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
+  // Process events - always return 200 { received: true } after signature verification
+  // to prevent Stripe retries from causing load spikes
   try {
     switch (event.type) {
       case 'checkout.session.completed': {
@@ -49,41 +79,45 @@ export async function POST(req: Request) {
           const durationDays = Number.parseInt(session.metadata.duration_days || '7')
           const amountPaid = (session.amount_total || 0) / 100 // Convert from stotinki
 
-          if (sellerId && productId) {
-            // Calculate expiry date
-            const startsAt = new Date()
-            const expiresAt = new Date(startsAt.getTime() + durationDays * 24 * 60 * 60 * 1000)
+          // Safe no-op if required metadata is missing
+          if (!sellerId || !productId) {
+            logWebhookError('listing-boost', new Error('Missing seller_id or product_id in metadata'))
+            break
+          }
 
-            // Create listing_boost record
-            const { error: boostError } = await supabase
-              .from('listing_boosts')
-              .insert({
-                product_id: productId,
-                seller_id: sellerId,
-                price_paid: amountPaid,
-                duration_days: durationDays,
-                starts_at: startsAt.toISOString(),
-                expires_at: expiresAt.toISOString(),
-                is_active: true,
-              })
+          // Calculate expiry date
+          const startsAt = new Date()
+          const expiresAt = new Date(startsAt.getTime() + durationDays * 24 * 60 * 60 * 1000)
 
-            if (boostError) {
-              console.error('Error creating listing boost:', boostError)
-            }
+          // Create listing_boost record
+          const { error: boostError } = await supabase
+            .from('listing_boosts')
+            .insert({
+              product_id: productId,
+              seller_id: sellerId,
+              price_paid: amountPaid,
+              duration_days: durationDays,
+              starts_at: startsAt.toISOString(),
+              expires_at: expiresAt.toISOString(),
+              is_active: true,
+            })
 
-            // Update product to mark as boosted
-            const { error: productError } = await supabase
-              .from('products')
-              .update({
-                is_boosted: true,
-                boost_expires_at: expiresAt.toISOString(),
-                listing_type: 'boosted',
-              })
-              .eq('id', productId)
+          if (boostError) {
+            logWebhookError('listing-boost-insert', boostError)
+          }
 
-            if (productError) {
-              console.error('Error updating product boost status:', productError)
-            }
+          // Update product to mark as boosted
+          const { error: productError } = await supabase
+            .from('products')
+            .update({
+              is_boosted: true,
+              boost_expires_at: expiresAt.toISOString(),
+              listing_type: 'boosted',
+            })
+            .eq('id', productId)
+
+          if (productError) {
+            logWebhookError('listing-boost-product', productError)
           }
           break
         }
@@ -97,12 +131,19 @@ export async function POST(req: Request) {
           const billingPeriod = session.metadata?.billing_period as 'monthly' | 'yearly' | undefined
           const subscriptionId = typeof session.subscription === 'string' ? session.subscription : null
 
-          if (!profileId || !planId || !billingPeriod || !subscriptionId) break
+          // Safe no-op if required metadata is missing
+          if (!profileId || !planId || !billingPeriod || !subscriptionId) {
+            logWebhookError('subscription-checkout', new Error('Missing required metadata (profile_id/plan_id/billing_period/subscription_id)'))
+            break
+          }
 
           // Get subscription details from Stripe (for period end + price id)
-          const subscriptionResponse = await stripe.subscriptions.retrieve(subscriptionId, {
-            expand: ['items.data.price'],
-          })
+          // Safe retrieval - returns null on failure, doesn't throw
+          const subscriptionResponse = await safeRetrieveSubscription(subscriptionId)
+          if (!subscriptionResponse) {
+            logWebhookError('subscription-checkout', new Error('Failed to retrieve subscription from Stripe'))
+            break
+          }
 
           const currentPeriodEnd = (subscriptionResponse as unknown as { current_period_end: number }).current_period_end
           const expiresAt = new Date(currentPeriodEnd * 1000).toISOString()
@@ -117,7 +158,7 @@ export async function POST(req: Request) {
             .single()
 
           if (!plan) {
-            console.error('Plan not found for plan_id')
+            logWebhookError('subscription-checkout', new Error('Plan not found for plan_id'))
             break
           }
 
@@ -147,7 +188,7 @@ export async function POST(req: Request) {
               .eq('id', existingSub.id)
 
             if (updateError) {
-              console.error('Error updating subscription:', updateError.message)
+              logWebhookError('subscription-update', updateError)
             }
           } else {
             const { error: subError } = await supabase
@@ -166,7 +207,7 @@ export async function POST(req: Request) {
               })
 
             if (subError) {
-              console.error('Error creating subscription:', subError.message)
+              logWebhookError('subscription-insert', subError)
             }
           }
 
@@ -183,7 +224,7 @@ export async function POST(req: Request) {
             .eq('id', profileId)
 
           if (profileError) {
-            console.error('Error updating profile:', profileError.message)
+            logWebhookError('profile-update', profileError)
           }
         }
         break
@@ -355,8 +396,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('Webhook processing error:', error)
-    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
+    // Always return 200 after signature verification to prevent Stripe retry storms
+    // Log sanitized error for debugging, never log full object/stack
+    logWebhookError('processing', error)
+    return NextResponse.json({ received: true })
   }
 }
 

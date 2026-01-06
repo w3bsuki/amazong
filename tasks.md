@@ -15,7 +15,7 @@ Pre-release gates (before "go live"):
 ## P0 - Ship blockers (must be done)
 
 - [x] Stripe products/prices created (Premium/Business)
-- [x] Dashboard step: Stripe Dashboard -> Products -> create `Premium` and `Business` products, add recurring prices (monthly/yearly as intended), then copy the Stripe Price IDs for the next checklist step.
+- [x] [HUMAN] Stripe Dashboard -> Products -> create `Premium` and `Business` products, add recurring prices (monthly/yearly as intended), then copy the Stripe Price IDs for the next checklist step.
 - [x] Note: provided Stripe Product IDs (these are `prod_...`, not `price_...`):
   - `prod_TbEnIEvcfYvHFt`
   - `prod_TbEmxeW1Vci25c`
@@ -25,15 +25,16 @@ Pre-release gates (before "go live"):
   - `prod_TbEcyvXCMdfIGn`
   - `prod_TbEb7tYV8H9uFD`
 - [x] Supabase `subscription_plans` updated with Stripe price IDs
-- [x] Dashboard step: copy the `price_...` IDs for Premium/Business monthly + yearly (needed for `subscription_plans.stripe_price_monthly_id` and `subscription_plans.stripe_price_yearly_id`).
+- [x] [HUMAN] Copy the `price_...` IDs for Premium/Business monthly + yearly (needed for `subscription_plans.stripe_price_monthly_id` and `subscription_plans.stripe_price_yearly_id`).
 - [x] Stripe webhook configured: `https://treido.eu/api/subscriptions/webhook`
 - [x] Code step: `/api/subscriptions/webhook` accepts Stripe events and uses `metadata.plan_id` to apply the correct plan.
-- [x] Dashboard step: Stripe -> Developers -> Webhooks -> endpoint points to `/api/subscriptions/webhook` and signing secret is set in Vercel as `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`.
+- [x] [HUMAN] Stripe -> Developers -> Webhooks -> endpoint points to `/api/subscriptions/webhook` and signing secret is set in Vercel as `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`.
 - [x] Vercel env vars set + verified at runtime:
   - [x] `NEXT_PUBLIC_APP_URL=https://treido.eu`
   - [x] `STRIPE_SECRET_KEY` / `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` / `STRIPE_WEBHOOK_SECRET` / `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`
   - [x] Runtime check: GET `/api/health/env` on `https://treido.eu` returns `{ ok: true }` (no missing vars).
 - [ ] Supabase Security Advisors: 0 actionable warnings (or explicitly accepted + documented)
+  - [ ] [HUMAN] Supabase Dashboard -> Auth -> Password Protection: enable leaked password protection (then re-run security advisors to confirm 0 warnings)
 
 Note (2026-01-06): Supabase Performance Advisors show **INFO only** (unused index lints). Defer index removals until post-launch unless write-amplification becomes a problem.
 
@@ -47,12 +48,12 @@ Note (2026-01-06): Supabase Performance Advisors show **INFO only** (unused inde
 
 ## P1 - Cost/perf stability (high ROI, do in small batches)
 
-- [ ] Middleware matcher excludes static assets (`_next/static`, `_next/image`, file assets)
+- [x] Middleware matcher excludes static assets (`_next/static`, `_next/image`, file assets)
 - [ ] Add missing `generateStaticParams()` for locale + key dynamic segments (avoid ISR write spikes)
 - [ ] Reduce over-fetching in hot paths (no `select('*')`; project list-view fields)
 - [ ] Cache Components usage sanity:
-  - [ ] `'use cache'` paired with `cacheLife('<profile>')`
-  - [ ] Correct invalidation: `revalidateTag(tag, profile)`
+  - [x] `'use cache'` paired with `cacheLife('<profile>')`
+  - [x] Correct invalidation: `revalidateTag(tag, profile)`
   - [x] No `'use cache'` module reads per-user request state (`cookies()`/`headers()`)
 
 ## P1 - UI drift (no redesign, high-traffic first)
@@ -80,6 +81,7 @@ Use scan reports as the source of truth:
 - `docs/DESIGN.md`
 - `docs/TESTING.md`
 - `docs/workflow.md`
+- `docs/gpt+opus.md`
 - `docs/frontend_tasks.md`
 - `docs/backend_tasks.md`
 
@@ -219,3 +221,13 @@ Use scan reports as the source of truth:
     - Component now properly uses `t("key")` syntax instead of `t.key` object access
   - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (15 passed)
   - Verified: Codex review pending
+
+- 2026-01-06 - BE (Opus): Stripe subscription webhook robustness - production hardening.
+  - Files: `app/api/subscriptions/webhook/route.ts`, `docs/backend_tasks.md`, `tasks.md`
+  - Changes:
+    - Malformed/partial payloads: Missing required metadata (profile_id/plan_id/billing_period/subscription_id) now results in safe no-op with `{ received: true }` + sanitized log
+    - Sanitized error logging: Added `logWebhookError()` helper that logs only error type + message (never full objects, stacks, or secrets)
+    - Stripe API failures: Added `safeRetrieveSubscription()` wrapper that returns null on failure instead of throwing; prevents retry storms by always returning 200 after signature verification
+    - Body read failures: Wrapped `req.text()` in try-catch; returns `{ received: true }` on failure
+    - Catch-all: Changed final catch block from 500 to 200 `{ received: true }` to prevent Stripe retry DOS
+  - Commands: `pnpm -s exec tsc -p tsconfig.json --noEmit` (PASS), `pnpm test:unit` (380/380 PASS), `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke` (14/15 - 1 pre-existing search filter flake)

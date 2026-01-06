@@ -2,7 +2,12 @@
 
 Owner: Backend agent(s)
 
-This is the day-to-day queue for backend work. The overall go-live checklist remains `tasks.md`.
+This is the day-to-day queue for backend work (**queue only**). The overall go-live checklist + batch log remains `tasks.md`.
+
+Rules:
+- Don’t treat this file as canonical; don’t duplicate/replace `tasks.md`.
+- Prefer “one behavior” tasks with a 1-sentence **Done when** and 2–4 verification steps.
+- When a batch ships, record it in `tasks.md` using the agreed medium format (`docs/gpt+opus.md`).
 
 Read first: `docs/workflow.md`, `docs/backend.md`, `docs/ENGINEERING.md`, `docs/PRODUCTION.md`, `supabase_tasks.md`.
 
@@ -15,6 +20,7 @@ Read first: `docs/workflow.md`, `docs/backend.md`, `docs/ENGINEERING.md`, `docs/
 - [x] **Stripe locale return URLs sweep**: all Stripe `success_url`, `cancel_url`, `return_url` use locale-prefixed paths via shared `lib/stripe-locale.ts` helper
 - [x] **Stripe locale unit tests**: `lib/stripe-locale.ts` behavior locked in with comprehensive Vitest coverage (37 tests: `normalizeLocale`, `buildLocaleUrl`, `inferLocaleFromRequest`, `inferLocaleFromHeaders`)
 - [x] **Subscription checkout hardening**: clean 4xx for bad input, clear 5xx for Stripe failures (no secrets logged), stripe_price_*_id guardrail (explicit config error for malformed IDs)
+- [x] **Stripe subscription webhook robustness**: malformed/partial payloads result in safe no-op + `{ received: true }`; sanitized error logging (type + message only); Stripe API failures return 200 to prevent retry storms
 
 ## P0 audit notes (fill this in)
 
