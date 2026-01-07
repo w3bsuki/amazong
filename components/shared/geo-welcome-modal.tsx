@@ -145,7 +145,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
 
   // Avoid SSR/client mismatches by only rendering after the app is safe to open dialogs.
   // Also require that the cookie consent banner has been acted on first to avoid overlapping dialogs.
-  if (isE2E || !safeToOpen || !hasCookieDecision || isLoading || !isOpen) {
+  if (isE2E || !safeToOpen || isLoading || !isOpen) {
     return null;
   }
 
@@ -154,9 +154,9 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent 
+      <DialogContent
         className="w-full max-w-sm rounded-lg border border-border bg-background p-0"
-        showCloseButton={false}
+        showCloseButton={true}
       >
         <DialogTitle className="sr-only">
           {locale === 'bg' ? 'Избор на регион' : 'Choose your region'}
@@ -185,7 +185,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
               <label className="text-sm font-medium text-foreground">
                 {t('selectRegion')}
               </label>
-              
+
               <Select
                 value={selectedRegion}
                 onValueChange={(value) => setSelectedRegion(value as ShippingRegion)}
@@ -203,8 +203,8 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
                 </SelectTrigger>
                 <SelectContent className="rounded-lg border border-border">
                   {(['BG', 'UK', 'EU', 'US', 'WW'] as ShippingRegion[]).map((region) => (
-                    <SelectItem 
-                      key={region} 
+                    <SelectItem
+                      key={region}
                       value={region}
                       className="py-2.5 cursor-pointer"
                     >

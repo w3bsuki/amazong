@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { CaretRight, TrendUp, GridFour, Fire, Percent, Star, Tag, MapPin, ChartLineUp, Eye } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { Link } from "@/i18n/routing"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -68,10 +70,11 @@ interface TabbedProductFeedProps {
  * - Clean product grid with load more (client-side pagination)
  */
 export function TabbedProductFeed({ 
-  locale, 
+  locale: _locale,
   initialProducts = [], 
   initialHasMore = true 
 }: TabbedProductFeedProps) {
+  const t = useTranslations("TabbedProductFeed")
   const [activeTab, setActiveTab] = useState<FeedTab>("all")
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   // Initialize with server-side data to avoid loading state flash
@@ -128,15 +131,15 @@ export function TabbedProductFeed({
   }, [])
 
   const tabs: { id: FeedTab; label: string; icon: typeof GridFour; color?: string }[] = [
-    { id: "all", label: locale === "bg" ? "Всички" : "All", icon: GridFour },
-    { id: "newest", label: locale === "bg" ? "Най-нови" : "Newest", icon: TrendUp, color: "text-success" },
-    { id: "best_sellers", label: locale === "bg" ? "Най-продавани" : "Best Sellers", icon: ChartLineUp, color: "text-primary" },
-    { id: "most_viewed", label: locale === "bg" ? "Най-разглеждани" : "Most Viewed", icon: Eye, color: "text-info" },
-    { id: "top_rated", label: locale === "bg" ? "Топ оценени" : "Top Rated", icon: Star, color: "text-warning" },
-    { id: "promoted", label: locale === "bg" ? "Промотирани" : "Promoted", icon: Fire, color: "text-warning" },
-    { id: "deals", label: locale === "bg" ? "Оферти" : "Deals", icon: Percent, color: "text-destructive" },
-    { id: "price_low", label: locale === "bg" ? "Най-ниска цена" : "Lowest Price", icon: Tag, color: "text-info" },
-    { id: "nearby", label: locale === "bg" ? "Близо до мен" : "Near Me", icon: MapPin, color: "text-info" },
+    { id: "all", label: t("tabs.all"), icon: GridFour },
+    { id: "newest", label: t("tabs.newest"), icon: TrendUp, color: "text-success" },
+    { id: "best_sellers", label: t("tabs.best_sellers"), icon: ChartLineUp, color: "text-primary" },
+    { id: "most_viewed", label: t("tabs.most_viewed"), icon: Eye, color: "text-info" },
+    { id: "top_rated", label: t("tabs.top_rated"), icon: Star, color: "text-warning" },
+    { id: "promoted", label: t("tabs.promoted"), icon: Fire, color: "text-warning" },
+    { id: "deals", label: t("tabs.deals"), icon: Percent, color: "text-destructive" },
+    { id: "price_low", label: t("tabs.price_low"), icon: Tag, color: "text-info" },
+    { id: "nearby", label: t("tabs.nearby"), icon: MapPin, color: "text-info" },
   ]
 
   const fetchProducts = useCallback(async (tab: FeedTab, pageNum: number, limit: number, append = false, categorySlug?: string | null) => {
@@ -262,31 +265,23 @@ export function TabbedProductFeed({
   useEffect(() => {
     const tabChanged = prevTabRef.current !== activeTab
     const categoryChanged = prevCategoryRef.current !== activeCategory
-    const pageSizeChanged = prevPageSizeRef.current !== pageSize
     
     prevTabRef.current = activeTab
     prevCategoryRef.current = activeCategory
     prevPageSizeRef.current = pageSize
 
-    // Skip initial fetch if we have server-side data for "all" tab
-    const isInitialFetch = !initialFetchDone.current
-    const shouldFetch = isInitialFetch || tabChanged || categoryChanged
+    // Need initial fetch if no server-side data was provided
+    const needsInitialFetch = !initialFetchDone.current
     
-    if (!shouldFetch) {
-      // pageSize changed but tab/category didn't - don't refetch, just note the size change
+    if (needsInitialFetch) {
+      initialFetchDone.current = true
+      fetchProducts(activeTab, 1, pageSize, false, activeCategory)
       return
     }
 
-    initialFetchDone.current = true
-
-    // Only reset page when tab or category actually changed
+    // Only reset page and fetch when tab or category actually changed
     if (tabChanged || categoryChanged) {
       setPage(1)
-      // Don't clear products here - let the new data replace them to avoid flash
-    }
-    
-    // Only fetch if tab/category changed (not on initial mount with server data)
-    if (tabChanged || categoryChanged) {
       fetchProducts(activeTab, 1, pageSize, false, activeCategory)
     }
   }, [pageSize, fetchProducts, activeTab, activeCategory])
@@ -316,7 +311,7 @@ export function TabbedProductFeed({
   }
 
   return (
-    <section id="listings" className="w-full" aria-label={locale === "bg" ? "Обяви" : "Listings"}>
+    <section id="listings" className="w-full" aria-label={t("sectionAriaLabel")}>
       {/* Unified Navigation Row - Professional Nav Pills */}
       <div className="flex flex-col gap-4 mb-4">
         <div className="-mx-4 px-4 md:mx-0 md:px-0">
@@ -328,7 +323,7 @@ export function TabbedProductFeed({
             <div className="relative">
               <div className="overflow-x-auto no-scrollbar pb-1">
                 <TabsList
-                  aria-label={locale === "bg" ? "Филтър на обявите" : "Listings filter"}
+                  aria-label={t("tabsAriaLabel")}
                   className="h-auto w-max min-w-full justify-start gap-4 rounded-none border-0 border-b border-border/50 bg-transparent p-0 pb-1 md:w-full md:justify-center"
                 >
                   {tabs.map((tab) => {
@@ -419,25 +414,19 @@ export function TabbedProductFeed({
 
                     {hasMore && (
                       <div className="mt-12 text-center">
-                        <button
-                          onClick={loadMore}
-                          disabled={isLoading}
-                          className={cn(
-                            "px-8 py-3 rounded-full font-medium text-sm transition-all",
-                            "bg-primary text-primary-foreground hover:bg-primary/90",
-                            "disabled:opacity-50 disabled:cursor-not-allowed",
-                            "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                          )}
-                        >
+                        <Button onClick={loadMore} disabled={isLoading} size="lg">
                           {isLoading ? (
                             <span className="flex items-center gap-2">
-                              <span className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                              {locale === "bg" ? "Зареждане..." : "Loading..."}
+                              <span
+                                className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                                aria-hidden="true"
+                              />
+                              {t("loading")}
                             </span>
                           ) : (
-                            locale === "bg" ? "Зареди още" : "Load more"
+                            t("loadMore")
                           )}
-                        </button>
+                        </Button>
                       </div>
                     )}
                   </>

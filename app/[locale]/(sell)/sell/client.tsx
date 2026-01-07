@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
-import { 
-  SignInPrompt, 
+import {
+  SignInPrompt,
   SellHeader,
   SellFormSkeleton,
   SellErrorBoundary,
@@ -26,8 +26,8 @@ interface SellPageClientProps {
   categories: Category[];
 }
 
-export function SellPageClient({ 
-  initialUser, 
+export function SellPageClient({
+  initialUser,
   initialSeller,
   initialNeedsOnboarding = false,
   initialUsername = null,
@@ -44,7 +44,7 @@ export function SellPageClient({
   const [accountType, setAccountType] = useState<"personal" | "business">(initialAccountType);
   const [displayName, setDisplayName] = useState<string | null>(initialDisplayName);
   const [businessName, setBusinessName] = useState<string | null>(initialBusinessName);
-  
+
   const params = useParams();
   const locale = typeof params?.locale === "string" ? params.locale : "en";
   const isBg = locale === "bg";
@@ -58,18 +58,18 @@ export function SellPageClient({
     }
 
     const supabase = createClient();
-    
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: string, session: { user?: { id: string; email?: string } } | null) => {
       const currentUser = session?.user ?? null;
       setUser(
         currentUser
           ? {
-              id: currentUser.id,
-              ...(currentUser.email ? { email: currentUser.email } : {}),
-            }
+            id: currentUser.id,
+            ...(currentUser.email ? { email: currentUser.email } : {}),
+          }
           : null
       );
-      
+
       if (currentUser && !seller) {
         // Check if user has a profile with username and is_seller status
         const { data: profileData } = await supabase
@@ -77,14 +77,14 @@ export function SellPageClient({
           .select("id, username, display_name, business_name, is_seller, account_type")
           .eq("id", currentUser.id)
           .single();
-        
+
         if (profileData?.username) {
           setUsername(profileData.username);
           // account_type is always set in DB, defaults to 'personal'
           setAccountType(profileData.account_type === "business" ? "business" : "personal");
           setDisplayName(profileData.display_name || null);
           setBusinessName(profileData.business_name || null);
-          
+
           // Check if user needs onboarding (has username but is_seller is false)
           if (!profileData.is_seller) {
             setNeedsOnboarding(true);
@@ -99,7 +99,7 @@ export function SellPageClient({
         setSeller(null);
         setNeedsOnboarding(false);
       }
-      
+
       setIsAuthChecking(false);
     });
 
@@ -142,7 +142,7 @@ export function SellPageClient({
         .select("id, username, display_name, business_name")
         .eq("id", user.id)
         .single();
-      
+
       if (profileData) {
         setSeller({
           id: profileData.id,
@@ -181,12 +181,12 @@ export function SellPageClient({
               {isBg ? "Настройте потребителско име" : "Set Up Your Username"}
             </h2>
             <p className="text-muted-foreground">
-              {isBg 
+              {isBg
                 ? "Нужно ви е потребителско име, преди да започнете да продавате."
                 : "You need a username before you can start selling. Visit your account settings to set one up."}
             </p>
-            <Link 
-              href={`/${locale}/account/profile`}
+            <Link
+              href="/account/profile"
               className="inline-block px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             >
               {isBg ? "Настройки" : "Go to Settings"}
@@ -200,11 +200,11 @@ export function SellPageClient({
   // =========================================================================
   // MAIN CONTENT: Traditional Form
   // =========================================================================
-  
+
   return (
     <SellErrorBoundary sellerId={seller.id}>
       {/* UnifiedSellForm handles both desktop and mobile layouts */}
-      <UnifiedSellForm 
+      <UnifiedSellForm
         sellerId={seller.id}
         locale={locale}
         categories={categories}

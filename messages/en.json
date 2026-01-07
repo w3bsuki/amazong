@@ -181,6 +181,11 @@
             "usedShort": "Used",
             "refurbShort": "Refurb"
         },
+        "b2b": {
+            "moqShort": "MOQ",
+            "samples": "Samples",
+            "verifiedShort": "Verified"
+        },
         "addToCart": "Add to Cart",
         "addedToCart": "Added to cart successfully!",
         "inCart": "In cart",
@@ -202,6 +207,8 @@
         "selectColor": "Select a color",
         "size": "Size",
         "selectSize": "Select a size",
+        "variant": "Variant",
+        "selectVariant": "Select variant",
         "quantity": "Quantity",
         "qty": "Qty",
         "shipsFrom": "Ships from",
@@ -1560,6 +1567,28 @@
         "tabUnread": "Unread",
         "tabBuying": "Buying",
         "tabSelling": "Selling"
+    },
+    "ProductFeed": {
+        "categoryAnnouncement": "Now showing {categoryName}",
+        "loadingProducts": "Loading products",
+        "endOfResults": "{count, plural, one {# product} other {# products}}"
+    },
+    "TabbedProductFeed": {
+        "sectionAriaLabel": "Listings",
+        "tabsAriaLabel": "Listings filter",
+        "tabs": {
+            "all": "All",
+            "newest": "Newest",
+            "best_sellers": "Best Sellers",
+            "most_viewed": "Most Viewed",
+            "top_rated": "Top Rated",
+            "promoted": "Promoted",
+            "deals": "Deals",
+            "price_low": "Lowest Price",
+            "nearby": "Near Me"
+        },
+        "loadMore": "Load more",
+        "loading": "Loading..."
     },
     "GeoWelcome": {
         "title": "Hello! We detected you're visiting from {country}",

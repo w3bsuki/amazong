@@ -30,6 +30,8 @@ type Category = CategoryTreeNode
 
 interface MobileHomeTabsProps {
   initialProducts: UIProduct[]
+  /** Which category slug the initialProducts are for. Defaults to "all" for homepage. */
+  initialProductsSlug?: string
   /** Categories with children from server (L0→L1→L2 pre-loaded, L3 lazy) */
   initialCategories?: Category[]
   defaultTab?: string | null
@@ -78,6 +80,7 @@ interface MobileHomeTabsProps {
 
 export function MobileHomeTabs({
   initialProducts,
+  initialProductsSlug = "all",
   initialCategories = [],
   defaultTab = null,
   defaultSubTab = null,
@@ -109,6 +112,7 @@ export function MobileHomeTabs({
     tabsNavigateToPages,
     l0Style,
     initialProducts,
+    initialProductsSlug,
     locale,
     activeAllFilter,
   })

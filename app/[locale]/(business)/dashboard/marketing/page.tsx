@@ -1,5 +1,5 @@
 import { requireDashboardAccess } from "@/lib/auth/business"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import {
   Card,
   CardContent,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { 
+import {
   IconBrandFacebook,
   IconBrandGoogle,
   IconMail,
@@ -123,7 +123,7 @@ export default async function BusinessMarketingPage() {
           {marketingChannels.map((channel) => {
             const Icon = channel.icon
             const isAvailable = channel.status === "available"
-            
+
             return (
               <Card key={channel.id} className={!isAvailable ? "opacity-75" : ""}>
                 <CardHeader className="pb-3">
@@ -143,9 +143,9 @@ export default async function BusinessMarketingPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <Button 
-                    variant={isAvailable ? "default" : "outline"} 
-                    size="sm" 
+                  <Button
+                    variant={isAvailable ? "default" : "outline"}
+                    size="sm"
                     className="w-full"
                     disabled={!isAvailable}
                   >

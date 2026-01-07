@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
 import { IconChevronRight, IconPackage, IconShoppingBag, IconMessageCircle } from "@tabler/icons-react"
@@ -77,7 +77,7 @@ interface AccountOrdersGridProps {
 export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
   const dateLocale = locale === "bg" ? bg : enUS
   const [conversationMap, setConversationMap] = useState<Map<string, string>>(new Map())
-  
+
   // Fetch conversation IDs for each order
   useEffect(() => {
     async function fetchConversations() {
@@ -94,7 +94,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
       }
       setConversationMap(map)
     }
-    
+
     if (orders.length > 0) {
       fetchConversations()
     }
@@ -270,156 +270,156 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                   </div>
                 </button>
               </SheetTrigger>
-                  <SheetContent side="bottom" className="h-[85vh] rounded-t-xl">
-                    <SheetHeader className="pb-4 border-b">
-                      <SheetTitle className="flex items-center gap-2">
-                        <IconPackage className="size-5" />
-                        {t.order} #{order.id.slice(0, 8)}
-                      </SheetTitle>
-                      <SheetDescription>
-                        <Badge
-                          variant="outline"
-                          className={getStatusColor(status)}
-                        >
-                          {getStatusText(status)}
-                        </Badge>
-                      </SheetDescription>
-                    </SheetHeader>
-                    <ScrollArea className="flex-1 -mx-6 px-6">
-                      <div className="py-4 space-y-4">
-                        {/* Order info */}
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="text-muted-foreground">{t.placed}</p>
-                            <p className="font-medium">
-                              {new Date(order.created_at).toLocaleDateString(
-                                locale,
-                                {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                }
-                              )}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">{t.total}</p>
-                            <p className="font-semibold tabular-nums">
-                              {formatCurrency(orderTotal)}
-                            </p>
-                          </div>
-                        </div>
-
-                        <Separator />
-
-                        {/* Items */}
-                        <div className="space-y-4">
-                          {order.order_items.map((item) => {
-                            const product = item.product
-                            const image =
-                              product?.images?.[0] || "/placeholder.svg"
-                            const title =
-                              product?.title ||
-                              (locale === "bg" ? "Продукт" : "Product")
-                            const href = `/product/${item.product_id}`
-                            const itemStatus = item.status || 'pending'
-
-                            return (
-                              <div key={item.id} className="flex gap-3">
-                                <Link href={href} className="shrink-0">
-                                  <div className="relative size-16 overflow-hidden rounded-lg border bg-muted">
-                                    <Image
-                                      src={image}
-                                      alt={title}
-                                      fill
-                                      sizes="64px"
-                                      className="object-contain"
-                                    />
-                                  </div>
-                                </Link>
-                                <div className="min-w-0 flex-1">
-                                  <Link
-                                    href={href}
-                                    className="text-sm font-medium hover:underline line-clamp-2"
-                                  >
-                                    {title}
-                                  </Link>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <OrderStatusBadge status={itemStatus as OrderItemStatus} size="sm" />
-                                  </div>
-                                  <p className="text-xs text-muted-foreground mt-1">
-                                    {t.qty}: {item.quantity}
-                                  </p>
-                                  {item.price_at_purchase && (
-                                    <p className="text-sm font-medium mt-1 tabular-nums">
-                                      {formatCurrency(item.price_at_purchase)}
-                                    </p>
-                                  )}
-                                  {/* Tracking info */}
-                                  {item.tracking_number && (
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                      📍 {item.tracking_number} {item.shipping_carrier && `(${item.shipping_carrier})`}
-                                    </p>
-                                  )}
-                                  {/* Buyer Actions: Confirm Delivery & Rate Seller */}
-                                  {item.seller_id && (itemStatus === 'shipped' || itemStatus === 'delivered') && (
-                                    <div className="mt-2">
-                                      <BuyerOrderActions
-                                        orderItemId={item.id}
-                                        currentStatus={itemStatus as OrderItemStatus}
-                                        sellerId={item.seller_id}
-                                        conversationId={conversationMap.get(order.id) ?? null}
-                                        locale={locale}
-                                        orderId={order.id}
-                                      />
-                                    </div>
-                                  )}
-                                  {/* Chat link (shown for other statuses) */}
-                                  {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
-                                    <Link
-                                      href={`/${locale}/chat?conversation=${conversationMap.get(order.id)}`}
-                                      className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2"
-                                    >
-                                      <IconMessageCircle className="size-3" />
-                                      {locale === "bg" ? "Чат с продавача" : "Chat with seller"}
-                                    </Link>
-                                  )}
-                                </div>
-                              </div>
-                            )
-                          })}
-                        </div>
+              <SheetContent side="bottom" className="h-[85vh] rounded-t-xl">
+                <SheetHeader className="pb-4 border-b">
+                  <SheetTitle className="flex items-center gap-2">
+                    <IconPackage className="size-5" />
+                    {t.order} #{order.id.slice(0, 8)}
+                  </SheetTitle>
+                  <SheetDescription>
+                    <Badge
+                      variant="outline"
+                      className={getStatusColor(status)}
+                    >
+                      {getStatusText(status)}
+                    </Badge>
+                  </SheetDescription>
+                </SheetHeader>
+                <ScrollArea className="flex-1 -mx-6 px-6">
+                  <div className="py-4 space-y-4">
+                    {/* Order info */}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">{t.placed}</p>
+                        <p className="font-medium">
+                          {new Date(order.created_at).toLocaleDateString(
+                            locale,
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }
+                          )}
+                        </p>
                       </div>
-                    </ScrollArea>
-                  </SheetContent>
-                </Sheet>
+                      <div>
+                        <p className="text-muted-foreground">{t.total}</p>
+                        <p className="font-semibold tabular-nums">
+                          {formatCurrency(orderTotal)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Items */}
+                    <div className="space-y-4">
+                      {order.order_items.map((item) => {
+                        const product = item.product
+                        const image =
+                          product?.images?.[0] || "/placeholder.svg"
+                        const title =
+                          product?.title ||
+                          (locale === "bg" ? "Продукт" : "Product")
+                        const href = `/product/${item.product_id}`
+                        const itemStatus = item.status || 'pending'
+
+                        return (
+                          <div key={item.id} className="flex gap-3">
+                            <Link href={href} className="shrink-0">
+                              <div className="relative size-16 overflow-hidden rounded-lg border bg-muted">
+                                <Image
+                                  src={image}
+                                  alt={title}
+                                  fill
+                                  sizes="64px"
+                                  className="object-contain"
+                                />
+                              </div>
+                            </Link>
+                            <div className="min-w-0 flex-1">
+                              <Link
+                                href={href}
+                                className="text-sm font-medium hover:underline line-clamp-2"
+                              >
+                                {title}
+                              </Link>
+                              <div className="flex items-center gap-2 mt-1">
+                                <OrderStatusBadge status={itemStatus as OrderItemStatus} size="sm" />
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {t.qty}: {item.quantity}
+                              </p>
+                              {item.price_at_purchase && (
+                                <p className="text-sm font-medium mt-1 tabular-nums">
+                                  {formatCurrency(item.price_at_purchase)}
+                                </p>
+                              )}
+                              {/* Tracking info */}
+                              {item.tracking_number && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  📍 {item.tracking_number} {item.shipping_carrier && `(${item.shipping_carrier})`}
+                                </p>
+                              )}
+                              {/* Buyer Actions: Confirm Delivery & Rate Seller */}
+                              {item.seller_id && (itemStatus === 'shipped' || itemStatus === 'delivered') && (
+                                <div className="mt-2">
+                                  <BuyerOrderActions
+                                    orderItemId={item.id}
+                                    currentStatus={itemStatus as OrderItemStatus}
+                                    sellerId={item.seller_id}
+                                    conversationId={conversationMap.get(order.id) ?? null}
+                                    locale={locale}
+                                    orderId={order.id}
+                                  />
+                                </div>
+                              )}
+                              {/* Chat link (shown for other statuses) */}
+                              {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
+                                <Link
+                                  href={`/${locale}/chat?conversation=${conversationMap.get(order.id)}`}
+                                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2"
+                                >
+                                  <IconMessageCircle className="size-3" />
+                                  {locale === "bg" ? "Чат с продавача" : "Chat with seller"}
+                                </Link>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </ScrollArea>
+              </SheetContent>
+            </Sheet>
+          )
+        })}
+      </div>
+
+      {/* Desktop: Table-like layout in Card */}
+      <Card className="hidden shadow-none md:block">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-base">{t.order}s</CardTitle>
+          <CardDescription>
+            {orders.length} {orders.length === 1 ? t.item : t.items}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="divide-y">
+            {orders.map((order) => {
+              const status = (order.status || "pending") as OrderStatus
+              const itemCount = order.order_items.reduce(
+                (sum, i) => sum + Number(i.quantity || 0),
+                0
               )
-            })}
-        </div>
+              const orderTotal = Number(order.total_amount || 0)
+              const visibleItems = order.order_items.slice(0, 4)
+              const remainingCount = order.order_items.length - 4
 
-        {/* Desktop: Table-like layout in Card */}
-        <Card className="hidden shadow-none md:block">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-base">{t.order}s</CardTitle>
-            <CardDescription>
-              {orders.length} {orders.length === 1 ? t.item : t.items}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="divide-y">
-              {orders.map((order) => {
-                const status = (order.status || "pending") as OrderStatus
-                const itemCount = order.order_items.reduce(
-                  (sum, i) => sum + Number(i.quantity || 0),
-                  0
-                )
-                const orderTotal = Number(order.total_amount || 0)
-                const visibleItems = order.order_items.slice(0, 4)
-                const remainingCount = order.order_items.length - 4
-
-                return (
-                  <Sheet key={order.id}>
-                    <div className="flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors">
+              return (
+                <Sheet key={order.id}>
+                  <div className="flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors">
                     {/* Product thumbnails - fixed width for alignment */}
                     <div className="w-40 shrink-0">
                       <div className="flex -space-x-2">
@@ -630,9 +630,9 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                 </Sheet>
               )
             })}
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
     </>
   )
 }

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import { UpgradeContent } from "./upgrade-content"
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 
 const PROFILE_SELECT_FOR_UPGRADE = 'id,tier,commission_rate,stripe_customer_id'
 const SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE =
@@ -25,13 +25,13 @@ export default async function UpgradePage({
   const { locale } = await params
   setRequestLocale(locale)
   const supabase = await createClient()
-  
+
   if (!supabase) {
     redirect("/auth/login")
   }
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect("/auth/login")
   }
@@ -63,7 +63,7 @@ export default async function UpgradePage({
   return (
     <div className="p-4 lg:p-4 max-w-4xl mx-auto">
       {/* Back Link */}
-      <Link 
+      <Link
         href="/account/plans"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
       >
@@ -77,13 +77,13 @@ export default async function UpgradePage({
           {locale === 'bg' ? 'Надгради плана си' : 'Upgrade Your Plan'}
         </h1>
         <p className="text-muted-foreground">
-          {locale === 'bg' 
+          {locale === 'bg'
             ? 'Изберете план с по-ниски комисиони и повече функции'
             : 'Choose a plan with lower commissions and more features'}
         </p>
       </div>
-      
-      <UpgradeContent 
+
+      <UpgradeContent
         locale={locale}
         plans={(plans || []) as Parameters<typeof UpgradeContent>[0]['plans']}
         currentTier={currentTier}

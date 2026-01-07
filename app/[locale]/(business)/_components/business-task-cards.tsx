@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import {
   IconAlertTriangle,
   IconStar,
@@ -53,7 +53,7 @@ const taskConfig = [
 // Compact inline badge version
 export function BusinessTaskCards({ tasks, className }: BusinessTaskCardsProps) {
   const activeTasks = taskConfig.filter((task) => tasks[task.key] > 0)
-  
+
   if (activeTasks.length === 0) return null
 
   return (
@@ -61,10 +61,10 @@ export function BusinessTaskCards({ tasks, className }: BusinessTaskCardsProps) 
       {activeTasks.map((task) => {
         const count = tasks[task.key]
         const Icon = task.icon
-        
+
         return (
-          <Link 
-            key={task.key} 
+          <Link
+            key={task.key}
             href={task.href}
             className={cn(
               "flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-all hover:shadow-sm",

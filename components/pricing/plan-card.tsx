@@ -149,8 +149,8 @@ export function PlanCard({
         // Using calc to account for container padding (1rem each side) and gap (1rem)
         // Compact: smaller cards for modals, Full: larger cards for pages
         variant === "compact" 
-          ? "w-[calc(100vw-4rem)] max-w-[280px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink md:snap-none"
-          : "w-[calc(100vw-3rem)] shrink-0 snap-center md:w-auto md:max-w-none md:shrink md:snap-none",
+          ? "min-w-(--container-2xs) max-w-(--container-xs) w-full shrink-0 snap-center md:w-auto md:min-w-0 md:max-w-none md:shrink md:snap-none"
+          : "min-w-(--container-dropdown) max-w-(--container-modal-sm) w-full shrink-0 snap-center md:w-auto md:min-w-0 md:max-w-none md:shrink md:snap-none",
         // Styling based on plan type
         isPopular && "border-primary ring-1 ring-primary/20 shadow-md",
         isBest && "border-rating ring-1 ring-rating/20 shadow-md",
@@ -373,7 +373,9 @@ export function PlansGridSkeleton({ count = 3, variant = "full" }: { count?: num
           key={i}
           className={cn(
             "shrink-0 snap-center md:w-auto md:shrink md:snap-none rounded-md border bg-card p-4",
-            variant === "compact" ? "w-[calc(100vw-4rem)] max-w-[280px]" : "w-[calc(100vw-3rem)]"
+            variant === "compact"
+              ? "min-w-(--container-2xs) max-w-(--container-xs) w-full"
+              : "min-w-(--container-dropdown) max-w-(--container-modal-sm) w-full"
           )}
         >
           <div className="flex items-center gap-3 mb-3">

@@ -2,14 +2,14 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { getProductUrl } from "@/lib/url-utils"
 import { toast } from "sonner"
-import { 
-  Heart, 
-  ShoppingCart, 
-  Trash, 
+import {
+  Heart,
+  ShoppingCart,
+  Trash,
   ArrowRight,
   Package,
   XCircle,
@@ -90,7 +90,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
       image: item.image,
       quantity: 1,
     })
-    
+
     // Remove from wishlist after adding to cart
     await handleRemove(item.product_id)
     toast.success(locale === 'bg' ? 'Преместено в количката' : 'Moved to cart')
@@ -145,8 +145,8 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
       })
     })
     toast.success(
-      locale === 'bg' 
-        ? `Добавени ${inStockItems.length} артикула в количката` 
+      locale === 'bg'
+        ? `Добавени ${inStockItems.length} артикула в количката`
         : `Added ${inStockItems.length} items to cart`
     )
   }
@@ -209,10 +209,10 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
             >
               {/* Product Image */}
               <div className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">
-                <Image 
-                  src={item.image} 
-                  alt={item.title} 
-                  fill 
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
                   className={cn(
                     "object-cover",
                     item.stock <= 0 && "opacity-60 grayscale-30"
@@ -249,7 +249,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                   </button>
                 )}
               </div>
-              
+
               {/* Product Info */}
               <div className="flex flex-col p-3 flex-1">
                 <p className="text-sm font-medium text-foreground line-clamp-2 leading-tight mb-2">
@@ -258,8 +258,8 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 <div className="mt-auto flex items-center justify-between">
                   <p className={cn(
                     "text-base font-bold",
-                    item.stock > 0 
-                      ? "text-foreground" 
+                    item.stock > 0
+                      ? "text-foreground"
                       : "text-muted-foreground line-through"
                   )}>
                     {formatCurrency(item.price)}
@@ -296,17 +296,17 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                   )}
                 </SheetDescription>
               </SheetHeader>
-              
+
               <div className="py-4">
                 <div className="relative aspect-square w-full max-w-60 mx-auto rounded-md overflow-hidden bg-muted">
-                  <Image 
-                    src={item.image} 
-                    alt={item.title} 
-                    fill 
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
                     className="object-contain"
                   />
                 </div>
-                
+
                 <div className="mt-6 space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">{labels.price}</span>
@@ -331,7 +331,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               </div>
 
               <SheetFooter className="flex-col gap-2 sm:flex-col pt-4 border-t">
-                <Button 
+                <Button
                   onClick={() => handleMoveToCart(item)}
                   disabled={item.stock <= 0}
                   className="w-full h-12 text-base"
@@ -340,9 +340,9 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                   {labels.moveToCart}
                 </Button>
                 <div className="flex gap-2 w-full">
-                  <Button 
-                    variant="outline" 
-                    asChild 
+                  <Button
+                    variant="outline"
+                    asChild
                     className="flex-1 h-11"
                   >
                     <Link
@@ -356,7 +356,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                       {labels.viewProduct}
                     </Link>
                   </Button>
-                  <Button 
+                  <Button
                     variant="outline"
                     onClick={() => {
                       handleRemove(item.product_id)
@@ -377,16 +377,16 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
       {/* Desktop: Beautiful card grid with hover effects */}
       <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {items.map((item) => (
-          <div 
+          <div
             key={item.id}
             className="group relative flex flex-col rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden transition-colors hover:border-account-accent"
           >
             {/* Product Image */}
             <div className="relative aspect-square w-full overflow-hidden bg-account-stat-bg">
-              <Image 
-                src={item.image} 
-                alt={item.title} 
-                fill 
+              <Image
+                src={item.image}
+                alt={item.title}
+                fill
                 className={cn(
                   "object-cover",
                   item.stock <= 0 && "opacity-60 grayscale-30"
@@ -444,10 +444,10 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 </div>
               </div>
             </div>
-            
+
             {/* Product Info */}
             <div className="flex flex-col p-4 flex-1">
-              <Link 
+              <Link
                 href={getProductUrl({
                   id: item.product_id,
                   slug: item.slug ?? null,
@@ -457,13 +457,13 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
               >
                 {item.title}
               </Link>
-              
+
               <div className="mt-auto space-y-3">
                 <div className="flex items-center justify-between">
                   <p className={cn(
                     "text-lg font-bold",
-                    item.stock > 0 
-                      ? "text-foreground" 
+                    item.stock > 0
+                      ? "text-foreground"
                       : "text-muted-foreground line-through"
                   )}>
                     {formatCurrency(item.price)}
@@ -472,10 +472,10 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                     {formatDate(item.created_at)}
                   </span>
                 </div>
-                
+
                 {/* Action buttons */}
                 <div className="flex gap-2">
-                  <Button 
+                  <Button
                     size="sm"
                     onClick={() => handleMoveToCart(item)}
                     disabled={item.stock <= 0}
@@ -496,7 +496,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
                 </div>
               </div>
             </div>
-            
+
             {/* Wishlist heart indicator */}
             <div className="absolute top-3 left-3 flex size-8 items-center justify-center rounded-full bg-background/90">
               <IconHeart className="size-4 text-destructive fill-destructive" />
@@ -508,8 +508,8 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
       {/* Add All to Cart Button (Desktop only) */}
       {items.some(item => item.stock > 0) && (
         <div className="hidden md:flex justify-end pt-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleAddAllToCart}
             className="border-account-stat-border hover:bg-account-card-hover"
           >
@@ -522,7 +522,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
       {/* Mobile: Floating Add All button */}
       {items.some(item => item.stock > 0) && items.length > 2 && (
         <div className="fixed bottom-20 left-4 right-4 md:hidden z-40">
-          <Button 
+          <Button
             onClick={handleAddAllToCart}
             className="w-full h-12 rounded-full"
           >

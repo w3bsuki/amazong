@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import {
@@ -135,7 +135,7 @@ export function ProductsTable({
     // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      result = result.filter((p) => 
+      result = result.filter((p) =>
         p.title.toLowerCase().includes(query) ||
         (p.variant_count ? false : (p.sku && p.sku.toLowerCase().includes(query))) ||
         (p.barcode && p.barcode.toLowerCase().includes(query))
@@ -222,24 +222,24 @@ export function ProductsTable({
           setProducts((prev) =>
             prev.map((p) =>
               p.id === editingProduct.id
-                ? { 
-                    ...p, 
-                    title: data.title,
-                    price: data.price,
-                    list_price: data.compareAtPrice || null,
-                    cost_price: data.costPrice || null,
-                    sku: data.sku || null,
-                    barcode: data.barcode || null,
-                    stock: data.stock,
-                    track_inventory: data.trackInventory ?? true,
-                    status: data.status || "draft",
-                    weight: data.weight || null,
-                    weight_unit: data.weightUnit || "kg",
-                    condition: data.condition || "new",
-                    images: data.images,
-                    category_id: data.categoryId || null,
-                    updated_at: new Date().toISOString() 
-                  }
+                ? {
+                  ...p,
+                  title: data.title,
+                  price: data.price,
+                  list_price: data.compareAtPrice || null,
+                  cost_price: data.costPrice || null,
+                  sku: data.sku || null,
+                  barcode: data.barcode || null,
+                  stock: data.stock,
+                  track_inventory: data.trackInventory ?? true,
+                  status: data.status || "draft",
+                  weight: data.weight || null,
+                  weight_unit: data.weightUnit || "kg",
+                  condition: data.condition || "new",
+                  images: data.images,
+                  category_id: data.categoryId || null,
+                  updated_at: new Date().toISOString()
+                }
                 : p
             )
           )
@@ -307,7 +307,7 @@ export function ProductsTable({
       const result = await bulkUpdateProductStatus([...selectedIds], newStatus)
       if (result.success) {
         toast.success(`${selectedIds.size} product(s) set to ${newStatus}`)
-        setProducts((prev) => prev.map((p) => 
+        setProducts((prev) => prev.map((p) =>
           selectedIds.has(p.id) ? { ...p, status: newStatus } : p
         ))
         setSelectedIds(new Set())
@@ -551,22 +551,22 @@ export function ProductsTable({
                   <TableHead className="w-10 pl-4">
                     <Checkbox checked={isAllSelected} onCheckedChange={toggleSelectAll} />
                   </TableHead>
-                  <TableHead className="min-w-[250px]">
+                  <TableHead className="min-w-(--container-3xs)">
                     <SortHeader field="title">Product</SortHeader>
                   </TableHead>
-                  <TableHead className="w-[100px]">
+                  <TableHead className="w-24">
                     <SortHeader field="sku">SKU</SortHeader>
                   </TableHead>
-                  <TableHead className="w-[100px]">
+                  <TableHead className="w-24">
                     <SortHeader field="status">Status</SortHeader>
                   </TableHead>
-                  <TableHead className="w-[120px]">
+                  <TableHead className="w-28">
                     <SortHeader field="stock">Inventory</SortHeader>
                   </TableHead>
-                  <TableHead className="w-[100px]">
+                  <TableHead className="w-24">
                     <SortHeader field="price">Price</SortHeader>
                   </TableHead>
-                  <TableHead className="w-[100px]">Rating</TableHead>
+                  <TableHead className="w-24">Rating</TableHead>
                   <TableHead className="w-10 pr-4"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -628,8 +628,8 @@ export function ProductsTable({
                         product.status === "out_of_stock" && "bg-warning/10 text-warning border border-warning/20",
                         !product.status && "bg-muted text-muted-foreground border border-border"
                       )}>
-                        {product.status === "out_of_stock" ? "Out of Stock" : 
-                         product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "Draft"}
+                        {product.status === "out_of_stock" ? "Out of Stock" :
+                          product.status ? product.status.charAt(0).toUpperCase() + product.status.slice(1) : "Draft"}
                       </span>
                     </TableCell>
                     <TableCell>

@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import {
   IconBox,
   IconPlus,
@@ -139,7 +139,7 @@ export function BusinessEmptyState({ type, title, description, className }: Empt
           <div className="flex size-16 items-center justify-center rounded-full bg-muted mb-4">
             <Icon className="size-8 text-muted-foreground" />
           </div>
-          
+
           {/* Text */}
           <h3 className="text-lg font-semibold mb-1">
             {title || config.title}
@@ -147,7 +147,7 @@ export function BusinessEmptyState({ type, title, description, className }: Empt
           <p className="text-sm text-muted-foreground max-w-md mb-6">
             {description || config.description}
           </p>
-          
+
           {/* Actions */}
           <div className="flex items-center gap-3 mb-8">
             <Button asChild>
@@ -166,7 +166,7 @@ export function BusinessEmptyState({ type, title, description, className }: Empt
               </Button>
             )}
           </div>
-          
+
           {/* Tips */}
           <div className="w-full max-w-md">
             <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, forwardRef, useImperativeHandle } from "react"
-import { 
+import {
   Drawer,
   DrawerContent,
   DrawerHeader,
@@ -10,9 +10,9 @@ import {
   DrawerDescription,
 } from "@/components/ui/drawer"
 import { Link } from "@/i18n/routing"
-import { 
-  X, 
-  CaretRight, 
+import {
+  X,
+  CaretRight,
   SquaresFour
 } from "@phosphor-icons/react"
 import { useLocale } from "next-intl"
@@ -62,7 +62,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                 </DrawerTitle>
               </div>
               <DrawerClose asChild>
-                <button 
+                <button
                   className="flex items-center justify-center size-touch -mr-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/70 transition-colors touch-action-manipulation tap-transparent"
                   aria-label="Close menu"
                 >
@@ -77,15 +77,15 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
 
           {/* Scrollable Content with safe area */}
           <div className="flex-1 overflow-y-auto overscroll-contain px-(--page-inset) pb-[max(1rem,env(safe-area-inset-bottom))]">
-            
+
             {/* Categories Section - circles grid */}
             <section className="py-3">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-foreground">
                   {locale === 'bg' ? 'Пазарувай по категория' : 'Shop by Category'}
                 </h3>
-                <Link 
-                  href="/categories" 
+                <Link
+                  href="/categories"
                   onClick={() => setOpen(false)}
                   className="text-xs text-cta-trust-blue font-medium hover:underline underline-offset-2 flex items-center gap-0.5 min-h-touch-xs px-1 -mr-1 rounded transition-colors active:bg-muted/50"
                 >
@@ -95,9 +95,9 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
               </div>
 
               {/* Intentionally no debug UI / query toggles here. */}
-              
-              {/* Category Circles Grid - 3 columns (better label fit on mobile) */}
-              <div className="grid grid-cols-3 gap-y-4 gap-x-2">
+
+              {/* Category Circles Grid - 4 columns (Compact & Perfect) */}
+              <div className="grid grid-cols-4 gap-y-3 gap-x-2">
                 {categories.slice(0, 20).map((cat) => {
                   return (
                     <CategoryCircle
@@ -105,8 +105,8 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                       category={cat}
                       href={`/categories/${cat.slug}`}
                       onClick={() => setOpen(false)}
-                      circleClassName="size-12"
-                      fallbackIconSize={20}
+                      circleClassName="size-14"
+                      fallbackIconSize={24}
                       fallbackIconWeight="regular"
                       variant="menu"
                       label={getShortName(cat)}

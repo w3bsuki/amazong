@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -62,7 +62,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
 
   const t = {
     boostListing: locale === 'bg' ? 'Промотирай обявата' : 'Boost Listing',
-    boostDesc: locale === 'bg' 
+    boostDesc: locale === 'bg'
       ? 'Получете до 10 пъти повече гледания с промотирана обява'
       : 'Get up to 10x more views with a boosted listing',
     selectDuration: locale === 'bg' ? 'Изберете продължителност' : 'Select duration',
@@ -91,7 +91,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
 
   const handleBoost = async () => {
     setIsLoading(true)
-    
+
     try {
       const { url } = await createBoostCheckoutSession({
         productId: product.id,
@@ -105,7 +105,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
     } catch (error) {
       console.error('Boost error:', error)
       toast.error(
-        locale === 'bg' 
+        locale === 'bg'
           ? 'Грешка при създаване на плащане. Моля, опитайте отново.'
           : 'Error creating payment. Please try again.'
       )
@@ -119,7 +119,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
     const expiresAt = new Date(product.boost_expires_at)
     const now = new Date()
     const daysLeft = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-    
+
     if (daysLeft > 0) {
       return (
         <Badge className="bg-primary/10 text-primary border-0 gap-1">
@@ -164,20 +164,20 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
               {BOOST_OPTIONS.map((option) => {
                 const isSelected = selectedDays === option.days
                 const pricePerDay = option.price / option.days
-                
+
                 return (
                   <button
                     key={option.days}
                     onClick={() => setSelectedDays(option.days)}
                     className={cn(
                       "relative flex flex-col items-center p-3 rounded-lg border-2 transition-all",
-                      isSelected 
-                        ? "border-primary bg-primary/5" 
+                      isSelected
+                        ? "border-primary bg-primary/5"
                         : "border-border hover:border-primary/50"
                     )}
                   >
                     {option.popular && (
-                      <Badge 
+                      <Badge
                         className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xs px-1.5 py-0"
                         variant="default"
                       >
@@ -220,8 +220,8 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
           </div>
 
           {/* CTA Button */}
-          <Button 
-            className="w-full gap-2" 
+          <Button
+            className="w-full gap-2"
             size="lg"
             onClick={handleBoost}
             disabled={isLoading}
@@ -252,7 +252,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
           </div>
 
           {/* View Plans CTA */}
-          <Link 
+          <Link
             href={`/${locale}/account/plans`}
             onClick={() => setIsOpen(false)}
             className="flex items-center justify-between w-full p-3 rounded-lg border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors group"
@@ -266,8 +266,8 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
                   {locale === 'bg' ? 'Надградете плана си' : 'Upgrade Your Plan'}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {locale === 'bg' 
-                    ? 'Вземете 5+ безплатни буста на месец' 
+                  {locale === 'bg'
+                    ? 'Вземете 5+ безплатни буста на месец'
                     : 'Get 5+ free boosts per month'}
                 </p>
               </div>

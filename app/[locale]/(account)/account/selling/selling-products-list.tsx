@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -94,8 +94,8 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
       const result = await deleteProduct(productId)
       if (result.success) {
         toast.success(
-          locale === 'bg' 
-            ? 'Продуктът е изтрит успешно!' 
+          locale === 'bg'
+            ? 'Продуктът е изтрит успешно!'
             : 'Product deleted successfully!'
         )
         setProductsList(prev => prev.filter(p => p.id !== productId))
@@ -115,11 +115,11 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
       const result = await bulkUpdateProductStatus([productId], newStatus)
       if (result.success) {
         toast.success(
-          locale === 'bg' 
+          locale === 'bg'
             ? (newStatus === 'draft' ? 'Продуктът е поставен на пауза' : 'Продуктът е активен отново')
             : (newStatus === 'draft' ? 'Product paused' : 'Product activated')
         )
-        setProductsList(prev => prev.map(p => 
+        setProductsList(prev => prev.map(p =>
           p.id === productId ? { ...p, status: newStatus } : p
         ))
         router.refresh()
@@ -134,16 +134,16 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
   useEffect(() => {
     if (searchParams.get('boost_success') === 'true') {
       toast.success(
-        locale === 'bg' 
-          ? 'Промоцията е активирана успешно!' 
+        locale === 'bg'
+          ? 'Промоцията е активирана успешно!'
           : 'Boost activated successfully!'
       )
       // Clean up URL
       window.history.replaceState({}, '', window.location.pathname)
     } else if (searchParams.get('boost_canceled') === 'true') {
       toast.info(
-        locale === 'bg' 
-          ? 'Плащането беше отменено' 
+        locale === 'bg'
+          ? 'Плащането беше отменено'
           : 'Payment was cancelled'
       )
       window.history.replaceState({}, '', window.location.pathname)
@@ -284,8 +284,8 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
           {locale === 'bg' ? 'Нямате продукти все още' : 'No products yet'}
         </h3>
         <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-          {locale === 'bg' 
-            ? 'Започнете да продавате, като създадете първата си обява' 
+          {locale === 'bg'
+            ? 'Започнете да продавате, като създадете първата си обява'
             : 'Start selling by creating your first product listing'}
         </p>
         <Button asChild className="rounded-full">
@@ -307,13 +307,12 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
           const daysLeft = getBoostDaysLeft(product)
           const saleActive = isSaleActive(product)
           const salePercent = getSalePercentForDisplay(product)
-          
+
           return (
-            <div 
-              key={product.id} 
-              className={`flex items-start gap-3 p-3 rounded-md bg-account-stat-bg border border-account-stat-border transition-all active:scale-[0.99] ${
-                boosted ? 'ring-2 ring-primary/20 border-primary/30' : ''
-              }`}
+            <div
+              key={product.id}
+              className={`flex items-start gap-3 p-3 rounded-md bg-account-stat-bg border border-account-stat-border transition-all active:scale-[0.99] ${boosted ? 'ring-2 ring-primary/20 border-primary/30' : ''
+                }`}
             >
               {/* Product Image */}
               <div className="relative size-20 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
@@ -343,7 +342,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <Link 
+                    <Link
                       href={`/product/${product.id}`}
                       className="font-medium text-foreground hover:text-primary line-clamp-1 text-sm"
                     >
@@ -362,7 +361,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                     </div>
                     <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground">
                       <span className={product.stock < 5 && product.stock > 0 ? "text-account-warning font-medium" : product.stock === 0 ? "text-account-error font-medium" : ""}>
-                        {product.stock === 0 
+                        {product.stock === 0
                           ? (locale === 'bg' ? 'Изчерпан' : 'Out of stock')
                           : `${product.stock} ${locale === 'bg' ? 'в склад' : 'in stock'}`
                         }
@@ -404,13 +403,13 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       <Tag className="size-4" weight="bold" />
                     </Button>
                     {!boosted && (
-                      <BoostDialog 
-                        product={product} 
+                      <BoostDialog
+                        product={product}
                         locale={locale}
                         trigger={
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             className="size-8 text-primary hover:bg-primary/10"
                           >
                             <Lightning className="size-4" weight="bold" />
@@ -419,9 +418,9 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       />
                     )}
                     {/* Pause/Unpause button */}
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="size-8"
                       onClick={() => handleToggleStatus(product.id, product.status)}
                       disabled={togglingId === product.id}
@@ -440,9 +439,9 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                     {/* Delete button */}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="size-8 text-destructive hover:bg-destructive/10"
                           disabled={deletingId === product.id}
                         >
@@ -455,7 +454,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                             {locale === 'bg' ? 'Изтриване на продукт' : 'Delete Product'}
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            {locale === 'bg' 
+                            {locale === 'bg'
                               ? `Сигурни ли сте, че искате да изтриете "${product.title}"? Това действие не може да бъде отменено.`
                               : `Are you sure you want to delete "${product.title}"? This action cannot be undone.`
                             }
@@ -489,13 +488,12 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
           const daysLeft = getBoostDaysLeft(product)
           const saleActive = isSaleActive(product)
           const salePercent = getSalePercentForDisplay(product)
-          
+
           return (
-            <div 
-              key={product.id} 
-              className={`flex items-center gap-4 p-4 hover:bg-account-card-hover transition-colors ${
-                boosted ? 'bg-primary/5' : ''
-              }`}
+            <div
+              key={product.id}
+              className={`flex items-center gap-4 p-4 hover:bg-account-card-hover transition-colors ${boosted ? 'bg-primary/5' : ''
+                }`}
             >
               {/* Product Image */}
               <div className="relative size-16 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
@@ -521,168 +519,168 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                 )}
               </div>
 
-            {/* Product Info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <Link 
-                  href={`/product/${product.id}`}
-                  className="font-medium text-foreground hover:text-primary line-clamp-1"
-                >
-                  {product.title}
-                </Link>
-                {saleActive && salePercent > 0 && (
-                  <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-xs shrink-0">
-                    <Tag weight="fill" className="size-3 mr-0.5" />
-                    -{salePercent}%
-                  </Badge>
-                )}
-                {boosted && (
-                  <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-xs shrink-0">
-                    <Lightning weight="fill" className="size-3 mr-0.5" />
-                    {daysLeft} {locale === 'bg' ? 'дни' : 'days'}
-                  </Badge>
-                )}
-              </div>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
-                <div className="flex items-baseline gap-1.5">
-                  <span className={`font-semibold ${saleActive ? 'text-deal' : 'text-foreground'}`}>
-                    {formatCurrency(Number(product.price))}
-                  </span>
-                  {product.list_price && product.list_price > product.price && (
-                    <span className="text-muted-foreground line-through text-xs">
-                      {formatCurrency(Number(product.list_price))}
-                    </span>
+              {/* Product Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Link
+                    href={`/product/${product.id}`}
+                    className="font-medium text-foreground hover:text-primary line-clamp-1"
+                  >
+                    {product.title}
+                  </Link>
+                  {saleActive && salePercent > 0 && (
+                    <Badge variant="secondary" className="bg-deal/10 text-deal border-0 text-xs shrink-0">
+                      <Tag weight="fill" className="size-3 mr-0.5" />
+                      -{salePercent}%
+                    </Badge>
+                  )}
+                  {boosted && (
+                    <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-xs shrink-0">
+                      <Lightning weight="fill" className="size-3 mr-0.5" />
+                      {daysLeft} {locale === 'bg' ? 'дни' : 'days'}
+                    </Badge>
                   )}
                 </div>
-                <span className={product.stock < 5 && product.stock > 0 ? "text-account-warning font-medium" : product.stock === 0 ? "text-account-error font-medium" : ""}>
-                  {product.stock === 0 
-                    ? (locale === 'bg' ? 'Изчерпан' : 'Out of stock')
-                    : `${product.stock} ${locale === 'bg' ? 'в склад' : 'in stock'}`
-                  }
-                </span>
-                {product.category && (
-                  <span className="text-muted-foreground">{product.category.name}</span>
-                )}
-              </div>
-              {/* Rating */}
-              <div className="flex items-center gap-1 mt-1.5">
-                <div className="flex text-rating">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={12}
-                      weight={i < Math.floor(product.rating || 0) ? "fill" : "regular"}
-                      className="text-rating"
-                    />
-                  ))}
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className={`font-semibold ${saleActive ? 'text-deal' : 'text-foreground'}`}>
+                      {formatCurrency(Number(product.price))}
+                    </span>
+                    {product.list_price && product.list_price > product.price && (
+                      <span className="text-muted-foreground line-through text-xs">
+                        {formatCurrency(Number(product.list_price))}
+                      </span>
+                    )}
+                  </div>
+                  <span className={product.stock < 5 && product.stock > 0 ? "text-account-warning font-medium" : product.stock === 0 ? "text-account-error font-medium" : ""}>
+                    {product.stock === 0
+                      ? (locale === 'bg' ? 'Изчерпан' : 'Out of stock')
+                      : `${product.stock} ${locale === 'bg' ? 'в склад' : 'in stock'}`
+                    }
+                  </span>
+                  {product.category && (
+                    <span className="text-muted-foreground">{product.category.name}</span>
+                  )}
                 </div>
-                <span className="text-xs text-muted-foreground">
-                  ({product.review_count || 0})
-                </span>
+                {/* Rating */}
+                <div className="flex items-center gap-1 mt-1.5">
+                  <div className="flex text-rating">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={12}
+                        weight={i < Math.floor(product.rating || 0) ? "fill" : "regular"}
+                        className="text-rating"
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    ({product.review_count || 0})
+                  </span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2 shrink-0">
+                {/* Boost Button */}
+                {!boosted && (
+                  <BoostDialog
+                    product={product}
+                    locale={locale}
+                    trigger={
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1.5 text-primary border-primary/30 hover:bg-primary/10 hover:text-primary h-9 px-3 rounded-full"
+                      >
+                        <Lightning className="size-4" weight="bold" />
+                        {locale === 'bg' ? 'Промотирай' : 'Boost'}
+                      </Button>
+                    }
+                  />
+                )}
+                {/* Discount Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-9"
+                  onClick={() => openDiscountDialog(product)}
+                  title={locale === 'bg' ? 'Отстъпка' : 'Discount'}
+                >
+                  <Tag className="size-4" weight="bold" />
+                </Button>
+                {/* Pause/Unpause Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-9"
+                  onClick={() => handleToggleStatus(product.id, product.status)}
+                  disabled={togglingId === product.id}
+                  title={product.status === 'draft'
+                    ? (locale === 'bg' ? 'Активирай' : 'Activate')
+                    : (locale === 'bg' ? 'Постави на пауза' : 'Pause')
+                  }
+                >
+                  {product.status === 'draft' ? (
+                    <Play className="size-4 text-account-success" weight="fill" />
+                  ) : (
+                    <Pause className="size-4 text-account-warning" weight="fill" />
+                  )}
+                </Button>
+                <Button asChild variant="ghost" size="icon" className="size-9">
+                  <Link href={`/product/${product.id}`}>
+                    <Eye className="size-4" />
+                    <span className="sr-only">View</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="icon" className="size-9">
+                  <Link href={`/${locale}/account/selling/edit?id=${product.id}`}>
+                    <Pencil className="size-4" />
+                    <span className="sr-only">Edit</span>
+                  </Link>
+                </Button>
+                {/* Delete Button */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-9 text-destructive hover:bg-destructive/10"
+                      disabled={deletingId === product.id}
+                    >
+                      <Trash className="size-4" />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {locale === 'bg' ? 'Изтриване на продукт' : 'Delete Product'}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {locale === 'bg'
+                          ? `Сигурни ли сте, че искате да изтриете "${product.title}"? Това действие не може да бъде отменено.`
+                          : `Are you sure you want to delete "${product.title}"? This action cannot be undone.`
+                        }
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>
+                        {locale === 'bg' ? 'Отказ' : 'Cancel'}
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDelete(product.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        {locale === 'bg' ? 'Изтрий' : 'Delete'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2 shrink-0">
-              {/* Boost Button */}
-              {!boosted && (
-                <BoostDialog 
-                  product={product} 
-                  locale={locale}
-                  trigger={
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="gap-1.5 text-primary border-primary/30 hover:bg-primary/10 hover:text-primary h-9 px-3 rounded-full"
-                    >
-                      <Lightning className="size-4" weight="bold" />
-                      {locale === 'bg' ? 'Промотирай' : 'Boost'}
-                    </Button>
-                  }
-                />
-              )}
-              {/* Discount Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-9"
-                onClick={() => openDiscountDialog(product)}
-                title={locale === 'bg' ? 'Отстъпка' : 'Discount'}
-              >
-                <Tag className="size-4" weight="bold" />
-              </Button>
-              {/* Pause/Unpause Button */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="size-9"
-                onClick={() => handleToggleStatus(product.id, product.status)}
-                disabled={togglingId === product.id}
-                title={product.status === 'draft' 
-                  ? (locale === 'bg' ? 'Активирай' : 'Activate') 
-                  : (locale === 'bg' ? 'Постави на пауза' : 'Pause')
-                }
-              >
-                {product.status === 'draft' ? (
-                  <Play className="size-4 text-account-success" weight="fill" />
-                ) : (
-                  <Pause className="size-4 text-account-warning" weight="fill" />
-                )}
-              </Button>
-              <Button asChild variant="ghost" size="icon" className="size-9">
-                <Link href={`/product/${product.id}`}>
-                  <Eye className="size-4" />
-                  <span className="sr-only">View</span>
-                </Link>
-              </Button>
-              <Button asChild variant="ghost" size="icon" className="size-9">
-                <Link href={`/${locale}/account/selling/edit?id=${product.id}`}>
-                  <Pencil className="size-4" />
-                  <span className="sr-only">Edit</span>
-                </Link>
-              </Button>
-              {/* Delete Button */}
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="size-9 text-destructive hover:bg-destructive/10"
-                    disabled={deletingId === product.id}
-                  >
-                    <Trash className="size-4" />
-                    <span className="sr-only">Delete</span>
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {locale === 'bg' ? 'Изтриване на продукт' : 'Delete Product'}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {locale === 'bg' 
-                        ? `Сигурни ли сте, че искате да изтриете "${product.title}"? Това действие не може да бъде отменено.`
-                        : `Are you sure you want to delete "${product.title}"? This action cannot be undone.`
-                      }
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>
-                      {locale === 'bg' ? 'Отказ' : 'Cancel'}
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => handleDelete(product.id)}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      {locale === 'bg' ? 'Изтрий' : 'Delete'}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          </div>
-        )
-      })}
+          )
+        })}
       </div>
 
       {/* Discount Dialog */}

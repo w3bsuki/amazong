@@ -1,5 +1,5 @@
 import { requireDashboardAccess } from "@/lib/auth/business"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { format } from "date-fns"
 import {
   Card,
@@ -19,8 +19,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { BusinessEmptyState } from "../../_components/business-empty-state"
-import { 
-  IconTag, 
+import {
+  IconTag,
   IconPlus,
   IconPercentage,
   IconCurrencyDollar,
@@ -55,7 +55,7 @@ export default async function BusinessDiscountsPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const { discounts, total } = await getBusinessDiscounts(businessSeller.id)
-  
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -240,8 +240,8 @@ export default async function BusinessDiscountsPage() {
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">
-                    {discount.type === 'percentage' 
-                      ? `${discount.value}%` 
+                    {discount.type === 'percentage'
+                      ? `${discount.value}%`
                       : formatCurrency(discount.value)
                     }
                   </TableCell>
@@ -253,7 +253,7 @@ export default async function BusinessDiscountsPage() {
                   </TableCell>
                   <TableCell>{getStatusBadge(discount.status)}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">
-                    {discount.ends_at 
+                    {discount.ends_at
                       ? format(new Date(discount.ends_at), "MMM d, yyyy")
                       : "No expiry"
                     }

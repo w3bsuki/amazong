@@ -1,6 +1,6 @@
 "use client"
 
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -34,17 +34,17 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/settings": "Settings",
 }
 
-export function BusinessHeader({ 
-  storeName, 
-  isVerified, 
+export function BusinessHeader({
+  storeName,
+  isVerified,
   subscriptionTier: _subscriptionTier = 'free',
-  hasDashboardAccess = false 
+  hasDashboardAccess = false
 }: BusinessHeaderProps) {
   const pathname = usePathname()
-  
+
   // Normalize pathname by removing locale prefix
   const normalizedPath = pathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?/, '') || '/dashboard'
-  
+
   // Get page title based on current route
   const getPageTitle = () => {
     // Check for exact match first
@@ -68,7 +68,7 @@ export function BusinessHeader({
           orientation="vertical"
           className="mx-1 data-[orientation=vertical]:h-4"
         />
-        
+
         {/* Page Title */}
         <div className="flex items-center gap-2">
           <h1 className="text-base font-semibold">{getPageTitle()}</h1>
@@ -79,8 +79,8 @@ export function BusinessHeader({
           )}
           {!hasDashboardAccess && (
             <Link href="/dashboard/upgrade">
-              <Badge 
-                variant="outline" 
+              <Badge
+                variant="outline"
                 className="text-2xs h-5 bg-warning/10 text-warning border-warning/30 hover:bg-warning/20 cursor-pointer"
               >
                 Upgrade to unlock
@@ -88,19 +88,19 @@ export function BusinessHeader({
             </Link>
           )}
         </div>
-        
+
         {/* Command Palette Search - Shopify Style */}
         <div className="hidden md:flex flex-1 max-w-md mx-auto justify-center">
           <BusinessCommandPalette {...(storeName ? { storeName } : {})} />
         </div>
-        
+
         {/* Right Actions */}
         <div className="ml-auto flex items-center gap-1">
           {/* Add Product - Primary Action */}
-          <Button 
-            variant="default" 
-            size="sm" 
-            asChild 
+          <Button
+            variant="default"
+            size="sm"
+            asChild
             className="hidden sm:flex h-8 px-3"
           >
             <Link href="/dashboard/products?add=true">
@@ -108,12 +108,12 @@ export function BusinessHeader({
               Add product
             </Link>
           </Button>
-          
+
           {/* View Store */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            asChild 
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
             className="hidden sm:flex h-8 text-muted-foreground hover:text-foreground"
           >
             <a href="/" target="_blank" rel="noopener noreferrer">
@@ -121,7 +121,7 @@ export function BusinessHeader({
               View store
             </a>
           </Button>
-          
+
           {/* Notifications */}
           <BusinessNotifications />
         </div>

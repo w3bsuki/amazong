@@ -4,7 +4,7 @@ import { Component, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { WarningCircle, ArrowCounterClockwise, FloppyDisk, House } from "@phosphor-icons/react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 
 interface SellErrorBoundaryProps {
   children: ReactNode;
@@ -31,10 +31,10 @@ interface SellErrorBoundaryState {
 export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErrorBoundaryState> {
   constructor(props: SellErrorBoundaryProps) {
     super(props);
-    this.state = { 
-      hasError: false, 
+    this.state = {
+      hasError: false,
       error: null,
-      hasDraft: false 
+      hasDraft: false
     };
   }
 
@@ -44,14 +44,14 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("[SellErrorBoundary] Error caught:", error, errorInfo);
-    
+
     // Check if there's a draft saved
     if (this.props.sellerId) {
       const draftKey = `sell-draft-${this.props.sellerId}`;
       const hasDraft = !!localStorage.getItem(draftKey);
       this.setState({ hasDraft });
     }
-    
+
     this.props.onError?.(error, errorInfo);
   }
 
@@ -75,7 +75,7 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
                 {this.state.error?.message || "An unexpected error occurred while loading the sell form."}
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="space-y-4 pt-2">
               {/* Draft recovery notice */}
               {this.state.hasDraft && (
@@ -94,16 +94,16 @@ export class SellErrorBoundary extends Component<SellErrorBoundaryProps, SellErr
 
               {/* Action buttons */}
               <div className="flex flex-col gap-2">
-                <Button 
+                <Button
                   onClick={this.handleRetry}
                   className="w-full h-touch gap-2"
                 >
                   <ArrowCounterClockwise className="h-4 w-4" />
                   Try again
                 </Button>
-                
-                <Button 
-                  variant="outline" 
+
+                <Button
+                  variant="outline"
                   asChild
                   className="w-full h-touch gap-2"
                 >

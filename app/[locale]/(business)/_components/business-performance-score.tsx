@@ -1,5 +1,5 @@
 import * as React from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import {
   IconTrendingUp,
   IconTrendingDown,
@@ -135,8 +135,8 @@ export function BusinessPerformanceScore({
             </div>
           </div>
           <div>
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className={cn(
                 "mb-1",
                 overallScore >= 80
@@ -149,22 +149,22 @@ export function BusinessPerformanceScore({
               {getScoreLabel(overallScore)}
             </Badge>
             <p className="text-sm text-muted-foreground max-w-[180px]">
-              {overallScore >= 80 
+              {overallScore >= 80
                 ? "Your store is performing well! Keep it up."
                 : overallScore >= 60
-                ? "Your store is doing okay. Room for improvement."
-                : "Focus on improving these metrics."
+                  ? "Your store is doing okay. Room for improvement."
+                  : "Focus on improving these metrics."
               }
             </p>
           </div>
         </div>
-        
+
         {/* Individual Metrics */}
         <div className="space-y-4">
           {metrics.map((metric) => {
             const progress = Math.min((metric.value / metric.target) * 100, 100)
             const TrendIcon = getTrendIcon(metric.trend)
-            
+
             return (
               <div key={metric.id} className="space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
@@ -196,8 +196,8 @@ export function BusinessPerformanceScore({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Progress 
-                    value={progress} 
+                  <Progress
+                    value={progress}
                     className="h-1.5 flex-1"
                   />
                   <span className="text-xs text-muted-foreground tabular-nums w-12 text-right">
@@ -225,7 +225,7 @@ function calculatePerformanceScore(stats: {
     {
       id: "conversion",
       label: "Conversion Rate",
-      value: stats.orders > 0 && stats.views > 0 
+      value: stats.orders > 0 && stats.views > 0
         ? Number(((stats.orders / stats.views) * 100).toFixed(1))
         : 0,
       target: 3,
@@ -261,17 +261,17 @@ function calculatePerformanceScore(stats: {
       description: "Number of orders in the last 30 days",
     },
   ]
-  
+
   // Calculate overall score (weighted average)
   const weights = { conversion: 30, rating: 25, listings: 20, orders: 25 }
   let totalScore = 0
-  
+
   for (const metric of metrics) {
     const progress = Math.min((metric.value / metric.target) * 100, 100)
     const weight = weights[metric.id as keyof typeof weights] || 25
     totalScore += (progress * weight) / 100
   }
-  
+
   return {
     overallScore: Math.round(totalScore),
     metrics,

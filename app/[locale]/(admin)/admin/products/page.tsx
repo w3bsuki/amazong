@@ -1,6 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"

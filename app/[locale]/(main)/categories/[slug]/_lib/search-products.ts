@@ -4,7 +4,7 @@ import type { CategoryProductFilters, Product } from "./types"
 
 export async function searchProducts(
   supabase: ReturnType<typeof createStaticClient>,
-  categoryIds: string[],
+  categoryId: string,
   filters: CategoryProductFilters,
   page: number = 1,
   limit: number = ITEMS_PER_PAGE,
@@ -26,9 +26,9 @@ export async function searchProducts(
     "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,attributes,created_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)"
   )
 
-  if (categoryIds.length > 0) {
-    countQuery = countQuery.in("category_id", categoryIds)
-    dbQuery = dbQuery.in("category_id", categoryIds)
+  if (categoryId) {
+    countQuery = countQuery.filter("category_ancestors", "cs", `{${categoryId}}`)
+    dbQuery = dbQuery.filter("category_ancestors", "cs", `{${categoryId}}`)
   }
 
   if (shippingFilter) {

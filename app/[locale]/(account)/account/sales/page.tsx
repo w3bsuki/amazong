@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { AppBreadcrumb } from "@/components/navigation/app-breadcrumb"
 import { SalesChart } from "./_components/sales-chart"
 import { SalesStats } from "./_components/sales-stats"
@@ -55,7 +55,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   if (!profile || !profile.username) {
     redirect(`/${locale}/sell`)
   }
-  
+
   // Map profile to seller format for compatibility
   const seller = {
     ...profile,
@@ -65,7 +65,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   // Calculate date range
   const now = new Date()
   let startDate = new Date()
-  
+
   switch (period) {
     case "7d":
       startDate.setDate(now.getDate() - 7)
@@ -114,34 +114,34 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   // Get unique order IDs and product IDs
   const orderIds = [...new Set((salesData || []).map(s => s.order_id))]
   const productIds = [...new Set((salesData || []).map(s => s.product_id))]
-  
+
   // Fetch orders with date filter
-  const { data: ordersData } = orderIds.length > 0 
+  const { data: ordersData } = orderIds.length > 0
     ? await supabase
-        .from("orders")
-        .select("id, status, created_at, shipping_address, user_id")
-        .in("id", orderIds)
-        .gte("created_at", startDate.toISOString())
-        .order("created_at", { ascending: false })
+      .from("orders")
+      .select("id, status, created_at, shipping_address, user_id")
+      .in("id", orderIds)
+      .gte("created_at", startDate.toISOString())
+      .order("created_at", { ascending: false })
     : { data: [] }
-  
+
   // Get buyer profiles for the orders
   const buyerIds = [...new Set((ordersData || []).map(o => o.user_id))]
   const { data: buyersData } = buyerIds.length > 0
     ? await supabase
-        .from("profiles")
-        .select("id, email, full_name")
-        .in("id", buyerIds)
+      .from("profiles")
+      .select("id, email, full_name")
+      .in("id", buyerIds)
     : { data: [] }
-  
+
   // Fetch products
   const { data: productsData } = productIds.length > 0
     ? await supabase
-        .from("products")
-        .select("id, title, images, price")
-        .in("id", productIds)
+      .from("products")
+      .select("id, title, images, price")
+      .in("id", productIds)
     : { data: [] }
-  
+
   // Create lookup maps
   const ordersMap = new Map((ordersData || []).map(o => [o.id, o]))
   const buyersMap = new Map((buyersData || []).map(b => [b.id, b]))
@@ -190,7 +190,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
   // Get previous period for comparison
   const prevStartDate = new Date(startDate)
   prevStartDate.setDate(prevStartDate.getDate() - (now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-  
+
   const { data: prevSalesData } = await supabase
     .from("order_items")
     .select(`
@@ -205,16 +205,16 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
     .gte("orders.created_at", prevStartDate.toISOString())
     .lt("orders.created_at", startDate.toISOString())
 
-  const prevTotalRevenue = (prevSalesData || []).reduce((sum, sale) => 
+  const prevTotalRevenue = (prevSalesData || []).reduce((sum, sale) =>
     sum + (Number(sale.price_at_purchase) * sale.quantity), 0)
   const prevTotalSales = (prevSalesData || []).length
 
   // Calculate growth percentages
-  const revenueGrowth = prevTotalRevenue > 0 
-    ? ((totalRevenue - prevTotalRevenue) / prevTotalRevenue) * 100 
+  const revenueGrowth = prevTotalRevenue > 0
+    ? ((totalRevenue - prevTotalRevenue) / prevTotalRevenue) * 100
     : totalRevenue > 0 ? 100 : 0
-  const salesGrowth = prevTotalSales > 0 
-    ? ((totalSales - prevTotalSales) / prevTotalSales) * 100 
+  const salesGrowth = prevTotalSales > 0
+    ? ((totalSales - prevTotalSales) / prevTotalSales) * 100
     : totalSales > 0 ? 100 : 0
 
   // Commission calculation (based on seller tier)
@@ -261,7 +261,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
           { label: locale === 'bg' ? 'Акаунт' : 'Account', href: "/account" },
           { label: locale === 'bg' ? 'Продажби' : 'Sales' }
         ]} />
-        
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-4 mb-6">
           <div className="flex items-center gap-4">
@@ -328,15 +328,15 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
             </div>
             <div className="flex items-center gap-2">
               <Link href={`?period=7d`}>
-                <Badge 
-                  variant={period === "7d" ? "default" : "outline"} 
+                <Badge
+                  variant={period === "7d" ? "default" : "outline"}
                   className="cursor-pointer"
                 >
                   7D
                 </Badge>
               </Link>
               <Link href={`?period=30d`}>
-                <Badge 
+                <Badge
                   variant={period === "30d" ? "default" : "outline"}
                   className="cursor-pointer"
                 >
@@ -344,7 +344,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
                 </Badge>
               </Link>
               <Link href={`?period=90d`}>
-                <Badge 
+                <Badge
                   variant={period === "90d" ? "default" : "outline"}
                   className="cursor-pointer"
                 >
@@ -352,7 +352,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
                 </Badge>
               </Link>
               <Link href={`?period=1y`}>
-                <Badge 
+                <Badge
                   variant={period === "1y" ? "default" : "outline"}
                   className="cursor-pointer"
                 >
@@ -375,7 +375,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
                   {locale === 'bg' ? 'Последни продажби' : 'Recent Sales'}
                 </CardTitle>
                 <CardDescription>
-                  {locale === 'bg' 
+                  {locale === 'bg'
                     ? `${totalSales} продажби за последните ${period === '7d' ? '7 дни' : period === '30d' ? '30 дни' : period === '90d' ? '90 дни' : 'година'}`
                     : `${totalSales} sales in the last ${period === '7d' ? '7 days' : period === '30d' ? '30 days' : period === '90d' ? '90 days' : 'year'}`
                   }
@@ -405,8 +405,8 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
                   {locale === 'bg' ? 'Нямате продажби все още' : 'No sales yet'}
                 </h3>
                 <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                  {locale === 'bg' 
-                    ? 'Когато продадете продукт, вашите продажби ще се показват тук' 
+                  {locale === 'bg'
+                    ? 'Когато продадете продукт, вашите продажби ще се показват тук'
                     : 'When you sell a product, your sales will appear here'}
                 </p>
                 <Button asChild>

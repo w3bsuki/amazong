@@ -196,6 +196,8 @@
         "selectColor": "Избери цвят",
         "size": "Размер",
         "selectSize": "Избери размер",
+        "variant": "Вариант",
+        "selectVariant": "Избери вариант",
         "quantity": "Количество",
         "qty": "Бр.",
         "shipsFrom": "Изпраща се от",
@@ -904,6 +906,11 @@
             "usedShort": "Употр.",
             "refurbShort": "Рефърб."
         },
+        "b2b": {
+            "moqShort": "MOQ",
+            "samples": "Мостри",
+            "verifiedShort": "Потвърден"
+        },
         "electronics": "Електроника",
         "books": "Книги",
         "fashion": "Мода",
@@ -1560,6 +1567,28 @@
         "tabUnread": "Непрочетени",
         "tabBuying": "Покупки",
         "tabSelling": "Продажби"
+    },
+    "ProductFeed": {
+        "categoryAnnouncement": "Показване на {categoryName}",
+        "loadingProducts": "Зареждане на продукти",
+        "endOfResults": "{count, plural, one {# продукт} other {# продукта}}"
+    },
+    "TabbedProductFeed": {
+        "sectionAriaLabel": "Обяви",
+        "tabsAriaLabel": "Филтър на обявите",
+        "tabs": {
+            "all": "Всички",
+            "newest": "Най-нови",
+            "best_sellers": "Най-продавани",
+            "most_viewed": "Най-разглеждани",
+            "top_rated": "Топ оценени",
+            "promoted": "Промотирани",
+            "deals": "Оферти",
+            "price_low": "Най-ниска цена",
+            "nearby": "Близо до мен"
+        },
+        "loadMore": "Зареди още",
+        "loading": "Зареждане..."
     },
     "GeoWelcome": {
         "title": "Здравейте! Установихме, че посещавате от {country}",

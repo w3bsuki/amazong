@@ -1,5 +1,5 @@
 import { requireDashboardAccess, getBusinessCustomers } from "@/lib/auth/business"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { format } from "date-fns"
 import {
   Card,
@@ -21,9 +21,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { BusinessEmptyState } from "../../_components/business-empty-state"
-import { 
-  IconUsers, 
-  IconMail, 
+import {
+  IconUsers,
+  IconMail,
   IconMessage,
   IconTrendingUp,
   IconShoppingCart,
@@ -34,7 +34,7 @@ export default async function BusinessCustomersPage() {
   // Requires paid business subscription
   const businessSeller = await requireDashboardAccess()
   const { customers, total } = await getBusinessCustomers(businessSeller.id)
-  
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',

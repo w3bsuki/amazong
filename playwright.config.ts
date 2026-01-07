@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import net from 'node:net'
 import path from 'node:path'
@@ -13,8 +14,6 @@ const shellBaseURL = process.env.BASE_URL
  * Returns true if port is occupied, false if available.
  */
 function isPortInUse(port: number): boolean {
-  // Use a quick TCP connection attempt to check if port is listening
-  const { execSync } = require('node:child_process')
   try {
     if (process.platform === 'win32') {
       // Windows: use netstat to check if port is listening

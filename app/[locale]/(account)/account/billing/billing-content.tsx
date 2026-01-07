@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -143,8 +143,8 @@ export function BillingContent({
   // Translations
   const t = {
     title: locale === 'bg' ? 'Фактуриране' : 'Billing',
-    subtitle: locale === 'bg' 
-      ? 'Управлявайте абонамента си и преглеждайте историята на плащанията' 
+    subtitle: locale === 'bg'
+      ? 'Управлявайте абонамента си и преглеждайте историята на плащанията'
       : 'Manage your subscription and view payment history',
     currentPlan: locale === 'bg' ? 'Текущ план' : 'Current Plan',
     freePlan: locale === 'bg' ? 'Безплатен план' : 'Free Plan',
@@ -189,11 +189,11 @@ export function BillingContent({
     expired2: locale === 'bg' ? 'Изтекъл' : 'Expired',
     sellerSubscription: locale === 'bg' ? 'Абонамент за продавач' : 'Seller subscription',
     listingBoost: locale === 'bg' ? 'Промотиране на обява' : 'Listing boost',
-    noBillingYet: locale === 'bg' 
+    noBillingYet: locale === 'bg'
       ? 'Все още нямате плащания. Когато направите покупка или абонамент, ще ги видите тук.'
       : 'No billing history yet. When you make a purchase or subscription, it will appear here.',
     startSelling: locale === 'bg' ? 'Започнете да продавате' : 'Start Selling',
-    becomeSeller: locale === 'bg' 
+    becomeSeller: locale === 'bg'
       ? 'Станете продавач, за да получите достъп до планове и промотиране'
       : 'Become a seller to access plans and boosts',
   }
@@ -209,7 +209,7 @@ export function BillingContent({
       try {
         const response = await fetch('/api/billing/invoices')
         if (!response.ok) throw new Error('Failed to fetch')
-        
+
         const data = await response.json()
         setInvoices(data.invoices || [])
         setCharges(data.charges || [])
@@ -313,7 +313,7 @@ export function BillingContent({
   return (
     <div className="grid gap-4">
       {/* Page Header */}
-      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>
           <p className="text-muted-foreground text-sm mt-1">{t.subtitle}</p>
@@ -361,21 +361,21 @@ export function BillingContent({
       {seller && (
         <Card>
           <CardHeader className="pb-3">
-            <div className="grid grid-cols-[1fr_auto] items-center gap-4">
+            <div className="flex items-center justify-between gap-4">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Crown className="size-5 text-primary" weight="fill" />
                 {t.currentPlan}
               </CardTitle>
               {subscription && (
-                <Badge 
+                <Badge
                   variant={subscription.status === 'active' ? 'default' : 'secondary'}
                   className={cn(
                     subscription.status === 'active' && 'bg-success'
                   )}
                 >
-                  {subscription.status === 'active' ? t.active : 
-                   subscription.status === 'cancelled' ? t.cancelled :
-                   subscription.status === 'expired' ? t.expired : t.pending}
+                  {subscription.status === 'active' ? t.active :
+                    subscription.status === 'cancelled' ? t.cancelled :
+                      subscription.status === 'expired' ? t.expired : t.pending}
                 </Badge>
               )}
             </div>
@@ -388,8 +388,8 @@ export function BillingContent({
                   <div className={cn(
                     "p-2.5 rounded-md",
                     seller.tier === 'business' ? "bg-primary/10" :
-                    seller.tier === 'premium' ? "bg-warning/10" :
-                    "bg-muted"
+                      seller.tier === 'premium' ? "bg-warning/10" :
+                        "bg-muted"
                   )}>
                     {seller.tier === 'business' ? (
                       <Sparkle className="size-5 text-primary" weight="fill" />
@@ -434,7 +434,7 @@ export function BillingContent({
                 {/* Free Plan Notice */}
                 {!subscription && seller.tier === 'basic' && (
                   <p className="text-sm text-muted-foreground">
-                    {locale === 'bg' 
+                    {locale === 'bg'
                       ? 'Надградете за по-ниски комисионни и повече функции'
                       : 'Upgrade for lower commissions and more features'}
                   </p>
@@ -444,8 +444,8 @@ export function BillingContent({
               {/* Actions */}
               <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2">
                 {subscription?.stripe_subscription_id && (
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={handleManageSubscription}
                     disabled={isPortalLoading}
                     className="gap-1.5"
@@ -492,7 +492,7 @@ export function BillingContent({
               <CardHeader>
                 <CardTitle className="text-base">{t.paymentHistory}</CardTitle>
                 <CardDescription>
-                  {locale === 'bg' 
+                  {locale === 'bg'
                     ? 'Всички плащания за абонаменти и услуги'
                     : 'All payments for subscriptions and services'}
                 </CardDescription>
@@ -501,13 +501,13 @@ export function BillingContent({
                 {isLoading ? (
                   <div className="grid gap-3">
                     {[1, 2, 3].map((i) => (
-                      <div key={i} className="grid grid-cols-[40px_1fr_auto] items-center gap-4">
-                        <Skeleton className="h-10 w-10 rounded" />
-                        <div className="grid gap-2">
+                      <div key={i} className="flex items-center gap-4">
+                        <Skeleton className="h-10 w-10 rounded shrink-0" />
+                        <div className="grid gap-2 flex-1">
                           <Skeleton className="h-4 w-48" />
                           <Skeleton className="h-3 w-32" />
                         </div>
-                        <Skeleton className="h-6 w-16" />
+                        <Skeleton className="h-6 w-16 shrink-0" />
                       </div>
                     ))}
                   </div>
@@ -540,7 +540,7 @@ export function BillingContent({
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <Crown className="size-4 text-warning shrink-0" />
-                                <span className="truncate max-w-[200px]">
+                                <span className="truncate max-w-52">
                                   {invoice.description || t.sellerSubscription}
                                   {invoice.number && (
                                     <span className="text-muted-foreground ml-1">
@@ -559,14 +559,14 @@ export function BillingContent({
                             <TableCell className="text-right">
                               <div className="flex items-center justify-end gap-1">
                                 {invoice.hosted_invoice_url && (
-                                  <Button 
-                                    variant="ghost" 
+                                  <Button
+                                    variant="ghost"
                                     size="sm"
                                     asChild
                                   >
-                                    <a 
-                                      href={invoice.hosted_invoice_url} 
-                                      target="_blank" 
+                                    <a
+                                      href={invoice.hosted_invoice_url}
+                                      target="_blank"
                                       rel="noopener noreferrer"
                                     >
                                       <ArrowSquareOut className="size-4" />
@@ -574,14 +574,14 @@ export function BillingContent({
                                   </Button>
                                 )}
                                 {invoice.invoice_pdf && (
-                                  <Button 
-                                    variant="ghost" 
+                                  <Button
+                                    variant="ghost"
                                     size="sm"
                                     asChild
                                   >
-                                    <a 
-                                      href={invoice.invoice_pdf} 
-                                      target="_blank" 
+                                    <a
+                                      href={invoice.invoice_pdf}
+                                      target="_blank"
                                       rel="noopener noreferrer"
                                     >
                                       <Download className="size-4" />
@@ -601,11 +601,11 @@ export function BillingContent({
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <Lightning className="size-4 text-primary shrink-0" />
-                                <span className="truncate max-w-[200px]">
-                                  {charge.description || 
-                                   charge.metadata?.type === 'listing_boost' 
-                                     ? t.listingBoost 
-                                     : locale === 'bg' ? 'Плащане' : 'Payment'}
+                                <span className="truncate max-w-52">
+                                  {charge.description ||
+                                    charge.metadata?.type === 'listing_boost'
+                                    ? t.listingBoost
+                                    : locale === 'bg' ? 'Плащане' : 'Payment'}
                                 </span>
                               </div>
                             </TableCell>
@@ -617,14 +617,14 @@ export function BillingContent({
                             </TableCell>
                             <TableCell className="text-right">
                               {charge.receipt_url && (
-                                <Button 
-                                  variant="ghost" 
+                                <Button
+                                  variant="ghost"
                                   size="sm"
                                   asChild
                                 >
-                                  <a 
-                                    href={charge.receipt_url} 
-                                    target="_blank" 
+                                  <a
+                                    href={charge.receipt_url}
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                   >
                                     <ArrowSquareOut className="size-4" />
@@ -645,11 +645,11 @@ export function BillingContent({
           {/* Boosts Tab */}
           <TabsContent value="boosts">
             <Card>
-              <CardHeader className="grid grid-cols-[1fr_auto] items-center gap-4">
+              <CardHeader className="flex flex-row items-center justify-between gap-4">
                 <div>
                   <CardTitle className="text-base">{t.boostPurchases}</CardTitle>
                   <CardDescription>
-                    {locale === 'bg' 
+                    {locale === 'bg'
                       ? 'История на промотираните продукти'
                       : 'Boosted products history'}
                   </CardDescription>
@@ -667,7 +667,7 @@ export function BillingContent({
                     <Lightning className="size-12 text-muted-foreground/50 mx-auto mb-3" />
                     <p className="text-muted-foreground">{t.noBoosts}</p>
                     <p className="text-sm text-muted-foreground/70 mt-1">
-                      {locale === 'bg' 
+                      {locale === 'bg'
                         ? 'Промотирайте продуктите си за повече видимост'
                         : 'Boost your products for more visibility'}
                     </p>
@@ -693,25 +693,25 @@ export function BillingContent({
                       <TableBody>
                         {boosts.map((boost) => {
                           const isExpired = new Date(boost.expires_at) < new Date()
-                          const expiresIn = formatDistanceToNow(new Date(boost.expires_at), { 
+                          const expiresIn = formatDistanceToNow(new Date(boost.expires_at), {
                             locale: dateLocale,
                             addSuffix: true,
                           })
-                          
+
                           return (
                             <TableRow key={boost.id}>
                               <TableCell>
                                 <div className="flex items-center gap-3">
                                   {boost.products?.images?.[0] && (
-                                    <Image 
-                                      src={boost.products.images[0]} 
+                                    <Image
+                                      src={boost.products.images[0]}
                                       alt=""
                                       width={40}
                                       height={40}
                                       className="size-10 rounded object-cover"
                                     />
                                   )}
-                                  <span className="truncate max-w-[180px] font-medium">
+                                  <span className="truncate max-w-44 font-medium">
                                     {boost.products?.title || boost.product_id}
                                   </span>
                                 </div>
@@ -758,16 +758,16 @@ export function BillingContent({
       {/* Quick Info */}
       {seller && hasStripeCustomer && (
         <Card className="bg-muted/30 border-dashed">
-          <CardContent className="grid grid-cols-[auto_1fr] items-start gap-3 pt-4">
-            <Info className="size-5 text-muted-foreground mt-0.5" />
+          <CardContent className="flex items-start gap-4 pt-4">
+            <Info className="size-5 text-muted-foreground mt-0.5 shrink-0" />
             <div className="text-sm text-muted-foreground grid gap-1">
               <p>
-                {locale === 'bg' 
+                {locale === 'bg'
                   ? 'Плащанията се обработват сигурно чрез Stripe. Фактурите се генерират автоматично след всяко плащане.'
                   : 'Payments are processed securely through Stripe. Invoices are automatically generated after each payment.'}
               </p>
               <p>
-                {locale === 'bg' 
+                {locale === 'bg'
                   ? `Имейл за фактури: ${userEmail}`
                   : `Billing email: ${userEmail}`}
               </p>

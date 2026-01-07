@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useTransition } from "react"
 import { useSearchParams } from "next/navigation"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { 
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -88,12 +88,12 @@ interface PlansContentProps {
 function toPlan(sp: SubscriptionPlan): Plan {
   // Validate account_type is a valid literal type
   const accountType = sp.account_type === "business" ? "business" : "personal"
-  
+
   // Parse features from Json to string array
-  const features: string[] = Array.isArray(sp.features) 
+  const features: string[] = Array.isArray(sp.features)
     ? sp.features.filter((f): f is string => typeof f === "string")
     : []
-  
+
   return {
     id: sp.id,
     name: sp.name,
@@ -117,12 +117,12 @@ function toPlan(sp: SubscriptionPlan): Plan {
   }
 }
 
-export function PlansContent({ 
-  locale, 
-  plans, 
-  currentTier, 
+export function PlansContent({
+  locale,
+  plans,
+  currentTier,
   seller,
-  currentSubscription 
+  currentSubscription
 }: PlansContentProps) {
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly")
@@ -136,35 +136,35 @@ export function PlansContent({
   // Computed: Is this subscription set to cancel at period end?
   const isCancelledButActive = currentSubscription?.status === "active" && currentSubscription?.auto_renew === false
   const hasActiveSubscription = currentSubscription?.status === "active" && currentTier !== "free"
-  
+
   // Format expiry date
-  const expiryDate = currentSubscription?.expires_at 
+  const expiryDate = currentSubscription?.expires_at
     ? new Date(currentSubscription.expires_at).toLocaleDateString(locale === "bg" ? "bg-BG" : "en-US", {
-        year: "numeric",
-        month: "long", 
-        day: "numeric"
-      })
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    })
     : null
 
   // Show toast notifications based on URL params (from Stripe redirect)
   useEffect(() => {
     if (searchParams.get("success") === "true") {
       toast.success(
-        locale === "bg" 
-          ? "Абонаментът е активиран успешно!" 
+        locale === "bg"
+          ? "Абонаментът е активиран успешно!"
           : "Subscription activated successfully!"
       )
       window.history.replaceState({}, "", window.location.pathname)
     } else if (searchParams.get("canceled") === "true") {
       toast.info(
-        locale === "bg" 
-          ? "Плащането беше отменено" 
+        locale === "bg"
+          ? "Плащането беше отменено"
           : "Payment was cancelled"
       )
       window.history.replaceState({}, "", window.location.pathname)
     }
   }, [searchParams, locale])
-  
+
   // Handle subscription cancellation
   const handleCancelSubscription = () => {
     startTransition(async () => {
@@ -205,7 +205,7 @@ export function PlansContent({
     }
 
     setLoadingPlanId(plan.id)
-    
+
     try {
       const { url, error } = await createSubscriptionCheckoutSession({
         planId: plan.id,
@@ -223,8 +223,8 @@ export function PlansContent({
     } catch (err) {
       console.error("Checkout error:", err)
       toast.error(
-        locale === "bg" 
-          ? "Грешка при създаване на плащане. Моля, опитайте отново." 
+        locale === "bg"
+          ? "Грешка при създаване на плащане. Моля, опитайте отново."
           : "Error creating payment. Please try again."
       )
     } finally {
@@ -248,8 +248,8 @@ export function PlansContent({
     } catch (err) {
       console.error("Portal error:", err)
       toast.error(
-        locale === "bg" 
-          ? "Грешка при отваряне на портала. Моля, опитайте отново." 
+        locale === "bg"
+          ? "Грешка при отваряне на портала. Моля, опитайте отново."
           : "Error opening portal. Please try again."
       )
     }
@@ -268,7 +268,7 @@ export function PlansContent({
           {locale === "bg" ? "Изберете план за продавач" : "Choose a Seller Plan"}
         </h1>
         <p className="text-muted-foreground">
-          {locale === "bg" 
+          {locale === "bg"
             ? "Надградете акаунта си за по-ниски комисиони и повече възможности"
             : "Upgrade your account for lower commissions and more features"}
         </p>
@@ -303,14 +303,14 @@ export function PlansContent({
                   <CalendarBlank className="size-4" />
                   {isCancelledButActive ? (
                     <span>
-                      {locale === "bg" 
-                        ? `Достъпът приключва на ${expiryDate}` 
+                      {locale === "bg"
+                        ? `Достъпът приключва на ${expiryDate}`
                         : `Access ends on ${expiryDate}`}
                     </span>
                   ) : (
                     <span>
-                      {locale === "bg" 
-                        ? `Следващо плащане: ${expiryDate}` 
+                      {locale === "bg"
+                        ? `Следващо плащане: ${expiryDate}`
                         : `Next billing: ${expiryDate}`}
                     </span>
                   )}
@@ -333,8 +333,8 @@ export function PlansContent({
               <div className="flex items-center gap-2 flex-wrap">
                 {isCancelledButActive ? (
                   // Show Reactivate button if cancelled but not yet expired
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     onClick={handleReactivate}
                     disabled={isPending}
                     className="gap-1.5"
@@ -385,19 +385,19 @@ export function PlansContent({
                           disabled={isPending}
                           className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
-                          {isPending 
-                            ? (locale === "bg" ? "Обработка..." : "Processing...") 
+                          {isPending
+                            ? (locale === "bg" ? "Обработка..." : "Processing...")
                             : (locale === "bg" ? "Да, отмени" : "Yes, Cancel")}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
                 )}
-                
+
                 {/* Stripe Portal for payment method management */}
                 {currentSubscription?.stripe_subscription_id && (
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="sm"
                     onClick={handleManageSubscription}
                     className="text-xs"
@@ -462,8 +462,8 @@ export function PlansContent({
           <button
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-colors",
-              billingPeriod === "monthly" 
-                ? "bg-background text-foreground shadow-sm" 
+              billingPeriod === "monthly"
+                ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
             onClick={() => setBillingPeriod("monthly")}
@@ -473,8 +473,8 @@ export function PlansContent({
           <button
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2",
-              billingPeriod === "yearly" 
-                ? "bg-background text-foreground shadow-sm" 
+              billingPeriod === "yearly"
+                ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
             onClick={() => setBillingPeriod("yearly")}
@@ -511,7 +511,7 @@ export function PlansContent({
                   {locale === 'bg' ? 'Промотирай обявите си' : 'Boost Your Listings'}
                 </CardTitle>
                 <CardDescription className="text-xs md:text-sm">
-                  {locale === 'bg' 
+                  {locale === 'bg'
                     ? 'Покажи продуктите си на повече хора'
                     : 'Show your products to more people'}
                 </CardDescription>
@@ -538,7 +538,7 @@ export function PlansContent({
               </div>
             </div>
             <p className="text-2xs md:text-xs text-muted-foreground mt-3 text-center">
-              {locale === 'bg' 
+              {locale === 'bg'
                 ? 'Промотираните обяви се показват в секцията "Препоръчани" и имат по-високо позициониране.'
                 : 'Boosted listings appear in "Recommended" and rank higher in search.'}
             </p>

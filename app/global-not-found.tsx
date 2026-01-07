@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 
 /**
  * Global Not Found Page
@@ -35,7 +35,7 @@ export default function GlobalNotFound() {
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Link 
+              <Link
                 href="/"
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
               >

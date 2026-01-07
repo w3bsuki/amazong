@@ -8,6 +8,99 @@ import type Stripe from 'stripe';
 // PRODUCTION: Use centralized admin client for consistency
 const supabase = createAdminClient();
 
+type OrderItemPayload = {
+  id: string;
+  variantId?: string | null;
+  qty: number;
+  price: number;
+};
+
+function parseOrderItems(
+  session: Stripe.Checkout.Session
+): OrderItemPayload[] {
+  const rawItems = session.metadata?.items_json;
+  if (!rawItems) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(rawItems);
+    if (Array.isArray(parsed)) {
+      return parsed as OrderItemPayload[];
+    }
+  } catch {
+    return [];
+  }
+
+  return [];
+}
+
+async function ensureOrderItems(
+  orderId: string,
+  itemsData: OrderItemPayload[]
+) {
+  if (itemsData.length === 0) {
+    return;
+  }
+
+  // Avoid duplicate inserts if the webhook retries after order creation.
+  const { data: existingItems, error: existingItemsError } = await supabase
+    .from('order_items')
+    .select('id')
+    .eq('order_id', orderId)
+    .limit(1);
+
+  if (existingItemsError) {
+    console.error('Error checking order items:', existingItemsError);
+    return;
+  }
+
+  if (existingItems?.length) {
+    return;
+  }
+
+  const productIds = itemsData.map(item => item.id).filter(Boolean);
+  if (productIds.length === 0) {
+    return;
+  }
+
+  const { data: products, error: productsError } = await supabase
+    .from('products')
+    .select('id, seller_id')
+    .in('id', productIds);
+
+  if (productsError) {
+    console.error('Error fetching products:', productsError);
+  }
+
+  const productSellerMap = new Map(
+    products?.map((product) => [product.id, product.seller_id]) || []
+  );
+
+  const validItems = itemsData
+    .filter((item) => item.id && productSellerMap.get(item.id))
+    .map((item) => ({
+      order_id: orderId,
+      product_id: item.id,
+      seller_id: productSellerMap.get(item.id)!,
+      quantity: item.qty || 1,
+      price_at_purchase: item.price,
+      ...(item.variantId ? { variant_id: item.variantId } : {}),
+    }));
+
+  if (validItems.length === 0) {
+    return;
+  }
+
+  const { error: itemsError } = await supabase
+    .from('order_items')
+    .insert(validItems);
+
+  if (itemsError) {
+    console.error('Error creating order items:', itemsError);
+  }
+}
+
 export async function POST(req: Request) {
   const body = await req.text();
   const headersList = await headers();
@@ -51,6 +144,8 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
 
     try {
+      const itemsData = parseOrderItems(session);
+
       // Idempotency: avoid creating duplicate orders for the same payment intent.
       if (session.payment_intent) {
         const { data: existingOrder } = await supabase
@@ -60,6 +155,16 @@ export async function POST(req: Request) {
           .maybeSingle();
 
         if (existingOrder?.id) {
+          if (itemsData.length > 0) {
+            const lineItems = await stripe.checkout.sessions.listLineItems(
+              session.id
+            );
+
+            if (lineItems.data.length > 0) {
+              await ensureOrderItems(existingOrder.id, itemsData);
+            }
+          }
+
           return NextResponse.json({ received: true });
         }
       }
@@ -109,59 +214,7 @@ export async function POST(req: Request) {
 
       // Create order items from line items
       if (lineItems.data.length > 0) {
-        // Try to get items from metadata
-        let itemsData: { id: string; variantId?: string | null; qty: number; price: number }[] = [];
-        try {
-          if (session.metadata?.items_json) {
-            itemsData = JSON.parse(session.metadata.items_json);
-          }
-        } catch {
-          // Items JSON not available in metadata
-        }
-
-        // Get product details including seller_id for each item
-        const productIds = itemsData.map(item => item.id).filter(Boolean);
-        
-        if (productIds.length > 0) {
-          const { data: products, error: productsError } = await supabase
-            .from('products')
-            .select('id, seller_id')
-            .in('id', productIds);
-
-          if (productsError) {
-            console.error('Error fetching products:', productsError);
-          }
-
-          // Create a map of product_id to seller_id
-          const productSellerMap = new Map(
-            products?.map(p => [p.id, p.seller_id]) || []
-          );
-
-          // Build valid order items with required seller_id
-          const validItems = itemsData
-            .filter(item => item.id && productSellerMap.get(item.id))
-            .map((item) => ({
-              order_id: order.id,
-              product_id: item.id,
-              seller_id: productSellerMap.get(item.id)!,
-              quantity: item.qty || 1,
-              price_at_purchase: item.price,
-              ...(item.variantId ? { variant_id: item.variantId } : {}),
-            }));
-
-          if (validItems.length > 0) {
-            const { error: itemsError } = await supabase
-              .from('order_items')
-              .insert(validItems);
-
-            if (itemsError) {
-              console.error('Error creating order items:', itemsError);
-            }
-
-            // Create order conversations for buyer-seller communication
-            // This is handled by the create_order_conversation trigger on orders table
-          }
-        }
+        await ensureOrderItems(order.id, itemsData);
       }
 
       // TODO: Send buyer confirmation email when email service is set up

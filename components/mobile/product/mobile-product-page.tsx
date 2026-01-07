@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ProductGalleryHybrid } from "@/components/shared/product/product-gallery-hybrid";
 import { MobileProductHeader } from "./mobile-product-header";
 import { MobilePriceBlock } from "./mobile-price-block";
@@ -73,6 +74,7 @@ interface MobileProductPageProps {
 }
 
 export function MobileProductPage(props: MobileProductPageProps) {
+  const t = useTranslations("Product");
   const {
     locale,
     username,
@@ -118,7 +120,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
 
   // Seller info
   const sellerInfo = {
-    name: viewModel.sellerName || seller?.username || username || "Seller",
+    name: viewModel.sellerName || seller?.username || username || t("seller"),
     username: seller?.username || username,
     avatarUrl: viewModel.sellerAvatarUrl,
     rating: product.seller_stats?.average_rating ?? null,
@@ -246,14 +248,14 @@ export function MobileProductPage(props: MobileProductPageProps) {
       {safeVariants.length > 0 ? (
         <div className="px-3 pt-2">
           <div className="text-xs font-medium text-muted-foreground mb-1">
-            {locale === "bg" ? "Вариант" : "Variant"}
+            {t("variant")}
           </div>
           <Select
             value={selectedVariantId ?? undefined}
             onValueChange={(v) => setSelectedVariantId(v)}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={locale === "bg" ? "Изберете вариант" : "Select variant"} />
+              <SelectValue placeholder={t("selectVariant")} />
             </SelectTrigger>
             <SelectContent>
               {safeVariants.map((v) => (
@@ -284,8 +286,8 @@ export function MobileProductPage(props: MobileProductPageProps) {
         <MobileAccordions
           description={String(product.description ?? "")}
           details={viewModel.itemSpecifics.details}
-          shippingText={!product.pickup_only ? (locale === "bg" ? "Безплатна доставка" : "Free shipping") : (locale === "bg" ? "Доставка при поръчка" : "Shipping calculated at checkout")}
-          returnsText={locale === "bg" ? "30 дни връщане. Купувачът плаща за връщане." : "30 days returns. Buyer pays for return shipping."}
+          shippingText={!product.pickup_only ? t("freeDelivery") : t("defaultShipping")}
+          returnsText={t("defaultReturns")}
         />
       </div>
 

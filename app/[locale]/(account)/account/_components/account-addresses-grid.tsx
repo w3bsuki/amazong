@@ -312,7 +312,7 @@ export function AccountAddressesGrid({
       className="border-dashed cursor-pointer hover:border-brand/50 hover:bg-muted/30 transition-colors"
       onClick={onAdd}
     >
-      <CardContent className="flex flex-col items-center justify-center h-full min-h-[180px] py-8">
+      <CardContent className="flex flex-col items-center justify-center h-full min-h-44 py-8">
         <div className="size-12 rounded-full bg-muted flex items-center justify-center mb-3">
           <Plus className="size-6 text-muted-foreground" />
         </div>

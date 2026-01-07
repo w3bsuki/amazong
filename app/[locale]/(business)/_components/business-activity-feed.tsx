@@ -1,5 +1,5 @@
 import * as React from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
 import {
   IconShoppingCart,
@@ -102,7 +102,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
             {activities.map((activity, index) => {
               const Icon = activityIcons[activity.type]
               const iconColor = activityColors[activity.type]
-              
+
               return (
                 <div
                   key={activity.id}
@@ -118,7 +118,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                   )}>
                     <Icon className="size-4" />
                   </div>
-                  
+
                   {/* Content */}
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-start justify-between gap-2">
@@ -136,7 +136,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                         </span>
                       )}
                     </div>
-                    
+
                     {/* Meta info */}
                     <div className="flex items-center gap-2 flex-wrap">
                       {activity.meta?.status && (
@@ -149,17 +149,17 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                         if (typeof rating !== "number") return null
 
                         return (
-                        <div className="flex items-center gap-0.5 text-rating">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <IconStar
-                              key={i}
-                              className={cn(
-                                "size-3",
-                                i < rating ? "fill-current" : "opacity-30"
-                              )}
-                            />
-                          ))}
-                        </div>
+                          <div className="flex items-center gap-0.5 text-rating">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <IconStar
+                                key={i}
+                                className={cn(
+                                  "size-3",
+                                  i < rating ? "fill-current" : "opacity-30"
+                                )}
+                              />
+                            ))}
+                          </div>
                         )
                       })()}
                       <span className="text-2xs text-muted-foreground">
@@ -167,7 +167,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                       </span>
                     </div>
                   </div>
-                  
+
                   {/* Thumbnail if available */}
                   {activity.meta?.image && (
                     <Avatar className="size-10 rounded-md shrink-0">
@@ -205,7 +205,7 @@ function transformToActivityItems(
   }>
 ): ActivityItem[] {
   const activities: ActivityItem[] = []
-  
+
   // Transform orders
   for (const order of orders) {
     const product = Array.isArray(order.product) ? order.product[0] : order.product
@@ -223,7 +223,7 @@ function transformToActivityItems(
       },
     })
   }
-  
+
   // Transform products
   for (const product of products) {
     activities.push({
@@ -239,11 +239,11 @@ function transformToActivityItems(
       },
     })
   }
-  
+
   // Sort by timestamp (newest first)
-  activities.sort((a, b) => 
+  activities.sort((a, b) =>
     new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
   )
-  
+
   return activities.slice(0, 10)
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -177,7 +177,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
   // Open tracking URL
   const openTracking = (item: OrderItem) => {
     if (!item.tracking_number || !item.shipping_carrier) return
-    
+
     const carrier = CARRIERS[item.shipping_carrier.toLowerCase()]
     if (carrier) {
       window.open(carrier.trackingUrl + item.tracking_number, "_blank")
@@ -196,10 +196,10 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
     // When implemented, call: await requestReturn(selectedItem.id, returnReason)
     await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
     setIsSubmitting(false)
-    
+
     toast.success(
-      locale === "bg" 
-        ? "Заявката за връщане е изпратена" 
+      locale === "bg"
+        ? "Заявката за връщане е изпратена"
         : "Return request submitted"
     )
     setIsReturnDialogOpen(false)
@@ -347,13 +347,12 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
               const Icon = config.icon
               const isActive = arr.indexOf(normalizeProgressStatus(orderStatusKey)) >= index
               const isCurrent = orderStatus === status
-              
+
               return (
                 <div key={status} className="flex items-center flex-1">
                   <div className={`flex flex-col items-center flex-1 ${isCurrent ? "scale-110" : ""}`}>
-                    <div className={`size-8 rounded-full flex items-center justify-center transition-colors ${
-                      isActive ? config.color + " text-white" : "bg-muted text-muted-foreground"
-                    }`}>
+                    <div className={`size-8 rounded-full flex items-center justify-center transition-colors ${isActive ? config.color + " text-white" : "bg-muted text-muted-foreground"
+                      }`}>
                       <Icon className="size-4" weight={isCurrent ? "fill" : "regular"} />
                     </div>
                     <span className={`text-xs mt-1.5 ${isActive ? "font-medium" : "text-muted-foreground"}`}>
@@ -361,9 +360,8 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                     </span>
                   </div>
                   {index < arr.length - 1 && (
-                    <div className={`h-0.5 flex-1 mx-1 transition-colors ${
-                      arr.indexOf(normalizeProgressStatus(orderStatusKey)) > index ? "bg-primary" : "bg-muted"
-                    }`} />
+                    <div className={`h-0.5 flex-1 mx-1 transition-colors ${arr.indexOf(normalizeProgressStatus(orderStatusKey)) > index ? "bg-primary" : "bg-muted"
+                      }`} />
                   )}
                 </div>
               )
@@ -424,7 +422,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                 const itemStatus = item.status || "pending"
                 const itemConfig = getStatusConfig(itemStatus)
                 const firstImage = item.product?.images?.[0]
-                
+
                 return (
                   <div key={item.id} className="flex gap-4 p-3 rounded-lg border bg-card">
                     {/* Product Image */}
@@ -448,82 +446,82 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                       <div className="flex items-start justify-between gap-2">
                         <div>
 
-                        {/* Seller feedback dialog */}
-                        <Dialog open={isFeedbackDialogOpen} onOpenChange={setIsFeedbackDialogOpen}>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>{locale === "bg" ? "Обратна връзка" : "Seller feedback"}</DialogTitle>
-                              <DialogDescription>
-                                {locale === "bg"
-                                  ? "Оценете качеството на поръчката и комуникацията."
-                                  : "Rate the order experience and communication."}
-                              </DialogDescription>
-                            </DialogHeader>
+                          {/* Seller feedback dialog */}
+                          <Dialog open={isFeedbackDialogOpen} onOpenChange={setIsFeedbackDialogOpen}>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>{locale === "bg" ? "Обратна връзка" : "Seller feedback"}</DialogTitle>
+                                <DialogDescription>
+                                  {locale === "bg"
+                                    ? "Оценете качеството на поръчката и комуникацията."
+                                    : "Rate the order experience and communication."}
+                                </DialogDescription>
+                              </DialogHeader>
 
-                            <div className="space-y-4">
-                              <div className="space-y-2">
-                                <Label>{locale === "bg" ? "Оценка" : "Rating"}</Label>
-                                <RadioGroup
-                                  value={String(feedbackRating)}
-                                  onValueChange={(v) => setFeedbackRating(Number(v))}
-                                  className="flex flex-wrap gap-3"
-                                >
-                                  {[5, 4, 3, 2, 1].map((r) => (
-                                    <div key={r} className="flex items-center gap-2">
-                                      <RadioGroupItem value={String(r)} id={`rating-${r}`} />
-                                      <Label htmlFor={`rating-${r}`}>{r}</Label>
-                                    </div>
-                                  ))}
-                                </RadioGroup>
-                              </div>
-
-                              <div className="space-y-2">
-                                <Label>{locale === "bg" ? "Детайли" : "Details"}</Label>
+                              <div className="space-y-4">
                                 <div className="space-y-2">
-                                  <label className="flex items-center gap-2 text-sm">
-                                    <Checkbox checked={itemAsDescribed} onCheckedChange={(v) => setItemAsDescribed(Boolean(v))} />
-                                    {locale === "bg" ? "Описанието отговаря" : "Item as described"}
-                                  </label>
-                                  <label className="flex items-center gap-2 text-sm">
-                                    <Checkbox checked={shippingSpeed} onCheckedChange={(v) => setShippingSpeed(Boolean(v))} />
-                                    {locale === "bg" ? "Бърза доставка" : "Fast shipping"}
-                                  </label>
-                                  <label className="flex items-center gap-2 text-sm">
-                                    <Checkbox checked={communication} onCheckedChange={(v) => setCommunication(Boolean(v))} />
-                                    {locale === "bg" ? "Добра комуникация" : "Good communication"}
-                                  </label>
+                                  <Label>{locale === "bg" ? "Оценка" : "Rating"}</Label>
+                                  <RadioGroup
+                                    value={String(feedbackRating)}
+                                    onValueChange={(v) => setFeedbackRating(Number(v))}
+                                    className="flex flex-wrap gap-3"
+                                  >
+                                    {[5, 4, 3, 2, 1].map((r) => (
+                                      <div key={r} className="flex items-center gap-2">
+                                        <RadioGroupItem value={String(r)} id={`rating-${r}`} />
+                                        <Label htmlFor={`rating-${r}`}>{r}</Label>
+                                      </div>
+                                    ))}
+                                  </RadioGroup>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label>{locale === "bg" ? "Детайли" : "Details"}</Label>
+                                  <div className="space-y-2">
+                                    <label className="flex items-center gap-2 text-sm">
+                                      <Checkbox checked={itemAsDescribed} onCheckedChange={(v) => setItemAsDescribed(Boolean(v))} />
+                                      {locale === "bg" ? "Описанието отговаря" : "Item as described"}
+                                    </label>
+                                    <label className="flex items-center gap-2 text-sm">
+                                      <Checkbox checked={shippingSpeed} onCheckedChange={(v) => setShippingSpeed(Boolean(v))} />
+                                      {locale === "bg" ? "Бърза доставка" : "Fast shipping"}
+                                    </label>
+                                    <label className="flex items-center gap-2 text-sm">
+                                      <Checkbox checked={communication} onCheckedChange={(v) => setCommunication(Boolean(v))} />
+                                      {locale === "bg" ? "Добра комуникация" : "Good communication"}
+                                    </label>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="seller-feedback-comment">{locale === "bg" ? "Коментар (по избор)" : "Comment (optional)"}</Label>
+                                  <Textarea
+                                    id="seller-feedback-comment"
+                                    value={feedbackComment}
+                                    onChange={(e) => setFeedbackComment(e.target.value)}
+                                    rows={4}
+                                  />
                                 </div>
                               </div>
 
-                              <div className="space-y-2">
-                                <Label htmlFor="seller-feedback-comment">{locale === "bg" ? "Коментар (по избор)" : "Comment (optional)"}</Label>
-                                <Textarea
-                                  id="seller-feedback-comment"
-                                  value={feedbackComment}
-                                  onChange={(e) => setFeedbackComment(e.target.value)}
-                                  rows={4}
-                                />
-                              </div>
-                            </div>
-
-                            <DialogFooter>
-                              <Button variant="outline" onClick={() => setIsFeedbackDialogOpen(false)}>
-                                {locale === "bg" ? "Отказ" : "Cancel"}
-                              </Button>
-                              <Button onClick={submitFeedback} disabled={isSubmittingFeedback}>
-                                {isSubmittingFeedback ? (
-                                  <>
-                                    <SpinnerGap className="size-4 mr-2 animate-spin" />
-                                    {locale === "bg" ? "Изпращане..." : "Submitting..."}
-                                  </>
-                                ) : (
-                                  locale === "bg" ? "Изпрати" : "Submit"
-                                )}
-                              </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                          <Link 
+                              <DialogFooter>
+                                <Button variant="outline" onClick={() => setIsFeedbackDialogOpen(false)}>
+                                  {locale === "bg" ? "Отказ" : "Cancel"}
+                                </Button>
+                                <Button onClick={submitFeedback} disabled={isSubmittingFeedback}>
+                                  {isSubmittingFeedback ? (
+                                    <>
+                                      <SpinnerGap className="size-4 mr-2 animate-spin" />
+                                      {locale === "bg" ? "Изпращане..." : "Submitting..."}
+                                    </>
+                                  ) : (
+                                    locale === "bg" ? "Изпрати" : "Submit"
+                                  )}
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                          <Link
                             href={`/product/${item.product?.slug || item.product_id}`}
                             className="font-medium hover:underline line-clamp-2"
                           >
@@ -578,9 +576,9 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
                           </Button>
                         </Link>
                         {itemStatus === "delivered" && (
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
+                          <Button
+                            variant="outline"
+                            size="sm"
                             className="h-7"
                             onClick={() => {
                               setSelectedItem(item)
@@ -687,8 +685,8 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
             <CardHeader className="pb-3">
               <CardTitle className="text-base">{locale === "bg" ? "Нужда от помощ?" : "Need Help?"}</CardTitle>
               <CardDescription>
-                {locale === "bg" 
-                  ? "Свържете се с продавача или поддръжката" 
+                {locale === "bg"
+                  ? "Свържете се с продавача или поддръжката"
                   : "Contact the seller or support"}
               </CardDescription>
             </CardHeader>
@@ -710,8 +708,8 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
           <DialogHeader>
             <DialogTitle>{locale === "bg" ? "Заявка за връщане" : "Return Request"}</DialogTitle>
             <DialogDescription>
-              {locale === "bg" 
-                ? "Опишете защо искате да върнете продукта" 
+              {locale === "bg"
+                ? "Опишете защо искате да върнете продукта"
                 : "Describe why you want to return this item"}
             </DialogDescription>
           </DialogHeader>

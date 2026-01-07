@@ -32,6 +32,8 @@ export interface UseCategoryNavigationProps {
   tabsNavigateToPages: boolean
   l0Style: "tabs" | "pills"
   initialProducts: UIProduct[]
+  /** Which category slug the initialProducts are for. Defaults to "all". */
+  initialProductsSlug?: string
   locale: string
   activeAllFilter: string
 }
@@ -90,6 +92,7 @@ export function useCategoryNavigation({
   tabsNavigateToPages,
   l0Style,
   initialProducts,
+  initialProductsSlug = "all",
   locale,
   activeAllFilter,
 }: UseCategoryNavigationProps): UseCategoryNavigationReturn {
@@ -156,19 +159,40 @@ export function useCategoryNavigation({
 
   // Product feed state
   const [isLoading, setIsLoading] = useState(false)
+  const isMountedRef = useRef(true)
+  const loadRequestIdRef = useRef(0)
   const [tabData, setTabData] = useState<Record<string, TabData>>(() => {
+    // Only seed the bucket that matches what the server actually fetched
+    // Homepage fetches "all" products, category pages fetch specific category products
+    if (initialProducts.length === 0) {
+      return {}
+    }
     const seed: TabData = {
       products: initialProducts,
       page: 1,
       hasMore: initialProducts.length >= 12,
     }
-    return {
-      all: seed,
-      ...(initialActiveSlug !== "all" ? { [initialActiveSlug]: seed } : null),
-    }
+    return { [initialProductsSlug]: seed }
   })
 
   const isAllTab = activeTab === "all"
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
+  const beginLoading = useCallback(() => {
+    const requestId = ++loadRequestIdRef.current
+    if (isMountedRef.current) setIsLoading(true)
+    return requestId
+  }, [])
+
+  const endLoading = useCallback((requestId: number) => {
+    if (!isMountedRef.current) return
+    if (loadRequestIdRef.current === requestId) setIsLoading(false)
+  }, [])
 
   // ==========================================================================
   // Derived State
@@ -301,7 +325,10 @@ export function useCategoryNavigation({
   )
 
   // Track which slugs have been loaded
-  const loadedSlugsRef = useRef<Set<string>>(new Set(["all"]))
+  // Only mark initialProductsSlug as loaded (that's what server actually fetched)
+  const loadedSlugsRef = useRef<Set<string>>(
+    new Set(initialProducts.length > 0 ? [initialProductsSlug] : [])
+  )
 
   const lastFilterQueryKeyRef = useRef<string>(filterQueryKey)
   useEffect(() => {
@@ -322,14 +349,13 @@ export function useCategoryNavigation({
     loadedSlugsRef.current.add(activeSlug)
 
     let cancelled = false
-    setIsLoading(true)
+    let completed = false
+    const requestId = beginLoading()
 
     loadPage(activeSlug, 1)
       .then((data) => {
-        if (cancelled) {
-          loadedSlugsRef.current.delete(activeSlug)
-          return
-        }
+        if (cancelled) return
+        completed = true
         const first = data.products || []
         setTabData((prev) => ({
           ...prev,
@@ -346,20 +372,19 @@ export function useCategoryNavigation({
           loadedSlugsRef.current.delete(activeSlug)
         }
       })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false)
-      })
+      .finally(() => endLoading(requestId))
 
     return () => {
       cancelled = true
+      if (!completed) loadedSlugsRef.current.delete(activeSlug)
     }
-  }, [activeSlug, loadPage])
+  }, [activeSlug, beginLoading, endLoading, loadPage])
 
   // Load more products (infinite scroll)
   const loadMoreProducts = useCallback(async () => {
     if (isLoading || !activeFeed.hasMore) return
 
-    setIsLoading(true)
+    const requestId = beginLoading()
     try {
       const nextPage = (activeFeed.page || 0) + 1
       const data = await loadPage(activeSlug, nextPage)
@@ -393,9 +418,17 @@ export function useCategoryNavigation({
     } catch (error) {
       console.error("Failed to load more products:", error)
     } finally {
-      setIsLoading(false)
+      endLoading(requestId)
     }
-  }, [activeFeed.hasMore, activeFeed.page, activeSlug, isLoading, loadPage])
+  }, [
+    activeFeed.hasMore,
+    activeFeed.page,
+    activeSlug,
+    beginLoading,
+    endLoading,
+    isLoading,
+    loadPage,
+  ])
 
   // ==========================================================================
   // Navigation Handlers

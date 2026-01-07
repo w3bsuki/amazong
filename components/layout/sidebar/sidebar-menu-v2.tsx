@@ -25,11 +25,11 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { 
-    List, 
-    X, 
-    SignIn as SignInIcon, 
-    ChatCircleText, 
+import {
+    List,
+    X,
+    SignIn as SignInIcon,
+    ChatCircleText,
     Heart,
     Receipt,
     SignOut,
@@ -108,8 +108,8 @@ function CategoryGridInner({
                         category={cat}
                         href={`/categories/${cat.slug}`}
                         onClick={onNavigate}
-                        circleClassName="size-14"
-                        fallbackIconSize={24}
+                        circleClassName="size-16"
+                        fallbackIconSize={28}
                         fallbackIconWeight="regular"
                         variant="menu"
                         label={name}
@@ -209,15 +209,15 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                     <div className="h-14 px-3 flex items-center">
                         {/* LEFT: Account or Sign In */}
                         {isLoggedIn ? (
-                            <Link 
+                            <Link
                                 href="/account"
                                 onClick={() => setOpen(false)}
                                 className="flex items-center gap-2.5 min-w-0 hover:opacity-90 transition-opacity"
                             >
                                 <div className="size-9 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
-                                    <UserCircle size={22} weight="fill" className="text-white" />
+                                    <UserCircle size={26} weight="fill" className="text-white" />
                                 </div>
-                                <span className="text-white text-base font-semibold truncate max-w-[120px]">
+                                <span className="text-white text-base font-semibold truncate max-w-32">
                                     {firstName || displayName}
                                 </span>
                             </Link>
@@ -228,7 +228,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                                     onClick={() => setOpen(false)}
                                     className="flex items-center gap-1.5 h-9 px-4 rounded-full bg-white text-brand text-sm font-semibold hover:bg-white/90 transition-colors"
                                 >
-                                    <SignInIcon size={16} weight="bold" />
+                                    <SignInIcon size={20} weight="bold" />
                                     <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
                                 </Link>
                                 <Link
@@ -252,7 +252,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                                 className="size-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                                 aria-label={locale === 'bg' ? 'Помощ' : 'Help'}
                             >
-                                <Question size={20} weight="regular" />
+                                <Question size={24} weight="regular" />
                             </Link>
 
                             {/* Settings - only logged in */}
@@ -263,14 +263,14 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                                     className="size-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                                     aria-label={locale === 'bg' ? 'Настройки' : 'Settings'}
                                 >
-                                    <Gear size={20} weight="regular" />
+                                    <Gear size={24} weight="regular" />
                                 </Link>
                             )}
 
                             {/* Language */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button 
+                                    <button
                                         type="button"
                                         className="size-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                                         aria-label="Language"
@@ -278,23 +278,23 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                                         <Image
                                             src={locale === 'bg' ? "https://flagcdn.com/w40/bg.png" : "https://flagcdn.com/w40/gb.png"}
                                             alt=""
-                                            width={20}
-                                            height={14}
-                                            className="w-5 h-3.5 rounded-sm object-cover"
+                                            width={24}
+                                            height={16}
+                                            className="w-6 h-4 rounded-sm object-cover"
                                         />
                                     </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="min-w-[140px] rounded-lg p-1">
+                                <DropdownMenuContent align="end" className="min-w-36 rounded-lg p-1">
                                     <DropdownMenuItem asChild>
                                         <Link href="/" locale="en" onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md">
-                                            <Image src="https://flagcdn.com/w40/gb.png" alt="" width={18} height={12} className="w-[18px] h-3 rounded-sm object-cover" />
+                                            <Image src="https://flagcdn.com/w40/gb.png" alt="" width={18} height={12} className="h-3 w-auto rounded-sm object-cover" />
                                             <span className="text-sm font-medium">English</span>
                                             {locale === 'en' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
                                         <Link href="/" locale="bg" onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer rounded-md">
-                                            <Image src="https://flagcdn.com/w40/bg.png" alt="" width={18} height={12} className="w-[18px] h-3 rounded-sm object-cover" />
+                                            <Image src="https://flagcdn.com/w40/bg.png" alt="" width={18} height={12} className="h-3 w-auto rounded-sm object-cover" />
                                             <span className="text-sm font-medium">Български</span>
                                             {locale === 'bg' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
                                         </Link>
@@ -308,7 +308,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                                     type="button"
                                     className="size-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                                 >
-                                    <X size={20} weight="bold" />
+                                    <X size={24} weight="bold" />
                                     <span className="sr-only">{t('close')}</span>
                                 </button>
                             </DrawerClose>
@@ -317,26 +317,26 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
 
                     {/* Quick Actions row - in blue header */}
                     {isLoggedIn && (
-                        <div className="mx-3 mb-3 p-2 rounded-xl bg-white/10 border border-white/20">
+                        <div className="mx-3 mb-3 p-3 rounded-xl bg-white/10 border border-white/20">
                             <div className="grid grid-cols-4 gap-1">
-                            {[
-                                { href: "/account/orders", icon: Receipt, label: locale === 'bg' ? 'Поръчки' : 'Orders' },
-                                { href: "/account/sales", icon: ChartLineUp, label: locale === 'bg' ? 'Продажби' : 'Sales' },
-                                { href: "/wishlist", icon: Heart, label: locale === 'bg' ? 'Любими' : 'Saved' },
-                                { href: "/chat", icon: ChatCircleText, label: locale === 'bg' ? 'Чат' : 'Chat' },
-                            ].map(({ href, icon: Icon, label }) => (
-                                <Link
-                                    key={href}
-                                    href={href}
-                                    onClick={() => setOpen(false)}
-                                    className="flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-white/10 group active:scale-95 transition-all"
-                                >
-                                    <Icon size={22} weight="regular" className="text-white" />
-                                    <span className="text-xs font-medium text-white/90">
-                                        {label}
-                                    </span>
-                                </Link>
-                            ))}
+                                {[
+                                    { href: "/account/orders", icon: Receipt, label: locale === 'bg' ? 'Поръчки' : 'Orders' },
+                                    { href: "/account/sales", icon: ChartLineUp, label: locale === 'bg' ? 'Продажби' : 'Sales' },
+                                    { href: "/wishlist", icon: Heart, label: locale === 'bg' ? 'Любими' : 'Saved' },
+                                    { href: "/chat", icon: ChatCircleText, label: locale === 'bg' ? 'Чат' : 'Chat' },
+                                ].map(({ href, icon: Icon, label }) => (
+                                    <Link
+                                        key={href}
+                                        href={href}
+                                        onClick={() => setOpen(false)}
+                                        className="flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-white/10 group active:scale-95 transition-all"
+                                    >
+                                        <Icon size={28} weight="regular" className="text-white" />
+                                        <span className="text-xs font-medium text-white/90">
+                                            {label}
+                                        </span>
+                                    </Link>
+                                ))}
                             </div>
                         </div>
                     )}
@@ -354,8 +354,8 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                             <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                                 {locale === 'bg' ? 'Категории' : 'Categories'}
                             </h2>
-                            <Link 
-                                href="/categories" 
+                            <Link
+                                href="/categories"
                                 onClick={() => setOpen(false)}
                                 className="text-xs text-primary font-medium flex items-center gap-0.5 hover:underline"
                             >

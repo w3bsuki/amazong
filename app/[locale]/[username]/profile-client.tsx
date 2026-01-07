@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -117,7 +117,7 @@ function StarRating({ rating, count, size = "sm" }: { rating: number; count: num
   const stars = []
   const fullStars = Math.floor(rating)
   const hasHalf = rating % 1 >= 0.5
-  
+
   for (let i = 0; i < 5; i++) {
     if (i < fullStars) {
       stars.push(<Star key={i} weight="fill" className={`text-rating ${size === "md" ? "size-5" : "size-4"}`} />)
@@ -127,7 +127,7 @@ function StarRating({ rating, count, size = "sm" }: { rating: number; count: num
       stars.push(<Star key={i} weight="regular" className={`text-rating-empty ${size === "md" ? "size-5" : "size-4"}`} />)
     }
   }
-  
+
   return (
     <div className="flex items-center gap-1">
       <div className="flex">{stars}</div>
@@ -150,11 +150,11 @@ export function PublicProfileClient({
   locale,
 }: PublicProfileClientProps) {
   const [activeTab, setActiveTab] = useState(profile.is_seller ? "listings" : "reviews")
-  
+
   const displayName = profile.display_name || profile.username || 'User'
   const initials = displayName.slice(0, 2).toUpperCase()
   const memberSince = new Date(profile.created_at)
-  
+
   const socialIcons: Record<string, React.ReactNode> = {
     facebook: <FacebookLogo className="size-5" weight="fill" />,
     instagram: <InstagramLogo className="size-5" weight="fill" />,
@@ -162,7 +162,7 @@ export function PublicProfileClient({
     tiktok: <TiktokLogo className="size-5" weight="fill" />,
     youtube: <YoutubeLogo className="size-5" weight="fill" />,
   }
-  
+
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-8">
       {/* Banner */}
@@ -178,7 +178,7 @@ export function PublicProfileClient({
         )}
         <div className="absolute inset-0 bg-background/40" />
       </div>
-      
+
       {/* Profile Header */}
       <div className="container relative -mt-16 sm:-mt-20">
         <div className="flex flex-col sm:flex-row sm:items-end gap-4">
@@ -196,7 +196,7 @@ export function PublicProfileClient({
               </div>
             )}
           </div>
-          
+
           {/* Name and Actions */}
           <div className="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2">
             <div>
@@ -220,10 +220,10 @@ export function PublicProfileClient({
                 <p className="text-sm text-muted-foreground mt-0.5">{profile.business_name}</p>
               )}
             </div>
-            
+
             <div className="flex gap-2">
               {isOwnProfile ? (
-                <Link href={`/${locale}/account/profile`}>
+                <Link href="/account/profile">
                   <Button variant="outline" size="sm" className="gap-2">
                     <PencilSimple className="size-4" />
                     {locale === "bg" ? "Редактирай" : "Edit Profile"}
@@ -249,7 +249,7 @@ export function PublicProfileClient({
             </div>
           </div>
         </div>
-        
+
         {/* Bio and Info */}
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {/* Left Column - Bio and Details */}
@@ -257,7 +257,7 @@ export function PublicProfileClient({
             {profile.bio && (
               <p className="text-muted-foreground">{profile.bio}</p>
             )}
-            
+
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
               {profile.location && (
                 <span className="flex items-center gap-1.5">
@@ -270,7 +270,7 @@ export function PublicProfileClient({
                 {locale === "bg" ? "Член от" : "Member since"} {memberSince.toLocaleDateString(locale === "bg" ? "bg-BG" : "en-US", { month: "long", year: "numeric" })}
               </span>
             </div>
-            
+
             {/* Social Links */}
             {profile.social_links && Object.keys(profile.social_links).length > 0 && (
               <div className="flex gap-2">
@@ -301,7 +301,7 @@ export function PublicProfileClient({
               </div>
             )}
           </div>
-          
+
           {/* Right Column - Stats */}
           <div className="space-y-3">
             <Card>
@@ -338,7 +338,7 @@ export function PublicProfileClient({
                     <Separator />
                   </div>
                 )}
-                
+
                 {/* Buyer Stats */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -366,7 +366,7 @@ export function PublicProfileClient({
           </div>
         </div>
       </div>
-      
+
       {/* Tabs Content */}
       <div className="container mt-8">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -390,7 +390,7 @@ export function PublicProfileClient({
               </TabsTrigger>
             )}
           </TabsList>
-          
+
           {/* Listings Tab */}
           {profile.is_seller && (
             <TabsContent value="listings" className="mt-6">
@@ -398,7 +398,7 @@ export function PublicProfileClient({
                 <>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                     {products.map((product) => (
-                      <ProductCard 
+                      <ProductCard
                         key={product.id}
                         id={product.id}
                         title={product.title}
@@ -418,7 +418,7 @@ export function PublicProfileClient({
                   </div>
                   {productCount > 12 && (
                     <div className="mt-6 flex justify-center">
-                      <Link href={`/${locale}/search?seller=${profile.id}`}>
+                      <Link href={`/search?seller=${profile.id}`}>
                         <Button variant="outline" className="gap-2">
                           {locale === "bg" ? "Виж всички" : "View All"} ({productCount})
                           <ArrowRight className="size-4" />
@@ -435,7 +435,7 @@ export function PublicProfileClient({
               )}
             </TabsContent>
           )}
-          
+
           {/* Seller Reviews Tab */}
           {profile.is_seller && (
             <TabsContent value="seller-reviews" className="mt-6">
@@ -453,8 +453,8 @@ export function PublicProfileClient({
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
-                              <Link 
-                                href={`/${locale}/u/${review.buyer?.username}`}
+                              <Link
+                                href={`/u/${review.buyer?.username}`}
                                 className="font-medium hover:underline"
                               >
                                 {review.buyer?.display_name || review.buyer?.username}
@@ -500,7 +500,7 @@ export function PublicProfileClient({
               )}
             </TabsContent>
           )}
-          
+
           {/* Buyer Reviews Tab */}
           {profile.total_purchases > 0 && (
             <TabsContent value="buyer-reviews" className="mt-6">
@@ -518,8 +518,8 @@ export function PublicProfileClient({
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
-                              <Link 
-                                href={`/${locale}/u/${review.seller?.username}`}
+                              <Link
+                                href={`/u/${review.seller?.username}`}
                                 className="font-medium hover:underline"
                               >
                                 {review.seller?.display_name || review.seller?.username}

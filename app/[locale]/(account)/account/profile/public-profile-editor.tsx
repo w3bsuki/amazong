@@ -2,7 +2,7 @@
 
 import { useState, useRef, useTransition, useEffect } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -75,7 +75,7 @@ interface PublicProfileEditorProps {
 export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProps) {
   const [isPending, startTransition] = useTransition()
   const bannerInputRef = useRef<HTMLInputElement>(null)
-  
+
   // Username state
   const [usernameDialogOpen, setUsernameDialogOpen] = useState(false)
   const [newUsername, setNewUsername] = useState(profile.username || "")
@@ -83,7 +83,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
   const [isCheckingUsername, setIsCheckingUsername] = useState(false)
   const [canChangeUsername, setCanChangeUsername] = useState(true)
   const [daysUntilChange, setDaysUntilChange] = useState<number | undefined>()
-  
+
   // Profile data state
   const [profileData, setProfileData] = useState({
     display_name: profile.display_name || "",
@@ -97,11 +97,11 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
       tiktok: profile.social_links?.tiktok || "",
     },
   })
-  
+
   // Banner state
   const [bannerPreview, setBannerPreview] = useState<string | null>(profile.banner_url)
   const [isUploadingBanner, setIsUploadingBanner] = useState(false)
-  
+
   // Business upgrade state
   const [businessDialogOpen, setBusinessDialogOpen] = useState(false)
   const [businessData, setBusinessData] = useState({
@@ -110,7 +110,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
     change_username: false,
     new_username: "",
   })
-  
+
   // Check username change cooldown on mount
   useEffect(() => {
     const checkCooldown = async () => {
@@ -120,29 +120,29 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
     }
     checkCooldown()
   }, [])
-  
+
   // Username availability check
   const handleUsernameCheck = async (username: string) => {
     if (!username || username.length < 3) {
       setUsernameAvailable(null)
       return
     }
-    
+
     if (username === profile.username) {
       setUsernameAvailable(null)
       return
     }
-    
+
     setIsCheckingUsername(true)
     const result = await checkUsernameAvailability(username)
     setUsernameAvailable(result.available)
     setIsCheckingUsername(false)
   }
-  
+
   // Handle username change
   const handleUsernameChange = async () => {
     if (!newUsername || newUsername === profile.username) return
-    
+
     startTransition(async () => {
       const result = await setUsername(newUsername)
       if (result.success) {
@@ -155,7 +155,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
       }
     })
   }
-  
+
   // Handle profile update
   const handleProfileUpdate = async () => {
     startTransition(async () => {
@@ -166,7 +166,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
         website_url: profileData.website_url || null,
         social_links: profileData.social_links,
       })
-      
+
       if (result.success) {
         toast.success(locale === "bg" ? "Профилът е обновен" : "Profile updated successfully")
       } else {
@@ -174,25 +174,25 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
       }
     })
   }
-  
+
   // Handle banner upload
   const handleBannerChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    
+
     // Preview
     const reader = new FileReader()
     reader.onloadend = () => setBannerPreview(reader.result as string)
     reader.readAsDataURL(file)
-    
+
     // Upload
     setIsUploadingBanner(true)
     const formData = new FormData()
     formData.set("banner", file)
-    
+
     const result = await uploadBanner(formData)
     setIsUploadingBanner(false)
-    
+
     if (result.success) {
       setBannerPreview(result.bannerUrl || null)
       toast.success(locale === "bg" ? "Банерът е качен" : "Banner uploaded successfully")
@@ -201,7 +201,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
       toast.error(result.error)
     }
   }
-  
+
   // Handle business upgrade
   const handleBusinessUpgrade = async () => {
     startTransition(async () => {
@@ -211,7 +211,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
         change_username: businessData.change_username,
         new_username: businessData.new_username || undefined,
       })
-      
+
       if (result.success) {
         toast.success(locale === "bg" ? "Профилът е обновен до бизнес" : "Upgraded to business account")
         setBusinessDialogOpen(false)
@@ -221,7 +221,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
       }
     })
   }
-  
+
   // Handle downgrade to personal
   const handleDowngrade = async () => {
     startTransition(async () => {
@@ -234,7 +234,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
       }
     })
   }
-  
+
   const isBusiness = profile.account_type === "business"
 
   return (
@@ -262,7 +262,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
           </CardContent>
         </Card>
       )}
-      
+
       {/* Username Section */}
       <Card>
         <CardHeader>
@@ -271,8 +271,8 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
             {locale === "bg" ? "Потребителско име" : "Username"}
           </CardTitle>
           <CardDescription>
-            {locale === "bg" 
-              ? "Уникалният ти идентификатор за URL и споменаване" 
+            {locale === "bg"
+              ? "Уникалният ти идентификатор за URL и споменаване"
               : "Your unique identifier for URLs and mentions"}
           </CardDescription>
         </CardHeader>
@@ -293,12 +293,12 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                 </p>
               )}
             </div>
-            
+
             <Dialog open={usernameDialogOpen} onOpenChange={setUsernameDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" disabled={!canChangeUsername && !!profile.username}>
                   <PencilSimple className="size-4 mr-1.5" />
-                  {profile.username 
+                  {profile.username
                     ? (locale === "bg" ? "Промени" : "Change")
                     : (locale === "bg" ? "Задай" : "Set")
                   }
@@ -307,18 +307,18 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>
-                    {profile.username 
+                    {profile.username
                       ? (locale === "bg" ? "Промени потребителско име" : "Change Username")
                       : (locale === "bg" ? "Избери потребителско име" : "Choose Username")
                     }
                   </DialogTitle>
                   <DialogDescription>
-                    {locale === "bg" 
+                    {locale === "bg"
                       ? "Потребителското име може да се променя веднъж на 14 дни"
                       : "Username can be changed once every 14 days"}
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
                     <Label>{locale === "bg" ? "Ново потребителско име" : "New Username"}</Label>
@@ -352,22 +352,22 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                       </p>
                     )}
                   </div>
-                  
+
                   <Alert>
                     <Info className="size-4" />
                     <AlertDescription className="text-xs">
-                      {locale === "bg" 
+                      {locale === "bg"
                         ? "Правила: 3-30 символа, само малки букви, цифри и долна черта"
                         : "Rules: 3-30 chars, lowercase letters, numbers, and underscores only"}
                     </AlertDescription>
                   </Alert>
                 </div>
-                
+
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setUsernameDialogOpen(false)}>
                     {locale === "bg" ? "Отказ" : "Cancel"}
                   </Button>
-                  <Button 
+                  <Button
                     onClick={handleUsernameChange}
                     disabled={isPending || !usernameAvailable || !newUsername || newUsername === profile.username}
                   >
@@ -378,17 +378,17 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
               </DialogContent>
             </Dialog>
           </div>
-          
+
           {!canChangeUsername && daysUntilChange && (
             <p className="text-xs text-muted-foreground mt-2">
-              {locale === "bg" 
+              {locale === "bg"
                 ? `Можеш да промениш след ${daysUntilChange} дни`
                 : `Can change again in ${daysUntilChange} days`}
             </p>
           )}
         </CardContent>
       </Card>
-      
+
       {/* Profile Banner */}
       <Card>
         <CardHeader>
@@ -397,13 +397,13 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
             {locale === "bg" ? "Банер на профила" : "Profile Banner"}
           </CardTitle>
           <CardDescription>
-            {locale === "bg" 
-              ? "Препоръчителен размер: 1200x300 пиксела" 
+            {locale === "bg"
+              ? "Препоръчителен размер: 1200x300 пиксела"
               : "Recommended size: 1200x300 pixels"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div 
+          <div
             className="relative h-32 rounded-lg bg-muted overflow-hidden cursor-pointer group"
             onClick={() => bannerInputRef.current?.click()}
           >
@@ -431,7 +431,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
           />
         </CardContent>
       </Card>
-      
+
       {/* Public Profile Info */}
       <Card>
         <CardHeader>
@@ -440,8 +440,8 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
             {locale === "bg" ? "Публична информация" : "Public Information"}
           </CardTitle>
           <CardDescription>
-            {locale === "bg" 
-              ? "Тази информация се показва на публичния ти профил" 
+            {locale === "bg"
+              ? "Тази информация се показва на публичния ти профил"
               : "This information is visible on your public profile"}
           </CardDescription>
         </CardHeader>
@@ -457,7 +457,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
               {locale === "bg" ? "Показва се вместо @username" : "Shown instead of @username"}
             </p>
           </div>
-          
+
           <div className="space-y-2">
             <Label>{locale === "bg" ? "Биография" : "Bio"}</Label>
             <Textarea
@@ -471,7 +471,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
               {profileData.bio.length}/500
             </p>
           </div>
-          
+
           <div className="space-y-2">
             <Label className="flex items-center gap-1.5">
               <MapPin className="size-4" />
@@ -483,9 +483,9 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
               placeholder={locale === "bg" ? "София, България" : "Sofia, Bulgaria"}
             />
           </div>
-          
+
           <Separator />
-          
+
           {/* Social Links - Only for business accounts */}
           {isBusiness && (
             <>
@@ -501,7 +501,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                   placeholder="https://example.com"
                 />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-1.5">
@@ -510,8 +510,8 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                   </Label>
                   <Input
                     value={profileData.social_links.facebook}
-                    onChange={(e) => setProfileData(prev => ({ 
-                      ...prev, 
+                    onChange={(e) => setProfileData(prev => ({
+                      ...prev,
                       social_links: { ...prev.social_links, facebook: e.target.value }
                     }))}
                     placeholder="facebook.com/..."
@@ -524,8 +524,8 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                   </Label>
                   <Input
                     value={profileData.social_links.instagram}
-                    onChange={(e) => setProfileData(prev => ({ 
-                      ...prev, 
+                    onChange={(e) => setProfileData(prev => ({
+                      ...prev,
                       social_links: { ...prev.social_links, instagram: e.target.value }
                     }))}
                     placeholder="instagram.com/..."
@@ -538,8 +538,8 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                   </Label>
                   <Input
                     value={profileData.social_links.twitter}
-                    onChange={(e) => setProfileData(prev => ({ 
-                      ...prev, 
+                    onChange={(e) => setProfileData(prev => ({
+                      ...prev,
                       social_links: { ...prev.social_links, twitter: e.target.value }
                     }))}
                     placeholder="x.com/..."
@@ -552,8 +552,8 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                   </Label>
                   <Input
                     value={profileData.social_links.tiktok}
-                    onChange={(e) => setProfileData(prev => ({ 
-                      ...prev, 
+                    onChange={(e) => setProfileData(prev => ({
+                      ...prev,
                       social_links: { ...prev.social_links, tiktok: e.target.value }
                     }))}
                     placeholder="tiktok.com/@..."
@@ -562,14 +562,14 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
               </div>
             </>
           )}
-          
+
           <Button onClick={handleProfileUpdate} disabled={isPending} className="w-full">
             {isPending && <SpinnerGap className="size-4 mr-2 animate-spin" />}
             {locale === "bg" ? "Запази промените" : "Save Changes"}
           </Button>
         </CardContent>
       </Card>
-      
+
       {/* Account Type Section */}
       <Card>
         <CardHeader>
@@ -578,7 +578,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
             {locale === "bg" ? "Тип акаунт" : "Account Type"}
           </CardTitle>
           <CardDescription>
-            {isBusiness 
+            {isBusiness
               ? (locale === "bg" ? "Бизнес акаунт с разширени функции" : "Business account with extended features")
               : (locale === "bg" ? "Личен акаунт" : "Personal account")
             }
@@ -589,7 +589,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
             <div className="flex items-center gap-3">
               <Badge variant={isBusiness ? "default" : "secondary"} className="gap-1">
                 {isBusiness ? <Storefront className="size-3" /> : <User className="size-3" />}
-                {isBusiness 
+                {isBusiness
                   ? (locale === "bg" ? "Бизнес" : "Business")
                   : (locale === "bg" ? "Личен" : "Personal")
                 }
@@ -601,7 +601,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                 </Badge>
               )}
             </div>
-            
+
             {isBusiness ? (
               <Button variant="outline" size="sm" onClick={handleDowngrade} disabled={isPending}>
                 {locale === "bg" ? "Върни към личен" : "Switch to Personal"}
@@ -620,12 +620,12 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                       {locale === "bg" ? "Надгради до бизнес акаунт" : "Upgrade to Business Account"}
                     </DialogTitle>
                     <DialogDescription>
-                      {locale === "bg" 
+                      {locale === "bg"
                         ? "Бизнес акаунтите имат допълнителни функции"
                         : "Business accounts have additional features"}
                     </DialogDescription>
                   </DialogHeader>
-                  
+
                   <div className="space-y-4 py-4">
                     <div className="space-y-2">
                       <Label>{locale === "bg" ? "Име на бизнеса *" : "Business Name *"}</Label>
@@ -635,7 +635,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                         placeholder={locale === "bg" ? "Вашият бизнес" : "Your Business"}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label>{locale === "bg" ? "ДДС номер (по желание)" : "VAT Number (optional)"}</Label>
                       <Input
@@ -644,22 +644,22 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                         placeholder="BG123456789"
                       />
                     </div>
-                    
+
                     <Alert>
                       <Info className="size-4" />
                       <AlertDescription className="text-xs">
-                        {locale === "bg" 
+                        {locale === "bg"
                           ? "Бизнес акаунтите показват допълнителна информация на профила - социални мрежи, уебсайт и др."
                           : "Business accounts display additional profile info - social links, website, etc."}
                       </AlertDescription>
                     </Alert>
                   </div>
-                  
+
                   <DialogFooter>
                     <Button variant="outline" onClick={() => setBusinessDialogOpen(false)}>
                       {locale === "bg" ? "Отказ" : "Cancel"}
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleBusinessUpgrade}
                       disabled={isPending || !businessData.business_name}
                     >
@@ -671,7 +671,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
               </Dialog>
             )}
           </div>
-          
+
           {isBusiness && profile.business_name && (
             <div className="mt-4 pt-4 border-t">
               <p className="text-sm text-muted-foreground">

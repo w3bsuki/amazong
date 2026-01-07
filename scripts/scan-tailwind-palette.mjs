@@ -38,7 +38,61 @@ const paletteAlt = paletteFamilies.join("|");
 // - from-*/to-*/via-* (any value, not just palette)
 const rePalette = new RegExp(`\\b(?:${paletteAlt})-\\d{2,3}(?:\\/\\d{1,3})?\\b`, "gi");
 const reFillPalette = new RegExp(`\\bfill-(?:${paletteAlt})-\\d{2,3}(?:\\/\\d{1,3})?\\b`, "gi");
-const reGradientStops = /\b(?:from|to|via)-[^\s"']+\b/gi;
+const gradientIgnoreBases = [/^slide-(?:in|out)-(?:from|to)-/];
+
+function stripVariants(token) {
+  // Tailwind class tokens can be prefixed by variants (md:hover:from-*).
+  const parts = token.split(":");
+  return parts[parts.length - 1] ?? token;
+}
+
+function cleanToken(raw) {
+  // Remove leading/trailing punctuation so we can match class tokens inside JSX strings.
+  return raw.replace(/^[^A-Za-z0-9]+/, "").replace(/[^A-Za-z0-9\[\]\-/:().%]+$/, "");
+}
+
+function isGradientIndicator(base) {
+  return base.startsWith("bg-gradient-to-") || base === "bg-gradient";
+}
+
+function isGradientStop(base) {
+  if (gradientIgnoreBases.some((re) => re.test(base))) return false;
+  return base.startsWith("from-") || base.startsWith("to-") || base.startsWith("via-");
+}
+
+function countGradientClusters(text) {
+  let count = 0;
+  const lines = text.split(/\r?\n/);
+
+  for (const line of lines) {
+    const tokens = line
+      .split(/\s+/)
+      .map(cleanToken)
+      .filter(Boolean)
+      .map(stripVariants);
+
+    if (!tokens.length) continue;
+
+    const stops = tokens.filter(isGradientStop);
+    if (!stops.length) continue;
+
+    const hasGradientIndicator = tokens.some(isGradientIndicator);
+    const hasFrom = stops.some((t) => t.startsWith("from-"));
+    const hasTo = stops.some((t) => t.startsWith("to-"));
+    const hasVia = stops.some((t) => t.startsWith("via-"));
+
+    const hasCluster =
+      (hasGradientIndicator && (hasFrom || hasTo || hasVia)) ||
+      (hasFrom && (hasTo || hasVia)) ||
+      (hasVia && hasTo);
+
+    if (!hasCluster) continue;
+
+    count += stops.length + (hasGradientIndicator ? 1 : 0);
+  }
+
+  return count;
+}
 
 function isDirectory(p) {
   try {
@@ -92,7 +146,7 @@ for (const abs of allFiles) {
 
   const palette = countMatches(text, rePalette);
   const fill = countMatches(text, reFillPalette);
-  const gradient = countMatches(text, reGradientStops);
+  const gradient = countGradientClusters(text);
   const total = palette + fill + gradient;
 
   if (total === 0) continue;

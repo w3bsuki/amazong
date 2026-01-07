@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import {
   IconCheck,
   IconX,
@@ -114,16 +114,16 @@ export function BusinessSetupGuide({
                 </CardDescription>
               </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="size-7 shrink-0"
               onClick={handleDismiss}
             >
               <IconX className="size-4" />
             </Button>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="mt-4 space-y-1.5">
             <div className="flex items-center justify-between text-sm">
@@ -133,27 +133,27 @@ export function BusinessSetupGuide({
             <Progress value={progressPercent} className="h-2" />
           </div>
         </CardHeader>
-        
+
         <CardContent className="pb-4">
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((step) => {
               const Icon = step.icon
               return (
-                <Link 
-                  key={step.id} 
+                <Link
+                  key={step.id}
                   href={step.href}
                   className="group"
                 >
                   <div className={cn(
                     "flex items-center gap-3 rounded-lg border p-3 transition-all",
-                    step.completed 
-                      ? "border-success/30 bg-success/5" 
+                    step.completed
+                      ? "border-success/30 bg-success/5"
                       : "border-border bg-card hover:border-primary/50 hover:bg-primary/5"
                   )}>
                     <div className={cn(
                       "flex size-8 items-center justify-center rounded-full shrink-0",
-                      step.completed 
-                        ? "bg-success text-success-foreground" 
+                      step.completed
+                        ? "bg-success text-success-foreground"
                         : "bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground"
                     )}>
                       {step.completed ? (

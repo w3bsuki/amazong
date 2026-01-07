@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -61,17 +61,17 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
 
   const handleUnfollow = async (sellerId: string) => {
     setUnfollowingId(sellerId)
-    
+
     startTransition(async () => {
       const result = await unfollowSeller(sellerId)
-      
+
       if (result.success) {
         setSellers(prev => prev.filter(s => s.seller_id !== sellerId))
         toast.success(locale === "bg" ? "Спряхте да следвате магазина" : "Unfollowed store")
       } else {
         toast.error(result.error || (locale === "bg" ? "Грешка" : "Error"))
       }
-      
+
       setUnfollowingId(null)
     })
   }
@@ -85,8 +85,8 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
             {locale === "bg" ? "Не следвате никой магазин" : "You're not following any stores"}
           </h2>
           <p className="text-sm text-muted-foreground text-center max-w-md mb-4">
-            {locale === "bg" 
-              ? "Когато последвате магазин, ще виждате техните нови продукти и оферти тук" 
+            {locale === "bg"
+              ? "Когато последвате магазин, ще виждате техните нови продукти и оферти тук"
               : "When you follow a store, you'll see their new products and offers here"}
           </p>
           <Button asChild>
@@ -117,7 +117,7 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sellers.map((follow) => {
           if (!follow.seller) return null
-          
+
           const seller = follow.seller
           const stats = follow.seller_stats
           const avatarUrl = safeAvatarSrc(seller.profile?.avatar_url)
@@ -154,7 +154,7 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <Link 
+                      <Link
                         href={`/${locale}/seller/${seller.store_slug || seller.id}`}
                         className="font-medium hover:underline truncate"
                       >
@@ -164,7 +164,7 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
                         <CheckCircle className="size-4 text-info shrink-0" weight="fill" />
                       )}
                     </div>
-                    
+
                     {seller.profile?.full_name && (
                       <p className="text-xs text-muted-foreground truncate">
                         {seller.profile.full_name}

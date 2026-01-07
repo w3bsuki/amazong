@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { formatDistanceToNow } from "date-fns"
 import {
   IconBell,
@@ -103,35 +103,35 @@ const defaultNotifications: Notification[] = [
   },
 ]
 
-export function BusinessNotifications({ 
-  initialNotifications = defaultNotifications 
+export function BusinessNotifications({
+  initialNotifications = defaultNotifications
 }: BusinessNotificationsProps) {
   const [notifications, setNotifications] = React.useState(initialNotifications)
   const [isOpen, setIsOpen] = React.useState(false)
-  
+
   const unreadCount = notifications.filter(n => !n.read).length
-  
+
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
+    setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, read: true } : n)
     )
   }
-  
+
   const markAllAsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
   }
-  
+
   const clearNotification = (id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id))
   }
-  
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="size-8 relative">
           <IconBell className="size-4" />
           {unreadCount > 0 && (
-            <Badge 
+            <Badge
               className="absolute -top-1 -right-1 size-4 p-0 flex items-center justify-center text-2xs bg-destructive text-destructive-foreground"
             >
               {unreadCount > 9 ? "9+" : unreadCount}
@@ -139,8 +139,8 @@ export function BusinessNotifications({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-80 p-0" 
+      <PopoverContent
+        className="w-80 p-0"
         align="end"
         sideOffset={8}
       >
@@ -149,9 +149,9 @@ export function BusinessNotifications({
           <h3 className="font-semibold text-sm">Notifications</h3>
           <div className="flex items-center gap-1">
             {unreadCount > 0 && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="h-7 text-xs"
                 onClick={markAllAsRead}
               >
@@ -165,7 +165,7 @@ export function BusinessNotifications({
             </Button>
           </div>
         </div>
-        
+
         {/* Notifications List */}
         <ScrollArea className="h-[360px]">
           {notifications.length === 0 ? (
@@ -183,7 +183,7 @@ export function BusinessNotifications({
               {notifications.map((notification) => {
                 const Icon = notificationIcons[notification.type]
                 const iconColor = notificationColors[notification.type]
-                
+
                 return (
                   <div
                     key={notification.id}
@@ -199,10 +199,10 @@ export function BusinessNotifications({
                     )}>
                       <Icon className="size-4" />
                     </div>
-                    
+
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <Link 
+                      <Link
                         href={notification.href || "#"}
                         onClick={() => {
                           markAsRead(notification.id)
@@ -224,7 +224,7 @@ export function BusinessNotifications({
                         </p>
                       </Link>
                     </div>
-                    
+
                     {/* Actions */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -239,7 +239,7 @@ export function BusinessNotifications({
                             Mark as read
                           </DropdownMenuItem>
                         )}
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => clearNotification(notification.id)}
                           className="text-destructive"
                         >
@@ -248,7 +248,7 @@ export function BusinessNotifications({
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    
+
                     {/* Unread indicator */}
                     {!notification.read && (
                       <div className="size-2 rounded-full bg-primary shrink-0" />
@@ -259,15 +259,15 @@ export function BusinessNotifications({
             </div>
           )}
         </ScrollArea>
-        
+
         {/* Footer */}
         {notifications.length > 0 && (
           <>
             <Separator />
             <div className="p-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="w-full justify-center text-xs h-8"
                 asChild
               >

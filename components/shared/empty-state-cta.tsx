@@ -1,7 +1,7 @@
 "use client"
 
 import { useLocale } from "next-intl"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { Package, Plus, Storefront, MagnifyingGlass, ShoppingBag } from "@phosphor-icons/react"
 
@@ -9,7 +9,7 @@ import { Package, Plus, Storefront, MagnifyingGlass, ShoppingBag } from "@phosph
 // Types
 // =============================================================================
 
-type EmptyStateVariant = 
+type EmptyStateVariant =
   | "no-listings"      // Generic: no listings in category/feed
   | "no-search"        // Search returned no results
   | "no-category"      // Category has no products
@@ -47,9 +47,9 @@ const CONTENT = {
   "no-listings": {
     icon: Package,
     title: { en: "No listings yet", bg: "Все още няма обяви" },
-    description: { 
-      en: "Be the first to list something here!", 
-      bg: "Бъди първият, който публикува тук!" 
+    description: {
+      en: "Be the first to list something here!",
+      bg: "Бъди първият, който публикува тук!"
     },
     cta: { en: "Create Listing", bg: "Създай обява" },
     href: "/sell",
@@ -57,9 +57,9 @@ const CONTENT = {
   "no-search": {
     icon: MagnifyingGlass,
     title: { en: "No results found", bg: "Няма намерени резултати" },
-    description: { 
-      en: "Try different keywords or browse categories", 
-      bg: "Опитай с други ключови думи или разгледай категориите" 
+    description: {
+      en: "Try different keywords or browse categories",
+      bg: "Опитай с други ключови думи или разгледай категориите"
     },
     cta: { en: "Browse All", bg: "Разгледай всички" },
     href: "/",
@@ -67,9 +67,9 @@ const CONTENT = {
   "no-category": {
     icon: Storefront,
     title: { en: "Nothing here yet", bg: "Все още няма нищо тук" },
-    description: { 
-      en: "This category is waiting for its first listing", 
-      bg: "Тази категория чака първата си обява" 
+    description: {
+      en: "This category is waiting for its first listing",
+      bg: "Тази категория чака първата си обява"
     },
     cta: { en: "Start Selling", bg: "Започни да продаваш" },
     href: "/sell",
@@ -77,9 +77,9 @@ const CONTENT = {
   "no-favorites": {
     icon: ShoppingBag,
     title: { en: "No favorites yet", bg: "Все още няма любими" },
-    description: { 
-      en: "Save items you love to find them easily later", 
-      bg: "Запази артикули, които харесваш, за да ги намериш лесно по-късно" 
+    description: {
+      en: "Save items you love to find them easily later",
+      bg: "Запази артикули, които харесваш, за да ги намериш лесно по-късно"
     },
     cta: { en: "Explore", bg: "Разгледай" },
     href: "/",
@@ -87,9 +87,9 @@ const CONTENT = {
   "no-orders": {
     icon: Package,
     title: { en: "No orders yet", bg: "Все още няма поръчки" },
-    description: { 
-      en: "Your order history will appear here", 
-      bg: "Историята на поръчките ти ще се появи тук" 
+    description: {
+      en: "Your order history will appear here",
+      bg: "Историята на поръчките ти ще се появи тук"
     },
     cta: { en: "Start Shopping", bg: "Започни да пазаруваш" },
     href: "/",
@@ -119,7 +119,7 @@ export function EmptyStateCTA({
   // Build contextual description
   let finalDescription = description || content.description[locale]
   if (categoryName && variant === "no-category") {
-    finalDescription = locale === "bg" 
+    finalDescription = locale === "bg"
       ? `В "${categoryName}" все още няма обяви. Бъди първият!`
       : `"${categoryName}" has no listings yet. Be the first!`
   }

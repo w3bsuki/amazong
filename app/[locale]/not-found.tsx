@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div className="min-h-[60vh] flex items-center justify-center px-4">
+    <div className="min-h-96 py-20 flex items-center justify-center px-4">
       <div className="text-center max-w-md">
         <div className="text-8xl font-bold text-brand/20 mb-4">Oops</div>
 
@@ -37,15 +37,15 @@ export default function NotFound() {
             Looking for something specific?
           </p>
           <div className="flex flex-wrap justify-center items-center gap-2 text-sm">
-            <Link href="/todays-deals" className="text-link hover:underline min-h-[28px] inline-flex items-center px-1">
+            <Link href="/todays-deals" className="text-link hover:underline min-h-7 inline-flex items-center px-1">
               Today's Deals
             </Link>
             <span className="text-muted-foreground">•</span>
-            <Link href="/customer-service" className="text-link hover:underline min-h-[28px] inline-flex items-center px-1">
+            <Link href="/customer-service" className="text-link hover:underline min-h-7 inline-flex items-center px-1">
               Customer Service
             </Link>
             <span className="text-muted-foreground">•</span>
-            <Link href="/contact" className="text-link hover:underline min-h-[28px] inline-flex items-center px-1">
+            <Link href="/contact" className="text-link hover:underline min-h-7 inline-flex items-center px-1">
               Contact Us
             </Link>
           </div>

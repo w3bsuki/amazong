@@ -310,7 +310,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
                   <button
                     type="button"
                     onClick={() => setIsCurrencyDrawerOpen(true)}
-                    className="w-auto min-w-[90px] flex items-center justify-between px-3 h-full font-bold text-sm hover:bg-muted transition-colors"
+                    className="w-auto min-w-24 flex items-center justify-between px-3 h-full font-bold text-sm hover:bg-muted transition-colors"
                   >
                     <span>{currency}</span>
                     <CaretRight className="size-3 opacity-50" weight="bold" />
@@ -331,7 +331,7 @@ export function PricingField({ className, categoryId, idPrefix = "sell-form", co
                   value={currency}
                   onValueChange={(val) => setValue("currency", val as "BGN" | "EUR" | "USD")}
                 >
-                  <SelectTrigger className="w-auto min-w-[90px] border-none bg-transparent h-full rounded-none font-bold focus:ring-0 focus:ring-offset-0 shadow-none px-3 text-sm">
+                  <SelectTrigger className="w-auto min-w-24 border-none bg-transparent h-full rounded-none font-bold focus:ring-0 focus:ring-offset-0 shadow-none px-3 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

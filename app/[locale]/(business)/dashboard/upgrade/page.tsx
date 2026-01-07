@@ -1,7 +1,7 @@
 import { requireBusinessSeller, getActiveSubscription, DASHBOARD_ALLOWED_TIERS } from "@/lib/auth/business"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import {
   Card,
   CardContent,
@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { 
-  IconRocket, 
-  IconChartBar, 
-  IconUsers, 
+import {
+  IconRocket,
+  IconChartBar,
+  IconUsers,
   IconShoppingCart,
   IconCheck,
   IconX,
@@ -144,19 +144,19 @@ interface UpgradePageProps {
 export default async function DashboardUpgradePage({ params }: UpgradePageProps) {
   const { locale } = await params
   const t = translations[locale as keyof typeof translations] || translations.en
-  
+
   // Get the business seller (they must be a business account to see this page)
   const businessSeller = await requireBusinessSeller("/account")
-  
+
   // Check if they already have dashboard access
   const subscription = await getActiveSubscription(businessSeller.id)
   const hasAccess = subscription && DASHBOARD_ALLOWED_TIERS.includes(subscription.plan_tier as 'professional' | 'enterprise')
-  
+
   // If they already have access, redirect to dashboard
   if (hasAccess) {
     redirect(`/${locale}/dashboard`)
   }
-  
+
   // Fetch business plans for display
   const supabase = await createClient()
   const { data: _plans } = await supabase
@@ -225,7 +225,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
               <span className="text-muted-foreground">{t.perMonth}</span>
             </div>
             <p className="text-xs text-muted-foreground">{t.saveYearly}</p>
-            
+
             <div className="space-y-3">
               {t.proFeatures.map((feature, i) => (
                 <div key={i} className="flex items-start gap-2">
@@ -267,7 +267,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
               <span className="text-muted-foreground">{t.perMonth}</span>
             </div>
             <p className="text-xs text-muted-foreground">{t.saveYearly}</p>
-            
+
             <div className="space-y-3">
               {t.enterpriseFeatures.map((feature, i) => (
                 <div key={i} className="flex items-start gap-2">

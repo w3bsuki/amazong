@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { ArrowLeft, Package, Loader2, RefreshCw, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -45,16 +45,16 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
         getSellerOrders(),
         getSellerOrderStats()
       ])
-      
+
       if (ordersResult.orders) {
         setOrders(ordersResult.orders)
-        
+
         // Load conversation IDs for each order
         const convPromises = ordersResult.orders.map(async (item) => {
           const result = await getOrderConversation(item.order_id, item.seller_id)
           return { key: `${item.order_id}-${item.seller_id}`, conversationId: result.conversationId }
         })
-        
+
         const conversations = await Promise.all(convPromises)
         const map = new Map<string, string>()
         conversations.forEach(({ key, conversationId }) => {
@@ -62,7 +62,7 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
         })
         setConversationMap(map)
       }
-      
+
       setStats(statsResult)
     } catch (error) {
       console.error('Error loading orders:', error)
@@ -102,7 +102,7 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
       <header className="sticky top-0 z-50 bg-background border-b">
         <div className="container mx-auto px-4 py-4 flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={`/${locale}/sell`}>
+            <Link href="/sell">
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
@@ -121,8 +121,8 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {statCards.map((stat) => (
-            <Card 
-              key={stat.key} 
+            <Card
+              key={stat.key}
               className={cn(
                 "cursor-pointer transition-all hover:shadow-md",
                 activeTab === stat.key && "ring-2 ring-primary"
@@ -172,7 +172,7 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                   <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium mb-2">No orders yet</h3>
                   <p className="text-muted-foreground">
-                    {activeTab === 'all' 
+                    {activeTab === 'all'
                       ? "When customers purchase your products, their orders will appear here."
                       : `You have no ${activeTab} orders.`
                     }
@@ -184,7 +184,7 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                 {filteredOrders.map((item) => {
                   const convKey = `${item.order_id}-${item.seller_id}`
                   const conversationId = conversationMap.get(convKey)
-                  
+
                   return (
                     <Card key={item.id}>
                       <CardContent className="p-4 md:p-4">
@@ -295,14 +295,14 @@ export function SellerOrdersClient({ locale }: SellerOrdersClientProps) {
                               conversationId={conversationId ?? null}
                               locale={locale}
                             />
-                            
+
                             {/* Rate Buyer - only shown for delivered orders */}
                             <SellerRateBuyerActions
                               orderItemId={item.id}
                               currentStatus={item.status}
                               locale={locale}
                             />
-                            
+
                             {item.product?.slug && (
                               <Button variant="ghost" size="sm" asChild>
                                 <Link href={`/product/${item.product.slug}`} target="_blank">

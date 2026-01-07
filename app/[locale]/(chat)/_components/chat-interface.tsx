@@ -35,7 +35,7 @@ import {
 import { blockUser } from "@/app/actions/blocked-users"
 import { reportConversation } from "@/app/[locale]/(chat)/_actions/report-conversation"
 import { useToast } from "@/hooks/use-toast"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import Image from "next/image"
 
 interface ChatInterfaceProps {
@@ -288,22 +288,22 @@ export function ChatInterface({
 
   // Get other party info based on whether current user is buyer or seller
   const isBuyer = currentUserId === currentConversation.buyer_id
-  const otherProfile = isBuyer 
-    ? currentConversation.seller_profile 
+  const otherProfile = isBuyer
+    ? currentConversation.seller_profile
     : currentConversation.buyer_profile
-  
+
   // Fall back to legacy fields if new profile fields not available
   // Type guard for seller_profile which has business_name
   const sellerProfile = currentConversation.seller_profile
   const displayName = isBuyer
     ? (sellerProfile?.business_name || otherProfile?.display_name || otherProfile?.full_name || currentConversation.seller?.business_name || t("unknownUser"))
     : (otherProfile?.display_name || otherProfile?.full_name || currentConversation.buyer?.full_name || t("unknownUser"))
-  
-  const avatarUrl = otherProfile?.avatar_url || 
+
+  const avatarUrl = otherProfile?.avatar_url ||
     (isBuyer ? currentConversation.seller?.profile?.avatar_url : currentConversation.buyer?.avatar_url)
 
   const avatarSrc = safeAvatarSrc(avatarUrl)
-  
+
   const initials = (displayName || "?")
     .split(" ")
     .map((n: string) => n[0])
@@ -706,7 +706,7 @@ export function ChatInterface({
                           alt="Shared image"
                           width={240}
                           height={240}
-                          className="rounded-xl max-w-[240px] w-auto h-auto object-cover cursor-pointer hover:opacity-95 transition-opacity"
+                          className="rounded-xl max-w-60 w-auto h-auto object-cover cursor-pointer hover:opacity-95 transition-opacity"
                           unoptimized
                         />
                       </a>
@@ -824,7 +824,7 @@ export function ChatInterface({
                 placeholder={t("typeMessage")}
                 disabled={isSending || isUploadingImage}
                 rows={1}
-                className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground resize-none outline-none min-h-[20px] max-h-[100px] py-0 leading-5"
+                className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground resize-none outline-none min-h-5 max-h-24 py-0 leading-5"
               />
             </div>
 

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { format } from "date-fns"
@@ -93,33 +93,33 @@ type SortField = "created_at" | "total" | "customer"
 type SortOrder = "asc" | "desc"
 
 const STATUS_CONFIG = {
-  pending: { 
-    label: "Unfulfilled", 
+  pending: {
+    label: "Unfulfilled",
     color: "bg-muted text-foreground border-border",
     icon: IconPackage
   },
-  processing: { 
-    label: "In Progress", 
+  processing: {
+    label: "In Progress",
     color: "bg-primary/10 text-primary border-primary/20",
     icon: IconRefresh
   },
-  shipped: { 
-    label: "Shipped", 
+  shipped: {
+    label: "Shipped",
     color: "bg-muted text-foreground border-border",
     icon: IconTruck
   },
-  delivered: { 
-    label: "Delivered", 
+  delivered: {
+    label: "Delivered",
     color: "bg-success/10 text-success border-success/20",
     icon: IconCheck
   },
-  cancelled: { 
-    label: "Cancelled", 
+  cancelled: {
+    label: "Cancelled",
     color: "bg-destructive/10 text-destructive border-destructive/20",
     icon: IconX
   },
-  paid: { 
-    label: "Paid", 
+  paid: {
+    label: "Paid",
     color: "bg-success/10 text-success border-success/20",
     icon: IconCheck
   },
@@ -207,7 +207,7 @@ export function OrdersTable({
       let comparison = 0
       const orderA = getOrder(a)
       const orderB = getOrder(b)
-      
+
       switch (sortField) {
         case "created_at":
           const timeA = orderA?.created_at ? new Date(orderA.created_at).getTime() : 0
@@ -261,8 +261,8 @@ export function OrdersTable({
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return <IconSelector className="size-3.5 text-muted-foreground" />
-    return sortOrder === "asc" 
-      ? <IconChevronUp className="size-3.5" /> 
+    return sortOrder === "asc"
+      ? <IconChevronUp className="size-3.5" />
       : <IconChevronDown className="size-3.5" />
   }
 
@@ -367,7 +367,7 @@ export function OrdersTable({
             className="pl-9 h-9"
           />
         </div>
-        
+
         {/* Bulk Actions */}
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-lg">
@@ -392,7 +392,7 @@ export function OrdersTable({
                   Mark as Delivered
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => handleBulkStatusUpdate("cancelled")}
                   className="text-destructive focus:bg-destructive/10 focus:text-destructive"
                 >
@@ -401,9 +401,9 @@ export function OrdersTable({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="h-7"
               onClick={() => {
                 setSelectedIds(new Set())
@@ -433,14 +433,14 @@ export function OrdersTable({
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-10">
-                  <Checkbox 
+                  <Checkbox
                     checked={isAllSelected}
                     onCheckedChange={toggleSelectAll}
                     aria-label="Select all"
                   />
                 </TableHead>
-                <TableHead className="w-[100px]">Order</TableHead>
-                <TableHead 
+                <TableHead className="w-24">Order</TableHead>
+                <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort("created_at")}
                 >
@@ -449,7 +449,7 @@ export function OrdersTable({
                     {getSortIcon("created_at")}
                   </div>
                 </TableHead>
-                <TableHead 
+                <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort("customer")}
                 >
@@ -460,7 +460,7 @@ export function OrdersTable({
                 </TableHead>
                 <TableHead>Product</TableHead>
                 <TableHead className="text-center">Qty</TableHead>
-                <TableHead 
+                <TableHead
                   className="cursor-pointer select-none text-right"
                   onClick={() => handleSort("total")}
                 >
@@ -484,7 +484,7 @@ export function OrdersTable({
                 const firstImage = product?.images?.[0]
 
                 return (
-                  <TableRow 
+                  <TableRow
                     key={item.id}
                     className={cn(
                       "group",
@@ -492,14 +492,14 @@ export function OrdersTable({
                     )}
                   >
                     <TableCell>
-                      <Checkbox 
+                      <Checkbox
                         checked={selectedIds.has(item.id)}
                         onCheckedChange={() => toggleSelect(item.id)}
                         aria-label={`Select order ${order?.id}`}
                       />
                     </TableCell>
                     <TableCell>
-                      <Link 
+                      <Link
                         href={`/dashboard/orders/${order?.id}`}
                         className="font-mono text-sm font-medium text-primary hover:underline"
                       >
@@ -518,10 +518,10 @@ export function OrdersTable({
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-medium text-sm truncate max-w-[150px]">
+                        <span className="font-medium text-sm truncate max-w-40">
                           {customer?.full_name || "Guest"}
                         </span>
-                        <span className="text-xs text-muted-foreground truncate max-w-[150px]">
+                        <span className="text-xs text-muted-foreground truncate max-w-40">
                           {customer?.email}
                         </span>
                       </div>
@@ -543,7 +543,7 @@ export function OrdersTable({
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium truncate max-w-[180px]">
+                          <p className="text-sm font-medium truncate max-w-48">
                             {product?.title || "Unknown Product"}
                           </p>
                           {product?.sku && (
@@ -561,8 +561,8 @@ export function OrdersTable({
                       {formatCurrency(item.price_at_purchase * item.quantity)}
                     </TableCell>
                     <TableCell>
-                      <Badge 
-                        variant="outline" 
+                      <Badge
+                        variant="outline"
                         className={cn("gap-1", statusConfig.color)}
                       >
                         <StatusIcon className="size-3" />
@@ -572,8 +572,8 @@ export function OrdersTable({
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button 
-                            variant="ghost" 
+                          <Button
+                            variant="ghost"
                             size="icon"
                             className="size-8 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
@@ -596,21 +596,21 @@ export function OrdersTable({
                             Print Packing Slip
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => handleBulkStatusUpdate("processing")}
                             disabled={status === "processing"}
                           >
                             <IconRefresh className="size-4 mr-2" />
                             Mark Processing
                           </DropdownMenuItem>
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => handleBulkStatusUpdate("shipped")}
                             disabled={status === "shipped"}
                           >
                             <IconTruck className="size-4 mr-2" />
                             Mark Shipped
                           </DropdownMenuItem>
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => handleBulkStatusUpdate("delivered")}
                             disabled={status === "delivered"}
                           >

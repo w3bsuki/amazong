@@ -1,6 +1,6 @@
 import { requireDashboardAccess, getBusinessInventory } from "@/lib/auth/business"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import {
   Card,
   CardContent,
@@ -91,10 +91,10 @@ export default async function BusinessInventoryPage() {
                       {formatCurrencyBGN(product.price)}
                     </TableCell>
                     <TableCell>
-                      <Badge 
-                        variant="outline" 
-                        className={product.stock > 10 
-                          ? 'border-success/20 bg-success/10 text-success' 
+                      <Badge
+                        variant="outline"
+                        className={product.stock > 10
+                          ? 'border-success/20 bg-success/10 text-success'
                           : product.stock > 0
                             ? 'border-warning/20 bg-warning/10 text-warning'
                             : 'border-destructive/20 bg-destructive/10 text-destructive'

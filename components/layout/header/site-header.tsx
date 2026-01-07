@@ -152,7 +152,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
               aria-haspopup="dialog"
               aria-expanded={isMobileSearchOpen}
             >
-              <Search size={18} className="text-muted-foreground shrink-0" />
+              <Search size={22} className="text-muted-foreground shrink-0" />
               <span className="flex-1 truncate font-normal">{searchPlaceholder}</span>
               <div className="flex items-center gap-1.5 shrink-0">
                 <ScanLine size={18} className="text-muted-foreground/60" />

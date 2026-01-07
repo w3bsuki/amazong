@@ -91,7 +91,7 @@ function HamburgerCategoryCirclesInner({
                 <div className="grid grid-cols-3 gap-y-3 gap-x-2">
                     {Array.from({ length: 8 }).map((_, i) => (
                         <div key={i} className="flex flex-col items-center gap-1.5">
-                            <div className="size-[52px] rounded-full bg-muted animate-pulse" />
+                            <div className="size-(--category-circle-mobile) rounded-full bg-muted animate-pulse" />
                             <div className="h-2 w-10 rounded bg-muted animate-pulse" />
                         </div>
                     ))}
@@ -106,7 +106,7 @@ function HamburgerCategoryCirclesInner({
                                 category={cat}
                                 href={`/categories/${cat.slug}`}
                                 onClick={onNavigate}
-                                circleClassName="size-[52px]"
+                                circleClassName="size-(--category-circle-mobile)"
                                 fallbackIconSize={20}
                                 fallbackIconWeight="regular"
                                 variant="menu"
@@ -218,13 +218,13 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                                         width={18}
                                         height={12}
                                         sizes="18px"
-                                        className="w-[18px] h-3 rounded-sm object-cover"
+                                        className="w-5 h-3 rounded-sm object-cover"
                                     />
                                     <span>{locale === 'bg' ? 'BG' : 'EN'}</span>
                                     <CaretDown size={10} weight="bold" className="text-white/60" />
                                 </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="min-w-[140px] rounded-lg p-1 border border-border/50">
+                                <DropdownMenuContent align="start" className="min-w-36 rounded-lg p-1 border border-border/50">
                                 <DropdownMenuItem asChild>
                                     <Link
                                         href="/"
@@ -238,7 +238,7 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                                             width={18}
                                             height={12}
                                             sizes="18px"
-                                            className="w-[18px] h-3 rounded-sm object-cover"
+                                            className="w-5 h-3 rounded-sm object-cover"
                                         />
                                         <span className="text-sm font-medium">English</span>
                                         {locale === 'en' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
@@ -257,7 +257,7 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                                             width={18}
                                             height={12}
                                             sizes="18px"
-                                            className="w-[18px] h-3 rounded-sm object-cover"
+                                            className="w-5 h-3 rounded-sm object-cover"
                                         />
                                         <span className="text-sm font-medium">Български</span>
                                         {locale === 'bg' && <span className="ml-auto text-brand font-bold text-xs">✓</span>}
@@ -276,7 +276,7 @@ export function SidebarMenu({ user, categories, triggerClassName }: SidebarMenuP
                                 <div className="size-6 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
                                     <UserCircle size={16} weight="fill" className="text-white" />
                                 </div>
-                                <span className="text-white text-sm font-semibold truncate max-w-[120px]">
+                                <span className="text-white text-sm font-semibold truncate max-w-32">
                                     {firstName || displayName}
                                 </span>
                             </Link>

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { usePathname } from "next/navigation"
 import { useLocale } from "next-intl"
 import {
@@ -71,11 +71,13 @@ const getAccountNavItems = (locale: string) => [
     url: "/account/wishlist",
     icon: IconHeart,
   },
-  {    title: locale === 'bg' ? 'Следвани' : 'Following',
+  {
+    title: locale === 'bg' ? 'Следвани' : 'Following',
     url: "/account/following",
     icon: IconBuildingStore,
   },
-  {    title: locale === 'bg' ? 'Съобщения' : 'Messages',
+  {
+    title: locale === 'bg' ? 'Съобщения' : 'Messages',
     url: "/chat",
     icon: IconMessage,
   },
@@ -231,7 +233,7 @@ function AccountNavUser({
 export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
   const locale = useLocale()
   const pathname = usePathname()
-  
+
   const navItems = getAccountNavItems(locale)
   const manageItems = getAccountManageItems(locale)
   const sellerItems = getAccountSellerItems(locale)
@@ -273,8 +275,8 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton 
-                    asChild 
+                  <SidebarMenuButton
+                    asChild
                     tooltip={item.title}
                     isActive={isActive(item.url, item.exact)}
                   >
@@ -298,8 +300,8 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
             <SidebarMenu>
               {manageItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton 
-                    asChild 
+                  <SidebarMenuButton
+                    asChild
                     tooltip={item.title}
                     isActive={isActive(item.url)}
                   >
@@ -323,8 +325,8 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
             <SidebarMenu>
               {sellerItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton 
-                    asChild 
+                  <SidebarMenuButton
+                    asChild
                     tooltip={item.title}
                     isActive={isActive(item.url)}
                   >
@@ -351,8 +353,8 @@ export function AccountSidebar({ user, ...props }: AccountSidebarProps) {
               </div>
             </div>
             <p className="text-xs text-muted-foreground mb-3">
-              {locale === 'bg' 
-                ? 'По-ниски комисиони и повече възможности' 
+              {locale === 'bg'
+                ? 'По-ниски комисиони и повече възможности'
                 : 'Lower commissions & more features'}
             </p>
             <PlansModal

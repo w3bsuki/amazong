@@ -52,7 +52,7 @@ export default function DashboardAnalyticsLoading() {
             </div>
           </CardHeader>
           <CardContent>
-            <Skeleton className="h-[350px] w-full" />
+            <Skeleton className="h-80 w-full" />
           </CardContent>
         </Card>
       </div>
@@ -64,7 +64,7 @@ export default function DashboardAnalyticsLoading() {
             <Skeleton className="h-5 w-36" />
           </CardHeader>
           <CardContent>
-            <Skeleton className="h-[250px] w-full" />
+            <Skeleton className="h-64 w-full" />
           </CardContent>
         </Card>
         <Card>
@@ -72,7 +72,7 @@ export default function DashboardAnalyticsLoading() {
             <Skeleton className="h-5 w-32" />
           </CardHeader>
           <CardContent>
-            <Skeleton className="h-[250px] w-full" />
+            <Skeleton className="h-64 w-full" />
           </CardContent>
         </Card>
       </div>

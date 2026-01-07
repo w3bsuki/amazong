@@ -1,9 +1,10 @@
 "use client"
 
-import { useRef, useEffect, useCallback, useState } from "react"
+import { useRef, useEffect } from "react"
 import type { UIProduct } from "@/lib/data/products"
 import { ProductCard, ProductCardSkeletonGrid, ProductGrid } from "@/components/shared/product/product-card"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
+import { useTranslations } from "next-intl"
 
 // =============================================================================
 // Types
@@ -30,13 +31,11 @@ export interface ProductFeedProps {
 // End of Results
 // =============================================================================
 
-function EndOfResults({ locale, count }: { locale: string; count: number }) {
+function EndOfResults({ label }: { label: string }) {
   return (
     <div className="flex items-center justify-center gap-2 py-4 text-xs text-muted-foreground">
       <span className="h-px w-12 bg-border" />
-      <span>
-        {locale === "bg" ? `${count} продукта` : `${count} products`}
-      </span>
+      <span>{label}</span>
       <span className="h-px w-12 bg-border" />
     </div>
   )
@@ -51,20 +50,19 @@ export function ProductFeed({
   hasMore,
   isLoading,
   activeSlug,
-  locale,
+  locale: _locale,
   isAllTab,
   activeCategoryName,
   onLoadMore,
 }: ProductFeedProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null)
+  const tFeed = useTranslations("ProductFeed")
 
   const categoryAnnouncement = activeCategoryName
-    ? (locale === "bg"
-        ? `Показване на ${activeCategoryName}`
-        : `Now showing ${activeCategoryName}`)
+    ? tFeed("categoryAnnouncement", { categoryName: activeCategoryName })
     : null
 
-  const loadingLabel = locale === "bg" ? "Зареждане на продукти" : "Loading products"
+  const loadingLabel = tFeed("loadingProducts")
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
@@ -153,7 +151,7 @@ export function ProductFeed({
           />
         )}
         {!hasMore && products.length > 0 && (
-          <EndOfResults locale={locale} count={products.length} />
+          <EndOfResults label={tFeed("endOfResults", { count: products.length })} />
         )}
       </div>
     </div>

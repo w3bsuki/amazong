@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
 import { IconChevronRight, IconPackage, IconPhoto, IconShoppingBag } from "@tabler/icons-react"
@@ -12,8 +12,8 @@ function SectionHeader({ title, href, viewAllText }: { title: string; href: stri
   return (
     <div className="flex items-center justify-between px-1 mb-3">
       <span className="font-semibold text-base text-foreground">{title}</span>
-      <Link 
-        href={href} 
+      <Link
+        href={href}
         className="text-xs font-medium text-account-accent hover:text-account-accent/80 transition-colors flex items-center gap-0.5"
       >
         {viewAllText}
@@ -63,7 +63,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
   const dateLocale = locale === 'bg' ? bg : enUS
 
   const withLocale = (path: string) => `/${locale}${path}`
-  
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
@@ -144,10 +144,10 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                   const firstImage = order.order_items?.find(item => getProductImage(item.products))
                   const firstImageUrl = firstImage ? getProductImage(firstImage.products) : undefined
                   const itemCount = order.order_items?.length || 0
-                  
+
                   return (
-                    <Link 
-                      key={order.id} 
+                    <Link
+                      key={order.id}
                       href={withLocale(`/account/orders/${order.id}`)}
                       className="flex flex-col w-36 rounded-md bg-account-stat-bg border border-account-stat-border p-3 transition-colors"
                     >
@@ -189,7 +189,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                 })}
               </div>
             </div>
-            
+
             {/* Desktop: List view */}
             <div className="hidden md:block rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden">
               <div className="divide-y divide-account-stat-border/50">
@@ -202,10 +202,10 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                   const firstImage = order.order_items?.find(item => getProductImage(item.products))
                   const firstImageUrl = firstImage ? getProductImage(firstImage.products) : undefined
                   const itemCount = order.order_items?.length || 0
-                  
+
                   return (
-                    <Link 
-                      key={order.id} 
+                    <Link
+                      key={order.id}
                       href={withLocale(`/account/orders/${order.id}`)}
                       className="flex items-center gap-3 p-4 hover:bg-account-card-hover transition-colors"
                     >
@@ -255,13 +255,13 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       {products.length > 0 && (
         <div>
           <SectionHeader title={t.myProducts} href={withLocale("/account/selling")} viewAllText={t.viewAll} />
-          
+
           {/* Mobile: Horizontal scroll cards */}
           <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
             <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
               {products.slice(0, 5).map((product) => (
-                <Link 
-                  key={product.id} 
+                <Link
+                  key={product.id}
                   href={withLocale(`/product/${product.id}`)}
                   className="flex flex-col w-36 rounded-md bg-account-stat-bg border border-account-stat-border p-3 transition-colors"
                 >
@@ -296,13 +296,13 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
               ))}
             </div>
           </div>
-          
+
           {/* Desktop: List view */}
           <div className="hidden md:block rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden">
             <div className="divide-y divide-account-stat-border/50">
               {products.slice(0, 3).map((product) => (
-                <Link 
-                  key={product.id} 
+                <Link
+                  key={product.id}
                   href={withLocale(`/product/${product.id}`)}
                   className="flex items-center gap-3 p-4 hover:bg-account-card-hover transition-colors"
                 >
@@ -345,45 +345,45 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
           <SectionHeader title={t.recentSales} href={withLocale("/account/sales")} viewAllText={t.viewAll} />
           <div className="rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden">
             <div className="divide-y divide-account-stat-border/50">
-            {sales.slice(0, 3).map((sale, index) => (
-              <div key={`${sale.id}-${index}`} className="flex items-center gap-3 p-4">
-                {/* Product Image or Quantity Badge */}
-                <div className="relative size-11 rounded-md overflow-hidden bg-account-success-soft shrink-0">
-                  {sale.product_image ? (
-                    <>
-                      <Image
-                        src={sale.product_image}
-                        alt={sale.product_title || 'Product'}
-                        fill
-                        className="object-cover"
-                        sizes="44px"
-                      />
-                      {/* Quantity badge overlay */}
-                      <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-account-success text-2xs font-bold text-white shadow-sm">
-                        {sale.quantity}
+              {sales.slice(0, 3).map((sale, index) => (
+                <div key={`${sale.id}-${index}`} className="flex items-center gap-3 p-4">
+                  {/* Product Image or Quantity Badge */}
+                  <div className="relative size-11 rounded-md overflow-hidden bg-account-success-soft shrink-0">
+                    {sale.product_image ? (
+                      <>
+                        <Image
+                          src={sale.product_image}
+                          alt={sale.product_title || 'Product'}
+                          fill
+                          className="object-cover"
+                          sizes="44px"
+                        />
+                        {/* Quantity badge overlay */}
+                        <div className="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-account-success text-2xs font-bold text-white shadow-sm">
+                          {sale.quantity}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex size-full items-center justify-center">
+                        <span className="text-sm font-bold text-account-success">x{sale.quantity}</span>
                       </div>
-                    </>
-                  ) : (
-                    <div className="flex size-full items-center justify-center">
-                      <span className="text-sm font-bold text-account-success">x{sale.quantity}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-account-stat-value truncate">
-                    {sale.product_title || `Item #${sale.id.slice(0, 6)}`}
-                  </p>
-                  {sale.created_at && (
-                    <p className="text-xs text-account-stat-label mt-0.5">
-                      {formatDistanceToNow(new Date(sale.created_at), { addSuffix: true, locale: dateLocale })}
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-account-stat-value truncate">
+                      {sale.product_title || `Item #${sale.id.slice(0, 6)}`}
                     </p>
-                  )}
+                    {sale.created_at && (
+                      <p className="text-xs text-account-stat-label mt-0.5">
+                        {formatDistanceToNow(new Date(sale.created_at), { addSuffix: true, locale: dateLocale })}
+                      </p>
+                    )}
+                  </div>
+                  <span className="text-sm font-bold text-account-success">
+                    +{formatCurrency(sale.price_at_purchase * sale.quantity)}
+                  </span>
                 </div>
-                <span className="text-sm font-bold text-account-success">
-                  +{formatCurrency(sale.price_at_purchase * sale.quantity)}
-                </span>
-              </div>
-            ))}
+              ))}
             </div>
           </div>
         </div>

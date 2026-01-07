@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export default function ChatLoading() {
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-background">
+    <div className="flex min-h-screen bg-background">
       {/* Sidebar - Conversations List */}
       <div className="w-80 border-r bg-card hidden md:flex flex-col">
         {/* Header */}
@@ -47,7 +47,7 @@ export default function ChatLoading() {
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* Received Messages */}
-          <div className="flex gap-3 max-w-[80%]">
+          <div className="flex gap-3 max-w-xl md:max-w-2xl">
             <Skeleton className="size-8 rounded-full shrink-0" />
             <div className="space-y-2">
               <Skeleton className="h-20 w-64 rounded-md rounded-tl-none" />
@@ -56,7 +56,7 @@ export default function ChatLoading() {
           </div>
 
           {/* Sent Messages */}
-          <div className="flex gap-3 max-w-[80%] ml-auto flex-row-reverse">
+          <div className="flex gap-3 max-w-xl md:max-w-2xl ml-auto flex-row-reverse">
             <div className="space-y-2">
               <Skeleton className="h-16 w-56 rounded-md rounded-tr-none" />
               <Skeleton className="h-3 w-16 ml-auto" />
@@ -64,7 +64,7 @@ export default function ChatLoading() {
           </div>
 
           {/* Received Message with Product */}
-          <div className="flex gap-3 max-w-[80%]">
+          <div className="flex gap-3 max-w-xl md:max-w-2xl">
             <Skeleton className="size-8 rounded-full shrink-0" />
             <div className="space-y-2">
               <Skeleton className="h-12 w-48 rounded-md rounded-tl-none" />
@@ -74,7 +74,7 @@ export default function ChatLoading() {
           </div>
 
           {/* Sent Message */}
-          <div className="flex gap-3 max-w-[80%] ml-auto flex-row-reverse">
+          <div className="flex gap-3 max-w-xl md:max-w-2xl ml-auto flex-row-reverse">
             <div className="space-y-2">
               <Skeleton className="h-10 w-40 rounded-md rounded-tr-none" />
               <Skeleton className="h-3 w-16 ml-auto" />
@@ -82,7 +82,7 @@ export default function ChatLoading() {
           </div>
 
           {/* More received */}
-          <div className="flex gap-3 max-w-[80%]">
+          <div className="flex gap-3 max-w-xl md:max-w-2xl">
             <Skeleton className="size-8 rounded-full shrink-0" />
             <div className="space-y-2">
               <Skeleton className="h-14 w-72 rounded-md rounded-tl-none" />

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { format } from "date-fns"
@@ -78,38 +78,38 @@ interface OrderDetailViewProps {
 }
 
 const STATUS_CONFIG = {
-  pending: { 
-    label: "Unfulfilled", 
+  pending: {
+    label: "Unfulfilled",
     color: "bg-muted text-foreground border-border",
     icon: IconPackage,
     nextStatus: "processing",
   },
-  paid: { 
-    label: "Paid", 
+  paid: {
+    label: "Paid",
     color: "bg-success/10 text-success border-success/20",
     icon: IconCheck,
     nextStatus: "processing",
   },
-  processing: { 
-    label: "Processing", 
+  processing: {
+    label: "Processing",
     color: "bg-primary/10 text-primary border-primary/20",
     icon: IconRefresh,
     nextStatus: "shipped",
   },
-  shipped: { 
-    label: "Shipped", 
+  shipped: {
+    label: "Shipped",
     color: "bg-muted text-foreground border-border",
     icon: IconTruck,
     nextStatus: "delivered",
   },
-  delivered: { 
-    label: "Delivered", 
+  delivered: {
+    label: "Delivered",
     color: "bg-success/10 text-success border-success/20",
     icon: IconCheck,
     nextStatus: undefined,
   },
-  cancelled: { 
-    label: "Cancelled", 
+  cancelled: {
+    label: "Cancelled",
     color: "bg-destructive/10 text-destructive border-destructive/20",
     icon: IconX,
     nextStatus: undefined,
@@ -131,23 +131,23 @@ export function OrderDetailView({
 }: OrderDetailViewProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState(false)
-  
+
   // Helper to get nested data
   const getProduct = (item: OrderItem): OrderProduct | null => {
     if (!item.product) return null
     return Array.isArray(item.product) ? (item.product.at(0) ?? null) : item.product
   }
-  
+
   const getCustomer = (): OrderCustomer | null => {
     if (!order.user) return null
     return Array.isArray(order.user) ? (order.user.at(0) ?? null) : order.user
   }
-  
+
   const customer = getCustomer()
   const status = order.status || "pending"
   const statusConfig = getStatusConfig(status)
   const StatusIcon = statusConfig.icon
-  
+
   const shippingCost = 0 // Shipping cost not stored in orders table yet
   const total = order.total_amount || (subtotal + shippingCost)
 
@@ -196,8 +196,8 @@ export function OrderDetailView({
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-3">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             className="shrink-0 -ml-2"
             onClick={() => router.push('/dashboard/orders')}
@@ -209,16 +209,16 @@ export function OrderDetailView({
               <h1 className="text-xl font-bold tracking-tight">
                 Order #{order.id.slice(0, 8)}
               </h1>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="size-6"
                 onClick={copyOrderId}
               >
                 <IconCopy className="size-3.5" />
               </Button>
-              <Badge 
-                variant="outline" 
+              <Badge
+                variant="outline"
                 className={cn("gap-1", statusConfig.color)}
               >
                 <StatusIcon className="size-3" />
@@ -230,11 +230,11 @@ export function OrderDetailView({
             </p>
           </div>
         </div>
-        
+
         {/* Actions */}
         <div className="flex items-center gap-2 flex-wrap">
           {statusConfig.nextStatus && (
-            <Button 
+            <Button
               onClick={() => handleStatusUpdate(statusConfig.nextStatus!)}
               disabled={isLoading}
               size="sm"
@@ -261,7 +261,7 @@ export function OrderDetailView({
                 Print Packing Slip
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => handleStatusUpdate("cancelled")}
                 className="text-destructive focus:bg-destructive/10 focus:text-destructive"
                 disabled={status === "cancelled" || status === "delivered"}
@@ -309,7 +309,7 @@ export function OrderDetailView({
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <Link 
+                        <Link
                           href={`/products/${product?.id}`}
                           className="font-medium text-sm hover:underline"
                         >
@@ -338,7 +338,7 @@ export function OrderDetailView({
                   )
                 })}
               </div>
-              
+
               {/* Order Summary */}
               <div className="border-t p-4 space-y-2">
                 <div className="flex justify-between text-sm">
@@ -409,8 +409,8 @@ export function OrderDetailView({
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">Customer</CardTitle>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={handleContactCustomer}
                 >

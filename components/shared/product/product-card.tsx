@@ -5,6 +5,7 @@ import Image from "next/image"
 import { Link, useRouter } from "@/i18n/routing"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCart } from "@/components/providers/cart-context"
 import { useWishlist } from "@/components/providers/wishlist-context"
@@ -22,12 +23,12 @@ import { Heart, ShoppingCart, Plus, Star, SealCheck, Truck } from "@phosphor-ico
 // =============================================================================
 
 const productCardVariants = cva(
-  "tap-transparent group relative block h-full min-w-0 cursor-pointer overflow-hidden bg-transparent focus-within:ring-2 focus-within:ring-ring/40 lg:rounded-md lg:border lg:border-transparent lg:bg-card lg:transition-[border-color,box-shadow] lg:duration-100 lg:hover:border-border lg:hover:shadow-sm",
+  "tap-transparent group relative block h-full min-w-0 cursor-pointer overflow-hidden bg-transparent focus-within:ring-2 focus-within:ring-ring/40 lg:rounded-md lg:border lg:border-transparent lg:bg-card lg:transition-colors lg:duration-100 lg:hover:border-border",
   {
     variants: {
       variant: {
         default: "",
-        featured: "lg:border-primary/30 lg:bg-primary/[0.02]",
+        featured: "lg:border-primary/30 lg:bg-primary/5",
       },
       state: {
         default: "",
@@ -218,6 +219,13 @@ function ProductCard({
     return buildHeroBadgeText(categoryRootSlug, attributes, categoryPath, locale)
   }, [categoryRootSlug, attributes, categoryPath, locale])
 
+  const categoryLabel = React.useMemo(() => {
+    const last = categoryPath?.at(-1)
+    if (!last) return null
+    if (locale === "bg" && last.nameBg) return last.nameBg
+    return last.name
+  }, [categoryPath, locale])
+
   // Condition badge helper (C2C feature)
   const conditionLabel = React.useMemo(() => {
     if (!condition) return null
@@ -333,11 +341,14 @@ function ProductCard({
           </div>
         )}
 
-        {/* Condition Badge - Top Left (C2C feature) */}
-        {conditionLabel && inStock && (
-          <span className="absolute left-1.5 top-1.5 z-10 rounded-sm bg-foreground/90 px-1.5 py-0.5 text-2xs font-semibold uppercase tracking-wider text-background">
-            {conditionLabel}
-          </span>
+        {/* Category Badge - Top Left (mobile priority) */}
+        {(categoryLabel || smartBadge) && (
+          <Badge
+            variant="category"
+            className="absolute left-1.5 top-1.5 right-10 z-10 truncate border-transparent bg-overlay-dark text-2xs text-white"
+          >
+            {categoryLabel ?? smartBadge}
+          </Badge>
         )}
 
         {/* Wishlist button - Top Right (WCAG 2.2 AA: min 24px, using 28px) */}
@@ -349,7 +360,7 @@ function ProductCard({
               !inWishlist && "lg:pointer-events-none lg:opacity-0 lg:group-hover:pointer-events-auto lg:group-hover:opacity-100 lg:transition-opacity lg:duration-100",
               inWishlist
                 ? "bg-product-wishlist-active text-white"
-                : "bg-overlay-dark text-white backdrop-blur-sm hover:bg-foreground/50 active:bg-product-wishlist",
+                : "bg-overlay-dark text-white hover:bg-foreground/50 active:bg-product-wishlist",
               isWishlistPending && "pointer-events-none opacity-50"
             )}
             onClick={handleWishlist}
@@ -359,65 +370,56 @@ function ProductCard({
             <Heart size={14} weight={inWishlist ? "fill" : "bold"} />
           </button>
         )}
-
-        {/* Discount Badge - Bottom Right with gradient (only show if >= 5%) */}
-        {hasDiscount && discountPercent >= 5 && (
-          <>
-            <div className="absolute inset-x-0 bottom-0 h-10 bg-overlay-dark" />
-            <span className="absolute bottom-1.5 right-1.5 z-10 text-2xs font-bold text-white drop-shadow-sm">
-              -{discountPercent}%
-            </span>
-          </>
-        )}
-
-        {/* Smart attribute badge - bottom left over gradient */}
-        {smartBadge && !hasDiscount && (
-          <div className="absolute inset-x-0 bottom-0 z-10 bg-overlay-dark px-1.5 py-1">
-            <span className="text-xs font-medium text-white drop-shadow-sm">
-              {smartBadge}
-            </span>
-          </div>
-        )}
       </div>
 
       {/* Content Area */}
-      <div className="relative z-2 px-1 pb-1.5 pt-1.5 lg:p-2">
-        {/* HERO: Price Row - Maximum prominence */}
-        <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-          {/* Current Price - HERO element */}
-          <span
-            className={cn(
-              "text-price font-bold leading-tight tracking-tight lg:text-lg",
-              hasDiscount ? "text-price-sale" : "text-price-regular"
-            )}
-          >
-            {formattedPrice}
-          </span>
-
-          {/* Original Price (crossed out) */}
-          {hasDiscount && formattedOriginalPrice && (
-            <span className="text-xs text-price-original line-through">
-              {formattedOriginalPrice}
-            </span>
-          )}
-
-          {/* Free Shipping Badge */}
-          {freeShipping && (
-            <span className="inline-flex items-center gap-0.5 rounded-sm bg-shipping-free/10 px-1 py-px text-2xs font-medium text-shipping-free">
-              <Truck size={10} weight="bold" />
-              <span className="hidden xs:inline">{t("freeShipping")}</span>
-            </span>
-          )}
-        </div>
-
-        {/* Title - 2 lines max, professional typography */}
-        <h3 className="mt-0.5 line-clamp-2 text-body leading-snug text-foreground/90">
+      <div className="relative z-2 pt-1.5 lg:p-2">
+        {/* Title (dense mobile grid) */}
+        <h3 className="line-clamp-1 break-words text-body font-medium leading-snug text-foreground sm:line-clamp-2">
           {title}
         </h3>
 
+        {/* Price + Condition */}
+        <div className="mt-0.5 flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-baseline gap-1">
+            <span
+              className={cn(
+                "text-price font-semibold leading-tight tabular-nums",
+                hasDiscount ? "text-price-sale" : "text-price-regular"
+              )}
+            >
+              {formattedPrice}
+            </span>
+            {hasDiscount && formattedOriginalPrice && (
+              <span className="text-xs text-price-original line-through">
+                {formattedOriginalPrice}
+              </span>
+            )}
+            {hasDiscount && discountPercent >= 5 && (
+              <Badge variant="sale" className="text-2xs">
+                -{discountPercent}%
+              </Badge>
+            )}
+          </div>
+
+          {conditionLabel && (
+            <Badge variant="condition-outline" className="text-2xs">
+              {conditionLabel}
+            </Badge>
+          )}
+        </div>
+
+        {/* Free Shipping (desktop only) */}
+        {freeShipping && (
+          <span className="mt-0.5 hidden sm:inline-flex items-center gap-0.5 rounded-sm bg-shipping-free/10 px-1 py-px text-2xs font-medium text-shipping-free">
+            <Truck size={10} weight="bold" />
+            <span className="hidden xs:inline">{t("freeShipping")}</span>
+          </span>
+        )}
+
         {/* Social Proof Row: Rating + Sold Count */}
         {(hasRating || hasSoldCount) && (
-          <div className="mt-0.5 flex items-center gap-1 text-2xs text-muted-foreground">
+          <div className="mt-0.5 hidden sm:flex items-center gap-1 text-2xs text-muted-foreground">
             {hasRating && (
               <>
                 <Star size={10} weight="fill" className="text-rating" />
@@ -440,37 +442,37 @@ function ProductCard({
 
         {/* B2B Badges (if applicable) */}
         {(minOrderQuantity && minOrderQuantity > 1) || businessVerified || samplesAvailable ? (
-          <div className="mt-0.5 flex flex-wrap gap-1">
+          <div className="mt-0.5 hidden lg:flex flex-wrap gap-1">
             {minOrderQuantity && minOrderQuantity > 1 && (
               <span className="rounded-sm bg-info/10 px-1 py-px text-2xs font-medium text-info">
-                MOQ:{minOrderQuantity}
+                {t("b2b.moqShort")}:{minOrderQuantity}
               </span>
             )}
             {samplesAvailable && (
               <span className="rounded-sm bg-warning/10 px-1 py-px text-2xs font-medium text-warning">
-                Samples
+                {t("b2b.samples")}
               </span>
             )}
             {businessVerified && (
               <span className="rounded-sm bg-success/10 px-1 py-px text-2xs font-medium text-success">
-                Verified
+                {t("b2b.verifiedShort")}
               </span>
             )}
           </div>
         ) : null}
 
-        {/* Seller Row + Quick-Add */}
-        <div className="mt-1 flex items-center justify-between gap-1">
+        {/* Seller Row + Quick-Add (desktop only) */}
+        <div className="mt-1 hidden lg:flex items-center justify-between gap-2">
           {/* Seller Info */}
           {displaySellerName ? (
-            <div className="flex min-w-0 items-center gap-1">
+            <div className="flex min-w-0 items-center gap-1.5">
               <Avatar className="size-5 shrink-0 ring-1 ring-border/50">
                 <AvatarImage src={safeAvatarSrc(sellerAvatarUrl)} />
                 <AvatarFallback className="bg-muted text-2xs font-medium">
                   {displaySellerName.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="truncate text-2xs text-muted-foreground">
+              <span className="truncate text-xs text-muted-foreground">
                 {displaySellerName}
               </span>
               {sellerVerified && (
@@ -486,7 +488,7 @@ function ProductCard({
             <button
               type="button"
               className={cn(
-                "flex size-touch-sm shrink-0 items-center justify-center rounded outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
+                "flex size-touch-sm shrink-0 items-center justify-center rounded-md outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
                 inCart
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary active:bg-primary active:text-primary-foreground",
@@ -494,7 +496,7 @@ function ProductCard({
               )}
               onClick={handleAddToCart}
               disabled={isOwnProduct || !inStock}
-              aria-label={inCart ? "In cart" : "Add to cart"}
+              aria-label={inCart ? t("inCart") : t("addToCart")}
             >
               {inCart ? (
                 <ShoppingCart size={14} weight="fill" />
@@ -522,21 +524,20 @@ interface ProductGridProps {
 
 /**
  * ProductGrid - Responsive CSS Grid
- * Mobile: 2 cols, gap-1.5 (6px), px-1 (4px)
- * Tablet: 3 cols, gap-2 (8px)
+ * Mobile: 2 cols, gap-2 (8px)
  * Desktop: 4-5 cols, gap-3 (12px)
  */
 function ProductGrid({ children, density = "default", className }: ProductGridProps) {
   const densityClasses = {
-    compact: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
-    default: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+    compact: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
+    default: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
     comfortable: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
   }
 
   return (
     <div
       className={cn(
-        "grid gap-1.5 px-(--page-inset) sm:gap-2 sm:px-(--page-inset-md) lg:gap-3 lg:px-(--page-inset-lg)",
+        "grid gap-2 px-(--page-inset) md:gap-3 md:px-(--page-inset-md) lg:px-(--page-inset-lg)",
         densityClasses[density],
         className
       )}

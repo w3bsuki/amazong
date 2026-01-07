@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { usePathname } from "next/navigation"
 import {
   IconDashboard,
@@ -117,12 +117,12 @@ interface BusinessSidebarProps extends React.ComponentProps<typeof Sidebar> {
   hasDashboardAccess?: boolean
 }
 
-function NavItem({ 
-  item, 
-  isActive 
-}: { 
+function NavItem({
+  item,
+  isActive
+}: {
   item: { title: string; url: string; icon: React.ElementType; badge?: number }
-  isActive: boolean 
+  isActive: boolean
 }) {
   const Icon = item.icon
   return (
@@ -139,8 +139,8 @@ function NavItem({
           <Icon className="size-4" />
           <span className="flex-1">{item.title}</span>
           {item.badge !== undefined && item.badge > 0 && (
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className="h-5 min-w-5 px-1.5 text-2xs font-semibold bg-primary text-primary-foreground"
             >
               {item.badge > 99 ? '99+' : item.badge}
@@ -165,20 +165,20 @@ const tierLabels: Record<string, string> = {
   free: 'Free',
 }
 
-export function BusinessSidebar({ 
-  user, 
-  storeName, 
+export function BusinessSidebar({
+  user,
+  storeName,
   pendingOrdersCount = 0,
   subscriptionTier = 'free',
   subscriptionName: _subscriptionName = 'Business Free',
   hasDashboardAccess = false,
-  ...props 
+  ...props
 }: BusinessSidebarProps) {
   const pathname = usePathname()
-  
+
   // Normalize pathname by removing locale prefix
   const normalizedPath = pathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?/, '') || '/dashboard'
-  
+
   const isActive = (url: string) => {
     if (url === '/dashboard') {
       return normalizedPath === '/dashboard' || normalizedPath === ''
@@ -193,7 +193,7 @@ export function BusinessSidebar({
       ? { badge: pendingOrdersCount }
       : {}),
   }))
-  
+
   // Get tier display info
   const tierColor = tierColors[subscriptionTier] || tierColors.free
   const tierLabel = tierLabels[subscriptionTier] || 'Free'
@@ -216,7 +216,7 @@ export function BusinessSidebar({
                     {storeName || 'My Store'}
                   </span>
                   <div className="flex items-center gap-1.5">
-                    <Badge 
+                    <Badge
                       className={cn(
                         "h-4 px-1.5 text-2xs font-semibold border-0",
                         tierColor
@@ -225,7 +225,7 @@ export function BusinessSidebar({
                       {tierLabel}
                     </Badge>
                     {!hasDashboardAccess && (
-                      <Link 
+                      <Link
                         href="/dashboard/upgrade"
                         className="text-2xs text-primary hover:underline"
                         onClick={(e) => e.stopPropagation()}
@@ -247,9 +247,9 @@ export function BusinessSidebar({
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               {salesChannelNavWithBadges.map((item) => (
-                <NavItem 
-                  key={item.url} 
-                  item={item} 
+                <NavItem
+                  key={item.url}
+                  item={item}
                   isActive={isActive(item.url)}
                 />
               ))}
@@ -265,9 +265,9 @@ export function BusinessSidebar({
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               {productsNav.map((item) => (
-                <NavItem 
-                  key={item.url} 
-                  item={item} 
+                <NavItem
+                  key={item.url}
+                  item={item}
                   isActive={isActive(item.url)}
                 />
               ))}
@@ -283,9 +283,9 @@ export function BusinessSidebar({
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               {customersNav.map((item) => (
-                <NavItem 
-                  key={item.url} 
-                  item={item} 
+                <NavItem
+                  key={item.url}
+                  item={item}
                   isActive={isActive(item.url)}
                 />
               ))}
@@ -301,9 +301,9 @@ export function BusinessSidebar({
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               {marketingNav.map((item) => (
-                <NavItem 
-                  key={item.url} 
-                  item={item} 
+                <NavItem
+                  key={item.url}
+                  item={item}
                   isActive={isActive(item.url)}
                 />
               ))}
@@ -319,9 +319,9 @@ export function BusinessSidebar({
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               {analyticsNav.map((item) => (
-                <NavItem 
-                  key={item.url} 
-                  item={item} 
+                <NavItem
+                  key={item.url}
+                  item={item}
                   isActive={isActive(item.url)}
                 />
               ))}
@@ -334,9 +334,9 @@ export function BusinessSidebar({
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               {settingsNav.map((item) => (
-                <NavItem 
-                  key={item.url} 
-                  item={item} 
+                <NavItem
+                  key={item.url}
+                  item={item}
                   isActive={isActive(item.url)}
                 />
               ))}
