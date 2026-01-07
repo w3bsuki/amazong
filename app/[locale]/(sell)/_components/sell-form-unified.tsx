@@ -195,8 +195,8 @@ function SellFormContent({ sellerId }: { sellerId: string }) {
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
           <div className="w-full max-w-sm text-center space-y-8">
             {/* Success icon - clean, no animation */}
-            <div className="mx-auto w-20 h-20 bg-green-500 rounded-full flex items-center justify-center">
-              <CheckCircle className="size-10 text-white" weight="fill" />
+            <div className="mx-auto w-20 h-20 bg-success rounded-full flex items-center justify-center">
+              <CheckCircle className="size-10 text-success-foreground" weight="fill" />
             </div>
 
             {/* Success message */}

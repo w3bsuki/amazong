@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react"
 import { formatDistanceToNow } from "date-fns"
 import { useTranslations, useLocale } from "next-intl"
 import { bg, enUS } from "date-fns/locale"
-import { cn } from "@/lib/utils"
+import { cn, safeAvatarSrc } from "@/lib/utils"
 import { useMessages, type Conversation } from "@/components/providers/message-context"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ChatCircle, Check, Checks } from "@phosphor-icons/react"
@@ -99,11 +99,11 @@ export function ConversationList({
     return (
       <div className={cn("flex flex-col", className)}>
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex items-center gap-3 px-4 py-3">
-            <Skeleton className="size-14 rounded-full shrink-0" />
+          <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+            <Skeleton className="size-12 rounded-full shrink-0" />
             <div className="flex-1 min-w-0">
-              <Skeleton className="h-4 w-28 mb-2" />
-              <Skeleton className="h-3 w-40" />
+              <Skeleton className="h-3.5 w-24 mb-1.5" />
+              <Skeleton className="h-3 w-36" />
             </div>
           </div>
         ))}
@@ -115,26 +115,22 @@ export function ConversationList({
     return (
       <div
         className={cn(
-          "flex flex-col items-center justify-center h-full p-8",
+          "flex flex-col items-center justify-center h-full p-6",
           className
         )}
       >
-        <div className="flex size-16 items-center justify-center rounded-full bg-muted mb-4">
+        <div className="flex size-14 items-center justify-center rounded-full bg-muted mb-3">
           <ChatCircle
-            size={32}
+            size={28}
             weight="regular"
             className="text-muted-foreground"
           />
         </div>
         <p className="text-sm font-medium text-foreground mb-1">
-          {searchQuery
-            ? t("noSearchResults") || "No results found"
-            : t("noConversations")}
+          {searchQuery ? t("noSearchResults") : t("noConversations")}
         </p>
         <p className="text-xs text-muted-foreground text-center">
-          {searchQuery
-            ? t("tryDifferentSearch") || "Try a different search term"
-            : t("noConversationsHint") || "Messages from sellers will appear here"}
+          {searchQuery ? t("tryDifferentSearch") : t("noConversationsHint")}
         </p>
       </div>
     )
@@ -192,6 +188,8 @@ function ConversationItem({
   // Get avatar URL from new profile structure with fallback
   const avatarUrl = otherProfile?.avatar_url || 
     (isBuyer ? conversation.seller?.profile?.avatar_url : conversation.buyer?.avatar_url)
+
+  const avatarSrc = safeAvatarSrc(avatarUrl)
     
   const initials = (displayName || "?")
     .split(" ")
@@ -221,7 +219,7 @@ function ConversationItem({
     lastMessagePreview = t("noMessages")
   }
 
-  // Format time - Instagram style (1h, 2d, 1w, etc.)
+  // Format time - Instagram style (1h, 2d, 1w, etc.) using i18n
   const formatTime = (date: string) => {
     const now = new Date()
     const msgDate = new Date(date)
@@ -229,15 +227,14 @@ function ConversationItem({
       (now.getTime() - msgDate.getTime()) / (1000 * 60 * 60)
     )
 
-    if (diffInHours < 1) return locale === "bg" ? "сега" : "now"
-    if (diffInHours < 24)
-      return `${diffInHours}${locale === "bg" ? "ч" : "h"}`
+    if (diffInHours < 1) return t("timeNow")
+    if (diffInHours < 24) return t("timeHours", { count: diffInHours })
 
     const diffInDays = Math.floor(diffInHours / 24)
-    if (diffInDays < 7) return `${diffInDays}${locale === "bg" ? "д" : "d"}`
+    if (diffInDays < 7) return t("timeDays", { count: diffInDays })
 
     const diffInWeeks = Math.floor(diffInDays / 7)
-    if (diffInWeeks < 4) return `${diffInWeeks}${locale === "bg" ? "сд" : "w"}`
+    if (diffInWeeks < 4) return t("timeWeeks", { count: diffInWeeks })
 
     return formatDistanceToNow(msgDate, { addSuffix: false, locale: dateLocale })
   }
@@ -251,26 +248,26 @@ function ConversationItem({
       type="button"
       onClick={onClick}
       className={cn(
-        "w-full text-left flex items-center gap-3 px-4 py-3 transition-colors",
-        "hover:bg-muted/60",
-        isSelected && "bg-muted/80"
+        "w-full text-left flex items-center gap-3 px-3 py-2.5 transition-colors min-h-touch-lg",
+        "hover:bg-muted/50 active:bg-muted/70",
+        isSelected && "bg-muted/60"
       )}
     >
-      {/* Avatar with online indicator */}
+      {/* Avatar with product thumbnail overlay */}
       <div className="relative shrink-0">
-        {avatarUrl ? (
+        {avatarSrc ? (
           <Image
-            src={avatarUrl}
+            src={avatarSrc}
             alt={displayName}
-            width={56}
-            height={56}
-            className="size-14 rounded-full object-cover ring-2 ring-transparent"
+            width={48}
+            height={48}
+            className="size-12 rounded-full object-cover"
           />
         ) : (
           <div
             className={cn(
-              "flex size-14 items-center justify-center rounded-full text-base font-semibold",
-              "bg-purple-600 text-white"
+              "flex size-12 items-center justify-center rounded-full text-sm font-semibold",
+              "bg-primary text-primary-foreground"
             )}
           >
             {initials}
@@ -278,12 +275,12 @@ function ConversationItem({
         )}
         {/* Product thumbnail overlay */}
         {conversation.product?.images?.[0] && (
-          <div className="absolute -bottom-1 -right-1 size-6 rounded-full border-2 border-background overflow-hidden bg-muted">
+          <div className="absolute -bottom-0.5 -right-0.5 size-5 rounded-full border-2 border-background overflow-hidden bg-muted">
             <Image
               src={conversation.product.images[0]}
               alt=""
-              width={24}
-              height={24}
+              width={20}
+              height={20}
               className="size-full object-cover"
             />
           </div>
@@ -315,7 +312,7 @@ function ConversationItem({
         {/* Product title if exists */}
         {conversation.product && (
           <p className="text-xs text-muted-foreground truncate mb-0.5">
-            Re: {conversation.product.title}
+            {t("replyPrefix")}: {conversation.product.title}
           </p>
         )}
 

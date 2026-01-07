@@ -100,7 +100,7 @@ export function useProductSearch(maxResults: number = 8) {
     (price: number) => {
       return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-US", {
         style: "currency",
-        currency: locale === "bg" ? "BGN" : "USD",
+        currency: "EUR",
       }).format(price)
     },
     [locale]

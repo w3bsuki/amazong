@@ -498,7 +498,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
             </div>
             
             {/* Wishlist heart indicator */}
-            <div className="absolute top-3 left-3 flex size-8 items-center justify-center rounded-full bg-white/90 dark:bg-gray-900/90">
+            <div className="absolute top-3 left-3 flex size-8 items-center justify-center rounded-full bg-background/90">
               <IconHeart className="size-4 text-destructive fill-destructive" />
             </div>
           </div>

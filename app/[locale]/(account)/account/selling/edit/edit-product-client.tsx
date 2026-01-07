@@ -339,7 +339,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
                     step="0.01"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className={isOnSale ? "border-green-500 focus:ring-green-500" : ""}
+                    className={isOnSale ? "border-success focus:ring-success" : ""}
                   />
                 </div>
 

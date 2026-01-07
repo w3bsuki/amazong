@@ -60,17 +60,17 @@ const DEFAULT_PREFS: NotificationPreferences = {
 const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
     case "purchase":
-      return <Package size={18} weight="duotone" className="text-green-500" />
+      return <Package size={18} weight="duotone" className="text-success" />
     case "order_status":
-      return <Package size={18} weight="duotone" className="text-blue-500" />
+      return <Package size={18} weight="duotone" className="text-info" />
     case "message":
-      return <ChatCircle size={18} weight="duotone" className="text-purple-500" />
+      return <ChatCircle size={18} weight="duotone" className="text-primary" />
     case "review":
-      return <Star size={18} weight="duotone" className="text-yellow-500" />
+      return <Star size={18} weight="duotone" className="text-warning" />
     case "system":
-      return <Users size={18} weight="duotone" className="text-gray-500" />
+      return <Users size={18} weight="duotone" className="text-muted-foreground" />
     case "promotion":
-      return <Tag size={18} weight="duotone" className="text-orange-500" />
+      return <Tag size={18} weight="duotone" className="text-destructive" />
     default:
       return <Bell size={18} weight="duotone" />
   }

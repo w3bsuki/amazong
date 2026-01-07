@@ -314,7 +314,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
               const currencyLocale = locale === "bg" ? "bg-BG" : "en-US"
               const formattedPrice =
                 typeof price === "number"
-                  ? new Intl.NumberFormat(currencyLocale, { style: "currency", currency: "BGN" }).format(price)
+                  ? new Intl.NumberFormat(currencyLocale, { style: "currency", currency: "EUR" }).format(price)
                   : null
 
               const baseDescription = (

@@ -12,7 +12,8 @@ import {
 import { CategorySubheader } from "@/components/navigation/category-subheader"
 
 // Other components
-import { SidebarMenu } from "@/components/layout/sidebar/sidebar-menu"
+// V2 hamburger menu - cleaner layout, language selector moved to settings section
+import { SidebarMenuV2 as SidebarMenu } from "@/components/layout/sidebar/sidebar-menu-v2"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"

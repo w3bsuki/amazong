@@ -187,7 +187,7 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                         <p className="text-sm font-medium">{locale === 'bg' ? 'Имейл' : 'Email'}</p>
                         <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+                    <div className="flex items-center gap-1.5 text-xs text-success">
                         <CheckCircle className="size-3.5" weight="fill" />
                         <span className="hidden sm:inline">{locale === 'bg' ? 'Потвърден' : 'Verified'}</span>
                     </div>
@@ -251,13 +251,13 @@ export function SecurityContent({ locale, userEmail }: SecurityContentProps) {
                 </div>
                 <ul className="space-y-1.5 text-xs text-muted-foreground">
                     <li className="flex items-start gap-2">
-                        <CheckCircle className="size-3 text-emerald-500 mt-0.5 shrink-0" />
+                        <CheckCircle className="size-3 text-success mt-0.5 shrink-0" />
                         {locale === 'bg' 
                             ? 'Използвайте уникална парола'
                             : 'Use a unique password'}
                     </li>
                     <li className="flex items-start gap-2">
-                        <CheckCircle className="size-3 text-emerald-500 mt-0.5 shrink-0" />
+                        <CheckCircle className="size-3 text-success mt-0.5 shrink-0" />
                         {locale === 'bg' 
                             ? 'Никога не споделяйте паролата си'
                             : 'Never share your password'}

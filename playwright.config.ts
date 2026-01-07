@@ -1,10 +1,57 @@
 import { defineConfig, devices } from '@playwright/test'
 import fs from 'node:fs'
+import net from 'node:net'
 import path from 'node:path'
 import dotenv from 'dotenv'
 
 // Capture shell environment BEFORE dotenv runs
 const shellReuseServer = process.env.REUSE_EXISTING_SERVER
+const shellBaseURL = process.env.BASE_URL
+
+/**
+ * Check if a port is currently in use (synchronous via spawnSync).
+ * Returns true if port is occupied, false if available.
+ */
+function isPortInUse(port: number): boolean {
+  // Use a quick TCP connection attempt to check if port is listening
+  const { execSync } = require('node:child_process')
+  try {
+    if (process.platform === 'win32') {
+      // Windows: use netstat to check if port is listening
+      const result = execSync(
+        `netstat -ano | findstr ":${port}" | findstr "LISTENING"`,
+        { encoding: 'utf8', timeout: 5000, stdio: ['pipe', 'pipe', 'pipe'] }
+      )
+      return result.trim().length > 0
+    } else {
+      // Unix: use lsof
+      execSync(`lsof -i :${port} -sTCP:LISTEN`, {
+        encoding: 'utf8',
+        timeout: 5000,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      })
+      return true
+    }
+  } catch {
+    // Command failed = port not in use (or command not found, assume available)
+    return false
+  }
+}
+
+/**
+ * Find a free port starting from the given port.
+ * Returns the first available port.
+ */
+function findFreePort(startPort: number, maxAttempts = 20): number {
+  for (let i = 0; i < maxAttempts; i++) {
+    const port = startPort + i
+    if (!isPortInUse(port)) {
+      return port
+    }
+  }
+  // Fallback: return a port in the dynamic range
+  return 3000 + Math.floor(Math.random() * 1000)
+}
 
 // Ensure Playwright has access to the same env vars as Next.js dev.
 // - Does not override already-set process.env (CI or shell takes precedence).
@@ -31,7 +78,6 @@ if (shellReuseServer != null) {
  * - Console error capture
  */
 
-const baseURL = process.env.BASE_URL || 'http://localhost:3000'
 const isCI = !!process.env.CI
 const isProdTest = process.env.TEST_PROD === 'true'
 const outputDir = process.env.PW_OUTPUT_DIR || 'test-results'
@@ -43,20 +89,47 @@ const reuseExistingServer =
     ? process.env.REUSE_EXISTING_SERVER === 'true'
     : false
 
-// Debug: Log the reuse setting
+// Determine if we should auto-pick a free port:
+// - Only when NOT reusing an existing server
+// - Only when BASE_URL was NOT explicitly set by the user
+// - Only for local hosts (localhost / 127.0.0.1)
+const explicitBaseURL = shellBaseURL // captured before dotenv
+const defaultBaseURL = 'http://localhost:3000'
+const rawBaseURL = explicitBaseURL || defaultBaseURL
+const parsedBase = new URL(rawBaseURL)
+const isLocalHost =
+  parsedBase.hostname === 'localhost' || parsedBase.hostname === '127.0.0.1'
+const defaultPort = parseInt(parsedBase.port || '3000', 10)
+
+// Auto-pick logic: find a free port if conditions are met
+let finalPort = defaultPort
+let didAutoPickPort = false
+
+if (!reuseExistingServer && !explicitBaseURL && isLocalHost) {
+  // Check if the default port is in use
+  if (isPortInUse(defaultPort)) {
+    finalPort = findFreePort(defaultPort + 1)
+    didAutoPickPort = true
+  }
+}
+
+// Construct the final baseURL
+const baseURL = explicitBaseURL
+  ? explicitBaseURL
+  : `${parsedBase.protocol}//${parsedBase.hostname}:${finalPort}`
+
+const basePort = String(finalPort)
+
+// Debug: Log the configuration
 console.log('[Playwright Config] REUSE_EXISTING_SERVER:', process.env.REUSE_EXISTING_SERVER, '-> reuseExistingServer:', reuseExistingServer)
-const base = new URL(baseURL)
-const basePort =
-  base.port ||
-  (base.hostname === 'localhost' || base.hostname === '127.0.0.1'
-    ? '3000'
-    : base.protocol === 'https:'
-      ? '443'
-      : '80')
+if (didAutoPickPort) {
+  console.log(`[Playwright Config] Port ${defaultPort} is busy, auto-picked port: ${finalPort}`)
+}
+console.log('[Playwright Config] baseURL:', baseURL)
 // Use an endpoint that should reliably return 2xx once Next is up.
 // NOTE: /robots.txt can be affected by app metadata/route issues; /en is a
 // better readiness signal for this app.
-const webServerURL = `${base.origin}/en`
+const webServerURL = `${baseURL}/en`
 const timestampedReport =
   process.env.PW_TIMESTAMPED_REPORT === 'true' ||
   process.env.PW_TIMESTAMPED_REPORT === '1'

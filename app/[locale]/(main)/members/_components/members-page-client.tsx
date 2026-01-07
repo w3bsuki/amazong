@@ -70,8 +70,8 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
                 <AvatarFallback className="text-lg bg-primary/10 text-primary">{initials}</AvatarFallback>
               </Avatar>
               {(member.is_verified_business || member.verified) && (
-                <div className="absolute -bottom-0.5 -right-0.5 bg-blue-500 rounded-full p-0.5 border-2 border-background">
-                  <CheckCircle className="size-3 text-white" weight="fill" />
+                <div className="absolute -bottom-0.5 -right-0.5 bg-info rounded-full p-0.5 border-2 border-background">
+                  <CheckCircle className="size-3 text-info-foreground" weight="fill" />
                 </div>
               )}
             </div>
@@ -92,7 +92,7 @@ function MemberCard({ member, locale }: { member: Member; locale: string }) {
                 {member.tier && member.tier !== "free" && (
                   <Badge
                     variant="outline"
-                    className="text-2xs px-1.5 py-0 gap-0.5 text-yellow-600 border-yellow-200 bg-yellow-50"
+                    className="text-2xs px-1.5 py-0 gap-0.5 text-rating border-rating/30 bg-rating/10"
                   >
                     <Star className="size-3" weight="fill" />
                     {member.tier}

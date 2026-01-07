@@ -47,10 +47,10 @@ const activityIcons: Record<ActivityType, React.ElementType> = {
 }
 
 const activityColors: Record<ActivityType, string> = {
-  order: "bg-blue-100 text-blue-600",
-  product: "bg-purple-100 text-purple-600",
-  review: "bg-amber-100 text-amber-600",
-  customer: "bg-emerald-100 text-emerald-600",
+  order: "bg-info/10 text-info",
+  product: "bg-primary/10 text-primary",
+  review: "bg-warning/10 text-warning",
+  customer: "bg-success/10 text-success",
   milestone: "bg-primary/10 text-primary",
 }
 
@@ -131,7 +131,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                         </p>
                       </div>
                       {activity.meta?.amount && (
-                        <span className="text-sm font-semibold tabular-nums text-emerald-600 shrink-0">
+                        <span className="text-sm font-semibold tabular-nums text-success shrink-0">
                           +{formatCurrency(activity.meta.amount)}
                         </span>
                       )}
@@ -149,7 +149,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
                         if (typeof rating !== "number") return null
 
                         return (
-                        <div className="flex items-center gap-0.5 text-amber-500">
+                        <div className="flex items-center gap-0.5 text-rating">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <IconStar
                               key={i}

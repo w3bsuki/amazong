@@ -237,7 +237,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                       regular: product.list_price != null
                         ? Number(product.list_price)
                         : Number(product.price ?? 0),
-                      currency: locale === "bg" ? "BGN" : "EUR",
+                      currency: "EUR",
                     },
                     store: storeForBuyBox,
                     images: viewModel.galleryImages.map((img) => ({ src: img.src, alt: img.alt })),

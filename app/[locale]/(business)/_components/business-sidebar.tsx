@@ -154,8 +154,8 @@ function NavItem({
 
 // Subscription tier badge colors
 const tierColors: Record<string, string> = {
-  professional: 'bg-blue-600 text-white',
-  enterprise: 'bg-amber-500 text-white',
+  professional: 'bg-info text-info-foreground',
+  enterprise: 'bg-warning text-warning-foreground',
   free: 'bg-muted text-muted-foreground',
 }
 

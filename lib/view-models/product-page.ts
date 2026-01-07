@@ -208,7 +208,7 @@ export function buildProductPageViewModel(args: {
     offers: {
       "@type": "Offer",
       price: product.price,
-      priceCurrency: locale === "bg" ? "BGN" : "EUR",
+      priceCurrency: "EUR",
       availability: Number(product.stock ?? 0) > 0
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",

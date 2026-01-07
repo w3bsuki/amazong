@@ -58,7 +58,7 @@ export function UpgradeContent({
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: 'BGN',
+      currency: 'EUR',
       minimumFractionDigits: 2,
     }).format(price)
   }

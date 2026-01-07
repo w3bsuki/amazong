@@ -212,7 +212,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
                 { icon: Clock, text: t.feature4 },
               ].map((feature, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="size-4 text-green-500" weight="fill" />
+                  <CheckCircle className="size-4 text-success" weight="fill" />
                   <span className="text-muted-foreground">{feature.text}</span>
                 </div>
               ))}

@@ -37,7 +37,7 @@ export function MobileStickyBarEnhanced({
   variantName,
   price,
   originalPrice,
-  currency = "BGN",
+  currency = "EUR",
   isOutOfStock = false,
 }: MobileStickyBarEnhancedProps) {
   const locale = useLocale();

@@ -41,41 +41,6 @@ interface WriteReviewDialogProps {
   submitReview: SubmitReviewFn;
 }
 
-const translations = {
-  en: {
-    writeReview: "Write a Review",
-    title: "Share Your Experience",
-    description: "Help other buyers by sharing your thoughts about this product.",
-    ratingLabel: "Your Rating",
-    selectRating: "Select a rating",
-    commentLabel: "Your Review (optional)",
-    commentPlaceholder: "What did you like or dislike? How was the quality?",
-    submit: "Submit Review",
-    submitting: "Submitting...",
-    cancel: "Cancel",
-    success: "Review submitted successfully!",
-    error: "Failed to submit review",
-    loginRequired: "Please sign in to write a review",
-    stars: ["Poor", "Fair", "Good", "Very Good", "Excellent"],
-  },
-  bg: {
-    writeReview: "Напиши отзив",
-    title: "Споделете впечатленията си",
-    description: "Помогнете на другите купувачи, като споделите мнението си за този продукт.",
-    ratingLabel: "Вашата оценка",
-    selectRating: "Изберете оценка",
-    commentLabel: "Вашият отзив (по избор)",
-    commentPlaceholder: "Какво ви хареса или не? Как беше качеството?",
-    submit: "Изпрати отзив",
-    submitting: "Изпращане...",
-    cancel: "Отказ",
-    success: "Отзивът е изпратен успешно!",
-    error: "Неуспешно изпращане на отзив",
-    loginRequired: "Моля, влезте, за да напишете отзив",
-    stars: ["Слабо", "Средно", "Добро", "Много добро", "Отлично"],
-  },
-};
-
 export function WriteReviewDialog({
   productId,
   productTitle,

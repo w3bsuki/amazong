@@ -338,7 +338,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                         <SpinnerGap className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin" />
                       )}
                       {!isCheckingUsername && usernameAvailable === true && (
-                        <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-emerald-500" weight="fill" />
+                        <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-success" weight="fill" />
                       )}
                     </div>
                     {usernameAvailable === false && (
@@ -595,7 +595,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                 }
               </Badge>
               {isBusiness && profile.verified_business && (
-                <Badge variant="outline" className="gap-1 text-blue-600 border-blue-200 bg-blue-50">
+                <Badge variant="outline" className="gap-1 text-info border-info/30 bg-info/10">
                   <CheckCircle className="size-3" weight="fill" />
                   {locale === "bg" ? "Верифициран" : "Verified"}
                 </Badge>

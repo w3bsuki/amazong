@@ -24,6 +24,27 @@ import { AppBreadcrumb, breadcrumbPresets } from "@/components/navigation/app-br
 import { useTranslations, useLocale } from "next-intl"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
+import { MobileCartHeader } from "./mobile-cart-header"
+
+/**
+ * Hook to hide the parent SiteHeader on mobile for this page.
+ * Cart page uses its own MobileCartHeader, similar to product pages.
+ */
+function useHideParentHeaderOnMobile() {
+  useEffect(() => {
+    // Find the parent header element (SiteHeader is first header in layout)
+    const header = document.querySelector('header[data-hydrated]') as HTMLElement | null
+    if (!header) return
+
+    // Add class to hide on mobile
+    header.classList.add('lg:flex', 'hidden')
+    
+    return () => {
+      // Restore visibility when leaving the page
+      header.classList.remove('hidden')
+    }
+  }, [])
+}
 
 export default function CartPageClient() {
   const { items, removeFromCart, updateQuantity, subtotal, totalItems } = useCart()
@@ -31,6 +52,9 @@ export default function CartPageClient() {
   const t = useTranslations("CartPage")
   const locale = useLocale()
   const [mounted, setMounted] = useState(false)
+
+  // Hide the parent SiteHeader on mobile (cart has its own MobileCartHeader)
+  useHideParentHeaderOnMobile()
 
   useEffect(() => {
     setMounted(true)
@@ -70,11 +94,14 @@ export default function CartPageClient() {
 
   if (items.length === 0) {
     return (
-      <div className="bg-secondary/30 min-h-[80vh]">
+      <div className="bg-secondary/30 min-h-[80vh] pt-14 lg:pt-0">
+        {/* Mobile Header - only visible on mobile */}
+        <MobileCartHeader />
+        
         <div className="container py-6">
-          <AppBreadcrumb items={breadcrumbPresets.cart} />
+          <AppBreadcrumb items={breadcrumbPresets.cart} className="hidden lg:flex" />
 
-          <div className="mt-12 max-w-md mx-auto text-center">
+          <div className="mt-8 lg:mt-12 max-w-md mx-auto text-center">
             <div className="size-24 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingCart className="size-10 text-muted-foreground/60" weight="duotone" />
             </div>
@@ -102,9 +129,12 @@ export default function CartPageClient() {
   }
 
   return (
-    <div className="bg-secondary/30 min-h-screen pb-32 lg:pb-12">
+    <div className="bg-secondary/30 min-h-screen pb-32 pt-14 lg:pb-12 lg:pt-0">
+      {/* Mobile Header - only visible on mobile */}
+      <MobileCartHeader />
+      
       <div className="container py-4 lg:py-6">
-        <AppBreadcrumb items={breadcrumbPresets.cart} />
+        <AppBreadcrumb items={breadcrumbPresets.cart} className="hidden lg:flex" />
 
         <div className="mt-4 mb-6 flex items-baseline justify-between">
           <div>
@@ -122,124 +152,99 @@ export default function CartPageClient() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
           {/* Cart Items List */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-3">
             {items.map((item, index) => (
               <div 
                 key={`${item.id}:${item.variantId ?? ""}`} 
-                className="bg-card rounded-lg border border-border/50 p-3 sm:p-4 flex gap-3 sm:gap-5"
+                className="bg-card rounded-lg border border-border/50 p-3"
               >
-                {/* Image */}
-                <Link
-                  href={getProductUrl(item)}
-                  className="relative shrink-0 size-24 sm:size-32 bg-white rounded-md overflow-hidden border border-border/50"
-                >
-                  {item.image ? (
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="object-contain p-2"
-                      sizes="(max-width: 640px) 96px, 128px"
-                      priority={index === 0}
-                    />
-                  ) : (
-                    <div className="size-full flex items-center justify-center text-muted-foreground">
-                      <Package size={32} weight="duotone" />
-                    </div>
-                  )}
-                </Link>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0 flex flex-col">
-                  <div className="flex justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <Link
-                        href={getProductUrl(item)}
-                        className="font-medium hover:text-brand transition-colors line-clamp-2 text-sm sm:text-base leading-snug"
-                      >
-                        {item.title}
-                      </Link>
-                      {item.variantName && (
-                        <div className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                          {item.variantName}
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge
-                          variant="secondary"
-                          className="bg-brand-success/10 text-brand-success border-0 text-xs h-5 px-1.5 font-normal"
-                        >
-                          <CheckCircle className="size-3 mr-1" weight="fill" />
-                          {t("inStock")}
-                        </Badge>
+                <div className="flex gap-3">
+                  {/* Image */}
+                  <Link
+                    href={getProductUrl(item)}
+                    className="relative shrink-0 size-20 bg-white rounded-md overflow-hidden border border-border/50"
+                  >
+                    {item.image ? (
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-contain p-1.5"
+                        sizes="80px"
+                        priority={index === 0}
+                      />
+                    ) : (
+                      <div className="size-full flex items-center justify-center text-muted-foreground">
+                        <Package size={28} weight="duotone" />
                       </div>
-                    </div>
+                    )}
+                  </Link>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0 flex flex-col">
+                    {/* Title */}
+                    <Link
+                      href={getProductUrl(item)}
+                      className="font-medium hover:text-brand transition-colors line-clamp-2 text-sm leading-snug pr-6"
+                    >
+                      {item.title}
+                    </Link>
                     
-                    {/* Desktop Price */}
-                    <div className="hidden sm:block text-right shrink-0">
-                      <p className="text-lg font-semibold">
-                        {formatPrice(item.price * item.quantity)}
-                      </p>
-                      {item.quantity > 1 && (
-                        <p className="text-xs text-muted-foreground">
-                          {formatPrice(item.price)} {locale === "bg" ? "бр." : "ea."}
-                        </p>
-                      )}
+                    {/* Stock badge */}
+                    <div className="flex items-center gap-1 mt-1">
+                      <CheckCircle className="size-3 text-brand-success" weight="fill" />
+                      <span className="text-2xs text-brand-success">{t("inStock")}</span>
                     </div>
+
+                    {/* Price */}
+                    <p className="text-base font-bold mt-auto pt-1">
+                      {formatPrice(item.price * item.quantity)}
+                    </p>
                   </div>
 
-                  {/* Controls Row */}
-                  <div className="flex items-end justify-between mt-auto pt-3">
-                    {/* Mobile Price */}
-                    <div className="sm:hidden">
-                      <p className="text-base font-semibold">
-                        {formatPrice(item.price * item.quantity)}
-                      </p>
+                  {/* Right side: Delete + Quantity + Wishlist */}
+                  <div className="flex flex-col items-end justify-between shrink-0">
+                    {/* Delete */}
+                    <button
+                      onClick={() => removeFromCart(item.id, item.variantId)}
+                      className="size-7 flex items-center justify-center rounded text-muted-foreground/50 hover:text-destructive transition-colors"
+                      aria-label={t("delete")}
+                    >
+                      <Trash className="size-4" />
+                    </button>
+
+                    {/* Quantity selector */}
+                    <div className="flex items-center h-8 rounded-md border border-border bg-muted/30">
+                      <button
+                        onClick={() =>
+                          item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.variantId)
+                        }
+                        disabled={item.quantity <= 1}
+                        className="w-8 h-8 flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-l-md"
+                        aria-label="Decrease quantity"
+                      >
+                        <Minus className="size-3.5" weight="bold" />
+                      </button>
+                      <span className="w-8 text-center text-sm font-semibold tabular-nums">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
+                        disabled={item.quantity >= 10}
+                        className="w-8 h-8 flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors rounded-r-md"
+                        aria-label="Increase quantity"
+                      >
+                        <Plus className="size-3.5" weight="bold" />
+                      </button>
                     </div>
 
-                    <div className="flex items-center gap-4 ml-auto sm:ml-0">
-                      {/* Quantity */}
-                      <div className="flex items-center bg-muted/50 rounded-full border border-border/50 h-8">
-                        <button
-                          onClick={() =>
-                            item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.variantId)
-                          }
-                          disabled={item.quantity <= 1}
-                          className="size-8 flex items-center justify-center rounded-l-full hover:bg-background disabled:opacity-40 transition-colors text-muted-foreground hover:text-foreground"
-                          aria-label="Decrease quantity"
-                        >
-                          <Minus className="size-3.5" weight="bold" />
-                        </button>
-                        <span className="w-8 text-center text-sm font-medium tabular-nums">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1, item.variantId)}
-                          disabled={item.quantity >= 10}
-                          className="size-8 flex items-center justify-center rounded-r-full hover:bg-background disabled:opacity-40 transition-colors text-muted-foreground hover:text-foreground"
-                          aria-label="Increase quantity"
-                        >
-                          <Plus className="size-3.5" weight="bold" />
-                        </button>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-1">
-                        <button
-                          className="size-8 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                          aria-label={t("saveForLater")}
-                        >
-                          <Heart className="size-4" />
-                        </button>
-                        <button
-                          onClick={() => removeFromCart(item.id, item.variantId)}
-                          className="size-8 flex items-center justify-center rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                          aria-label={t("delete")}
-                        >
-                          <Trash className="size-4" />
-                        </button>
-                      </div>
-                    </div>
+                    {/* Wishlist */}
+                    <button
+                      className="size-7 flex items-center justify-center rounded text-muted-foreground/50 hover:text-brand transition-colors"
+                      aria-label={t("saveForLater")}
+                    >
+                      <Heart className="size-4" />
+                    </button>
                   </div>
                 </div>
               </div>

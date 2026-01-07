@@ -34,59 +34,55 @@ export function StartSellingBanner({
   // Full-bleed: edge-to-edge professional banner (like eBay/OLX seller CTAs)
   if (variant === "full-bleed") {
     return (
-      <div className={cn("w-full", className)}>
-        {/* Main CTA Banner */}
-        <Link
-          href="/sell"
-          className={cn(
-            "block w-full",
-            "bg-brand",
-            "text-white",
-            "px-(--page-inset) py-3",
-            "hover:bg-brand-dark",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-            "transition-all duration-150"
-          )}
-        >
-          <div className="flex items-center justify-between w-full gap-3">
-            {/* Left: Text */}
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold leading-snug">
-                {isBg ? "Регистрирай се, за да продаваш" : "Sign up to start selling"}
-              </p>
-              <p className="text-xs text-white/80 mt-0.5">
-                {isBg
-                  ? "Създай обява за минути. Достигни купувачи."
-                  : "List in minutes. Reach buyers faster."}
-              </p>
-            </div>
-
-            {/* Right: Arrow pill */}
-            <span
-              className="size-8 shrink-0 rounded-full bg-white/20 flex items-center justify-center"
-              aria-hidden="true"
-            >
-              <ArrowRight size={16} weight="bold" />
-            </span>
+      <Link
+        href="/sell"
+        className={cn(
+          "block w-full",
+          "bg-brand",
+          "text-white",
+          "px-(--page-inset) py-3",
+          "hover:bg-brand-dark",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+          "transition-all duration-150",
+          className
+        )}
+      >
+        <div className="flex items-center justify-between w-full gap-3">
+          {/* Left: Text */}
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold leading-snug">
+              {isBg ? "Регистрирай се, за да продаваш" : "Sign up to start selling"}
+            </p>
+            <p className="text-xs text-white/80 mt-0.5">
+              {isBg
+                ? "Създай обява за минути. Достигни купувачи."
+                : "List in minutes. Reach buyers faster."}
+            </p>
           </div>
-        </Link>
 
-        {/* Trust Row - separate strip below */}
+          {/* Right: Arrow pill */}
+          <span
+            className="size-8 shrink-0 rounded-full bg-white/20 flex items-center justify-center"
+            aria-hidden="true"
+          >
+            <ArrowRight size={16} weight="bold" />
+          </span>
+        </div>
+
+        {/* Trust badges integrated into banner */}
         {showTrustRow && (
-          <div className="w-full bg-secondary/80 border-b border-border/50 px-(--page-inset) py-2">
-            <div className="flex items-center justify-between gap-2">
-              {trustItems.map((item, index) => (
-                <div key={index} className="flex items-center gap-1.5 text-muted-foreground">
-                  <item.icon size={14} weight="duotone" className="shrink-0 text-brand/70" />
-                  <span className="text-2xs font-medium whitespace-nowrap">
-                    {item.text}
-                  </span>
-                </div>
-              ))}
-            </div>
+          <div className="flex items-center gap-4 mt-2 pt-2 border-t border-white/15">
+            {trustItems.map((item, index) => (
+              <div key={index} className="flex items-center gap-1.5 text-white/70">
+                <item.icon size={14} weight="bold" className="shrink-0" />
+                <span className="text-2xs font-medium whitespace-nowrap">
+                  {item.text}
+                </span>
+              </div>
+            ))}
           </div>
         )}
-      </div>
+      </Link>
     )
   }
   

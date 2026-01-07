@@ -17,19 +17,75 @@ import {
 import { routing } from "@/i18n/routing"
 
 // =============================================================================
-// ISR OPTIMIZATION - Prevent cache explosion
+// SEO-OPTIMIZED PRODUCT PAGE
+// URL Pattern: /{username}/{productSlug}
+// Example: /indecisive_wear/vintage-leather-jacket
+// 
+// ISR OPTIMIZATION:
+// - generateStaticParams fetches top 100 products for build-time pre-rendering
+// - High-traffic product pages are pre-built for fast first loads + SEO
+// - New/less-popular products are rendered on-demand (ISR)
 // =============================================================================
-// generateStaticParams returns placeholder only - products are rendered on-demand
-// This prevents ISR write explosion from pre-generating all product URLs
-// Note: dynamicParams is not compatible with cacheComponents in Next.js 16
 
-export function generateStaticParams() {
-  // Only generate locale variants with placeholder - actual products are dynamic
-  return routing.locales.map((locale) => ({ 
-    locale, 
-    username: '__placeholder__',
-    productSlug: '__placeholder__'
-  }))
+// Pre-generate top 100 products (by views/sales) for fast SEO pages
+export async function generateStaticParams() {
+  const supabase = createStaticClient()
+  
+  // Fallback when Supabase isn't configured (e.g. local/E2E)
+  if (!supabase) {
+    return routing.locales.map((locale) => ({ 
+      locale, 
+      username: '__fallback__',
+      productSlug: '__fallback__'
+    }))
+  }
+
+  // Fetch top 100 products with their seller usernames
+  // Ordered by review_count (popularity proxy) and boosted status
+  const { data: products } = await supabase
+    .from("products")
+    .select("slug, seller:profiles!products_seller_id_fkey(username)")
+    .eq("status", "active")
+    .not("slug", "is", null)
+    .order("is_boosted", { ascending: false })
+    .order("review_count", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .limit(100)
+
+  if (!products || products.length === 0) {
+    return routing.locales.map((locale) => ({ 
+      locale, 
+      username: '__fallback__',
+      productSlug: '__fallback__'
+    }))
+  }
+
+  // Build locale × username × productSlug combinations
+  const params: Array<{ locale: string; username: string; productSlug: string }> = []
+  
+  for (const product of products) {
+    const slug = product.slug
+    // Seller is returned as object from Supabase relation
+    const seller = product.seller as { username: string | null } | null
+    const username = seller?.username
+    
+    if (slug && username) {
+      for (const locale of routing.locales) {
+        params.push({ locale, username, productSlug: slug })
+      }
+    }
+  }
+
+  // Fallback if no valid products found
+  if (params.length === 0) {
+    return routing.locales.map((locale) => ({ 
+      locale, 
+      username: '__fallback__',
+      productSlug: '__fallback__'
+    }))
+  }
+
+  return params
 }
 
 interface ProductPageProps {
@@ -65,8 +121,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const { username, productSlug, locale } = await params
   setRequestLocale(locale)
 
-  // Handle placeholder from generateStaticParams
-  if (username === '__placeholder__' || productSlug === '__placeholder__') {
+  // Handle fallback from generateStaticParams (when Supabase unavailable at build)
+  if (username === '__fallback__' || productSlug === '__fallback__') {
     notFound()
   }
 

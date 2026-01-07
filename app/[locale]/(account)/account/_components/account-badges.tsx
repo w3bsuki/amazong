@@ -167,8 +167,8 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
                         <span className="text-base">{badge.icon}</span>
                         <span>{badge.name}</span>
                         {badge.is_featured && (
-                          <span className="absolute -top-1 -right-1 size-4 rounded-full bg-yellow-500 flex items-center justify-center">
-                            <Star className="size-2.5 text-white" weight="fill" />
+                          <span className="absolute -top-1 -right-1 size-4 rounded-full bg-rating flex items-center justify-center">
+                            <Star className="size-2.5 text-rating-foreground" weight="fill" />
                           </span>
                         )}
                       </button>
@@ -179,7 +179,7 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
                       <p className="text-xs text-muted-foreground mt-1">
                         {t.earnedOn}: {formatDate(badge.earned_at)}
                       </p>
-                      <p className="text-xs text-yellow-500 mt-1">
+                      <p className="text-xs text-rating mt-1">
                         {t.unfeature}
                       </p>
                     </TooltipContent>
@@ -214,8 +214,8 @@ export function AccountBadges({ locale = "en" }: AccountBadgesProps) {
                       >
                         <span className="text-lg">{badge.icon}</span>
                         {badge.is_featured && (
-                          <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full bg-yellow-500 flex items-center justify-center">
-                            <Star className="size-2 text-white" weight="fill" />
+                          <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full bg-rating flex items-center justify-center">
+                            <Star className="size-2 text-rating-foreground" weight="fill" />
                           </span>
                         )}
                       </button>

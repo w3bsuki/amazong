@@ -296,9 +296,9 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
     if (hasSpecial) score++
     
     if (score <= 2) return { label: locale === "bg" ? "Слаба" : "Weak", color: "bg-destructive", width: "w-1/4" }
-    if (score === 3) return { label: locale === "bg" ? "Средна" : "Fair", color: "bg-yellow-500", width: "w-2/4" }
-    if (score === 4) return { label: locale === "bg" ? "Добра" : "Good", color: "bg-blue-500", width: "w-3/4" }
-    return { label: locale === "bg" ? "Силна" : "Strong", color: "bg-green-500", width: "w-full" }
+    if (score === 3) return { label: locale === "bg" ? "Средна" : "Fair", color: "bg-warning", width: "w-2/4" }
+    if (score === 4) return { label: locale === "bg" ? "Добра" : "Good", color: "bg-info", width: "w-3/4" }
+    return { label: locale === "bg" ? "Силна" : "Strong", color: "bg-success", width: "w-full" }
   }
 
   const passwordStrength = getPasswordStrength(passwordData.newPassword)
@@ -540,7 +540,7 @@ export function ProfileContent({ locale, profile }: ProfileContentProps) {
               <p className="text-sm font-medium">{locale === "bg" ? "Имейл" : "Email"}</p>
               <p className="text-xs text-muted-foreground truncate">{profile.email}</p>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center gap-1.5 text-xs text-success">
               <CheckCircle className="size-3.5" weight="fill" />
               <span className="hidden sm:inline">{locale === "bg" ? "Потвърден" : "Verified"}</span>
             </div>

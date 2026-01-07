@@ -50,10 +50,10 @@ function ReviewSection({
         <div className="flex items-center gap-2">
           <Icon className={cn(
             "size-4",
-            isComplete ? "text-green-600" : "text-muted-foreground"
+            isComplete ? "text-success" : "text-muted-foreground"
           )} weight="fill" />
           <span className="text-xs font-bold uppercase tracking-wider">{title}</span>
-          {isComplete && <CheckCircle className="size-3.5 text-green-600" weight="fill" />}
+          {isComplete && <CheckCircle className="size-3.5 text-success" weight="fill" />}
         </div>
         {onEdit && (
           <Button
@@ -306,7 +306,7 @@ export function ReviewField({ onEditStep }: ReviewFieldProps) {
 
           {/* Accept offers */}
           {acceptOffers && (
-            <div className="flex items-center gap-2 text-sm text-green-600">
+            <div className="flex items-center gap-2 text-sm text-success">
               <CheckCircle className="size-4" weight="fill" />
               {isBg ? "Приема оферти" : "Accepts offers"}
             </div>

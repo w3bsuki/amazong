@@ -9,11 +9,14 @@ Rules:
 - Prefer “one behavior” tasks with a 1-sentence **Done when** and 2–4 verification steps.
 - When a batch ships, record it in `tasks.md` using the agreed medium format (`docs/gpt+opus.md`).
 
-Read first: `docs/workflow.md`, `docs/backend.md`, `docs/ENGINEERING.md`, `docs/PRODUCTION.md`, `supabase_tasks.md`.
+Read first: `docs/opusvsgpt.md`, `docs/guides/backend.md`, `docs/ENGINEERING.md`, `docs/PRODUCTION.md`, `supabase_tasks.md`.
 
 ## P0: Start here (today)
 
+- [x] **Next P0:** Fix Stripe subscription checkout currency mismatch (EUR vs BGN) so `/en/plans` checkout creates a session and returns to `/{locale}/account/plans`.
+  - **Fixed (2026-01-07):** Applied migration `fix_subscription_plans_currency_default_eur` to change `subscription_plans.currency` default from `'BGN'` to `'EUR'`. All existing plans already had EUR; this fixes the schema default for consistency.
 - [x] Run Supabase MCP security advisors; eliminate warnings (or explicitly accept + document)
+  - **Evidence (2026-01-07):** 1 warning - "Leaked Password Protection Disabled" (dashboard-only, documented in `TASK-enable-leaked-password-protection.md`)
 - [x] Run Supabase MCP performance advisors; record findings + decide what is safe to defer
 - [x] Reproduce `/plans` failure (Stripe return URLs missing locale) and fix as a small batch
 - [x] Stripe sanity: webhook applies plans by `metadata.plan_id` and signature verification is in place

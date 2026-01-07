@@ -22,7 +22,7 @@ const ChatInterface = lazy(() =>
 // Loading skeleton for ChatInterface - Instagram style
 function ChatInterfaceSkeleton() {
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       {/* Header skeleton */}
       <div className="shrink-0 border-b border-border/50 px-4 py-3">
         <div className="flex items-center gap-3">
@@ -34,7 +34,7 @@ function ChatInterfaceSkeleton() {
         </div>
       </div>
       {/* Messages area skeleton */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
         <div className="flex items-end gap-2">
           <Skeleton className="size-7 rounded-full shrink-0" />
           <Skeleton className="h-12 w-48 rounded-md rounded-bl-md" />
@@ -155,11 +155,11 @@ function MessagesContent() {
   }
 
   return (
-    <div className="flex h-full bg-background">
+    <div className="flex h-full min-h-0 bg-background">
       {/* Conversation list - full width on mobile, sidebar on desktop */}
       <div
         className={cn(
-          "w-full flex flex-col lg:w-80 xl:w-96 lg:border-r border-border/40",
+          "w-full flex min-h-0 flex-col overflow-hidden lg:w-80 xl:w-96 lg:border-r border-border/40",
           showChat ? "hidden lg:flex" : "flex"
         )}
       >
@@ -209,7 +209,7 @@ function MessagesContent() {
 
         {/* Conversation list */}
         <ConversationList
-          className="flex-1 overflow-y-auto"
+          className="flex-1 min-h-0 overflow-y-auto"
           onSelectConversation={() => setShowChat(true)}
           searchQuery={searchQuery}
           filter={activeFilter}
@@ -224,7 +224,7 @@ function MessagesContent() {
 
       {/* Chat area */}
       <div className={cn(
-        "min-w-0 flex-1 flex flex-col",
+        "min-w-0 flex-1 min-h-0 flex flex-col overflow-hidden",
         showChat ? "flex" : "hidden lg:flex"
       )}>
         {currentConversation ? (

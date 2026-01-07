@@ -129,8 +129,8 @@ function PriceSuggestionCard({
       {position && priceNum > 0 && (
         <div className={cn(
           "mt-2 flex items-center gap-1.5 text-xs",
-          position === "below" && "text-green-600",
-          position === "above" && "text-amber-600",
+          position === "below" && "text-success",
+          position === "above" && "text-warning",
           (position === "low" || position === "median" || position === "high") && "text-primary"
         )}>
           {position === "below" && <TrendDown className="h-3.5 w-3.5" />}

@@ -62,10 +62,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
                 }
             },
             number: {
-                // Currency: Bulgarian Lev (BGN)
+                // Currency: Euro (EUR) - Bulgaria joined Eurozone
                 currency: {
                     style: 'currency',
-                    currency: 'BGN',
+                    currency: 'EUR',
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 },

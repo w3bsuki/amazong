@@ -32,7 +32,7 @@ export function WishlistDropdown() {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-US", {
       style: "currency",
-      currency: locale === "bg" ? "BGN" : "EUR",
+      currency: "EUR",
     }).format(price)
   }
 

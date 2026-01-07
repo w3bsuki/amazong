@@ -4,6 +4,7 @@ import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { revalidateTag } from "next/cache"
+import type Stripe from "stripe"
 
 // =============================================================================
 // TYPES
@@ -46,6 +47,9 @@ const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
   "id,name,tier,is_active,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,final_value_fee,commission_rate" as const
 const SUBSCRIPTION_SELECT_FOR_DETAILS =
   "id,plan_type,status,billing_period,price_paid,currency,starts_at,expires_at,auto_renew,stripe_subscription_id,stripe_customer_id,created_at" as const
+
+type CheckoutSessionCreateParams = Stripe.Checkout.SessionCreateParams
+type CheckoutLineItem = Stripe.Checkout.SessionCreateParams.LineItem
 
 // =============================================================================
 // HELPERS
@@ -150,32 +154,32 @@ export async function createSubscriptionCheckoutSession(args: {
     const stripePriceId =
       billingPeriod === "yearly" ? plan.stripe_price_yearly_id : plan.stripe_price_monthly_id
 
-    const lineItems = stripePriceId
+    // Use Stripe Price IDs when available (preferred), fallback to inline EUR pricing
+    const useStripePriceId = !!(stripePriceId && stripePriceId.startsWith("price_"))
+    
+    const lineItems: CheckoutLineItem[] = useStripePriceId
       ? [{ price: stripePriceId, quantity: 1 }]
-      : [
-          {
-            price_data: {
-              currency: "eur" as const,
-              product_data: {
-                name: `${plan.name} Plan`,
-                description: `${plan.name} seller subscription - ${billingPeriod}`,
-              },
-              unit_amount: Math.round(Number(price ?? 0) * 100),
-              recurring: {
-                interval: (billingPeriod === "yearly" ? "year" : "month") as "year" | "month",
-              },
+      : [{
+          price_data: {
+            currency: "eur",
+            product_data: {
+              name: `${plan.name} Plan`,
+              description: `${plan.name} seller subscription - ${billingPeriod}`,
             },
-            quantity: 1,
+            unit_amount: Math.round(Number(price ?? 0) * 100),
+            recurring: {
+              interval: billingPeriod === "yearly" ? "year" : "month",
+            },
           },
-        ]
+          quantity: 1,
+        }]
 
     const accountPlansUrl = getAbsoluteAccountPlansUrl(locale)
 
-    const session = await stripe.checkout.sessions.create({
+    const checkoutParams: Omit<CheckoutSessionCreateParams, "line_items"> = {
       ...(customerId ? { customer: customerId } : {}),
-      mode: "subscription",
+      mode: "subscription" as const,
       payment_method_types: ["card"],
-      line_items: lineItems,
       metadata: {
         profile_id: profile.id,
         plan_id: planId,
@@ -184,15 +188,22 @@ export async function createSubscriptionCheckoutSession(args: {
         commission_rate: (plan.final_value_fee ?? plan.commission_rate ?? 12).toString(),
       },
       allow_promotion_codes: true,
-      billing_address_collection: "required",
+      billing_address_collection: "required" as const,
       success_url: `${accountPlansUrl}?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${accountPlansUrl}?canceled=true`,
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      ...checkoutParams,
+      line_items: lineItems,
     })
 
     return session.url ? { url: session.url } : { error: "Failed to start checkout" }
   } catch (error) {
-    console.error("Subscription checkout error:", error)
-    return { error: error instanceof Error ? error.message : "Internal server error" }
+    const errorMessage = error instanceof Error ? error.message : "Internal server error"
+    const errorType = error instanceof Error ? error.constructor.name : typeof error
+    console.error(`[subscriptions] ${errorType}: ${errorMessage}`)
+    return { error: errorMessage }
   }
 }
 

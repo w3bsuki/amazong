@@ -2,12 +2,34 @@
 
 Owner: Frontend agent(s)
 
-This is the day-to-day queue for frontend work. The overall go-live checklist remains `tasks.md`.
+This is the day-to-day queue for frontend work (**queue only**). The overall go-live checklist + batch log remains `tasks.md`.
 
-Read first: `docs/workflow.md`, `docs/frontend.md`, `docs/DESIGN.md`, `docs/ENGINEERING.md`.
+Rules:
+- Don’t treat this file as canonical; don’t duplicate/replace `tasks.md`.
+- Prefer “one behavior” tasks with a 1-sentence **Done when** and 2–4 verification steps.
+- When a batch ships, record it in `tasks.md` using the agreed medium format (`docs/gpt+opus.md`).
+
+Read first: `docs/opusvsgpt.md`, `docs/guides/frontend.md`, `docs/DESIGN.md`, `docs/ENGINEERING.md`.
 
 ## P0: Start here (today)
 
+- [ ] **Next P0:** Re-test `/en/plans` checkout end-to-end after BE fixes Stripe currency mismatch; record evidence in `tasks.md`.
+- [ ] **Chat routing:** decide + standardize conversation deep-links (`/chat?conversation=<id>` vs `/chat/<id>`) and align with Next.js App Router + Supabase Realtime
+	- Surface: `/{locale}/chat` (mobile + desktop)
+	- What’s wrong: conversation selection currently uses a search param (`?conversation=`) which is easy for client state but feels non-canonical; unclear expectations for deep links/back button/share links.
+	- Notes:
+		- SEO is effectively irrelevant for chat (auth-gated); still prefer `robots: noindex` on chat routes to avoid accidental indexing.
+		- Realtime subscription logic should be keyed off the selected conversation id regardless of URL shape.
+	- Candidate files: `app/[locale]/(chat)/chat/page.tsx`, `app/[locale]/(chat)/_components/messages-page-client.tsx`, `app/[locale]/(chat)/_components/conversation-list.tsx`, `components/providers/message-context.tsx`
+	- Done when: we either (A) migrate to a dynamic segment route (`/chat/<conversationId>`) with clean back behavior, or (B) explicitly keep `?conversation=` and document why; in both cases deep links work, back/forward works, and there’s no extra refetch/churn.
+	- Verification: `pnpm -s exec tsc -p tsconfig.json --noEmit` + `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke`
+- [ ] **Chat mobile list polish:** tighten conversation list UI/UX on mobile (no redesign, token-only)
+	- Surface: `/{locale}/chat` @ 390x844
+	- What’s wrong: conversation list feels off-token/ugly on mobile (spacing/hierarchy); also contains hardcoded fallbacks/time abbreviations.
+	- Task doc: `TASK-chat-mobile-conversation-list-polish.md`
+	- Candidate files: `app/[locale]/(chat)/_components/conversation-list.tsx`, `messages/en.json`, `messages/bg.json`
+	- Done when: list feels consistent with the rest of the app, no hardcoded strings, localized time labels, and gates pass.
+	- Verification: `pnpm -s exec tsc -p tsconfig.json --noEmit` + `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke`
 - [x] Run Playwright MCP audit on P0 flows (mobile 390x844 + desktop 1440x900) and write findings into the next section
 - [x] Pick 1 issue from the findings below (home/search/product/checkout/login/toast) and ship it as a 1-3 file batch, then run `tsc` + `e2e:smoke` and log the batch in `tasks.md`
   - Shipped: auth E2E password toggle deterministic fix (accessible name selectors + dev overlay wait)

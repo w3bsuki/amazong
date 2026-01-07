@@ -147,13 +147,13 @@ export function BusinessSetupGuide({
                   <div className={cn(
                     "flex items-center gap-3 rounded-lg border p-3 transition-all",
                     step.completed 
-                      ? "border-emerald-200 bg-emerald-50/50" 
+                      ? "border-success/30 bg-success/5" 
                       : "border-border bg-card hover:border-primary/50 hover:bg-primary/5"
                   )}>
                     <div className={cn(
                       "flex size-8 items-center justify-center rounded-full shrink-0",
                       step.completed 
-                        ? "bg-emerald-500 text-white" 
+                        ? "bg-success text-success-foreground" 
                         : "bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground"
                     )}>
                       {step.completed ? (
@@ -165,7 +165,7 @@ export function BusinessSetupGuide({
                     <div className="min-w-0 flex-1">
                       <p className={cn(
                         "text-sm font-medium truncate",
-                        step.completed && "text-emerald-700"
+                        step.completed && "text-success"
                       )}>
                         {step.title}
                       </p>

@@ -486,7 +486,7 @@ export default function PlansPageClient(props: {
             <Switch checked={yearly} onCheckedChange={setYearly} />
             <span className={cn("text-sm", yearly && "font-medium")}>{t.yearly}</span>
             {yearly && (
-              <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
+              <span className="rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
                 {t.saveLabel}
               </span>
             )}

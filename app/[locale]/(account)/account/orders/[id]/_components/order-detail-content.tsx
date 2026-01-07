@@ -100,12 +100,12 @@ interface OrderDetailContentProps {
 }
 
 const STATUS_CONFIG = {
-  pending: { label: "Pending", labelBg: "Изчаква", color: "bg-yellow-500", icon: Clock },
-  paid: { label: "Paid", labelBg: "Платена", color: "bg-blue-500", icon: Receipt },
-  processing: { label: "Processing", labelBg: "Обработва се", color: "bg-indigo-500", icon: Package },
-  shipped: { label: "Shipped", labelBg: "Изпратена", color: "bg-purple-500", icon: Truck },
-  delivered: { label: "Delivered", labelBg: "Доставена", color: "bg-green-500", icon: CheckCircle },
-  cancelled: { label: "Cancelled", labelBg: "Отменена", color: "bg-red-500", icon: XCircle },
+  pending: { label: "Pending", labelBg: "Изчаква", color: "bg-warning", icon: Clock },
+  paid: { label: "Paid", labelBg: "Платена", color: "bg-info", icon: Receipt },
+  processing: { label: "Processing", labelBg: "Обработва се", color: "bg-primary", icon: Package },
+  shipped: { label: "Shipped", labelBg: "Изпратена", color: "bg-primary", icon: Truck },
+  delivered: { label: "Delivered", labelBg: "Доставена", color: "bg-success", icon: CheckCircle },
+  cancelled: { label: "Cancelled", labelBg: "Отменена", color: "bg-destructive", icon: XCircle },
 } as const satisfies Record<
   "pending" | "paid" | "processing" | "shipped" | "delivered" | "cancelled",
   { label: string; labelBg: string; color: string; icon: typeof CheckCircle }

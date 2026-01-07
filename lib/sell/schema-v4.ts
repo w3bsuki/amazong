@@ -110,7 +110,7 @@ export const sellFormSchemaV4 = z.object({
 		.refine((val) => !isNaN(Number.parseFloat(val)) && Number.parseFloat(val) > 0, "Enter a valid price greater than 0")
 		.refine((val) => Number.parseFloat(val) <= 999999.99, "Price can't exceed 999,999.99"),
 
-	currency: z.enum(["BGN", "EUR", "USD"]).default("BGN"),
+	currency: z.enum(["EUR", "BGN", "USD"]).default("EUR"),
 
 	compareAtPrice: z
 		.string()
@@ -168,7 +168,7 @@ export const defaultSellFormValuesV4: SellFormDataV4 = {
 	attributes: [],
 	format: "fixed",
 	price: "",
-	currency: "BGN",
+	currency: "EUR",
 	compareAtPrice: "",
 	quantity: 1,
 	acceptOffers: false,

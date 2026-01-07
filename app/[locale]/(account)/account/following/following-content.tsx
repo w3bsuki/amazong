@@ -161,7 +161,7 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
                         {seller.store_name}
                       </Link>
                       {seller.verified && (
-                        <CheckCircle className="size-4 text-blue-500 shrink-0" weight="fill" />
+                        <CheckCircle className="size-4 text-info shrink-0" weight="fill" />
                       )}
                     </div>
                     

@@ -864,6 +864,9 @@
 .min-w-touch { min-width: var(--spacing-touch); }
 .h-touch-xs { height: var(--spacing-touch-xs); }  /* 24px */
 .w-touch-xs { width: var(--spacing-touch-xs); }
+.min-h-touch-xs { min-height: var(--spacing-touch-xs); }
+.min-w-touch-xs { min-width: var(--spacing-touch-xs); }
+.size-touch-xs { width: var(--spacing-touch-xs); height: var(--spacing-touch-xs); }
 .h-touch-sm { height: var(--spacing-touch-sm); }  /* 28px */
 .w-touch-sm { width: var(--spacing-touch-sm); }
 .min-h-touch-sm { min-height: var(--spacing-touch-sm); }

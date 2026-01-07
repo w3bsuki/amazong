@@ -71,7 +71,7 @@ export function MobileSellerTrustLine({
             <>
               {displayRating && (
                 <div className="flex items-center gap-0.5 shrink-0">
-                  <Star className="size-3.5 fill-amber-400 text-amber-400" />
+                  <Star className="size-3.5 fill-rating text-rating" />
                   <span className="text-xs font-semibold text-seller-banner-text">{displayRating}</span>
                 </div>
               )}

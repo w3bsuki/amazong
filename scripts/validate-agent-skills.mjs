@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const repoRoot = path.resolve(process.cwd());
-const skillsRoot = path.join(repoRoot, ".github", "skills");
+const skillsRoot = path.join(repoRoot, ".claude", "skills");
 
 function fail(message) {
   process.stderr.write(`\nAgent Skills validation failed: ${message}\n`);

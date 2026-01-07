@@ -44,7 +44,7 @@ export default function SellersGrid({
                     {seller.verified && (
                       <Badge
                         variant="secondary"
-                        className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs px-1.5 py-0 shrink-0"
+                        className="bg-success/10 text-success text-xs px-1.5 py-0 shrink-0"
                       >
                         {locale === "bg" ? "Потвърден" : "Verified"}
                       </Badge>

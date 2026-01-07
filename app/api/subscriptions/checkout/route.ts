@@ -2,27 +2,14 @@ import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
 import { buildLocaleUrl, inferLocaleFromRequest } from '@/lib/stripe-locale'
+import type Stripe from 'stripe'
 
 const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
 const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
   'id,tier,name,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,commission_rate,final_value_fee'
 
-/**
- * Validate that a stripe_price_*_id is properly configured.
- * Returns true if valid (starts with 'price_'), false if null/undefined/empty (fallback allowed),
- * throws if malformed (non-empty but not a valid Stripe Price ID format).
- */
-function validateStripePriceId(priceId: string | null | undefined, fieldName: string): boolean {
-  if (!priceId || priceId.trim() === '') {
-    // Empty/null = fallback to inline price_data is allowed
-    return false
-  }
-  if (!priceId.startsWith('price_')) {
-    // Non-empty but malformed = explicit config error
-    throw new Error(`Invalid ${fieldName}: expected 'price_...' format, got '${priceId.slice(0, 20)}...'`)
-  }
-  return true
-}
+type CheckoutSessionCreateParams = Stripe.Checkout.SessionCreateParams
+type CheckoutLineItem = Stripe.Checkout.SessionCreateParams.LineItem
 
 export async function POST(req: Request) {
   // Parse body early to get locale for error URLs
@@ -87,22 +74,10 @@ export async function POST(req: Request) {
     }
 
     const price = billingPeriod === 'yearly' ? plan.price_yearly : plan.price_monthly
+    const stripePriceId = billingPeriod === 'yearly' ? plan.stripe_price_yearly_id : plan.stripe_price_monthly_id
 
-    // Validate stripe_price_*_id configuration (guardrail: explicit config error if malformed)
-    const priceField = billingPeriod === 'yearly' ? 'stripe_price_yearly_id' : 'stripe_price_monthly_id'
-    const rawPriceId = billingPeriod === 'yearly' ? plan.stripe_price_yearly_id : plan.stripe_price_monthly_id
-
-    let useStripePriceId = false
-    try {
-      useStripePriceId = validateStripePriceId(rawPriceId, priceField)
-    } catch (configError) {
-      // Config error: price ID is set but malformed - this is a server-side config issue
-      console.error('[checkout] Config error:', configError instanceof Error ? configError.message : configError)
-      return NextResponse.json(
-        { error: 'Subscription plan configuration error. Please contact support.' },
-        { status: 500 }
-      )
-    }
+    // Use Stripe Price IDs when available (preferred), fallback to inline EUR pricing
+    const useStripePriceId = !!(stripePriceId && stripePriceId.startsWith('price_'))
 
     // Create or get Stripe customer
     let customerId = profile.stripe_customer_id
@@ -117,38 +92,33 @@ export async function POST(req: Request) {
       })
       customerId = customer.id
 
-      // Save customer ID to profile
       await supabase
         .from('profiles')
         .update({ stripe_customer_id: customerId })
         .eq('id', profile.id)
     }
 
-    // Build line_items - use Price ID if available and valid, otherwise create inline price
-    // Note: Bulgaria joins Eurozone Jan 2026, all prices in EUR
-    const lineItems = useStripePriceId
-      ? [{ price: rawPriceId!, quantity: 1 }]
+    const lineItems: CheckoutLineItem[] = useStripePriceId
+      ? [{ price: stripePriceId, quantity: 1 }]
       : [{
           price_data: {
-            currency: 'eur' as const,
+            currency: 'eur',
             product_data: {
               name: `${plan.name} Plan`,
               description: `${plan.name} seller subscription - ${billingPeriod}`,
             },
-            unit_amount: Math.round(price * 100), // Stripe uses cents
+            unit_amount: Math.round(price * 100),
             recurring: {
-              interval: (billingPeriod === 'yearly' ? 'year' : 'month') as 'year' | 'month',
+              interval: billingPeriod === 'yearly' ? 'year' : 'month',
             },
           },
           quantity: 1,
         }]
 
-    // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const checkoutParams: Omit<CheckoutSessionCreateParams, 'line_items'> = {
       customer: customerId,
       mode: 'subscription',
       payment_method_types: ['card'],
-      line_items: lineItems,
       metadata: {
         profile_id: profile.id,
         plan_id: planId,
@@ -156,12 +126,16 @@ export async function POST(req: Request) {
         billing_period: billingPeriod,
         commission_rate: (plan.final_value_fee ?? plan.commission_rate ?? 12).toString(),
       },
-      // Allow promotion codes for discounts
       allow_promotion_codes: true,
-      // Collect billing address for invoicing
       billing_address_collection: 'required',
       success_url: `${accountPlansUrl}?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${accountPlansUrl}?canceled=true`,
+    }
+
+    let session: Awaited<ReturnType<typeof stripe.checkout.sessions.create>>
+    session = await stripe.checkout.sessions.create({
+      ...checkoutParams,
+      line_items: lineItems,
     })
 
     return NextResponse.json({ sessionId: session.id, url: session.url })

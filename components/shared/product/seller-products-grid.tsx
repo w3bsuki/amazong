@@ -160,7 +160,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
             <p className="text-base font-bold text-foreground mt-1">
               {new Intl.NumberFormat(locale, { 
                 style: "currency", 
-                currency: locale === "bg" ? "BGN" : "EUR", 
+                currency: "EUR", 
                 minimumFractionDigits: 2 
               }).format(product.price)}
             </p>

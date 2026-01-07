@@ -163,3 +163,19 @@ Production push order (practical):
 4) Then do larger refactors (providers/monster files) with strict verification
 
 If a change risks a cascade, stop and propose a smaller slice.
+
+## Workflow
+
+**Read `TODO.md` → pick one item → code (max 3 files) → run gates → done.**
+
+Gates:
+```bash
+pnpm -s exec tsc -p tsconfig.json --noEmit
+REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
+```
+
+Rules:
+- 1-3 files per change (max 5 if truly one behavior)
+- No gradients, no arbitrary Tailwind values
+- No secrets in logs
+- All strings via next-intl (en.json + bg.json)

@@ -90,7 +90,7 @@ export function AccountAddressesGrid({
     switch (label.toLowerCase()) {
       case 'home':
       case 'дом':
-        return 'text-emerald-600 dark:text-emerald-400'
+        return 'text-success'
       case 'work':
       case 'работа':
         return 'text-account-info'

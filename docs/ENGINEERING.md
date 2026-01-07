@@ -73,5 +73,5 @@ Performance rules:
 
 - Scope: 1–3 files/features.
 - Risk: low unless touching auth/checkout/seller flows.
-- Verification (minimum): `tsc` + `e2e:smoke` (see `docs/TESTING.md`).
+- Verification (minimum): `tsc` + `e2e:smoke` (see `docs/guides/testing.md`).
 - Notes: what changed + how verified.

@@ -217,7 +217,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
         <MobilePriceBlock
           salePrice={displayPrice}
           regularPrice={displayRegularPrice}
-          currency="BGN"
+          currency="EUR"
         />
       </div>
 
@@ -326,7 +326,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
         product={cartProduct}
         price={displayPrice}
         originalPrice={displayRegularPrice}
-        currency="BGN"
+        currency="EUR"
         isOutOfStock={stockStatus === "out_of_stock"}
         {...(safeVariants.length > 0 && selectedVariant?.id ? { variantId: selectedVariant.id } : {})}
         {...(safeVariants.length > 0 && selectedVariant?.name ? { variantName: selectedVariant.name } : {})}

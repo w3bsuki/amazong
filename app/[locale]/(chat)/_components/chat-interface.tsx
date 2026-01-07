@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { format, isToday, isYesterday, isSameDay } from "date-fns"
 import { useTranslations, useLocale } from "next-intl"
 import { bg, enUS } from "date-fns/locale"
-import { cn } from "@/lib/utils"
+import { cn, safeAvatarSrc } from "@/lib/utils"
 import { useMessages, type Message } from "@/components/providers/message-context"
 import { createClient } from "@/lib/supabase/client"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -301,6 +301,8 @@ export function ChatInterface({
   
   const avatarUrl = otherProfile?.avatar_url || 
     (isBuyer ? currentConversation.seller?.profile?.avatar_url : currentConversation.buyer?.avatar_url)
+
+  const avatarSrc = safeAvatarSrc(avatarUrl)
   
   const initials = (displayName || "?")
     .split(" ")
@@ -335,54 +337,52 @@ export function ChatInterface({
   })
 
   return (
-    <div className={cn("flex flex-col h-full bg-background", className)}>
-      {/* Header - Instagram DM style */}
+    <div className={cn("flex h-full min-h-0 flex-col bg-background", className)}>
+      {/* Header - Compact mobile style with safe area */}
       {showHeader && (
-        <div className="shrink-0 border-b border-border px-3 py-2.5">
-          <div className="flex items-center gap-3">
+        <div className="shrink-0 border-b border-border px-2 py-2 safe-area-top">
+          <div className="flex items-center gap-2">
             {/* Back button (mobile) */}
             {onBack && (
               <button
                 onClick={onBack}
-                className="flex items-center justify-center size-9 -ml-1 rounded-full hover:bg-muted transition-colors md:hidden"
+                className="flex items-center justify-center size-9 rounded-full hover:bg-muted active:bg-muted/70 transition-colors lg:hidden"
               >
-                <ArrowLeft size={24} weight="regular" className="text-foreground" />
+                <ArrowLeft size={22} weight="regular" className="text-foreground" />
               </button>
             )}
 
-            {/* Avatar */}
+            {/* Avatar - smaller on mobile */}
             <Link href={`/seller/${currentConversation.seller_id}`} className="shrink-0">
-              {avatarUrl ? (
+              {avatarSrc ? (
                 <Image
-                  src={avatarUrl}
+                  src={avatarSrc}
                   alt={displayName}
-                  width={44}
-                  height={44}
-                  className="size-11 rounded-full object-cover"
+                  width={40}
+                  height={40}
+                  className="size-10 rounded-full object-cover"
                 />
               ) : (
-                <div className="flex size-11 items-center justify-center rounded-full bg-purple-600 text-sm font-semibold text-white">
+                <div className="flex size-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
                   {initials}
                 </div>
               )}
             </Link>
 
-            {/* Name and status */}
+            {/* Name and status - tighter */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="font-semibold text-base text-foreground truncate">
-                  {displayName}
-                </h2>
-              </div>
+              <h2 className="font-semibold text-sm text-foreground truncate leading-tight">
+                {displayName}
+              </h2>
               {currentConversation.product ? (
                 <Link
                   href={`/product/${currentConversation.product.id}`}
-                  className="text-xs text-muted-foreground hover:text-foreground transition-colors truncate block"
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors truncate block leading-tight"
                 >
                   {currentConversation.product.title}
                 </Link>
               ) : (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground leading-tight">
                   {isClosed
                     ? locale === "bg"
                       ? "Затворен чат"
@@ -394,13 +394,13 @@ export function ChatInterface({
               )}
             </div>
 
-            {/* Action buttons - Instagram style */}
-            <div className="flex items-center gap-1">
+            {/* Action buttons - compact */}
+            <div className="flex items-center">
               <button className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors">
-                <Phone size={22} weight="regular" className="text-foreground" />
+                <Phone size={20} weight="regular" className="text-foreground" />
               </button>
               <button className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors">
-                <VideoCamera size={22} weight="regular" className="text-foreground" />
+                <VideoCamera size={20} weight="regular" className="text-foreground" />
               </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -451,10 +451,10 @@ export function ChatInterface({
         </div>
       )}
 
-      {/* Messages area - Instagram style with bubbles */}
+      {/* Messages area - proper mobile padding */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto overscroll-contain px-4 py-4"
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3"
       >
         {isLoadingMessages ? (
           <div className="space-y-4">
@@ -477,16 +477,16 @@ export function ChatInterface({
           <div className="flex flex-col items-center justify-center h-full text-center">
             {/* Profile card for new conversations */}
             <div className="flex flex-col items-center gap-3 mb-6">
-              {avatarUrl ? (
+              {avatarSrc ? (
                 <Image
-                  src={avatarUrl}
+                  src={avatarSrc}
                   alt={displayName}
                   width={96}
                   height={96}
                   className="size-24 rounded-full object-cover"
                 />
               ) : (
-                <div className="flex size-24 items-center justify-center rounded-full bg-purple-600 text-2xl font-bold text-white">
+                <div className="flex size-24 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground">
                   {initials}
                 </div>
               )}
@@ -619,8 +619,8 @@ export function ChatInterface({
                             {quantity !== "1" && (
                               <span className="text-xs text-muted-foreground">× {quantity}</span>
                             )}
-                            <span className="inline-flex items-center gap-1 text-2xs text-amber-600 dark:text-amber-500 ml-auto">
-                              <span className="size-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            <span className="inline-flex items-center gap-1 text-2xs text-warning ml-auto">
+                              <span className="size-1.5 rounded-full bg-warning animate-pulse" />
                               {locale === "bg" ? "Изчаква" : "Pending"}
                             </span>
                           </div>
@@ -667,16 +667,16 @@ export function ChatInterface({
                   {!isOwn && (
                     <div className="shrink-0 w-7">
                       {isLastInGroup &&
-                        (avatarUrl ? (
+                        (avatarSrc ? (
                           <Image
-                            src={avatarUrl}
+                            src={avatarSrc}
                             alt={displayName}
                             width={28}
                             height={28}
                             className="size-7 rounded-full object-cover"
                           />
                         ) : (
-                          <div className="flex size-7 items-center justify-center rounded-full bg-purple-600 text-2xs font-semibold text-white">
+                          <div className="flex size-7 items-center justify-center rounded-full bg-primary text-2xs font-semibold text-primary-foreground">
                             {initials}
                           </div>
                         ))}
@@ -686,14 +686,11 @@ export function ChatInterface({
                   {/* Message bubble */}
                   <div
                     className={cn(
-                      "max-w-[70%] relative group",
-                      message.message_type === "image" ? "p-1" : "px-3.5 py-2",
+                      "max-w-[75%] relative group",
+                      message.message_type === "image" ? "p-1" : "px-3 py-1.5",
                       isOwn
-                        ? "bg-primary text-primary-foreground rounded-md"
-                        : "bg-muted rounded-md",
-                      // Bubble tail styling
-                      isOwn && isLastInGroup && "rounded-br-md",
-                      !isOwn && isLastInGroup && "rounded-bl-md"
+                        ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md"
+                        : "bg-muted rounded-2xl rounded-bl-md"
                     )}
                   >
                     {/* Message content - image or text */}
@@ -707,14 +704,14 @@ export function ChatInterface({
                         <Image
                           src={message.attachment_url}
                           alt="Shared image"
-                          width={280}
-                          height={280}
-                          className="rounded-md max-w-[280px] w-auto h-auto object-cover cursor-pointer hover:opacity-95 transition-opacity"
+                          width={240}
+                          height={240}
+                          className="rounded-xl max-w-[240px] w-auto h-auto object-cover cursor-pointer hover:opacity-95 transition-opacity"
                           unoptimized
                         />
                       </a>
                     ) : (
-                      <p className="text-base leading-snug whitespace-pre-wrap wrap-break-word">
+                      <p className="text-sm leading-snug whitespace-pre-wrap break-words">
                         {message.content}
                       </p>
                     )}
@@ -787,14 +784,14 @@ export function ChatInterface({
         </div>
       )}
 
-      {/* Input area - Instagram style */}
-      <div className="shrink-0 border-t border-border px-3 py-3 bg-background">
+      {/* Input area - with safe area for mobile */}
+      <div className="shrink-0 border-t border-border px-2 py-2 bg-background safe-area-bottom">
         {isClosed ? (
           <div className="flex items-center justify-center py-2 px-4 rounded-full bg-muted">
             <p className="text-sm text-muted-foreground">{t("conversationClosed")}</p>
           </div>
         ) : (
-          <div className="flex items-end gap-2">
+          <div className="flex items-end gap-1.5">
             {/* Hidden file input for image upload */}
             <input
               ref={fileInputRef}
@@ -808,17 +805,17 @@ export function ChatInterface({
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploadingImage || isSending}
-              className="flex items-center justify-center size-10 rounded-full hover:bg-muted transition-colors shrink-0 disabled:opacity-50"
+              className="flex items-center justify-center size-10 rounded-full hover:bg-muted active:bg-muted/70 transition-colors shrink-0 disabled:opacity-50"
             >
               {isUploadingImage ? (
-                <CircleNotch size={24} weight="regular" className="text-primary animate-spin" />
+                <CircleNotch size={22} weight="regular" className="text-primary animate-spin" />
               ) : (
-                <ImageIcon size={24} weight="regular" className="text-primary" />
+                <ImageIcon size={22} weight="regular" className="text-primary" />
               )}
             </button>
 
-            {/* Input container */}
-            <div className="flex-1 flex items-end gap-2 px-4 py-2 rounded-md border border-border bg-muted/30 focus-within:border-primary/50 transition-colors">
+            {/* Input container - full width, rounded */}
+            <div className="flex-1 flex items-end gap-2 px-3 py-2 rounded-full border border-border bg-muted/40 focus-within:border-primary/50 transition-colors min-h-10">
               <textarea
                 ref={inputRef}
                 value={inputValue}
@@ -827,7 +824,7 @@ export function ChatInterface({
                 placeholder={t("typeMessage")}
                 disabled={isSending || isUploadingImage}
                 rows={1}
-                className="flex-1 bg-transparent text-base placeholder:text-muted-foreground resize-none outline-none min-h-[24px] max-h-[120px] py-0.5"
+                className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground resize-none outline-none min-h-[20px] max-h-[100px] py-0 leading-5"
               />
             </div>
 
@@ -843,9 +840,9 @@ export function ChatInterface({
               )}
             >
               {isSending ? (
-                <CircleNotch size={20} weight="regular" className="animate-spin" />
+                <CircleNotch size={18} weight="regular" className="animate-spin" />
               ) : (
-                <PaperPlaneTilt size={20} weight="fill" />
+                <PaperPlaneTilt size={18} weight="fill" />
               )}
             </button>
           </div>

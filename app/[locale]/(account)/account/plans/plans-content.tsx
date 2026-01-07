@@ -278,7 +278,7 @@ export function PlansContent({
       {seller && hasActiveSubscription && (
         <Card className={cn(
           "max-w-md mx-auto",
-          isCancelledButActive && "border-amber-500/50 bg-amber-50/50 dark:bg-amber-950/20"
+          isCancelledButActive && "border-warning/50 bg-warning/5"
         )}>
           <CardContent className="p-4">
             <div className="flex flex-col gap-3">
@@ -290,7 +290,7 @@ export function PlansContent({
                     <span className="font-semibold capitalize ml-1">{currentTier}</span>
                   </Badge>
                   {isCancelledButActive && (
-                    <Badge variant="outline" className="text-amber-600 border-amber-500">
+                    <Badge variant="outline" className="text-warning border-warning/50">
                       {locale === "bg" ? "Отменен" : "Cancelling"}
                     </Badge>
                   )}
@@ -319,7 +319,7 @@ export function PlansContent({
 
               {/* Cancellation Warning */}
               {isCancelledButActive && (
-                <div className="flex items-start gap-2 p-2 rounded-md bg-amber-100/80 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-xs">
+                <div className="flex items-start gap-2 p-2 rounded-md bg-warning/10 text-warning text-xs">
                   <Warning className="size-4 shrink-0 mt-0.5" weight="fill" />
                   <span>
                     {locale === "bg"

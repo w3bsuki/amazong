@@ -2,7 +2,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 import { Suspense } from "react"
-import { createClient } from "@/lib/supabase/server"
+import { createClient, createStaticClient } from "@/lib/supabase/server"
 import { getPublicProfileData, getProfileMetadata } from "@/lib/data/profile-page"
 import { PublicProfileClient } from "./profile-client"
 import { routing } from "@/i18n/routing"
@@ -18,16 +18,46 @@ import { routing } from "@/i18n/routing"
 // - Uses Suspense to stream dynamic content while showing cached content fast
 // 
 // ISR OPTIMIZATION:
-// - generateStaticParams returns placeholder only (no pre-generation of all users)
-// - This prevents ISR write explosion from pre-generating all usernames
-// - Note: dynamicParams is not compatible with cacheComponents in Next.js 16
+// - generateStaticParams fetches top 100 active sellers for build-time pre-rendering
+// - High-traffic seller pages are pre-built for fast first loads + SEO
+// - New/less-active sellers are rendered on-demand (ISR)
 // =============================================================================
 
-// Return placeholder - users are rendered on-demand, not pre-built
-// This prevents ISR write explosion from trying to pre-generate all usernames
-export function generateStaticParams() {
-  // Only generate locale variants, actual usernames are dynamic
-  return routing.locales.map((locale) => ({ locale, username: '__placeholder__' }))
+// Pre-generate top 100 active sellers (by product count) for fast SEO pages
+export async function generateStaticParams() {
+  const supabase = createStaticClient()
+  
+  // Fallback when Supabase isn't configured (e.g. local/E2E)
+  if (!supabase) {
+    return routing.locales.map((locale) => ({ locale, username: '__fallback__' }))
+  }
+
+  // Fetch top 100 active sellers with products (ordered by activity)
+  const { data: sellers } = await supabase
+    .from("profiles")
+    .select("username, products(id)")
+    .eq("is_seller", true)
+    .not("username", "is", null)
+    .limit(100)
+
+  if (!sellers || sellers.length === 0) {
+    return routing.locales.map((locale) => ({ locale, username: '__fallback__' }))
+  }
+
+  // Sort by product count (most active sellers first) and take top 100
+  const activeSellers = sellers
+    .map(s => ({ 
+      username: s.username as string, 
+      productCount: Array.isArray(s.products) ? s.products.length : 0 
+    }))
+    .filter(s => s.username && s.productCount > 0)
+    .sort((a, b) => b.productCount - a.productCount)
+    .slice(0, 100)
+
+  // Generate locale × username combinations
+  return routing.locales.flatMap((locale) =>
+    activeSellers.map((s) => ({ locale, username: s.username }))
+  )
 }
 
 // Proper types for products and reviews - must match profile-client.tsx
@@ -167,8 +197,8 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
   const { username, locale } = await params
   setRequestLocale(locale)
 
-  // Handle placeholder from generateStaticParams
-  if (username === '__placeholder__') {
+  // Handle fallback from generateStaticParams (when Supabase unavailable at build)
+  if (username === '__fallback__') {
     notFound()
   }
 

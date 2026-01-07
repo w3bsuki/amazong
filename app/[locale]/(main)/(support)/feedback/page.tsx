@@ -137,7 +137,7 @@ export default async function FeedbackPage({
 
               {/* Trust message */}
               <div className="mt-6 pt-6 border-t flex items-start gap-3 text-sm text-muted-foreground">
-                <CheckCircle className="size-5 text-green-500 shrink-0 mt-0.5" weight="fill" />
+                <CheckCircle className="size-5 text-success shrink-0 mt-0.5" weight="fill" />
                 <p>{t('trustMessage')}</p>
               </div>
             </CardContent>

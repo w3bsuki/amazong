@@ -155,7 +155,7 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
                 aria-label={`Go to image ${index + 1}`}
                 onClick={() => api?.scrollTo(index)}
                 className={cn(
-                  "min-w-[24px] min-h-[24px] flex items-center justify-center",
+                  "min-w-touch-xs min-h-touch-xs flex items-center justify-center",
                   "before:h-2 before:rounded-full before:transition-all before:duration-300",
                   current === index ? "before:w-4 before:bg-primary" : "before:w-2 before:bg-primary/30 hover:before:bg-primary/50"
                 )}
