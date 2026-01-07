@@ -2,6 +2,7 @@
 
 import { useLocale } from "next-intl"
 import { usePathname } from "next/navigation"
+import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/layout/sidebar/sidebar"
@@ -9,11 +10,11 @@ import { SidebarTrigger } from "@/components/layout/sidebar/sidebar"
 export function AccountHeader() {
   const locale = useLocale()
   const pathname = usePathname()
-  
+
   // Get current page title based on pathname
   const getPageTitle = () => {
     const path = pathname.replace(`/${locale}`, "")
-    
+
     const titles: Record<string, { en: string; bg: string }> = {
       '/account': { en: 'Account Overview', bg: 'Преглед на акаунта' },
       '/account/orders': { en: 'Orders', bg: 'Поръчки' },
@@ -26,7 +27,7 @@ export function AccountHeader() {
       '/account/sales': { en: 'Sales', bg: 'Продажби' },
       '/account/plans': { en: 'Plans', bg: 'Планове' },
     }
-    
+
     // Prefer exact match first (e.g. "/account/orders" should not match "/account")
     const exact = titles[path]
     if (exact) return locale === "bg" ? exact.bg : exact.en
@@ -40,7 +41,7 @@ export function AccountHeader() {
         return locale === "bg" ? value.bg : value.en
       }
     }
-    
+
     return locale === 'bg' ? 'Моят акаунт' : 'My Account'
   }
 
@@ -55,9 +56,9 @@ export function AccountHeader() {
         <div className="text-sm font-medium text-foreground">{getPageTitle()}</div>
         <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-            <a href={`/${locale}`} className="dark:text-foreground">
+            <Link href="/" className="dark:text-foreground">
               {locale === 'bg' ? 'Към магазина' : 'Back to Store'}
-            </a>
+            </Link>
           </Button>
         </div>
       </div>

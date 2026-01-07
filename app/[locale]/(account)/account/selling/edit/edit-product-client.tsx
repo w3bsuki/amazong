@@ -95,7 +95,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
       // Check auth
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        router.push(`/${locale}/auth/login`)
+        router.push("/auth/login")
         return
       }
 
@@ -115,7 +115,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
           description: locale === 'bg' ? 'Продуктът не е намерен' : 'Product not found',
           variant: 'destructive'
         })
-        router.push(`/${locale}/account/selling`)
+        router.push("/account/selling")
         return
       }
 
@@ -225,7 +225,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
         title: locale === 'bg' ? 'Успех!' : 'Success!',
         description: locale === 'bg' ? 'Промените са запазени' : 'Changes saved successfully',
       })
-      router.push(`/${locale}/account/selling`)
+      router.push("/account/selling")
     }
 
     setIsSaving(false)
@@ -252,7 +252,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
       {/* Header */}
       <div className="flex items-center gap-4 mt-4 mb-6">
         <Button variant="ghost" size="icon" asChild>
-          <Link href={`/${locale}/account/selling`}>
+          <Link href="/account/selling">
             <ArrowLeft className="size-5" />
           </Link>
         </Button>

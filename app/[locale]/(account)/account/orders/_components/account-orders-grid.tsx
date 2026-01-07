@@ -377,7 +377,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                               {/* Chat link (shown for other statuses) */}
                               {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
                                 <Link
-                                  href={`/${locale}/chat?conversation=${conversationMap.get(order.id)}`}
+                                  href={`/chat?conversation=${conversationMap.get(order.id)}`}
                                   className="inline-flex items-center gap-1 text-xs text-primary hover:underline mt-2"
                                 >
                                   <IconMessageCircle className="size-3" />
@@ -598,7 +598,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                                     {/* Show chat only if NOT showing buyer actions */}
                                     {item.seller_id && itemStatus !== 'shipped' && itemStatus !== 'delivered' && conversationMap.get(order.id) && (
                                       <Link
-                                        href={`/${locale}/chat?conversation=${conversationMap.get(order.id)}`}
+                                        href={`/chat?conversation=${conversationMap.get(order.id)}`}
                                         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
                                       >
                                         <IconMessageCircle className="size-4" />

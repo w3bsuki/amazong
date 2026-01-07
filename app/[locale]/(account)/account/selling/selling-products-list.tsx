@@ -289,7 +289,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
             : 'Start selling by creating your first product listing'}
         </p>
         <Button asChild className="rounded-full">
-          <Link href={`/${locale}/sell`}>
+          <Link href="/sell">
             <Plus weight="bold" className="size-4 mr-2" />
             {locale === 'bg' ? 'Създай обява' : 'Create Listing'}
           </Link>
@@ -432,7 +432,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       )}
                     </Button>
                     <Button asChild variant="ghost" size="icon" className="size-8">
-                      <Link href={`/${locale}/account/selling/edit?id=${product.id}`}>
+                      <Link href={`/account/selling/edit?id=${product.id}`}>
                         <Pencil className="size-4" />
                       </Link>
                     </Button>
@@ -634,7 +634,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                   </Link>
                 </Button>
                 <Button asChild variant="ghost" size="icon" className="size-9">
-                  <Link href={`/${locale}/account/selling/edit?id=${product.id}`}>
+                  <Link href={`/account/selling/edit?id=${product.id}`}>
                     <Pencil className="size-4" />
                     <span className="sr-only">Edit</span>
                   </Link>

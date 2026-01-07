@@ -51,7 +51,7 @@ export function PendingActions({
               {ordersToShipCount}
             </Badge>
             <Button asChild size="sm" variant="outline" disabled={ordersToShipCount === 0}>
-              <Link href={`/${locale}/account/sales`}>
+              <Link href="/account/sales">
                 {locale === "bg" ? "Преглед" : "View"}
               </Link>
             </Button>
@@ -70,7 +70,7 @@ export function PendingActions({
               {unreadMessagesCount}
             </Badge>
             <Button asChild size="sm" variant="outline" disabled={unreadMessagesCount === 0}>
-              <Link href={`/${locale}/chat`}>
+              <Link href="/chat">
                 {locale === "bg" ? "Отвори" : "Open"}
               </Link>
             </Button>
@@ -89,7 +89,7 @@ export function PendingActions({
               {lowStockCount}
             </Badge>
             <Button asChild size="sm" variant="outline" disabled={lowStockCount === 0}>
-              <Link href={`/${locale}/account/selling`}>
+              <Link href="/account/selling">
                 {locale === "bg" ? "Управление" : "Manage"}
               </Link>
             </Button>

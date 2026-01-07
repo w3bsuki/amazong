@@ -279,13 +279,13 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
           </div>
           <div className="flex items-center gap-2">
             <Button asChild variant="outline">
-              <Link href={`/${locale}/account/selling`}>
+              <Link href="/account/selling">
                 <Storefront className="size-4 mr-2" />
                 {locale === 'bg' ? 'Моят магазин' : 'My Store'}
               </Link>
             </Button>
             <Button asChild>
-              <Link href={`/${locale}/sell`}>
+              <Link href="/sell">
                 <Plus weight="bold" className="size-4 mr-2" />
                 {locale === 'bg' ? 'Нова обява' : 'New Listing'}
               </Link>
@@ -410,7 +410,7 @@ export default async function SalesPage({ params, searchParams }: SalesPageProps
                     : 'When you sell a product, your sales will appear here'}
                 </p>
                 <Button asChild>
-                  <Link href={`/${locale}/sell`}>
+                  <Link href="/sell">
                     <Plus weight="bold" className="size-4 mr-2" />
                     {locale === 'bg' ? 'Създай обява' : 'Create Listing'}
                   </Link>

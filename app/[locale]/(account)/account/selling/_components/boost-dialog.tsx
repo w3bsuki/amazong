@@ -253,7 +253,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
 
           {/* View Plans CTA */}
           <Link
-            href={`/${locale}/account/plans`}
+            href="/account/plans"
             onClick={() => setIsOpen(false)}
             className="flex items-center justify-between w-full p-3 rounded-lg border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors group"
           >

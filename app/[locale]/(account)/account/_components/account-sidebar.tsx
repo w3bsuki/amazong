@@ -206,7 +206,7 @@ function AccountNavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href={`/${locale}/account/settings`}>
+              <Link href="/account/settings">
                 <IconSettings className="mr-2 size-4" />
                 {locale === 'bg' ? 'Настройки' : 'Settings'}
               </Link>

@@ -811,13 +811,13 @@ export default function PlansPageClient(props: {
         <div className="container flex flex-col items-center justify-between gap-4 py-8 sm:flex-row">
           <span className="text-sm text-muted-foreground">© 2025 Treido</span>
           <div className="flex gap-4 text-sm">
-            <Link href={`/${locale}/terms`} className="text-muted-foreground hover:text-foreground">
+            <Link href="/terms" className="text-muted-foreground hover:text-foreground">
               {locale === "bg" ? "Условия" : "Terms"}
             </Link>
-            <Link href={`/${locale}/privacy`} className="text-muted-foreground hover:text-foreground">
+            <Link href="/privacy" className="text-muted-foreground hover:text-foreground">
               {locale === "bg" ? "Поверителност" : "Privacy"}
             </Link>
-            <Link href={`/${locale}/contact`} className="text-muted-foreground hover:text-foreground">
+            <Link href="/contact" className="text-muted-foreground hover:text-foreground">
               {locale === "bg" ? "Контакт" : "Contact"}
             </Link>
           </div>

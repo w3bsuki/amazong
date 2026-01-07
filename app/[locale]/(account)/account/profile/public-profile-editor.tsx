@@ -252,7 +252,7 @@ export function PublicProfileEditor({ locale, profile }: PublicProfileEditorProp
                   treido.eu/{profile.username}
                 </p>
               </div>
-              <Link href={`/${locale}/${profile.username}`}>
+              <Link href={`/${profile.username}`}>
                 <Button variant="outline" size="sm" className="gap-2">
                   {locale === "bg" ? "Виж профила" : "View Profile"}
                   <ArrowRight className="size-4" />

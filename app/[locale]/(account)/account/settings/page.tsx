@@ -29,12 +29,12 @@ export default async function AccountSettingsPage({
   }
 
   const links = [
-    { label: t.profile, href: `/${locale}/account/profile` },
-    { label: t.security, href: `/${locale}/account/security` },
-    { label: t.addresses, href: `/${locale}/account/addresses` },
-    { label: t.payments, href: `/${locale}/account/payments` },
-    { label: t.notifications, href: `/${locale}/account/notifications` },
-    { label: t.billing, href: `/${locale}/account/billing` },
+    { label: t.profile, href: "/account/profile" },
+    { label: t.security, href: "/account/security" },
+    { label: t.addresses, href: "/account/addresses" },
+    { label: t.payments, href: "/account/payments" },
+    { label: t.notifications, href: "/account/notifications" },
+    { label: t.billing, href: "/account/billing" },
   ]
 
   return (

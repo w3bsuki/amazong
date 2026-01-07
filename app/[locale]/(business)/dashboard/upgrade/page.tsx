@@ -237,7 +237,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
           </CardContent>
           <CardFooter>
             <Button asChild className="w-full" size="lg">
-              <Link href={`/${locale}/plans?type=business&highlight=professional`}>
+              <Link href="/plans?type=business&highlight=professional">
                 {t.upgradeNow}
                 <IconArrowRight className="ml-2 size-4" />
               </Link>
@@ -279,7 +279,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
           </CardContent>
           <CardFooter>
             <Button asChild variant="outline" className="w-full" size="lg">
-              <Link href={`/${locale}/plans?type=business&highlight=enterprise`}>
+              <Link href="/plans?type=business&highlight=enterprise">
                 {t.upgradeNow}
                 <IconArrowRight className="ml-2 size-4" />
               </Link>
@@ -309,7 +309,7 @@ export default async function DashboardUpgradePage({ params }: UpgradePageProps)
         </CardContent>
         <CardFooter className="justify-center">
           <Button asChild variant="link">
-            <Link href={`/${locale}/plans`}>
+            <Link href="/plans">
               {t.viewPlans}
               <IconArrowRight className="ml-1 size-4" />
             </Link>

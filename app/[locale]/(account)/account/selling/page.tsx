@@ -144,7 +144,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
             </div>
           </div>
           <Button asChild size="sm" className="h-9 gap-1.5 rounded-full px-4">
-            <Link href={`/${locale}/sell`}>
+            <Link href="/sell">
               <Plus weight="bold" className="size-4" />
               {locale === 'bg' ? 'Добави' : 'Add'}
             </Link>
@@ -191,13 +191,13 @@ export default async function SellingPage({ params }: SellingPageProps) {
         </div>
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" className="gap-2 rounded-full">
-            <Link href={`/${locale}/account/sales`}>
+            <Link href="/account/sales">
               <ChartLineUp weight="bold" className="size-4" />
               {locale === 'bg' ? 'Продажби' : 'Sales'}
             </Link>
           </Button>
           <Button asChild className="gap-2 rounded-full">
-            <Link href={`/${locale}/sell`}>
+            <Link href="/sell">
               <Plus weight="bold" className="size-4" />
               {locale === 'bg' ? 'Нова обява' : 'New Listing'}
             </Link>
@@ -305,7 +305,7 @@ export default async function SellingPage({ params }: SellingPageProps) {
               </CardDescription>
             </div>
             <Button asChild variant="outline" size="sm" className="rounded-full">
-              <Link href={`/${locale}/sell`}>
+              <Link href="/sell">
                 <Plus weight="bold" className="size-4 mr-2" />
                 {locale === 'bg' ? 'Добави' : 'Add'}
               </Link>

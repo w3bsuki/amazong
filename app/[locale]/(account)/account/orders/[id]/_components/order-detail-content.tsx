@@ -303,7 +303,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
       {/* Back Button & Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <Link href={`/${locale}/account/orders`}>
+          <Link href="/account/orders">
             <Button variant="ghost" size="icon" className="size-8">
               <ArrowLeft className="size-4" />
             </Button>
@@ -569,7 +569,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
 
                       {/* Actions */}
                       <div className="flex gap-2 mt-3">
-                        <Link href={`/${locale}/messages?seller=${item.seller_id}`}>
+                        <Link href={`/messages?seller=${item.seller_id}`}>
                           <Button variant="outline" size="sm" className="h-7">
                             <ChatCircle className="size-3.5 mr-1" />
                             {locale === "bg" ? "Съобщение" : "Message"}
@@ -691,7 +691,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Link href={`/${locale}/support`}>
+              <Link href="/support">
                 <Button variant="outline" className="w-full justify-start">
                   <ChatCircle className="size-4 mr-2" />
                   {locale === "bg" ? "Свържете се с поддръжката" : "Contact Support"}

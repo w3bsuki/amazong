@@ -90,7 +90,7 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
               : "When you follow a store, you'll see their new products and offers here"}
           </p>
           <Button asChild>
-            <Link href={`/${locale}`}>
+            <Link href="/">
               {locale === "bg" ? "Разгледай магазини" : "Browse stores"}
             </Link>
           </Button>
@@ -155,7 +155,7 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <Link
-                        href={`/${locale}/seller/${seller.store_slug || seller.id}`}
+                        href={`/seller/${seller.store_slug || seller.id}`}
                         className="font-medium hover:underline truncate"
                       >
                         {seller.store_name}
@@ -201,7 +201,7 @@ export function FollowingContent({ locale, sellers: initialSellers, total }: Fol
                 {/* Actions */}
                 <div className="flex gap-2 mt-4">
                   <Button asChild variant="outline" size="sm" className="flex-1">
-                    <Link href={`/${locale}/seller/${seller.store_slug || seller.id}`}>
+                    <Link href={`/seller/${seller.store_slug || seller.id}`}>
                       <Storefront className="size-4 mr-1.5" />
                       {locale === "bg" ? "Виж магазина" : "View Store"}
                     </Link>

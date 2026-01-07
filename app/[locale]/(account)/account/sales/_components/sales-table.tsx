@@ -161,7 +161,7 @@ export function SalesTable({ sales, locale }: SalesTableProps) {
               {/* Actions */}
               <TableCell className="pr-6 text-right">
                 <Button asChild variant="ghost" size="sm">
-                  <Link href={`/${locale}/account/orders/${sale.order_id}`}>
+                  <Link href={`/account/orders/${sale.order_id}`}>
                     <Eye className="size-4 mr-1.5" />
                     {locale === "bg" ? "Виж" : "View"}
                   </Link>
