@@ -1,39 +1,71 @@
-# Supabase Tasks (execute via Supabase MCP)
+# Supabase Tasks (run via Supabase MCP)
 
-Last updated: 2026-01-06
+## P0 — Make `/categories/[slug]` fast + correct (category ancestry)
 
-## P0 — Security gate
+### 0) Quick sanity checks
 
-1) **Run security advisors**
-   - `mcp_supabase_get_advisors({ type: "security" })`
-   - Expectation: **0 actionable warnings** (or explicitly accepted + documented).
+```sql
+-- How many products have a category but no ancestry cached?
+select
+  count(*) filter (where category_id is not null) as with_category,
+  count(*) filter (where category_id is not null and category_ancestors is null) as missing_ancestors
+from public.products;
 
-## P0 — RLS policy performance sanity check
+-- Spot-check a few products
+select id, category_id, category_ancestors
+from public.products
+where category_id is not null
+order by updated_at desc
+limit 20;
+```
 
-2) **Verify no bare `auth.uid()` policies**
-   - Run:
-     - `mcp_supabase_execute_sql({ query: \"SELECT schemaname, tablename, policyname, qual, with_check FROM pg_policies WHERE schemaname = 'public' AND ((qual ~ 'auth\\\\.uid\\\\(\\\\)' AND qual !~* 'select\\\\s+auth\\\\.uid\\\\(\\\\)') OR (with_check ~ 'auth\\\\.uid\\\\(\\\\)' AND with_check !~* 'select\\\\s+auth\\\\.uid\\\\(\\\\)'));\" })`
-   - Expectation: **0 rows**.
+### 1) Backfill `products.category_ancestors`
 
-   Status (2026-01-06): **PASS**
-   - Result: **0 rows**
+```sql
+update public.products
+set category_ancestors = public.get_category_ancestor_ids(category_id)
+where category_id is not null
+  and (category_ancestors is null or array_length(category_ancestors, 1) is null);
+```
 
-## P1 — Performance advisors snapshot (post-launch candidate)
+### 2) Keep `category_ancestors` correct on insert/update
 
-3) **Run performance advisors**
-   - `mcp_supabase_get_advisors({ type: "performance" })`
-   - If there are many unused indexes, capture list but defer removals until post-launch unless there's a clear write-amplification issue.
-   - Optional verification (post-launch): confirm `idx_scan = 0` and no recent usage before dropping anything.
+```sql
+create or replace function public.set_product_category_ancestors()
+returns trigger
+language plpgsql
+as $$
+begin
+  if new.category_id is null then
+    new.category_ancestors := null;
+  else
+    new.category_ancestors := public.get_category_ancestor_ids(new.category_id);
+  end if;
+  return new;
+end;
+$$;
 
-   Status (2026-01-06): **INFO only**
-   - Unused index lints reported (capture for post-launch cleanup):
-     - `idx_buyer_feedback_order_id` on `public.buyer_feedback`
-     - `idx_conversations_order_id` on `public.conversations`
-     - `idx_listing_boosts_product_id` on `public.listing_boosts`
-     - `idx_notifications_user_id` / `idx_notifications_order_id` / `idx_notifications_product_id` / `idx_notifications_conversation_id` on `public.notifications`
-     - `idx_seller_feedback_order_id` on `public.seller_feedback`
-     - `idx_cart_items_product_id` / `idx_cart_items_variant_id` on `public.cart_items`
-     - `idx_order_items_product_id` / `idx_order_items_variant_id` on `public.order_items`
-     - `idx_user_badges_badge_id` on `public.user_badges`
-     - `idx_business_verification_verified_by` on `public.business_verification`
+drop trigger if exists trg_products_category_ancestors on public.products;
+
+create trigger trg_products_category_ancestors
+before insert or update of category_id on public.products
+for each row
+execute function public.set_product_category_ancestors();
+```
+
+### 3) Index for `category_ancestors` queries
+
+```sql
+-- NOTE: CONCURRENTLY cannot run inside a transaction.
+create index concurrently if not exists products_category_ancestors_gin
+on public.products
+using gin (category_ancestors);
+```
+
+### 4) Optional: index `categories.parent_id` (descendant traversal)
+
+```sql
+create index concurrently if not exists categories_parent_id_idx
+on public.categories (parent_id);
+```
 
