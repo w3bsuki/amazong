@@ -16,6 +16,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
 import { Link, routing } from "@/i18n/routing"
 import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
+import { cacheLife, cacheTag } from "next/cache"
 import {
   getCategoryBySlug,
   getCategoryContext,
@@ -41,6 +42,53 @@ import type { UIProduct } from "@/lib/data/products"
 // =============================================================================
 
 const PLACEHOLDER_SLUG = '__placeholder__'
+
+async function getDescendantCategoryIds(categoryId: string): Promise<string[]> {
+  'use cache'
+  cacheTag('categories', `descendants-${categoryId}`)
+  cacheLife('categories')
+
+  const supabase = createStaticClient()
+  if (!supabase) return [categoryId]
+
+  const maxNodes = 5000
+  const batchSize = 50
+
+  const ids = new Set<string>([categoryId])
+  let frontier: string[] = [categoryId]
+
+  while (frontier.length > 0 && ids.size < maxNodes) {
+    const batches: string[][] = []
+    for (let i = 0; i < frontier.length; i += batchSize) {
+      batches.push(frontier.slice(i, i + batchSize))
+    }
+
+    const results = await Promise.all(
+      batches.map((batchIds) =>
+        supabase
+          .from("categories")
+          .select("id")
+          .in("parent_id", batchIds)
+          .lt("display_order", 9999)
+      )
+    )
+
+    const next: string[] = []
+    for (const { data } of results) {
+      for (const row of data || []) {
+        const id = (row as { id?: unknown } | null)?.id
+        if (!id || typeof id !== "string") continue
+        if (ids.has(id)) continue
+        ids.add(id)
+        next.push(id)
+      }
+    }
+
+    frontier = next
+  }
+
+  return Array.from(ids)
+}
 
 // Generate static params for all categories (for SSG)
 // Uses createStaticClient because this runs at build time outside request scope
@@ -177,9 +225,8 @@ export default async function CategoryPage({
   }))
   const allCategories = allCategoriesWithSubs.map((c) => c.category)
 
-  // Products are commonly assigned to leaf categories (L2/L3).
-  // Filter by `products.category_ancestors` so the parent category shows all listings.
-  const categoryId = currentCategory.id
+  // Products are commonly assigned to leaf categories (L2/L3), so include all descendants.
+  const categoryIds = await getDescendantCategoryIds(currentCategory.id)
 
   // Extract attr_* params for attribute filtering
   const attributeFilters: Record<string, string | string[]> = {}
@@ -195,7 +242,7 @@ export default async function CategoryPage({
   // This significantly speeds up page load by avoiding sequential awaits
   // ==========================================================================
   const [result, ancestry, t] = await Promise.all([
-    searchProducts(supabase, categoryId, {
+    searchProducts(supabase, categoryIds, {
       minPrice: searchParams.minPrice,
       maxPrice: searchParams.maxPrice,
       tag: searchParams.tag,
