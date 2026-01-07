@@ -4,7 +4,7 @@ import type { CategoryProductFilters, Product } from "./types"
 
 export async function searchProducts(
   supabase: ReturnType<typeof createStaticClient>,
-  categoryIds: string[],
+  categoryId: string,
   filters: CategoryProductFilters,
   page: number = 1,
   limit: number = ITEMS_PER_PAGE,
@@ -26,10 +26,11 @@ export async function searchProducts(
     "id,title,price,list_price,images,rating,review_count,category_id,slug,tags,attributes,created_at,profiles:profiles!products_seller_id_fkey(id,username,display_name,business_name,avatar_url,tier,account_type,is_verified_business)"
   )
 
-  if (categoryIds.length > 0) {
-    countQuery = countQuery.in("category_id", categoryIds)
-    dbQuery = dbQuery.in("category_id", categoryIds)
-  }
+  // Products are often assigned to leaf categories (L2/L3). Use `category_ancestors`
+  // so browsing a parent category includes all descendant listings without a huge IN().
+  const categoryFilter = `category_id.eq.${categoryId},category_ancestors.cs.{${categoryId}}`
+  countQuery = countQuery.or(categoryFilter)
+  dbQuery = dbQuery.or(categoryFilter)
 
   if (shippingFilter) {
     countQuery = countQuery.or(shippingFilter)

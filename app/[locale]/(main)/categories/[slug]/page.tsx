@@ -177,8 +177,9 @@ export default async function CategoryPage({
   }))
   const allCategories = allCategoriesWithSubs.map((c) => c.category)
 
-  // Get products from this category AND all its subcategories
-  const categoryIds = [currentCategory.id, ...subcategories.map(s => s.id)]
+  // Products are commonly assigned to leaf categories (L2/L3).
+  // Filter by `products.category_ancestors` so the parent category shows all listings.
+  const categoryId = currentCategory.id
 
   // Extract attr_* params for attribute filtering
   const attributeFilters: Record<string, string | string[]> = {}
@@ -194,7 +195,7 @@ export default async function CategoryPage({
   // This significantly speeds up page load by avoiding sequential awaits
   // ==========================================================================
   const [result, ancestry, t] = await Promise.all([
-    searchProducts(supabase, categoryIds, {
+    searchProducts(supabase, categoryId, {
       minPrice: searchParams.minPrice,
       maxPrice: searchParams.maxPrice,
       tag: searchParams.tag,
