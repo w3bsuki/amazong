@@ -41,7 +41,9 @@ export const CategoryNavItem = forwardRef<
 ) {
   // Tab variant: underline-style, padding provides touch area
   const tabStyles = cn(
-    "shrink-0 min-h-touch px-1.5 text-sm relative flex items-center",
+    "shrink-0 min-h-touch px-0.5 relative flex items-center",
+    "text-sm font-medium leading-none",
+    "tap-highlight-transparent",
     "border-b-2",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "transition-colors",
@@ -109,14 +111,14 @@ export function TabContent({ label, isActive }: TabContentProps) {
       <span
         className={cn(
           "transition-[font-weight] duration-100",
-          isActive ? "font-bold" : "font-medium"
+          isActive ? "font-semibold" : "font-medium"
         )}
       >
         {label}
       </span>
       {/* Invisible bold text to prevent layout shift */}
       <span
-        className="font-bold invisible h-0 overflow-hidden"
+        className="font-semibold invisible h-0 overflow-hidden"
         aria-hidden="true"
       >
         {label}

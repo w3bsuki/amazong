@@ -73,7 +73,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             href="/"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
+              "flex flex-col items-center justify-center gap-0.5 px-3 py-1",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
               pathname === "/" ? "text-foreground" : "text-muted-foreground active:text-foreground"
@@ -81,7 +81,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-label={t("home")}
             aria-current={pathname === "/" ? "page" : undefined}
           >
-            <Home size={22} strokeWidth={1.5} className={pathname === "/" ? "fill-current" : ""} />
+            <Home size={20} strokeWidth={1.5} className={pathname === "/" ? "fill-current" : ""} />
             <span className="text-2xs font-medium leading-none">{t("home")}</span>
           </Link>
 
@@ -90,7 +90,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             type="button"
             onClick={() => menuSheetRef.current?.open()}
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
+              "flex flex-col items-center justify-center gap-0.5 px-3 py-1",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
               isActive("/categories") ? "text-foreground" : "text-muted-foreground active:text-foreground"
@@ -98,7 +98,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-label={t("categories")}
             aria-haspopup="dialog"
           >
-            <LayoutGrid size={22} strokeWidth={1.5} className={isActive("/categories") ? "fill-current" : ""} />
+            <LayoutGrid size={20} strokeWidth={1.5} className={isActive("/categories") ? "fill-current" : ""} />
             <span className="text-2xs font-medium leading-none">{t("categories")}</span>
           </button>
 
@@ -107,7 +107,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             href="/sell"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
+              "flex flex-col items-center justify-center gap-0.5 px-3 py-1",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
               "rounded-lg",
@@ -117,7 +117,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
-            <PlusSquare size={26} strokeWidth={1.5} />
+            <PlusSquare size={22} strokeWidth={1.5} />
             <span className="text-2xs font-medium leading-none">{t("sell")}</span>
           </Link>
 
@@ -126,7 +126,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             href="/chat"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
+              "flex flex-col items-center justify-center gap-0.5 px-3 py-1",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
               isActive("/chat") ? "text-foreground" : "text-muted-foreground active:text-foreground"
@@ -135,7 +135,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-current={isActive("/chat") ? "page" : undefined}
           >
             <span className="relative">
-              <MessageCircle size={22} strokeWidth={1.5} className={isActive("/chat") ? "fill-current" : ""} />
+              <MessageCircle size={20} strokeWidth={1.5} className={isActive("/chat") ? "fill-current" : ""} />
               {unreadCount > 0 && (
                 <CountBadge
                   count={unreadCount}
@@ -152,7 +152,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             href="/account"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
+              "flex flex-col items-center justify-center gap-0.5 px-3 py-1",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
               isActive("/account") ? "text-foreground" : "text-muted-foreground active:text-foreground"
@@ -160,7 +160,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-label={t("account")}
             aria-current={isActive("/account") ? "page" : undefined}
           >
-            <User size={22} strokeWidth={1.5} className={isActive("/account") ? "fill-current" : ""} />
+            <User size={20} strokeWidth={1.5} className={isActive("/account") ? "fill-current" : ""} />
             <span className="text-2xs font-medium leading-none">{t("account")}</span>
           </Link>
         </div>

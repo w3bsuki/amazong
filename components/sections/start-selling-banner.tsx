@@ -38,11 +38,11 @@ export function StartSellingBanner({
         <Link
           href="/sell"
           className={cn(
-            "block w-full rounded-lg",
-            "bg-brand",
-            "text-white",
+            "block w-full rounded-md",
+            "bg-foreground text-background",
+            "border border-border/50",
             "px-3 py-3",
-            "hover:bg-brand-dark",
+            "hover:bg-foreground/90",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             "transition-colors duration-150",
             className
@@ -52,18 +52,18 @@ export function StartSellingBanner({
             {/* Left: Text */}
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold leading-snug">
-                {isBg ? "Регистрирай се, за да продаваш" : "Sign up to start selling"}
+                {isBg ? "Продай за минути" : "Sell in minutes"}
               </p>
-              <p className="text-xs text-white/80 mt-0.5">
+              <p className="text-xs text-background/80 mt-0.5">
                 {isBg
-                  ? "Създай обява за минути. Достигни купувачи."
-                  : "List in minutes. Reach buyers faster."}
+                  ? "Освободи място и спечели."
+                  : "Clear space and earn."}
               </p>
             </div>
 
             {/* Right: Arrow pill */}
             <span
-              className="size-8 shrink-0 rounded-full bg-white/20 flex items-center justify-center"
+              className="size-8 shrink-0 rounded-full bg-background/10 border border-background/10 flex items-center justify-center"
               aria-hidden="true"
             >
               <ArrowRight size={16} weight="bold" />

@@ -75,6 +75,7 @@ export interface UIProduct {
   id: string
   title: string
   price: number
+  createdAt?: string | null
   listPrice?: number
   isOnSale?: boolean
   salePercent?: number
@@ -409,6 +410,7 @@ export function normalizeProductRow(p: {
   id: string
   title: string
   price: number
+  created_at?: string | null
   seller_id?: string | null
   list_price?: number | null
   is_on_sale?: boolean | null
@@ -451,6 +453,7 @@ export function normalizeProductRow(p: {
     id: p.id,
     title: p.title,
     price: p.price,
+    created_at: p.created_at ?? null,
     seller_id: p.seller_id ?? null,
     list_price: p.list_price ?? null,
     is_on_sale: p.is_on_sale ?? null,
@@ -497,6 +500,7 @@ export function toUI(p: Product): UIProduct {
     id: p.id,
     title: p.title,
     price: p.price,
+    ...(typeof p.created_at === "string" ? { createdAt: p.created_at } : {}),
     ...(typeof p.list_price === "number" ? { listPrice: p.list_price } : {}),
     ...(typeof p.is_on_sale === "boolean" ? { isOnSale: p.is_on_sale } : {}),
     ...(typeof p.sale_percent === "number" ? { salePercent: p.sale_percent } : {}),

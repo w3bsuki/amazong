@@ -110,6 +110,7 @@ export function ProductFeed({
               id={product.id}
               title={product.title}
               price={product.price}
+              createdAt={product.createdAt ?? null}
               originalPrice={product.listPrice ?? null}
               image={product.image}
               rating={product.rating}

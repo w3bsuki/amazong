@@ -15,6 +15,37 @@ import { buildHeroBadgeText } from "@/lib/product-card-hero-attributes"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Truck } from "@phosphor-icons/react"
 
+function formatTimeAgo(input: string, locale: string): string | null {
+  const d = new Date(input)
+  const ms = d.getTime()
+  if (!Number.isFinite(ms)) return null
+
+  const diffSeconds = Math.round((ms - Date.now()) / 1000)
+  const abs = Math.abs(diffSeconds)
+
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" })
+
+  if (abs < 60) return rtf.format(diffSeconds, "second")
+
+  const diffMinutes = Math.round(diffSeconds / 60)
+  if (Math.abs(diffMinutes) < 60) return rtf.format(diffMinutes, "minute")
+
+  const diffHours = Math.round(diffMinutes / 60)
+  if (Math.abs(diffHours) < 24) return rtf.format(diffHours, "hour")
+
+  const diffDays = Math.round(diffHours / 24)
+  if (Math.abs(diffDays) < 7) return rtf.format(diffDays, "day")
+
+  const diffWeeks = Math.round(diffDays / 7)
+  if (Math.abs(diffWeeks) < 5) return rtf.format(diffWeeks, "week")
+
+  const diffMonths = Math.round(diffDays / 30)
+  if (Math.abs(diffMonths) < 12) return rtf.format(diffMonths, "month")
+
+  const diffYears = Math.round(diffDays / 365)
+  return rtf.format(diffYears, "year")
+}
+
 // =============================================================================
 // CVA VARIANTS
 // =============================================================================
@@ -50,6 +81,9 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   title: string
   price: number
   image: string
+
+  // Meta
+  createdAt?: string | null
 
   // Pricing
   originalPrice?: number | null
@@ -125,6 +159,7 @@ function ProductCard({
   title,
   price,
   image,
+  createdAt,
   originalPrice,
   isOnSale,
   salePercent,
@@ -152,6 +187,7 @@ function ProductCard({
   reviews,
   soldCount,
   condition,
+  location,
   // B2B props
   minOrderQuantity,
   businessVerified,
@@ -199,6 +235,18 @@ function ProductCard({
     if (c === "refurbished" || c === "рефърбиш") return t("condition.refurbShort")
     return condition.slice(0, 8)
   }, [condition, t])
+
+  const createdAtLabel = React.useMemo(() => {
+    if (!createdAt) return null
+    return formatTimeAgo(createdAt, locale)
+  }, [createdAt, locale])
+
+  const metaParts = React.useMemo(() => {
+    const parts: string[] = []
+    if (typeof location === "string" && location.trim()) parts.push(location.trim())
+    if (typeof createdAtLabel === "string" && createdAtLabel.trim()) parts.push(createdAtLabel.trim())
+    return parts
+  }, [location, createdAtLabel])
 
   return (
     <div
@@ -263,6 +311,18 @@ function ProductCard({
           locale={locale}
           conditionLabel={conditionLabel}
         />
+
+        {/* Meta (C2C-style): location • time */}
+        {metaParts.length > 0 && (
+          <div className="mt-0.5 line-clamp-1 flex items-center gap-1 text-2xs text-muted-foreground">
+            {metaParts.map((part, i) => (
+              <React.Fragment key={`${part}-${i}`}>
+                {i > 0 && <span aria-hidden="true">•</span>}
+                <span className="truncate">{part}</span>
+              </React.Fragment>
+            ))}
+          </div>
+        )}
 
         {/* Free Shipping (desktop only) */}
         {freeShipping && (
