@@ -29,7 +29,7 @@ export default function TodaysDealsLoading() {
           <Skeleton className="h-4 w-36 mb-3" />
           <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
             {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className="flex flex-col items-center gap-1.5 min-w-[70px] shrink-0">
+              <div key={i} className="flex flex-col items-center gap-1.5 min-w-(--deals-category-min-w) shrink-0">
                 <Skeleton className="size-14 sm:size-16 rounded-full" />
                 <Skeleton className="h-3 w-12" />
               </div>

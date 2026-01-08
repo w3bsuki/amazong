@@ -69,7 +69,7 @@ const defaultNotifications: Notification[] = [
     id: "1",
     type: "order",
     title: "New order received",
-    message: "You have a new order #ABC123 for BGN 45.99",
+    message: "You have a new order ABC-123 for BGN 45.99",
     timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(), // 15 min ago
     read: false,
     href: "/dashboard/orders",
@@ -167,7 +167,7 @@ export function BusinessNotifications({
         </div>
 
         {/* Notifications List */}
-        <ScrollArea className="h-[360px]">
+        <ScrollArea className="h-(--business-notifications-scroll-h)">
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center px-4">
               <div className="flex size-10 items-center justify-center rounded-full bg-muted mb-2">

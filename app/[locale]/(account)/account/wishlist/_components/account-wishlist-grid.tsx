@@ -280,7 +280,7 @@ export function AccountWishlistGrid({ items, locale, onRemove }: WishlistGridPro
             </div>
 
             {/* Detail Sheet */}
-            <SheetContent side="bottom" className="h-auto max-h-[85vh] rounded-t-3xl">
+            <SheetContent side="bottom" className="h-auto max-h-(--dialog-h-85vh) rounded-t-3xl">
               <SheetHeader className="text-left pb-4">
                 <SheetTitle className="line-clamp-2 text-lg">{item.title}</SheetTitle>
                 <SheetDescription className="flex items-center gap-2 flex-wrap">

@@ -100,7 +100,7 @@ test.describe('Smoke Tests - Critical Path', () => {
     await app.waitForHydration()
 
     // Must have form with required fields
-    await assertVisible(page.locator('form'))
+    await expect(page.locator('form')).toHaveCount(1)
     await assertVisible(page.locator('input[type="email"], input#email'))
     await assertVisible(page.locator('input[type="password"], input#password'))
     await assertVisible(page.getByRole('button', { name: /sign in|log in/i }))
@@ -114,7 +114,7 @@ test.describe('Smoke Tests - Critical Path', () => {
     await app.waitForHydration()
 
     // Must have form
-    await assertVisible(page.locator('form'))
+    await expect(page.locator('form')).toHaveCount(1)
     await assertNoErrorBoundary(page)
 
     app.assertNoConsoleErrors()

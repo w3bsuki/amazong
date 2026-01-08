@@ -18,12 +18,12 @@ import { routing } from "@/i18n/routing"
 // - Uses Suspense to stream dynamic content while showing cached content fast
 // 
 // ISR OPTIMIZATION:
-// - generateStaticParams fetches top 100 active sellers for build-time pre-rendering
+// - generateStaticParams fetches top 25 active sellers for build-time pre-rendering
 // - High-traffic seller pages are pre-built for fast first loads + SEO
 // - New/less-active sellers are rendered on-demand (ISR)
 // =============================================================================
 
-// Pre-generate top 100 active sellers (by product count) for fast SEO pages
+// Pre-generate top 25 active sellers (by product count) for fast SEO pages
 export async function generateStaticParams() {
   const supabase = createStaticClient()
   
@@ -32,19 +32,19 @@ export async function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale, username: '__fallback__' }))
   }
 
-  // Fetch top 100 active sellers with products (ordered by activity)
+  // Fetch top 25 active sellers with products (ordered by activity)
   const { data: sellers } = await supabase
     .from("profiles")
     .select("username, products(id)")
     .eq("is_seller", true)
     .not("username", "is", null)
-    .limit(100)
+    .limit(25)
 
   if (!sellers || sellers.length === 0) {
     return routing.locales.map((locale) => ({ locale, username: '__fallback__' }))
   }
 
-  // Sort by product count (most active sellers first) and take top 100
+  // Sort by product count (most active sellers first) and take top 25
   const activeSellers = sellers
     .map(s => ({ 
       username: s.username as string, 
@@ -52,7 +52,7 @@ export async function generateStaticParams() {
     }))
     .filter(s => s.username && s.productCount > 0)
     .sort((a, b) => b.productCount - a.productCount)
-    .slice(0, 100)
+    .slice(0, 25)
 
   // Generate locale × username combinations
   return routing.locales.flatMap((locale) =>

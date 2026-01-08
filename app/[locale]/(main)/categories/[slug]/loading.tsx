@@ -52,7 +52,7 @@ export default function CategorySlugLoading() {
         <div className="flex gap-0">
           {/* Sidebar Filters - Desktop Only */}
           <aside className="w-56 hidden lg:block shrink-0 border-r border-border">
-            <div className="sticky top-16 pr-4 py-1 max-h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar space-y-3">
+            <div className="sticky top-16 pr-4 py-1 max-h-(--category-sidebar-max-h) overflow-y-auto no-scrollbar space-y-3">
               <Skeleton className="h-6 w-36" />
               {Array.from({ length: 8 }).map((_, i) => (
                 <Skeleton key={i} className="h-4 w-full" />

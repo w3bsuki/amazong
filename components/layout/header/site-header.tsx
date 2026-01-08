@@ -99,7 +99,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
     <header
       ref={headerRef}
       className={cn(
-        "sticky top-0 z-50 w-full flex flex-col bg-header-bg",
+        "sticky top-0 z-50 w-full flex flex-col bg-header-bg md:border-b md:border-header-border",
         hideOnMobile && "hidden lg:flex"
       )}
     >
@@ -136,26 +136,26 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
           </div>
         </div>
 
-        {/* Search bar row - integrated into header, hidden on product pages */}
+        {/* Search bar row - muted bg stands out from white header */}
         {!isProductPage && (
-          <div className="px-(--page-inset) pb-2">
+          <div className="px-(--page-inset) pt-1 pb-2">
             <button
               onClick={() => setIsMobileSearchOpen(true)}
               className={cn(
                 "w-full flex items-center gap-2 h-9 px-3 rounded-lg",
-                "bg-background",
+                "bg-muted border border-border/50",
                 "text-muted-foreground text-sm text-left",
-                "active:bg-muted/50",
+                "active:bg-muted/80",
                 "touch-action-manipulation tap-transparent"
               )}
               aria-label={searchPlaceholder}
               aria-haspopup="dialog"
               aria-expanded={isMobileSearchOpen}
             >
-              <Search size={22} className="text-muted-foreground shrink-0" />
+              <Search size={18} className="text-muted-foreground shrink-0" />
               <span className="flex-1 truncate font-normal">{searchPlaceholder}</span>
               <div className="flex items-center gap-1.5 shrink-0">
-                <ScanLine size={18} className="text-muted-foreground/60" />
+                <ScanLine size={16} className="text-muted-foreground/60" />
               </div>
             </button>
           </div>
@@ -266,17 +266,17 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
 
       {/* Category Subheader - Hide on category/product pages (eBay/Target pattern) */}
       {!pathWithoutLocale.startsWith("/categories") && !isProductPage && !hideSubheader && (
-        <nav className="hidden sm:block bg-header-bg text-sm border-t border-header-text/15 relative">
-          <div className="container text-header-text">
+        <nav className="hidden sm:block bg-header-nav-bg text-sm border-t border-border/50 relative">
+          <div className="container text-foreground">
             {/* Mobile/Tablet: Quick Links with Sidebar Menu */}
             <div className="lg:hidden">
               <div className="w-full flex items-center gap-0.5 overflow-x-auto no-scrollbar">
                 <SidebarMenu user={user} categories={categories} />
-                <Link href="/todays-deals" prefetch={true} className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
-                <Link href="/customer-service" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
-                <Link href="/registry" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('registry')}</Link>
-                <Link href="/gift-cards" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('giftCards')}</Link>
-                <Link href="/sell" className="font-normal text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
+                <Link href="/todays-deals" prefetch={true} className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
+                <Link href="/customer-service" className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
+                <Link href="/registry" className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('registry')}</Link>
+                <Link href="/gift-cards" className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('giftCards')}</Link>
+                <Link href="/sell" className="font-normal text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
               </div>
             </div>
 

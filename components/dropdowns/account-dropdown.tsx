@@ -50,7 +50,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
           <span className="text-2xs text-header-text/70 font-normal">
             {t("hello")}
           </span>
-          <span className="text-xs font-bold truncate max-w-[80px] lg:max-w-[120px]">
+          <span className="text-xs font-bold truncate max-w-20 lg:max-w-32">
             {user ? (user.user_metadata?.full_name || user.email?.split("@")[0] || "User") : t("signIn")}
           </span>
         </div>
@@ -58,9 +58,9 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
     </div>
   ) : (
     <div
-      className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer", className)}
+      className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 cursor-pointer", className)}
     >
-      <UserCircle weight="fill" />
+      <UserCircle weight="fill" className="size-6" />
     </div>
   )
 
@@ -102,7 +102,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
                   <Button
                     type="submit"
                     disabled={isSigningOut}
-                    className="w-56 h-[30px] text-xs bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text disabled:opacity-70"
+                    className="w-56 h-8 text-xs bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text disabled:opacity-70"
                   >
                     {isSigningOut ? (
                       <>

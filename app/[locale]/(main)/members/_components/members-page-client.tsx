@@ -228,7 +228,7 @@ export default function MembersPageClient({
           </form>
 
           <Select value={sort} onValueChange={(value) => updateParams({ sort: value, page: "1" })}>
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full sm:w-(--members-sort-w-sm)">
               <SelectValue placeholder={locale === "bg" ? "Сортирай по" : "Sort by"} />
             </SelectTrigger>
             <SelectContent>

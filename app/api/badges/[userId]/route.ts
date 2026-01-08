@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createStaticClient } from "@/lib/supabase/server"
+import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
 interface RouteContext {
   params: Promise<{ userId: string }>
@@ -93,6 +94,7 @@ export async function GET(request: Request, { params }: RouteContext) {
     })
     
   } catch (error) {
+    if (isNextPrerenderInterrupted(error)) throw error
     console.error("Error fetching badges:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }

@@ -1,6 +1,4 @@
-"use client"
-
-import { ArrowCounterClockwise, Lock, ShieldCheck, Truck } from "@phosphor-icons/react"
+import { ArrowCounterClockwise, Lock, ShieldCheck, Truck } from "@phosphor-icons/react/dist/ssr"
 
 import { cn } from "@/lib/utils"
 

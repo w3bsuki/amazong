@@ -1,6 +1,8 @@
-import { createAdminClient } from "@/lib/supabase/server"
+import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
 import { Link } from "@/i18n/routing"
+import { Suspense } from "react"
+import { connection } from "next/server"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -40,14 +42,18 @@ async function getProducts(): Promise<AdminProduct[]> {
     .limit(100)
 
   if (error) {
-    console.error("Failed to fetch products:", error.message)
+    if (!error.message.includes("During prerendering, fetch() rejects when the prerender is complete")) {
+      console.error("Failed to fetch products:", error.message)
+    }
     return []
   }
 
   return (products || []) as AdminProduct[]
 }
 
-export default async function AdminProductsPage() {
+async function AdminProductsContent() {
+  await (await createClient()).auth.getUser()
+
   const products = await getProducts()
 
   const formatCurrency = (value: number) => {
@@ -127,5 +133,39 @@ export default async function AdminProductsPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+function AdminProductsFallback() {
+  return (
+    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Products</h1>
+          <p className="text-muted-foreground">All product listings on the platform</p>
+        </div>
+        <Badge variant="outline" className="text-base">Loading...</Badge>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>All Products</CardTitle>
+          <CardDescription>View and manage all product listings</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-sm text-muted-foreground">Loading...</div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default async function AdminProductsPage() {
+  await connection()
+
+  return (
+    <Suspense fallback={<AdminProductsFallback />}>
+      <AdminProductsContent />
+    </Suspense>
   )
 }

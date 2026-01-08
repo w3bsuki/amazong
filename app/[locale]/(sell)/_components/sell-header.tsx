@@ -150,7 +150,7 @@ export function SellHeader({
                         {userInitial}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="hidden md:inline text-sm max-w-[100px] truncate">
+                      <span className="hidden md:inline text-sm max-w-(--sell-header-user-max-w) truncate">
                       {storeName || user.email?.split("@")[0]}
                     </span>
                     <CaretDown className="size-3.5 text-muted-foreground hidden sm:block" />

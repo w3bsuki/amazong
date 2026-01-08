@@ -38,7 +38,7 @@ export default function AdminLoading() {
             </div>
           </CardHeader>
           <CardContent>
-            <Skeleton className="h-[300px] w-full" />
+            <Skeleton className="h-(--spacing-scroll-md) w-full" />
           </CardContent>
         </Card>
       </div>

@@ -91,7 +91,7 @@ export default async function SharedWishlistPage({ params }: SharedWishlistPageP
               <CardContent className="p-3">
                 <Link 
                   href={`/product/${item.product_id}`}
-                  className="text-sm font-medium text-foreground hover:text-brand-blue line-clamp-2 min-h-[40px]"
+                  className="text-sm font-medium text-foreground hover:text-brand-blue line-clamp-2 min-h-10"
                 >
                   {item.product_title}
                 </Link>

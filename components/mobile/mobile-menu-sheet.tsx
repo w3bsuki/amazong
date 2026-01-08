@@ -51,7 +51,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
 
     return (
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="max-h-[90dvh]">
+        <DrawerContent className="max-h-(--dialog-max-h)">
           {/* Header - Compact with proper touch target for close */}
           <DrawerHeader className="py-2 px-(--page-inset) border-b border-border">
             <div className="flex items-center justify-between">
@@ -76,7 +76,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
           </DrawerHeader>
 
           {/* Scrollable Content with safe area */}
-          <div className="flex-1 overflow-y-auto overscroll-contain px-(--page-inset) pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="flex-1 overflow-y-auto overscroll-contain px-(--page-inset) pb-safe-max">
 
             {/* Categories Section - circles grid */}
             <section className="py-3">

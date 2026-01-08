@@ -72,7 +72,7 @@ export function SelectDrawer({
 
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="max-h-[85vh]">
+      <DrawerContent className="max-h-(--dialog-h-85vh)">
         <DrawerHeader className="border-b border-border pb-3">
           <DrawerTitle className="text-lg">{title}</DrawerTitle>
           <DrawerDescription>
@@ -144,7 +144,7 @@ export function SelectDrawer({
           </div>
         </ScrollArea>
 
-        <div className="pb-[env(safe-area-inset-bottom)]" />
+        <div className="pb-safe" />
       </DrawerContent>
     </Drawer>
   );

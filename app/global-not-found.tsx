@@ -1,5 +1,3 @@
-import { Link } from "@/i18n/routing"
-
 /**
  * Global Not Found Page
  * 
@@ -9,7 +7,12 @@ import { Link } from "@/i18n/routing"
  * Note: This is a Server Component so we use basic HTML elements
  * to avoid issues with client-only components (Button uses React Context).
  */
+import { setRequestLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
+
 export default function GlobalNotFound() {
+  setRequestLocale(routing.defaultLocale);
+
   return (
     <html lang="en">
       <body className="bg-background text-foreground">
@@ -35,19 +38,19 @@ export default function GlobalNotFound() {
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Link
+              <a
                 href="/"
-                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 Go to Homepage
-              </Link>
+              </a>
             </div>
 
             <p className="mt-8 text-xs text-muted-foreground">
               If you believe this is an error, please{" "}
-              <Link href="/contact" className="text-primary hover:underline">
+              <a href="/contact" className="text-primary hover:underline">
                 contact support
-              </Link>
+              </a>
               .
             </p>
           </div>

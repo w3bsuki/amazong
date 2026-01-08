@@ -1,5 +1,6 @@
-import { createAdminClient } from "@/lib/supabase/server"
+import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
+import { Suspense } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -15,14 +16,18 @@ async function getUsers() {
     .limit(100)
 
   if (error) {
-    console.error("Failed to fetch users:", error.message)
+    if (!error.message.includes("During prerendering, fetch() rejects when the prerender is complete")) {
+      console.error("Failed to fetch users:", error.message)
+    }
     return []
   }
 
   return users
 }
 
-export default async function AdminUsersPage() {
+async function AdminUsersContent() {
+  await (await createClient()).auth.getUser()
+
   const users = await getUsers()
 
   const getRoleBadge = (role: string | null) => {
@@ -95,5 +100,37 @@ export default async function AdminUsersPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+function AdminUsersFallback() {
+  return (
+    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Users</h1>
+          <p className="text-muted-foreground">Manage all registered users on the platform</p>
+        </div>
+        <Badge variant="outline" className="text-base">Loading...</Badge>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>All Users</CardTitle>
+          <CardDescription>A list of all users including their name, email, and role.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-sm text-muted-foreground">Loading...</div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default function AdminUsersPage() {
+  return (
+    <Suspense fallback={<AdminUsersFallback />}>
+      <AdminUsersContent />
+    </Suspense>
   )
 }

@@ -43,7 +43,7 @@ export function DesktopHeroCTA({ locale = "en", bottomSlot }: DesktopHeroCTAProp
               </h1>
 
               {/* Subtitle - lighter weight for visual hierarchy */}
-              <p className="text-sm lg:text-base text-cta-trust-blue-text/90 font-normal max-w-[54ch] mx-auto lg:mx-0 text-pretty">
+              <p className="text-sm lg:text-base text-cta-trust-blue-text/90 font-normal max-w-(--text-measure-54ch) mx-auto lg:mx-0 text-pretty">
                 {isBg 
                   ? "Купувай и продавай лесно. Безплатно публикуване, без такси." 
                   : "Buy and sell easily. Free listings, no fees."}

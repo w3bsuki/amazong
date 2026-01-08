@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
+import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
 /**
  * GET /api/seller/limits
  * Returns the current user's listing limits and subscription status
  */
 export async function GET(request: NextRequest) {
-  const { supabase, applyCookies } = createRouteHandlerClient(request)
-  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
-    applyCookies(NextResponse.json(body, init))
-
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    const res = NextResponse.json({ skipped: true }, { status: 200 })
+    res.headers.set('Cache-Control', 'private, no-store')
+    res.headers.set('CDN-Cache-Control', 'private, no-store')
+    res.headers.set('Vercel-CDN-Cache-Control', 'private, no-store')
+    return res
+  }
   try {
+    const { supabase, applyCookies } = createRouteHandlerClient(request)
+    const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+      applyCookies(NextResponse.json(body, init))
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -68,8 +75,14 @@ export async function GET(request: NextRequest) {
       needsUpgrade: !isUnlimited && remaining <= 0,
     })
   } catch (error) {
+    if (isNextPrerenderInterrupted(error)) {
+      const res = NextResponse.json({ skipped: true }, { status: 200 })
+      res.headers.set('Cache-Control', 'private, no-store')
+      return res
+    }
     console.error("Seller limits API error:", error)
-    return json(
+
+    return NextResponse.json(
       { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 }
     )

@@ -1,7 +1,7 @@
 "use client"
 
 import { CaretDown, ArrowsDownUp } from "@phosphor-icons/react"
-import { useLocale, useTranslations } from "next-intl"
+import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { useCallback } from "react"
@@ -16,16 +16,18 @@ import {
 
 export function SortSelect() {
   const t = useTranslations('SearchFilters')
-  const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  const normalizedPathname = pathname.startsWith(`/${locale}/`)
-    ? pathname.slice(locale.length + 1)
-    : pathname === `/${locale}`
-      ? '/'
-      : pathname
+  const normalizedPathname = (() => {
+    const segments = pathname.split('/').filter(Boolean)
+    const maybeLocale = segments[0]
+    if (maybeLocale && /^[a-z]{2}(-[A-Z]{2})?$/i.test(maybeLocale)) {
+      segments.shift()
+    }
+    return `/${segments.join('/')}` || '/'
+  })()
   
   // Get current sort from URL, default to "featured"
   const currentSort = searchParams.get('sort') || 'featured'

@@ -2,6 +2,7 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 import { normalizeOptionalImageUrl } from "@/lib/normalize-image-url"
 import { cacheLife, cacheTag } from "next/cache"
+import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
 // NOTE: This endpoint serves public data (no user cookies required).
 // In Cache Components mode, avoid Dynamic APIs like `connection()` and avoid
@@ -351,6 +352,7 @@ export async function GET(request: Request) {
     const categories = await getRootCategoriesCached()
     return cachedJsonResponse({ categories })
   } catch (error) {
+    if (isNextPrerenderInterrupted(error)) throw error
     console.error("Categories API Error:", error)
     const message = error instanceof Error ? error.message : "Internal Server Error"
     return NextResponse.json({ error: message }, { status: 500 })

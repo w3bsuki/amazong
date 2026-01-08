@@ -150,7 +150,7 @@ export default async function ContactPage({
                     <Textarea 
                       id="message" 
                       placeholder={t('messagePlaceholder')} 
-                      className="min-h-[150px] resize-none" 
+                      className="min-h-(--textarea-min-h) resize-none" 
                       required 
                     />
                     <p className="text-xs text-muted-foreground">{t('messageHint')}</p>

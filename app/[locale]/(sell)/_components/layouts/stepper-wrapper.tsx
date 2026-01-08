@@ -58,7 +58,7 @@ export function StepperWrapper({
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       {/* Header - larger text, better visual hierarchy */}
-      <header className="sticky top-0 z-40 border-b border-border bg-background pt-[env(safe-area-inset-top)]">
+      <header className="sticky top-0 z-40 border-b border-border bg-background pt-safe">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             {/* Step indicator badge */}
@@ -90,7 +90,7 @@ export function StepperWrapper({
       </main>
 
       {/* Footer - larger buttons, proper safe areas */}
-      <footer className="sticky bottom-0 border-t border-border bg-background/95 backdrop-blur-sm px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <footer className="sticky bottom-0 border-t border-border bg-background/95 backdrop-blur-sm px-4 py-3 pb-(--safe-area-pb-sm)">
         <div className="mx-auto flex max-w-lg items-center gap-3">
           {!isFirstStep && (
             <Button

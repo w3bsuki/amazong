@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createRouteHandlerClient } from "@/lib/supabase/server"
+import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
 /**
  * GET /api/badges
  * Returns the current user's badges with definitions
  */
 export async function GET(request: NextRequest) {
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    const res = NextResponse.json({ skipped: true }, { status: 200 })
+    res.headers.set('Cache-Control', 'private, no-store')
+    res.headers.set('CDN-Cache-Control', 'private, no-store')
+    res.headers.set('Vercel-CDN-Cache-Control', 'private, no-store')
+    return res
+  }
   try {
     const { supabase, applyCookies } = createRouteHandlerClient(request)
     const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) => {
@@ -62,6 +70,11 @@ export async function GET(request: NextRequest) {
     })
     
   } catch (error) {
+    if (isNextPrerenderInterrupted(error)) {
+      const res = NextResponse.json({ skipped: true }, { status: 200 })
+      res.headers.set('Cache-Control', 'private, no-store')
+      return res
+    }
     console.error("Error fetching badges:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }

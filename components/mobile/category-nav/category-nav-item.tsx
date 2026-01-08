@@ -39,27 +39,27 @@ export const CategoryNavItem = forwardRef<
   { href, onClick, isActive, variant, children, className, ...props },
   ref
 ) {
-  // Tab variant: underline-style with text indicator
+  // Tab variant: underline-style, padding provides touch area
   const tabStyles = cn(
-    "shrink-0 py-3 text-sm relative",
+    "shrink-0 min-h-touch px-1.5 text-sm relative flex items-center",
+    "border-b-2",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
     "transition-colors",
     isActive
-      ? "text-primary"
-      : "text-muted-foreground hover:text-foreground"
+      ? "text-foreground border-foreground"
+      : "text-muted-foreground border-transparent hover:text-foreground"
   )
 
-  // Pill variant: compact rounded pill (L0 - bold and prominent vs subtle L3)
-  // Uses h-touch token (32px) for consistent touch targets
+  // Pill variant: compact rounded pill, visually refined
   const pillStyles = cn(
-    "shrink-0 h-touch px-3.5 text-xs font-bold rounded-full whitespace-nowrap",
+    "shrink-0 h-touch-sm px-3 text-xs font-semibold rounded-full whitespace-nowrap",
     "flex items-center justify-center",
     "border",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
     "transition-colors",
     isActive
-      ? "bg-primary text-primary-foreground border-primary shadow-sm"
-      : "bg-muted/80 text-foreground border-border/60 hover:bg-muted hover:border-border"
+      ? "bg-foreground text-background border-foreground"
+      : "bg-background text-muted-foreground border-border/60 hover:border-border hover:bg-muted/40 hover:text-foreground"
   )
 
   const styles = variant === "tab" ? tabStyles : pillStyles
@@ -121,10 +121,6 @@ export function TabContent({ label, isActive }: TabContentProps) {
       >
         {label}
       </span>
-      {/* Active indicator line */}
-      {isActive && (
-        <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full" />
-      )}
     </span>
   )
 }

@@ -9,3 +9,6 @@ export { CategoryL3Pills } from "./category-l3-pills"
 export type { CategoryL3PillsProps } from "./category-l3-pills"
 export { AllTabFilters } from "./all-tab-filters"
 export type { AllTabFiltersProps } from "./all-tab-filters"
+export { QuickFilterRow } from "./quick-filter-row"
+export { StickyCategoryTabs } from "./sticky-category-tabs"
+

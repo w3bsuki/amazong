@@ -22,12 +22,12 @@ import { routing } from "@/i18n/routing"
 // Example: /indecisive_wear/vintage-leather-jacket
 // 
 // ISR OPTIMIZATION:
-// - generateStaticParams fetches top 100 products for build-time pre-rendering
+// - generateStaticParams fetches top 25 products for build-time pre-rendering
 // - High-traffic product pages are pre-built for fast first loads + SEO
 // - New/less-popular products are rendered on-demand (ISR)
 // =============================================================================
 
-// Pre-generate top 100 products (by views/sales) for fast SEO pages
+// Pre-generate top 25 products (by views/sales) for fast SEO pages
 export async function generateStaticParams() {
   const supabase = createStaticClient()
   
@@ -40,7 +40,7 @@ export async function generateStaticParams() {
     }))
   }
 
-  // Fetch top 100 products with their seller usernames
+  // Fetch top 25 products with their seller usernames
   // Ordered by review_count (popularity proxy) and boosted status
   const { data: products } = await supabase
     .from("products")
@@ -50,7 +50,7 @@ export async function generateStaticParams() {
     .order("is_boosted", { ascending: false })
     .order("review_count", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
-    .limit(100)
+    .limit(25)
 
   if (!products || products.length === 0) {
     return routing.locales.map((locale) => ({ 

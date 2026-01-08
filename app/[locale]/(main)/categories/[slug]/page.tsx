@@ -2,20 +2,16 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { Button } from "@/components/ui/button"
 import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
-import { MobileFilters } from "@/components/shared/filters/mobile-filters"
 import { DesktopFilters } from "@/components/shared/filters/desktop-filters"
 import { FilterChips } from "@/components/shared/filters/filter-chips"
 import { SortSelect } from "@/components/shared/search/sort-select"
 import { SearchPagination } from "@/components/shared/search/search-pagination"
 import { SearchFilters } from "@/components/shared/search/search-filters"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
-import { Suspense } from "react"
+import { Suspense, use } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
-import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
-import { Link, routing } from "@/i18n/routing"
-import { getShippingFilter, parseShippingRegion } from "@/lib/shipping"
 import {
   getCategoryBySlug,
   getCategoryContext,
@@ -30,43 +26,14 @@ import type { UIProduct } from "@/lib/data/products"
 
 // =============================================================================
 // CATEGORY PAGE - HYBRID CACHING STRATEGY
-// 
+//
 // Static/Cached data (via 'use cache' functions):
-// - Category hierarchy (getCategoryContext, getRootCategoriesWithChildren)
+// - Category hierarchy (getCategoryContext, getCategoryHierarchy)
 // - Category metadata (getCategoryBySlug)
-// 
-// Dynamic data (user-specific, requires cookies):
-// - Shipping zone filter (from user cookie)
-// - Product search results (filtered by user preferences)
+//
+// Dynamic data:
+// - searchParams-driven filtering/pagination/sort
 // =============================================================================
-
-const PLACEHOLDER_SLUG = '__placeholder__'
-
-// Generate static params for all categories (for SSG)
-// Uses createStaticClient because this runs at build time outside request scope
-export async function generateStaticParams() {
-  const supabase = createStaticClient()
-  // With Cache Components enabled, `generateStaticParams` must return at least
-  // one param. When Supabase isn't configured (e.g. local/E2E), fall back to a
-  // placeholder param to avoid build-time empty-array errors.
-  if (!supabase) {
-    return routing.locales.map((locale) => ({ locale, slug: PLACEHOLDER_SLUG }))
-  }
-
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("slug")
-
-  const slugs = (categories || [])
-    .map((category) => category.slug)
-    .filter((slug): slug is string => typeof slug === 'string' && slug.length > 0)
-
-  if (slugs.length === 0) {
-    return routing.locales.map((locale) => ({ locale, slug: PLACEHOLDER_SLUG }))
-  }
-
-  return routing.locales.flatMap((locale) => slugs.map((slug) => ({ locale, slug })))
-}
 
 // Generate metadata for SEO - Uses cached getCategoryBySlug
 export async function generateMetadata({
@@ -76,12 +43,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug, locale } = await params
   setRequestLocale(locale)
-
-  if (slug === PLACEHOLDER_SLUG) {
-    return {
-      title: locale === 'bg' ? 'Категории' : 'Categories',
-    }
-  }
 
   // Use cached function instead of direct query
   const category = await getCategoryBySlug(slug)
@@ -107,7 +68,7 @@ export async function generateMetadata({
 }
 
 
-export default async function CategoryPage({
+export default function CategoryPage({
   params: paramsPromise,
   searchParams: searchParamsPromise,
 }: {
@@ -126,45 +87,55 @@ export default async function CategoryPage({
     [key: string]: string | string[] | undefined  // Dynamic attr_* params
   }>
 }) {
-  // NO connection() here - category data is CACHED via 'use cache' functions
-  // Only cookies() makes this dynamic (for shipping zone filter)
-  const params = await paramsPromise
-  const searchParams = await searchParamsPromise
-  const { slug, locale } = params
+  return (
+    <Suspense
+      fallback={
+        <>
+          <div className="lg:hidden" />
+          <div className="hidden lg:block min-h-screen bg-background">
+            <div className="container px-2 sm:px-4 py-1">
+              <div className="flex gap-0">
+                <aside className="w-56 shrink-0 border-r border-border">
+                  <div className="sticky top-16 pr-4 py-1 max-h-(--category-sidebar-max-h) overflow-y-auto no-scrollbar" />
+                </aside>
+                <div className="flex-1 min-w-0 lg:pl-5" />
+              </div>
+            </div>
+          </div>
+        </>
+      }
+    >
+      <CategoryPageContent paramsPromise={paramsPromise} searchParamsPromise={searchParamsPromise} />
+    </Suspense>
+  )
+}
 
-  if (slug === PLACEHOLDER_SLUG) {
-    notFound()
-  }
-
+function CategoryPageContent({
+  paramsPromise,
+  searchParamsPromise,
+}: {
+  paramsPromise: Promise<{ slug: string; locale: string }>
+  searchParamsPromise: Promise<{
+    minPrice?: string
+    maxPrice?: string
+    minRating?: string
+    subcategory?: string
+    tag?: string
+    deals?: string
+    brand?: string
+    availability?: string
+    sort?: string
+    page?: string
+    [key: string]: string | string[] | undefined
+  }>
+}) {
+  const { slug, locale } = use(paramsPromise)
   setRequestLocale(locale)
-  const currentPage = Math.max(1, Number.parseInt(searchParams.page || "1", 10))
 
-  const supabase = createStaticClient()
-
-  // Read shipping zone from cookie (set by header "Доставка до" dropdown)
-  // Only filter if user has selected a specific zone (not WW = worldwide = show all)
-  const cookieStore = await cookies()
-  const userZone = cookieStore.get('user-zone')?.value
-  const parsedZone = parseShippingRegion(userZone)
-  const shippingFilter = parsedZone !== 'WW'
-    ? getShippingFilter(parsedZone)
-    : ''
-
-  if (!supabase) {
-    notFound()
-  }
-
-  // ============================================================================
-  // PHASE 2: Use cached data fetching functions (Next.js 16+ 'use cache' pattern)
-  // These functions use cacheTag and cacheLife for granular cache invalidation
-  // PARALLEL FETCH for faster page load
-  // ============================================================================
-
-  // Fetch category context AND root categories in parallel
-  const [categoryContext, categoriesWithChildren] = await Promise.all([
-    getCategoryContext(slug),
-    getCategoryHierarchy(null, 2),
-  ])
+  // Cached category shell data
+  const categoryContext = use(getCategoryContext(slug))
+  const categoriesWithChildren = use(getCategoryHierarchy(null, 2))
+  const ancestry = use(getCategoryAncestry(slug))
 
   if (!categoryContext) {
     notFound()
@@ -177,11 +148,106 @@ export default async function CategoryPage({
   }))
   const allCategories = allCategoriesWithSubs.map((c) => c.category)
 
-  // Products are commonly assigned to leaf categories (L2/L3). Query via
-  // category_ancestors to include all descendants without huge IN filters.
   const categoryId = currentCategory.id
 
-  // Extract attr_* params for attribute filtering
+  const categoryName = locale === 'bg' && currentCategory.name_bg
+    ? currentCategory.name_bg
+    : currentCategory.name
+
+  // Extract filterable attributes for the filter toolbar
+  const filterableAttributes = categoryContext.attributes.filter(attr => attr.is_filterable)
+
+  const defaultTab = ancestry?.[0] ?? null
+  const defaultSubTab = ancestry?.[1] ?? null
+  const defaultL2 = ancestry?.[2] ?? null
+  const defaultL3 = ancestry?.[3] ?? null
+
+  return (
+    <CategoryPageDynamicContent
+      locale={locale}
+      slug={slug}
+      categoryId={categoryId}
+      searchParamsPromise={searchParamsPromise}
+      categoriesWithChildren={categoriesWithChildren}
+      allCategoriesWithSubs={allCategoriesWithSubs}
+      allCategories={allCategories}
+      currentCategory={currentCategory}
+      parentCategory={parentCategory}
+      subcategories={subcategories}
+      filterableAttributes={filterableAttributes}
+      categoryName={categoryName}
+      defaultTab={defaultTab}
+      defaultSubTab={defaultSubTab}
+      defaultL2={defaultL2}
+      defaultL3={defaultL3}
+    />
+  )
+}
+
+function CategoryPageDynamicContent({
+  locale,
+  slug,
+  categoryId,
+  searchParamsPromise,
+  categoriesWithChildren,
+  allCategoriesWithSubs,
+  allCategories,
+  currentCategory,
+  parentCategory,
+  subcategories,
+  filterableAttributes,
+  categoryName,
+  defaultTab,
+  defaultSubTab,
+  defaultL2,
+  defaultL3,
+}: {
+  locale: string
+  slug: string
+  categoryId: string
+  searchParamsPromise: Promise<{
+    minPrice?: string
+    maxPrice?: string
+    minRating?: string
+    subcategory?: string
+    tag?: string
+    deals?: string
+    brand?: string
+    availability?: string
+    sort?: string
+    page?: string
+    [key: string]: string | string[] | undefined
+  }>
+  categoriesWithChildren: any
+  allCategoriesWithSubs: any
+  allCategories: any
+  currentCategory: Awaited<ReturnType<typeof getCategoryContext>> extends infer T
+    ? T extends { current: infer C }
+      ? C
+      : never
+    : never
+  parentCategory: Awaited<ReturnType<typeof getCategoryContext>> extends infer T
+    ? T extends { parent: infer P }
+      ? P
+      : never
+    : never
+  subcategories: Awaited<ReturnType<typeof getCategoryContext>> extends infer T
+    ? T extends { children: infer CH }
+      ? CH
+      : never
+    : never
+  filterableAttributes: any[]
+  categoryName: string
+  defaultTab: string | null
+  defaultSubTab: string | null
+  defaultL2: string | null
+  defaultL3: string | null
+}) {
+  // React/Next can only stream partial prerenders when request-bound data is
+  // accessed via Suspense. `use()` will suspend this segment properly.
+  const searchParams = use(searchParamsPromise)
+  const currentPage = Math.max(1, Number.parseInt(searchParams.page || "1", 10))
+
   const attributeFilters: Record<string, string | string[]> = {}
   for (const [key, value] of Object.entries(searchParams)) {
     if (key.startsWith('attr_') && value) {
@@ -190,28 +256,39 @@ export default async function CategoryPage({
     }
   }
 
-  // ==========================================================================
-  // PARALLEL FETCH: Get products, mobile data, and translations at once
-  // This significantly speeds up page load by avoiding sequential awaits
-  // ==========================================================================
-  const [result, ancestry, t] = await Promise.all([
-    searchProducts(supabase, categoryId, {
-      minPrice: searchParams.minPrice,
-      maxPrice: searchParams.maxPrice,
-      tag: searchParams.tag,
-      minRating: searchParams.minRating,
-      availability: searchParams.availability,
-      sort: searchParams.sort,
-      attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
-    }, currentPage, ITEMS_PER_PAGE, shippingFilter),
-    getCategoryAncestry(slug),
-    getTranslations('SearchFilters'),
-  ])
+  // NOTE: This route is statically generated for SEO. Avoid request-bound reads
+  // (cookies/headers) here so Next.js can prerender successfully.
+  const shippingFilter = ""
+
+  const supabase = createStaticClient()
+  if (!supabase) {
+    notFound()
+  }
+
+  const result = use(
+    searchProducts(
+      supabase,
+      categoryId,
+      {
+        minPrice: searchParams.minPrice,
+        maxPrice: searchParams.maxPrice,
+        tag: searchParams.tag,
+        minRating: searchParams.minRating,
+        availability: searchParams.availability,
+        sort: searchParams.sort,
+        attributes: Object.keys(attributeFilters).length > 0 ? attributeFilters : undefined,
+      },
+      currentPage,
+      ITEMS_PER_PAGE,
+      shippingFilter
+    )
+  )
+
+  const t = use(getTranslations('SearchFilters'))
 
   const products = result.products
   const totalProducts = result.total
-  
-  // Convert server products to UIProduct format for mobile
+
   const mobileInitialProducts: UIProduct[] = products.map((p): UIProduct => ({
     id: p.id,
     title: p.title,
@@ -225,46 +302,21 @@ export default async function CategoryPage({
     sellerId: p.sellers?.id ?? null,
     sellerName: p.sellers?.display_name || p.sellers?.business_name || p.sellers?.store_slug || null,
     sellerAvatarUrl: p.sellers?.avatar_url ?? null,
-    sellerTier: p.sellers?.account_type === 'business' ? 'business' : p.sellers?.tier === 'premium' ? 'premium' : 'basic',
+    sellerTier:
+      p.sellers?.account_type === 'business'
+        ? 'business'
+        : p.sellers?.tier === 'premium'
+          ? 'premium'
+          : 'basic',
     sellerVerified: p.sellers?.is_verified_business ?? false,
     ...(p.attributes?.condition ? { condition: p.attributes.condition } : {}),
     ...(p.attributes?.brand ? { brand: p.attributes.brand } : {}),
   }))
 
-  const categoryName = locale === 'bg' && currentCategory.name_bg
-    ? currentCategory.name_bg
-    : currentCategory.name
-
-  // Extract filterable attributes for the filter toolbar
-  const filterableAttributes = categoryContext.attributes.filter(attr => attr.is_filterable)
-  
-  // Map ancestry to tab state: [L0, L1?, L2?, L3?]
-  // L0 = activeTab (defaultTab)
-  // L1 = activeL1 (defaultSubTab) 
-  // L2 = activeL2 (defaultL2)
-  // L3 = selectedPill (defaultL3)
-  const defaultTab = ancestry?.[0] ?? null
-  const defaultSubTab = ancestry?.[1] ?? null
-  const defaultL2 = ancestry?.[2] ?? null
-  const defaultL3 = ancestry?.[3] ?? null
-
   return (
     <>
-      {/* Mobile: MobileHomeTabs with page navigation for proper SEO URLs
-          
-          tabsNavigateToPages=true ensures clicking L0 category tabs navigates
-          to /categories/[slug] instead of adding ?tab=X query params.
-          
-          circlesNavigateToPages=true ensures clicking subcategory circles navigates
-          to /categories/[slug] with:
-          - Clean SEO-friendly URLs (no ?tab=X&sub=Y query params)
-          - Server-side filter fetching (proper filterableAttributes)
-          - Shareable deep links
-          
-          Trade-off: Full page reload vs instant client-side navigation
-          Decision: SEO and proper filters > instant navigation UX */}
       <div className="lg:hidden">
-        <MobileHomeTabs 
+        <MobileHomeTabs
           initialProducts={mobileInitialProducts}
           initialProductsSlug={slug}
           initialCategories={categoriesWithChildren}
@@ -273,29 +325,21 @@ export default async function CategoryPage({
           defaultL2={defaultL2}
           defaultL3={defaultL3}
           showBanner={false}
-          l0Style="pills"
-          tabsNavigateToPages={true}
-          circlesNavigateToPages={true}
+          l0Style="tabs"
+          showQuickFilters={true}
+          showL3Pills={false}
+          tabsNavigateToPages={false}
+          circlesNavigateToPages={false}
           locale={locale}
           filterableAttributes={filterableAttributes}
         />
       </div>
-      
-      {/* Desktop: Full filter/sort/pagination experience */}
+
       <div className="hidden lg:block min-h-screen bg-background">
         <div className="container px-2 sm:px-4 py-1">
-          {/* No breadcrumb needed - sidebar provides all navigation context:
-              - Category title at top
-              - Back link to parent/all categories  
-              - Subcategory navigation
-              Breadcrumb would be redundant (Amazon pattern) */}
-
-          {/* Layout: Sidebar (desktop) + Main Content */}
           <div className="flex gap-0">
-            {/* Sidebar Filters - Desktop Only */}
             <aside className="w-56 shrink-0 border-r border-border">
-            <div className="sticky top-16 pr-4 py-1 max-h-[calc(100vh-5rem)] overflow-y-auto no-scrollbar">
-              <Suspense>
+              <div className="sticky top-16 pr-4 py-1 max-h-(--category-sidebar-max-h) overflow-y-auto no-scrollbar">
                 <SearchFilters
                   categories={allCategories}
                   subcategories={subcategories}
@@ -305,134 +349,98 @@ export default async function CategoryPage({
                   brands={[]}
                   basePath={`/categories/${slug}`}
                 />
-              </Suspense>
-            </div>
-          </aside>
+              </div>
+            </aside>
 
-          {/* Main Content */}
-          <div className="flex-1 min-w-0 lg:pl-5">
-
-            {/* Subcategory Circles or Category Banner (when at deepest level) */}
-            <Suspense>
+            <div className="flex-1 min-w-0 lg:pl-5">
               <SubcategoryTabs
                 currentCategory={currentCategory}
                 subcategories={subcategories}
                 parentCategory={parentCategory}
                 basePath="/categories"
               />
-            </Suspense>
 
-            {/* Filter & Sort Row - Compact toolbar */}
-            <div className="mb-2 sm:mb-4 flex items-center gap-2">
-              {/* Mobile Filters (Sheet) */}
-              <div className="lg:hidden">
-                <Suspense>
-                  <MobileFilters
-                    locale={locale}
-                    resultsCount={totalProducts}
-                    attributes={filterableAttributes}
-                  />
-                </Suspense>
+              <div className="mb-2 sm:mb-4 flex items-center gap-2">
+                <div className="lg:contents">
+                  <SortSelect />
+                </div>
+
+                <p className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                  <span className="font-semibold text-foreground">{totalProducts}</span>
+                  <span> {t('results')}</span>
+                  <span className="hidden lg:inline">
+                    {' '}
+                    {t('in')} <span className="font-medium">{categoryName}</span>
+                  </span>
+                </p>
+
+                <div className="hidden lg:flex items-center gap-2 flex-wrap ml-auto">
+                  <DesktopFilters attributes={filterableAttributes} categorySlug={slug} categoryId={categoryId} />
+                </div>
               </div>
 
-              {/* Sort Dropdown */}
-              <div className="lg:contents">
-                <SortSelect />
-              </div>
-
-              {/* Results Count - Show on mobile too */}
-              <p className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
-                <span className="font-semibold text-foreground">{totalProducts}</span>
-                <span> {t('results')}</span>
-                <span className="hidden lg:inline"> {t('in')} <span className="font-medium">{categoryName}</span></span>
-              </p>
-
-              {/* Desktop Filters - Now includes attribute filters */}
-              <div className="hidden lg:flex items-center gap-2 flex-wrap ml-auto">
-                <Suspense>
-                  <DesktopFilters
-                    attributes={filterableAttributes}
-                    categorySlug={slug}
-                  />
-                </Suspense>
-              </div>
-            </div>
-
-            {/* Active Filter Pills - Moved below toolbar */}
-            <div className="mb-4">
-              <Suspense>
+              <div className="mb-4">
                 <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} />
-              </Suspense>
-            </div>
+              </div>
 
-            {/* Product Grid */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {products.map((product) => {
-                const image = product.image_url || product.images?.[0] || "/placeholder.svg"
-                const sellerName =
-                  product.sellers?.display_name ||
-                  product.sellers?.business_name ||
-                  product.sellers?.store_slug
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                {products.map((product) => {
+                  const image = product.image_url || product.images?.[0] || "/placeholder.svg"
+                  const sellerName =
+                    product.sellers?.display_name ||
+                    product.sellers?.business_name ||
+                    product.sellers?.store_slug
 
-                return (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    title={product.title}
-                    price={product.price}
-                    image={image}
-                    rating={product.rating || 0}
-                    reviews={product.review_count || 0}
-                    originalPrice={product.list_price ?? null}
-                    tags={product.tags || []}
-                    slug={product.slug ?? null}
-                    username={product.sellers?.store_slug ?? null}
-                    sellerId={product.sellers?.id ?? null}
-                    {...(sellerName ? { sellerName } : {})}
-                    sellerAvatarUrl={product.sellers?.avatar_url ?? null}
-                    sellerTier={
-                      product.sellers?.account_type === "business"
-                        ? "business"
-                        : product.sellers?.tier === "premium"
-                          ? "premium"
-                          : "basic"
-                    }
-                    sellerVerified={Boolean(product.sellers?.is_verified_business)}
-                    categorySlug={slug}
-                    {...(product.attributes?.condition ? { condition: product.attributes.condition } : {})}
-                    {...(product.attributes?.brand ? { brand: product.attributes.brand } : {})}
-                    {...(product.attributes?.make ? { make: product.attributes.make } : {})}
-                    {...(product.attributes?.model ? { model: product.attributes.model } : {})}
-                    {...(product.attributes?.year ? { year: product.attributes.year } : {})}
-                    {...(product.attributes?.location ? { location: product.attributes.location } : {})}
-                  />
-                )
-              })}
-            </div>
+                  return (
+                    <ProductCard
+                      key={product.id}
+                      id={product.id}
+                      title={product.title}
+                      price={product.price}
+                      image={image}
+                      rating={product.rating || 0}
+                      reviews={product.review_count || 0}
+                      originalPrice={product.list_price ?? null}
+                      tags={product.tags || []}
+                      slug={product.slug ?? null}
+                      username={product.sellers?.store_slug ?? null}
+                      sellerId={product.sellers?.id ?? null}
+                      {...(sellerName ? { sellerName } : {})}
+                      sellerAvatarUrl={product.sellers?.avatar_url ?? null}
+                      sellerTier={
+                        product.sellers?.account_type === "business"
+                          ? "business"
+                          : product.sellers?.tier === "premium"
+                            ? "premium"
+                            : "basic"
+                      }
+                      sellerVerified={Boolean(product.sellers?.is_verified_business)}
+                      categorySlug={slug}
+                      {...(product.attributes?.condition ? { condition: product.attributes.condition } : {})}
+                      {...(product.attributes?.brand ? { brand: product.attributes.brand } : {})}
+                      {...(product.attributes?.make ? { make: product.attributes.make } : {})}
+                      {...(product.attributes?.model ? { model: product.attributes.model } : {})}
+                      {...(product.attributes?.year ? { year: product.attributes.year } : {})}
+                      {...(product.attributes?.location ? { location: product.attributes.location } : {})}
+                    />
+                  )
+                })}
+              </div>
 
-            {products.length === 0 && (
-              <EmptyStateCTA
-                variant="no-category"
-                categoryName={categoryName}
-                className="mt-8"
-              />
-            )}
+              {products.length === 0 && (
+                <EmptyStateCTA variant="no-category" categoryName={categoryName} className="mt-8" />
+              )}
 
-            {/* Pagination */}
-            {products.length > 0 && (
-              <Suspense>
+              {products.length > 0 && (
                 <SearchPagination
                   totalItems={totalProducts}
                   itemsPerPage={ITEMS_PER_PAGE}
                   currentPage={currentPage}
                 />
-              </Suspense>
-            )}
+              )}
+            </div>
           </div>
-          {/* End Main Content */}
         </div>
-        {/* End flex container */}
-      </div>
       </div>
     </>
   )

@@ -202,7 +202,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
           return (
             <Sheet key={order.id}>
               <SheetTrigger asChild>
-                <button className="w-full text-left rounded-md bg-account-stat-bg border border-account-stat-border p-4 transition-all active:scale-[0.99]">
+                <button className="active-scale-99 w-full text-left rounded-md bg-account-stat-bg border border-account-stat-border p-4 transition-all">
                   {/* Header: Price + Date */}
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-lg font-bold text-foreground tabular-nums">
@@ -270,7 +270,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                   </div>
                 </button>
               </SheetTrigger>
-              <SheetContent side="bottom" className="h-[85vh] rounded-t-xl">
+              <SheetContent side="bottom" className="h-(--dialog-h-85vh) rounded-t-xl">
                 <SheetHeader className="pb-4 border-b">
                   <SheetTitle className="flex items-center gap-2">
                     <IconPackage className="size-5" />
@@ -514,7 +514,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                         </span>
                       </SheetDescription>
                     </SheetHeader>
-                    <ScrollArea className="flex-1 -mx-6 px-6 h-[calc(100vh-12rem)]">
+                    <ScrollArea className="flex-1 -mx-6 px-6 h-(--account-orders-sheet-scroll-h)">
                       <div className="py-6 space-y-6">
                         {/* Summary */}
                         <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">

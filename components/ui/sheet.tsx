@@ -53,9 +53,9 @@ const sheetVariants = cva(
         top: "inset-x-0 top-0 border-b",
         bottom:
           "inset-x-0 bottom-0 border-t",
-        left: "inset-y-0 left-0 h-full w-[85vw] border-r sm:max-w-md",
+        left: "inset-y-0 left-0 h-full w-(--sheet-w-mobile) border-r sm:max-w-md",
         right:
-          "inset-y-0 right-0 h-full w-[85vw] border-l sm:max-w-md",
+          "inset-y-0 right-0 h-full w-(--sheet-w-mobile) border-l sm:max-w-md",
       },
     },
     defaultVariants: {
@@ -84,7 +84,7 @@ function SheetContent({
       >
         {children}
         {!hideCloseButton && (
-          <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-2 right-2 flex items-center justify-center size-touch rounded-full opacity-70 transition-opacity hover:opacity-100 hover:bg-muted active:bg-muted/70 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none touch-action-manipulation tap-transparent">
+          <SheetPrimitive.Close className="ring-offset-background focus:ring-ring absolute top-2 right-2 flex items-center justify-center size-touch rounded-full opacity-70 transition-opacity hover:opacity-100 hover:bg-muted active:bg-muted/70 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none touch-action-manipulation tap-transparent">
             <XIcon className="size-5" />
             <span className="sr-only">Close</span>
           </SheetPrimitive.Close>
@@ -109,7 +109,7 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="sheet-footer"
       className={cn(
-        "mt-auto flex flex-col gap-2 px-(--page-inset) py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]",
+        "mt-auto flex flex-col gap-2 px-(--page-inset) py-3 pb-(--safe-area-pb-sm)",
         className
       )}
       {...props}

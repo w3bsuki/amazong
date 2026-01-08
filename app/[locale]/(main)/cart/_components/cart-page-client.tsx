@@ -81,7 +81,7 @@ export default function CartPageClient() {
 
   if (!mounted) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="min-h-(--page-section-min-h) flex items-center justify-center">
         <div className="flex flex-col items-center gap-3" role="status" aria-live="polite">
           <SpinnerGap className="size-8 animate-spin text-brand" />
           <p className="text-sm text-muted-foreground">
@@ -94,7 +94,7 @@ export default function CartPageClient() {
 
   if (items.length === 0) {
     return (
-      <div className="bg-secondary/30 min-h-[80vh] pt-14 lg:pt-0">
+      <div className="bg-secondary/30 min-h-(--page-section-min-h-lg) pt-14 lg:pt-0">
         {/* Mobile Header - only visible on mobile */}
         <MobileCartHeader />
         

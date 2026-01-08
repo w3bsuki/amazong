@@ -1,5 +1,7 @@
-import { createAdminClient } from "@/lib/supabase/server"
+import { createAdminClient, createClient } from "@/lib/supabase/server"
 import { formatDistanceToNow } from "date-fns"
+import { Suspense } from "react"
+import { connection } from "next/server"
 import {
   Card,
   CardContent,
@@ -60,7 +62,14 @@ async function getSellers(): Promise<Seller[]> {
     .order('created_at', { ascending: false })
   
   if (error) {
-    console.error('Failed to fetch sellers:', error)
+    const message =
+      typeof error === 'object' && error && 'message' in error
+        ? String((error as { message?: unknown }).message)
+        : ''
+
+    if (!message.includes('During prerendering, fetch() rejects when the prerender is complete')) {
+      console.error('Failed to fetch sellers:', error)
+    }
     return []
   }
   
@@ -83,7 +92,9 @@ async function getSellers(): Promise<Seller[]> {
   }))
 }
 
-export default async function AdminSellersPage() {
+async function AdminSellersContent() {
+  await (await createClient()).auth.getUser()
+
   const sellers = await getSellers()
   
   const getTierBadge = (tier: string | null) => {
@@ -190,5 +201,39 @@ export default async function AdminSellersPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+function AdminSellersFallback() {
+  return (
+    <div className="flex flex-col gap-4 py-4 md:gap-4 md:py-6 px-4 lg:px-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Sellers</h1>
+          <p className="text-muted-foreground">All seller accounts on the platform</p>
+        </div>
+        <Badge variant="outline" className="text-base">Loading...</Badge>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>All Sellers</CardTitle>
+          <CardDescription>View and manage seller accounts and their stores</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-sm text-muted-foreground">Loading...</div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+export default async function AdminSellersPage() {
+  await connection()
+
+  return (
+    <Suspense fallback={<AdminSellersFallback />}>
+      <AdminSellersContent />
+    </Suspense>
   )
 }

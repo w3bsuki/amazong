@@ -7,7 +7,7 @@ import type Stripe from 'stripe'
 
 const SUBSCRIPTION_SELECT_FOR_UPDATES = 'id,seller_id,status,expires_at'
 const SUBSCRIPTION_PLAN_SELECT_FOR_WEBHOOK =
-  'id,tier,price_monthly,price_yearly,commission_rate,final_value_fee,insertion_fee,per_order_fee'
+  'id,tier,price_monthly,price_yearly,stripe_price_monthly_id,stripe_price_yearly_id,commission_rate,final_value_fee,insertion_fee,per_order_fee'
 
 /** Sanitized error logging - never log full objects or secrets */
 function logWebhookError(context: string, err: unknown): void {
@@ -76,7 +76,8 @@ export async function POST(req: Request) {
         if (session.metadata?.type === 'listing_boost' && session.mode === 'payment') {
           const sellerId = session.metadata.seller_id ?? session.metadata.profile_id
           const productId = session.metadata.product_id
-          const durationDays = Number.parseInt(session.metadata.duration_days || '7')
+          const rawDuration = Number.parseInt(session.metadata.duration_days || '7', 10)
+          const durationDays = Math.min(365, Math.max(1, Number.isFinite(rawDuration) ? rawDuration : 7))
           const amountPaid = (session.amount_total || 0) / 100 // Convert from stotinki
 
           // Safe no-op if required metadata is missing
@@ -88,6 +89,24 @@ export async function POST(req: Request) {
           // Calculate expiry date
           const startsAt = new Date()
           const expiresAt = new Date(startsAt.getTime() + durationDays * 24 * 60 * 60 * 1000)
+
+          // Idempotency guard: if already boosted and not expired, avoid duplicate inserts
+          const nowIso = new Date().toISOString()
+          const { data: existingBoost, error: existingBoostError } = await supabase
+            .from('listing_boosts')
+            .select('id')
+            .eq('product_id', productId)
+            .eq('is_active', true)
+            .gt('expires_at', nowIso)
+            .maybeSingle()
+
+          if (existingBoostError) {
+            logWebhookError('listing-boost-idempotency', existingBoostError)
+          }
+
+          if (existingBoost?.id) {
+            break
+          }
 
           // Create listing_boost record
           const { error: boostError } = await supabase
@@ -128,7 +147,11 @@ export async function POST(req: Request) {
         if (session.mode === 'subscription') {
           const profileId = session.metadata?.profile_id || session.metadata?.seller_id // Support both for backwards compat
           const planId = session.metadata?.plan_id
-          const billingPeriod = session.metadata?.billing_period as 'monthly' | 'yearly' | undefined
+          const billingPeriodRaw = session.metadata?.billing_period
+          const billingPeriod =
+            billingPeriodRaw === 'monthly' || billingPeriodRaw === 'yearly'
+              ? (billingPeriodRaw as 'monthly' | 'yearly')
+              : undefined
           const subscriptionId = typeof session.subscription === 'string' ? session.subscription : null
 
           // Safe no-op if required metadata is missing
@@ -162,7 +185,37 @@ export async function POST(req: Request) {
             break
           }
 
+          // Plan consistency check: if plan has explicit Stripe price IDs,
+          // ensure the subscription item price matches the expected billing period.
+          const expectedStripePriceId =
+            billingPeriod === 'monthly'
+              ? plan.stripe_price_monthly_id
+              : plan.stripe_price_yearly_id
+
+          if (expectedStripePriceId && stripePriceId && stripePriceId !== expectedStripePriceId) {
+            logWebhookError(
+              'subscription-price-mismatch',
+              new Error(
+                `Stripe price mismatch for plan_id=${planId} period=${billingPeriod}: got=${stripePriceId} expected=${expectedStripePriceId}`
+              )
+            )
+            break
+          }
+
           const pricePaid = billingPeriod === 'yearly' ? plan.price_yearly : plan.price_monthly
+
+          // Verify Stripe price amount matches the plan (defense-in-depth against tampered metadata)
+          const stripeUnitAmount = subscriptionResponse.items?.data?.[0]?.price?.unit_amount
+          if (typeof stripeUnitAmount === 'number' && Number.isFinite(pricePaid)) {
+            const expectedUnitAmount = Math.round(pricePaid * 100)
+            if (expectedUnitAmount !== stripeUnitAmount) {
+              logWebhookError(
+                'subscription-price-mismatch',
+                new Error(`Expected unit_amount ${expectedUnitAmount}, got ${stripeUnitAmount}`)
+              )
+              break
+            }
+          }
 
           // Idempotency: if Stripe retries, don't create duplicates
           const { data: existingSub } = await supabase

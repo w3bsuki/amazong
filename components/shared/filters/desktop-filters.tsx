@@ -17,6 +17,7 @@ import type { CategoryAttribute } from "@/lib/data/categories"
 interface DesktopFiltersProps {
   attributes?: CategoryAttribute[]
   categorySlug?: string
+  categoryId?: string
 }
 
 // =============================================================================
@@ -24,7 +25,7 @@ interface DesktopFiltersProps {
 // Now shows only 2 quick pills (Price, Rating) + "All Filters" modal
 // =============================================================================
 
-export function DesktopFilters({ attributes = [], categorySlug }: DesktopFiltersProps) {
+export function DesktopFilters({ attributes = [], categorySlug, categoryId }: DesktopFiltersProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -213,6 +214,7 @@ export function DesktopFilters({ attributes = [], categorySlug }: DesktopFilters
         <DesktopFilterModal 
           attributes={attributes}
           categorySlug={categorySlug}
+          categoryId={categoryId}
         />
       )}
     </>

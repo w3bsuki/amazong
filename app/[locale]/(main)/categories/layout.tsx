@@ -20,11 +20,11 @@ export default async function CategoriesLayout({
   setRequestLocale(locale)
 
   return (
-    <div className="min-h-[calc(100vh-52px-50px)] bg-background">
+    <div className="min-h-(--categories-layout-min-h) bg-background">
       {/* Main Content Area - MobileHomeTabs handles tabs internally */}
-      <div className="min-w-0 overflow-x-hidden">
+      <main id="main-content" className="min-w-0 overflow-x-hidden">
         {children}
-      </div>
+      </main>
     </div>
   )
 }

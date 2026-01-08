@@ -27,7 +27,7 @@ const chartConfig = {
 export function SalesChart({ data, locale }: SalesChartProps) {
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+      <div className="flex items-center justify-center h-(--spacing-scroll-md) text-muted-foreground">
         {locale === "bg" ? "Няма данни за показване" : "No data to display"}
       </div>
     )
@@ -50,7 +50,7 @@ export function SalesChart({ data, locale }: SalesChartProps) {
   }))
 
   return (
-    <ChartContainer config={chartConfig} className="h-[300px] w-full">
+    <ChartContainer config={chartConfig} className="h-(--spacing-scroll-md) w-full">
       <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">

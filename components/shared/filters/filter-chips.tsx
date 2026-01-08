@@ -1,8 +1,9 @@
 "use client"
 
+import { useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/routing"
-import { X, Star, Truck, Package, Percent } from "@phosphor-icons/react"
+import { X, Star, Truck, Package, Percent, Tag } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
@@ -23,10 +24,27 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
   const currentAvailability = searchParams.get("availability")
   const currentFreeShipping = searchParams.get("freeShipping")
 
+  // Collect all attr_* params for attribute filter chips
+  const attributeFilters = useMemo(() => {
+    const attrs: Array<{ name: string; values: string[] }> = []
+    for (const key of searchParams.keys()) {
+      if (key.startsWith("attr_")) {
+        const attrName = key.replace("attr_", "")
+        const values = searchParams.getAll(key)
+        if (values.length > 0) {
+          attrs.push({ name: attrName, values })
+        }
+      }
+    }
+    return attrs
+  }, [searchParams])
+
   const removeParam = (key: string, key2?: string) => {
     const params = new URLSearchParams(searchParams.toString())
     params.delete(key)
     if (key2) params.delete(key2)
+    // Reset pagination when filters change
+    params.delete("page")
     const queryString = params.toString()
     if (basePath) {
       router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
@@ -98,6 +116,22 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
       label: t('inStock'),
       icon: <Package size={14} weight="regular" />,
       color: 'bg-stock-available/10 text-stock-available border-stock-available/20'
+    })
+  }
+
+  // Attribute filter chips (attr_*)
+  for (const { name, values } of attributeFilters) {
+    // Format the attribute name for display (capitalize first letter)
+    const displayName = name.charAt(0).toUpperCase() + name.slice(1)
+    const label = values.length === 1 
+      ? `${displayName}: ${values[0]}`
+      : `${displayName}: ${values.length} selected`
+    
+    chips.push({
+      key: `attr_${name}`,
+      label,
+      icon: <Tag size={14} weight="regular" />,
+      color: 'bg-primary/10 text-primary border-primary/20'
     })
   }
 

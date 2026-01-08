@@ -7,9 +7,7 @@ import type { CategoryTreeNode } from "@/lib/category-tree"
 import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 import type { UIProduct } from "@/lib/data/products"
 import { Link } from "@/i18n/routing"
-import { CaretRight, ListBullets } from "@phosphor-icons/react"
-import { MobileFilters } from "@/components/shared/filters/mobile-filters"
-import { SortSelect } from "@/components/shared/search/sort-select"
+import { CaretRight } from "@phosphor-icons/react"
 
 // Import extracted components
 import { useCategoryNavigation } from "@/hooks/use-category-navigation"
@@ -19,6 +17,7 @@ import {
   CategoryCircles,
   CategoryL3Pills,
   AllTabFilters,
+  QuickFilterRow,
 } from "./category-nav"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 
@@ -32,6 +31,8 @@ interface MobileHomeTabsProps {
   initialProducts: UIProduct[]
   /** Which category slug the initialProducts are for. Defaults to "all" for homepage. */
   initialProductsSlug?: string
+  /** Show the homepage-only "View all" link strip (defaults to true). */
+  showViewAllLink?: boolean
   /** Categories with children from server (L0→L1→L2 pre-loaded, L3 lazy) */
   initialCategories?: Category[]
   defaultTab?: string | null
@@ -44,6 +45,10 @@ interface MobileHomeTabsProps {
   showL0Tabs?: boolean
   /** L0 navigation style: "tabs" (default underline tabs) or "pills" (compact quick pills) */
   l0Style?: "tabs" | "pills"
+  /** Show the eBay-style quick filter row (All filters / Sort / priority pills). */
+  showQuickFilters?: boolean
+  /** Show deep L3 pills row (defaults to true). Category pages may disable this to reduce stacked controls. */
+  showL3Pills?: boolean
   /**
    * When true, clicking L0 tabs navigates to a category page URL
    * (e.g. `/categories/{slug}`) instead of updating query params.
@@ -81,6 +86,7 @@ interface MobileHomeTabsProps {
 export function MobileHomeTabs({
   initialProducts,
   initialProductsSlug = "all",
+  showViewAllLink = true,
   initialCategories = [],
   defaultTab = null,
   defaultSubTab = null,
@@ -90,6 +96,8 @@ export function MobileHomeTabs({
   pageTitle = null,
   showL0Tabs = true,
   l0Style = "tabs",
+  showQuickFilters = false,
+  showL3Pills = true,
   tabsNavigateToPages = false,
   circlesNavigateToPages = false,
   locale: localeProp,
@@ -131,7 +139,11 @@ export function MobileHomeTabs({
       // in normal document flow. Applying its height as a sticky `top` offset would
       // make our own sticky bars become "stuck" immediately and visually slide down.
       const headerPosition = getComputedStyle(header).position
-      setHeaderHeight(headerPosition === "fixed" ? header.offsetHeight : 0)
+      setHeaderHeight(
+        headerPosition === "fixed" || headerPosition === "sticky"
+          ? header.offsetHeight
+          : 0
+      )
     }
 
     update()
@@ -189,9 +201,9 @@ export function MobileHomeTabs({
         />
       )}
 
-      {/* 2. Full-bleed Seller Banner (All tab only) */}
+      {/* 2. Seller Banner (All tab only) */}
       {showBanner && nav.isAllTab && (
-        <StartSellingBanner locale={locale} variant="full-bleed" showTrustRow />
+        <StartSellingBanner locale={locale} variant="full-bleed" />
       )}
 
       {/* Optional Page Title (for category pages) */}
@@ -230,7 +242,7 @@ export function MobileHomeTabs({
       </div>
 
       {/* 4. Deep Navigation Pills (L3) */}
-      {nav.showPills && (
+      {showL3Pills && nav.showPills && (
         <CategoryL3Pills
           categories={nav.l3Categories}
           selectedPill={nav.selectedPill}
@@ -241,26 +253,39 @@ export function MobileHomeTabs({
         />
       )}
 
-      {/* Mobile Filter + Sort toolbar (pills mode only) */}
-      {l0Style === "pills" && (
-        <div className="bg-background border-b border-border/30 px-(--page-inset) py-1">
-          <div className="flex items-center gap-2">
-            <div className="flex-1">
-              <MobileFilters locale={locale} attributes={filterableAttributes} />
-            </div>
-            <div className="flex-1">
-              <SortSelect />
-            </div>
-            <span className="text-xs text-muted-foreground whitespace-nowrap flex items-center gap-1">
-              <ListBullets size={14} aria-hidden="true" />
-              {nav.activeFeed.products.length}
-            </span>
-          </div>
-        </div>
+      {/* Quick Filter Pills (enabled per-page) */}
+      {showQuickFilters && (
+        <QuickFilterRow
+          locale={locale}
+          {...(nav.activeSlug !== "all" ? { categorySlug: nav.activeSlug } : {})}
+          {...(() => {
+            if (nav.selectedPill) {
+              const id = nav.l3Categories.find((c) => c.slug === nav.selectedPill)?.id
+              return id ? { categoryId: id } : {}
+            }
+            if (nav.activeL2 && nav.currentL2) return { categoryId: nav.currentL2.id }
+            if (nav.activeL1 && nav.currentL1) return { categoryId: nav.currentL1.id }
+            if (nav.activeTab !== "all" && nav.currentL0) return { categoryId: nav.currentL0.id }
+            return {}
+          })()}
+          attributes={filterableAttributes}
+          subcategories={nav.circlesToDisplay.map((c) => ({
+            id: c.id,
+            name: c.name,
+            name_bg: c.name_bg,
+            slug: c.slug,
+          }))}
+          {...(nav.activeCategoryName ? { categoryName: nav.activeCategoryName } : {})}
+        />
       )}
 
-      {/* "View all" link - ONLY on HOMEPAGE (tabs mode) */}
-      {l0Style === "tabs" && !nav.isAllTab && nav.activeSlug !== "all" && (
+      {/* "View all" link - homepage-only helper to jump into /categories/[slug]. */}
+      {showViewAllLink &&
+        initialProductsSlug === "all" &&
+        l0Style === "tabs" &&
+        !tabsNavigateToPages &&
+        !nav.isAllTab &&
+        nav.activeSlug !== "all" && (
         <div className="bg-background px-(--page-inset) pt-2 pb-3 border-b border-border/40">
           <Link
             href={`/categories/${nav.activeSlug}`}

@@ -182,7 +182,7 @@ export default function TodaysDealsPageClient({
                             key={cat.id}
                             onClick={() => setActiveCategory(cat.id)}
                             className={cn(
-                                "flex flex-col items-center gap-1.5 min-w-[70px] shrink-0 snap-start",
+                                "flex flex-col items-center gap-1.5 min-w-(--deals-category-min-w) shrink-0 snap-start",
                                 "touch-action-manipulation active:scale-95 transition-transform",
                             )}
                         >

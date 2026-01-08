@@ -80,7 +80,7 @@ export default async function BusinessInventoryPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <p className="font-medium truncate max-w-[200px]">
+                      <p className="font-medium truncate max-w-52">
                         {product.title}
                       </p>
                     </TableCell>

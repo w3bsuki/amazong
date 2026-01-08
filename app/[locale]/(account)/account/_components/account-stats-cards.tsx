@@ -90,7 +90,7 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
                 <action.icon className="size-5 text-account-stat-icon" strokeWidth={1.8} />
                 {/* Count badge */}
                 {action.count !== null && action.count > 0 && (
-                  <div className="absolute -top-0.5 -right-0.5 flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-foreground text-background px-1 text-2xs font-bold shadow-sm">
+                  <div className="absolute -top-0.5 -right-0.5 flex min-w-(--badge-count-size) h-(--badge-count-size) items-center justify-center rounded-full bg-foreground text-background px-1 text-2xs font-bold shadow-sm">
                     {action.count > 99 ? '99+' : action.count}
                   </div>
                 )}

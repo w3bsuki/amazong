@@ -18,7 +18,7 @@ export default function PaymentsLoading() {
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Add New Payment Method Card */}
           <Card className="border-dashed">
-            <CardContent className="p-4 flex flex-col items-center justify-center min-h-[180px]">
+            <CardContent className="p-4 flex flex-col items-center justify-center min-h-(--spacing-scroll-sm)">
               <Skeleton className="size-12 rounded-full mb-3" />
               <Skeleton className="h-5 w-40 mb-2" />
               <Skeleton className="h-4 w-56" />

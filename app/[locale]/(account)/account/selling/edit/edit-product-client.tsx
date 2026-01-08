@@ -235,7 +235,7 @@ export function EditProductClient({ productId, locale }: EditProductClientProps)
     return (
       <div className="py-4 sm:py-6">
         <Skeleton className="h-8 w-64 mb-4" />
-        <Skeleton className="h-[500px] w-full" />
+        <Skeleton className="h-(--spacing-scroll-xl) w-full" />
       </div>
     )
   }

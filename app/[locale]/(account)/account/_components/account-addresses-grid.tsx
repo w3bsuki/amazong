@@ -157,7 +157,7 @@ export function AccountAddressesGrid({
             </CardContent>
           </Card>
         </SheetTrigger>
-        <SheetContent side="bottom" className="h-auto max-h-[85vh]">
+        <SheetContent side="bottom" className="h-auto max-h-(--dialog-h-85vh)">
           <SheetHeader className="text-left">
             <SheetTitle className="flex items-center gap-2">
               <LabelIcon className={`size-5 ${getLabelColor(address.label)}`} weight="duotone" />
@@ -171,7 +171,7 @@ export function AccountAddressesGrid({
             </SheetTitle>
             <SheetDescription>{t.addressDetails}</SheetDescription>
           </SheetHeader>
-          <ScrollArea className="mt-4 max-h-[50vh]">
+          <ScrollArea className="mt-4 max-h-(--dialog-h-50vh)">
             <div className="space-y-4">
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">{t.deliveryAddress}</p>

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
 // Get one featured product per subcategory for mega-menu
 export async function GET(request: Request) {
@@ -73,6 +74,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ products: productsByCategory })
   } catch (error) {
+    if (isNextPrerenderInterrupted(error)) throw error
     console.error("Categories Products API Error:", error)
     const message = error instanceof Error ? error.message : "Internal Server Error"
     return NextResponse.json({ error: message }, { status: 500 })

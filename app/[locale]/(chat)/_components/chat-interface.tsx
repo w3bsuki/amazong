@@ -686,7 +686,7 @@ export function ChatInterface({
                   {/* Message bubble */}
                   <div
                     className={cn(
-                      "max-w-[75%] relative group",
+                      "max-w-(--chat-message-max-w) relative group",
                       message.message_type === "image" ? "p-1" : "px-3 py-1.5",
                       isOwn
                         ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md"

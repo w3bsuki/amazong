@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 import type { Database } from "@/lib/supabase/database.types"
+import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
 
 type CategoryAttribute = Database["public"]["Tables"]["category_attributes"]["Row"]
 
@@ -166,6 +167,7 @@ export async function GET(request: Request) {
       includeGlobal,
     })
   } catch (error: unknown) {
+    if (isNextPrerenderInterrupted(error)) throw error
     console.error("Category Attributes API Error:", error)
     const message = error instanceof Error ? error.message : "Internal Server Error"
     return NextResponse.json({ error: message }, { status: 500 })

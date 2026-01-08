@@ -3,7 +3,7 @@ import { Link } from "@/i18n/routing"
 
 export default function NotFound() {
   return (
-    <div className="min-h-[50vh] flex items-center justify-center px-4">
+    <div className="min-h-(--dialog-h-50vh) flex items-center justify-center px-4">
       <div className="text-center max-w-md">
         <div className="text-7xl font-bold text-brand/20 mb-4">404</div>
         <h1 className="text-2xl font-bold text-foreground mb-2">Category not found</h1>

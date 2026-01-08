@@ -28,6 +28,19 @@ export function MobileCartDropdown() {
     const tNav = useTranslations('Navigation')
     const locale = useLocale()
 
+    const formatPrice = (price: number) => {
+        return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
+            style: 'currency',
+            currency: 'EUR',
+        }).format(price)
+    }
+
+    const contentMaxHeight = useMemo(() => {
+        if (items.length === 0) return 'max-h-(--wishlist-drawer-max-h-empty)'
+        if (items.length <= 2) return 'max-h-(--wishlist-drawer-max-h-few)'
+        return 'max-h-(--wishlist-drawer-max-h)'
+    }, [items.length])
+
     const buildProductUrl = useCallback((item: CartItem) => {
         if (!item.storeSlug) return "#"
         return `/${item.storeSlug}/${item.slug || item.id}`
@@ -37,18 +50,21 @@ export function MobileCartDropdown() {
         setMounted(true)
     }, [])
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat(locale === 'bg' ? 'bg-BG' : 'en-IE', {
-            style: 'currency',
-            currency: 'EUR',
-        }).format(price)
+    // Avoid Radix/React hydration mismatch warnings in dev by not SSR-rendering
+    // Drawer internals (ids/aria-* can differ if cart state is client-initialized).
+    if (!mounted) {
+        return (
+            <Link
+                href="/cart"
+                className="flex items-center justify-center size-10 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
+                aria-label={tNav('cart')}
+            >
+                <span className="relative" aria-hidden="true">
+                    <ShoppingCart size={22} weight="regular" className="text-header-text" />
+                </span>
+            </Link>
+        )
     }
-
-    const contentMaxHeight = useMemo(() => {
-        if (items.length === 0) return 'max-h-[30dvh]'
-        if (items.length <= 2) return 'max-h-[40dvh]'
-        return 'max-h-[55dvh]'
-    }, [items.length])
 
     return (
         <Drawer open={open} onOpenChange={setOpen}>
@@ -59,7 +75,7 @@ export function MobileCartDropdown() {
                 >
                     <span className="relative" aria-hidden="true">
                         <ShoppingCart size={22} weight="regular" className="text-header-text" />
-                        {mounted && totalItems > 0 && (
+                        {totalItems > 0 && (
                             <CountBadge
                                 count={totalItems}
                                 className="absolute -top-1 -right-1.5 bg-destructive text-white ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
@@ -76,7 +92,7 @@ export function MobileCartDropdown() {
                             <ShoppingCart size={16} weight="regular" className="text-muted-foreground" />
                             <DrawerTitle className="text-sm font-semibold">{t('title')}</DrawerTitle>
                             <span className="text-xs text-muted-foreground" suppressHydrationWarning>
-                                ({mounted ? totalItems : 0})
+                                ({totalItems})
                             </span>
                         </div>
                         <DrawerClose asChild>

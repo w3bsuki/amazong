@@ -42,14 +42,14 @@ export default async function MainLayout({
     // Enable static rendering - required for Next.js 16+ with cacheComponents
     setRequestLocale(locale);
 
-    const supabase = await createClient();
-    let user = null;
-    if (supabase) {
-        const { data } = await supabase.auth.getUser();
-        user = data.user;
-    }
-
     const categories = await getCategoryHierarchy(null, 2);
+
+    async function HeaderWithUser() {
+        const supabase = await createClient();
+        const { data } = await supabase.auth.getUser();
+
+        return <SiteHeader user={data.user} categories={categories} />;
+    }
 
     return (
         <OnboardingProvider locale={locale}>
@@ -57,8 +57,8 @@ export default async function MainLayout({
                 {/* Skip Links - Accessibility */}
                 <SkipLinks />
 
-                <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
-                    <SiteHeader user={user} categories={categories} />
+                <Suspense fallback={<div className="h-(--header-skeleton-h) w-full bg-header-bg md:h-(--header-skeleton-h-md)" />}>
+                    <HeaderWithUser />
                 </Suspense>
 
                 <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">

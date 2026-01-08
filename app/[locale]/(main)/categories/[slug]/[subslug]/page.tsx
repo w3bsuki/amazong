@@ -9,6 +9,7 @@ const PLACEHOLDER_SUBSLUG = '__placeholder_sub__'
 // Uses createStaticClient because this runs at build time outside request scope
 export async function generateStaticParams() {
   const supabase = createStaticClient()
+  const MAX_STATIC_SUBCATEGORY_PAIRS = 50
   
   // Fallback when Supabase isn't configured (e.g. local/E2E)
   if (!supabase) {
@@ -25,10 +26,13 @@ export async function generateStaticParams() {
     .from("categories")
     .select(`
       slug,
+      display_order,
       parent:parent_id (slug)
     `)
     .not("parent_id", "is", null)
     .lt("display_order", 9000)
+    .order("display_order", { ascending: true })
+    .limit(MAX_STATIC_SUBCATEGORY_PAIRS)
 
   if (!categories || categories.length === 0) {
     return routing.locales.map((locale) => ({

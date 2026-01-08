@@ -66,11 +66,11 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
       toast.success(locale === 'bg' ? 'Преместено в количката' : 'Moved to cart')
     }
 
-    const contentMaxHeight = items.length === 0 
-      ? 'max-h-[30dvh]' 
-      : items.length <= 2 
-        ? 'max-h-[40dvh]' 
-        : 'max-h-[55dvh]'
+    const contentMaxHeight = items.length === 0
+      ? "max-h-(--wishlist-drawer-max-h-empty)"
+      : items.length <= 2
+        ? "max-h-(--wishlist-drawer-max-h-few)"
+        : "max-h-(--wishlist-drawer-max-h)"
 
     return (
       <Drawer open={open} onOpenChange={setOpen}>

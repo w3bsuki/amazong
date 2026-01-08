@@ -135,7 +135,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
           <Link
             key={product.id}
             href={getProductHref(product)}
-            className="group flex-none w-32 sm:w-[150px] snap-start"
+            className="group flex-none w-32 sm:w-(--seller-product-card-w-sm) snap-start"
           >
             <div className="aspect-square bg-muted/30 rounded-md overflow-hidden border border-border/50 relative shadow-sm group-hover:shadow-md transition-shadow">
               {product.image && (
@@ -154,7 +154,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
                 </div>
               )}
             </div>
-            <h3 className="text-xs font-semibold text-foreground leading-tight mt-1.5 group-hover:text-[var(--color-link)] line-clamp-2 transition-colors">
+            <h3 className="text-xs font-semibold text-foreground leading-tight mt-1.5 group-hover:text-link line-clamp-2 transition-colors">
               {product.title}
             </h3>
             <p className="text-base font-bold text-foreground mt-1">

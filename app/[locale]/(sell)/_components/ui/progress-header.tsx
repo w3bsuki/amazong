@@ -66,7 +66,7 @@ export function ProgressHeader({
                 aria-label={`${isBg ? "Прогрес на формуляра" : "Form progress"}: ${progressPercent}%`}
               />
               <span className={cn(
-                "text-sm font-semibold tabular-nums min-w-[2.5rem] text-right",
+                "text-sm font-semibold tabular-nums min-w-10 text-right",
                 isComplete ? "text-primary" : "text-muted-foreground"
               )}>
                 {progressPercent}%

@@ -85,7 +85,7 @@ export function ErrorBoundaryUI({
   const CtaIcon = iconMap[ctaIcon]
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center px-4">
+    <div className="min-h-(--page-section-min-h) flex items-center justify-center px-4">
       <div className="text-center max-w-md">
         <div className="size-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-3">
           <WarningCircle className="size-10 text-destructive" weight="fill" />

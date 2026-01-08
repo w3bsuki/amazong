@@ -115,7 +115,7 @@ export function WriteReviewDialog({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-(--write-review-dialog-max-w)">
         <DialogHeader>
           <DialogTitle>{tReviews("reviewThisProduct")}</DialogTitle>
           <DialogDescription>

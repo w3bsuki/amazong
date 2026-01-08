@@ -3,11 +3,12 @@ import { createAdminClient } from "@/lib/supabase/server"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import { getStripeWebhookSecrets } from "@/lib/env"
-
-// PRODUCTION: Use centralized admin client for consistency
-const supabase = createAdminClient()
+import { logError } from "@/lib/structured-log"
 
 export async function POST(request: Request) {
+    // Create admin client inside handler (avoid module-level client in serverless)
+    const supabase = createAdminClient()
+
     const body = await request.text()
     const headersList = await headers()
     const signature = headersList.get("stripe-signature")
@@ -37,7 +38,10 @@ export async function POST(request: Request) {
         }
     } catch (error) {
         const message = error instanceof Error ? error.message : "Webhook verification failed"
-        console.error("Webhook signature verification failed:", message)
+        logError("stripe_webhook_signature_verification_failed", error, {
+            route: "api/payments/webhook",
+            message,
+        })
         return NextResponse.json({ error: message }, { status: 400 })
     }
 
@@ -69,7 +73,7 @@ export async function POST(request: Request) {
                     .from('user_payment_methods')
                     .select('id')
                     .eq('stripe_payment_method_id', paymentMethodId)
-                    .single()
+                    .maybeSingle()
 
                 if (existing) break // Already saved
 
@@ -78,6 +82,7 @@ export async function POST(request: Request) {
                     .from('user_payment_methods')
                     .select('id')
                     .eq('user_id', userId)
+                    .limit(1)
 
                 const isFirst = !existingMethods || existingMethods.length === 0
 
@@ -96,7 +101,10 @@ export async function POST(request: Request) {
                     })
 
                 if (insertError) {
-                    console.error("Error saving payment method:", insertError)
+                    logError("stripe_webhook_save_payment_method_failed", insertError, {
+                        route: "api/payments/webhook",
+                        userId,
+                    })
                 }
 
                 // If first card, set as default in Stripe too
@@ -126,7 +134,10 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ received: true })
     } catch (error) {
-        console.error("Webhook handler error:", error)
+        logError("stripe_webhook_handler_error", error, {
+            route: "api/payments/webhook",
+            eventType: (event as any)?.type,
+        })
         return NextResponse.json(
             { error: "Webhook handler failed" },
             { status: 500 }

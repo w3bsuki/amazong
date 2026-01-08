@@ -69,3 +69,26 @@ create index concurrently if not exists categories_parent_id_idx
 on public.categories (parent_id);
 ```
 
+---
+
+## Supabase Performance Advisors (2026-01-07)
+
+Source: `mcp_supabase_get_advisors({ type: "performance" })`
+
+Findings (all `INFO`, `unused_index`):
+- `public.buyer_feedback`: `idx_buyer_feedback_order_id`
+- `public.conversations`: `idx_conversations_order_id`
+- `public.listing_boosts`: `idx_listing_boosts_product_id`
+- `public.notifications`: `idx_notifications_user_id`, `idx_notifications_order_id`, `idx_notifications_product_id`, `idx_notifications_conversation_id`
+- `public.seller_feedback`: `idx_seller_feedback_order_id`
+- `public.cart_items`: `idx_cart_items_product_id`, `idx_cart_items_variant_id`
+- `public.order_items`: `idx_order_items_product_id`, `idx_order_items_variant_id`
+- `public.user_badges`: `idx_user_badges_badge_id`
+- `public.business_verification`: `idx_business_verification_verified_by`
+
+Recommendation:
+- Keep for now (low risk). Re-evaluate post-launch when query patterns stabilize.
+- If writes become expensive, consider dropping truly-unused indexes after confirming with `pg_stat_user_indexes`.
+
+Remediation reference: https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index
+

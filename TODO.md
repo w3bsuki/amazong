@@ -1,6 +1,8 @@
 # TODO
 
-> **Workflow**: See `docs/GPTVSOPUSFINAL.md` (current) and `WORKFLOW.md` (quick gates)
+> **Workflow**: See `docs/PRODUCTION-WORKFLOW-GUIDE.md` (comprehensive) or `docs/GPTVSOPUSFINAL.md` (agent roles)
+> 
+> **Prefixes**: `TREIDO:` (general dev), `TAILWIND:` (UI audit), `SUPABASE:` (DB audit)
 
 ## Gates (run after changes)
 ```bash

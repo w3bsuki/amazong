@@ -51,7 +51,7 @@ export default function SalesLoading() {
             </div>
           </CardHeader>
           <CardContent>
-            <Skeleton className="h-[250px] w-full" />
+            <Skeleton className="h-(--chart-h-sm) w-full" />
           </CardContent>
         </Card>
 

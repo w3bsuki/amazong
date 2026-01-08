@@ -387,7 +387,7 @@ export function ProductFormModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="max-w-full w-full h-dvh sm:h-[98dvh] sm:w-[98vw] sm:max-w-none p-0 gap-0 overflow-hidden flex flex-col rounded-none sm:rounded-md border-0 sm:border"
+        className="max-w-full w-full h-dvh sm:h-(--product-form-modal-h) sm:w-(--product-form-modal-w) sm:max-w-none p-0 gap-0 overflow-hidden flex flex-col rounded-none sm:rounded-md border-0 sm:border"
         showCloseButton={false}
       >
         {/* Header */}
@@ -477,7 +477,7 @@ export function ProductFormModal({
         {/* Content */}
         <div className="flex-1 overflow-y-auto bg-muted/30">
           <div className="max-w-7xl mx-auto p-4 sm:p-4 lg:p-4">
-            <div className="grid gap-4 lg:grid-cols-[1fr,380px] xl:grid-cols-[1fr,420px]">
+            <div className="grid gap-4 product-form-grid lg:grid-cols-2">
               
               {/* Left Column */}
               <div className="space-y-6">

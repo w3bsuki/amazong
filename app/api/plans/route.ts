@@ -35,12 +35,26 @@ export async function GET() {
       .order("price_monthly", { ascending: true })
 
     if (error) {
+      const message =
+        typeof error === "object" && error && "message" in error
+          ? String((error as { message?: unknown }).message)
+          : ""
+
+      if (message.includes("During prerendering, fetch() rejects when the prerender is complete")) {
+        return cachedJsonResponse([])
+      }
+
       console.error("Error fetching plans:", error)
       return NextResponse.json({ error: "Failed to fetch plans" }, { status: 500 })
     }
 
     return cachedJsonResponse(plans)
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    if (message.includes("During prerendering, fetch() rejects when the prerender is complete")) {
+      return cachedJsonResponse([])
+    }
+
     console.error("Plans API error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }

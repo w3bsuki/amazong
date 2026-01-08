@@ -97,7 +97,7 @@ export function BusinessActivityFeed({ activities, className }: BusinessActivity
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <ScrollArea className="h-[320px]">
+        <ScrollArea className="h-80">
           <div className="space-y-0">
             {activities.map((activity, index) => {
               const Icon = activityIcons[activity.type]

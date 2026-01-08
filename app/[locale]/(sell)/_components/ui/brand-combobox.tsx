@@ -163,7 +163,7 @@ export function BrandCombobox({
         onValueChange={setSearchQuery}
         className="h-12 border-none focus:ring-0"
       />
-      <CommandList className={cn("overflow-y-auto", isMobile ? "max-h-[50vh]" : "max-h-(--spacing-scroll-md)")}>
+      <CommandList className={cn("overflow-y-auto", isMobile ? "max-h-(--dialog-h-50vh)" : "max-h-(--spacing-scroll-md)")}>
         <CommandEmpty>
           {showCustomOption ? (
             <button
@@ -340,7 +340,7 @@ export function BrandCombobox({
         {trigger}
       </PopoverTrigger>
       <PopoverContent 
-        className="w-[--radix-popover-trigger-width] p-0" 
+        className="w-(--radix-popover-trigger-width) p-0" 
         align="start"
       >
         {commandContent}

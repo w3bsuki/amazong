@@ -644,7 +644,7 @@ export default function PlansPageClient(props: {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
-                  <TableHead className="h-12 w-[220px] pl-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <TableHead className="h-12 w-(--plans-table-head-w) pl-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     {t.comparison.plan}
                   </TableHead>
                   <TableHead className="h-12 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">

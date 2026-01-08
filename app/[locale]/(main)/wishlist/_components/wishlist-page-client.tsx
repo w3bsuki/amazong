@@ -227,7 +227,7 @@ export default function WishlistPageClient() {
                       removeFromWishlist(item.product_id)
                       toast.success(locale === "bg" ? "Премахнато от любими" : "Removed from wishlist")
                     }}
-                    className="absolute top-2 right-2 p-2 rounded-full bg-white/90 hover:bg-white border border-border text-muted-foreground hover:text-destructive transition-colors"
+                    className="absolute top-2 right-2 p-2 rounded-full bg-background/90 hover:bg-background border border-border text-muted-foreground hover:text-destructive transition-colors"
                     aria-label={t("remove")}
                   >
                     <Trash size={16} weight="regular" />
@@ -239,7 +239,7 @@ export default function WishlistPageClient() {
               <div className="p-2 sm:p-3">
                 {/* Title */}
                 <Link href={getProductUrl(item)}>
-                  <h3 className="text-sm font-medium text-foreground line-clamp-2 mb-1 group-hover:text-brand transition-colors min-h-[2.5rem]">
+                  <h3 className="text-sm font-medium text-foreground line-clamp-2 mb-1 group-hover:text-brand transition-colors min-h-10">
                     {item.title}
                   </h3>
                 </Link>

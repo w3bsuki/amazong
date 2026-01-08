@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
-import { Home, LayoutGrid, MessageCircle, User, PlusCircle } from "lucide-react"
+import { Home, LayoutGrid, MessageCircle, User, PlusSquare } from "lucide-react"
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
@@ -62,7 +62,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden pb-safe"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border/60 md:hidden pb-safe"
         role="navigation"
         aria-label="Mobile navigation"
         data-testid="mobile-tab-bar"
@@ -76,12 +76,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-              pathname === "/" ? "text-cta-trust-blue" : "text-muted-foreground active:text-foreground"
+              pathname === "/" ? "text-foreground" : "text-muted-foreground active:text-foreground"
             )}
             aria-label={t("home")}
             aria-current={pathname === "/" ? "page" : undefined}
           >
-            <Home size={20} className={pathname === "/" ? "fill-current" : ""} />
+            <Home size={22} strokeWidth={1.5} className={pathname === "/" ? "fill-current" : ""} />
             <span className="text-2xs font-medium leading-none">{t("home")}</span>
           </Link>
 
@@ -93,12 +93,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-              isActive("/categories") ? "text-cta-trust-blue" : "text-muted-foreground active:text-foreground"
+              isActive("/categories") ? "text-foreground" : "text-muted-foreground active:text-foreground"
             )}
             aria-label={t("categories")}
             aria-haspopup="dialog"
           >
-            <LayoutGrid size={20} className={isActive("/categories") ? "fill-current" : ""} />
+            <LayoutGrid size={22} strokeWidth={1.5} className={isActive("/categories") ? "fill-current" : ""} />
             <span className="text-2xs font-medium leading-none">{t("categories")}</span>
           </button>
 
@@ -110,12 +110,14 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-              isActive("/sell") ? "text-cta-trust-blue" : "text-muted-foreground active:text-foreground"
+              "rounded-lg",
+              "text-foreground hover:bg-muted/40 active:bg-muted/60",
+              isActive("/sell") ? "" : "text-foreground"
             )}
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
-            <PlusCircle size={20} className={isActive("/sell") ? "fill-current" : ""} />
+            <PlusSquare size={26} strokeWidth={1.5} />
             <span className="text-2xs font-medium leading-none">{t("sell")}</span>
           </Link>
 
@@ -127,13 +129,13 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-              isActive("/chat") ? "text-cta-trust-blue" : "text-muted-foreground active:text-foreground"
+              isActive("/chat") ? "text-foreground" : "text-muted-foreground active:text-foreground"
             )}
             aria-label={`${t("chat")}${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
             aria-current={isActive("/chat") ? "page" : undefined}
           >
             <span className="relative">
-              <MessageCircle size={20} className={isActive("/chat") ? "fill-current" : ""} />
+              <MessageCircle size={22} strokeWidth={1.5} className={isActive("/chat") ? "fill-current" : ""} />
               {unreadCount > 0 && (
                 <CountBadge
                   count={unreadCount}
@@ -153,12 +155,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
               "flex flex-col items-center justify-center gap-0.5 px-3 py-1.5",
               "touch-action-manipulation tap-transparent",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
-              isActive("/account") ? "text-cta-trust-blue" : "text-muted-foreground active:text-foreground"
+              isActive("/account") ? "text-foreground" : "text-muted-foreground active:text-foreground"
             )}
             aria-label={t("account")}
             aria-current={isActive("/account") ? "page" : undefined}
           >
-            <User size={20} className={isActive("/account") ? "fill-current" : ""} />
+            <User size={22} strokeWidth={1.5} className={isActive("/account") ? "fill-current" : ""} />
             <span className="text-2xs font-medium leading-none">{t("account")}</span>
           </Link>
         </div>

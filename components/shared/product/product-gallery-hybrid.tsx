@@ -65,7 +65,7 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-3 w-full lg:max-w-[600px]">
+    <div className="flex flex-col gap-3 w-full lg:max-w-(--product-gallery-max-w-lg)">
       {/* Main Image Container - aspect-[4/3] on mobile for better product visibility */}
       <div 
         className="w-full overflow-hidden lg:rounded-md lg:border lg:border-border bg-card relative group aspect-[4/3] lg:aspect-square" 

@@ -315,7 +315,7 @@ export function PostSignupOnboardingModal({
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent 
-        className="w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] sm:max-h-[90vh] overflow-y-auto p-0 bg-card border-0 shadow-md"
+        className="w-(--onboarding-modal-w) sm:max-w-md max-h-(--onboarding-modal-max-h) sm:max-h-(--onboarding-modal-max-h-sm) overflow-y-auto p-0 bg-card border-0 shadow-md"
         showCloseButton={false}
       >
         <AnimatePresence mode="wait">

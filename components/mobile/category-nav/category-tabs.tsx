@@ -52,12 +52,12 @@ export function CategoryTabs({
 
   return (
     <div
-      className="sticky z-30 bg-background border-b border-border/40"
+      className="sticky z-30 bg-background/90 backdrop-blur-md border-b border-border/50"
       style={{ top: headerHeight }}
     >
       <div
         ref={tabsContainerRef}
-        className="relative flex items-center gap-3 overflow-x-auto no-scrollbar px-(--page-inset)"
+        className="relative flex items-center gap-2 overflow-x-auto no-scrollbar px-(--page-inset)"
         role="tablist"
       >
         {/* "All" Tab */}

@@ -62,7 +62,7 @@ export default function CheckoutSuccessPageClient() {
   // Loading
   if (state.status === "loading" || state.status === "idle") {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center px-3">
+      <div className="min-h-(--page-section-min-h) flex items-center justify-center px-3">
         <div className="text-center">
           <SpinnerGap className="size-8 text-primary animate-spin mx-auto mb-3" />
           <p className="text-sm font-medium">{t("verifying")}</p>
@@ -75,7 +75,7 @@ export default function CheckoutSuccessPageClient() {
   // Error
   if (state.status === "error") {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center px-3">
+      <div className="min-h-(--page-section-min-h) flex items-center justify-center px-3">
         <div className="text-center max-w-sm">
           <div className="size-14 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-3">
             <XCircle className="size-7 text-destructive" weight="fill" />
@@ -97,7 +97,7 @@ export default function CheckoutSuccessPageClient() {
 
   // Success
   return (
-    <div className="min-h-[60vh] flex items-center justify-center px-3">
+    <div className="min-h-(--page-section-min-h) flex items-center justify-center px-3">
       <div className="text-center max-w-sm w-full">
         {/* Success icon */}
         <div className="size-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">

@@ -232,7 +232,7 @@ export function SiteFooter() {
                                 href={link.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="min-h-[36px] flex items-center px-2 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
+                                className="min-h-9 flex items-center px-2 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
                             >
                                 {link.label}
                             </a>
@@ -240,7 +240,7 @@ export function SiteFooter() {
                             <Link 
                                 key={index}
                                 href={link.href} 
-                                className="min-h-[36px] flex items-center px-2 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
+                                className="min-h-9 flex items-center px-2 hover:text-primary-foreground hover:underline underline-offset-2 transition-colors whitespace-nowrap"
                             >
                                 {link.label}
                             </Link>

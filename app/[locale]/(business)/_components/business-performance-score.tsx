@@ -148,7 +148,7 @@ export function BusinessPerformanceScore({
             >
               {getScoreLabel(overallScore)}
             </Badge>
-            <p className="text-sm text-muted-foreground max-w-[180px]">
+            <p className="text-sm text-muted-foreground max-w-44">
               {overallScore >= 80
                 ? "Your store is performing well! Keep it up."
                 : overallScore >= 60
@@ -177,7 +177,7 @@ export function BusinessPerformanceScore({
                             <IconInfoCircle className="size-3.5 text-muted-foreground" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="max-w-[200px] text-xs">{metric.description}</p>
+                            <p className="max-w-52 text-xs">{metric.description}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>

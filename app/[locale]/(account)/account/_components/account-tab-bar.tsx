@@ -66,7 +66,7 @@ export function AccountTabBar() {
               href={tab.href}
               prefetch={true}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full min-w-[44px] min-h-[44px] gap-0.5 transition-colors",
+                "flex flex-col items-center justify-center flex-1 h-full min-w-11 min-h-11 gap-0.5 transition-colors",
                 "touch-action-manipulation tap-transparent",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
                 active && !isStore 

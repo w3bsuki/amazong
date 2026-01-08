@@ -1,22 +1,19 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
-import { Link, useRouter } from "@/i18n/routing"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Link } from "@/i18n/routing"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
-import { useCart } from "@/components/providers/cart-context"
-import { useWishlist } from "@/components/providers/wishlist-context"
-import { toast } from "sonner"
+import { ProductCardActions } from "./product-card-actions"
+import { ProductCardB2BBadges } from "./product-card-b2b-badges"
+import { ProductCardImage } from "./product-card-image"
+import { ProductCardPrice } from "./product-card-price"
+import { ProductCardSeller } from "./product-card-seller"
+import { ProductCardSocialProof } from "./product-card-social-proof"
 import { useLocale, useTranslations } from "next-intl"
-import { cn, safeAvatarSrc } from "@/lib/utils"
-import { productBlurDataURL, getImageLoadingStrategy } from "@/lib/image-utils"
-import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import { cn } from "@/lib/utils"
 import { buildHeroBadgeText } from "@/lib/product-card-hero-attributes"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Heart, ShoppingCart, Plus, Star, SealCheck, Truck } from "@phosphor-icons/react"
+import { Truck } from "@phosphor-icons/react"
 
 // =============================================================================
 // CVA VARIANTS
@@ -119,23 +116,6 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   showRating?: boolean
 }
 
-function getProductCardImageSrc(src: string): string {
-  if (!src) return PLACEHOLDER_IMAGE_PATH
-  const normalized = normalizeImageUrl(src)
-  if (!normalized) return PLACEHOLDER_IMAGE_PATH
-  return normalized === PLACEHOLDER_IMAGE_PATH ? PLACEHOLDER_IMAGE_PATH : normalized
-}
-
-/**
- * Format count with K suffix for thousands (1234 → "1.2K")
- */
-function formatCount(count: number): string {
-  if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}K`
-  }
-  return count.toString()
-}
-
 // =============================================================================
 // PRODUCT CARD COMPONENT - Pro Commerce: Temu Density + eBay Trust + Shein Polish
 // =============================================================================
@@ -177,14 +157,8 @@ function ProductCard({
   businessVerified,
   samplesAvailable,
 }: ProductCardProps & { ref?: React.Ref<HTMLDivElement> }) {
-  const router = useRouter()
-  const { addToCart, items: cartItems } = useCart()
-  const { isInWishlist, toggleWishlist } = useWishlist()
   const t = useTranslations("Product")
-  const tCart = useTranslations("Cart")
   const locale = useLocale()
-
-  const [isWishlistPending, setIsWishlistPending] = React.useState(false)
 
   // Derived values
   const hasDiscount = originalPrice && originalPrice > price
@@ -199,17 +173,6 @@ function ProductCard({
   const productUrl = username ? `/${username}/${slug || id}` : "#"
   // Seller display name (prefer sellerName, fallback to username)
   const displaySellerName = showSeller ? (sellerName || username || null) : null
-
-  const inWishlist = isInWishlist(id)
-  const inCart = React.useMemo(() => cartItems.some((item) => item.id === id), [cartItems, id])
-
-  const handleOpenProduct = React.useCallback(() => {
-    router.push(productUrl)
-  }, [router, productUrl])
-
-  // Loading strategy
-  const loadingStrategy = getImageLoadingStrategy(index, 4)
-  const imageSrc = React.useMemo(() => getProductCardImageSrc(image), [image])
 
   // Check if own product
   const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
@@ -237,72 +200,10 @@ function ProductCard({
     return condition.slice(0, 8)
   }, [condition, t])
 
-  // Price formatting (memoized for performance)
-  const formattedPrice = React.useMemo(() => {
-    return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
-      style: "currency",
-      currency: "EUR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(price)
-  }, [price, locale])
-
-  const formattedOriginalPrice = React.useMemo(() => {
-    if (!originalPrice) return null
-    return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
-      style: "currency",
-      currency: "EUR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(originalPrice)
-  }, [originalPrice, locale])
-
-  // Handlers (stable callbacks for performance)
-  const handleAddToCart = React.useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (isOwnProduct) {
-      toast.error(t("cannotBuyOwnProduct"))
-      return
-    }
-    if (!inStock) {
-      toast.error(t("outOfStock"))
-      return
-    }
-    addToCart({
-      id,
-      title,
-      price,
-      image,
-      quantity: 1,
-      ...(slug ? { slug } : {}),
-      ...(username ? { username } : {}),
-    })
-    toast.success(tCart("itemAdded"))
-  }, [id, title, price, image, slug, username, isOwnProduct, inStock, addToCart, t, tCart])
-
-  const handleWishlist = React.useCallback(async (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (isWishlistPending) return
-    setIsWishlistPending(true)
-    try {
-      await toggleWishlist({ id, title, price, image })
-    } finally {
-      setIsWishlistPending(false)
-    }
-  }, [id, title, price, image, isWishlistPending, toggleWishlist])
-
-  // Rating & social proof
-  const hasRating = typeof rating === "number" && rating > 0
-  const reviewCount = reviews ?? 0
-  const hasSoldCount = typeof soldCount === "number" && soldCount > 0
-
   return (
     <div
       ref={ref}
       className={cn(productCardVariants({ variant, state: resolvedState }), className)}
-      onClick={handleOpenProduct}
     >
       {/* Full-card link for accessibility */}
       <Link
@@ -313,63 +214,39 @@ function ProductCard({
         <span className="sr-only">{title}</span>
       </Link>
 
-      {/* Image Container - 4:5 aspect ratio for optimal mobile display */}
-      <div className={cn(
-        "relative overflow-hidden rounded-md bg-muted lg:rounded-none",
-        !inStock && "after:absolute after:inset-0 after:bg-background/60"
-      )}>
-        <AspectRatio ratio={4 / 5}>
-          <Image
-            src={imageSrc}
-            alt={title}
-            fill
-            className={cn("object-cover", !inStock && "grayscale")}
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            placeholder="blur"
-            blurDataURL={productBlurDataURL()}
-            loading={loadingStrategy.loading}
-            priority={loadingStrategy.priority}
-          />
-        </AspectRatio>
+      {/* Image Container - 1:1 aspect ratio for consistent grid display */}
+      <div className="relative overflow-hidden rounded-md border border-border/30 bg-muted lg:rounded-none lg:border-0">
+        <ProductCardImage
+          src={image}
+          alt={title}
+          index={index}
+          inStock={inStock}
+          outOfStockLabel={t("outOfStock")}
+        />
 
-        {/* Out of Stock overlay */}
-        {!inStock && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center">
-            <span className="rounded-sm bg-foreground/80 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-background">
-              {t("outOfStock")}
-            </span>
-          </div>
-        )}
-
-        {/* Category Badge - Top Left (mobile priority) */}
+        {/* Category Badge - Top Left (smaller, subtle background) */}
         {(categoryLabel || smartBadge) && (
           <Badge
             variant="category"
-            className="absolute left-1.5 top-1.5 right-10 z-10 truncate border-transparent bg-overlay-dark text-2xs text-white"
+            className="absolute left-1.5 top-1.5 max-w-[calc(100%-2.75rem)] z-10 truncate border-transparent bg-background/80 text-2xs text-foreground/80 shadow-sm backdrop-blur-sm"
           >
             {categoryLabel ?? smartBadge}
           </Badge>
         )}
 
-        {/* Wishlist button - Top Right (WCAG 2.2 AA: min 24px, using 28px) */}
-        {showWishlist && (
-          <button
-            type="button"
-            className={cn(
-              "absolute right-1.5 top-1.5 z-10 flex size-touch-sm items-center justify-center rounded-full outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
-              !inWishlist && "lg:pointer-events-none lg:opacity-0 lg:group-hover:pointer-events-auto lg:group-hover:opacity-100 lg:transition-opacity lg:duration-100",
-              inWishlist
-                ? "bg-product-wishlist-active text-white"
-                : "bg-overlay-dark text-white hover:bg-foreground/50 active:bg-product-wishlist",
-              isWishlistPending && "pointer-events-none opacity-50"
-            )}
-            onClick={handleWishlist}
-            disabled={isWishlistPending}
-            aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
-          >
-            <Heart size={14} weight={inWishlist ? "fill" : "bold"} />
-          </button>
-        )}
+        {/* Wishlist button - using ProductCardActions */}
+        <ProductCardActions
+          id={id}
+          title={title}
+          price={price}
+          image={image}
+          slug={slug ?? null}
+          username={username ?? null}
+          showQuickAdd={false}
+          showWishlist={showWishlist}
+          inStock={inStock}
+          isOwnProduct={isOwnProduct}
+        />
       </div>
 
       {/* Content Area */}
@@ -380,34 +257,12 @@ function ProductCard({
         </h3>
 
         {/* Price + Condition */}
-        <div className="mt-0.5 flex items-center justify-between gap-2">
-          <div className="flex min-w-0 items-baseline gap-1">
-            <span
-              className={cn(
-                "text-price font-semibold leading-tight tabular-nums",
-                hasDiscount ? "text-price-sale" : "text-price-regular"
-              )}
-            >
-              {formattedPrice}
-            </span>
-            {hasDiscount && formattedOriginalPrice && (
-              <span className="text-xs text-price-original line-through">
-                {formattedOriginalPrice}
-              </span>
-            )}
-            {hasDiscount && discountPercent >= 5 && (
-              <Badge variant="sale" className="text-2xs">
-                -{discountPercent}%
-              </Badge>
-            )}
-          </div>
-
-          {conditionLabel && (
-            <Badge variant="condition-outline" className="text-2xs">
-              {conditionLabel}
-            </Badge>
-          )}
-        </div>
+        <ProductCardPrice
+          price={price}
+          originalPrice={originalPrice}
+          locale={locale}
+          conditionLabel={conditionLabel}
+        />
 
         {/* Free Shipping (desktop only) */}
         {freeShipping && (
@@ -418,93 +273,51 @@ function ProductCard({
         )}
 
         {/* Social Proof Row: Rating + Sold Count */}
-        {(hasRating || hasSoldCount) && (
-          <div className="mt-0.5 hidden sm:flex items-center gap-1 text-2xs text-muted-foreground">
-            {hasRating && (
-              <>
-                <Star size={10} weight="fill" className="text-rating" />
-                <span className="font-medium text-foreground/80">
-                  {rating.toFixed(1)}
-                </span>
-                {reviewCount > 0 && <span>({formatCount(reviewCount)})</span>}
-              </>
-            )}
-
-            {hasRating && hasSoldCount && (
-              <span className="text-border">·</span>
-            )}
-
-            {hasSoldCount && (
-              <span>{formatCount(soldCount)} {t("sold")}</span>
-            )}
-          </div>
-        )}
+        <ProductCardSocialProof
+          rating={rating}
+          reviews={reviews}
+          soldCount={soldCount}
+          soldLabel={t("sold")}
+        />
 
         {/* B2B Badges (if applicable) */}
-        {(minOrderQuantity && minOrderQuantity > 1) || businessVerified || samplesAvailable ? (
-          <div className="mt-0.5 hidden lg:flex flex-wrap gap-1">
-            {minOrderQuantity && minOrderQuantity > 1 && (
-              <span className="rounded-sm bg-info/10 px-1 py-px text-2xs font-medium text-info">
-                {t("b2b.moqShort")}:{minOrderQuantity}
-              </span>
-            )}
-            {samplesAvailable && (
-              <span className="rounded-sm bg-warning/10 px-1 py-px text-2xs font-medium text-warning">
-                {t("b2b.samples")}
-              </span>
-            )}
-            {businessVerified && (
-              <span className="rounded-sm bg-success/10 px-1 py-px text-2xs font-medium text-success">
-                {t("b2b.verifiedShort")}
-              </span>
-            )}
-          </div>
-        ) : null}
+        <ProductCardB2BBadges
+          minOrderQuantity={minOrderQuantity}
+          businessVerified={businessVerified}
+          samplesAvailable={samplesAvailable}
+          labels={{
+            moq: t("b2b.moqShort"),
+            samples: t("b2b.samples"),
+            verified: t("b2b.verifiedShort"),
+          }}
+        />
 
         {/* Seller Row + Quick-Add (desktop only) */}
         <div className="mt-1 hidden lg:flex items-center justify-between gap-2">
           {/* Seller Info */}
           {displaySellerName ? (
-            <div className="flex min-w-0 items-center gap-1.5">
-              <Avatar className="size-5 shrink-0 ring-1 ring-border/50">
-                <AvatarImage src={safeAvatarSrc(sellerAvatarUrl)} />
-                <AvatarFallback className="bg-muted text-2xs font-medium">
-                  {displaySellerName.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <span className="truncate text-xs text-muted-foreground">
-                {displaySellerName}
-              </span>
-              {sellerVerified && (
-                <SealCheck size={10} weight="fill" className="shrink-0 text-verified" />
-              )}
-            </div>
+            <ProductCardSeller
+              name={displaySellerName}
+              avatarUrl={sellerAvatarUrl}
+              verified={sellerVerified}
+            />
           ) : (
             <div className="flex-1" />
           )}
 
-          {/* Quick-Add Button - 28px (size-touch-sm), WCAG 2.2 AA compliant */}
-          {showQuickAdd && (
-            <button
-              type="button"
-              className={cn(
-                "flex size-touch-sm shrink-0 items-center justify-center rounded-md outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
-                inCart
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary active:bg-primary active:text-primary-foreground",
-                (!inStock || isOwnProduct) && "cursor-not-allowed opacity-40"
-              )}
-              onClick={handleAddToCart}
-              disabled={isOwnProduct || !inStock}
-              aria-label={inCart ? t("inCart") : t("addToCart")}
-            >
-              {inCart ? (
-                <ShoppingCart size={14} weight="fill" />
-              ) : (
-                <Plus size={14} weight="bold" />
-              )}
-            </button>
-          )}
+          {/* Quick-Add Button - using ProductCardActions */}
+          <ProductCardActions
+            id={id}
+            title={title}
+            price={price}
+            image={image}
+            slug={slug ?? null}
+            username={username ?? null}
+            showQuickAdd={showQuickAdd}
+            showWishlist={false}
+            inStock={inStock}
+            isOwnProduct={isOwnProduct}
+          />
         </div>
       </div>
     </div>
@@ -512,128 +325,20 @@ function ProductCard({
 }
 
 // =============================================================================
-// PRODUCT GRID - Responsive CSS Grid with density options
+// RE-EXPORTS FROM PRODUCT-GRID
 // =============================================================================
 
-interface ProductGridProps {
-  children: React.ReactNode
-  /** Grid density: compact (Temu), default (eBay), comfortable (Airbnb) */
-  density?: "compact" | "default" | "comfortable"
-  className?: string
-}
-
-/**
- * ProductGrid - Responsive CSS Grid
- * Mobile: 2 cols, gap-2 (8px)
- * Desktop: 4-5 cols, gap-3 (12px)
- */
-function ProductGrid({ children, density = "default", className }: ProductGridProps) {
-  const densityClasses = {
-    compact: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6",
-    default: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
-    comfortable: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
-  }
-
-  return (
-    <div
-      className={cn(
-        "grid gap-2 px-(--page-inset) md:gap-3 md:px-(--page-inset-md) lg:px-(--page-inset-lg)",
-        densityClasses[density],
-        className
-      )}
-    >
-      {children}
-    </div>
-  )
-}
-
-ProductGrid.displayName = "ProductGrid"
-
-// =============================================================================
-// SKELETON - Matches new Pro design structure
-// =============================================================================
-
-interface ProductCardSkeletonProps {
-  className?: string
-}
-
-function ProductCardSkeleton({ className }: ProductCardSkeletonProps) {
-  return (
-    <div className={cn("h-full", className)}>
-      {/* Image - 4:5 aspect ratio */}
-      <div className="overflow-hidden rounded-md bg-muted lg:rounded-none">
-        <AspectRatio ratio={4 / 5}>
-          <Skeleton className="h-full w-full rounded-none" />
-        </AspectRatio>
-      </div>
-      {/* Content */}
-      <div className="px-1 pb-1.5 pt-1.5 lg:p-2">
-        {/* Price row */}
-        <div className="flex items-baseline gap-1.5">
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-3 w-10" />
-        </div>
-        {/* Title (2 lines) */}
-        <Skeleton className="mt-1 h-4 w-full" />
-        <Skeleton className="mt-0.5 h-4 w-2/3" />
-        {/* Rating row */}
-        <div className="mt-1 flex items-center gap-1">
-          <Skeleton className="size-3 rounded-full" />
-          <Skeleton className="h-2.5 w-16" />
-        </div>
-        {/* Seller + Quick-add */}
-        <div className="mt-1 flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <Skeleton className="size-5 rounded-full" />
-            <Skeleton className="h-2.5 w-14" />
-          </div>
-          <Skeleton className="size-7 rounded" />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-ProductCardSkeleton.displayName = "ProductCardSkeleton"
-
-// =============================================================================
-// SKELETON GRID
-// =============================================================================
-
-interface ProductCardSkeletonGridProps {
-  count?: number
-  density?: "compact" | "default" | "comfortable"
-  className?: string
-}
-
-function ProductCardSkeletonGrid({
-  count = 8,
-  density = "default",
-  className,
-}: ProductCardSkeletonGridProps) {
-  return (
-    <ProductGrid density={density} className={className ?? ""}>
-      {Array.from({ length: count }).map((_, i) => (
-        <ProductCardSkeleton key={i} />
-      ))}
-    </ProductGrid>
-  )
-}
-
-ProductCardSkeletonGrid.displayName = "ProductCardSkeletonGrid"
+export {
+  ProductGrid,
+  ProductCardSkeleton,
+  ProductCardSkeletonGrid,
+  type ProductGridProps,
+  type ProductCardSkeletonProps,
+  type ProductCardSkeletonGridProps,
+} from "./product-grid"
 
 // =============================================================================
 // EXPORTS
 // =============================================================================
 
-export {
-  ProductCard,
-  ProductGrid,
-  ProductCardSkeleton,
-  ProductCardSkeletonGrid,
-  productCardVariants,
-  type ProductCardProps,
-  type ProductGridProps,
-  type ProductCardSkeletonProps,
-  type ProductCardSkeletonGridProps,
-}
+export { ProductCard, productCardVariants, type ProductCardProps }

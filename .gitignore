@@ -84,3 +84,4 @@ CLAUDE.local.md
 # Supabase temp artifacts
 /supabase/.temp/
 /prompts/_archive/
+.env*.local

@@ -570,7 +570,7 @@ function MegaMenuPanel({
         role="menu"
         aria-label={getName(activeCategory)}
       >
-        <div className="container bg-popover border-b border-border py-6 max-h-[70vh] overflow-y-auto">
+        <div className="container bg-popover border-b border-border py-6 max-h-(--category-subheader-max-h) overflow-y-auto">
           {activeCategory.id === "more-categories" ? (
             <MoreCategoriesGrid
               categories={activeCategory.children || []}

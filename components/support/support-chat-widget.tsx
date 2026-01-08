@@ -356,7 +356,7 @@ export function SupportChatWidget({
                   )}
                   <div
                     className={cn(
-                      "max-w-[80%] rounded-lg px-3 py-2",
+                      "max-w-(--support-chat-message-max-w) rounded-lg px-3 py-2",
                       msg.is_support
                         ? "bg-muted text-foreground"
                         : "bg-brand text-white"

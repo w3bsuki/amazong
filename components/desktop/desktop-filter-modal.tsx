@@ -28,11 +28,13 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
+import { useFilterCount } from '@/hooks/use-filter-count'
 import type { CategoryAttribute } from '@/lib/data/categories'
 
 interface DesktopFilterModalProps {
   attributes?: CategoryAttribute[]
-  categorySlug?: string
+  categorySlug?: string | undefined
+  categoryId?: string | undefined
   className?: string
 }
 
@@ -56,12 +58,14 @@ function getAttrOptions(attr: CategoryAttribute, locale: string): string[] {
 export function DesktopFilterModal({ 
   attributes = [], 
   categorySlug,
+  categoryId,
   className 
 }: DesktopFilterModalProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const t = useTranslations('SearchFilters')
+  const tHub = useTranslations('FilterHub')
   const locale = useLocale()
   
   const [isOpen, setIsOpen] = React.useState(false)
@@ -81,6 +85,22 @@ export function DesktopFilterModal({
   const currentMinPrice = searchParams.get('minPrice')
   const currentMaxPrice = searchParams.get('maxPrice')
   const currentRating = searchParams.get('minRating')
+
+  // Build count params for live count (only when modal is open)
+  const countParams = React.useMemo(() => ({
+    categoryId: categoryId ?? null,
+    filters: {
+      minPrice: pendingPrice.min ? Number(pendingPrice.min) : null,
+      maxPrice: pendingPrice.max ? Number(pendingPrice.max) : null,
+      minRating: pendingRating ?? null,
+      attributes: pendingFilters,
+    },
+  }), [categoryId, pendingPrice, pendingRating, pendingFilters])
+
+  // Live count via debounced hook (only active when modal is open)
+  const { count: liveCount, isLoading: isCountLoading } = useFilterCount(
+    isOpen ? countParams : { categoryId: null, filters: {} }
+  )
 
   // Get current filter values from URL
   const getCurrentAttrValues = (attrName: string): string[] => {
@@ -157,7 +177,7 @@ export function DesktopFilterModal({
 
   const hasPendingFilters = 
     Object.values(pendingFilters).some(v => v.length > 0) ||
-    pendingPrice.min || pendingPrice.max ||
+    Boolean(pendingPrice.min) || Boolean(pendingPrice.max) ||
     pendingRating !== null
 
   const priceRanges = [
@@ -190,7 +210,7 @@ export function DesktopFilterModal({
       </DialogTrigger>
 
       <DialogContent 
-        className="sm:max-w-(--container-modal-lg) h-[85vh] max-h-[85vh] p-0 gap-0 flex flex-col overflow-hidden"
+        className="sm:max-w-(--container-modal-lg) h-(--dialog-h-85vh) max-h-(--dialog-h-85vh) p-0 gap-0 flex flex-col overflow-hidden"
         showCloseButton={false}
       >
         <DialogDescription className="sr-only">Filter products by attributes</DialogDescription>
@@ -221,7 +241,7 @@ export function DesktopFilterModal({
         </div>
 
         {/* Content - scrollable with scroll shadow indicator */}
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-track]:bg-transparent">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-smooth scrollbar-soft">
           <div className="p-4 space-y-4">
             
             {/* Row 1: Price & Rating - 2 columns 50/50 */}
@@ -400,7 +420,7 @@ export function DesktopFilterModal({
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer with Live Count CTA */}
         <div className="shrink-0 px-6 py-4 border-t bg-background flex items-center justify-between">
           <button
             type="button"
@@ -418,9 +438,16 @@ export function DesktopFilterModal({
           <Button 
             onClick={applyFilters} 
             size="lg"
-            className="px-8 rounded-full transition-colors"
+            disabled={liveCount === 0 && hasPendingFilters}
+            className="px-8 rounded-full transition-colors min-w-40"
           >
-            {t('showResults')}
+            {isCountLoading ? (
+              <span className="animate-pulse">{tHub('showResults', { count: '...' })}</span>
+            ) : liveCount === 0 && hasPendingFilters ? (
+              tHub('noResults')
+            ) : (
+              tHub('showResults', { count: liveCount.toLocaleString() })
+            )}
           </Button>
         </div>
       </DialogContent>
@@ -465,7 +492,7 @@ function FilterSearch({
           className="pl-9 h-9 text-sm bg-muted/50 border-input"
         />
       </div>
-      <div className="space-y-1 max-h-[180px] overflow-y-auto">
+      <div className="space-y-1 max-h-(--spacing-scroll-sm) overflow-y-auto">
         {visibleOptions.map((option) => {
           const isChecked = selectedValues.includes(option)
           return (

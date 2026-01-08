@@ -1,13 +1,16 @@
 import { defineConfig, devices } from '@playwright/test'
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
-import net from 'node:net'
 import path from 'node:path'
 import dotenv from 'dotenv'
 
 // Capture shell environment BEFORE dotenv runs
 const shellReuseServer = process.env.REUSE_EXISTING_SERVER
 const shellBaseURL = process.env.BASE_URL
+// Internal latch: when we auto-pick a port, persist it so subsequent config
+// evaluations (Playwright can load config in multiple processes) stay consistent.
+const latchedBaseURL = process.env.PW_LATCHED_BASE_URL
+const latchedPort = process.env.PW_LATCHED_PORT
 
 /**
  * Check if a port is currently in use (synchronous via spawnSync).
@@ -80,6 +83,8 @@ if (shellReuseServer != null) {
 const isCI = !!process.env.CI
 const isProdTest = process.env.TEST_PROD === 'true'
 const outputDir = process.env.PW_OUTPUT_DIR || 'test-results'
+const debugConfig =
+  process.env.PW_DEBUG_CONFIG === 'true' || process.env.PW_DEBUG_CONFIG === '1'
 // E2E should be self-contained by default (start its own server) to avoid
 // flakiness when no dev server is running.
 // Override explicitly via REUSE_EXISTING_SERVER=true/false.
@@ -94,17 +99,19 @@ const reuseExistingServer =
 // - Only for local hosts (localhost / 127.0.0.1)
 const explicitBaseURL = shellBaseURL // captured before dotenv
 const defaultBaseURL = 'http://localhost:3000'
-const rawBaseURL = explicitBaseURL || defaultBaseURL
+const rawBaseURL = explicitBaseURL || latchedBaseURL || defaultBaseURL
 const parsedBase = new URL(rawBaseURL)
 const isLocalHost =
   parsedBase.hostname === 'localhost' || parsedBase.hostname === '127.0.0.1'
-const defaultPort = parseInt(parsedBase.port || '3000', 10)
+const defaultPort = latchedPort
+  ? parseInt(latchedPort, 10)
+  : parseInt(parsedBase.port || '3000', 10)
 
 // Auto-pick logic: find a free port if conditions are met
 let finalPort = defaultPort
 let didAutoPickPort = false
 
-if (!reuseExistingServer && !explicitBaseURL && isLocalHost) {
+if (!reuseExistingServer && !explicitBaseURL && !latchedBaseURL && isLocalHost) {
   // Check if the default port is in use
   if (isPortInUse(defaultPort)) {
     finalPort = findFreePort(defaultPort + 1)
@@ -115,16 +122,38 @@ if (!reuseExistingServer && !explicitBaseURL && isLocalHost) {
 // Construct the final baseURL
 const baseURL = explicitBaseURL
   ? explicitBaseURL
-  : `${parsedBase.protocol}//${parsedBase.hostname}:${finalPort}`
+  : latchedBaseURL
+    ? latchedBaseURL
+    : `${parsedBase.protocol}//${parsedBase.hostname}:${finalPort}`
 
 const basePort = String(finalPort)
 
-// Debug: Log the configuration
-console.log('[Playwright Config] REUSE_EXISTING_SERVER:', process.env.REUSE_EXISTING_SERVER, '-> reuseExistingServer:', reuseExistingServer)
-if (didAutoPickPort) {
-  console.log(`[Playwright Config] Port ${defaultPort} is busy, auto-picked port: ${finalPort}`)
+// Latch computed baseURL/port for consistency across Playwright processes.
+// Do not override a user-provided BASE_URL.
+if (!explicitBaseURL) {
+  process.env.PW_LATCHED_BASE_URL = baseURL
+  process.env.PW_LATCHED_PORT = basePort
 }
-console.log('[Playwright Config] baseURL:', baseURL)
+
+// Propagate resolved values so fixtures that read process.env directly stay in sync.
+process.env.BASE_URL = baseURL
+process.env.PORT = basePort
+
+if (debugConfig) {
+  // Debug: Log the configuration (quiet by default for CI/tooling like knip)
+  console.log(
+    '[Playwright Config] REUSE_EXISTING_SERVER:',
+    process.env.REUSE_EXISTING_SERVER,
+    '-> reuseExistingServer:',
+    reuseExistingServer
+  )
+  if (didAutoPickPort) {
+    console.log(
+      `[Playwright Config] Port ${defaultPort} is busy, auto-picked port: ${finalPort}`
+    )
+  }
+  console.log('[Playwright Config] baseURL:', baseURL)
+}
 // Use an endpoint that should reliably return 2xx once Next is up.
 // NOTE: /robots.txt can be affected by app metadata/route issues; /en is a
 // better readiness signal for this app.

@@ -113,7 +113,7 @@ export default async function FeedbackPage({
                   <Textarea
                     id="feedback"
                     placeholder={t('feedbackPlaceholder')}
-                    className="min-h-[150px] resize-none"
+                    className="min-h-(--textarea-min-h) resize-none"
                   />
                   <p className="text-xs text-muted-foreground">{t('feedbackHint')}</p>
                 </div>

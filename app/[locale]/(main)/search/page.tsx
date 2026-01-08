@@ -6,7 +6,7 @@ import { SubcategoryTabs } from "@/components/category/subcategory-tabs"
 import { SearchHeader } from "./_components/search-header"
 import { searchProducts } from "./_lib/search-products"
 import type { Category, Product } from "./_lib/types"
-import { MobileFilters } from "@/components/shared/filters/mobile-filters"
+import { QuickFilterRow } from "@/components/mobile/category-nav/quick-filter-row"
 import { DesktopFilters } from "@/components/shared/filters/desktop-filters"
 import { FilterChips } from "@/components/shared/filters/filter-chips"
 import { SortSelect } from "@/components/shared/search/sort-select"
@@ -18,6 +18,8 @@ import { cookies } from "next/headers"
 import type { Metadata } from 'next'
 import { getShippingFilter, parseShippingRegion } from '@/lib/shipping'
 import { ITEMS_PER_PAGE } from "../_lib/pagination"
+import { getCategoryContext } from "@/lib/data/categories"
+import type { CategoryAttribute } from "@/lib/data/categories"
 
 
 export function generateStaticParams() {
@@ -96,6 +98,8 @@ export default async function SearchPage({
   let allCategories: Category[] = []
   let allCategoriesWithSubs: { category: Category; subs: Category[] }[] = []
   let brands: string[] = []
+  let filterableAttributes: CategoryAttribute[] = []
+  let categoryIdForFilters: string | undefined = undefined
 
   if (supabase) {
     // Fetch L0 categories first (with subcategories fetched separately)
@@ -136,6 +140,7 @@ export default async function SearchPage({
 
         if (categoryData) {
           currentCategory = categoryData
+          categoryIdForFilters = categoryData.id
 
           // Check if this is a subcategory (has parent_id)
           if (categoryData.parent_id) {
@@ -207,6 +212,15 @@ export default async function SearchPage({
     // brands = [...new Set(products.map(p => p.brand).filter(Boolean))]
   }
 
+  // For mobile quick filters, fetch filterable attributes for the active category (if any)
+  if (searchParams.category) {
+    const ctx = await getCategoryContext(searchParams.category)
+    if (ctx) {
+      filterableAttributes = ctx.attributes
+      categoryIdForFilters = ctx.current.id
+    }
+  }
+
   // Get translations for search page UI
   const t = await getTranslations('SearchFilters')
 
@@ -216,7 +230,7 @@ export default async function SearchPage({
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Sidebar Filters - Hidden on mobile */}
           <aside className="w-64 hidden lg:block shrink-0 border-r border-border">
-            <div className="sticky top-28 py-4 pr-4 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar">
+            <div className="sticky top-28 py-4 pr-4 space-y-5 max-h-(--search-sidebar-max-h) overflow-y-auto no-scrollbar">
               <Suspense>
                 <SearchFilters
                   categories={allCategories}
@@ -256,41 +270,52 @@ export default async function SearchPage({
               </Suspense>
             </div>
 
-            {/* Filter & Sort Row - Amazon/Target style toolbar */}
-            <div className="mb-3 sm:mb-5 flex items-center gap-2 sm:gap-2.5">
-              {/* Mobile Filter Button - Larger on mobile */}
-              <div className="flex-1 lg:hidden">
-                <Suspense>
-                  <MobileFilters
-                    locale={locale}
-                    resultsCount={totalProducts}
-                  />
-                </Suspense>
-              </div>
+            {/* Mobile Control Bar — Sticky Sort + Filter below header */}
+            <div className="lg:hidden">
+              <Suspense>
+                <QuickFilterRow
+                  locale={locale}
+                  {...(currentCategory?.slug ? { categorySlug: currentCategory.slug } : {})}
+                  {...(categoryIdForFilters ? { categoryId: categoryIdForFilters } : {})}
+                  {...(query ? { searchQuery: query } : {})}
+                  attributes={filterableAttributes}
+                  subcategories={allCategories.map((c) => ({
+                    id: c.id,
+                    name: c.name,
+                    name_bg: c.name_bg,
+                    slug: c.slug,
+                  }))}
+                  basePath="/search"
+                  categoryParamKey="category"
+                />
+              </Suspense>
+            </div>
 
-              {/* Sort Dropdown - Left aligned on all devices, larger on mobile */}
-              <div className="flex-1 lg:max-w-[180px] lg:flex-initial">
+            {/* Desktop Filter & Sort Row */}
+            <div className="hidden lg:flex mb-3 sm:mb-5 items-center gap-2 sm:gap-2.5">
+              {/* Sort Dropdown */}
+              <div className="lg:max-w-44">
                 <SortSelect />
               </div>
 
               {/* Desktop Quick Filters */}
-              <div className="hidden lg:flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <Suspense>
                   <DesktopFilters />
                 </Suspense>
               </div>
 
-              {/* Results count - right aligned, hidden on mobile since it clutters the UI */}
-              <p className="hidden sm:block text-sm text-muted-foreground ml-auto whitespace-nowrap">
+              {/* Results count - right aligned */}
+              <p className="text-sm text-muted-foreground ml-auto whitespace-nowrap">
                 <span className="font-semibold text-foreground">{totalProducts}</span>
                 <span> {t('results')}</span>
                 {query && (
-                  <span className="hidden lg:inline">
+                  <span>
                     {" "}{t('for')} <span className="font-medium text-primary">&quot;{query}&quot;</span>
                   </span>
                 )}
                 {currentCategory && !query && (
-                  <span className="hidden lg:inline"> {t('in')} <span className="font-medium">{locale === 'bg' && currentCategory.name_bg ? currentCategory.name_bg : currentCategory.name}</span></span>
+                  <span> {t('in')} <span className="font-medium">{locale === 'bg' && currentCategory.name_bg ? currentCategory.name_bg : currentCategory.name}</span></span>
                 )}
               </p>
             </div>

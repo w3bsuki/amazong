@@ -9,7 +9,7 @@ export default function Loading() {
           <div className="flex gap-2.5 overflow-x-auto pb-2 no-scrollbar">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="flex flex-col items-center gap-2 shrink-0">
-                <Skeleton className="size-[72px] rounded-full" />
+                <Skeleton className="size-(--home-category-skeleton-size) rounded-full" />
                 <Skeleton className="h-3 w-12" />
               </div>
             ))}
@@ -76,7 +76,7 @@ export default function Loading() {
             <Skeleton className="h-6 w-56 mb-3" />
             <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
               {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="w-[260px] min-w-[260px] h-32 rounded-md" />
+                <Skeleton key={i} className="w-(--home-horizontal-card-skeleton-w) min-w-(--home-horizontal-card-skeleton-w) h-32 rounded-md" />
               ))}
             </div>
           </div>

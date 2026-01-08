@@ -99,8 +99,8 @@ export function MobileStickyBarEnhanced({
   };
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background shadow-[0_-2px_10px_rgba(0,0,0,0.08)] lg:hidden">
-      <div className="flex items-center gap-2 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+    <div className="mobile-sticky-shadow fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background lg:hidden">
+      <div className="flex items-center gap-2 px-3 py-2 pb-safe-max-xs">
         {/* Wishlist Button - 40px touch target */}
         <Button
           type="button"

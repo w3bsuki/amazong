@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/routing"
-import { Storefront, ArrowRight, ShieldCheck, ArrowCounterClockwise, Lock } from "@phosphor-icons/react"
+import { Storefront, ArrowRight, ShieldCheck, CreditCard, ChatCircleDots } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface StartSellingBannerProps {
@@ -22,67 +22,67 @@ export function StartSellingBanner({
   const trustItems = isBg
     ? [
         { icon: ShieldCheck, text: "Защита на купувача" },
-        { icon: ArrowCounterClockwise, text: "30 дни връщане" },
-        { icon: Lock, text: "Сигурно плащане" },
+        { icon: CreditCard, text: "Сигурно плащане" },
+        { icon: ChatCircleDots, text: "Поддръжка 24/7" },
       ]
     : [
-        { icon: ShieldCheck, text: "Buyer Protection" },
-        { icon: ArrowCounterClockwise, text: "30-Day Returns" },
-        { icon: Lock, text: "Secure Payment" },
+        { icon: ShieldCheck, text: "Buyer protection" },
+        { icon: CreditCard, text: "Secure payment" },
+        { icon: ChatCircleDots, text: "24/7 support" },
       ]
   
-  // Full-bleed: edge-to-edge professional banner (like eBay/OLX seller CTAs)
+  // Full-bleed: prominent banner but respects page rhythm
   if (variant === "full-bleed") {
     return (
-      <Link
-        href="/sell"
-        className={cn(
-          "block w-full",
-          "bg-brand",
-          "text-white",
-          "px-(--page-inset) py-3",
-          "hover:bg-brand-dark",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-          "transition-all duration-150",
-          className
-        )}
-      >
-        <div className="flex items-center justify-between w-full gap-3">
-          {/* Left: Text */}
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold leading-snug">
-              {isBg ? "Регистрирай се, за да продаваш" : "Sign up to start selling"}
-            </p>
-            <p className="text-xs text-white/80 mt-0.5">
-              {isBg
-                ? "Създай обява за минути. Достигни купувачи."
-                : "List in minutes. Reach buyers faster."}
-            </p>
+      <div className="px-(--page-inset) py-2 bg-background">
+        <Link
+          href="/sell"
+          className={cn(
+            "block w-full rounded-lg",
+            "bg-brand",
+            "text-white",
+            "px-3 py-3",
+            "hover:bg-brand-dark",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "transition-colors duration-150",
+            className
+          )}
+        >
+          <div className="flex items-center justify-between w-full gap-3">
+            {/* Left: Text */}
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold leading-snug">
+                {isBg ? "Регистрирай се, за да продаваш" : "Sign up to start selling"}
+              </p>
+              <p className="text-xs text-white/80 mt-0.5">
+                {isBg
+                  ? "Създай обява за минути. Достигни купувачи."
+                  : "List in minutes. Reach buyers faster."}
+              </p>
+            </div>
+
+            {/* Right: Arrow pill */}
+            <span
+              className="size-8 shrink-0 rounded-full bg-white/20 flex items-center justify-center"
+              aria-hidden="true"
+            >
+              <ArrowRight size={16} weight="bold" />
+            </span>
           </div>
+        </Link>
 
-          {/* Right: Arrow pill */}
-          <span
-            className="size-8 shrink-0 rounded-full bg-white/20 flex items-center justify-center"
-            aria-hidden="true"
-          >
-            <ArrowRight size={16} weight="bold" />
-          </span>
-        </div>
-
-        {/* Trust badges integrated into banner */}
+        {/* Trust badges - separate row below banner */}
         {showTrustRow && (
-          <div className="flex items-center gap-4 mt-2 pt-2 border-t border-white/15">
+          <div className="flex items-center justify-between mt-2 px-1">
             {trustItems.map((item, index) => (
-              <div key={index} className="flex items-center gap-1.5 text-white/70">
-                <item.icon size={14} weight="bold" className="shrink-0" />
-                <span className="text-2xs font-medium whitespace-nowrap">
-                  {item.text}
-                </span>
+              <div key={index} className="flex items-center gap-1.5 text-muted-foreground">
+                <item.icon size={16} weight="regular" />
+                <span className="text-xs">{item.text}</span>
               </div>
             ))}
           </div>
         )}
-      </Link>
+      </div>
     )
   }
   

@@ -2,7 +2,8 @@
 
 This file is for coding agents (including GPT-5.2) working in this repo.
 Goal: ship to production with fewer regressions, lower Vercel/Supabase cost, and less “AI slop”.
-
+> **Full Workflow**: See `docs/PRODUCTION-WORKFLOW-GUIDE.md`
+> **Skill Prefixes**: `TREIDO:` (general dev), `TAILWIND:` (UI audit), `SUPABASE:` (DB audit)
 ## Repo snapshot
 
 - App: Next.js 16 (App Router) + React 19 + TypeScript

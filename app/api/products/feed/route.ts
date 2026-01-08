@@ -6,13 +6,40 @@ import {
   dbUnavailableResponse, 
   parsePaginationParams 
 } from "@/lib/api/response-helpers"
+import { z } from "zod"
+
+const FeedQuerySchema = z.object({
+  type: z
+    .enum([
+      'all',
+      'newest',
+      'promoted',
+      'deals',
+      'top_rated',
+      'most_viewed',
+      'best_sellers',
+      'price_low',
+      'nearby',
+      'near_me',
+    ])
+    .optional()
+    .default('all'),
+  category: z.string().trim().min(1).max(64).optional(),
+  city: z.string().trim().min(1).max(80).optional(),
+})
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
-  const type = searchParams.get("type") || "all"
+  const parsedQuery = FeedQuerySchema.safeParse({
+    type: searchParams.get("type") ?? undefined,
+    category: searchParams.get("category") ?? undefined,
+    city: searchParams.get("city") ?? undefined,
+  })
+
+  const type = parsedQuery.success ? parsedQuery.data.type : "all"
   const { page, limit: safeLimit, offset } = parsePaginationParams(searchParams)
-  const category = searchParams.get("category")
-  const city = searchParams.get("city")
+  const category = parsedQuery.success ? parsedQuery.data.category : undefined
+  const city = parsedQuery.success ? parsedQuery.data.city : undefined
   const nowIso = new Date().toISOString()
   
   try {

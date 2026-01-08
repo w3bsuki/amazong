@@ -2,19 +2,28 @@ import { createStaticClient } from "@/lib/supabase/server"
 import { normalizeImageUrls } from "@/lib/normalize-image-url"
 import { NextResponse } from "next/server"
 import { cachedJsonResponse } from "@/lib/api/response-helpers"
+import { z } from "zod"
+import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
+
+const SearchQuerySchema = z.object({
+  q: z.string().trim().min(2).max(80),
+  limit: z.coerce.number().int().min(1).max(20).optional(),
+})
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
-    const rawQuery = searchParams.get("q")?.trim()
-    const limit = Number.parseInt(searchParams.get("limit") || "10")
+    const parsed = SearchQuerySchema.safeParse({
+      q: searchParams.get("q"),
+      limit: searchParams.get("limit") ?? undefined,
+    })
 
-    const query = rawQuery?.slice(0, 80)
-    const safeLimit = Math.min(Math.max(Number.isFinite(limit) ? limit : 10, 1), 20)
-
-    if (!query || query.length < 2) {
+    if (!parsed.success) {
       return cachedJsonResponse({ products: [] })
     }
+
+    const query = parsed.data.q
+    const safeLimit = parsed.data.limit ?? 10
 
     const supabase = createStaticClient()
     if (!supabase) {
@@ -59,6 +68,7 @@ export async function GET(request: Request) {
 
     return cachedJsonResponse({ products: transformedProducts })
   } catch (error) {
+    if (isNextPrerenderInterrupted(error)) throw error
     console.error("Search API Error:", error)
     const message = error instanceof Error ? error.message : "Internal Server Error"
     return NextResponse.json({ error: message }, { status: 500 })

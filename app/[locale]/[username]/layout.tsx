@@ -47,7 +47,7 @@ export default async function UsernameLayout({
             {/* Skip Links - Accessibility */}
             <SkipLinks />
 
-            <Suspense fallback={<div className="h-[52px] w-full bg-header-bg md:h-[100px]" />}>
+            <Suspense fallback={<div className="h-(--header-skeleton-h) w-full bg-header-bg md:h-(--header-skeleton-h-md)" />}>
                 <SiteHeader user={user} hideSubheader hideOnMobile categories={categories} />
             </Suspense>
 

@@ -166,7 +166,7 @@ export function PlansModal({
       console.error('Checkout error:', error)
       // On error, redirect to full plans page where user can see clearer error
       setIsOpen(false)
-      router.push(`/${locale}/plans`)
+      router.push("/plans")
     } finally {
       setSubscribingPlan(null)
     }

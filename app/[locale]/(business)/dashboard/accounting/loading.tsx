@@ -47,7 +47,7 @@ export default function DashboardAccountingLoading() {
             </div>
           </CardHeader>
           <CardContent>
-            <Skeleton className="h-[300px] w-full" />
+            <Skeleton className="h-(--spacing-scroll-md) w-full" />
           </CardContent>
         </Card>
       </div>

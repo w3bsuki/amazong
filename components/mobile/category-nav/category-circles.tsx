@@ -73,10 +73,12 @@ export function CategoryCircles({
           const dimmed =
             (showL2Circles ? !!activeL2 : !!activeL1) && !isActive
 
-          const href =
-            circlesNavigateToPages && activeTab !== "all"
-              ? (`/categories/${sub.slug}` as const)
-              : undefined
+          // Phase 3: Stop circle reloads - always use onClick for client-side drill-down
+          // L0/L1 circles should never cause page navigation; they update pending state.
+          // Navigation happens only on Apply in Filter Hub or via explicit "View all" links.
+          // Keep href behavior only for non-"all" tab when explicitly navigating to leaf categories.
+          const useHref = circlesNavigateToPages && activeTab !== "all" && showL2Circles
+          const href = useHref ? (`/categories/${sub.slug}` as const) : undefined
 
           return (
             <CategoryCircle
@@ -93,7 +95,7 @@ export function CategoryCircles({
               className="w-16 shrink-0"
               labelClassName={cn(
                 "w-full text-2xs text-center leading-tight line-clamp-2",
-                isActive ? "text-brand font-semibold" : "text-muted-foreground"
+                isActive ? "text-primary font-semibold" : "text-muted-foreground"
               )}
             />
           )

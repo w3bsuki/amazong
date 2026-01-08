@@ -539,13 +539,11 @@
         "signUp": "Sign up",
         "subscribing": "Subscribing...",
         "promoDisclaimer": "See offer details. Restrictions apply. Pricing, promotions and availability may vary by location.",
-        
         "company": "Company",
         "aboutUsLink": "About Treido",
         "careers": "Careers",
         "newsAndBlog": "News & Blog",
         "investors": "Investors",
-        
         "help": "Help",
         "helpCenter": "Treido Help",
         "returns": "Returns",
@@ -553,30 +551,25 @@
         "contactUs": "Contact Us",
         "securityFraud": "Security",
         "feedback": "Feedback",
-        
         "sellAndBusiness": "Sell & Business",
         "sellWithUs": "Sell with Us",
         "findStore": "Store Locator",
         "affiliatesPartners": "Affiliates & Partners",
         "advertise": "Advertise with Us",
         "suppliers": "Suppliers",
-        
         "services": "Services",
         "membershipProgram": "Membership",
         "giftCards": "Gift Cards",
         "giftRegistry": "Registry",
         "freeShipping": "Shipping Info",
         "accessibility": "Accessibility",
-        
         "socialMedia": "Follow us on social media",
         "homePage": "Go to homepage",
         "legalLinks": "Legal and privacy links",
-        
         "terms": "Terms of Service",
         "privacyPolicy": "Privacy Policy",
         "cookiePolicy": "Cookie Preferences",
         "odr": "Online Dispute Resolution",
-        
         "companyInfo": "Treido Ltd. • Sofia, Bulgaria • Company Reg: BG123456789 • VAT: BG123456789",
         "copyright": "TM & © {year} Treido, Inc. or its affiliates"
     },
@@ -879,6 +872,20 @@
     },
     "Account": {
         "title": "Your Account",
+        "header": {
+            "overview": "Account Overview",
+            "orders": "Orders",
+            "wishlist": "Wishlist",
+            "security": "Security",
+            "addresses": "Addresses",
+            "notifications": "Notifications",
+            "payments": "Payments",
+            "selling": "Selling",
+            "sales": "Sales",
+            "plans": "Plans",
+            "myAccount": "My Account",
+            "backToStore": "Back to Store"
+        },
         "orders": {
             "title": "Your Orders",
             "desc": "Track, return, or buy things again"
@@ -1339,10 +1346,8 @@
         "breadcrumbSecurity": "Security",
         "heroTitle": "Security at Treido",
         "heroSubtitle": "Your safety is our top priority",
-        
         "stripePartner": "Powered by Stripe",
         "stripePartnerDesc": "All payments are securely processed by Stripe, a global leader in payment security.",
-        
         "paymentSecurity": "Payment Security",
         "paymentSecurityDesc": "Every transaction on Treido is protected by multiple layers of security.",
         "pciCompliant": "PCI DSS Level 1 Certified",
@@ -1353,7 +1358,6 @@
         "secure3dDesc": "Additional verification step for card payments, reducing fraud and protecting your transactions.",
         "noCardStorage": "We Never Store Card Details",
         "noCardStorageDesc": "Your card information goes directly to Stripe and is never stored on our servers.",
-        
         "accountSecurity": "Account Security",
         "accountSecurityDesc": "We implement multiple measures to keep your account safe.",
         "securePasswords": "Secure Password Storage",
@@ -1364,7 +1368,6 @@
         "sessionManagementDesc": "Automatic session timeout and secure session handling protect against hijacking.",
         "twoFactor": "Two-Factor Authentication",
         "twoFactorDesc": "Optional 2FA adds an extra layer of protection to your account (coming soon).",
-        
         "fraudPrevention": "Fraud Prevention",
         "fraudPreventionDesc": "We actively monitor and prevent fraudulent activity on our platform.",
         "transactionMonitoring": "Transaction Monitoring",
@@ -1375,14 +1378,12 @@
         "buyerProtectionDesc": "If something goes wrong with your order, our buyer protection program has you covered.",
         "reportSuspicious": "Report Suspicious Activity",
         "reportSuspiciousDesc": "Help us keep the platform safe by reporting any suspicious listings or behavior.",
-        
         "dataProtection": "Data Protection",
         "dataProtectionDesc": "We take your privacy seriously and comply with all applicable data protection regulations.",
         "gdprCompliance": "Full GDPR compliance for all EU users",
         "dataEncryption": "All personal data encrypted at rest and in transit",
         "regularAudits": "Regular security audits and penetration testing",
         "dataMinimization": "We only collect data that's necessary for our services",
-        
         "reportIssue": "Found a Security Issue?",
         "reportIssueDesc": "If you've discovered a vulnerability, please let us know responsibly.",
         "contactUs": "Contact Support"
@@ -1604,5 +1605,19 @@
             "US": "United States",
             "WW": "Worldwide"
         }
+    },
+    "FilterHub": {
+        "refineSearch": "Refine Your Search",
+        "clearAll": "Clear All",
+        "showResults": "Show {count} Results",
+        "noResults": "No items found",
+        "back": "Back",
+        "close": "Close",
+        "searchPlaceholder": "Search {filterName}...",
+        "selected": "selected",
+        "category": "Category",
+        "allInCategory": "All in {category}",
+        "subcategories": "Subcategories",
+        "allFilters": "All filters"
     }
 }

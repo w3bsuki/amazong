@@ -1,5 +1,3 @@
-"use client"
-
 /**
  * Category Icons
  * 
@@ -84,7 +82,7 @@ import {
   Wine,
   CoffeeBean,
   Carrot
-} from "@phosphor-icons/react"
+} from "@phosphor-icons/react/ssr"
 
 type PhosphorIcon = typeof Monitor
 

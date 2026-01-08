@@ -1,48 +1,48 @@
 "use client"
 
-import { useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/layout/sidebar/sidebar"
 
+const PATH_TO_KEY: Record<string, string> = {
+  '/account': 'overview',
+  '/account/orders': 'orders',
+  '/account/wishlist': 'wishlist',
+  '/account/security': 'security',
+  '/account/addresses': 'addresses',
+  '/account/notifications': 'notifications',
+  '/account/payments': 'payments',
+  '/account/selling': 'selling',
+  '/account/sales': 'sales',
+  '/account/plans': 'plans',
+}
+
 export function AccountHeader() {
-  const locale = useLocale()
+  const t = useTranslations("Account.header")
   const pathname = usePathname()
 
   // Get current page title based on pathname
   const getPageTitle = () => {
-    const path = pathname.replace(`/${locale}`, "")
+    // Strip locale prefix (e.g., /en/account -> /account)
+    const path = pathname.replace(/^\/[a-z]{2}/, "")
 
-    const titles: Record<string, { en: string; bg: string }> = {
-      '/account': { en: 'Account Overview', bg: 'Преглед на акаунта' },
-      '/account/orders': { en: 'Orders', bg: 'Поръчки' },
-      '/account/wishlist': { en: 'Wishlist', bg: 'Любими' },
-      '/account/security': { en: 'Security', bg: 'Сигурност' },
-      '/account/addresses': { en: 'Addresses', bg: 'Адреси' },
-      '/account/notifications': { en: 'Notifications', bg: 'Известия' },
-      '/account/payments': { en: 'Payments', bg: 'Плащания' },
-      '/account/selling': { en: 'Selling', bg: 'Продавам' },
-      '/account/sales': { en: 'Sales', bg: 'Продажби' },
-      '/account/plans': { en: 'Plans', bg: 'Планове' },
-    }
+    // Prefer exact match first
+    const exactKey = PATH_TO_KEY[path]
+    if (exactKey) return t(exactKey)
 
-    // Prefer exact match first (e.g. "/account/orders" should not match "/account")
-    const exact = titles[path]
-    if (exact) return locale === "bg" ? exact.bg : exact.en
-
-    // Then fall back to the longest matching prefix
-    const keysBySpecificity = Object.keys(titles).sort((a, b) => b.length - a.length)
-    for (const key of keysBySpecificity) {
-      if (path.startsWith(key + "/")) {
-        const value = titles[key]
-        if (!value) continue
-        return locale === "bg" ? value.bg : value.en
+    // Fall back to longest matching prefix
+    const keysBySpecificity = Object.keys(PATH_TO_KEY).sort((a, b) => b.length - a.length)
+    for (const routePath of keysBySpecificity) {
+      if (path.startsWith(routePath + "/")) {
+        const key = PATH_TO_KEY[routePath]
+        if (key) return t(key)
       }
     }
 
-    return locale === 'bg' ? 'Моят акаунт' : 'My Account'
+    return t('myAccount')
   }
 
   return (
@@ -57,7 +57,7 @@ export function AccountHeader() {
         <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
             <Link href="/" className="dark:text-foreground">
-              {locale === 'bg' ? 'Към магазина' : 'Back to Store'}
+              {t('backToStore')}
             </Link>
           </Button>
         </div>

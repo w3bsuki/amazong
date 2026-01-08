@@ -235,8 +235,8 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
         onClick={() => setIsOpen(true)}
         className={cn(
           "h-8 w-full rounded-lg px-3 gap-2 text-xs font-medium",
-          "bg-muted/50 hover:bg-muted/70 hover:text-foreground transition-colors border border-border/40",
-          filterCount > 0 && "bg-primary/10 text-primary border-primary/30"
+          "bg-background hover:bg-muted/40 hover:text-foreground transition-colors border border-border/60",
+          filterCount > 0 && "bg-muted text-foreground border-border"
         )}
       >
         <Sliders size={14} weight="regular" className={cn(
@@ -245,7 +245,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
         )} />
         <span className={cn(filterCount > 0 ? "text-primary" : "text-foreground")}>{t('filters')}</span>
         {filterCount > 0 && (
-          <span className="bg-primary text-primary-foreground text-2xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
+          <span className="bg-foreground text-background text-2xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
             {filterCount}
           </span>
         )}
@@ -254,7 +254,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
       {/* Bottom Sheet using shadcn Drawer (Vaul) for drag-to-close */}
       <Drawer open={isOpen} onOpenChange={setIsOpen}>
         <DrawerContent 
-          className="max-h-[90vh] flex flex-col rounded-t-2xl px-0 pb-0 lg:hidden"
+          className="max-h-(--dialog-max-h) flex flex-col rounded-t-2xl px-0 pb-0 lg:hidden"
         >
           <DrawerHeader className={cn(
             "px-4 pb-3 border-b border-border/50",
@@ -465,7 +465,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
           </div>
 
           {/* Footer with Show Results button - includes safe area */}
-          <div className="p-4 border-t border-border/50 bg-background pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="p-4 border-t border-border/50 bg-background pb-safe-max">
             <DrawerClose asChild>
               <Button
                 className="w-full h-10 rounded-full text-sm font-bold"
