@@ -40,9 +40,9 @@ export default async function CategoriesPage({
   const initialProducts = newestProducts.map((p) => toUI(p))
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
       {/* MOBILE: full browsing UX (tabs + circles + quick filters). */}
-      <div className="md:hidden">
+      <div className="w-full md:hidden">
         <MobileHomeTabs
           initialProducts={initialProducts}
           initialProductsSlug="all"
@@ -59,7 +59,7 @@ export default async function CategoriesPage({
       </div>
 
       {/* DESKTOP: keep the category directory list. */}
-      <div className="hidden md:block">
+      <div className="hidden md:block min-h-screen bg-background">
 
         {/* Header */}
         <div className="border-b border-border/30 bg-background">
@@ -150,6 +150,6 @@ export default async function CategoriesPage({
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

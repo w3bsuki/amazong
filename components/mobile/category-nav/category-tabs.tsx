@@ -52,7 +52,7 @@ export function CategoryTabs({
 
   return (
     <div
-      className="sticky z-30 bg-header-bg/90 backdrop-blur-md border-b border-header-border/50"
+      className="sticky z-30 bg-header-bg border-b border-header-border/50"
       style={{ top: headerHeight }}
     >
       <div

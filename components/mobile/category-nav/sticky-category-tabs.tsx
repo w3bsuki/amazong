@@ -19,7 +19,9 @@ export function StickyCategoryTabs({
   const [headerHeight, setHeaderHeight] = useState(0)
 
   useEffect(() => {
-    const header = document.querySelector("header")
+    const header =
+      document.querySelector('header[data-hydrated="true"]') ||
+      document.querySelector("header")
 
     const update = () => {
       if (!(header instanceof HTMLElement)) {

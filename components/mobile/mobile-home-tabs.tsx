@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useLayoutEffect, useState, useCallback } from "react"
 import { useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 import type { CategoryTreeNode } from "@/lib/category-tree"
@@ -125,9 +125,13 @@ export function MobileHomeTabs({
     activeAllFilter,
   })
 
-  // Measure header height for sticky positioning
-  useEffect(() => {
-    const header = document.querySelector("header")
+  // Measure header height for sticky positioning (before paint to avoid overlap/jank)
+  useLayoutEffect(() => {
+    // Be precise: multiple components may render <header> tags.
+    // The site header marks itself as hydrated, so prefer that.
+    const header =
+      document.querySelector('header[data-hydrated="true"]') ||
+      document.querySelector("header")
 
     const update = () => {
       if (!(header instanceof HTMLElement)) {

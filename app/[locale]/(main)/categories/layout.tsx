@@ -19,12 +19,8 @@ export default async function CategoriesLayout({
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
 
-  return (
-    <div className="min-h-(--categories-layout-min-h) bg-background">
-      {/* Main Content Area - MobileHomeTabs handles tabs internally */}
-      <main id="main-content" className="min-w-0 overflow-x-hidden">
-        {children}
-      </main>
-    </div>
-  )
+  // NOTE: Removed overflow-x-hidden from main - it can interfere with sticky
+  // positioning of tabs in MobileHomeTabs. The page content should handle
+  // any overflow needs locally.
+  return <>{children}</>
 }
