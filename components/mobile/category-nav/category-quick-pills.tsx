@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from "react"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryName } from "@/lib/category-display"
+import { getCategoryShortName } from "@/lib/category-display"
 import { CategoryNavItem } from "./category-nav-item"
 
 type Category = CategoryTreeNode
@@ -83,7 +83,7 @@ export function CategoryQuickPills({
 
         {/* Category Pills */}
         {categories.map((cat) => {
-          const label = getCategoryName(cat, locale)
+          const label = getCategoryShortName(cat, locale)
           const isActive = activeTab === cat.slug
 
           return tabsNavigateToPages ? (
