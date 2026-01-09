@@ -364,7 +364,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                     is_primary: boolean | null
                     display_order: number | null
                   }
-                  
+
                   const productImages = data?.product_images as ProductImage[] | null
                   const legacyImages = data?.images as string[] | null
 
@@ -440,7 +440,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
       <HoverCardTrigger asChild>
         <div
           data-testid="notifications-dropdown"
-          className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer"
+          className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-touch [&_svg]:size-6 cursor-pointer"
           aria-label={`${t("title")} ${t("ariaNotificationsHint")}${totalUnread > 0 ? ` (${totalUnread} unread)` : ""}`}
         >
           <span className="relative" aria-hidden="true">

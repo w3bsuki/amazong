@@ -53,7 +53,7 @@ export default async function CategoriesPage({
       </div>
 
       {/* Category List */}
-      <div className="divide-y divide-border/30">
+      <div className="divide-y divide-border/60">
         {categoriesWithChildren.map((cat) => {
           const children = cat.children ?? []
           const hasChildren = children.length > 0
@@ -78,12 +78,18 @@ export default async function CategoriesPage({
                   {getCategoryShortName(cat, locale)}
                 </div>
                 {hasChildren && (
-                  <div className="text-2xs text-muted-foreground truncate">
-                    {children
-                      .slice(0, 3)
-                      .map((c) => getCategoryShortName(c, locale))
-                      .join(' • ')}
-                    {children.length > 3 && ` +${children.length - 3}`}
+                  <div className="text-2xs text-muted-foreground truncate flex items-center gap-0.5">
+                    <span className="truncate">
+                      {children
+                        .slice(0, 2)
+                        .map((c) => getCategoryShortName(c, locale))
+                        .join(' • ')}
+                    </span>
+                    {children.length > 2 && (
+                      <span className="inline-flex items-center justify-center shrink-0 px-1.5 py-0.5 bg-muted rounded-sm text-2xs font-medium text-muted-foreground">
+                        +{children.length - 2}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>

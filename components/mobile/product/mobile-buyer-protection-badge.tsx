@@ -19,7 +19,7 @@ export function MobileBuyerProtectionBadge() {
       <div className="flex items-start gap-3">
         <ShieldCheck className="size-5 text-foreground mt-0.5" strokeWidth={1.5} />
         <div>
-          <h3 className="text-[13px] font-bold text-foreground">{t("buyerProtectionBadgeTitle")}</h3>
+          <h3 className="text-xs font-bold text-foreground">{t("buyerProtectionBadgeTitle")}</h3>
           <p className="text-xs text-muted-foreground leading-snug mt-0.5">
             {t("buyerProtectionBadgeSubtitle")}
           </p>

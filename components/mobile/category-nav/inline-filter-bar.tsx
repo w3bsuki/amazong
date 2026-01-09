@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useMemo, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { Sliders, CaretDown } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
@@ -31,12 +31,22 @@ export interface InlineFilterBarProps {
   locale: string
   /** Called when "All filters" button is clicked */
   onAllFiltersClick: () => void
+  /** Optional externally-controlled applied params (for instant, non-navigating flows) */
+  appliedSearchParams?: URLSearchParams | ReadonlyURLSearchParams | undefined
+  /** Optional apply handler to avoid router navigation */
+  onApply?: (next: {
+    queryString: string
+    finalPath: string
+    pendingCategorySlug?: string | null
+  }) => void
   /** Filter triggers to display */
   filters?: FilterDropdownConfig[]
   /** Filterable attributes from category (auto-converted to triggers) */
   attributes?: CategoryAttribute[]
   /** Sticky position top offset (after header + pills) */
   stickyTop?: number
+  /** Whether this bar is sticky (default: true). */
+  sticky?: boolean
   /** Additional CSS classes */
   className?: string
 }
@@ -55,13 +65,17 @@ function attributesToFilters(attributes: CategoryAttribute[], locale: string): F
 export function InlineFilterBar({
   locale,
   onAllFiltersClick,
+  appliedSearchParams,
+  onApply,
   filters: filtersProp,
   attributes = [],
   stickyTop = 80,
+  sticky = true,
   className,
 }: InlineFilterBarProps) {
   const t = useTranslations("SearchFilters")
-  const searchParams = useSearchParams()
+  const searchParamsFromRouter = useSearchParams()
+  const searchParams = appliedSearchParams ?? searchParamsFromRouter
 
   const [singleOpen, setSingleOpen] = useState(false)
   const [singleSection, setSingleSection] = useState<FilterModalSection | null>(null)
@@ -98,30 +112,32 @@ export function InlineFilterBar({
 
   return (
     <div
-      className={cn("sticky z-20 bg-background border-b border-border/30", className)}
-      style={{ top: stickyTop }}
+      className={cn(sticky && "sticky z-20", "bg-background border-b border-border/60", className)}
+      style={sticky ? { top: stickyTop } : undefined}
     >
+      {/* Treido: 40px height, dense inline filter strip */}
       <div className="flex items-center h-10 px-(--page-inset) gap-2 overflow-x-auto no-scrollbar">
+        {/* All Filters button - prominent */}
         <button
           type="button"
           onClick={onAllFiltersClick}
           className={cn(
-            "flex items-center gap-1.5 h-8 px-2.5 shrink-0",
-            "rounded-full border border-border",
-            "text-sm font-medium text-foreground",
-            "hover:bg-muted/50 active:bg-muted/70",
+            "flex items-center gap-1.5 shrink-0",
+            "h-8 bg-background px-3 rounded-md border border-border",
+            "text-[13px] font-semibold text-foreground",
+            "tap-highlight-transparent active:opacity-60",
             "transition-colors",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           )}
           aria-haspopup="dialog"
         >
-          <Sliders size={16} weight="bold" className="shrink-0" />
+          <Sliders size={14} weight="bold" className="shrink-0 stroke-[2.5]" />
           <span>{t("filters")}</span>
           {activeFilterCount > 0 && (
             <span
               className={cn(
                 "bg-foreground text-background",
-                "text-2xs font-bold rounded-full",
+                "text-[10px] font-bold rounded-full",
                 "min-w-4 h-4 px-1",
                 "flex items-center justify-center"
               )}
@@ -131,8 +147,9 @@ export function InlineFilterBar({
           )}
         </button>
 
-        <div className="w-px h-5 bg-border/60 shrink-0" aria-hidden="true" />
 
+
+        {/* Quick filter triggers - Treido: outlined pill style with dropdown caret */}
         {filters.map((filter) => {
           const isActive = searchParams.getAll(filter.paramKey).length > 0
 
@@ -142,18 +159,25 @@ export function InlineFilterBar({
               type="button"
               onClick={() => handleFilterTrigger(filter)}
               className={cn(
-                "flex items-center gap-1 h-8 px-2.5 shrink-0",
-                "rounded-full border text-sm font-medium",
+                "flex items-center gap-1 shrink-0",
+                "h-8 px-4 rounded-md",
+                "border",
+                "text-[13px] font-semibold",
+                "whitespace-nowrap",
+                "tap-highlight-transparent active:bg-muted/30 active:opacity-90",
                 "transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 isActive
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/50"
+                  ? "bg-foreground text-background border-foreground"
+                  : "bg-background text-muted-foreground border-border"
               )}
               aria-haspopup="dialog"
             >
-              <span className="whitespace-nowrap">{filter.label}</span>
-              <CaretDown size={14} weight="bold" className="shrink-0" />
+              <span>{filter.label}</span>
+              <CaretDown size={12} weight="bold" className={cn(
+                "shrink-0",
+                isActive ? "text-background/60" : "text-muted-foreground/50"
+              )} />
             </button>
           )
         })}
@@ -175,6 +199,8 @@ export function InlineFilterBar({
             sectionLabel={singleLabel}
             locale={locale}
             attribute={singleAttribute!}
+            {...(appliedSearchParams ? { appliedSearchParams } : {})}
+            {...(onApply ? { onApply } : {})}
           />
         ) : (
           <FilterModal
@@ -190,6 +216,8 @@ export function InlineFilterBar({
             section={singleSection}
             sectionLabel={singleLabel}
             locale={locale}
+            {...(appliedSearchParams ? { appliedSearchParams } : {})}
+            {...(onApply ? { onApply } : {})}
           />
         ))}
     </div>

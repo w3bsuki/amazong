@@ -67,7 +67,7 @@ export function CategoryCircleVisual({
         "rounded-full flex items-center justify-center overflow-hidden",
         "border",
         "transition-all duration-200", // Smooth transition
-        "group-active:scale-95", // Treido: active:scale-95 (via group from parent)
+        "group-active:opacity-90", // Treido: active:opacity-90 (via group from parent)
         styles.bg,
         activeStyles,
         className

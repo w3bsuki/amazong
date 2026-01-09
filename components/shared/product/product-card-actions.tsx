@@ -101,7 +101,7 @@ export function ProductCardActions({
 
     return (
         <>
-            {/* Wishlist button - Treido: top-2 right-2, w-8 h-8, bg-white/90 */}
+            {/* Wishlist button - Treido: top-2 right-2, w-8 h-8, glassy */}
             {showWishlist && (
                 <button
                     type="button"
@@ -109,8 +109,8 @@ export function ProductCardActions({
                         "absolute right-2 top-2 z-10 w-8 h-8 rounded-full flex items-center justify-center outline-none transition-colors",
                         !inWishlist && "lg:pointer-events-none lg:opacity-0 lg:group-hover:pointer-events-auto lg:group-hover:opacity-100 lg:transition-opacity lg:duration-100",
                         inWishlist
-                            ? "bg-white/90 text-red-500"
-                            : "bg-white/90 text-gray-500 active:text-red-500",
+                            ? "bg-background/95 backdrop-blur text-red-500"
+                            : "bg-background/95 backdrop-blur text-muted-foreground active:text-red-500",
                         isWishlistPending && "pointer-events-none opacity-50",
                         className
                     )}
@@ -134,8 +134,8 @@ export function ProductCardActions({
                 <button
                     type="button"
                     className={cn(
-                        "hidden lg:flex w-8 h-8 shrink-0 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-600 active:bg-gray-50 outline-none transition-colors",
-                        inCart && "border-gray-900 bg-gray-900 text-white",
+                        "hidden lg:flex w-8 h-8 shrink-0 items-center justify-center rounded-md border border-border bg-background text-muted-foreground active:bg-muted outline-none transition-colors",
+                        inCart && "border-foreground bg-foreground text-background",
                         (!inStock || isOwnProduct) && "cursor-not-allowed opacity-40"
                     )}
                     onClick={handleAddToCart}

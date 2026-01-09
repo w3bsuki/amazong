@@ -1,10 +1,8 @@
 "use client"
 
 import { SubcategoryCircles } from "@/components/category/subcategory-circles"
-import Image from "next/image"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
-import { getCategoryIcon } from "@/lib/category-icons"
 
 import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
 
@@ -56,6 +54,7 @@ export function SubcategoryTabs({ currentCategory, subcategories, basePath }: Su
  */
 function CategoryBanner({ category }: { category: Category }) {
   const locale = useLocale()
+  const t = useTranslations("Categories")
   const name = locale === "bg" && category.name_bg ? category.name_bg : category.name
 
   return (
@@ -75,7 +74,7 @@ function CategoryBanner({ category }: { category: Category }) {
         <div className="flex-1 min-w-0">
           <h2 className="text-lg font-semibold text-foreground truncate">{name}</h2>
           <p className="text-sm text-muted-foreground">
-            {locale === "bg" ? "????????? ?????????? ? ???? ?????????" : "Browse products in this category"}
+            {t("bannerDescription")}
           </p>
         </div>
       </div>

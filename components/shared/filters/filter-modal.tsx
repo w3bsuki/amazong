@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useEffect, useMemo } from "react"
-import { useSearchParams } from "next/navigation"
+import { useState, useCallback, useEffect, useMemo, startTransition } from "react"
+import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
 import { X, Check, Star } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
@@ -81,6 +81,14 @@ interface FilterModalProps {
   categoryParamKey?: string
   /** When true, show an "All categories" option (used for /search) */
   showAllCategoriesOption?: boolean
+  /** Optional externally-controlled applied params (for instant, non-navigating flows) */
+  appliedSearchParams?: URLSearchParams | ReadonlyURLSearchParams | undefined
+  /** Optional apply handler to avoid router navigation */
+  onApply?: (next: {
+    queryString: string
+    finalPath: string
+    pendingCategorySlug?: string | null
+  }) => void
 }
 
 interface PendingFilters {
@@ -107,12 +115,15 @@ export function FilterModal({
   basePath,
   categoryParamKey,
   showAllCategoriesOption = false,
+  appliedSearchParams,
+  onApply,
 }: FilterModalProps) {
   const t = useTranslations("SearchFilters")
   const tHub = useTranslations("FilterHub")
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
+  const searchParamsFromRouter = useSearchParams()
+  const searchParams = appliedSearchParams ?? searchParamsFromRouter
   const isMobile = useIsMobile()
 
   const appliedCategorySlug = useMemo(() => {
@@ -184,8 +195,8 @@ export function FilterModal({
       availability: searchParams.get("availability"),
       attributes: attribute
         ? {
-            [attribute.name]: searchParams.getAll(`attr_${attribute.name}`),
-          }
+          [attribute.name]: searchParams.getAll(`attr_${attribute.name}`),
+        }
         : {},
     })
   }, [open, searchParams, attribute, categoryParamKey, section])
@@ -291,9 +302,16 @@ export function FilterModal({
     }
 
     const queryString = params.toString()
-    router.push(queryString ? `${finalPath}?${queryString}` : finalPath)
+    if (onApply) {
+      onApply({ queryString, finalPath, pendingCategorySlug })
+    } else {
+      // Replace instead of push: avoids history spam and reduces the feeling of a full reload.
+      startTransition(() => {
+        router.replace(queryString ? `${finalPath}?${queryString}` : finalPath)
+      })
+    }
     onOpenChange(false)
-  }, [section, pending, pendingCategorySlug, attribute, searchParams, resolvedBasePath, router, onOpenChange, categoryParamKey])
+  }, [section, pending, pendingCategorySlug, attribute, searchParams, resolvedBasePath, router, onOpenChange, categoryParamKey, onApply])
 
   const displayCount = open ? liveCount : resultsCount
 
@@ -330,7 +348,7 @@ export function FilterModal({
               <Check size={12} weight="bold" className="text-primary-foreground" />
             )}
           </div>
-          <span className="text-sm font-medium">{locale === "bg" ? "Да" : "Yes"}</span>
+          <span className="text-base font-normal">{locale === "bg" ? "Да" : "Yes"}</span>
         </button>
       )
     }
@@ -435,7 +453,7 @@ export function FilterModal({
 
       {/* Rating Section */}
       {section === "rating" && (
-        <div className={cn(listBleedClass, "divide-y divide-border/30")}> 
+        <div className={cn(listBleedClass, "divide-y divide-border/30")}>
           {[4, 3, 2, 1].map((stars) => {
             const isActive = pending.minRating === stars.toString()
             return (
@@ -472,7 +490,7 @@ export function FilterModal({
 
       {/* Availability Section */}
       {section === "availability" && (
-        <div className={cn(listBleedClass, "divide-y divide-border/30")}> 
+        <div className={cn(listBleedClass, "divide-y divide-border/30")}>
           <button
             type="button"
             onClick={() =>
@@ -507,7 +525,7 @@ export function FilterModal({
 
       {/* Category Section */}
       {section === "category" && subcategories.length > 0 && (
-        <div className={cn(listBleedClass, "divide-y divide-border/30")}> 
+        <div className={cn(listBleedClass, "divide-y divide-border/30")}>
           {showAllCategoriesOption && (
             <button
               type="button"
@@ -539,7 +557,7 @@ export function FilterModal({
               )}
               aria-pressed={pendingCategorySlug === null}
             >
-              <span className="text-base font-normal">
+              <span className="text-base font-medium">
                 {tHub("allInCategory", { category: categoryName || "" })}
               </span>
               {pendingCategorySlug === null && <Check size={18} weight="bold" />}
@@ -579,14 +597,11 @@ export function FilterModal({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-(--dialog-max-h) flex flex-col rounded-t-3xl px-0 pb-0">
-          <div className="flex justify-center pt-2">
-            <div className="h-1.5 w-12 rounded-full bg-muted-foreground/25" />
-          </div>
+        <DrawerContent className="max-h-[92dvh] flex flex-col rounded-t-2xl px-0 pb-0 bg-background">
 
           <DrawerHeader className="px-(--page-inset) pt-4 pb-3 border-b border-border/30">
             <div className="flex items-center justify-between min-h-touch-sm">
-              <DrawerTitle className="text-xl font-semibold">{sectionLabel}</DrawerTitle>
+              <span className="text-base font-semibold">{sectionLabel}</span>
               <div className="flex items-center gap-2">
                 {hasPendingFilters && (
                   <button
@@ -613,7 +628,7 @@ export function FilterModal({
             <div className={contentPaddingClass}>{body}</div>
           </div>
 
-          <div className="px-(--page-inset) py-4 border-t border-border/30 bg-background flex-shrink-0 pb-safe-max">
+          <div className="p-4 bg-background border-t border-border/30 flex-shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))]">
             <Button
               className="w-full h-11 rounded-full text-sm font-bold"
               onClick={applyFilters}

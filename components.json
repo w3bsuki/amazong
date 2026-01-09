@@ -9,6 +9,9 @@
       "headers": {
         "Authorization": "Bearer ${SHADCNBLOCKS_API_KEY}"
       }
+    },
+    "@shadcn-studio": {
+      "url": "https://shadcnstudio.com/r/{name}.json"
     }
   },
   "tailwind": {

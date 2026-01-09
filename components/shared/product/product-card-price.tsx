@@ -54,17 +54,17 @@ function ProductCardPrice({
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 items-baseline gap-1">
-        {/* Treido: text-[16px] font-extrabold */}
+        {/* Treido: compact price emphasis */}
         <span
           className={cn(
-            "text-[16px] font-extrabold tracking-tight tabular-nums",
-            hasDiscount ? "text-gray-900" : "text-gray-900"
+            "text-[15px] font-bold tracking-tight tabular-nums",
+            hasDiscount ? "text-foreground" : "text-foreground"
           )}
         >
           {formattedPrice}
         </span>
         {hasDiscount && formattedOriginalPrice && (
-          <span className="text-[12px] text-gray-400 line-through">
+          <span className="text-[11px] text-muted-foreground line-through">
             {formattedOriginalPrice}
           </span>
         )}

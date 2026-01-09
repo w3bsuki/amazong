@@ -20,6 +20,7 @@ function Tabs({
     <TabsPrimitive.Root
       data-slot="tabs"
       className={cn('flex flex-col gap-2', className)}
+      suppressHydrationWarning
       {...props}
       {...(value !== undefined ? { value } : {})}
       {...(defaultValue !== undefined ? { defaultValue } : {})}
@@ -54,6 +55,7 @@ function TabsTrigger({
         "inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-1.5 text-body font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
+      suppressHydrationWarning
       {...props}
     />
   )
@@ -67,6 +69,7 @@ function TabsContent({
     <TabsPrimitive.Content
       data-slot="tabs-content"
       className={cn('flex-1 outline-none', className)}
+      suppressHydrationWarning
       {...props}
     />
   )

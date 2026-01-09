@@ -12,6 +12,7 @@ import { CaretRight } from "@phosphor-icons/react"
 
 // Import extracted components
 import { useCategoryNavigation } from "@/hooks/use-category-navigation"
+import { useInstantCategoryBrowse } from "@/hooks/use-instant-category-browse"
 import {
   CategoryTabs,
   CategoryQuickPills,
@@ -23,7 +24,10 @@ import {
   ContextualCategoryHeader,
   SubcategoryPills,
   InlineFilterBar,
+  // Phase 3: Treido-mock Smart Anchor Navigation
+  SmartAnchorNav,
 } from "./category-nav"
+import { ContextualDoubleDeckerNav } from "./category-nav/contextual-double-decker-nav"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
 
@@ -115,6 +119,17 @@ interface MobileHomeTabsProps {
    * Current category ID for filter context.
    */
   categoryId?: string
+  /**
+   * Parent category of the current category.
+   * Used to determine if we're on L0 (null), L1 (parent is L0), or deeper.
+   */
+  parentCategory?: {
+    id: string
+    slug: string
+    parent_id: string | null
+    name?: string
+    name_bg?: string | null
+  } | null
 }
 
 // =============================================================================
@@ -146,6 +161,7 @@ export function MobileHomeTabs({
   contextualBackHref,
   contextualSubcategories = [],
   categoryId,
+  parentCategory,
 }: MobileHomeTabsProps) {
   const intlLocale = useLocale()
   const locale = localeProp || intlLocale
@@ -156,7 +172,6 @@ export function MobileHomeTabs({
   const [activeAllFilter, setActiveAllFilter] = useState<string>("newest")
 
   // Contextual mode state
-  const [activeSubcategorySlug, setActiveSubcategorySlug] = useState<string | null>(null)
   const [filterHubOpen, setFilterHubOpen] = useState(false)
 
   // Use the extracted navigation hook
@@ -229,25 +244,7 @@ export function MobileHomeTabs({
     [nav]
   )
 
-  // Handle subcategory pill selection in contextual mode
-  const handleSubcategorySelect = useCallback(
-    (slug: string | null) => {
-      setActiveSubcategorySlug(slug)
-
-      // In contextual category pages, pills represent child categories.
-      // Navigating to the child category page enables deeper browsing.
-      if (slug) {
-        router.push(`/categories/${slug}`)
-        return
-      }
-
-      // "All" resets back to the current category page.
-      if (initialProductsSlug && initialProductsSlug !== "all") {
-        router.push(`/categories/${initialProductsSlug}`)
-      }
-    },
-    [router, initialProductsSlug]
-  )
+  const contextualInitialTitle = contextualCategoryName || ""
 
   // ==========================================================================
   // Contextual Mode Rendering (Vinted-style)
@@ -261,95 +258,125 @@ export function MobileHomeTabs({
     const siteHeader = document.querySelector('body > div > header')
     if (!(siteHeader instanceof HTMLElement)) return
 
-    // Hide on mobile only
+    // Hide on mobile AND desktop (since we are matching mobile-only design)
     siteHeader.style.display = 'none'
-
-    // Show on desktop
-    const mediaQuery = window.matchMedia('(min-width: 1024px)')
-    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
-      siteHeader.style.display = e.matches ? '' : 'none'
-    }
-    handleChange(mediaQuery)
-    mediaQuery.addEventListener('change', handleChange)
 
     return () => {
       siteHeader.style.display = ''
-      mediaQuery.removeEventListener('change', handleChange)
     }
   }, [contextualMode])
 
   if (contextualMode) {
     const backHref = contextualBackHref || `/categories`
 
+    const instant = useInstantCategoryBrowse({
+      enabled: true,
+      locale,
+      initialSlug: initialProductsSlug,
+      initialTitle: contextualInitialTitle,
+      initialCategoryId: categoryId,
+      initialParent: parentCategory
+        ? {
+          id: parentCategory.id,
+          slug: parentCategory.slug,
+          parent_id: parentCategory.parent_id,
+          name: parentCategory.name ?? parentCategory.slug,
+          name_bg: parentCategory.name_bg ?? null,
+        }
+        : null,
+      initialChildren: (contextualSubcategories as any) ?? [],
+      initialAttributes: filterableAttributes as any,
+      initialProducts,
+    })
+
+    const handleBack = async () => {
+      if (instant.parent?.slug) {
+        await instant.goBack()
+        return
+      }
+      router.push(backHref)
+    }
+
+    const handleCircleClick = async (cat: any) => {
+      if (!cat?.slug) return
+      await instant.setCategorySlug(String(cat.slug), { clearAttrFilters: true })
+    }
+
+    const handleApplyFilters = async (next: { queryString: string; finalPath: string }) => {
+      // finalPath is ignored in instant mode; URL sync is handled by the hook.
+      const params = new URLSearchParams(next.queryString)
+      await instant.setFilters(params)
+    }
+
     return (
       <div className="w-full min-h-screen bg-background">
-        {/* 1. Contextual Category Header (40px) */}
-        <ContextualCategoryHeader
-          title={contextualCategoryName || ""}
-          backHref={backHref}
-          locale={locale}
-          showSearch={true}
-        />
+        {/*
+          Treido pattern: One sticky “control stack” (header + nav + filters).
+          Avoid multiple nested sticky bars with brittle `top` offsets.
+        */}
+        <div className="sticky top-0 z-50 bg-background">
+          {/* 1) Contextual Category Header (48px) */}
+          <ContextualCategoryHeader
+            title={instant.categoryTitle || contextualInitialTitle}
+            backHref={backHref}
+            onBack={handleBack}
+            locale={locale}
+            showSearch={true}
+            sticky={true}
+            className="z-50"
+          />
 
-        {/* 2. Subcategory Pills (~36px) - replaces circles */}
-        {/* 2. Subcategory Navigation (Circles for L2, Pills for L3) */}
-        {(() => {
-          // Check if current category is L1 (Top Level).
-          // If true, its children are L2 -> Show Circles.
-          // If false (L2+), its children are L3+ -> Show Pills.
-          const isL1 = initialCategories.some((c) => c.id === categoryId)
+        </div>
 
-          if (isL1 && contextualSubcategories.length > 0) {
-            return (
-              <div className="bg-background border-b border-border/60 py-2">
-                <CategoryCircles
-                  circles={contextualSubcategories}
-                  activeL1={null} // Contextual mode handles its own navigation
-                  activeL2={null}
-                  showL2Circles={false}
-                  locale={locale}
-                  circlesNavigateToPages={true} // Navigates to subcategory page
-                  activeTab="contextual"
-                  onCircleClick={() => { }} // Not used when circlesNavigateToPages=true
-                  onBack={() => { }} // Not used
-                  hideBackButton={true}
-                />
-              </div>
-            )
-          }
+        {/* 2) Subcategory Circles (Contextual Mode) - Scrolls away */}
+        {contextualSubcategories.length > 0 && (
+          <div className="bg-muted/20 border-b border-border/30 py-1">
+            <CategoryCircles
+              circles={(instant.children as any) ?? contextualSubcategories}
+              activeL1={null}
+              activeL2={null}
+              activeL2Category={null}
+              activeCategoryName={instant.categoryTitle || contextualInitialTitle}
+              showL2Circles={false}
+              isDrilledDown={false}
+              l3Categories={[]}
+              selectedPill={null}
+              isL3Loading={false}
+              locale={locale}
+              circlesNavigateToPages={false}
+              activeTab="categories"
+              hideBackButton={true}
+              className="py-1"
+              onCircleClick={handleCircleClick}
+              onBack={() => { }}
+              onPillClick={() => { }}
+              onAllPillClick={() => { }}
+            />
+          </div>
+        )}
 
-          if (contextualSubcategories.length > 0) {
-            return (
-              <SubcategoryPills
-                subcategories={contextualSubcategories}
-                activeSlug={activeSubcategorySlug}
-                locale={locale}
-                onSelect={handleSubcategorySelect}
-                stickyTop={40}
-              />
-            )
-          }
-          return null
-        })()}
-
-        {/* 3. Inline Filter Bar (~40px) - replaces QuickFilterRow */}
+        {/* 3) Inline Filter Bar (scrolls away like Treido reference) */}
         <InlineFilterBar
           locale={locale}
           onAllFiltersClick={() => setFilterHubOpen(true)}
-          attributes={filterableAttributes}
-          stickyTop={contextualSubcategories.length > 0 ? 76 : 40} // After header (40) + pills (36)
+          attributes={(instant.attributes as any) ?? filterableAttributes}
+          appliedSearchParams={instant.appliedSearchParams}
+          onApply={handleApplyFilters}
+          stickyTop={48}
+          sticky={true}
+          className="z-30"
         />
 
         {/* 4. Product Feed */}
         <ProductFeed
-          products={nav.activeFeed.products}
-          hasMore={nav.activeFeed.hasMore}
-          isLoading={nav.isLoading}
-          activeSlug={nav.activeSlug}
+          products={instant.feed.products}
+          hasMore={instant.feed.hasMore}
+          isLoading={instant.isLoading}
+          activeSlug={instant.activeSlug}
           locale={locale}
           isAllTab={false}
-          activeCategoryName={contextualCategoryName || nav.activeCategoryName}
-          onLoadMore={nav.loadMoreProducts}
+          activeCategoryName={instant.activeCategoryName}
+          onLoadMore={instant.loadMore}
         />
 
         {/* FilterHub Drawer (fallback for complex filters) */}
@@ -357,9 +384,11 @@ export function MobileHomeTabs({
           open={filterHubOpen}
           onOpenChange={setFilterHubOpen}
           locale={locale}
-          {...(initialProductsSlug !== "all" ? { categorySlug: initialProductsSlug } : {})}
-          {...(categoryId ? { categoryId } : {})}
-          attributes={filterableAttributes}
+          {...(instant.categorySlug !== "all" ? { categorySlug: instant.categorySlug } : {})}
+          {...(instant.categoryId ? { categoryId: instant.categoryId } : {})}
+          attributes={(instant.attributes as any) ?? filterableAttributes}
+          appliedSearchParams={instant.appliedSearchParams}
+          onApply={handleApplyFilters}
           mode="full"
           initialSection={null}
         />
@@ -398,7 +427,9 @@ export function MobileHomeTabs({
 
       {/* 2. Seller Banner (All tab only) */}
       {showBanner && nav.isAllTab && (
-        <StartSellingBanner locale={locale} variant="full-bleed" />
+        <div className="mt-2">
+          <StartSellingBanner locale={locale} variant="full-bleed" />
+        </div>
       )}
 
       {/* Optional Page Title (for category pages) */}
@@ -409,10 +440,11 @@ export function MobileHomeTabs({
       )}
 
       {/* 3. Subcategory Circles (L1 or L2) OR "All" Tab Quick Filters */}
+      {/* Treido pattern: In drilled-down state, circles hide and morphed back pill + L3 pills appear */}
       <div
         className={cn(
-          "bg-background border-b border-border/30",
-          "py-1.5"
+          "bg-background",
+          !nav.isDrilledDown && "pt-2 pb-1"
         )}
       >
         {nav.isAllTab ? (
@@ -426,28 +458,25 @@ export function MobileHomeTabs({
             circles={nav.circlesToDisplay}
             activeL1={nav.activeL1}
             activeL2={nav.activeL2}
+            activeL2Category={nav.currentL2 ?? null}
             activeCategoryName={nav.activeCategoryName}
             showL2Circles={nav.showL2Circles}
+            isDrilledDown={nav.isDrilledDown}
+            l3Categories={nav.l3Categories}
+            selectedPill={nav.selectedPill}
+            isL3Loading={nav.isL3Loading}
             locale={locale}
             circlesNavigateToPages={circlesNavigateToPages}
             activeTab={nav.activeTab}
             onCircleClick={nav.handleCircleClick}
             onBack={nav.handleBack}
+            onPillClick={nav.handlePillClick}
+            onAllPillClick={() => nav.setSelectedPill(null)}
           />
         )}
       </div>
 
-      {/* 4. Deep Navigation Pills (L3) */}
-      {showL3Pills && nav.showPills && (
-        <CategoryL3Pills
-          categories={nav.l3Categories}
-          selectedPill={nav.selectedPill}
-          locale={locale}
-          isLoading={nav.isL3Loading}
-          onPillClick={nav.handlePillClick}
-          onAllClick={() => nav.setSelectedPill(null)}
-        />
-      )}
+      {/* 4. Deep Navigation Pills (L3) - REMOVED: Now integrated into CategoryCircles via Treido pattern */}
 
       {/* Quick Filter Pills (enabled per-page) */}
       {showQuickFilters && (
@@ -506,21 +535,7 @@ export function MobileHomeTabs({
           </div>
         )}
 
-      {/* 5. Section Header (Treido-style) - "Свежи обяви" + "Виж всички" */}
-      {nav.isAllTab && (
-        <div className="flex items-center justify-between px-(--page-inset) pt-3 pb-2">
-          <h2 className="text-base font-bold text-foreground">
-            {locale === "bg" ? "Свежи обяви" : "Fresh listings"}
-          </h2>
-          <Link
-            href="/categories"
-            className="text-xs font-medium text-muted-foreground hover:text-foreground flex items-center gap-0.5"
-          >
-            {locale === "bg" ? "Виж всички" : "View all"}
-            <CaretRight size={12} weight="bold" />
-          </Link>
-        </div>
-      )}
+
 
       {/* 6. Product Feed */}
       <ProductFeed

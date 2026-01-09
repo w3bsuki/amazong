@@ -23,10 +23,14 @@ interface ContextualCategoryHeaderProps {
   title: string
   /** Where back arrow navigates (parent category or /categories) */
   backHref: string
+  /** Optional back handler for instant (non-navigation) flows */
+  onBack?: () => void
   /** Current locale for i18n */
   locale: string
   /** Show search button (default: true) */
   showSearch?: boolean
+  /** Whether the header is sticky (default: true). */
+  sticky?: boolean
   /** Additional CSS classes */
   className?: string
 }
@@ -34,47 +38,65 @@ interface ContextualCategoryHeaderProps {
 export function ContextualCategoryHeader({
   title,
   backHref,
+  onBack,
   locale,
   showSearch = true,
+  sticky = true,
   className,
 }: ContextualCategoryHeaderProps) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50",
-        "bg-background/95 backdrop-blur-md text-foreground border-b border-border/60 supports-[backdrop-filter]:bg-background/80", // Treido: Flat, blur only
+        sticky && "sticky top-0 z-50",
+        "bg-background", // Treido: No border, blends with circles below
         className
       )}
       data-contextual-header
     >
-      <div className="flex items-center h-10 px-(--page-inset) gap-0">
-        {/* Back button */}
-        <Link
-          href={backHref}
-          className="flex items-center justify-center h-touch w-touch rounded-full hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
-          aria-label={locale === "bg" ? "Назад" : "Back"}
-        >
-          <ArrowLeft size={20} weight="bold" />
-        </Link>
+      {/* Treido: 48px height standard */}
+      <div className="pt-safe-top">
+        <div className="flex items-center justify-between px-3 h-12 border-b border-border/40">
+          <div className="flex items-center">
+            {/* Back button - 36px touch area */}
+            {onBack ? (
+              <button
+                type="button"
+                onClick={onBack}
+                className="w-9 h-9 flex items-center justify-center rounded-full -ml-1 tap-highlight-transparent active:bg-zinc-100 transition-colors"
+                aria-label={locale === "bg" ? "Назад" : "Back"}
+              >
+                <ArrowLeft className="w-[22px] h-[22px]" weight="bold" />
+              </button>
+            ) : (
+              <Link
+                href={backHref}
+                className="w-9 h-9 flex items-center justify-center rounded-full -ml-1 tap-highlight-transparent active:bg-zinc-100 transition-colors"
+                aria-label={locale === "bg" ? "Назад" : "Back"}
+              >
+                <ArrowLeft className="w-[22px] h-[22px]" weight="bold" />
+              </Link>
+            )}
 
-        {/* Category title */}
-        <h1 className="flex-1 text-base font-semibold tracking-tight truncate -ml-1">
-          {title}
-        </h1>
+            {/* Category title - truncated, max-width */}
+            <h1 className="text-[16px] font-bold text-zinc-900 ml-1 truncate max-w-[200px]">
+              {title}
+            </h1>
+          </div>
 
-        {/* Actions */}
-        <div className="flex items-center">
-          {showSearch && (
-            <Link
-              href="/search"
-              className="flex items-center justify-center size-10 rounded-md hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
-              aria-label={locale === "bg" ? "Търсене" : "Search"}
-            >
-              <MagnifyingGlass size={22} weight="regular" />
-            </Link>
-          )}
-          <MobileWishlistButton />
-          <MobileCartDropdown />
+          {/* Actions - right aligned */}
+          <div className="flex items-center gap-1">
+            {showSearch && (
+              <Link
+                href="/search"
+                className="w-9 h-9 flex items-center justify-center rounded-full tap-highlight-transparent active:bg-zinc-100 transition-colors"
+                aria-label={locale === "bg" ? "Търсене" : "Search"}
+              >
+                <MagnifyingGlass className="w-[22px] h-[22px] stroke-[1.5]" weight="regular" />
+              </Link>
+            )}
+            <MobileWishlistButton />
+            <MobileCartDropdown />
+          </div>
         </div>
       </div>
     </header>

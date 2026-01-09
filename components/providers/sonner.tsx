@@ -16,8 +16,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={resolvedTheme}
       className="toaster group"
-      // Position: bottom-center on mobile, bottom-right on desktop
-      position={isMobile ? 'bottom-center' : 'bottom-right'}
+      // Position: top-center on mobile (avoid nav), bottom-right on desktop
+      position={isMobile ? 'top-center' : 'bottom-right'}
       // Duration: 3s default, can be overridden per toast
       duration={3000}
       // Stack limit: max 3 visible
@@ -42,7 +42,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       // Toast options
       toastOptions={{
         classNames: {
-          toast: 'group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-sm group-[.toaster]:rounded-lg',
+          toast: 'group toast group-[.toaster]:!bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-xl group-[.toaster]:rounded-lg',
           title: 'group-[.toast]:text-foreground group-[.toast]:font-medium',
           description:
             'group-[.toast]:text-muted-foreground group-[.toast]:text-sm',

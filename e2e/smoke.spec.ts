@@ -160,10 +160,13 @@ test.describe('Smoke Tests - Critical Path', () => {
     await app.goto('/en')
     await app.waitForHydration()
 
-    // Find and use the search input
-    const searchInput = page.getByPlaceholder(/search/i).first()
-    await assertVisible(searchInput)
+    // Treido uses a header search trigger that opens a full-screen overlay.
+    const searchTrigger = page.getByRole('button', { name: /search/i }).first()
+    await assertVisible(searchTrigger)
+    await searchTrigger.click()
 
+    const searchInput = page.getByRole('searchbox').first()
+    await assertVisible(searchInput)
     await searchInput.fill('phone')
     await searchInput.press('Enter')
 

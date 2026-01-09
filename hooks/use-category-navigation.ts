@@ -57,6 +57,7 @@ export interface UseCategoryNavigationReturn {
   showL1Circles: boolean
   showL2Circles: boolean
   showPills: boolean
+  isDrilledDown: boolean // Treido pattern: true when circles hidden, pills visible
   isL3Loading: boolean
   activeSlug: string
   isAllTab: boolean
@@ -249,17 +250,38 @@ export function useCategoryNavigation({
     fetchL3()
   }, [currentL2, l3Cache, l3Loading])
 
-  // Determine what to show
-  const showL1Circles = !activeL1 && l1Categories.length > 0
-  const showL2Circles = !!activeL1 && l2Categories.length > 0
-  const circlesToDisplay = showL2Circles
-    ? l2Categories
-    : showL1Circles
-      ? l1Categories
-      : []
+  // ==========================================================================
+  // Visual Drill-Down Navigation (Treido-mock pattern)
+  // ==========================================================================
+  // KEY INSIGHT: Never show circles AND pills at the same time!
+  //
+  // STATE A (Showroom): Show circles, NO pills
+  //   - L1 circles when no L1 selected
+  //   - L2 circles when L1 selected but no L2 selected
+  //
+  // STATE B (Drilled Down): NO circles, show morphed back pill + L3 pills
+  //   - When L2 is selected, circles HIDE completely
+  //   - The active L2 morphs into a dark "back pill" with icon + X
+  //   - L3 subcategories appear as text pills next to the back pill
+  // ==========================================================================
 
+  const isDrilledDown = !!activeL2 // STATE B: circles hidden, pills visible
   const isL3Loading = !!currentL2 && l3Loading === currentL2.id
-  const showPills = !!activeL2 && (l3Categories.length > 0 || isL3Loading)
+
+  // Determine what to show based on drill-down state
+  const showL1Circles = !isDrilledDown && !activeL1 && l1Categories.length > 0
+  const showL2Circles = !isDrilledDown && !!activeL1 && l2Categories.length > 0
+  const circlesToDisplay = isDrilledDown
+    ? [] // STATE B: No circles!
+    : showL2Circles
+      ? l2Categories
+      : showL1Circles
+        ? l1Categories
+        : []
+
+  // Pills shown in drilled-down state (STATE B). Even if L3 is empty/not loaded yet,
+  // we still want the "back pill" row to exist and not fall back to circles.
+  const showPills = isDrilledDown
 
   // Effective category slug for fetching products
   const activeSlug = useMemo(() => {
@@ -532,6 +554,7 @@ export function useCategoryNavigation({
     showL1Circles,
     showL2Circles,
     showPills,
+    isDrilledDown,
     isL3Loading,
     activeSlug,
     isAllTab,

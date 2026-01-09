@@ -45,16 +45,70 @@ function DrawerOverlay({
   )
 }
 
+function DrawerTitle({
+  className,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Title>) {
+  return (
+    <DrawerPrimitive.Title
+      data-slot="drawer-title"
+      className={cn("text-base font-semibold text-foreground leading-tight", className)}
+      {...props}
+    />
+  )
+}
+
+function DrawerDescription({
+  className,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Description>) {
+  return (
+    <DrawerPrimitive.Description
+      data-slot="drawer-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
+}
+
+function containsDrawerA11yNode(
+  children: React.ReactNode,
+  targetTypes: Array<React.ElementType>
+): boolean {
+  if (children == null) return false
+
+  const childArray = React.Children.toArray(children)
+  for (const child of childArray) {
+    if (!React.isValidElement(child)) continue
+
+    if (targetTypes.includes(child.type as React.ElementType)) return true
+
+    const element = child as React.ReactElement<{ children?: React.ReactNode }>
+    if (element.props.children && containsDrawerA11yNode(element.props.children, targetTypes)) {
+      return true
+    }
+  }
+
+  return false
+}
+
 function DrawerContent({
   className,
   children,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+  const ariaLabel = (props as { "aria-label"?: string | undefined })["aria-label"]
+  const ariaDescribedBy = (props as { "aria-describedby"?: string | undefined })["aria-describedby"]
+
+  const hasTitle = containsDrawerA11yNode(children, [DrawerTitle, DrawerPrimitive.Title])
+  const hasDescription = containsDrawerA11yNode(children, [DrawerDescription, DrawerPrimitive.Description])
+
   return (
     <DrawerPortal data-slot="drawer-portal">
       <DrawerOverlay />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
+        aria-describedby={hasDescription ? ariaDescribedBy : undefined}
         className={cn(
           "group/drawer-content bg-background fixed z-50 flex h-auto flex-col",
           // Bottom drawer - 90dvh max for mobile, proper safe area
@@ -69,6 +123,9 @@ function DrawerContent({
         )}
         {...props}
       >
+        {!hasTitle && (
+          <DrawerTitle className="sr-only">{ariaLabel ?? "Dialog"}</DrawerTitle>
+        )}
         {/* Compact drag handle - 32×4px, subtle styling per Temu pattern */}
         <div className="mx-auto mt-2 mb-1 hidden h-1 w-8 shrink-0 rounded-full bg-muted-foreground/30 group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
         {children}
@@ -98,32 +155,6 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
         "mt-auto flex flex-col gap-2 px-(--page-inset) py-3 pb-safe",
         className
       )}
-      {...props}
-    />
-  )
-}
-
-function DrawerTitle({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Title>) {
-  return (
-    <DrawerPrimitive.Title
-      data-slot="drawer-title"
-      className={cn("text-base font-semibold text-foreground leading-tight", className)}
-      {...props}
-    />
-  )
-}
-
-function DrawerDescription({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Description>) {
-  return (
-    <DrawerPrimitive.Description
-      data-slot="drawer-description"
-      className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
   )

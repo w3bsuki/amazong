@@ -115,24 +115,24 @@ export function MobileBottomBar({
   };
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-card/95 backdrop-blur-xl lg:hidden">
       <div className="flex items-center gap-2 px-4 py-2 pb-safe-max-xs">
-        {/* Chat Button - treido-mock: border-gray-300 */}
+        {/* Chat Button - OLX/treido style */}
         <button
           type="button"
           onClick={handleChat}
-          className="flex-1 h-[42px] flex items-center justify-center gap-2 rounded border border-input bg-background text-foreground font-bold text-sm active:bg-muted transition-colors"
+          className="flex-1 h-11 flex items-center justify-center gap-2 rounded-lg border border-input bg-background text-foreground font-bold text-sm active:bg-muted transition-colors"
         >
           <MessageCircle className="size-4" strokeWidth={1.5} />
           {chatText}
         </button>
 
-        {/* Buy Now Button - treido-mock: bg-gray-900 text-white */}
+        {/* Buy Now Button - OLX/treido style */}
         <button
           type="button"
           onClick={handleBuyNow}
           disabled={isOutOfStock}
-          className="flex-1 h-[42px] flex items-center justify-center rounded bg-foreground text-background font-bold text-sm active:opacity-90 transition-opacity disabled:bg-muted disabled:text-muted-foreground"
+          className="flex-1 h-11 flex items-center justify-center rounded-lg bg-foreground text-background font-bold text-sm active:opacity-90 transition-opacity disabled:bg-muted disabled:text-muted-foreground"
         >
           {isOutOfStock ? soldOutText : buyNowText}
         </button>

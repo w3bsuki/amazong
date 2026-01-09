@@ -202,7 +202,7 @@ export function QuickFilterRow({
                         type="button"
                         onClick={handleAllFiltersClick}
                         className={cn(
-                            "shrink-0 h-touch-sm px-3 rounded-full",
+                            "shrink-0 h-touch-sm px-3 rounded-md",
                             "flex items-center gap-1.5",
                             "text-xs font-medium",
                             "border transition-colors",
@@ -229,7 +229,7 @@ export function QuickFilterRow({
                         type="button"
                         onClick={() => setSortOpen(true)}
                         className={cn(
-                            "shrink-0 h-touch-sm px-3 rounded-full",
+                            "shrink-0 h-touch-sm px-3 rounded-md",
                             "flex items-center gap-1.5",
                             "text-xs font-medium whitespace-nowrap",
                             "border transition-colors",
@@ -251,7 +251,7 @@ export function QuickFilterRow({
                                 type="button"
                                 onClick={() => handlePillClick({ section: pill.section, label: pill.label })}
                                 className={cn(
-                                    "shrink-0 h-touch-sm px-3 rounded-full",
+                                    "shrink-0 h-touch-sm px-3 rounded-md",
                                     "flex items-center gap-1.5",
                                     "text-xs font-medium whitespace-nowrap",
                                     "border transition-colors",

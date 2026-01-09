@@ -98,18 +98,18 @@ export function MobileStickyBarEnhanced({
   };
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe z-50 lg:hidden">
+    <footer className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border/60 pb-safe z-50 lg:hidden">
       <div className="flex items-center gap-2 px-4 py-2">
         {/* Wishlist Button - 42px touch target */}
         <button
           type="button"
           onClick={handleWishlist}
-          className="shrink-0 w-[42px] h-[42px] flex items-center justify-center rounded border border-gray-300 bg-white active:bg-gray-50"
+          className="shrink-0 w-11 h-11 flex items-center justify-center rounded border border-input bg-background active:bg-muted"
           aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
         >
           <Heart 
             weight={inWishlist ? "fill" : "regular"} 
-            className={`size-5 ${inWishlist ? "text-red-500" : "text-gray-600"}`} 
+            className={`size-5 ${inWishlist ? "text-red-500" : "text-muted-foreground"}`} 
           />
         </button>
 
@@ -118,9 +118,9 @@ export function MobileStickyBarEnhanced({
           type="button"
           onClick={handleAddToCart}
           disabled={isOutOfStock}
-          className="flex-1 h-[42px] flex items-center justify-center gap-2 rounded border border-gray-300 bg-white text-gray-900 font-bold text-[14px] active:bg-gray-50 disabled:opacity-50"
+          className="flex-1 h-11 flex items-center justify-center gap-2 rounded border border-input bg-background text-foreground font-bold text-sm active:bg-muted disabled:opacity-50"
         >
-          <ShoppingCart className="w-4.5 h-4.5 stroke-[1.5]" weight="bold" />
+          <ShoppingCart className="size-4" weight="bold" />
           <span>{t("addToCart")}</span>
         </button>
 
@@ -129,7 +129,7 @@ export function MobileStickyBarEnhanced({
           type="button"
           onClick={handleBuyNow}
           disabled={isOutOfStock}
-          className="flex-1 h-[42px] flex items-center justify-center rounded bg-gray-900 text-white font-bold text-[14px] active:opacity-90 disabled:opacity-50"
+          className="flex-1 h-11 flex items-center justify-center rounded bg-foreground text-background font-bold text-sm active:opacity-90 disabled:opacity-50"
         >
           {isOutOfStock
             ? locale === "bg"

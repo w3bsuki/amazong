@@ -18,7 +18,7 @@ Goal: ship to production with fewer regressions, lower Vercel/Supabase cost, and
 
 - No “rewrite” PRs. Prefer small, verifiable changes.
 - No new architectural layers (stores/query libraries/DI frameworks) during cleanup.
-- No redesigns. Refactors must preserve behavior + styling.
+
 - Prefer deleting dead code over reorganizing folders “for neatness”.
 - Don’t touch secrets. Never log keys, JWTs, or full request bodies.
 

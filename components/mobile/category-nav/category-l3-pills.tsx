@@ -81,7 +81,7 @@ export function CategoryL3Pills({
                 key={child.slug}
                 onClick={() => onPillClick(child)}
                 className={cn(
-                  "px-3.5 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap border focus-visible:outline-none transition-all shadow-sm", // Treido: px-3.5 py-1.5 text-[13px]
+                  "px-3.5 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap border focus-visible:outline-none transition-all", // Treido: flat, no shadow
                   isSelected
                     ? "bg-foreground text-background border-foreground"
                     : "bg-background text-muted-foreground border-border/60 hover:border-foreground/20 hover:text-foreground"

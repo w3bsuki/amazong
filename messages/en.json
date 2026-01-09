@@ -109,6 +109,9 @@
         "chat": "Chat",
         "categories": "Categories"
     },
+    "Categories": {
+        "bannerDescription": "Browse products in this category"
+    },
     "Home": {
         "title": "Welcome to Treido",
         "hero": {

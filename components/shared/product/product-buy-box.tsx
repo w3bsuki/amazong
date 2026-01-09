@@ -102,7 +102,7 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product,
   const locale = useLocale();
   const { addToCart } = useCart();
   const { toast } = useToast();
-  
+
   const form = useForm<FormType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -158,7 +158,7 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product,
 
     const currentPrice = displayPrice;
     const primaryImage = product.images[0]?.src ?? "";
-    
+
     addToCart({
       id: productId,
       ...(safeVariants.length > 0 && selectedVariant?.id ? { variantId: selectedVariant.id } : {}),
@@ -170,7 +170,7 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product,
       ...(productSlug ? { slug: productSlug } : {}),
       ...(sellerUsername ? { username: sellerUsername } : {}),
     });
-    
+
     toast({
       title: "Added to cart",
       description: `${data.quantity}x ${product.name}`,
@@ -185,7 +185,7 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product,
           {product.name}
         </h1>
 
-        <div className="hidden lg:flex items-center gap-form-sm bg-background border border-border p-form-sm rounded-md shadow-sm">
+        <div className="hidden lg:flex items-center gap-form-sm bg-background border border-border p-form-sm rounded-md">
           <Avatar className="h-9 w-9 border border-border shrink-0">
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback className="bg-muted text-muted-foreground">BD</AvatarFallback>
@@ -340,7 +340,7 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product,
           />
 
           <div className="hidden flex-col gap-2 lg:flex">
-            <Button type="button" className="w-full bg-cta-trust-blue text-white hover:bg-cta-trust-blue/90 h-10 text-base font-bold rounded-full shadow-sm transition-colors" size="lg">
+            <Button type="button" className="w-full bg-cta-trust-blue text-white hover:bg-cta-trust-blue/90 h-10 text-base font-bold rounded-full transition-colors" size="lg">
               Buy It Now
             </Button>
             <Button type="submit" variant="outline" className="w-full border-cta-trust-blue text-cta-trust-blue hover:bg-cta-trust-blue/5 h-10 text-base font-bold rounded-full transition-colors" size="lg">
@@ -377,10 +377,10 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product,
         <div className="grid grid-cols-[90px_1fr] gap-2 text-sm items-center">
           <div className="text-muted-foreground font-medium">Payments:</div>
           <div className="flex gap-1.5">
-            <div className="h-5 w-8 bg-card border border-border rounded-sm shadow-sm"></div>
-            <div className="h-5 w-8 bg-card border border-border rounded-sm shadow-sm"></div>
-            <div className="h-5 w-8 bg-card border border-border rounded-sm shadow-sm"></div>
-            <div className="h-5 w-8 bg-card border border-border rounded-sm shadow-sm"></div>
+            <div className="h-5 w-8 bg-card border border-border rounded-sm"></div>
+            <div className="h-5 w-8 bg-card border border-border rounded-sm"></div>
+            <div className="h-5 w-8 bg-card border border-border rounded-sm"></div>
+            <div className="h-5 w-8 bg-card border border-border rounded-sm"></div>
           </div>
         </div>
       </div>

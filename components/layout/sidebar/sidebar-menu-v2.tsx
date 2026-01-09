@@ -160,7 +160,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
             <Button
                 type="button"
                 variant="ghost"
-                size="icon-lg"
+                size="icon"
                 className={cn(
                     "rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
                     triggerClassName
@@ -181,7 +181,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                 <Button
                     type="button"
                     variant="ghost"
-                    size="icon-lg"
+                    size="icon"
                     className={cn(
                         "rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
                         triggerClassName
@@ -214,7 +214,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                                 onClick={() => setOpen(false)}
                                 className="flex items-center gap-2.5 min-w-0 hover:opacity-90 transition-opacity"
                             >
-                                <div className="size-9 shrink-0 rounded-full bg-white/20 flex items-center justify-center">
+                                <div className="size-touch shrink-0 rounded-full bg-white/20 flex items-center justify-center">
                                     <UserCircle size={26} weight="fill" className="text-white" />
                                 </div>
                                 <span className="text-white text-base font-semibold truncate max-w-32">
@@ -260,7 +260,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                                 <Link
                                     href="/account/settings"
                                     onClick={() => setOpen(false)}
-                                    className="size-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                                    className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                                     aria-label={locale === 'bg' ? 'Настройки' : 'Settings'}
                                 >
                                     <Gear size={24} weight="regular" />
@@ -272,7 +272,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                                 <DropdownMenuTrigger asChild>
                                     <button
                                         type="button"
-                                        className="size-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                                        className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                                         aria-label="Language"
                                     >
                                         <Image
@@ -306,7 +306,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                             <DrawerClose asChild>
                                 <button
                                     type="button"
-                                    className="size-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                                    className="size-touch rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
                                 >
                                     <X size={24} weight="bold" />
                                     <span className="sr-only">{t('close')}</span>
@@ -329,7 +329,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                                         key={href}
                                         href={href}
                                         onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-white/10 group active:scale-95 transition-all"
+                                        className="flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-white/10 group active:opacity-90 transition-all"
                                     >
                                         <Icon size={28} weight="regular" className="text-white" />
                                         <span className="text-xs font-medium text-white/90">

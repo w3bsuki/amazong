@@ -12,6 +12,7 @@ import { Suspense, use } from "react"
 import { setRequestLocale, getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
 import type { Metadata } from 'next'
+import CategorySlugLoading from "./loading"
 import {
   getCategoryBySlug,
   getCategoryContext,
@@ -90,19 +91,7 @@ export default function CategoryPage({
   return (
     <Suspense
       fallback={
-        <>
-          <div className="lg:hidden" />
-          <div className="hidden lg:block min-h-screen bg-background">
-            <div className="container px-2 sm:px-4 py-1">
-              <div className="flex gap-0">
-                <aside className="w-56 shrink-0 border-r border-border">
-                  <div className="sticky top-16 pr-4 py-1 max-h-(--category-sidebar-max-h) overflow-y-auto no-scrollbar" />
-                </aside>
-                <div className="flex-1 min-w-0 lg:pl-5" />
-              </div>
-            </div>
-          </div>
-        </>
+        <CategorySlugLoading />
       }
     >
       <CategoryPageContent paramsPromise={paramsPromise} searchParamsPromise={searchParamsPromise} />
@@ -342,6 +331,13 @@ function CategoryPageDynamicContent({
           }
           contextualSubcategories={subcategories}
           categoryId={categoryId}
+          parentCategory={parentCategory ? {
+            id: parentCategory.id,
+            slug: parentCategory.slug,
+            name: parentCategory.name,
+            name_bg: parentCategory.name_bg,
+            parent_id: parentCategory.parent_id,
+          } : null}
         />
       </div>
 

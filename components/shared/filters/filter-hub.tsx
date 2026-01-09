@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useCallback, useEffect, useMemo } from "react"
-import { useSearchParams } from "next/navigation"
+import { useState, useCallback, useEffect, useMemo, startTransition } from "react"
+import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
 import {
   CaretLeft,
@@ -91,6 +91,14 @@ interface FilterHubProps {
   subcategories?: FilterHubSubcategory[]
   /** Current category name for display */
   categoryName?: string
+  /** Optional externally-controlled applied params (for instant, non-navigating flows) */
+  appliedSearchParams?: URLSearchParams | ReadonlyURLSearchParams | undefined
+  /** Optional apply handler to avoid router navigation */
+  onApply?: (next: {
+    queryString: string
+    finalPath: string
+    pendingCategorySlug?: string | null
+  }) => void
   /**
    * Mode: "full" (default) shows list view + drill-down
    * "single" shows only the initialSection with compact header
@@ -147,6 +155,8 @@ export function FilterHub({
   basePath,
   subcategories = [],
   categoryName,
+  appliedSearchParams,
+  onApply,
   mode = "full",
   initialSection = null,
 }: FilterHubProps) {
@@ -154,7 +164,8 @@ export function FilterHub({
   const tHub = useTranslations("FilterHub")
   const router = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
+  const searchParamsFromRouter = useSearchParams()
+  const searchParams = appliedSearchParams ?? searchParamsFromRouter
 
   // Filter out hidden attributes
   const visibleAttributes = useMemo(
@@ -243,12 +254,12 @@ export function FilterHub({
   // Build filter sections
   const filterSections: FilterSection[] = useMemo(() => {
     const sections: BaseFilterSection[] = []
-    
+
     // Add category section if subcategories exist (Phase 3: L2+ in Filter Hub)
     if (subcategories.length > 0) {
       sections.push({ id: "category", label: tHub("category") })
     }
-    
+
     // Base filter sections
     sections.push(
       { id: "rating", label: t("customerReviews") },
@@ -367,9 +378,16 @@ export function FilterHub({
     }
 
     const queryString = params.toString()
-    router.push(queryString ? `${finalPath}?${queryString}` : finalPath)
+    if (onApply) {
+      onApply({ queryString, finalPath, pendingCategorySlug })
+    } else {
+      // Replace instead of push: avoids history spam and reduces the feeling of a full reload.
+      startTransition(() => {
+        router.replace(queryString ? `${finalPath}?${queryString}` : finalPath)
+      })
+    }
     onOpenChange(false)
-  }, [pending, pendingCategorySlug, searchParams, resolvedBasePath, router, onOpenChange])
+  }, [pending, pendingCategorySlug, searchParams, resolvedBasePath, router, onOpenChange, onApply])
 
   // Get selected summary for a section (for main list view)
   const getSelectedSummary = useCallback(
@@ -420,11 +438,7 @@ export function FilterHub({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-(--dialog-max-h) flex flex-col rounded-t-3xl px-0 pb-0 lg:hidden">
-        {/* Drag handle */}
-        <div className="flex justify-center pt-2">
-          <div className="h-1.5 w-12 rounded-full bg-muted-foreground/25" />
-        </div>
+      <DrawerContent className="max-h-[92dvh] flex flex-col rounded-t-2xl px-0 pb-0 bg-background lg:hidden">
         {/* Header */}
         <DrawerHeader
           className={cn(
@@ -513,7 +527,6 @@ export function FilterHub({
                       </span>
                       {summary && (
                         <span className="text-xs text-muted-foreground truncate">
-                          {summary}
                         </span>
                       )}
                     </div>
@@ -812,7 +825,7 @@ export function FilterHub({
         </div>
 
         {/* Footer with Apply CTA + Live Count */}
-        <div className="px-(--page-inset) py-4 border-t border-border/50 bg-background pb-safe-max">
+        <div className="p-4 bg-background border-t border-border/30 flex-shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <Button
             className="w-full h-11 rounded-full text-sm font-bold"
             onClick={applyFilters}

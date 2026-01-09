@@ -11,8 +11,8 @@ interface StartSellingBannerProps {
   showTrustRow?: boolean
 }
 
-export function StartSellingBanner({ 
-  locale = "en", 
+export function StartSellingBanner({
+  locale = "en",
   className,
   variant = "default",
   showTrustRow = false
@@ -21,20 +21,20 @@ export function StartSellingBanner({
 
   const trustItems = isBg
     ? [
-        { icon: ShieldCheck, text: "Защита на купувача" },
-        { icon: CreditCard, text: "Сигурно плащане" },
-        { icon: ChatCircleDots, text: "Поддръжка 24/7" },
-      ]
+      { icon: ShieldCheck, text: "Защита на купувача" },
+      { icon: CreditCard, text: "Сигурно плащане" },
+      { icon: ChatCircleDots, text: "Поддръжка 24/7" },
+    ]
     : [
-        { icon: ShieldCheck, text: "Buyer protection" },
-        { icon: CreditCard, text: "Secure payment" },
-        { icon: ChatCircleDots, text: "24/7 support" },
-      ]
-  
+      { icon: ShieldCheck, text: "Buyer protection" },
+      { icon: CreditCard, text: "Secure payment" },
+      { icon: ChatCircleDots, text: "24/7 support" },
+    ]
+
   // Full-bleed: prominent banner but respects page rhythm
   if (variant === "full-bleed") {
     return (
-      <div className="px-(--page-inset) py-2 bg-background">
+      <div className="px-(--page-inset) bg-background">
         <Link
           href="/sell"
           className={cn(
@@ -62,7 +62,7 @@ export function StartSellingBanner({
 
             {/* Right: Arrow pill */}
             <span
-              className="size-8 shrink-0 rounded-full bg-background/10 border border-background/10 flex items-center justify-center"
+              className="size-8 shrink-0 rounded-md bg-background/10 border border-background/10 flex items-center justify-center"
               aria-hidden="true"
             >
               <ArrowRight size={16} weight="bold" />
@@ -84,7 +84,7 @@ export function StartSellingBanner({
       </div>
     )
   }
-  
+
   // Default: compact inline variant for use within filter areas
   return (
     <Link
@@ -99,8 +99,8 @@ export function StartSellingBanner({
       )}
     >
       {/* Left Icon Block */}
-      <span 
-        className="size-9 shrink-0 rounded-md border border-brand/20 bg-brand/10 text-brand flex items-center justify-center" 
+      <span
+        className="size-9 shrink-0 rounded-md border border-brand/20 bg-brand/10 text-brand flex items-center justify-center"
         aria-hidden="true"
       >
         <Storefront size={16} weight="fill" />
@@ -119,8 +119,8 @@ export function StartSellingBanner({
       </span>
 
       {/* Right Arrow */}
-      <span 
-        className="size-8 shrink-0 rounded-md border border-brand/20 bg-brand/10 text-brand flex items-center justify-center" 
+      <span
+        className="size-8 shrink-0 rounded-md border border-brand/20 bg-brand/10 text-brand flex items-center justify-center"
         aria-hidden="true"
       >
         <ArrowRight size={14} weight="bold" />

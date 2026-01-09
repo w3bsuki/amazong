@@ -51,11 +51,11 @@ export function AllTabFilters({
               key={filter.id}
               onClick={() => onFilterClick(filter.id)}
               className={cn(
-                "flex items-center gap-1.5 h-touch-sm px-3 shrink-0 snap-start rounded-full text-xs font-semibold",
+                "flex items-center gap-1.5 h-8 px-3 shrink-0 snap-start rounded-md text-xs font-semibold",
                 "border transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 isActive
-                  ? "bg-foreground text-background border-foreground shadow-sm"
+                  ? "bg-foreground text-background border-foreground"
                   : "bg-background text-muted-foreground border-border/60 hover:border-border hover:bg-muted/40 hover:text-foreground"
               )}
               aria-pressed={isActive}

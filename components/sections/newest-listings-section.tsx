@@ -411,7 +411,7 @@ export function NewestListingsSection({
           showCTA={true}
         />
       ) : (
-        <div className="grid grid-cols-2 gap-1 px-1 pt-1 lg:gap-1.5">
+        <div className="grid grid-cols-2 gap-2 px-(--page-inset) pt-1 md:gap-3 md:px-(--page-inset-md) lg:px-(--page-inset-lg)">
           {active.products.map((product, index) => (
             <ProductCard
               key={product.id}

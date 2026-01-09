@@ -109,6 +109,9 @@
         "chat": "Чат",
         "categories": "Обяви"
     },
+    "Categories": {
+        "bannerDescription": "Разгледай продуктите в тази категория"
+    },
     "Home": {
         "title": "Добре дошли в Treido",
         "hero": {

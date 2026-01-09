@@ -3,10 +3,7 @@
 import * as React from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
-import Image from "next/image"
-import { useLocale } from "next-intl"
-import { getCategoryIcon } from "@/lib/category-icons"
-import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import { useLocale, useTranslations } from "next-intl"
 import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
 
 interface Category {
@@ -28,13 +25,6 @@ interface SubcategoryCirclesProps {
   searchParamsString?: string
 }
 
-// Map category slugs to placeholder images (these would ideally come from the database)
-// REMOVED: Hardcoded categoryImages map. We now rely on Supabase image_url.
-
-function getCategoryImage(imageUrl?: string | null): string {
-  return imageUrl || "/placeholder.svg"
-}
-
 export function SubcategoryCircles({
   subcategories,
   currentCategory,
@@ -44,6 +34,8 @@ export function SubcategoryCircles({
   searchParamsString = ""
 }: SubcategoryCirclesProps) {
   const locale = useLocale()
+  const tCommon = useTranslations("Common")
+  const tSearch = useTranslations("SearchFilters")
 
   const getCategoryName = (cat: Category) => {
     if (locale === 'bg' && cat.name_bg) {
@@ -84,7 +76,7 @@ export function SubcategoryCircles({
       {/* Container with circles - horizontal scroll on mobile, wrap on larger screens */}
       <div className="relative">
         <div
-          className="flex gap-2 sm:gap-4 py-1 pb-2 overflow-x-auto sm:flex-wrap sm:overflow-x-visible scrollbar-hide"
+          className="flex gap-2 py-1 pb-2 pr-4 overflow-x-auto sm:flex-wrap sm:overflow-x-visible scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {/* "All in Category" circle - first item */}
@@ -93,54 +85,49 @@ export function SubcategoryCircles({
               href={buildUrl(currentCategory.slug)}
               prefetch={true}
               className={cn(
-                "flex flex-col items-center gap-1 min-w-14 sm:min-w-24 md:min-w-28 group shrink-0",
+                "flex flex-col items-center gap-1 min-w-[72px] group shrink-0",
                 "touch-action-manipulation"
               )}
             >
-              {/* Circle with gradient/icon */}
-              <div
-                className={cn(
-                  "rounded-full flex items-center justify-center overflow-hidden",
-                  "size-14 sm:size-24 md:size-28",
-                  "bg-primary"
-                )}
-              >
-                <span className="text-white text-2xs sm:text-sm font-medium text-center px-1 leading-tight">
-                  {locale === "bg" ? "Всички" : "All"}
+              {/* Treido muted "All" circle */}
+              <div className={cn(
+                "rounded-full flex items-center justify-center overflow-hidden",
+                "size-[56px] shrink-0",
+                "bg-secondary/30 border border-border/60",
+                "transition-opacity group-active:opacity-90"
+              )}>
+                <span className="text-[11px] font-medium text-foreground text-center px-1 leading-tight">
+                  {tCommon("all")}
                 </span>
               </div>
 
               {/* Label */}
               <span className={cn(
-                "text-2xs sm:text-sm font-medium text-center text-primary",
-                "max-w-14 sm:max-w-24 md:max-w-28 line-clamp-2 leading-tight"
+                "text-[11px] font-medium text-center text-foreground px-1 leading-tight",
+                "max-w-[72px] line-clamp-2"
               )}>
-                {locale === "bg" ? "Всички продукти" : "All Products"}
+                {tSearch("allProducts")}
               </span>
             </Link>
           )}
 
           {/* Subcategory circles */}
-          {validSubcategories.map((subcat, index) => {
-            const normalizedImageUrl = normalizeImageUrl(subcat.image_url)
-            const showImage = Boolean(subcat.image_url) && normalizedImageUrl !== PLACEHOLDER_IMAGE_PATH
-
+          {validSubcategories.map((subcat) => {
             return (
               <Link
                 key={subcat.id}
                 href={buildUrl(subcat.slug)}
                 prefetch={true}
                 className={cn(
-                  "flex flex-col items-center gap-1.5 min-w-[72px] sm:min-w-24 md:min-w-28 group shrink-0",
-                  "touch-action-manipulation",
-                  index === validSubcategories.length - 1 && "mr-4"
+                  "flex flex-col items-center gap-1.5 min-w-[72px] group shrink-0",
+                  "touch-action-manipulation"
                 )}
               >
                 {/* TREIDO STYLE CIRCLE */}
                 <CategoryCircleVisual
                   category={subcat}
                   active={false}
-                  className="size-[56px] sm:size-24 md:size-28 shrink-0 bg-secondary/30 border border-border/60 shadow-sm group-active:scale-95 transition-transform"
+                  className="size-[56px] shrink-0 bg-secondary/30 border border-border/60 group-active:opacity-90 transition-opacity"
                   fallbackIconSize={24}
                   fallbackIconWeight="light"
                   variant="muted"
@@ -148,10 +135,9 @@ export function SubcategoryCircles({
 
                 {/* Category Name - Treido: text-[11px] font-medium */}
                 <span className={cn(
-                  "text-[11px] sm:text-sm font-medium text-center text-foreground px-1 leading-tight",
-                  "group-hover:text-primary group-hover:underline",
+                  "text-[11px] font-medium text-center text-foreground px-1 leading-tight",
                   "line-clamp-2",
-                  "w-full max-w-[72px] sm:max-w-24 md:max-w-28"
+                  "w-full max-w-[72px]"
                 )}>
                   {getCategoryName(subcat)}
                 </span>

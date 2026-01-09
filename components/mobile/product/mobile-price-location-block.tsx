@@ -52,14 +52,14 @@ export function MobilePriceLocationBlock({
 
   return (
     <div className="space-y-1.5">
-      {/* Price - treido-mock: text-[22px] font-bold text-gray-900 */}
+      {/* Price - treido-mock style, using standard xl token */}
       <div className="flex items-baseline gap-1">
-        <span className="text-[22px] font-bold text-foreground">{formatPrice(price)}</span>
+        <span className="text-xl font-bold text-foreground tracking-tight">{formatPrice(price)}</span>
       </div>
 
-      {/* Location + Time Row - treido-mock: text-[12px] text-gray-500 */}
+      {/* Location + Time Row - OLX/treido style */}
       {(location || timeAgo) && (
-        <div className="flex items-center gap-2 text-[12px] text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <MapPin className="size-3.5 shrink-0" strokeWidth={1.5} />
             {location}

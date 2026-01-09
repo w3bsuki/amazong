@@ -15,7 +15,7 @@ export function generateStaticParams() {
 
 // Optimized font loading with display: swap for better LCP
 // Support both Latin and Cyrillic for Bulgarian locale
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin", "cyrillic"],
   display: "swap",
   variable: "--font-inter",
@@ -92,23 +92,23 @@ export const metadata: Metadata = {
  * - (account)/ - Minimal account layout with sidebar navigation
  */
 export default async function LocaleLayout({
-    children,
-    params
+  children,
+  params
 }: {
   children: ReactNode;
-    params: Promise<{ locale: string }>;
+  params: Promise<{ locale: string }>;
 }) {
-    // Ensure that the incoming `locale` is valid using proper type guard
-    const { locale } = await params;
-    if (!hasLocale(routing.locales, locale)) {
-        notFound();
-    }
-    
-    return (
-      <html lang={locale} className={inter.variable} suppressHydrationWarning>
-            <body className="bg-background min-h-screen">
-                <LocaleProviders locale={locale}>{children}</LocaleProviders>
-            </body>
-        </html>
-    );
+  // Ensure that the incoming `locale` is valid using proper type guard
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  return (
+    <html lang={locale} className={inter.variable} suppressHydrationWarning>
+      <body className="bg-background min-h-screen font-sans">
+        <LocaleProviders locale={locale}>{children}</LocaleProviders>
+      </body>
+    </html>
+  );
 }

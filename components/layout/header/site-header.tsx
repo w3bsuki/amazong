@@ -100,10 +100,12 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
       ref={headerRef}
       className={cn(
         "sticky top-0 z-50 w-full flex flex-col bg-header-bg md:border-b md:border-header-border",
-        hideOnMobile && "hidden lg:flex"
+        hideOnMobile && "hidden",
+        // Force hide on category pages to prevent double header (Contextual Header takes over)
+        pathWithoutLocale.startsWith("/categories") && "hidden"
       )}
     >
-      {/* Mobile Header + Search - Treido native iOS pattern */}
+      {/* Mobile Header + Search - Treido native iOS pattern - visible on mobile only */}
       <div className="md:hidden bg-background/90 backdrop-blur-md border-b border-border/50 text-foreground pt-safe">
         {/* Top row - Logo & Actions - h-12 touch-friendly */}
         <div className={cn(
@@ -114,7 +116,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
           {isProductPage ? (
             <button
               onClick={() => router.back()}
-              className="flex items-center justify-center h-touch w-touch rounded-full text-gray-600 active:opacity-50"
+              className="flex items-center justify-center h-touch w-touch rounded-full text-muted-foreground active:opacity-50"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
               <ChevronLeft size={20} strokeWidth={2} />
@@ -123,10 +125,10 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
             <SidebarMenu user={user} categories={categories} triggerClassName="justify-start" />
           )}
           <Link href="/" className={cn(
-            "flex items-center shrink-0 min-h-touch -ml-2",
+            "flex items-center shrink-0 h-10 -ml-4",
             isProductPage && "ml-0"
           )}>
-            <span className="text-[20px] font-extrabold tracking-tighter leading-none text-gray-900">treido.</span>
+            <span className="text-[20px] font-extrabold tracking-tighter leading-none text-foreground">treido.</span>
           </Link>
           <div className="flex-1" />
           <div className="flex items-center">
@@ -142,7 +144,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
             <button
               onClick={() => setIsMobileSearchOpen(true)}
               className={cn(
-                "w-full flex items-center gap-2 h-9 px-3 rounded-lg",
+                "w-full flex items-center gap-2 h-10 px-3 rounded-md",
                 "bg-muted border border-border/50",
                 "text-muted-foreground text-sm text-left",
                 "active:bg-muted/80",
@@ -160,16 +162,16 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
             </button>
           </div>
         )}
-
-        {/* Search Overlay - controlled by header */}
-        <MobileSearchOverlay
-          hideDefaultTrigger
-          externalOpen={isMobileSearchOpen}
-          onOpenChange={setIsMobileSearchOpen}
-        />
       </div>
 
-      {/* Desktop Top Header - CSS Grid for stable search bar alignment */}
+      {/* Search Overlay - rendered at root level for proper full-screen coverage */}
+      <MobileSearchOverlay
+        hideDefaultTrigger
+        externalOpen={isMobileSearchOpen}
+        onOpenChange={setIsMobileSearchOpen}
+      />
+
+      {/* Desktop Top Header - visible on md+ screens */}
       <div className="hidden md:block bg-header-bg text-header-text">
         <div className="container grid grid-cols-[auto_1fr_auto] items-center h-14 md:h-16 gap-3">
           {/* Left Section - Logo + Location */}

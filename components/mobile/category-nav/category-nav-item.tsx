@@ -52,7 +52,7 @@ export const CategoryNavItem = forwardRef<
 
   // Pill variant: Treido chip style - text-xs, h-8
   const pillStyles = cn(
-    "shrink-0 h-8 px-3 text-xs font-medium rounded-full whitespace-nowrap",
+    "shrink-0 h-8 px-3 text-xs font-medium rounded-md whitespace-nowrap",
     "flex items-center justify-center",
     "border transition-colors",
     isActive
@@ -103,16 +103,13 @@ interface TabContentProps {
 
 export function TabContent({ label, isActive }: TabContentProps) {
   return (
-    <span className="relative inline-flex flex-col items-center">
-      <span className={cn(
-        "transition-colors",
-        isActive ? "font-medium" : "font-medium"
-      )}>
+    <span className="relative inline-flex items-center">
+      <span className={cn("transition-colors", "font-medium")}>
         {label}
       </span>
       {/* Treido 2px underline indicator */}
       {isActive && (
-        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-foreground rounded-full" />
+        <span className="absolute bottom-0 left-0 w-full h-0.5 translate-y-1 bg-foreground rounded-full" />
       )}
     </span>
   )

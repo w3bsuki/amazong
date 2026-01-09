@@ -69,10 +69,10 @@ interface TabbedProductFeedProps {
  * - Feed type tabs (All/Newest/Promoted/Deals)
  * - Clean product grid with load more (client-side pagination)
  */
-export function TabbedProductFeed({ 
+export function TabbedProductFeed({
   locale: _locale,
-  initialProducts = [], 
-  initialHasMore = true 
+  initialProducts = [],
+  initialHasMore = true
 }: TabbedProductFeedProps) {
   const t = useTranslations("TabbedProductFeed")
   const [activeTab, setActiveTab] = useState<FeedTab>("all")
@@ -145,12 +145,12 @@ export function TabbedProductFeed({
   const fetchProducts = useCallback(async (tab: FeedTab, pageNum: number, limit: number, append = false, categorySlug?: string | null) => {
     setIsLoading(true)
     try {
-      const params = new URLSearchParams({ 
+      const params = new URLSearchParams({
         type: tab,
-        page: String(pageNum), 
-        limit: String(limit) 
+        page: String(pageNum),
+        limit: String(limit)
       })
-      
+
       if (categorySlug) {
         params.set("category", categorySlug)
       }
@@ -265,14 +265,14 @@ export function TabbedProductFeed({
   useEffect(() => {
     const tabChanged = prevTabRef.current !== activeTab
     const categoryChanged = prevCategoryRef.current !== activeCategory
-    
+
     prevTabRef.current = activeTab
     prevCategoryRef.current = activeCategory
     prevPageSizeRef.current = pageSize
 
     // Need initial fetch if no server-side data was provided
     const needsInitialFetch = !initialFetchDone.current
-    
+
     if (needsInitialFetch) {
       initialFetchDone.current = true
       fetchProducts(activeTab, 1, pageSize, false, activeCategory)
@@ -313,7 +313,7 @@ export function TabbedProductFeed({
   return (
     <section id="listings" className="w-full" aria-label={t("sectionAriaLabel")}>
       {/* Unified Navigation Row - Professional Nav Pills */}
-      <div className="flex flex-col gap-4 mb-4">
+      <div className="flex flex-col gap-3 mb-3">
         <div className="-mx-4 px-4 md:mx-0 md:px-0">
           <Tabs
             value={activeTab}
@@ -354,7 +354,7 @@ export function TabbedProductFeed({
               {/* Product Grid */}
               <div role="list" aria-live="polite">
                 {products.length === 0 && isLoading ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4" aria-busy="true">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2" aria-busy="true">
                     {Array.from({ length: 12 }).map((_, i) => (
                       <div key={i} className="space-y-3">
                         <Skeleton className="aspect-3/4 w-full rounded-lg" />
@@ -366,7 +366,7 @@ export function TabbedProductFeed({
                     ))}
                   </div>
                 ) : products.length === 0 ? (
-                  <EmptyStateCTA 
+                  <EmptyStateCTA
                     variant={activeCategory ? "no-category" : "no-listings"}
                     {...(activeCategory ? { categoryName: activeCategory } : {})}
                   />
@@ -443,7 +443,7 @@ export function TabbedProductFeed({
 export function TabbedProductFeedSkeleton() {
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-4 mb-4">
+      <div className="flex flex-col gap-3 mb-3">
         <div className="flex items-center justify-between">
           <Skeleton className="h-6 w-24" />
           <Skeleton className="h-4 w-16" />
@@ -456,7 +456,7 @@ export function TabbedProductFeedSkeleton() {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2">
         {Array.from({ length: 12 }).map((_, i) => (
           <div key={i} className="space-y-3">
             <Skeleton className="aspect-square w-full rounded-lg" />

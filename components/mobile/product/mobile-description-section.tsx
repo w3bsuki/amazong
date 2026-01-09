@@ -45,16 +45,16 @@ export function MobileDescriptionSection({
 
   return (
     <div className="px-4 py-4 border-b border-border">
-      {/* Section Header - treido-mock: text-[14px] font-bold text-gray-900 mb-2 */}
-      <h3 className="text-[14px] font-bold text-foreground mb-2">
+      {/* Section Header - OLX/treido style */}
+      <h3 className="text-sm font-bold text-foreground mb-2">
         {t("descriptionTitle")}
       </h3>
 
-      {/* Description Text - treido-mock: text-[13px] text-gray-600 leading-relaxed */}
+      {/* Description Text - OLX/treido style */}
       <div className="relative">
         <p
           className={cn(
-            "text-[13px] text-muted-foreground leading-relaxed whitespace-pre-line",
+            "text-xs text-muted-foreground leading-relaxed whitespace-pre-line",
             !isExpanded && "overflow-hidden"
           )}
           style={!isExpanded ? { WebkitLineClamp: maxLines, display: "-webkit-box", WebkitBoxOrient: "vertical", overflow: "hidden" } : undefined}
@@ -62,12 +62,12 @@ export function MobileDescriptionSection({
           {description}
         </p>
 
-        {/* Expand/Collapse Button - treido-mock: text-[13px] font-bold underline */}
+        {/* Expand/Collapse Button - OLX/treido style */}
         {needsExpand && (
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-[13px] font-bold text-foreground mt-2 underline decoration-muted-foreground/30 underline-offset-4 active:text-muted-foreground transition-colors"
+            className="text-xs font-bold text-foreground mt-2 underline decoration-muted-foreground/30 underline-offset-4 active:text-muted-foreground transition-colors"
           >
             {isExpanded ? t("showLess") : t("showMore")}
           </button>

@@ -56,7 +56,7 @@ export function MobileCartDropdown() {
         return (
             <Link
                 href="/cart"
-                className="flex items-center justify-center size-10 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
+                className="flex items-center justify-center size-touch rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
                 aria-label={tNav('cart')}
             >
                 <span className="relative" aria-hidden="true">
@@ -69,12 +69,12 @@ export function MobileCartDropdown() {
     return (
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <button 
-                    className="flex items-center justify-center size-10 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
+                <button
+                    className="flex items-center justify-center size-touch rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
                     aria-label={tNav('cart')}
                 >
                     <span className="relative" aria-hidden="true">
-                        <ShoppingCart size={22} weight="regular" className="text-header-text" />
+                        <ShoppingCart size={24} weight="regular" className="text-header-text" />
                         {totalItems > 0 && (
                             <CountBadge
                                 count={totalItems}
@@ -97,7 +97,7 @@ export function MobileCartDropdown() {
                             </span>
                         </div>
                         <DrawerClose asChild>
-                            <button 
+                            <button
                                 className="text-xs text-muted-foreground hover:text-foreground h-7 px-2 rounded-md hover:bg-muted touch-action-manipulation tap-transparent"
                                 aria-label="Close"
                             >
@@ -123,15 +123,15 @@ export function MobileCartDropdown() {
                 ) : (
                     <div className={cn("flex-1 overflow-y-auto px-(--page-inset) overscroll-contain", contentMaxHeight)}>
                         {items.map((item, index) => (
-                            <div 
+                            <div
                                 key={`${item.id}:${item.variantId ?? ""}`}
                                 className={cn(
                                     "flex gap-2 py-2",
                                     index !== items.length - 1 && "border-b border-border"
                                 )}
                             >
-                                <Link 
-                                    href={buildProductUrl(item)} 
+                                <Link
+                                    href={buildProductUrl(item)}
                                     onClick={() => setOpen(false)}
                                     className="shrink-0"
                                 >
@@ -154,7 +154,7 @@ export function MobileCartDropdown() {
                                     </div>
                                 </Link>
                                 <div className="flex-1 min-w-0 flex flex-col">
-                                    <Link 
+                                    <Link
                                         href={buildProductUrl(item)}
                                         onClick={() => setOpen(false)}
                                         className="text-sm text-foreground hover:text-brand line-clamp-2 leading-snug"

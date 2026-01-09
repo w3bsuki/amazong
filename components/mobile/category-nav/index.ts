@@ -20,3 +20,7 @@ export type { SubcategoryPillsProps } from "./subcategory-pills"
 export { InlineFilterBar } from "./inline-filter-bar"
 export type { InlineFilterBarProps, FilterDropdownConfig } from "./inline-filter-bar"
 
+// Phase 2: Treido-mock Smart Anchor Navigation (Morphing Row)
+export { SmartAnchorNav } from "./smart-anchor-nav"
+export type { SmartAnchorNavProps } from "./smart-anchor-nav"
+

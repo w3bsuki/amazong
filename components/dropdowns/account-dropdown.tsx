@@ -27,7 +27,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
       <Link href="/auth/login">
         <Button
           variant="ghost"
-            className={cn("h-10 px-3 text-sm font-medium border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover", className)}
+          className={cn("h-10 px-3 text-sm font-medium border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover", className)}
         >
           {t("signIn")}
         </Button>
@@ -58,7 +58,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
     </div>
   ) : (
     <div
-      className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 cursor-pointer", className)}
+      className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-touch cursor-pointer", className)}
     >
       <UserCircle weight="fill" className="size-6" />
     </div>

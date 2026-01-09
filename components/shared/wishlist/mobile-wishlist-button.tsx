@@ -23,7 +23,7 @@ export function MobileWishlistButton() {
     return (
       <button
         type="button"
-        className="flex items-center justify-center h-touch w-touch p-0 rounded-lg relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
+        className="flex items-center justify-center size-touch p-0 rounded-lg relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
         aria-label={tNav("wishlist")}
         disabled
         aria-disabled="true"
@@ -37,9 +37,9 @@ export function MobileWishlistButton() {
 
   return (
     <>
-      <button 
+      <button
         onClick={() => drawerRef.current?.open()}
-        className="flex items-center justify-center h-touch w-touch p-0 rounded-lg relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
+        className="flex items-center justify-center size-touch p-0 rounded-lg relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">

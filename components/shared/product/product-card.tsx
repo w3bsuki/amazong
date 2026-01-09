@@ -51,7 +51,8 @@ function formatTimeAgo(input: string, locale: string): string | null {
 // =============================================================================
 
 const productCardVariants = cva(
-  "tap-transparent group relative block h-full min-w-0 cursor-pointer",
+  // Treido: tap-transparent, subtle border, active feedback via opacity (not scale)
+  "tap-transparent group relative block h-full min-w-0 cursor-pointer rounded-md border-transparent shadow-sm bg-card p-2 active:opacity-95 transition-colors",
   {
     variants: {
       variant: {
@@ -262,8 +263,8 @@ function ProductCard({
         <span className="sr-only">{title}</span>
       </Link>
 
-      {/* Image Container - Treido: aspect-square, bg-gray-100, rounded-md, border */}
-      <div className="relative aspect-square overflow-hidden rounded-md bg-gray-100 border border-gray-100">
+      {/* Image Container - Treido: aspect-square, bg-muted, rounded-sm (inner radius smaller than card) */}
+      <div className="relative aspect-square overflow-hidden rounded-sm bg-muted">
         <ProductCardImage
           src={image}
           alt={title}
@@ -289,10 +290,10 @@ function ProductCard({
         />
       </div>
 
-      {/* Content Area - Treido spacing */}
-      <div className="relative z-2 mt-1.5 space-y-0.5">
+      {/* Content Area */}
+      <div className="relative z-2 mt-1">
         {/* Title - Treido: text-[13px] line-clamp-2 */}
-        <p className="line-clamp-2 break-words text-[13px] text-gray-900 leading-tight">
+        <p className="line-clamp-2 break-words text-[13px] font-medium text-foreground leading-tight">
           {title}
         </p>
 
@@ -304,16 +305,16 @@ function ProductCard({
           conditionLabel={conditionLabel}
         />
 
-        {/* Meta (C2C-style): location • time - Treido: text-[11px] text-gray-400 */}
+        {/* Meta (C2C-style): location • time - Treido: text-[11px] text-muted-foreground */}
         {metaParts.length > 0 && (
-          <p className="line-clamp-1 text-[11px] text-gray-400 truncate">
+          <p className="line-clamp-1 text-[11px] text-muted-foreground truncate">
             {metaParts.join(' • ')}
           </p>
         )}
 
         {/* Free Shipping - Treido subtle style */}
         {freeShipping && (
-          <span className="inline-flex items-center gap-0.5 text-[11px] text-gray-500">
+          <span className="inline-flex items-center gap-0.5 text-[11px] text-muted-foreground">
             <Truck size={10} weight="bold" />
             <span className="hidden xs:inline">{t("freeShipping")}</span>
           </span>

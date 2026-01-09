@@ -40,7 +40,7 @@ const FOCUS_DELAY_MS = 100
  * - Trending searches
  * - Full WCAG 2.1 AA accessibility compliance
  */
-export function MobileSearchOverlay({ 
+export function MobileSearchOverlay({
   className,
   hideDefaultTrigger = false,
   externalOpen,
@@ -54,7 +54,7 @@ export function MobileSearchOverlay({
   // State - use external control if provided
   const [internalOpen, setInternalOpen] = React.useState(false)
   const isOpen = externalOpen !== undefined ? externalOpen : internalOpen
-  
+
   const setIsOpen = React.useCallback((open: boolean) => {
     if (onOpenChange) {
       onOpenChange(open)
@@ -70,7 +70,7 @@ export function MobileSearchOverlay({
   // Hooks
   const router = useRouter()
   const locale = useLocale()
-  
+
   // Use shared search hook
   const {
     query,
@@ -233,10 +233,9 @@ export function MobileSearchOverlay({
           aria-labelledby={overlayTitleId}
           aria-describedby={overlayDescId}
           className={cn(
-            "fixed inset-0 z-100",
+            "fixed inset-0 z-[100]",
             "flex flex-col",
-            "bg-background",
-            "md:hidden"
+            "bg-background"
           )}
         >
           {/* Visually hidden title for screen readers */}

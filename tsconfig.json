@@ -49,6 +49,7 @@
     "e2e",
     "test",
     "playwright-report",
-    "test-results"
+    "test-results",
+    "inspiration"
   ]
 }

@@ -40,8 +40,8 @@ export function MobileDetailsSection({
 
   return (
     <div className="px-4 py-4 border-b border-border">
-      {/* Section Header - treido-mock: text-[14px] font-bold text-gray-900 mb-3 */}
-      <h3 className="text-[14px] font-bold text-foreground mb-3">
+      {/* Section Header - OLX/treido style */}
+      <h3 className="text-sm font-bold text-foreground mb-3">
         {t("detailsTitle")}
       </h3>
 
@@ -50,7 +50,7 @@ export function MobileDetailsSection({
         {details.map((item, index) => (
           <div
             key={index}
-            className="flex justify-between text-[13px]"
+            className="flex justify-between text-xs"
           >
             <span className="text-muted-foreground">{item.label}</span>
             <span className="font-medium text-foreground text-right max-w-[60%] truncate">
