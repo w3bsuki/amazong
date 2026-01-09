@@ -103,21 +103,21 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
         hideOnMobile && "hidden lg:flex"
       )}
     >
-      {/* Mobile Header + Search - Unified container like Target */}
-      <div className="md:hidden bg-header-bg text-header-text">
-        {/* Top row - Logo & Actions - compact */}
+      {/* Mobile Header + Search - Treido native iOS pattern */}
+      <div className="md:hidden bg-background/90 backdrop-blur-md border-b border-border/50 text-foreground pt-safe">
+        {/* Top row - Logo & Actions - h-12 touch-friendly */}
         <div className={cn(
-          "h-10 px-(--page-inset) flex items-center gap-0",
-          isProductPage && "border-b border-header-border/50"
+          "h-12 px-(--page-inset) flex items-center gap-0",
+          isProductPage && "border-b border-border/50"
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
           {isProductPage ? (
             <button
               onClick={() => router.back()}
-              className="flex items-center justify-center h-touch w-touch rounded-full text-header-text hover:bg-header-hover active:bg-header-active"
+              className="flex items-center justify-center h-touch w-touch rounded-full text-gray-600 active:opacity-50"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
-              <ChevronLeft size={20} strokeWidth={2.5} />
+              <ChevronLeft size={20} strokeWidth={2} />
             </button>
           ) : (
             <SidebarMenu user={user} categories={categories} triggerClassName="justify-start" />
@@ -126,7 +126,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
             "flex items-center shrink-0 min-h-touch -ml-2",
             isProductPage && "ml-0"
           )}>
-            <span className="text-xl font-bold tracking-tight leading-none text-header-text">Treido</span>
+            <span className="text-[20px] font-extrabold tracking-tighter leading-none text-gray-900">treido.</span>
           </Link>
           <div className="flex-1" />
           <div className="flex items-center">
@@ -136,9 +136,9 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
           </div>
         </div>
 
-        {/* Search bar row - muted bg stands out from white header */}
+        {/* Search bar row */}
         {!isProductPage && (
-          <div className="px-(--page-inset) pt-1 pb-2">
+          <div className="px-(--page-inset) pb-2 pt-0">
             <button
               onClick={() => setIsMobileSearchOpen(true)}
               className={cn(
@@ -175,7 +175,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
           {/* Left Section - Logo + Location */}
           <div className="flex items-center gap-1">
             <Link href="/" prefetch={true} className="flex items-center shrink-0 outline-none">
-              <span className="text-xl font-bold tracking-tight leading-none text-header-text">Treido</span>
+              <span className="text-xl font-semibold tracking-tight leading-none text-header-text">treido.</span>
             </Link>
             <div className="hidden lg:block">
               <AccountDropdown user={user} variant="full" />

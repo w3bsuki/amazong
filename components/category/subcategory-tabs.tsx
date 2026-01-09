@@ -6,6 +6,8 @@ import { useLocale } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { getCategoryIcon } from "@/lib/category-icons"
 
+import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
+
 interface Category {
   id: string
   name: string
@@ -60,19 +62,14 @@ function CategoryBanner({ category }: { category: Category }) {
     <div className="mb-4 rounded-md bg-primary/5 border border-border/50">
       <div className="flex items-center gap-3 p-3">
         {/* Category Icon or Image */}
-        <div className="shrink-0 size-14 rounded-full bg-primary/10 flex items-center justify-center">
-          {category.image_url ? (
-            <Image
-              src={category.image_url}
-              alt={name}
-              width={56}
-              height={56}
-              className="size-full object-cover rounded-full"
-            />
-          ) : (
-            getCategoryIcon(category.slug, { size: 28, weight: "regular", className: "text-primary" })
-          )}
-        </div>
+        <CategoryCircleVisual
+          category={category}
+          active={false}
+          className="size-[56px] shrink-0 bg-secondary/30 border border-border/60"
+          fallbackIconSize={24}
+          fallbackIconWeight="light"
+          variant="muted"
+        />
 
         {/* Category Info */}
         <div className="flex-1 min-w-0">

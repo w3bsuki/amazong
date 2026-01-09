@@ -42,9 +42,8 @@ export function StartSellingBanner({
             "bg-foreground text-background",
             "border border-border/50",
             "px-3 py-3",
-            "hover:bg-foreground/90",
+            "active:opacity-95 transition-opacity",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-            "transition-colors duration-150",
             className
           )}
         >

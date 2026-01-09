@@ -64,10 +64,10 @@ export function CategoryL3Pills({
           <button
             onClick={onAllClick}
             className={cn(
-              "h-touch-sm px-3 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+              "px-3.5 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap border focus-visible:outline-none transition-all",
               selectedPill === null
-                ? "bg-primary/15 text-primary border-primary/40"
-                : "bg-muted/50 text-muted-foreground border-border/30 hover:bg-muted/70"
+                ? "bg-foreground text-background border-foreground"
+                : "bg-background text-muted-foreground border-border/60 hover:border-foreground/20 hover:text-foreground"
             )}
           >
             {allLabel}
@@ -81,10 +81,10 @@ export function CategoryL3Pills({
                 key={child.slug}
                 onClick={() => onPillClick(child)}
                 className={cn(
-                  "h-touch-sm px-3 rounded-full text-xs font-medium whitespace-nowrap border focus-visible:outline-none transition-colors",
+                  "px-3.5 py-1.5 rounded-full text-[13px] font-medium whitespace-nowrap border focus-visible:outline-none transition-all shadow-sm", // Treido: px-3.5 py-1.5 text-[13px]
                   isSelected
-                    ? "bg-primary/15 text-primary border-primary/40"
-                    : "bg-muted/50 text-muted-foreground border-border/30 hover:bg-muted/70"
+                    ? "bg-foreground text-background border-foreground"
+                    : "bg-background text-muted-foreground border-border/60 hover:border-foreground/20 hover:text-foreground"
                 )}
               >
                 {getCategoryName(child, locale)}

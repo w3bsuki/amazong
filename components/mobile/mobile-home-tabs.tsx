@@ -7,6 +7,7 @@ import type { CategoryTreeNode } from "@/lib/category-tree"
 import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 import type { UIProduct } from "@/lib/data/products"
 import { Link } from "@/i18n/routing"
+import { useRouter } from "@/i18n/routing"
 import { CaretRight } from "@phosphor-icons/react"
 
 // Import extracted components
@@ -18,8 +19,13 @@ import {
   CategoryL3Pills,
   AllTabFilters,
   QuickFilterRow,
+  // Phase 2: Contextual navigation components (Vinted-style)
+  ContextualCategoryHeader,
+  SubcategoryPills,
+  InlineFilterBar,
 } from "./category-nav"
 import { ProductFeed } from "@/components/shared/product/product-feed"
+import { FilterHub } from "@/components/shared/filters/filter-hub"
 
 type Category = CategoryTreeNode
 
@@ -77,6 +83,38 @@ interface MobileHomeTabsProps {
     sort_order: number | null
     validation_rules?: unknown | null
   }>
+
+  // ==========================================================================
+  // Phase 2: Contextual Mode (Vinted-style category browsing)
+  // ==========================================================================
+
+  /**
+   * When true, use contextual header + subcategory pills + inline filter bar
+   * instead of the traditional tabs + circles layout.
+   *
+   * Automatically enabled for `/categories/[slug]` routes.
+   * Saves ~60px of nav chrome height for more products above fold.
+   */
+  contextualMode?: boolean
+  /**
+   * Current category name for contextual header (localized).
+   * Required when contextualMode is true.
+   */
+  contextualCategoryName?: string
+  /**
+   * Back navigation href for contextual header.
+   * Defaults to parent category or /categories.
+   */
+  contextualBackHref?: string
+  /**
+   * Subcategories to display as horizontal pills in contextual mode.
+   * Replaces circles for compact navigation.
+   */
+  contextualSubcategories?: Category[]
+  /**
+   * Current category ID for filter context.
+   */
+  categoryId?: string
 }
 
 // =============================================================================
@@ -102,13 +140,24 @@ export function MobileHomeTabs({
   circlesNavigateToPages = false,
   locale: localeProp,
   filterableAttributes = [],
+  // Phase 2: Contextual mode props
+  contextualMode = false,
+  contextualCategoryName,
+  contextualBackHref,
+  contextualSubcategories = [],
+  categoryId,
 }: MobileHomeTabsProps) {
   const intlLocale = useLocale()
   const locale = localeProp || intlLocale
+  const router = useRouter()
   const [headerHeight, setHeaderHeight] = useState(0)
 
   // Filter state for "All" tab
   const [activeAllFilter, setActiveAllFilter] = useState<string>("newest")
+
+  // Contextual mode state
+  const [activeSubcategorySlug, setActiveSubcategorySlug] = useState<string | null>(null)
+  const [filterHubOpen, setFilterHubOpen] = useState(false)
 
   // Use the extracted navigation hook
   const nav = useCategoryNavigation({
@@ -180,6 +229,148 @@ export function MobileHomeTabs({
     [nav]
   )
 
+  // Handle subcategory pill selection in contextual mode
+  const handleSubcategorySelect = useCallback(
+    (slug: string | null) => {
+      setActiveSubcategorySlug(slug)
+
+      // In contextual category pages, pills represent child categories.
+      // Navigating to the child category page enables deeper browsing.
+      if (slug) {
+        router.push(`/categories/${slug}`)
+        return
+      }
+
+      // "All" resets back to the current category page.
+      if (initialProductsSlug && initialProductsSlug !== "all") {
+        router.push(`/categories/${initialProductsSlug}`)
+      }
+    },
+    [router, initialProductsSlug]
+  )
+
+  // ==========================================================================
+  // Contextual Mode Rendering (Vinted-style)
+  // ==========================================================================
+
+  // Hide main site header on mobile when contextual mode is active
+  useEffect(() => {
+    if (!contextualMode) return
+
+    // Find the main site header (it's the first header in body, before main)
+    const siteHeader = document.querySelector('body > div > header')
+    if (!(siteHeader instanceof HTMLElement)) return
+
+    // Hide on mobile only
+    siteHeader.style.display = 'none'
+
+    // Show on desktop
+    const mediaQuery = window.matchMedia('(min-width: 1024px)')
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      siteHeader.style.display = e.matches ? '' : 'none'
+    }
+    handleChange(mediaQuery)
+    mediaQuery.addEventListener('change', handleChange)
+
+    return () => {
+      siteHeader.style.display = ''
+      mediaQuery.removeEventListener('change', handleChange)
+    }
+  }, [contextualMode])
+
+  if (contextualMode) {
+    const backHref = contextualBackHref || `/categories`
+
+    return (
+      <div className="w-full min-h-screen bg-background">
+        {/* 1. Contextual Category Header (40px) */}
+        <ContextualCategoryHeader
+          title={contextualCategoryName || ""}
+          backHref={backHref}
+          locale={locale}
+          showSearch={true}
+        />
+
+        {/* 2. Subcategory Pills (~36px) - replaces circles */}
+        {/* 2. Subcategory Navigation (Circles for L2, Pills for L3) */}
+        {(() => {
+          // Check if current category is L1 (Top Level).
+          // If true, its children are L2 -> Show Circles.
+          // If false (L2+), its children are L3+ -> Show Pills.
+          const isL1 = initialCategories.some((c) => c.id === categoryId)
+
+          if (isL1 && contextualSubcategories.length > 0) {
+            return (
+              <div className="bg-background border-b border-border/60 py-2">
+                <CategoryCircles
+                  circles={contextualSubcategories}
+                  activeL1={null} // Contextual mode handles its own navigation
+                  activeL2={null}
+                  showL2Circles={false}
+                  locale={locale}
+                  circlesNavigateToPages={true} // Navigates to subcategory page
+                  activeTab="contextual"
+                  onCircleClick={() => { }} // Not used when circlesNavigateToPages=true
+                  onBack={() => { }} // Not used
+                  hideBackButton={true}
+                />
+              </div>
+            )
+          }
+
+          if (contextualSubcategories.length > 0) {
+            return (
+              <SubcategoryPills
+                subcategories={contextualSubcategories}
+                activeSlug={activeSubcategorySlug}
+                locale={locale}
+                onSelect={handleSubcategorySelect}
+                stickyTop={40}
+              />
+            )
+          }
+          return null
+        })()}
+
+        {/* 3. Inline Filter Bar (~40px) - replaces QuickFilterRow */}
+        <InlineFilterBar
+          locale={locale}
+          onAllFiltersClick={() => setFilterHubOpen(true)}
+          attributes={filterableAttributes}
+          stickyTop={contextualSubcategories.length > 0 ? 76 : 40} // After header (40) + pills (36)
+        />
+
+        {/* 4. Product Feed */}
+        <ProductFeed
+          products={nav.activeFeed.products}
+          hasMore={nav.activeFeed.hasMore}
+          isLoading={nav.isLoading}
+          activeSlug={nav.activeSlug}
+          locale={locale}
+          isAllTab={false}
+          activeCategoryName={contextualCategoryName || nav.activeCategoryName}
+          onLoadMore={nav.loadMoreProducts}
+        />
+
+        {/* FilterHub Drawer (fallback for complex filters) */}
+        <FilterHub
+          open={filterHubOpen}
+          onOpenChange={setFilterHubOpen}
+          locale={locale}
+          {...(initialProductsSlug !== "all" ? { categorySlug: initialProductsSlug } : {})}
+          {...(categoryId ? { categoryId } : {})}
+          attributes={filterableAttributes}
+          mode="full"
+          initialSection={null}
+        />
+      </div>
+    )
+  }
+
+  // ==========================================================================
+  // Traditional Mode Rendering (Tabs + Circles)
+  // ==========================================================================
+
   return (
     <div className="w-full min-h-screen bg-background">
       {/* 1. Sticky Tabs Header (L0) - Two variants: tabs or pills */}
@@ -235,6 +426,7 @@ export function MobileHomeTabs({
             circles={nav.circlesToDisplay}
             activeL1={nav.activeL1}
             activeL2={nav.activeL2}
+            activeCategoryName={nav.activeCategoryName}
             showL2Circles={nav.showL2Circles}
             locale={locale}
             circlesNavigateToPages={circlesNavigateToPages}
@@ -290,31 +482,47 @@ export function MobileHomeTabs({
         !tabsNavigateToPages &&
         !nav.isAllTab &&
         nav.activeSlug !== "all" && (
-        <div className="bg-background px-(--page-inset) pt-2 pb-3 border-b border-border/40">
+          <div className="bg-background px-(--page-inset) pt-2 pb-3 border-b border-border/40">
+            <Link
+              href={`/categories/${nav.activeSlug}`}
+              aria-label={locale === "bg" ? "Виж всички" : "View all"}
+              className={cn(
+                "w-full",
+                "h-8 rounded-lg",
+                "inline-flex items-center justify-between gap-2",
+                "bg-secondary text-secondary-foreground",
+                "border border-border/50",
+                "px-3",
+                "text-xs font-medium",
+                "hover:bg-secondary/80",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+              )}
+            >
+              <span className="whitespace-nowrap">
+                {locale === "bg" ? "Виж всички" : "View all"}
+              </span>
+              <CaretRight size={14} weight="bold" aria-hidden="true" />
+            </Link>
+          </div>
+        )}
+
+      {/* 5. Section Header (Treido-style) - "Свежи обяви" + "Виж всички" */}
+      {nav.isAllTab && (
+        <div className="flex items-center justify-between px-(--page-inset) pt-3 pb-2">
+          <h2 className="text-base font-bold text-foreground">
+            {locale === "bg" ? "Свежи обяви" : "Fresh listings"}
+          </h2>
           <Link
-            href={`/categories/${nav.activeSlug}`}
-            aria-label={locale === "bg" ? "Виж всички" : "View all"}
-            className={cn(
-              "w-full",
-              "h-8 rounded-lg",
-              "inline-flex items-center justify-between gap-2",
-              "bg-secondary text-secondary-foreground",
-              "border border-border/50",
-              "px-3",
-              "text-xs font-medium",
-              "hover:bg-secondary/80",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-            )}
+            href="/categories"
+            className="text-xs font-medium text-muted-foreground hover:text-foreground flex items-center gap-0.5"
           >
-            <span className="whitespace-nowrap">
-              {locale === "bg" ? "Виж всички" : "View all"}
-            </span>
-            <CaretRight size={14} weight="bold" aria-hidden="true" />
+            {locale === "bg" ? "Виж всички" : "View all"}
+            <CaretRight size={12} weight="bold" />
           </Link>
         </div>
       )}
 
-      {/* 5. Product Feed */}
+      {/* 6. Product Feed */}
       <ProductFeed
         products={nav.activeFeed.products}
         hasMore={nav.activeFeed.hasMore}

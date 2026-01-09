@@ -229,97 +229,107 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
 
   return (
     <>
-      {/* Filter Trigger Button */}
+      {/* Filter Trigger Button - Treido style */}
       <Button
         variant="ghost"
         onClick={() => setIsOpen(true)}
         className={cn(
-          "h-8 w-full rounded-lg px-3 gap-2 text-xs font-medium",
-          "bg-background hover:bg-muted/40 hover:text-foreground transition-colors border border-border/60",
-          filterCount > 0 && "bg-muted text-foreground border-border"
+          "h-9 w-full rounded-lg px-3 gap-2 text-[14px] font-medium",
+          "bg-white border border-gray-200 text-gray-700 active:bg-gray-50",
+          filterCount > 0 && "border-gray-900 text-gray-900"
         )}
       >
-        <Sliders size={14} weight="regular" className={cn(
-          filterCount > 0 ? "text-primary" : "text-muted-foreground",
-          "shrink-0"
-        )} />
-        <span className={cn(filterCount > 0 ? "text-primary" : "text-foreground")}>{t('filters')}</span>
+        <Sliders size={14} weight="regular" className="shrink-0" />
+        <span>{t('filters')}</span>
         {filterCount > 0 && (
-          <span className="bg-foreground text-background text-2xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
+          <span className="bg-gray-900 text-white text-[10px] font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
             {filterCount}
           </span>
         )}
       </Button>
 
-      {/* Bottom Sheet using shadcn Drawer (Vaul) for drag-to-close */}
+      {/* Bottom Sheet - Treido pattern: h-[92vh], rounded-t-xl */}
       <Drawer open={isOpen} onOpenChange={setIsOpen}>
         <DrawerContent 
-          className="max-h-(--dialog-max-h) flex flex-col rounded-t-2xl px-0 pb-0 lg:hidden"
+          className="h-[92vh] flex flex-col rounded-t-xl px-0 pb-0 lg:hidden"
         >
+          {/* Header - Treido: h-[56px] border-b border-gray-100 */}
           <DrawerHeader className={cn(
-            "px-4 pb-3 border-b border-border/50",
-            activeSection ? "pt-4" : "pt-1"
+            "px-4 h-[56px] flex-shrink-0 border-b border-gray-100 flex items-center",
+            activeSection ? "justify-start" : "justify-between"
           )}>
-            <div className="flex items-center justify-between min-h-touch-sm">
-              {activeSection ? (
-                <button 
-                  onClick={() => setActiveSection(null)}
-                  className="flex items-center gap-2 text-foreground font-semibold active:opacity-70 transition-opacity"
-                >
-                  <CaretLeft size={20} weight="bold" />
-                  <span className="text-lg">
-                    {filterSections.find(s => s.id === activeSection)?.label}
-                  </span>
+            {activeSection ? (
+              <button 
+                onClick={() => setActiveSection(null)}
+                className="w-8 h-8 flex items-center justify-center rounded-full active:bg-gray-100"
+              >
+                <CaretLeft size={20} weight="bold" className="text-gray-900" />
+              </button>
+            ) : (
+              <DrawerClose asChild>
+                <button className="w-8 h-8 flex items-center justify-center rounded-full active:bg-gray-100">
+                  <span className="text-[20px] font-bold text-gray-400">×</span>
                 </button>
-              ) : (
-                <DrawerTitle className="text-lg font-bold">{t('filters')}</DrawerTitle>
-              )}
-              
-              {hasPendingFilters && !activeSection && (
-                <button
-                  onClick={clearAllPendingFilters}
-                  className="text-sm font-medium text-primary active:opacity-70 transition-opacity"
-                >
-                  {t('clearAllFilters')}
-                </button>
-              )}
-            </div>
+              </DrawerClose>
+            )}
+            
+            <h2 className="text-[16px] font-bold text-gray-900 flex-1 text-center">
+              {activeSection 
+                ? filterSections.find(s => s.id === activeSection)?.label 
+                : t('filters')
+              }
+            </h2>
+            
+            {hasPendingFilters && !activeSection ? (
+              <button
+                onClick={clearAllPendingFilters}
+                className="text-[14px] font-medium text-gray-500"
+              >
+                {t('clearAllFilters')}
+              </button>
+            ) : (
+              <div className="w-8" /> // Spacer for centering
+            )}
           </DrawerHeader>
 
-          {/* Filter Content */}
-          <div className="flex-1 overflow-y-auto overscroll-contain bg-background">
+          {/* Scrollable Body */}
+          <div className="flex-1 overflow-y-auto">
             {!activeSection ? (
-              /* Main List View */
-              <div className="divide-y divide-border/30">
+              /* Main List View - Treido style */
+              <div>
                 {filterSections.map((section) => {
                   const summary = getSelectedSummary(section)
                   return (
-                    <button
+                    <div
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
-                      className="w-full flex items-center justify-between px-4 h-12 active:bg-muted/50 transition-colors text-left"
+                      className="flex items-center justify-between py-2.5 px-4 cursor-pointer active:bg-gray-50 border-b border-gray-100"
                     >
-                      <div className="flex flex-col">
-                        <span className="font-medium text-sm text-foreground">{section.label}</span>
+                      <span className="text-[14px] text-gray-700">{section.label}</span>
+                      <div className="flex items-center gap-2">
                         {summary && (
-                          <span className="text-xs text-primary font-medium">{summary}</span>
+                          <span className="text-[14px] text-gray-900 font-medium">{summary}</span>
                         )}
+                        <CaretRight 
+                          size={16}
+                          weight="bold"
+                          className="text-gray-400" 
+                        />
                       </div>
-                      <CaretRight 
-                        size={16}
-                        weight="bold"
-                        className="text-muted-foreground/60" 
-                      />
-                    </button>
+                    </div>
                   )
                 })}
               </div>
             ) : (
-              /* Sub-view for specific filter */
-              <div className="p-4 space-y-2">
-                {/* Ratings */}
+              /* Sub-view for specific filter - Treido style */
+              <div className="p-4 border-b border-gray-100">
+                <h3 className="text-[14px] font-bold text-gray-900 mb-3">
+                  {filterSections.find(s => s.id === activeSection)?.label}
+                </h3>
+                <div className="space-y-2">
+                {/* Ratings - Treido chip style */}
                 {activeSection === 'rating' && (
-                  <div className="space-y-1">
+                  <div className="flex flex-wrap gap-2">
                     {[4, 3, 2, 1].map((stars) => (
                       <button
                         key={stars}
@@ -327,34 +337,31 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
                           setPendingRating(pendingRating === stars.toString() ? null : stars.toString())
                         }}
                         className={cn(
-                          "w-full flex items-center gap-3 px-3 h-touch rounded-md transition-colors",
+                          "px-4 py-2 rounded-lg border text-[13px] font-medium transition-colors flex items-center gap-1.5",
                           pendingRating === stars.toString()
-                            ? "bg-secondary text-primary font-medium"
-                            : "active:bg-muted"
+                            ? "border-gray-900 bg-gray-900 text-white"
+                            : "border-gray-200 bg-white text-gray-700 active:bg-gray-50"
                         )}
                         aria-pressed={pendingRating === stars.toString()}
                       >
                         <div className="flex text-rating">
-                          {[...Array(5)].map((_, i) => (
+                          {[...Array(stars)].map((_, i) => (
                             <Star
                               key={i}
-                              size={18}
-                              weight={i < stars ? "fill" : "regular"}
+                              size={14}
+                              weight="fill"
                             />
                           ))}
                         </div>
-                        <span className="text-sm font-medium">{t('andUp')}</span>
-                        {pendingRating === stars.toString() && (
-                          <Check size={16} weight="bold" className="ml-auto" />
-                        )}
+                        <span>{t('andUp')}</span>
                       </button>
                     ))}
                   </div>
                 )}
 
-                {/* Price */}
+                {/* Price - Treido chip style */}
                 {activeSection === 'price' && (
-                  <div className="space-y-1">
+                  <div className="flex flex-wrap gap-2">
                     {priceRanges.map(({ label, min, max }) => {
                       const isActive = pendingPrice.min === min && pendingPrice.max === max
                       return (
@@ -362,44 +369,39 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
                           key={label}
                           onClick={() => setPendingPrice(isActive ? { min: null, max: null } : { min, max })}
                           className={cn(
-                            "w-full flex items-center justify-between px-3 h-touch rounded-md transition-colors",
+                            "px-4 py-2 rounded-lg border text-[13px] font-medium transition-colors",
                             isActive
-                              ? "bg-secondary text-primary font-medium"
-                              : "active:bg-muted"
+                              ? "border-gray-900 bg-gray-900 text-white"
+                              : "border-gray-200 bg-white text-gray-700 active:bg-gray-50"
                           )}
                           aria-pressed={isActive}
                         >
-                          <span className="text-sm">{label}</span>
-                          {isActive && <Check size={16} weight="bold" />}
+                          {label}
                         </button>
                       )
                     })}
                   </div>
                 )}
 
-                {/* Availability */}
+                {/* Availability - Treido chip style */}
                 {activeSection === 'availability' && (
                   <button
                     onClick={() => setPendingAvailability(pendingAvailability === 'instock' ? null : 'instock')}
                     className={cn(
-                      "w-full flex items-center gap-3 px-3 h-touch rounded-md transition-colors",
-                      pendingAvailability === "instock" ? "bg-secondary text-primary font-medium" : "active:bg-muted"
+                      "px-4 py-2 rounded-lg border text-[13px] font-medium transition-colors",
+                      pendingAvailability === "instock"
+                        ? "border-gray-900 bg-gray-900 text-white"
+                        : "border-gray-200 bg-white text-gray-700 active:bg-gray-50"
                     )}
                     aria-pressed={pendingAvailability === 'instock'}
                   >
-                    <div className={cn(
-                      "size-5 rounded border flex items-center justify-center transition-colors",
-                      pendingAvailability === "instock" ? "bg-primary border-primary" : "border-input"
-                    )}>
-                      {pendingAvailability === "instock" && <Check size={12} weight="bold" className="text-primary-foreground" />}
-                    </div>
-                    <span className="text-sm font-medium">{t('inStock')}</span>
+                    {t('inStock')}
                   </button>
                 )}
 
-                {/* Category Attribute Filters */}
+                {/* Category Attribute Filters - Treido chip style */}
                 {filterSections.find(s => s.id === activeSection)?.attribute && (
-                  <div className="space-y-1">
+                  <div className="flex flex-wrap gap-2">
                     {(() => {
                       const section = filterSections.find(s => s.id === activeSection) as AttrFilterSection
                       const attr = section.attribute
@@ -410,18 +412,14 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
                           <button
                             onClick={() => setPendingAttrValues(attr.name, isChecked ? [] : ['true'])}
                             className={cn(
-                              "w-full flex items-center gap-3 px-3 h-touch rounded-md transition-colors",
-                              isChecked ? "bg-secondary text-primary font-medium" : "active:bg-muted"
+                              "px-4 py-2 rounded-lg border text-[13px] font-medium transition-colors",
+                              isChecked
+                                ? "border-gray-900 bg-gray-900 text-white"
+                                : "border-gray-200 bg-white text-gray-700 active:bg-gray-50"
                             )}
                             aria-pressed={isChecked}
                           >
-                            <div className={cn(
-                              "size-5 rounded border flex items-center justify-center transition-colors",
-                              isChecked ? "bg-primary border-primary" : "border-input"
-                            )}>
-                              {isChecked && <Check size={12} weight="bold" className="text-primary-foreground" />}
-                            </div>
-                            <span className="text-sm font-medium">{locale === 'bg' ? 'Да' : 'Yes'}</span>
+                            {locale === 'bg' ? 'Да' : 'Yes'}
                           </button>
                         )
                       }
@@ -445,13 +443,14 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
                                 setPendingAttrValues(attr.name, newValues)
                               }}
                               className={cn(
-                                "w-full flex items-center justify-between px-3 h-touch rounded-md transition-colors",
-                                isActive ? "bg-secondary text-primary font-medium" : "active:bg-muted"
+                                "px-4 py-2 rounded-lg border text-[13px] font-medium transition-colors",
+                                isActive
+                                  ? "border-gray-900 bg-gray-900 text-white"
+                                  : "border-gray-200 bg-white text-gray-700 active:bg-gray-50"
                               )}
                               aria-pressed={isActive}
                             >
-                              <span className="text-sm">{option}</span>
-                              {isActive && <Check size={16} weight="bold" />}
+                              {option}
                             </button>
                           )
                         })
@@ -461,23 +460,24 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
                   </div>
                 )}
               </div>
+              </div>
             )}
           </div>
 
-          {/* Footer with Show Results button - includes safe area */}
-          <div className="p-4 border-t border-border/50 bg-background pb-safe-max">
+          {/* Footer - Treido: border-t, pb-safe, bg-gray-900 button */}
+          <div className="border-t border-gray-100 p-4 pb-safe bg-white flex-shrink-0">
             <DrawerClose asChild>
-              <Button
-                className="w-full h-10 rounded-full text-sm font-bold"
+              <button
+                className="w-full h-[48px] bg-gray-900 text-white font-bold rounded-lg text-[15px] active:opacity-90"
                 onClick={() => {
                   applyPendingFilters()
                 }}
               >
                 {resultsCount > 0 
-                  ? (locale === 'bg' ? `Покажи ${resultsCount} резултата` : `Show ${resultsCount} results`)
+                  ? (locale === 'bg' ? `Покажи ${resultsCount} резултата` : `Show ${resultsCount} Results`)
                   : t('showResults')
                 }
-              </Button>
+              </button>
             </DrawerClose>
           </div>
         </DrawerContent>

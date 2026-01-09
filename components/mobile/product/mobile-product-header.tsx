@@ -1,38 +1,14 @@
 "use client"
 
-import { useState } from "react"
-import { ArrowLeft, Search, Share2, ShoppingCart, Heart } from "lucide-react"
+import { ArrowLeft, Share2, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Link } from "@/i18n/routing"
-import { useLocale } from "next-intl"
-import { useCart } from "@/components/providers/cart-context"
-import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
-import { safeAvatarSrc } from "@/lib/utils"
-
-interface MobileProductHeaderProps {
-  sellerName?: string;
-  sellerUsername?: string;
-  sellerAvatarUrl?: string;
-}
+import { useRouter } from "@/i18n/routing"
+import { useTranslations } from "next-intl"
 
 export function MobileProductHeader({ 
-  sellerName,
-  sellerUsername,
-  sellerAvatarUrl,
-}: MobileProductHeaderProps) {
-  const locale = useLocale()
-  const { totalItems } = useCart()
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  
-  const labels = {
-    back: locale === "bg" ? "Назад" : "Go back",
-    search: locale === "bg" ? "Търсене" : "Search",
-    share: locale === "bg" ? "Сподели" : "Share",
-    cart: locale === "bg" ? "Количка" : "Cart",
-    wishlist: locale === "bg" ? "Любими" : "Wishlist",
-  }
+  }: Record<string, never>) {
+  const t = useTranslations("Product")
+  const router = useRouter()
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -47,98 +23,48 @@ export function MobileProductHeader({
     }
   }
 
-  const sellerHref = sellerUsername ? `/${sellerUsername}` : "/"
-
   return (
-    <>
-    <header className="fixed top-0 left-0 right-0 z-60 h-12 bg-brand flex items-center justify-between px-2 lg:hidden">
-      {/* Left side: Back + Seller */}
-      <div className="flex items-center gap-1">
-        <Link 
-          href="/" 
-          className="flex items-center justify-center size-10 rounded-full text-header-text hover:bg-header-hover active:bg-header-active transition-colors" 
-          aria-label={labels.back} 
-          title={labels.back}
+    <header className="sticky top-0 z-40 w-full min-h-12 bg-background/90 backdrop-blur-md border-b border-border/50 lg:hidden pt-safe-top">
+      <div className="h-12 flex items-center justify-between px-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          aria-label={t("back")}
+          title={t("back")}
+          onClick={() => router.back()}
         >
           <ArrowLeft className="size-5" aria-hidden="true" />
-        </Link>
-        
-        {/* Seller avatar - quick link to seller profile */}
-        {sellerUsername && (
-          <Link 
-            href={sellerHref}
-            className="flex items-center gap-1.5 pl-0.5 pr-2 py-1 rounded-full hover:bg-header-hover active:bg-header-active transition-colors"
-            title={sellerName || sellerUsername}
+        </Button>
+
+        <div className="flex items-center">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+            aria-label={t("share")}
+            title={t("share")}
+            onClick={handleShare}
           >
-            <Avatar className="size-7 border-2 border-white/30">
-              <AvatarImage src={safeAvatarSrc(sellerAvatarUrl)} alt={sellerName || sellerUsername} />
-              <AvatarFallback className="text-2xs font-semibold bg-white/20 text-white">
-                {(sellerName || sellerUsername || "S").slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-xs font-medium text-header-text truncate max-w-20">
-              {sellerName || sellerUsername}
-            </span>
-          </Link>
-        )}
-      </div>
-      
-      {/* Action buttons */}
-      <div className="flex items-center">
-        <Button
-          variant="ghost"
-          size="icon-lg"
-          className="rounded-full text-header-text hover:bg-header-hover"
-          aria-label={labels.search}
-          title={labels.search}
-          onClick={() => setIsSearchOpen(true)}
-        >
-          <Search className="size-5" aria-hidden="true" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon-lg"
-          className="rounded-full text-header-text hover:bg-header-hover"
-          aria-label={labels.share}
-          title={labels.share}
-          onClick={handleShare}
-        >
-          <Share2 className="size-5" aria-hidden="true" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon-lg"
-          className="rounded-full text-header-text hover:bg-header-hover"
-          aria-label={labels.wishlist}
-          title={labels.wishlist}
-        >
-          <Heart className="size-5" aria-hidden="true" />
-        </Button>
-        <Link
-          href="/cart"
-          className="relative flex items-center justify-center size-10 rounded-full text-header-text hover:bg-header-hover active:bg-header-active transition-colors"
-          aria-label={labels.cart}
-          title={labels.cart}
-        >
-          <ShoppingCart className="size-5" aria-hidden="true" />
-          {totalItems > 0 && (
-            <Badge 
-              aria-hidden="true" 
-              className="absolute -top-0.5 -right-0.5 bg-cart-badge text-white text-2xs font-bold px-1.5 min-w-5 h-5 flex items-center justify-center rounded-full border-2 border-brand"
-            >
-              {totalItems > 99 ? "99+" : totalItems}
-            </Badge>
-          )}
-        </Link>
+            <Share2 className="size-5" aria-hidden="true" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+            aria-label={t("moreOptions")}
+            title={t("moreOptions")}
+            onClick={() => {
+              // Placeholder for a future menu / report / share sheet.
+            }}
+          >
+            <MoreHorizontal className="size-5" aria-hidden="true" />
+          </Button>
+        </div>
       </div>
     </header>
-    
-    {/* Search Overlay */}
-    <MobileSearchOverlay 
-      hideDefaultTrigger 
-      externalOpen={isSearchOpen} 
-      onOpenChange={setIsSearchOpen} 
-    />
-    </>
   )
 }

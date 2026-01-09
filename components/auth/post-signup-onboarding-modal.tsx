@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/routing"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ShoppingBag,
@@ -292,9 +292,9 @@ export function PostSignupOnboardingModal({
   const handleFinish = () => {
     onClose()
     if (intent === "sell") {
-      router.push(`/${locale}/sell`)
+      router.push("/sell")
     } else {
-      router.push(`/${locale}`)
+      router.push("/")
     }
     router.refresh()
   }

@@ -1,8 +1,7 @@
 "use client"
 
-import { Link } from "@/i18n/routing"
+import { Link, useRouter } from "@/i18n/routing"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { useEffect, useState, useTransition } from "react"
 import { createClient } from "@/lib/supabase/client"
 import {
@@ -148,7 +147,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
         .from("profiles")
         .update({ onboarding_completed: true } as Record<string, unknown>)
         .eq("id", userId)
-      router.push(`/${locale}/`)
+      router.push("/")
     })
   }
 

@@ -145,6 +145,111 @@ Verification gates (minimum for non-trivial UI work):
 
 ---
 
+## Token Usage Quick Reference (What to Use When)
+
+### Border Radius
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `rounded-none` | 0 | Tables, borders |
+| `rounded-sm` | 2px | Badges, inline elements |
+| `rounded-md` | 4px | **Cards, buttons, inputs (default)** |
+| `rounded-lg` | 6px | Dialogs, sheets, modals |
+| `rounded-xl` | 8px | Hero cards (rare) |
+| `rounded-full` | 9999px | **Pills, chips, avatars, category circles** |
+
+**Rule**: Cards and containers use `rounded-md`. Interactive pills/chips use `rounded-full`.
+
+### Spacing (4px grid)
+
+| Token | Pixels | Use |
+|-------|--------|-----|
+| `gap-1` | 4px | Inline items, icon + text |
+| `gap-1.5` | 6px | Tight groups |
+| `gap-2` | 8px | **Mobile default between items** |
+| `gap-3` | 12px | **Desktop default between items** |
+| `gap-4` | 16px | Between sections (mobile) |
+| `gap-6` | 24px | Between sections (desktop) |
+| `p-2` | 8px | Card internal padding (mobile) |
+| `p-3` | 12px | Card internal padding (desktop) |
+| `px-4` | 16px | Container horizontal edge padding |
+
+**Rule**: Mobile = `gap-2`, Desktop = `gap-3`. Section spacing = `py-6` (mobile) / `py-8` (desktop).
+
+### Typography
+
+| Token | Size | Use |
+|-------|------|-----|
+| `text-2xs` | 10px | Tiny badges, micro labels |
+| `text-xs` | 12px | Meta text, captions, timestamps |
+| `text-sm` | 14px | **Body text (default)** |
+| `text-base` | 16px | Prices, emphasis |
+| `text-lg` | 18px | Section headings |
+| `text-xl` | 20px | Page titles, logo |
+| `text-2xl+` | 24px+ | Hero headlines only |
+
+**Weights**:
+- `font-normal` (400): Body text
+- `font-medium` (500): Labels, navigation items
+- `font-semibold` (600): Prices, CTAs, headings
+- `font-bold` (700): Hero only (rare)
+
+**Rule**: Default body = `text-sm font-normal`. Prices = `text-base font-semibold`.
+
+### Touch Targets
+
+| Token | Size | Use |
+|-------|------|-----|
+| `h-touch-xs` | 24px | Minimum (inline icons) |
+| `h-touch-sm` | 28px | **Compact buttons, chips** |
+| `h-touch` | 32px | Standard buttons |
+| `h-touch-lg` | 36px | Primary CTA buttons |
+
+**Rule**: All tappable elements ≥24px. Pills/chips = `h-touch-sm rounded-full`.
+
+### Semantic Colors
+
+| Class | Use |
+|-------|-----|
+| `bg-background` | Page/section canvas |
+| `bg-card` | Elevated surfaces (cards, modals) |
+| `bg-muted` | Subdued backgrounds, inactive states |
+| `text-foreground` | Primary text |
+| `text-muted-foreground` | Secondary text, placeholders |
+| `border-border` | Standard borders |
+| `bg-foreground text-background` | **Active/inverted pill state** |
+
+**Rule**: Never hardcode `bg-white`, `text-black`, or `border-gray-*`. Use semantic tokens.
+
+### Common Patterns
+
+**Active pill (inverted)**:
+```
+bg-foreground text-background border-foreground
+```
+
+**Inactive pill (outlined)**:
+```
+bg-background text-muted-foreground border-border/60 hover:bg-muted/40 hover:text-foreground
+```
+
+**Sticky surface (glass)**:
+```
+bg-background/90 backdrop-blur-md border-b border-border/50
+```
+
+**Bottom nav (glassy)**:
+```
+bg-card/95 backdrop-blur-xl border-t border-border/60
+```
+
+**Product card**:
+```
+rounded-md border border-border bg-card
+```
+
+---
+
 ## Deep references
 
 - `styling/STYLE_GUIDE.md` (long-form patterns and examples)

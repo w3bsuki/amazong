@@ -52,12 +52,13 @@ export function CategoryTabs({
 
   return (
     <div
-      className="sticky z-30 bg-header-bg border-b border-header-border/50"
+      className="sticky z-30 bg-background/90 backdrop-blur-md border-b border-border/50"
       style={{ top: headerHeight }}
     >
+      {/* Treido: overflow-x-auto no-scrollbar */}
       <div
         ref={tabsContainerRef}
-        className="relative flex items-end gap-4 overflow-x-auto no-scrollbar px-(--page-inset)"
+        className="relative flex items-center gap-1.5 overflow-x-auto no-scrollbar px-(--page-inset)"
         role="tablist"
       >
         {/* "All" Tab */}

@@ -974,6 +974,7 @@
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 .pb-safe-max { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
 .pt-safe { padding-top: env(safe-area-inset-top); }
+.pt-safe-top { padding-top: env(safe-area-inset-top); } /* treido alias */
 .pl-safe { padding-left: env(safe-area-inset-left); }
 .pr-safe { padding-right: env(safe-area-inset-right); }
 .h-safe-bottom { height: env(safe-area-inset-bottom); }

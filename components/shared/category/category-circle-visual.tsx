@@ -41,41 +41,33 @@ export function CategoryCircleVisual({
   active = false,
   className,
   fallbackIconSize = 24,
-  fallbackIconWeight = "regular",
+  fallbackIconWeight = "light", // Treido uses thin stroke (1.5px approx)
   variant = "muted",
 }: CategoryCircleVisualProps) {
   const imageUrl = hasMeaningfulImageUrl(category.image_url) ? category.image_url : null
   const icon = hasMeaningfulIcon(category.icon) ? category.icon : null
 
-  // Variant-specific styling
-  // - muted: Light bg, brand icon (default browse)
-  // - menu: Neutral bg for drawers/menus (avoid loud/glowy look)
-  // - rail: Minimal styling for dense lists
-  const variantStyles = {
-    muted: {
-      bg: "bg-muted",
-      iconColor: "text-brand",
-    },
-    menu: {
-      bg: "bg-muted",
-      iconColor: "text-brand",
-    },
-    rail: {
-      bg: "bg-muted/50",
-      iconColor: "text-muted-foreground",
-    },
+  // Treido Style:
+  // - Base: bg-zinc-50 (bg-secondary/30), border-zinc-200 (border-border/60)
+  // - Active: Scale down
+  const styles = {
+    bg: "bg-secondary/30",
+    iconColor: "text-foreground",
+    border: "border-border/60",
   }
 
-  const styles = variantStyles[variant]
-  const activeStyles = active ? "border-primary" : "border-border/40"
+  // If active (selected state), use darker border
+  const activeStyles = active ? "border-primary ring-1 ring-primary/20" : styles.border
 
   return (
     <div
       className={cn(
+        // Treido: w-[56px] h-[56px] -> we expect parent to pass size-14 (56px) or similar
+        // If not, we enforce a good default in parent, but here we handle the visual properties.
         "rounded-full flex items-center justify-center overflow-hidden",
-        "border-2",
-        "shadow-none",
-        "transition-colors duration-100",
+        "border",
+        "transition-all duration-200", // Smooth transition
+        "group-active:scale-95", // Treido: active:scale-95 (via group from parent)
         styles.bg,
         activeStyles,
         className

@@ -12,3 +12,11 @@ export type { AllTabFiltersProps } from "./all-tab-filters"
 export { QuickFilterRow } from "./quick-filter-row"
 export { StickyCategoryTabs } from "./sticky-category-tabs"
 
+// Phase 1: Contextual category navigation (Vinted-style)
+export { ContextualCategoryHeader } from "./contextual-category-header"
+export type { ContextualCategoryHeaderProps } from "./contextual-category-header"
+export { SubcategoryPills } from "./subcategory-pills"
+export type { SubcategoryPillsProps } from "./subcategory-pills"
+export { InlineFilterBar } from "./inline-filter-bar"
+export type { InlineFilterBarProps, FilterDropdownConfig } from "./inline-filter-bar"
+

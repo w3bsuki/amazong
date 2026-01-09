@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, memo } from "react";
-import { useRouter } from "next/navigation";
-import { Link } from "@/i18n/routing";
+import { useRouter, Link } from "@/i18n/routing";
 import { 
   Storefront, 
   CaretDown, 

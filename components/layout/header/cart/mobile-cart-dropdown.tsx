@@ -78,6 +78,7 @@ export function MobileCartDropdown() {
                         {totalItems > 0 && (
                             <CountBadge
                                 count={totalItems}
+                                max={9}
                                 className="absolute -top-1 -right-1.5 bg-destructive text-white ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
                                 aria-hidden="true"
                             />

@@ -1,11 +1,9 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface SellerProductItem {
   id: string;
@@ -32,12 +30,24 @@ interface SellerProductsGridProps {
   sellerUsername?: string;
 }
 
+/**
+ * SellerProductsGrid - "More from Seller" horizontal scroll section
+ * 
+ * OLX/Treido reference design:
+ * ```
+ * Още от Иван                    [Виж всички]
+ * ┌────┐ ┌────┐ ┌────┐ ┌────┐
+ * │    │ │    │ │    │ │    │  ← Horizontal scroll
+ * └────┘ └────┘ └────┘ └────┘
+ * ```
+ * 
+ * Mobile: Pure swipe (no chevron buttons)
+ * Desktop: Chevron navigation buttons
+ */
 export function SellerProductsGrid({ products, totalCount, sellerUsername }: SellerProductsGridProps) {
   const t = useTranslations("Product");
   const locale = useLocale();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const getProductHref = (product: SellerProductItem) => {
     const resolvedSellerSlug = product.storeSlug || sellerUsername;
@@ -50,120 +60,74 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
 
   const hasProducts = Array.isArray(products) && products.length > 0;
 
-  const displayCount = totalCount ?? products.length;
   const viewAllHref = sellerUsername ? `/${sellerUsername}` : undefined;
-
-  const checkScroll = () => {
-    if (!scrollRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 0);
-    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
-  };
-
-  useEffect(() => {
-    if (!hasProducts) return;
-    checkScroll();
-    const el = scrollRef.current;
-    if (el) {
-      el.addEventListener("scroll", checkScroll);
-      window.addEventListener("resize", checkScroll);
-      return () => {
-        el.removeEventListener("scroll", checkScroll);
-        window.removeEventListener("resize", checkScroll);
-      };
-    }
-
-    return;
-  }, [hasProducts, products]);
-
-  const scroll = (dir: "left" | "right") => {
-    if (!scrollRef.current) return;
-    const cardWidth = scrollRef.current.firstElementChild?.clientWidth || 200;
-    const gap = 16;
-    const scrollAmount = (cardWidth + gap) * 2;
-    scrollRef.current.scrollBy({
-      left: dir === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth",
-    });
-  };
+  
+  // Translation with fallback for "View all"
+  const viewAllText = locale === "bg" ? "Виж всички" : "View all";
+  
+  // Seller name for header - extract first name for treido-mock style "More from Ivan"
+  const sellerFirstName = products[0]?.sellerName?.split(" ")[0] || "";
+  const moreFromText = locale === "bg" 
+    ? `Още от ${sellerFirstName}` 
+    : `More from ${sellerFirstName}`;
 
   if (!hasProducts) return null;
 
   return (
-    <div className="mt-4 pt-3 border-t border-border/50">
-      {/* Header with chevrons */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-foreground">
-          {t("moreFromSeller") || `More from ${products[0]?.sellerName || "this seller"}`}
-        </h2>
-        <div className="flex items-center gap-1">
-          {viewAllHref && displayCount > products.length && (
-            <Link 
-              href={viewAllHref}
-              className="text-xs font-medium text-primary hover:underline mr-2"
-            >
-              {t("viewAll") || "View all"} ({displayCount})
-            </Link>
-          )}
-          <Button
-            variant="outline"
-            size="icon-sm"
-            className="rounded-full"
-            onClick={() => scroll("left")}
-            disabled={!canScrollLeft}
+    <div className="py-4 bg-muted/30">
+      {/* Header - treido-mock: text-[14px] font-bold + text-[12px] font-medium */}
+      <div className="flex items-center justify-between px-4 mb-3">
+        <h3 className="text-[14px] font-bold text-foreground">
+          {sellerFirstName ? moreFromText : (t("moreFromSeller") || "More from this seller")}
+        </h3>
+        {viewAllHref && (
+          <Link 
+            href={viewAllHref}
+            className="text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon-sm"
-            className="rounded-full"
-            onClick={() => scroll("right")}
-            disabled={!canScrollRight}
-          >
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
+            {viewAllText}
+          </Link>
+        )}
       </div>
       
-      {/* Horizontal scrolling cards */}
+      {/* Horizontal scroll cards - treido-mock: w-[130px] with price+title */}
       <div 
         ref={scrollRef}
-        className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory pb-2 -mx-1 px-1"
+        className="flex overflow-x-auto scrollbar-hide scroll-smooth px-4 gap-2.5"
       >
         {products.slice(0, 10).map((product) => (
           <Link
             key={product.id}
             href={getProductHref(product)}
-            className="group flex-none w-32 sm:w-(--seller-product-card-w-sm) snap-start"
+            className="w-[130px] flex-shrink-0 bg-background rounded border border-border overflow-hidden"
           >
-            <div className="aspect-square bg-muted/30 rounded-md overflow-hidden border border-border/50 relative shadow-sm group-hover:shadow-md transition-shadow">
+            {/* Image - treido-mock: aspect-square bg-gray-100 */}
+            <div className="aspect-square bg-muted relative">
               {product.image && (
                 <Image
                   src={product.image}
                   alt={product.title}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 640px) 130px, 150px"
+                  sizes="130px"
+                  loading="lazy"
                 />
               )}
-              {/* Condition badge */}
-              {product.condition && (
-                <div className="absolute top-2 left-2 bg-background/95 backdrop-blur-sm px-2 py-0.5 rounded-lg text-2xs font-bold text-foreground shadow-sm border border-border/30">
-                  {product.condition.replaceAll('-', " ")}
-                </div>
-              )}
             </div>
-            <h3 className="text-xs font-semibold text-foreground leading-tight mt-1.5 group-hover:text-link line-clamp-2 transition-colors">
-              {product.title}
-            </h3>
-            <p className="text-base font-bold text-foreground mt-1">
-              {new Intl.NumberFormat(locale, { 
-                style: "currency", 
-                currency: "EUR", 
-                minimumFractionDigits: 2 
-              }).format(product.price)}
-            </p>
+            {/* Content - treido-mock: p-2 with price bold + title muted */}
+            <div className="p-2">
+              <p className="font-bold text-foreground text-[13px]">
+                {new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
+                  style: "currency",
+                  currency: "EUR",
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }).format(product.price)}
+              </p>
+              <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                {product.title}
+              </p>
+            </div>
           </Link>
         ))}
       </div>

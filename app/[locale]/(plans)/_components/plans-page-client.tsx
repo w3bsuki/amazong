@@ -1,8 +1,7 @@
 "use client"
 
-import { Link } from "@/i18n/routing"
+import { Link, useRouter } from "@/i18n/routing"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
 import {
   ChartBar,
   Check,
@@ -375,7 +374,7 @@ export default function PlansPageClient(props: {
 
   const handleSelect = async (planId: string, price: number, isCurrent: boolean) => {
     if (!userId) {
-      router.push(`/${locale}/auth/login?next=/${locale}/plans`)
+      router.push("/auth/login?next=/plans")
       return
     }
 

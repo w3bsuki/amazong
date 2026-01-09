@@ -101,16 +101,16 @@ export function ProductCardActions({
 
     return (
         <>
-            {/* Wishlist button - Top Right */}
+            {/* Wishlist button - Treido: top-2 right-2, w-8 h-8, bg-white/90 */}
             {showWishlist && (
                 <button
                     type="button"
                     className={cn(
-                        "absolute right-1.5 top-1.5 z-10 flex size-touch-sm items-center justify-center rounded-full outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
+                        "absolute right-2 top-2 z-10 w-8 h-8 rounded-full flex items-center justify-center outline-none transition-colors",
                         !inWishlist && "lg:pointer-events-none lg:opacity-0 lg:group-hover:pointer-events-auto lg:group-hover:opacity-100 lg:transition-opacity lg:duration-100",
                         inWishlist
-                            ? "bg-product-wishlist-active text-white"
-                            : "bg-background/80 text-foreground/70 shadow-sm backdrop-blur-sm hover:bg-background hover:text-foreground active:bg-product-wishlist active:text-white",
+                            ? "bg-white/90 text-red-500"
+                            : "bg-white/90 text-gray-500 active:text-red-500",
                         isWishlistPending && "pointer-events-none opacity-50",
                         className
                     )}
@@ -118,19 +118,24 @@ export function ProductCardActions({
                     disabled={isWishlistPending}
                     aria-label={inWishlist ? t("removeFromWatchlist") : t("addToWatchlist")}
                 >
-                    <Heart size={14} weight={inWishlist ? "fill" : "bold"} />
+                    {/* Treido: w-4 h-4 stroke-[1.5] */}
+                    <Heart 
+                        className={cn(
+                            "w-4 h-4 stroke-[1.5]",
+                            inWishlist && "fill-red-500 text-red-500"
+                        )} 
+                        weight={inWishlist ? "fill" : "regular"} 
+                    />
                 </button>
             )}
 
-            {/* Quick-Add Button - Desktop only, in content area */}
+            {/* Quick-Add Button - Desktop only, Treido style */}
             {showQuickAdd && (
                 <button
                     type="button"
                     className={cn(
-                        "hidden lg:flex size-touch-sm shrink-0 items-center justify-center rounded-md outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-ring",
-                        inCart
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary active:bg-primary active:text-primary-foreground",
+                        "hidden lg:flex w-8 h-8 shrink-0 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-600 active:bg-gray-50 outline-none transition-colors",
+                        inCart && "border-gray-900 bg-gray-900 text-white",
                         (!inStock || isOwnProduct) && "cursor-not-allowed opacity-40"
                     )}
                     onClick={handleAddToCart}

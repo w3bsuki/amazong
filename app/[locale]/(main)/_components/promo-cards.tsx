@@ -2,7 +2,7 @@ import { PromoCard } from "@/components/promo/promo-card"
 
 export function PromoCards({ locale }: { locale: string }) {
   return (
-    <div className="flex gap-2 overflow-x-auto snap-x snap-mandatory pb-2 px-3 mt-4 sm:mt-6 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-3 sm:overflow-visible sm:pb-0 no-scrollbar scroll-pl-3">
+    <div className="flex gap-2 overflow-x-auto snap-x snap-mandatory pb-2 px-4 mt-4 sm:mt-6 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-3 sm:overflow-visible sm:pb-0 no-scrollbar scroll-pl-4">
       <div className="basis-2/3 shrink-0 snap-start sm:basis-auto">
         <PromoCard
           bgImage="https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=800&q=80"

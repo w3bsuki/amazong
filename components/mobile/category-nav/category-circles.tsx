@@ -17,12 +17,14 @@ export interface CategoryCirclesProps {
   circles: Category[]
   activeL1: string | null
   activeL2: string | null
+  activeCategoryName?: string | null // NEW
   showL2Circles: boolean
   locale: string
   circlesNavigateToPages: boolean
   activeTab: string
   onCircleClick: (category: Category) => void
   onBack: () => void
+  hideBackButton?: boolean
 }
 
 // =============================================================================
@@ -33,31 +35,43 @@ export function CategoryCircles({
   circles,
   activeL1,
   activeL2,
+  activeCategoryName,
   showL2Circles,
   locale,
   circlesNavigateToPages,
   activeTab,
   onCircleClick,
   onBack,
+  hideBackButton,
 }: CategoryCirclesProps) {
   const subTabsContainerRef = useRef<HTMLDivElement>(null)
 
   // Don't render if no circles and no back button needed
-  if (circles.length === 0 && !activeL1) {
+  if (circles.length === 0 && (!activeL1 || hideBackButton)) {
     return <div className="flex-1" />
   }
 
   return (
-    <div className="px-(--page-inset) flex items-center gap-1.5">
-      {/* Back Button - compact 32px touch target */}
-      {activeL1 && (
+    <div className="px-4 flex items-center gap-1.5">
+      {/* Back Button - Transformer Logic */}
+      {activeL1 && !hideBackButton && (
         <button
           type="button"
           onClick={onBack}
-          className="size-touch shrink-0 rounded-full bg-muted/50 flex items-center justify-center"
-          aria-label={locale === "bg" ? "Назад" : "Back"}
+          className={cn(
+            "group flex flex-row items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full",
+            "bg-foreground text-background border border-transparent", // Treido: Flat black pill
+            "hover:opacity-90 transition-all active:scale-95"
+          )} aria-label={locale === "bg" ? "Назад" : "Back"}
         >
-          <CaretLeft size={16} weight="bold" className="text-muted-foreground" />
+          {/* Icon Circle */}
+          <div className="w-7 h-7 rounded-full bg-background/20 flex items-center justify-center">
+            <CaretLeft size={16} weight="bold" className="text-background" />
+          </div>
+          {/* Label */}
+          <span className="text-[13px] font-medium max-w-[100px] truncate leading-none pb-[1px]">
+            {activeCategoryName || (locale === "bg" ? "Назад" : "Back")}
+          </span>
         </button>
       )}
 
@@ -87,15 +101,15 @@ export function CategoryCircles({
               {...(href ? { href } : { onClick: () => onCircleClick(sub) })}
               active={isActive}
               dimmed={dimmed}
-              circleClassName="size-(--category-circle-mobile)"
-              fallbackIconSize={20}
-              fallbackIconWeight={isActive ? "fill" : "regular"}
+              circleClassName="w-[56px] h-[56px]" // Treido: 56px fixed size
+              fallbackIconSize={24} // Treido: 24px icon
+              fallbackIconWeight={isActive ? "fill" : "light"} // Treido: light stroke
               variant="muted"
               label={getCategoryShortName(sub, locale)}
-              className="w-16 shrink-0"
+              className="w-[72px] shrink-0" // Treido: w-[72px] container
               labelClassName={cn(
-                "w-full text-2xs text-center leading-tight line-clamp-2",
-                isActive ? "text-primary font-semibold" : "text-muted-foreground"
+                "w-full text-[11px] text-center leading-tight line-clamp-2 px-1 mt-2", // Treido: text-[11px], px-1
+                isActive ? "text-foreground font-medium" : "text-muted-foreground font-medium" // Treido: scale-700 equivalent
               )}
             />
           )

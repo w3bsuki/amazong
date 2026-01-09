@@ -2,7 +2,6 @@
 
 import { useLocale } from "next-intl";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import { Heart, ShoppingCart } from "@phosphor-icons/react";
 import { useCart } from "@/components/providers/cart-context";
 import { useWishlist } from "@/components/providers/wishlist-context";
@@ -99,49 +98,46 @@ export function MobileStickyBarEnhanced({
   };
 
   return (
-    <div className="mobile-sticky-shadow fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background lg:hidden">
-      <div className="flex items-center gap-2 px-3 py-2 pb-safe-max-xs">
-        {/* Wishlist Button - 40px touch target */}
-        <Button
+    <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe z-50 lg:hidden">
+      <div className="flex items-center gap-2 px-4 py-2">
+        {/* Wishlist Button - 42px touch target */}
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
           onClick={handleWishlist}
-          className="shrink-0 size-10 rounded-full border border-border"
+          className="shrink-0 w-[42px] h-[42px] flex items-center justify-center rounded border border-gray-300 bg-white active:bg-gray-50"
           aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
         >
           <Heart 
             weight={inWishlist ? "fill" : "regular"} 
-            className={`size-6 ${inWishlist ? "text-destructive" : "text-muted-foreground"}`} 
+            className={`size-5 ${inWishlist ? "text-red-500" : "text-gray-600"}`} 
           />
-        </Button>
+        </button>
 
         {/* Add to Cart - Secondary CTA */}
-        <Button
+        <button
           type="button"
-          variant="outline"
           onClick={handleAddToCart}
           disabled={isOutOfStock}
-          className="flex-1 h-10 px-3 text-sm font-semibold gap-2 border border-primary text-primary hover:bg-primary/5 rounded-full"
+          className="flex-1 h-[42px] flex items-center justify-center gap-2 rounded border border-gray-300 bg-white text-gray-900 font-bold text-[14px] active:bg-gray-50 disabled:opacity-50"
         >
-          <ShoppingCart className="size-5" weight="bold" />
+          <ShoppingCart className="w-4.5 h-4.5 stroke-[1.5]" weight="bold" />
           <span>{t("addToCart")}</span>
-        </Button>
+        </button>
 
-        {/* Buy Now - Primary CTA */}
-        <Button
+        {/* Buy Now - Primary CTA (Treido black) */}
+        <button
           type="button"
           onClick={handleBuyNow}
           disabled={isOutOfStock}
-          className="flex-1 h-10 px-3 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-full"
+          className="flex-1 h-[42px] flex items-center justify-center rounded bg-gray-900 text-white font-bold text-[14px] active:opacity-90 disabled:opacity-50"
         >
           {isOutOfStock
             ? locale === "bg"
               ? "Изчерпано"
               : "Sold Out"
             : t("buyNow")}
-        </Button>
+        </button>
       </div>
-    </div>
+    </footer>
   );
 }

@@ -52,18 +52,19 @@ function ProductCardPrice({
   }, [originalPrice, locale])
 
   return (
-    <div className="mt-0.5 flex items-center justify-between gap-2">
+    <div className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 items-baseline gap-1">
+        {/* Treido: text-[16px] font-extrabold */}
         <span
           className={cn(
-            "text-price font-semibold leading-tight tabular-nums",
-            hasDiscount ? "text-price-sale" : "text-price-regular"
+            "text-[16px] font-extrabold tracking-tight tabular-nums",
+            hasDiscount ? "text-gray-900" : "text-gray-900"
           )}
         >
           {formattedPrice}
         </span>
         {hasDiscount && formattedOriginalPrice && (
-          <span className="text-xs text-price-original line-through">
+          <span className="text-[12px] text-gray-400 line-through">
             {formattedOriginalPrice}
           </span>
         )}

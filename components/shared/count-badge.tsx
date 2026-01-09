@@ -10,7 +10,8 @@ type CountBadgeProps = Omit<React.ComponentPropsWithoutRef<"span">, "children"> 
 function CountBadge({ count, max = 99, className, ...props }: CountBadgeProps) {
   if (!Number.isFinite(count) || count <= 0) return null
 
-  const label = count > max ? `${max}+` : String(count)
+  // Show just the max number when exceeded (no '+' for compactness)
+  const label = count > max ? String(max) : String(count)
 
   return (
     <span

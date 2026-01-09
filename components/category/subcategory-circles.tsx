@@ -7,6 +7,7 @@ import Image from "next/image"
 import { useLocale } from "next-intl"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { normalizeImageUrl, PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
+import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
 
 interface Category {
   id: string
@@ -34,8 +35,8 @@ function getCategoryImage(imageUrl?: string | null): string {
   return imageUrl || "/placeholder.svg"
 }
 
-export function SubcategoryCircles({ 
-  subcategories, 
+export function SubcategoryCircles({
+  subcategories,
   currentCategory,
   title,
   className,
@@ -54,9 +55,9 @@ export function SubcategoryCircles({
   // Filter out deprecated/moved categories
   const isValidCategory = (cat: Category) => {
     const name = cat.name.toLowerCase()
-    return !name.includes('[deprecated]') && 
-           !name.includes('[moved]') && 
-           !name.includes('[duplicate]')
+    return !name.includes('[deprecated]') &&
+      !name.includes('[moved]') &&
+      !name.includes('[duplicate]')
   }
 
   const validSubcategories = subcategories.filter(isValidCategory)
@@ -79,7 +80,7 @@ export function SubcategoryCircles({
   return (
     <div className={cn("relative w-full overflow-x-hidden", className)}>
       {/* Title removed as requested */}
-      
+
       {/* Container with circles - horizontal scroll on mobile, wrap on larger screens */}
       <div className="relative">
         <div
@@ -108,7 +109,7 @@ export function SubcategoryCircles({
                   {locale === "bg" ? "Всички" : "All"}
                 </span>
               </div>
-              
+
               {/* Label */}
               <span className={cn(
                 "text-2xs sm:text-sm font-medium text-center text-primary",
@@ -118,7 +119,7 @@ export function SubcategoryCircles({
               </span>
             </Link>
           )}
-          
+
           {/* Subcategory circles */}
           {validSubcategories.map((subcat, index) => {
             const normalizedImageUrl = normalizeImageUrl(subcat.image_url)
@@ -130,49 +131,31 @@ export function SubcategoryCircles({
                 href={buildUrl(subcat.slug)}
                 prefetch={true}
                 className={cn(
-                  "flex flex-col items-center gap-1 min-w-14 sm:min-w-24 md:min-w-28 group shrink-0",
+                  "flex flex-col items-center gap-1.5 min-w-[72px] sm:min-w-24 md:min-w-28 group shrink-0",
                   "touch-action-manipulation",
                   index === validSubcategories.length - 1 && "mr-4"
                 )}
               >
-              {/* Circle with image or icon - NO border when image present */}
-              <div
-                className={cn(
-                  "rounded-full relative flex items-center justify-center overflow-hidden",
-                  "size-14 sm:size-24 md:size-28",
-                  "bg-muted"
-                )}
-              >
-                {showImage ? (
-                  <Image
-                    src={normalizedImageUrl}
-                    alt={getCategoryName(subcat)}
-                    fill
-                    sizes="(min-width: 768px) 100px, (min-width: 640px) 90px, 56px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <>
-                    <span className="text-primary sm:hidden">
-                      {getCategoryIcon(subcat.slug, { size: 26, weight: "duotone" })}
-                    </span>
-                    <span className="text-primary hidden sm:block">
-                      {getCategoryIcon(subcat.slug, { size: 32, weight: "duotone" })}
-                    </span>
-                  </>
-                )}
-              </div>
-              
-              {/* Category Name - Target style */}
-              <span className={cn(
-                "text-2xs sm:text-sm font-medium text-center text-foreground",
-                "group-hover:text-primary group-hover:underline",
-                "line-clamp-2 leading-tight",
-                "max-w-14 sm:max-w-24 md:max-w-28"
-              )}>
-                {getCategoryName(subcat)}
-              </span>
-            </Link>
+                {/* TREIDO STYLE CIRCLE */}
+                <CategoryCircleVisual
+                  category={subcat}
+                  active={false}
+                  className="size-[56px] sm:size-24 md:size-28 shrink-0 bg-secondary/30 border border-border/60 shadow-sm group-active:scale-95 transition-transform"
+                  fallbackIconSize={24}
+                  fallbackIconWeight="light"
+                  variant="muted"
+                />
+
+                {/* Category Name - Treido: text-[11px] font-medium */}
+                <span className={cn(
+                  "text-[11px] sm:text-sm font-medium text-center text-foreground px-1 leading-tight",
+                  "group-hover:text-primary group-hover:underline",
+                  "line-clamp-2",
+                  "w-full max-w-[72px] sm:max-w-24 md:max-w-28"
+                )}>
+                  {getCategoryName(subcat)}
+                </span>
+              </Link>
             )
           })}
         </div>

@@ -114,54 +114,25 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
              </Button>
           </div>
 
-          {/* Mobile Navigation Arrows (WCAG 2.5.7 - alternative to swipe) */}
+          {/* Mobile Dots Indicator - Simple solid circles matching OLX/Treido design */}
           {images.length > 1 && (
-            <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 z-10 flex justify-between pointer-events-none lg:hidden">
-              <Button
-                type="button"
-                aria-label="Previous image"
-                size="icon"
-                variant="secondary"
-                className="size-8 rounded-full bg-background/80 hover:bg-background border border-border/50 pointer-events-auto disabled:opacity-30"
-                onClick={() => api?.scrollPrev()}
-                disabled={current === 0}
-              >
-                <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-              </Button>
-              <Button
-                type="button"
-                aria-label="Next image"
-                size="icon"
-                variant="secondary"
-                className="size-8 rounded-full bg-background/80 hover:bg-background border border-border/50 pointer-events-auto disabled:opacity-30"
-                onClick={() => api?.scrollNext()}
-                disabled={current === images.length - 1}
-              >
-                <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </Button>
+            <div className="absolute bottom-3 left-0 right-0 z-10 lg:hidden flex justify-center gap-1.5">
+              {images.map((_, index) => (
+                <button 
+                  key={index}
+                  type="button"
+                  aria-label={`Go to image ${index + 1}`}
+                  onClick={() => api?.scrollTo(index)}
+                  className={cn(
+                    "size-2 rounded-full transition-colors",
+                    current === index 
+                      ? "bg-foreground" 
+                      : "bg-foreground/30"
+                  )}
+                />
+              ))}
             </div>
           )}
-
-          {/* Mobile Dots Indicator - WCAG 2.2 AA compliant with 24px touch area */}
-          <div className="absolute bottom-3 left-0 right-0 z-10 lg:hidden flex justify-center gap-2">
-            {images.map((_, index) => (
-              <button 
-                key={index}
-                type="button"
-                aria-label={`Go to image ${index + 1}`}
-                onClick={() => api?.scrollTo(index)}
-                className={cn(
-                  "min-w-touch-xs min-h-touch-xs flex items-center justify-center",
-                  "before:h-2 before:rounded-full before:transition-all before:duration-300",
-                  current === index ? "before:w-4 before:bg-primary" : "before:w-2 before:bg-primary/30 hover:before:bg-primary/50"
-                )}
-              />
-            ))}
-          </div>
         </div>
       </div>
 

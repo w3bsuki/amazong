@@ -256,7 +256,7 @@ export function QuickFilterRow({
                                     "text-xs font-medium whitespace-nowrap",
                                     "border transition-colors",
                                     pill.isActive
-                                        ? "bg-muted text-foreground border-border/60"
+                                        ? "bg-foreground text-background border-foreground"
                                         : "bg-transparent text-muted-foreground border-transparent hover:bg-muted/40 hover:text-foreground active:bg-muted/60"
                                 )}
                                 aria-pressed={pill.isActive}

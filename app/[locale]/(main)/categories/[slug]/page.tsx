@@ -326,12 +326,22 @@ function CategoryPageDynamicContent({
           defaultL3={defaultL3}
           showBanner={false}
           l0Style="tabs"
-          showQuickFilters={true}
+          showQuickFilters={false}
           showL3Pills={false}
           tabsNavigateToPages={false}
           circlesNavigateToPages={false}
           locale={locale}
           filterableAttributes={filterableAttributes}
+          // Phase 2: Enable contextual mode (Vinted-style)
+          contextualMode={true}
+          contextualCategoryName={categoryName}
+          contextualBackHref={
+            parentCategory
+              ? `/categories/${parentCategory.slug}`
+              : `/categories`
+          }
+          contextualSubcategories={subcategories}
+          categoryId={categoryId}
         />
       </div>
 
