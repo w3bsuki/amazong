@@ -1,0 +1,234 @@
+/* ============================================================
+   CUSTOM UTILITIES & MISC STYLES
+   Scrollbars, safe-area, accessibility, richtext, etc.
+   ============================================================ */
+
+/* ===== CONTAINER UTILITIES ===== */
+@utility container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 90rem;
+  padding-inline: 0.75rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 1rem;
+  }
+
+  @media (width >= 64rem) {
+    padding-inline: 1.5rem;
+  }
+}
+
+@utility container-wide {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 96rem;
+  padding-inline: 0.75rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 1rem;
+  }
+
+  @media (width >= 64rem) {
+    padding-inline: 1.5rem;
+  }
+}
+
+@utility container-content {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-header);
+  padding-inline: 0.75rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 1rem;
+  }
+
+  @media (width >= 64rem) {
+    padding-inline: 1.5rem;
+  }
+}
+
+@utility container-narrow {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 48rem;
+  padding-inline: 0.75rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 1rem;
+  }
+
+  @media (width >= 64rem) {
+    padding-inline: 1.5rem;
+  }
+}
+
+/* ===== RICH TEXT (CMS Content) ===== */
+@layer components {
+  .richtext {
+    color: var(--color-foreground);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    max-width: none;
+  }
+
+  .richtext :where(p):not(:where(.richtext-skip *)) {
+    margin-block: 0.75em;
+  }
+
+  .richtext :where(ul, ol):not(:where(.richtext-skip *)) {
+    margin-block: 0.75em;
+    padding-inline-start: 1.25em;
+  }
+
+  .richtext :where(li):not(:where(.richtext-skip *)) {
+    margin-block: 0.25em;
+  }
+
+  .richtext :where(a):not(:where(.richtext-skip *)) {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .richtext :where(strong):not(:where(.richtext-skip *)) {
+    font-weight: 650;
+  }
+
+  .richtext :where(code):not(:where(.richtext-skip *)) {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+  }
+
+  .richtext :where(pre):not(:where(.richtext-skip *)) {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    white-space: pre-wrap;
+    background: color-mix(in oklch, var(--color-card), var(--color-foreground) 6%);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    overflow: auto;
+  }
+
+  .richtext :where(h1, h2, h3):not(:where(.richtext-skip *)) {
+    font-weight: 650;
+    letter-spacing: var(--letter-spacing-tight);
+    margin-block: 1em 0.5em;
+  }
+
+  .richtext :where(h1):not(:where(.richtext-skip *)) {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+  }
+
+  .richtext :where(h2):not(:where(.richtext-skip *)) {
+    font-size: 1.0625rem;
+    line-height: 1.5rem;
+  }
+
+  .richtext :where(h3):not(:where(.richtext-skip *)) {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .richtext :where(hr):not(:where(.richtext-skip *)) {
+    border-color: var(--color-border);
+    margin-block: 1rem;
+  }
+
+  .richtext :where(blockquote):not(:where(.richtext-skip *)) {
+    border-inline-start: 3px solid var(--color-border);
+    padding-inline-start: 0.75rem;
+    color: var(--color-muted-foreground);
+  }
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: oklch(0.96 0 0);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.78 0 0);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.65 0 0);
+}
+
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar,
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ===== ACCESSIBILITY ===== */
+:focus-visible {
+  scroll-margin-top: 5rem;
+  scroll-margin-bottom: 7rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== SAFE AREA UTILITIES ===== */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pb-safe-max { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pl-safe { padding-left: env(safe-area-inset-left); }
+.pr-safe { padding-right: env(safe-area-inset-right); }
+
+/* ===== TOUCH UTILITIES ===== */
+.touch-target {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.tap-transparent {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== MISC UTILITIES ===== */
+.rounded-inherit {
+  border-radius: inherit;
+}
+
+.z-skip-link {
+  z-index: 100;
+}
+
+/* Hero carousel touch behavior */
+.hero-carousel {
+  touch-action: pan-x pinch-zoom;
+  overscroll-behavior: contain;
+  user-select: none;
+}
+
+.hero-carousel img {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+

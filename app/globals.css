@@ -1,10 +1,25 @@
+/* ============================================================
+   TREIDO DESIGN SYSTEM - Tailwind v4
+   
+   Structure:
+   - globals.css (this file) - imports + @theme tokens + @layer base
+   - utilities.css - custom utilities, scrollbar, richtext
+   - shadcn-components.css - shadcn/ui data-state selectors
+   - legacy-vars.css - component CSS vars (TODO: migrate out)
+   ============================================================ */
+
 @import "tailwindcss";
+@import "./utilities.css";
+@import "./shadcn-components.css";
+@import "./legacy-vars.css";
+
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
 
 /* ===== iOS ZOOM PREVENTION ===== */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
+
   input[type="text"],
   input[type="search"],
   input[type="email"],
@@ -19,7 +34,7 @@
   }
 }
 
-/* ===== TAILWIND V4 THEME ===== */
+/* ===== TAILWIND V4 THEME TOKENS ===== */
 @theme {
   /* === FONTS === */
   --font-sans: "Inter", var(--font-inter), ui-sans-serif, system-ui, -apple-system,
@@ -27,9 +42,15 @@
   --font-serif: "Source Serif 4", serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* === FONT SIZE: Custom 2xs for badges === */
-  --font-size-2xs: 0.625rem;
-  --font-size-2xs--line-height: 0.875rem;
+  /* === FONT SIZE: Custom scales === */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 0.875rem;
+  --text-tiny: 0.6875rem;
+  --text-tiny--line-height: 1rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.25rem;
+  --text-price: 1rem;
+  --text-price--line-height: 1.25rem;
 
   /* === LETTER SPACING === */
   --letter-spacing-tight: -0.01em;
@@ -37,7 +58,7 @@
   --letter-spacing-wide: 0.01em;
   --letter-spacing-wider: 0.02em;
 
-  /* === BORDER RADIUS (Treido: Technical/Tight) === */
+  /* === BORDER RADIUS (Treido: Tight) === */
   --radius-xs: 0.125rem;
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
@@ -54,7 +75,7 @@
   --spacing-input: 2.75rem;
   --spacing-search: 2.75rem;
 
-  /* === TOUCH TARGETS (Marketplace Dense) === */
+  /* === TOUCH TARGETS (Dense Marketplace) === */
   --spacing-touch-xs: 1.75rem;
   --spacing-touch-sm: 2rem;
   --spacing-touch: 2.25rem;
@@ -78,7 +99,7 @@
   --width-modal: 35rem;
   --width-modal-lg: 56.25rem;
 
-  /* === SHADOWS (Treido: FLAT by default) === */
+  /* === SHADOWS (FLAT by default) === */
   --shadow-2xs: none;
   --shadow-xs: none;
   --shadow-sm: none;
@@ -101,7 +122,7 @@
   --color-error: oklch(0.55 0.25 27);
   --color-info: oklch(0.55 0.18 250);
 
-  /* === COLORS: Marketplace Semantic === */
+  /* === COLORS: Marketplace === */
   --color-canvas: oklch(0.985 0 0);
   --color-surface: oklch(1 0 0);
   --color-border-subtle: oklch(0.88 0 0);
@@ -110,6 +131,7 @@
 
   /* === COLORS: Prices === */
   --color-price: oklch(0.15 0.01 250);
+  --color-price-regular: oklch(0.15 0.01 250);
   --color-price-sale: oklch(0.50 0.22 27);
   --color-price-original: oklch(0.55 0.01 250);
   --color-price-savings: oklch(0.50 0.18 145);
@@ -175,7 +197,7 @@
   --color-chart-4: oklch(0.50 0.08 259);
   --color-chart-5: oklch(0.42 0.10 264);
 
-  /* === COLORS: Sidebar (shadcn) === */
+  /* === COLORS: Sidebar === */
   --color-sidebar: oklch(0.97 0 0);
   --color-sidebar-foreground: oklch(0.20 0 0);
   --color-sidebar-primary: var(--color-brand);
@@ -185,7 +207,7 @@
   --color-sidebar-border: oklch(0.88 0 0);
   --color-sidebar-ring: var(--color-brand);
 
-  /* === COLORS: Header (Light) === */
+  /* === COLORS: Header === */
   --color-header-bg: oklch(1 0 0);
   --color-header-border: oklch(0.92 0 0);
   --color-header-text: oklch(0.15 0 0);
@@ -209,7 +231,7 @@
   --color-link: oklch(0.48 0.20 260);
   --color-link-hover: oklch(0.40 0.22 260);
 
-  /* === COLORS: Search Bar === */
+  /* === COLORS: Search === */
   --color-search-bg: oklch(1 0 0);
   --color-search-border: oklch(0.92 0.01 260);
   --color-search-icon: var(--color-brand);
@@ -262,9 +284,18 @@
   --color-form-section-border: oklch(0.92 0 0);
   --color-form-input-bg: oklch(0.98 0 0);
 
-  /* === COLORS: Discount Badge === */
+  /* === COLORS: Badges === */
   --color-discount-badge-bg: var(--color-deal);
   --color-discount-badge-text: oklch(1 0 0);
+  --color-badge-condition-bg: oklch(0.97 0 0);
+  --color-badge-condition-text: oklch(0.20 0 0);
+  --color-badge-condition-border: oklch(0.82 0 0);
+  --color-badge-shipping-bg: oklch(0.96 0.015 160);
+  --color-badge-shipping-text: oklch(0.30 0.08 160);
+  --color-badge-shipping-border: oklch(0.88 0.02 160);
+  --color-badge-stock-bg: oklch(0.96 0.03 85);
+  --color-badge-stock-text: oklch(0.35 0.12 85);
+  --color-badge-stock-border: oklch(0.88 0.04 85);
 
   /* === COLORS: Urgency Banners === */
   --color-urgency-stock-bg: oklch(0.96 0.04 85);
@@ -279,17 +310,6 @@
   --color-urgency-hot-bg: oklch(0.96 0.04 65);
   --color-urgency-hot-text: oklch(0.38 0.12 50);
   --color-urgency-hot-border: oklch(0.90 0.05 65);
-
-  /* === COLORS: Product Page Badges === */
-  --color-badge-condition-bg: oklch(0.97 0 0);
-  --color-badge-condition-text: oklch(0.20 0 0);
-  --color-badge-condition-border: oklch(0.82 0 0);
-  --color-badge-shipping-bg: oklch(0.96 0.015 160);
-  --color-badge-shipping-text: oklch(0.30 0.08 160);
-  --color-badge-shipping-border: oklch(0.88 0.02 160);
-  --color-badge-stock-bg: oklch(0.96 0.03 85);
-  --color-badge-stock-text: oklch(0.35 0.12 85);
-  --color-badge-stock-border: oklch(0.88 0.04 85);
 
   /* === COLORS: Seller Card === */
   --color-seller-card: oklch(0.98 0.01 250);
@@ -308,27 +328,22 @@
 
 /* ===== DARK MODE ===== */
 .dark {
-  /* Brand */
   --color-brand: oklch(0.60 0.16 250);
   --color-brand-light: oklch(0.70 0.14 250);
   --color-brand-dark: oklch(0.50 0.18 250);
 
-  /* Semantic Status */
   --color-success: oklch(0.65 0.16 145);
   --color-warning: oklch(0.70 0.14 85);
   --color-error: oklch(0.60 0.22 27);
   --color-info: oklch(0.60 0.16 250);
 
-  /* Marketplace Semantic */
   --color-canvas: oklch(0.18 0.02 250);
   --color-surface: oklch(0.22 0.02 250);
   --color-border-subtle: oklch(0.35 0.02 250);
 
-  /* Shadows */
   --shadow-dropdown: 0 2px 4px 0 oklch(0 0 0 / 20%);
   --shadow-modal: 0 4px 12px 0 oklch(0 0 0 / 30%);
 
-  /* shadcn/ui Base */
   --color-background: var(--color-canvas);
   --color-foreground: oklch(0.95 0 0);
   --color-card: var(--color-surface);
@@ -349,13 +364,11 @@
   --color-input: oklch(0.35 0.02 250);
   --color-ring: var(--color-brand);
 
-  /* Sidebar */
   --color-sidebar: oklch(0.22 0.02 250);
   --color-sidebar-foreground: oklch(0.95 0 0);
   --color-sidebar-primary: var(--color-brand);
   --color-sidebar-border: oklch(0.35 0.02 250);
 
-  /* Header */
   --color-header-bg: oklch(0.15 0.015 250);
   --color-header-border: oklch(0.28 0.02 250);
   --color-header-text: oklch(0.95 0 0);
@@ -364,45 +377,36 @@
   --color-header-active: oklch(0.32 0.02 250);
   --color-header-nav-bg: oklch(0.20 0.02 250);
 
-  /* Subheader */
   --color-subheader-text: oklch(0.90 0 0);
   --color-subheader-bg: oklch(0.18 0.02 250);
   --color-subheader-hover: oklch(0.25 0.02 250);
 
-  /* CTA (dark) */
   --color-cta-trust-blue: oklch(0.55 0.18 255);
   --color-cta-trust-blue-hover: oklch(0.48 0.20 255);
 
-  /* Footer */
   --color-footer-bg: oklch(0.15 0.015 250);
   --color-footer-border: oklch(0.28 0.02 250);
 
-  /* CTA */
   --color-cta-primary: var(--color-brand);
   --color-cta-primary-hover: var(--color-brand-dark);
   --color-cta-secondary: oklch(0.95 0 0);
   --color-cta-secondary-hover: oklch(0.90 0 0);
   --color-cta-secondary-text: oklch(0.20 0.02 250);
 
-  /* Filter */
   --color-filter-bg: var(--color-surface);
   --color-filter-border: var(--color-border-subtle);
   --color-filter-active: var(--color-brand);
 
-  /* Product Card */
   --color-product-card-bg: var(--color-surface);
   --color-product-card-border: var(--color-border-subtle);
 
-  /* Forms */
   --color-form-section-bg: var(--color-surface);
   --color-form-section-border: var(--color-border-subtle);
   --color-form-input-bg: oklch(0.26 0.02 250);
 
-  /* Order Status (dark) */
   --color-order-processing: oklch(0.65 0.14 275);
   --color-order-shipped: oklch(0.65 0.14 310);
 
-  /* Urgency (dark) */
   --color-urgency-stock-bg: oklch(0.25 0.04 85);
   --color-urgency-stock-text: oklch(0.85 0.08 85);
   --color-urgency-stock-border: oklch(0.35 0.05 85);
@@ -416,7 +420,6 @@
   --color-urgency-hot-text: oklch(0.85 0.08 50);
   --color-urgency-hot-border: oklch(0.35 0.05 65);
 
-  /* Badges (dark) */
   --color-badge-condition-bg: oklch(0.25 0 0);
   --color-badge-condition-text: oklch(0.92 0 0);
   --color-badge-condition-border: oklch(0.38 0 0);
@@ -427,14 +430,12 @@
   --color-badge-stock-text: oklch(0.85 0.08 85);
   --color-badge-stock-border: oklch(0.38 0.04 85);
 
-  /* Seller (dark) */
   --color-seller-card: oklch(0.22 0.01 250);
   --color-seller-card-border: oklch(0.35 0.01 250);
   --color-seller-banner: oklch(0.45 0.16 255);
   --color-seller-banner-pill-bg: oklch(0.20 0 0);
   --color-seller-banner-pill-text: oklch(0.85 0.10 250);
 
-  /* Category badge (dark) */
   --color-category-badge-bg: oklch(0.25 0 0);
   --color-category-badge-text: oklch(0.92 0 0);
   --color-category-badge-border: oklch(0.35 0 0);
@@ -480,547 +481,12 @@
     cursor: pointer;
   }
 
-  a, button, input, select, textarea, [role="button"] {
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"] {
     touch-action: manipulation;
   }
-}
-
-/* ===== CONTAINER UTILITIES ===== */
-@utility container {
-  margin-inline: auto;
-  width: 100%;
-  max-width: 90rem;
-  padding-inline: 0.75rem;
-
-  @media (width >= 40rem) {
-    padding-inline: 1rem;
-  }
-
-  @media (width >= 64rem) {
-    padding-inline: 1.5rem;
-  }
-}
-
-@utility container-wide {
-  margin-inline: auto;
-  width: 100%;
-  max-width: 96rem;
-  padding-inline: 0.75rem;
-
-  @media (width >= 40rem) {
-    padding-inline: 1rem;
-  }
-
-  @media (width >= 64rem) {
-    padding-inline: 1.5rem;
-  }
-}
-
-@utility container-content {
-  margin-inline: auto;
-  width: 100%;
-  max-width: var(--container-header);
-  padding-inline: 0.75rem;
-
-  @media (width >= 40rem) {
-    padding-inline: 1rem;
-  }
-
-  @media (width >= 64rem) {
-    padding-inline: 1.5rem;
-  }
-}
-
-@utility container-narrow {
-  margin-inline: auto;
-  width: 100%;
-  max-width: 48rem;
-  padding-inline: 0.75rem;
-
-  @media (width >= 40rem) {
-    padding-inline: 1rem;
-  }
-
-  @media (width >= 64rem) {
-    padding-inline: 1.5rem;
-  }
-}
-
-/* ===== RICH TEXT (CMS Content) ===== */
-@layer components {
-  .richtext {
-    color: var(--color-foreground);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    max-width: none;
-  }
-
-  .richtext :where(p):not(:where(.richtext-skip *)) {
-    margin-block: 0.75em;
-  }
-
-  .richtext :where(ul, ol):not(:where(.richtext-skip *)) {
-    margin-block: 0.75em;
-    padding-inline-start: 1.25em;
-  }
-
-  .richtext :where(li):not(:where(.richtext-skip *)) {
-    margin-block: 0.25em;
-  }
-
-  .richtext :where(a):not(:where(.richtext-skip *)) {
-    color: var(--color-link);
-    text-decoration: underline;
-    text-underline-offset: 0.18em;
-  }
-
-  .richtext :where(strong):not(:where(.richtext-skip *)) {
-    font-weight: 650;
-  }
-
-  .richtext :where(code):not(:where(.richtext-skip *)) {
-    font-family: var(--font-mono);
-    font-size: 0.95em;
-  }
-
-  .richtext :where(pre):not(:where(.richtext-skip *)) {
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    line-height: 1.25rem;
-    white-space: pre-wrap;
-    background: color-mix(in oklch, var(--color-card), var(--color-foreground) 6%);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    overflow: auto;
-  }
-
-  .richtext :where(h1, h2, h3):not(:where(.richtext-skip *)) {
-    font-weight: 650;
-    letter-spacing: var(--letter-spacing-tight);
-    margin-block: 1em 0.5em;
-  }
-
-  .richtext :where(h1):not(:where(.richtext-skip *)) {
-    font-size: 1.125rem;
-    line-height: 1.5rem;
-  }
-
-  .richtext :where(h2):not(:where(.richtext-skip *)) {
-    font-size: 1.0625rem;
-    line-height: 1.5rem;
-  }
-
-  .richtext :where(h3):not(:where(.richtext-skip *)) {
-    font-size: 1rem;
-    line-height: 1.5rem;
-  }
-
-  .richtext :where(hr):not(:where(.richtext-skip *)) {
-    border-color: var(--color-border);
-    margin-block: 1rem;
-  }
-
-  .richtext :where(blockquote):not(:where(.richtext-skip *)) {
-    border-inline-start: 3px solid var(--color-border);
-    padding-inline-start: 0.75rem;
-    color: var(--color-muted-foreground);
-  }
-}
-
-/* ===== SCROLLBAR ===== */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: oklch(0.96 0 0);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: oklch(0.78 0 0);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.65 0 0);
-}
-
-.no-scrollbar::-webkit-scrollbar,
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar,
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* ===== ACCESSIBILITY ===== */
-:focus-visible {
-  scroll-margin-top: 5rem;
-  scroll-margin-bottom: 7rem;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* ===== SAFE AREA UTILITIES ===== */
-.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-.pb-safe-max { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
-.pt-safe { padding-top: env(safe-area-inset-top); }
-.pl-safe { padding-left: env(safe-area-inset-left); }
-.pr-safe { padding-right: env(safe-area-inset-right); }
-
-/* ===== TOUCH UTILITIES ===== */
-.touch-target {
-  min-width: 40px;
-  min-height: 40px;
-}
-
-.tap-transparent {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* ===== MISC UTILITIES ===== */
-.rounded-inherit {
-  border-radius: inherit;
-}
-
-.z-skip-link {
-  z-index: 100;
-}
-
-/* Hero carousel touch behavior */
-.hero-carousel {
-  touch-action: pan-x pinch-zoom;
-  overscroll-behavior: contain;
-  user-select: none;
-}
-
-.hero-carousel img {
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-/* ============================================================
-   COMPONENT-SPECIFIC CSS VARIABLES
-   These are used in specific components via Tailwind arbitrary
-   value syntax: h-(--var-name). Ideally, move these to inline
-   styles or component-level CSS, but for now they're here.
-   ============================================================ */
-:root {
-  /* Layout heights (legacy naming) */
-  --h-header: var(--spacing-header);
-  --h-bottom-nav: var(--spacing-bottom-nav);
-  --h-button: var(--spacing-button);
-  --h-button-sm: var(--spacing-button-sm);
-  --h-button-lg: var(--spacing-button-lg);
-  --h-button-cta: var(--spacing-button-lg);
-  --h-input: var(--spacing-input);
-  --h-search: var(--spacing-search);
-
-  /* Page layout */
-  --page-inset: 0.5rem;
-  --page-inset-md: 0.75rem;
-  --page-inset-lg: 1rem;
-
-  /* Container widths (legacy) */
-  --container-header-content: var(--container-header);
-  --container-dropdown-sm: var(--width-dropdown-sm);
-  --container-dropdown: var(--width-dropdown);
-  --container-dropdown-lg: var(--width-dropdown-lg);
-  --container-modal-sm: var(--width-modal-sm);
-  --container-modal: var(--width-modal);
-  --container-modal-lg: var(--width-modal-lg);
-  --container-gallery: 36rem;
-
-  /* Sheet/drawer widths */
-  --sheet-w-mobile: 85vw;
-
-  /* Safe area */
-  --safe-area-pb-sm: max(0.75rem, env(safe-area-inset-bottom));
-
-  /* Scroll area heights */
-  --spacing-scroll-sm: 11.25rem;
-  --spacing-scroll-md: 18.75rem;
-  --spacing-scroll-lg: 25rem;
-  --spacing-scroll-xl: 31.25rem;
-
-  /* Dialog/modal max heights */
-  --dialog-max-h: 90dvh;
-  --dialog-max-h-sm: 75dvh;
-  --dialog-max-h-lg: 95dvh;
-  --dialog-max-w: calc(100% - 2rem);
-  --dialog-h-85vh: 85vh;
-  --dialog-h-50vh: 50vh;
-
-  /* Text measure */
-  --text-measure-54ch: 54ch;
-
-  /* Wishlist drawer heights */
-  --wishlist-drawer-max-h-empty: 30dvh;
-  --wishlist-drawer-max-h-few: 40dvh;
-  --wishlist-drawer-max-h: 55dvh;
-
-  /* Modal/dialog heights */
-  --page-section-min-h: 60vh;
-  --page-section-min-h-lg: 80vh;
-  --category-subheader-max-h: 70vh;
-
-  /* Product page */
-  --product-gallery-max-w-lg: 37.5rem;
-  --write-review-dialog-max-w: 26.5625rem;
-
-  /* Support chat */
-  --support-chat-message-max-w: 80%;
-
-  /* UI component sizes */
-  --switch-h: 1.15rem;
-
-  /* Category */
-  --category-circle-mobile: 3.25rem;
-
-  /* Chart */
-  --chart-h-sm: 15.625rem;
-
-  /* Textarea */
-  --textarea-min-h: 9.375rem;
-
-  /* Card loading */
-  --card-loading-min-h: 12.5rem;
-
-  /* Onboarding modal */
-  --onboarding-modal-w: calc(100vw - 2rem);
-  --onboarding-modal-max-h: 85vh;
-  --onboarding-modal-max-h-sm: 90vh;
-
-  /* Product form modal */
-  --product-form-modal-h: 98dvh;
-  --product-form-modal-w: 98vw;
-
-  /* Plans */
-  --plans-skeleton-card-w: calc(100vw - 3rem);
-  --plans-table-head-w: 13.75rem;
-
-  /* Deals */
-  --deals-category-min-w: 4.375rem;
-
-  /* Members */
-  --members-sort-w-sm: 11.25rem;
-
-  /* Sell header */
-  --sell-header-user-max-w: 6.25rem;
-
-  /* Badge count */
-  --badge-count-size: 1.125rem;
-
-  /* Account */
-  --account-orders-sheet-scroll-h: calc(100vh - 12rem);
-
-  /* Home page skeletons */
-  --home-category-skeleton-size: 4.5rem;
-  --home-horizontal-card-skeleton-w: 16.25rem;
-
-  /* Header skeleton */
-  --header-skeleton-h: 3.25rem;
-  --header-skeleton-h-md: 6.25rem;
-
-  /* Sidebar max heights */
-  --category-sidebar-max-h: calc(100vh - 5rem);
-  --search-sidebar-max-h: calc(100vh - 8rem);
-
-  /* Business */
-  --business-notifications-scroll-h: 22.5rem;
-}
-
-.dark {
-  /* Dark mode inherits same component vars */
-}
-
-/* ============================================================
-   UI COMPONENT STYLES
-   CSS rules for shadcn/ui components that can't be expressed
-   with Tailwind classes alone (data-state selectors, etc.)
-   ============================================================ */
-
-/* Select */
-.ui-select-trigger svg {
-  pointer-events: none;
-  flex-shrink: 0;
-}
-
-.ui-select-trigger svg:not([class*='size-']) {
-  width: 1rem;
-  height: 1rem;
-}
-
-.ui-select-trigger svg:not([class*='text-']) {
-  color: var(--color-muted-foreground);
-}
-
-.ui-select-trigger[data-placeholder] {
-  color: var(--color-muted-foreground);
-}
-
-.ui-select-trigger[data-size='default'] {
-  height: 2.5rem;
-}
-
-.ui-select-trigger[data-size='sm'] {
-  height: 2.25rem;
-}
-
-@media (min-width: 768px) {
-  .ui-select-trigger[data-size='default'] {
-    height: 2.25rem;
-  }
-
-  .ui-select-trigger[data-size='sm'] {
-    height: 2rem;
-  }
-}
-
-.ui-select-item svg {
-  pointer-events: none;
-  flex-shrink: 0;
-}
-
-.ui-select-item svg:not([class*='size-']) {
-  width: 1rem;
-  height: 1rem;
-}
-
-.ui-select-content--popper[data-side='bottom'] {
-  translate: 0 0.25rem;
-}
-
-.ui-select-content--popper[data-side='top'] {
-  translate: 0 -0.25rem;
-}
-
-.ui-select-content--popper[data-side='left'] {
-  translate: -0.25rem 0;
-}
-
-.ui-select-content--popper[data-side='right'] {
-  translate: 0.25rem 0;
-}
-
-/* Tooltip */
-.ui-tooltip-arrow {
-  translate: 0 calc(-50% - 2px);
-}
-
-/* Dropdown */
-.ui-dropdown-item svg {
-  pointer-events: none;
-  flex-shrink: 0;
-}
-
-.ui-dropdown-item svg:not([class*='size-']) {
-  width: 1rem;
-  height: 1rem;
-}
-
-.ui-dropdown-item svg:not([class*='text-']) {
-  color: var(--color-muted-foreground);
-}
-
-.ui-dropdown-item--destructive {
-  color: var(--color-destructive);
-}
-
-.ui-dropdown-item--destructive svg:not([class*='text-']) {
-  color: var(--color-destructive);
-}
-
-.ui-dropdown-sub-trigger[data-state='open'] {
-  @apply bg-accent text-accent-foreground;
-}
-
-/* Toast */
-.ui-toast[data-swipe='move'] {
-  transform: translateX(var(--radix-toast-swipe-move-x));
-  transition: none;
-}
-
-.ui-toast[data-swipe='cancel'] {
-  transform: translateX(0);
-}
-
-.ui-toast[data-swipe='end'] {
-  transform: translateX(var(--radix-toast-swipe-end-x));
-}
-
-.ui-toast[data-state='open'] {
-  @apply animate-in slide-in-from-top-full;
-}
-
-.ui-toast[data-state='closed'] {
-  @apply animate-out fade-out-80 slide-out-to-right-full;
-}
-
-@media (min-width: 640px) {
-  .ui-toast[data-state='open'] {
-    @apply slide-in-from-bottom-full;
-  }
-}
-
-.destructive .ui-toast-action {
-  @apply border-muted/40 hover:border-destructive/30 hover:bg-destructive hover:text-destructive-foreground focus:ring-destructive;
-}
-
-.destructive .ui-toast-close {
-  @apply text-destructive-foreground/70 hover:text-destructive-foreground focus:ring-destructive/50 focus:ring-offset-destructive;
-}
-
-/* Switch */
-.ui-switch[data-state='checked'] {
-  background-color: var(--color-primary);
-}
-
-.ui-switch[data-state='unchecked'] {
-  background-color: var(--color-input);
-}
-
-.dark .ui-switch[data-state='unchecked'] {
-  background-color: oklch(from var(--color-input) l c h / 80%);
-}
-
-.ui-switch-thumb[data-state='checked'] {
-  transform: translateX(calc(100% - 2px));
-}
-
-.dark .ui-switch-thumb[data-state='unchecked'] {
-  background-color: var(--color-foreground);
-}
-
-.dark .ui-switch-thumb[data-state='checked'] {
-  background-color: var(--color-primary-foreground);
-}
-
-/* Table */
-.ui-table-row[data-state='selected'] {
-  background-color: var(--color-muted);
-}
-
-.ui-table-head:has([role='checkbox']),
-.ui-table-cell:has([role='checkbox']) {
-  padding-right: 0;
-}
-
-.ui-table-head>[role='checkbox'],
-.ui-table-cell>[role='checkbox'] {
-  translate: 0 2px;
 }

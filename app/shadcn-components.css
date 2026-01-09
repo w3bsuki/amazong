@@ -1,0 +1,176 @@
+/* ============================================================
+   SHADCN/UI COMPONENT STYLES
+   CSS rules for shadcn/ui components that can't be expressed
+   with Tailwind classes alone (data-state selectors, etc.)
+   ============================================================ */
+
+/* Select */
+.ui-select-trigger svg {
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.ui-select-trigger svg:not([class*='size-']) {
+  width: 1rem;
+  height: 1rem;
+}
+
+.ui-select-trigger svg:not([class*='text-']) {
+  color: var(--color-muted-foreground);
+}
+
+.ui-select-trigger[data-placeholder] {
+  color: var(--color-muted-foreground);
+}
+
+.ui-select-trigger[data-size='default'] {
+  height: 2.5rem;
+}
+
+.ui-select-trigger[data-size='sm'] {
+  height: 2.25rem;
+}
+
+@media (min-width: 768px) {
+  .ui-select-trigger[data-size='default'] {
+    height: 2.25rem;
+  }
+
+  .ui-select-trigger[data-size='sm'] {
+    height: 2rem;
+  }
+}
+
+.ui-select-item svg {
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.ui-select-item svg:not([class*='size-']) {
+  width: 1rem;
+  height: 1rem;
+}
+
+.ui-select-content--popper[data-side='bottom'] {
+  translate: 0 0.25rem;
+}
+
+.ui-select-content--popper[data-side='top'] {
+  translate: 0 -0.25rem;
+}
+
+.ui-select-content--popper[data-side='left'] {
+  translate: -0.25rem 0;
+}
+
+.ui-select-content--popper[data-side='right'] {
+  translate: 0.25rem 0;
+}
+
+/* Tooltip */
+.ui-tooltip-arrow {
+  translate: 0 calc(-50% - 2px);
+}
+
+/* Dropdown */
+.ui-dropdown-item svg {
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.ui-dropdown-item svg:not([class*='size-']) {
+  width: 1rem;
+  height: 1rem;
+}
+
+.ui-dropdown-item svg:not([class*='text-']) {
+  color: var(--color-muted-foreground);
+}
+
+.ui-dropdown-item--destructive {
+  color: var(--color-destructive);
+}
+
+.ui-dropdown-item--destructive svg:not([class*='text-']) {
+  color: var(--color-destructive);
+}
+
+.ui-dropdown-sub-trigger[data-state='open'] {
+  @apply bg-accent text-accent-foreground;
+}
+
+/* Toast */
+.ui-toast[data-swipe='move'] {
+  transform: translateX(var(--radix-toast-swipe-move-x));
+  transition: none;
+}
+
+.ui-toast[data-swipe='cancel'] {
+  transform: translateX(0);
+}
+
+.ui-toast[data-swipe='end'] {
+  transform: translateX(var(--radix-toast-swipe-end-x));
+}
+
+.ui-toast[data-state='open'] {
+  @apply animate-in slide-in-from-top-full;
+}
+
+.ui-toast[data-state='closed'] {
+  @apply animate-out fade-out-80 slide-out-to-right-full;
+}
+
+@media (min-width: 640px) {
+  .ui-toast[data-state='open'] {
+    @apply slide-in-from-bottom-full;
+  }
+}
+
+.destructive .ui-toast-action {
+  @apply border-muted/40 hover:border-destructive/30 hover:bg-destructive hover:text-destructive-foreground focus:ring-destructive;
+}
+
+.destructive .ui-toast-close {
+  @apply text-destructive-foreground/70 hover:text-destructive-foreground focus:ring-destructive/50 focus:ring-offset-destructive;
+}
+
+/* Switch */
+.ui-switch[data-state='checked'] {
+  background-color: var(--color-primary);
+}
+
+.ui-switch[data-state='unchecked'] {
+  background-color: var(--color-input);
+}
+
+.dark .ui-switch[data-state='unchecked'] {
+  background-color: oklch(from var(--color-input) l c h / 80%);
+}
+
+.ui-switch-thumb[data-state='checked'] {
+  transform: translateX(calc(100% - 2px));
+}
+
+.dark .ui-switch-thumb[data-state='unchecked'] {
+  background-color: var(--color-foreground);
+}
+
+.dark .ui-switch-thumb[data-state='checked'] {
+  background-color: var(--color-primary-foreground);
+}
+
+/* Table */
+.ui-table-row[data-state='selected'] {
+  background-color: var(--color-muted);
+}
+
+.ui-table-head:has([role='checkbox']),
+.ui-table-cell:has([role='checkbox']) {
+  padding-right: 0;
+}
+
+.ui-table-head>[role='checkbox'],
+.ui-table-cell>[role='checkbox'] {
+  translate: 0 2px;
+}
