@@ -14,6 +14,11 @@ const CHECKS: EnvCheck[] = [
 ]
 
 export async function GET() {
+  // This endpoint is useful during staging/dev, but should not be publicly exposed in production.
+  if (process.env.NODE_ENV === 'production') {
+    return new Response(null, { status: 404 })
+  }
+
   const missing = CHECKS
     .filter((check) => check.required)
     .filter((check) => !process.env[check.key])

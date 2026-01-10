@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { submitSellerFeedback } from "@/app/actions/seller-feedback"
+import { requestReturn } from "@/app/actions/orders"
 import {
   ArrowLeft,
   Package,
@@ -192,10 +193,13 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
     }
 
     setIsSubmitting(true)
-    // Stub: Return request feature needs backend API endpoint and RLS policies
-    // When implemented, call: await requestReturn(selectedItem.id, returnReason)
-    await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
+    const result = await requestReturn(selectedItem.id, returnReason)
     setIsSubmitting(false)
+
+    if (!result.success) {
+      toast.error(result.error || (locale === "bg" ? "Грешка" : "Error"))
+      return
+    }
 
     toast.success(
       locale === "bg"
@@ -350,7 +354,7 @@ export function OrderDetailContent({ locale, order, existingSellerFeedbackSeller
 
               return (
                 <div key={status} className="flex items-center flex-1">
-                  <div className={`flex flex-col items-center flex-1 ${isCurrent ? "scale-110" : ""}`}>
+                  <div className="flex flex-col items-center flex-1">
                     <div className={`size-8 rounded-full flex items-center justify-center transition-colors ${isActive ? config.color + " text-white" : "bg-muted text-muted-foreground"
                       }`}>
                       <Icon className="size-4" weight={isCurrent ? "fill" : "regular"} />

@@ -98,7 +98,9 @@ const reuseExistingServer =
 // - Only when BASE_URL was NOT explicitly set by the user
 // - Only for local hosts (localhost / 127.0.0.1)
 const explicitBaseURL = shellBaseURL // captured before dotenv
-const defaultBaseURL = 'http://localhost:3000'
+// Prefer 127.0.0.1 over localhost on Windows to avoid IPv6 ::1 resolution
+// mismatches when the dev server is bound to IPv4 only.
+const defaultBaseURL = 'http://127.0.0.1:3000'
 const rawBaseURL = explicitBaseURL || latchedBaseURL || defaultBaseURL
 const parsedBase = new URL(rawBaseURL)
 const isLocalHost =
@@ -272,7 +274,7 @@ export default defineConfig({
     command:
       process.env.TEST_PROD === 'true'
         ? `pnpm -s build && cross-env PORT=${basePort} pnpm -s start`
-        : `cross-env NEXT_PUBLIC_E2E=true PORT=${basePort} pnpm dev`,
+        : `node scripts/clear-next-dev-lock.mjs && cross-env NEXT_PUBLIC_E2E=true PORT=${basePort} pnpm -s exec next dev --webpack -H 127.0.0.1 -p ${basePort}`,
     url: webServerURL,
     reuseExistingServer,
     // Even when reusing an existing dev server, the first request to a route can

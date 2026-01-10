@@ -30,9 +30,9 @@ export default function CheckoutLoading() {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-[1fr_400px] gap-4">
+        <div className="grid lg:grid-cols-12 gap-4">
           {/* Left Column - Forms */}
-          <div className="space-y-6">
+          <div className="lg:col-span-7 space-y-6">
             {/* Shipping Address Card */}
             <Card>
               <CardHeader>
@@ -134,7 +134,7 @@ export default function CheckoutLoading() {
           </div>
 
           {/* Right Column - Order Summary */}
-          <div className="lg:sticky lg:top-4 h-fit">
+          <div className="lg:col-span-5 lg:sticky lg:top-4 h-fit">
             <Card>
               <CardHeader>
                 <Skeleton className="h-6 w-36" />

@@ -73,19 +73,11 @@ export function ContextualDoubleDeckerNav({
   const chipBase = cn(
     "h-7",
     "px-3 rounded-md",
-    "text-[12px] font-medium whitespace-nowrap",
+    "text-xs font-medium whitespace-nowrap",
     "border",
     "transition-colors",
     "tap-highlight-transparent",
     "active:opacity-70"
-  )
-
-  const chipActive = cn(chipBase, "bg-zinc-900 text-white border-zinc-900")
-  const chipInactive = cn(
-    chipBase,
-    "bg-white text-zinc-600 border-zinc-200",
-    "hover:border-zinc-300",
-    "active:bg-zinc-100"
   )
   const chipActiveToken = cn(chipBase, "bg-foreground text-background border-foreground")
   const chipInactiveToken = cn(
@@ -117,7 +109,7 @@ export function ContextualDoubleDeckerNav({
           </Link>
           <CaretRight size={12} weight="bold" className="text-muted-foreground/50 shrink-0" aria-hidden="true" />
           <div className={cn(chipActiveToken, "flex items-center gap-1.5")}>
-            <span className="max-w-[160px] truncate">{currentLabel}</span>
+            <span className="max-w-40 truncate">{currentLabel}</span>
             <Link
               href={parentHref as string}
               className="-mr-1 rounded-sm p-1 active:opacity-70"

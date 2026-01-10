@@ -95,7 +95,6 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
   cacheLife('user')
 
   const supabase = createStaticClient()
-  if (!supabase) return null
 
   // 1. Fetch the profile
   const { data: profile, error } = await supabase
@@ -269,7 +268,6 @@ export async function getProfileMetadata(username: string) {
   cacheLife('user')
 
   const supabase = createStaticClient()
-  if (!supabase) return null
 
   const { data: profile } = await supabase
     .from("profiles")

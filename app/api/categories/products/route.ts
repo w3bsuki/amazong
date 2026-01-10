@@ -1,9 +1,15 @@
-import { createClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted"
+import { cacheLife, cacheTag } from "next/cache"
+
+// Align CDN cache headers with next.config.ts cacheLife.products
+// (revalidate: 300s, stale: 60s)
+const CACHE_TTL_SECONDS = 300
+const CACHE_STALE_WHILE_REVALIDATE = 60
 
 // Get one featured product per subcategory for mega-menu
-export async function GET(request: Request) {
+export async function GET(request: import("next/server").NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const parentId = searchParams.get("parentId")
@@ -12,28 +18,65 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "parentId is required" }, { status: 400 })
     }
 
-    const supabase = await createClient()
-    if (!supabase) {
-      return NextResponse.json({ error: "Database connection failed" }, { status: 500 })
-    }
+    const productsByCategory = await getFeaturedProductsBySubcategoryCached(parentId)
 
-    // Get all subcategory IDs for this parent
-    const { data: subcategories } = await supabase
-      .from("categories")
-      .select("id, slug")
-      .eq("parent_id", parentId)
+    return NextResponse.json(
+      { products: productsByCategory },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`,
+          "CDN-Cache-Control": `public, max-age=${CACHE_TTL_SECONDS}`,
+          "Vercel-CDN-Cache-Control": `public, max-age=${CACHE_TTL_SECONDS}`,
+        },
+      }
+    )
+  } catch (error) {
+    if (isNextPrerenderInterrupted(error)) throw error
+    console.error("Categories Products API Error:", error)
+    const message = error instanceof Error ? error.message : "Internal Server Error"
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+}
 
-    if (!subcategories || subcategories.length === 0) {
-      return NextResponse.json({ products: {} })
-    }
+type FeaturedProduct = {
+  id: string
+  title: string
+  price: number
+  list_price: number | null
+  image: string | null
+  rating: number | null
+  slug: string | null
+}
 
-    // For each subcategory, get one product
-    const subcategoryIds = subcategories.map(s => s.id)
-    
-    // Use a raw query to get one product per subcategory using DISTINCT ON
-    const { data: products, error } = await supabase
-      .from("products")
-      .select(`
+async function getFeaturedProductsBySubcategoryCached(parentId: string): Promise<Record<string, FeaturedProduct>> {
+  'use cache'
+  cacheLife('products')
+  cacheTag('categories:tree')
+  cacheTag(`category-children:${parentId}`)
+
+  const supabase = createStaticClient()
+
+  // Get all subcategory IDs for this parent
+  const { data: subcategories } = await supabase
+    .from("categories")
+    .select("id, slug")
+    .eq("parent_id", parentId)
+
+  if (!subcategories || subcategories.length === 0) {
+    return {}
+  }
+
+  for (const sub of subcategories) {
+    if (sub?.slug) cacheTag(`products:category:${sub.slug}`)
+  }
+
+  // For each subcategory, get one product
+  const subcategoryIds = subcategories.map((s) => s.id)
+
+  const { data: products, error } = await supabase
+    .from("products")
+    .select(
+      `
         id,
         title,
         price,
@@ -42,41 +85,36 @@ export async function GET(request: Request) {
         rating,
         slug,
         category_id
-      `)
-      .in("category_id", subcategoryIds)
-      .order("rating", { ascending: false })
-      .order("review_count", { ascending: false })
-    
-    if (error) {
-      console.error("Products query error:", error)
-      return NextResponse.json({ products: {} })
-    }
+      `
+    )
+    .in("category_id", subcategoryIds)
+    .order("rating", { ascending: false })
+    .order("review_count", { ascending: false })
 
-    // Group by category_id and take only the first (best rated) product per category
-    const productsByCategory: Record<string, { id: string; title: string; price: number; list_price: number | null; image: string | null; rating: number | null; slug: string | null }> = {}
-    
-    if (products) {
-      for (const product of products) {
-        const catId = product.category_id
-        if (catId && !productsByCategory[catId]) {
-          productsByCategory[catId] = {
-            id: product.id,
-            title: product.title,
-            price: product.price,
-            list_price: product.list_price,
-            image: product.images?.[0] || null,
-            rating: product.rating,
-            slug: product.slug
-          }
+  if (error) {
+    console.error("Products query error:", error)
+    return {}
+  }
+
+  // Group by category_id and take only the first (best rated) product per category
+  const productsByCategory: Record<string, FeaturedProduct> = {}
+
+  if (products) {
+    for (const product of products) {
+      const catId = product.category_id
+      if (catId && !productsByCategory[catId]) {
+        productsByCategory[catId] = {
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          list_price: product.list_price,
+          image: product.images?.[0] || null,
+          rating: product.rating,
+          slug: product.slug,
         }
       }
     }
-
-    return NextResponse.json({ products: productsByCategory })
-  } catch (error) {
-    if (isNextPrerenderInterrupted(error)) throw error
-    console.error("Categories Products API Error:", error)
-    const message = error instanceof Error ? error.message : "Internal Server Error"
-    return NextResponse.json({ error: message }, { status: 500 })
   }
+
+  return productsByCategory
 }

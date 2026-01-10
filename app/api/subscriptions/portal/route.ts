@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { createRouteHandlerClient } from '@/lib/supabase/server'
 import { stripe } from '@/lib/stripe'
 
 function getAppUrl() {
@@ -32,18 +32,16 @@ function inferLocaleFromRequest(req: Request): 'en' | 'bg' {
   return 'en'
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const { supabase, applyCookies } = createRouteHandlerClient(req)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
+
   try {
-    const supabase = await createClient()
-    
-    if (!supabase) {
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })
-    }
-    
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get seller's subscription to find the Stripe customer ID
@@ -55,7 +53,7 @@ export async function POST(req: Request) {
       .single()
 
     if (!subscription?.stripe_customer_id) {
-      return NextResponse.json(
+      return json(
         { error: 'No active subscription found' },
         { status: 404 }
       )
@@ -70,10 +68,10 @@ export async function POST(req: Request) {
       return_url: accountPlansUrl,
     })
 
-    return NextResponse.json({ url: portalSession.url })
+    return json({ url: portalSession.url })
   } catch (error) {
     console.error('Portal session error:', error)
-    return NextResponse.json(
+    return json(
       { error: 'Failed to create portal session' },
       { status: 500 }
     )

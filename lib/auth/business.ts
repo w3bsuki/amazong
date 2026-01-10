@@ -471,14 +471,12 @@ export async function getBusinessDashboardStats(sellerId: string) {
     sum + (Number((item as { price_at_purchase: number }).price_at_purchase) * (item as { quantity: number }).quantity), 0) || 0
   
   // Calculate total views (approximation - views column doesn't exist yet)
-  const totalViews = (viewsResult.count || 0) * 10 // Estimate 10 views per product
-  
-  // Simulate live activity (in production, this would come from real-time analytics)
-  // These could be tracked via page view events, WebSocket connections, etc.
+  const totalViews = (viewsResult.count || 0) * 10
+
   const liveActivity = {
-    currentVisitors: Math.floor(Math.random() * 5), // Simulated - replace with real tracking
-    recentViews: Math.floor(totalViews * 0.01), // Approximate hourly views
-    cartAdds: Math.floor(Math.random() * 3), // Simulated - replace with real tracking
+    currentVisitors: 0,
+    recentViews: Math.floor(totalViews * 0.01),
+    cartAdds: 0,
   }
   
   return {
@@ -837,8 +835,15 @@ export async function getSetupProgress(sellerId: string) {
   await connection()
   
   const supabase = await createClient()
+
+  type ShippingSettingsRow = { is_configured: boolean | null }
+  type SellerPayoutStatusRow = {
+    details_submitted: boolean | null
+    charges_enabled: boolean | null
+    payouts_enabled: boolean | null
+  }
   
-  const [profileResult, productsResult] = await Promise.all([
+  const [profileResult, productsResult, shippingResult, payoutResult] = await Promise.all([
     // Get profile details for setup completion
     supabase
       .from('profiles')
@@ -852,17 +857,35 @@ export async function getSetupProgress(sellerId: string) {
       .select('id', { count: 'exact', head: true })
       .eq('seller_id', sellerId)
       .limit(1),
+
+    // Check if seller has configured shipping settings
+    (supabase as unknown as { from: (table: string) => any })
+      .from('seller_shipping_settings')
+      .select('is_configured')
+      .eq('seller_id', sellerId)
+      .maybeSingle() as Promise<{ data: ShippingSettingsRow | null; error: unknown }>,
+
+    // Check seller payout status (Stripe Connect)
+    (supabase as unknown as { from: (table: string) => any })
+      .from('seller_payout_status')
+      .select('details_submitted, charges_enabled, payouts_enabled')
+      .eq('seller_id', sellerId)
+      .maybeSingle() as Promise<{ data: SellerPayoutStatusRow | null; error: unknown }>,
   ])
   
   const profile = profileResult.data
+
+  const hasShippingSetup = !shippingResult.error && Boolean(shippingResult.data?.is_configured)
+  const payout = payoutResult.error ? null : payoutResult.data
+  const hasPaymentSetup = Boolean(payout?.details_submitted && payout?.charges_enabled && payout?.payouts_enabled)
   
   return {
     hasProducts: (productsResult.count || 0) > 0,
     hasDescription: Boolean(profile?.bio && profile.bio.length > 10),
     hasLogo: Boolean(profile?.avatar_url),
     hasUsername: Boolean(profile?.username),
-    hasShippingSetup: true, // Stub: No shipping_settings table yet - will check seller_shipping_profiles when added
-    hasPaymentSetup: true, // Stub: No payout_settings table yet - will check stripe_connect_accounts when added
+    hasShippingSetup,
+    hasPaymentSetup,
   }
 }
 

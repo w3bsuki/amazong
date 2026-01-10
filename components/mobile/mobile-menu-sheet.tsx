@@ -33,8 +33,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
   function MobileMenuSheet({ categories }, ref) {
     const [open, setOpen] = useState(false)
     const locale = useLocale()
-    // Chosen design: blue circles with white icons.
-    // Keep labels black underneath for maximum readability.
+
     useImperativeHandle(ref, () => ({
       open: () => setOpen(true),
       close: () => setOpen(false),
@@ -50,7 +49,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
     }
 
     return (
-      <Drawer open={open} onOpenChange={setOpen}>
+      <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
         <DrawerContent className="max-h-(--dialog-max-h)">
           {/* Header - Compact with proper touch target for close */}
           <DrawerHeader className="py-2 px-(--page-inset) border-b border-border">
@@ -87,7 +86,7 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
                 <Link
                   href="/categories"
                   onClick={() => setOpen(false)}
-                  className="text-xs text-cta-trust-blue font-medium hover:underline underline-offset-2 flex items-center gap-0.5 min-h-touch-xs px-1 -mr-1 rounded transition-colors active:bg-muted/50"
+                  className="text-xs text-primary font-medium hover:underline underline-offset-2 flex items-center gap-0.5 min-h-touch-xs px-1 -mr-1 rounded-md transition-colors active:bg-muted/50"
                 >
                   {locale === 'bg' ? 'Виж всички' : 'See all'}
                   <CaretRight size={12} weight="bold" />

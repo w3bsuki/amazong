@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 import type { CartItem } from "@/components/providers/cart-context"
 import type Stripe from "stripe"
 
-export async function createCheckoutSession(items: CartItem[]) {
+export async function createCheckoutSession(items: CartItem[], locale?: "en" | "bg") {
   if (!process.env.STRIPE_SECRET_KEY) {
     console.error("STRIPE_SECRET_KEY is missing")
     return { error: "Stripe configuration is missing. Please check your server logs." }
@@ -52,6 +52,9 @@ export async function createCheckoutSession(items: CartItem[]) {
       }
     }
 
+    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000").replace(/\/$/, "")
+    const safeLocale = locale === "bg" ? "bg" : "en"
+
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"],
       line_items: items.map((item) => ({
@@ -79,8 +82,8 @@ export async function createCheckoutSession(items: CartItem[]) {
         user_id: userId || "guest",
         items_json: JSON.stringify(items.map((i) => ({ id: i.id, variantId: i.variantId ?? null, qty: i.quantity, price: i.price }))),
       },
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/cart`,
+      success_url: `${baseUrl}/${safeLocale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/${safeLocale}/cart`,
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams)
@@ -141,15 +144,25 @@ export async function verifyAndCreateOrder(sessionId: string) {
       return { error: "Payment not completed" }
     }
 
-    const { data: existingOrder } = await supabase
-      .from("orders")
-      .select("id")
-      .eq("stripe_payment_intent_id", session.payment_intent as string)
-      .eq("user_id", user.id)
-      .single()
+    if (session.payment_intent) {
+      const { data: existingOrder, error: existingOrderError } = await supabase
+        .from("orders")
+        .select("id,user_id")
+        .eq("stripe_payment_intent_id", session.payment_intent as string)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
 
-    if (existingOrder) {
-      return { success: true, orderId: existingOrder.id, message: "Order already exists" }
+      if (existingOrderError) {
+        console.error("Error checking existing order:", existingOrderError)
+      }
+
+      if (existingOrder?.id) {
+        if (existingOrder.user_id !== user.id) {
+          return { error: "Not authorized" }
+        }
+        return { success: true, orderId: existingOrder.id, message: "Order already exists" }
+      }
     }
 
     let itemsData: { id: string; variantId?: string | null; qty: number; price: number }[] = []
@@ -187,6 +200,23 @@ export async function verifyAndCreateOrder(sessionId: string) {
     const { data: order, error: orderError } = await supabase.from("orders").insert(orderData).select().single()
 
     if (orderError) {
+      // If the webhook won the race and created the order first, we try to fetch it.
+      if (session.payment_intent) {
+        const { data: racedOrder } = await supabase
+          .from("orders")
+          .select("id,user_id")
+          .eq("stripe_payment_intent_id", session.payment_intent as string)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle()
+
+        if (racedOrder?.id) {
+          if (racedOrder.user_id !== user.id) {
+            return { error: "Not authorized" }
+          }
+          return { success: true, orderId: racedOrder.id, message: "Order already exists" }
+        }
+      }
       return { error: `Failed to create order: ${orderError.message}` }
     }
 

@@ -110,7 +110,7 @@ export function CategoryCircles({
           <div className="w-4 h-4 bg-background/20 rounded-full flex items-center justify-center text-background">
             {activeIcon}
           </div>
-          <span className="max-w-[80px] truncate">{backLabel}</span>
+          <span className="max-w-20 truncate">{backLabel}</span>
           <X size={12} weight="bold" className="ml-0.5 opacity-60" />
         </button>
 
@@ -183,17 +183,17 @@ export function CategoryCircles({
       >
         {/* 'All' Circle (Static - Always visible) */}
         <CategoryCircle
-          category={{ slug: 'all', icon: 'SquaresFour' }} // Mock category
+          category={{ slug: 'all' }} // Icon handled by getCategoryIcon via slug
           label={locale === 'bg' ? 'Всички' : 'All'}
           active={!activeL2} // Active if no subcategory selected
           onClick={() => onBack()} // Acts as 'Reset' to parent L1
-          circleClassName="w-[56px] h-[56px] bg-muted/50 border-2 border-transparent data-[active=true]:border-foreground"
+          circleClassName="size-(--spacing-category-circle) bg-muted/50 border-2 border-transparent data-[active=true]:border-foreground"
           fallbackIconSize={24}
           fallbackIconWeight="regular"
           variant="muted"
-          className="w-[64px] shrink-0"
+          className="w-(--spacing-category-item) shrink-0"
           labelClassName={cn(
-            "w-full text-[10px] text-center leading-tight line-clamp-2 px-1 mt-2",
+            "w-full text-2xs text-center leading-tight line-clamp-2 px-1 mt-2",
             "text-muted-foreground font-medium",
             !activeL2 && "text-foreground font-bold"
           )}
@@ -216,14 +216,14 @@ export function CategoryCircles({
               {...(href ? { href } : { onClick: () => onCircleClick(sub) })}
               active={isActive}
               dimmed={dimmed}
-              circleClassName="w-[56px] h-[56px]"
+              circleClassName="size-(--spacing-category-circle)"
               fallbackIconSize={20}
               fallbackIconWeight="light"
               variant="muted"
               label={getCategoryShortName(sub, locale)}
-              className="w-[64px] shrink-0"
+              className="w-(--spacing-category-item) shrink-0"
               labelClassName={cn(
-                "w-full text-[10px] text-center leading-tight line-clamp-2 px-1 mt-2",
+                "w-full text-2xs text-center leading-tight line-clamp-2 px-1 mt-2",
                 "text-muted-foreground font-medium"
               )}
             />

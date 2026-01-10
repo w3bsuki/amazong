@@ -292,8 +292,8 @@ function ProductCard({
 
       {/* Content Area */}
       <div className="relative z-2 mt-1">
-        {/* Title - Treido: text-[13px] line-clamp-2 */}
-        <p className="line-clamp-2 break-words text-[13px] font-medium text-foreground leading-tight">
+        {/* Title - Treido: text-compact line-clamp-2 */}
+        <p className="line-clamp-2 break-words text-compact font-medium text-foreground leading-tight">
           {title}
         </p>
 
@@ -305,16 +305,16 @@ function ProductCard({
           conditionLabel={conditionLabel}
         />
 
-        {/* Meta (C2C-style): location • time - Treido: text-[11px] text-muted-foreground */}
+        {/* Meta (C2C-style): location • time - Treido: text-tiny text-muted-foreground */}
         {metaParts.length > 0 && (
-          <p className="line-clamp-1 text-[11px] text-muted-foreground truncate">
+          <p className="line-clamp-1 text-tiny text-muted-foreground truncate">
             {metaParts.join(' • ')}
           </p>
         )}
 
         {/* Free Shipping - Treido subtle style */}
         {freeShipping && (
-          <span className="inline-flex items-center gap-0.5 text-[11px] text-muted-foreground">
+          <span className="inline-flex items-center gap-0.5 text-tiny text-muted-foreground">
             <Truck size={10} weight="bold" />
             <span className="hidden xs:inline">{t("freeShipping")}</span>
           </span>

@@ -123,3 +123,9 @@ console.log(
   `Totals: files=${totals.files} arbitrary=${totals.arbitrary} hex=${totals.hex} oklch=${totals.oklch}`
 );
 console.log(`Full report: ${path.relative(projectRoot, reportPath).replaceAll("\\\\", "/")}`);
+
+if (process.env.FAIL_ON_FINDINGS === "1") {
+  if (totals.arbitrary > 0 || totals.hex > 0 || totals.oklch > 0) {
+    process.exitCode = 1;
+  }
+}

@@ -97,11 +97,11 @@ export function SmartAnchorNav({
   // === Styles ===
   // Anchor pill: solid foreground with inverted text - Treido style
   const anchorStyles = cn(
-    "shrink-0 h-[32px] pl-3 pr-4",
+    "shrink-0 h-8 pl-3 pr-4",
     "bg-foreground text-background",
     "rounded-full",
     "flex items-center gap-1.5",
-    "text-[13px] font-bold",
+    "text-compact font-bold",
     "active:opacity-90 transition-colors",
     "tap-highlight-transparent"
   )
@@ -110,7 +110,7 @@ export function SmartAnchorNav({
   const pillBase = cn(
     "shrink-0 h-8 px-4",
     "rounded-full",
-    "text-[13px] font-semibold",
+    "text-compact font-semibold",
     "whitespace-nowrap",
     "border transition-all duration-200",
     "tap-highlight-transparent",
@@ -175,7 +175,7 @@ export function SmartAnchorNav({
     >
       <div
         ref={containerRef}
-        className="flex items-center px-(--page-inset) h-[48px] gap-1.5 overflow-x-auto no-scrollbar"
+        className="flex items-center px-(--page-inset) h-(--spacing-nav-row) gap-1.5 overflow-x-auto no-scrollbar"
       >
         {/* === ANCHOR (only when drilled down) === */}
         {anchor && (
@@ -185,7 +185,7 @@ export function SmartAnchorNav({
             aria-label={locale === "bg" ? "Назад към " + anchor.label : "Back to " + anchor.label}
           >
             <ArrowLeft size={14} weight="bold" className="shrink-0" />
-            <span className="max-w-[120px] truncate">{anchor.label}</span>
+            <span className="max-w-28 truncate">{anchor.label}</span>
           </Link>
         )}
 

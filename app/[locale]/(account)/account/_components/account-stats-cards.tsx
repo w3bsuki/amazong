@@ -83,7 +83,7 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
             <Link
               key={action.href}
               href={withLocale(action.href)}
-              className="flex flex-col items-center gap-1.5 py-2 active:scale-95 transition-transform"
+              className="flex flex-col items-center gap-1.5 py-2"
             >
               {/* Circular neutral icon */}
               <div className="relative flex size-12 items-center justify-center rounded-full bg-account-stat-icon-bg border border-border">

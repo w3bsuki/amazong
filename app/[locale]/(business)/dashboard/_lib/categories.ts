@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server"
+import { createStaticClient } from "@/lib/supabase/server"
+import { cacheLife, cacheTag } from "next/cache"
 
 export interface CategoryNode {
   id: string
@@ -56,7 +57,15 @@ function buildCategoryTree(categories: RawCategory[]): CategoryNode[] {
 }
 
 export async function getBusinessDashboardCategories(): Promise<CategoryNode[]> {
-  const supabase = await createClient()
+  return getBusinessDashboardCategoriesCached()
+}
+
+async function getBusinessDashboardCategoriesCached(): Promise<CategoryNode[]> {
+  'use cache'
+  cacheLife('categories')
+  cacheTag('categories:tree')
+
+  const supabase = createStaticClient()
 
   const { data: rootCats, error: rootError } = await supabase
     .from("categories")

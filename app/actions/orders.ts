@@ -308,16 +308,16 @@ export async function getBuyerOrders(): Promise<{ orders: OrderItem[]; error?: s
 
     // Get seller profiles
     const sellerIds = [...new Set(orderItems?.map(item => item.seller_id).filter(Boolean))]
-    
-    let sellersMap = new Map<string, { id: string; full_name: string | null; avatar_url: string | null }>()
-    
+
+    const sellersMap = new Map<string, { id: string; full_name: string | null; avatar_url: string | null }>()
+
     if (sellerIds.length > 0) {
       const { data: sellers } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url')
         .in('id', sellerIds)
 
-      sellers?.forEach(seller => {
+      sellers?.forEach((seller) => {
         sellersMap.set(seller.id, seller)
       })
     }
@@ -561,6 +561,101 @@ export async function canSellerRateBuyer(
     }
   } catch {
     return { canRate: false, hasRated: false }
+  }
+}
+
+/**
+ * Request a return for an order item (buyer only)
+ * Minimal wiring: records the request for seller review.
+ */
+export async function requestReturn(
+  orderItemId: string,
+  reason: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = await createClient()
+    if (!supabase) {
+      return { success: false, error: "Failed to connect to database" }
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return { success: false, error: "Not authenticated" }
+    }
+
+    const normalizedReason = (reason ?? "").trim()
+    if (normalizedReason.length < 3) {
+      return { success: false, error: "Please provide a reason" }
+    }
+
+    const { data: orderItem, error: fetchError } = await supabase
+      .from("order_items")
+      .select(
+        `
+          id,
+          status,
+          seller_id,
+          order:orders!inner(id, user_id)
+        `
+      )
+      .eq("id", orderItemId)
+      .single()
+
+    if (fetchError || !orderItem) {
+      return { success: false, error: "Order item not found" }
+    }
+
+    const order = orderItem.order as unknown as { id: string; user_id: string }
+
+    if (order.user_id !== user.id) {
+      return { success: false, error: "Not authorized to request a return for this order" }
+    }
+
+    if (orderItem.status !== "delivered") {
+      return { success: false, error: "Return requests are available after delivery" }
+    }
+
+    const { data: existingRequests, error: existingError } = await supabase
+      .from("return_requests")
+      .select("id,status")
+      .eq("order_item_id", orderItemId)
+      .eq("buyer_id", user.id)
+      .neq("status", "cancelled")
+      .limit(1)
+
+    const existingRequest = (existingRequests?.[0] ?? null) as { id?: string; status?: string } | null
+
+    if (existingError) {
+      console.error("Error checking return requests:", existingError)
+      return { success: false, error: "Failed to submit return request" }
+    }
+
+    if (existingRequest?.id) {
+      return { success: false, error: "Return request already submitted" }
+    }
+
+    const { error: insertError } = await supabase.from("return_requests").insert({
+        order_item_id: orderItemId,
+        order_id: order.id,
+        buyer_id: user.id,
+        seller_id: orderItem.seller_id,
+        reason: normalizedReason,
+        status: "requested",
+      })
+
+    if (insertError) {
+      console.error("Error creating return request:", insertError)
+      return { success: false, error: "Failed to submit return request" }
+    }
+
+    revalidateTag("orders", "max")
+    revalidateTag("messages", "max")
+    revalidateTag("conversations", "max")
+
+    return { success: true }
+  } catch (error) {
+    console.error("Error in requestReturn:", error)
+    return { success: false, error: "An unexpected error occurred" }
   }
 }
 

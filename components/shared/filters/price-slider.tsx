@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
+import { Slider } from "@/components/ui/slider"
 
 type PriceValue = string | null
 
@@ -70,13 +71,6 @@ export function PriceSlider({
   const normalizedMin = Math.min(minForSlider, maxForSlider)
   const normalizedMax = Math.max(minForSlider, maxForSlider)
 
-  const leftPct = (normalizedMin / computedMaxLimit) * 100
-  const rightPct = (normalizedMax / computedMaxLimit) * 100
-
-  const trackStyle = {
-    background: `linear-gradient(to right, hsl(var(--muted)) 0%, hsl(var(--muted)) ${leftPct}%, hsl(var(--primary)) ${leftPct}%, hsl(var(--primary)) ${rightPct}%, hsl(var(--muted)) ${rightPct}%, hsl(var(--muted)) 100%)`,
-  } as const
-
   const commit = (next: { min: number | null; max: number | null }, changed: "min" | "max") => {
     let nextMin = next.min
     let nextMax = next.max
@@ -101,18 +95,14 @@ export function PriceSlider({
     commit({ min: parsedMin, max: parseNonNegativeInt(digitsOnly) }, "max")
   }
 
-  const handleMinSlider = (raw: string) => {
-    const n = clamp(Number(raw), 0, computedMaxLimit)
-    // slider at 0 means "no min"
-    const nextMin = n <= 0 ? null : n
-    commit({ min: nextMin, max: parsedMax }, "min")
-  }
+  const handleSlider = (values: number[]) => {
+    const nextMinRaw = clamp(values[0] ?? 0, 0, computedMaxLimit)
+    const nextMaxRaw = clamp(values[1] ?? computedMaxLimit, 0, computedMaxLimit)
 
-  const handleMaxSlider = (raw: string) => {
-    const n = clamp(Number(raw), 0, computedMaxLimit)
-    // slider at max means "no max"
-    const nextMax = n >= computedMaxLimit ? null : n
-    commit({ min: parsedMin, max: nextMax }, "max")
+    const nextMin = nextMinRaw <= 0 ? null : nextMinRaw
+    const nextMax = nextMaxRaw >= computedMaxLimit ? null : nextMaxRaw
+
+    onChange({ min: formatValue(nextMin), max: formatValue(nextMax) })
   }
 
   return (
@@ -127,7 +117,7 @@ export function PriceSlider({
             onChange={(e) => handleMinInput(e.target.value)}
             placeholder="0"
             className={cn(
-              "w-full h-10 px-3 rounded-lg",
+              "w-full h-10 px-3 rounded-md",
               "bg-muted/50 border border-border/50",
               "text-sm placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
@@ -144,7 +134,7 @@ export function PriceSlider({
             onChange={(e) => handleMaxInput(e.target.value)}
             placeholder={String(computedMaxLimit)}
             className={cn(
-              "w-full h-10 px-3 rounded-lg",
+              "w-full h-10 px-3 rounded-md",
               "bg-muted/50 border border-border/50",
               "text-sm placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
@@ -155,54 +145,14 @@ export function PriceSlider({
       </div>
 
       <div className="space-y-2">
-        <div className="h-2 rounded-full" style={trackStyle} />
-
-        <div className="relative h-6">
-          <input
-            type="range"
-            min={0}
-            max={computedMaxLimit}
-            step={step}
-            value={normalizedMin}
-            onChange={(e) => handleMinSlider(e.target.value)}
-            className={cn(
-              "absolute inset-0 w-full",
-              "bg-transparent",
-              "[&::-webkit-slider-runnable-track]:bg-transparent",
-              "[&::-moz-range-track]:bg-transparent",
-              "[&::-webkit-slider-thumb]:appearance-none",
-              "[&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full",
-              "[&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-border",
-              "[&::-webkit-slider-thumb]:shadow-sm",
-              "[&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full",
-              "[&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-border",
-              "[&::-moz-range-thumb]:shadow-sm"
-            )}
-            aria-label={t("min")}
-          />
-          <input
-            type="range"
-            min={0}
-            max={computedMaxLimit}
-            step={step}
-            value={normalizedMax}
-            onChange={(e) => handleMaxSlider(e.target.value)}
-            className={cn(
-              "absolute inset-0 w-full",
-              "bg-transparent",
-              "[&::-webkit-slider-runnable-track]:bg-transparent",
-              "[&::-moz-range-track]:bg-transparent",
-              "[&::-webkit-slider-thumb]:appearance-none",
-              "[&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full",
-              "[&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-border",
-              "[&::-webkit-slider-thumb]:shadow-sm",
-              "[&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full",
-              "[&::-moz-range-thumb]:bg-background [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-border",
-              "[&::-moz-range-thumb]:shadow-sm"
-            )}
-            aria-label={t("max")}
-          />
-        </div>
+        <Slider
+          min={0}
+          max={computedMaxLimit}
+          step={step}
+          value={[normalizedMin, normalizedMax]}
+          onValueChange={handleSlider}
+          thumbLabels={[t("min"), t("max")]}
+        />
 
         <p className="text-xs text-muted-foreground">
           {t("min")}: {value.min ?? "—"} · {t("max")}: {value.max ?? "—"}

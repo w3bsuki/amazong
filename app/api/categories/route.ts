@@ -117,7 +117,7 @@ function cachedJsonResponse(data: unknown) {
 
 async function getRootCategoriesCached() {
   'use cache'
-  cacheTag('categories', 'root-categories')
+  cacheTag('categories:tree')
   cacheLife('categories')
 
   const supabase = createStaticClient()
@@ -141,7 +141,8 @@ async function getRootCategoriesCached() {
 
 async function getRootWithChildrenCached(depth: number) {
   'use cache'
-  cacheTag('categories', 'root-with-children')
+  cacheTag('categories:tree')
+  cacheTag(`categories:root-with-children:depth:${depth}`)
   cacheLife('categories')
 
   const supabase = createStaticClient()
@@ -277,7 +278,9 @@ async function getRootWithChildrenCached(depth: number) {
 
 async function getCategoryHierarchyCached(parentSlug: string, depth: number) {
   'use cache'
-  cacheTag('categories', `category-hierarchy-${parentSlug}`)
+  cacheTag('categories:tree')
+  cacheTag(`category:${parentSlug}`)
+  cacheTag(`categories:hierarchy:${parentSlug}`)
   cacheLife('categories')
 
   const supabase = createStaticClient()
@@ -294,6 +297,8 @@ async function getCategoryHierarchyCached(parentSlug: string, depth: number) {
   if (parentError || !parentCat) {
     return { categories: [], parent: null }
   }
+
+  cacheTag(`category-children:${parentCat.id}`)
 
   // Then get all descendants up to depth
   const { data: descendants, error: descendantsError } = await supabase

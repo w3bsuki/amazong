@@ -3,9 +3,11 @@ import { spawn } from 'node:child_process'
 async function detectRunningBaseURL() {
   if (process.env.BASE_URL) return process.env.BASE_URL
 
+  const host = process.env.PW_E2E_HOST || '127.0.0.1'
+
   // If a port is explicitly provided, prefer it.
   if (process.env.PORT) {
-    return `http://localhost:${process.env.PORT}`
+    return `http://${host}:${process.env.PORT}`
   }
 
   // Only attempt auto-detection when the caller asked to reuse an existing server.
@@ -19,13 +21,13 @@ async function detectRunningBaseURL() {
 
     try {
       // Prefer a localized route as a readiness signal for this app.
-      const res = await fetch(`http://localhost:${port}/en`, {
+      const res = await fetch(`http://${host}:${port}/en`, {
         method: 'GET',
         signal: controller.signal,
       })
 
       if (res.ok) {
-        return `http://localhost:${port}`
+        return `http://${host}:${port}`
       }
     } catch {
       // ignore

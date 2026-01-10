@@ -166,7 +166,10 @@ export function MobileSearchOverlay({
 
       saveSearch(trimmedValue)
       handleClose()
-      router.push(`/search?q=${encodeURIComponent(trimmedValue)}`)
+      router.push({
+        pathname: "/search",
+        query: { q: trimmedValue },
+      })
     },
     [saveSearch, handleClose, router]
   )

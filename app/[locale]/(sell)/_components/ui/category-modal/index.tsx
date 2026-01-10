@@ -151,7 +151,7 @@ function CategorySearchResults({
           type="button"
           onClick={() => onSelect(cat)}
           className={cn(
-            "w-full flex flex-col items-start gap-0.5 px-4 py-2.5 rounded-md border text-left transition-all active:scale-[0.98]",
+            "w-full flex flex-col items-start gap-0.5 px-4 py-2.5 rounded-md border text-left transition-colors",
             selectedValue === cat.id 
               ? "border-primary bg-primary/5 shadow-xs" 
               : "border-border bg-background hover:border-primary/30"
@@ -281,7 +281,7 @@ export function CategorySelector({
         "relative w-full flex items-center h-12 px-4 rounded-md border transition-all text-left",
         "bg-background border border-border shadow-xs",
         "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
-        "transition-all active:scale-[0.98]",
+        "transition-colors",
         className
       )}
     >
@@ -531,7 +531,7 @@ function CategoryModalContent({
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="size-8 flex items-center justify-center rounded-lg bg-background border border-border shadow-xs shrink-0 active:scale-95 transition-transform"
+                    className="size-8 flex items-center justify-center rounded-lg bg-background border border-border shadow-xs shrink-0 transition-colors hover:bg-muted"
                   >
                     <CaretLeft className="size-4" weight="bold" />
                   </button>

@@ -40,6 +40,23 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
   }, [searchParams])
 
   const removeParam = (key: string, key2?: string) => {
+    // Handle Category Chip Removal
+    if (key === 'category') {
+      if (basePath) {
+        // If we differ from basepath, go up? 
+        // Actually, if we are removing the "current category", we likely want to go to the PARENT or Root.
+        // Simple heuristic: Go to "/categories" or "/" if we are "removing" the category context.
+        router.push('/categories')
+      } else {
+        // Search mode: remove category param
+        const params = new URLSearchParams(searchParams.toString())
+        params.delete("category")
+        params.delete("page")
+        router.push(`/search?${params.toString()}`)
+      }
+      return
+    }
+
     const params = new URLSearchParams(searchParams.toString())
     params.delete(key)
     if (key2) params.delete(key2)
@@ -60,6 +77,16 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
     icon?: React.ReactNode
     color?: string
   }> = []
+
+  // Current Category Chip
+  if (_currentCategory) {
+    chips.push({
+      key: 'category',
+      label: _currentCategory.name,
+      icon: <Tag size={14} weight="regular" />, // Using Tag icon for category
+      color: 'bg-primary/5 text-primary border-primary/20'
+    })
+  }
 
   // Free Shipping chip
   if (currentFreeShipping === "true") {
@@ -123,10 +150,10 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
   for (const { name, values } of attributeFilters) {
     // Format the attribute name for display (capitalize first letter)
     const displayName = name.charAt(0).toUpperCase() + name.slice(1)
-    const label = values.length === 1 
+    const label = values.length === 1
       ? `${displayName}: ${values[0]}`
       : `${displayName}: ${values.length} selected`
-    
+
     chips.push({
       key: `attr_${name}`,
       label,
@@ -144,7 +171,7 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
       <span className="text-sm text-muted-foreground shrink-0 py-1.5 hidden sm:flex items-center">
         {t('activeFilters')}:
       </span>
-      
+
       {chips.map((chip) => (
         <button
           key={chip.key}

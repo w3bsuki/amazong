@@ -183,7 +183,7 @@ export default function TodaysDealsPageClient({
                             onClick={() => setActiveCategory(cat.id)}
                             className={cn(
                                 "flex flex-col items-center gap-1.5 min-w-(--deals-category-min-w) shrink-0 snap-start",
-                                "touch-action-manipulation active:scale-95 transition-transform",
+                                "touch-action-manipulation",
                             )}
                         >
                             <div
@@ -222,8 +222,8 @@ export default function TodaysDealsPageClient({
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={cn(
-                            "min-h-11 px-4 py-2 rounded-full text-sm font-medium transition-all shrink-0 snap-start",
-                            "touch-action-manipulation active:scale-95",
+                            "min-h-11 px-4 py-2 rounded-full text-sm font-medium transition-colors shrink-0 snap-start",
+                            "touch-action-manipulation",
                             activeTab === tab.id
                                 ? "bg-primary text-primary-foreground"
                                 : "bg-secondary text-foreground hover:bg-muted border border-border",

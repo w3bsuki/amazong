@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
+import { logger } from "@/lib/logger"
 import type {
   Conversation,
   Message,
@@ -342,7 +343,7 @@ export async function fetchTotalUnreadCount(
   const { data, error } = await supabase.rpc("get_total_unread_messages")
 
   if (error) {
-    console.error("Error fetching unread count:", error)
+    logger.error("[Chat] Error fetching unread count", error)
     return 0
   }
 

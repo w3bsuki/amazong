@@ -57,28 +57,28 @@ function ProductCardPrice({
         {/* Treido: compact price emphasis */}
         <span
           className={cn(
-            "text-[15px] font-bold tracking-tight tabular-nums",
+            "text-reading font-bold tracking-tight tabular-nums",
             hasDiscount ? "text-foreground" : "text-foreground"
           )}
         >
           {formattedPrice}
         </span>
         {hasDiscount && formattedOriginalPrice && (
-          <span className="text-[11px] text-muted-foreground line-through">
+          <span className="text-tiny text-muted-foreground line-through">
             {formattedOriginalPrice}
           </span>
         )}
         {hasDiscount && discountPercent >= 5 && (
-          <Badge variant="sale" className="text-2xs">
+          <span className="text-2xs font-bold text-deal bg-deal/10 px-1 py-px rounded-sm">
             -{discountPercent}%
-          </Badge>
+          </span>
         )}
       </div>
 
       {conditionLabel && (
-        <Badge variant="condition-outline" className="text-2xs">
+        <span className="text-2xs font-medium text-muted-foreground border border-border px-1 py-px rounded-sm">
           {conditionLabel}
-        </Badge>
+        </span>
       )}
     </div>
   )

@@ -62,23 +62,23 @@ export function ContextualCategoryHeader({
               <button
                 type="button"
                 onClick={onBack}
-                className="w-9 h-9 flex items-center justify-center rounded-full -ml-1 tap-highlight-transparent active:bg-zinc-100 transition-colors"
+                className="w-9 h-9 flex items-center justify-center rounded-full -ml-1 tap-highlight-transparent active:bg-muted transition-colors"
                 aria-label={locale === "bg" ? "Назад" : "Back"}
               >
-                <ArrowLeft className="w-[22px] h-[22px]" weight="bold" />
+                <ArrowLeft className="size-6" weight="bold" />
               </button>
             ) : (
               <Link
                 href={backHref}
-                className="w-9 h-9 flex items-center justify-center rounded-full -ml-1 tap-highlight-transparent active:bg-zinc-100 transition-colors"
+                className="w-9 h-9 flex items-center justify-center rounded-full -ml-1 tap-highlight-transparent active:bg-muted transition-colors"
                 aria-label={locale === "bg" ? "Назад" : "Back"}
               >
-                <ArrowLeft className="w-[22px] h-[22px]" weight="bold" />
+                <ArrowLeft className="size-6" weight="bold" />
               </Link>
             )}
 
             {/* Category title - truncated, max-width */}
-            <h1 className="text-[16px] font-bold text-zinc-900 ml-1 truncate max-w-[200px]">
+            <h1 className="text-base font-bold text-foreground ml-1 truncate max-w-48">
               {title}
             </h1>
           </div>
@@ -88,10 +88,10 @@ export function ContextualCategoryHeader({
             {showSearch && (
               <Link
                 href="/search"
-                className="w-9 h-9 flex items-center justify-center rounded-full tap-highlight-transparent active:bg-zinc-100 transition-colors"
+                className="w-9 h-9 flex items-center justify-center rounded-full tap-highlight-transparent active:bg-muted transition-colors"
                 aria-label={locale === "bg" ? "Търсене" : "Search"}
               >
-                <MagnifyingGlass className="w-[22px] h-[22px] stroke-[1.5]" weight="regular" />
+                <MagnifyingGlass className="size-6" weight="regular" />
               </Link>
             )}
             <MobileWishlistButton />

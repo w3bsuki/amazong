@@ -53,7 +53,7 @@ export default async function MainLayout({
 
     return (
         <OnboardingProvider locale={locale}>
-            <div className="bg-secondary min-h-screen flex flex-col">
+            <div className="bg-background min-h-screen flex flex-col">
                 {/* Skip Links - Accessibility */}
                 <SkipLinks />
 

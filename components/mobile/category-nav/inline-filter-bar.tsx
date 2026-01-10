@@ -124,7 +124,7 @@ export function InlineFilterBar({
           className={cn(
             "flex items-center gap-1.5 shrink-0",
             "h-8 bg-background px-3 rounded-md border border-border",
-            "text-[13px] font-semibold text-foreground",
+            "text-compact font-semibold text-foreground",
             "tap-highlight-transparent active:opacity-60",
             "transition-colors",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -137,7 +137,7 @@ export function InlineFilterBar({
             <span
               className={cn(
                 "bg-foreground text-background",
-                "text-[10px] font-bold rounded-full",
+                "text-2xs font-bold rounded-full",
                 "min-w-4 h-4 px-1",
                 "flex items-center justify-center"
               )}
@@ -162,7 +162,7 @@ export function InlineFilterBar({
                 "flex items-center gap-1 shrink-0",
                 "h-8 px-4 rounded-md",
                 "border",
-                "text-[13px] font-semibold",
+                "text-compact font-semibold",
                 "whitespace-nowrap",
                 "tap-highlight-transparent active:bg-muted/30 active:opacity-90",
                 "transition-colors",

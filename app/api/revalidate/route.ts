@@ -11,10 +11,114 @@ import { NextRequest, NextResponse } from 'next/server'
 // Usage: POST /api/revalidate with JSON body { tag: 'categories', secret: '...' }
 // =============================================================================
 
+type SupabaseWebhookEvent = {
+  type?: 'INSERT' | 'UPDATE' | 'DELETE'
+  table?: string
+  schema?: string
+  record?: Record<string, unknown> | null
+  old_record?: Record<string, unknown> | null
+}
+
+type RevalidateScope =
+  | {
+      scope: 'categories'
+      categorySlug?: string
+      parentId?: string
+      previousCategorySlug?: string
+      previousParentId?: string
+    }
+  | {
+      scope: 'attributes'
+      categoryId?: string
+      previousCategoryId?: string
+    }
+
 interface RevalidateRequest {
+  secret: string
+
+  // Raw tags (backward compatible)
   tag?: string
   tags?: string[]
-  secret: string
+
+  // Higher-level invalidation helpers
+  scope?: RevalidateScope['scope']
+  categorySlug?: string
+  parentId?: string
+  previousCategorySlug?: string
+  previousParentId?: string
+  categoryId?: string
+  previousCategoryId?: string
+
+  // Supabase Database Webhooks payload (optional)
+  supabase?: SupabaseWebhookEvent
+}
+
+function asString(value: unknown): string | null {
+  return typeof value === 'string' && value.length > 0 ? value : null
+}
+
+function collectTagsForRequest(body: RevalidateRequest): string[] {
+  const out = new Set<string>()
+
+  if (body.tag) out.add(body.tag)
+  if (body.tags && body.tags.length > 0) {
+    for (const t of body.tags) {
+      if (typeof t === 'string' && t.length > 0) out.add(t)
+    }
+  }
+
+  if (body.scope === 'categories') {
+    out.add('categories:tree')
+
+    const categorySlug = asString(body.categorySlug)
+    const previousCategorySlug = asString(body.previousCategorySlug)
+    const parentId = asString(body.parentId)
+    const previousParentId = asString(body.previousParentId)
+
+    if (categorySlug) out.add(`category:${categorySlug}`)
+    if (previousCategorySlug) out.add(`category:${previousCategorySlug}`)
+
+    if (parentId) out.add(`category-children:${parentId}`)
+    if (previousParentId) out.add(`category-children:${previousParentId}`)
+  }
+
+  if (body.scope === 'attributes') {
+    const categoryId = asString(body.categoryId)
+    const previousCategoryId = asString(body.previousCategoryId)
+
+    if (categoryId) out.add(`attrs:category:${categoryId}`)
+    if (previousCategoryId) out.add(`attrs:category:${previousCategoryId}`)
+  }
+
+  const supabase = body.supabase
+  if (supabase?.table === 'categories') {
+    out.add('categories:tree')
+    const rec = supabase.record ?? {}
+    const old = supabase.old_record ?? {}
+
+    const slug = asString((rec as any).slug)
+    const oldSlug = asString((old as any).slug)
+    const parentId = asString((rec as any).parent_id)
+    const oldParentId = asString((old as any).parent_id)
+
+    if (slug) out.add(`category:${slug}`)
+    if (oldSlug) out.add(`category:${oldSlug}`)
+    if (parentId) out.add(`category-children:${parentId}`)
+    if (oldParentId) out.add(`category-children:${oldParentId}`)
+  }
+
+  if (supabase?.table === 'category_attributes') {
+    const rec = supabase.record ?? {}
+    const old = supabase.old_record ?? {}
+
+    const categoryId = asString((rec as any).category_id)
+    const oldCategoryId = asString((old as any).category_id)
+
+    if (categoryId) out.add(`attrs:category:${categoryId}`)
+    if (oldCategoryId) out.add(`attrs:category:${oldCategoryId}`)
+  }
+
+  return Array.from(out)
 }
 
 /**
@@ -39,7 +143,7 @@ interface RevalidateRequest {
 export async function POST(request: NextRequest) {
   try {
     const body: RevalidateRequest = await request.json()
-    const { tag, tags, secret } = body
+    const { secret } = body
     
     // Validate webhook secret
     if (!process.env.REVALIDATION_SECRET) {
@@ -57,10 +161,10 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // Validate input
-    if (!tag && (!tags || tags.length === 0)) {
+    const tagsToRevalidate = collectTagsForRequest(body)
+    if (tagsToRevalidate.length === 0) {
       return NextResponse.json(
-        { error: 'Missing required field: tag or tags' },
+        { error: 'No tags resolved. Provide tag/tags, scope fields, or a supabase webhook payload.' },
         { status: 400 }
       )
     }
@@ -68,27 +172,13 @@ export async function POST(request: NextRequest) {
     const revalidatedTags: string[] = []
     const failedTags: string[] = []
     
-    // Revalidate single tag
-    if (tag) {
+    for (const t of tagsToRevalidate) {
       try {
-        revalidateTag(tag, "max")
-        revalidatedTags.push(tag)
+        revalidateTag(t, 'max')
+        revalidatedTags.push(t)
       } catch (error) {
-        console.error(`Failed to revalidate tag: ${tag}`, error)
-        failedTags.push(tag)
-      }
-    }
-    
-    // Revalidate multiple tags
-    if (tags && tags.length > 0) {
-      for (const t of tags) {
-        try {
-          revalidateTag(t, "max")
-          revalidatedTags.push(t)
-        } catch (error) {
-          console.error(`Failed to revalidate tag: ${t}`, error)
-          failedTags.push(t)
-        }
+        console.error(`Failed to revalidate tag: ${t}`, error)
+        failedTags.push(t)
       }
     }
     
@@ -121,13 +211,32 @@ export async function GET() {
     requiredFields: {
       secret: 'REVALIDATION_SECRET environment variable',
       tag: 'Single cache tag (optional if tags provided)',
-      tags: 'Array of cache tags (optional if tag provided)'
+      tags: 'Array of cache tags (optional if tag provided)',
+      scope: 'Optional helper: "categories" or "attributes"',
+      supabase: 'Optional Supabase Database Webhooks payload (table/record/old_record)'
     },
     note: 'Tags are defined by your app. This endpoint can revalidate any tag used by next/cache (cacheTag).',
     examples: {
-      categories: ['categories', 'root-with-children', 'category-hierarchy-all', 'category-hierarchy-{slug}', 'category-{slug}'],
-      products: ['products', 'deals', 'newest', 'featured', 'product-{id}', 'category:{slug}'],
-      attributes: ['attributes', 'attrs-{categoryId}']
+      categories: {
+        scope: 'categories',
+        categorySlug: 'electronics',
+        parentId: 'uuid',
+      },
+      attributes: {
+        scope: 'attributes',
+        categoryId: 'uuid',
+      },
+      supabaseWebhook: {
+        supabase: {
+          type: 'UPDATE',
+          table: 'categories',
+          record: { id: 'uuid', slug: 'electronics', parent_id: null },
+          old_record: { id: 'uuid', slug: 'electronics-old', parent_id: null },
+        },
+      },
+      rawTags: {
+        tags: ['categories:tree', 'category:electronics', 'category-children:uuid', 'attrs:category:uuid'],
+      },
     }
   })
 }

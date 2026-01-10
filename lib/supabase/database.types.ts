@@ -1334,6 +1334,71 @@ export type Database = {
         }
         Relationships: []
       }
+      return_requests: {
+        Row: {
+          buyer_id: string
+          created_at: string
+          id: string
+          order_id: string
+          order_item_id: string
+          reason: string
+          seller_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string
+          id?: string
+          order_id: string
+          order_item_id: string
+          reason: string
+          seller_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string
+          id?: string
+          order_id?: string
+          order_item_id?: string
+          reason?: string
+          seller_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "return_requests_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "return_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "return_requests_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "return_requests_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           comment: string | null
@@ -1467,6 +1532,79 @@ export type Database = {
           },
         ]
       }
+
+      seller_payout_status: {
+        Row: {
+          seller_id: string
+          stripe_connect_account_id: string | null
+          details_submitted: boolean
+          charges_enabled: boolean
+          payouts_enabled: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          seller_id: string
+          stripe_connect_account_id?: string | null
+          details_submitted?: boolean
+          charges_enabled?: boolean
+          payouts_enabled?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          seller_id?: string
+          stripe_connect_account_id?: string | null
+          details_submitted?: boolean
+          charges_enabled?: boolean
+          payouts_enabled?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_payout_status_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+
+      seller_shipping_settings: {
+        Row: {
+          seller_id: string
+          is_configured: boolean
+          configured_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          seller_id: string
+          is_configured?: boolean
+          configured_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          seller_id?: string
+          is_configured?: boolean
+          configured_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_shipping_settings_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+
       seller_stats: {
         Row: {
           active_listings: number | null

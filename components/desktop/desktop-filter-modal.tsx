@@ -30,25 +30,13 @@ import { Switch } from '@/components/ui/switch'
 import { Slider } from '@/components/ui/slider'
 import { useFilterCount } from '@/hooks/use-filter-count'
 import type { CategoryAttribute } from '@/lib/data/categories'
+import { getCategoryAttributeLabel, getCategoryAttributeOptions } from '@/lib/filters/category-attribute'
 
 interface DesktopFilterModalProps {
   attributes?: CategoryAttribute[]
   categorySlug?: string | undefined
   categoryId?: string | undefined
   className?: string
-}
-
-// =============================================================================
-// Helper Functions
-// =============================================================================
-
-function getAttrName(attr: CategoryAttribute, locale: string): string {
-  return locale === 'bg' && attr.name_bg ? attr.name_bg : attr.name
-}
-
-function getAttrOptions(attr: CategoryAttribute, locale: string): string[] {
-  const options = locale === 'bg' && attr.options_bg ? attr.options_bg : attr.options
-  return options || []
 }
 
 // =============================================================================
@@ -339,8 +327,8 @@ export function DesktopFilterModal({
             {/* Row 3+: Category Attributes - 3 columns */}
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
               {filterableAttributes.map((attr) => {
-                const attrName = getAttrName(attr, locale)
-                const options = getAttrOptions(attr, locale)
+                const attrName = getCategoryAttributeLabel(attr, locale)
+                const options = getCategoryAttributeOptions(attr, locale) ?? []
                 const currentValues = pendingFilters[attr.name] || []
                 const selectedCount = currentValues.length
 

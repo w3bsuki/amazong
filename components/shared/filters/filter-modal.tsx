@@ -23,6 +23,8 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import type { CategoryAttribute } from "@/lib/data/categories"
+import { getCategoryAttributeOptions, shouldForceMultiSelectCategoryAttribute } from "@/lib/filters/category-attribute"
+import { setPendingAttributeValues } from "@/lib/filters/pending-attributes"
 import { ColorSwatches } from "./color-swatches"
 import { SizeTiles } from "./size-tiles"
 import { FilterList } from "./filter-list"
@@ -203,12 +205,12 @@ export function FilterModal({
 
   // Attribute helpers
   const shouldForceMultiSelect = useCallback((attr: CategoryAttribute) => {
-    return FORCE_MULTISELECT_NAMES.includes(attr.name.trim().toLowerCase())
+    return shouldForceMultiSelectCategoryAttribute(attr)
   }, [])
 
   const getAttrOptions = useCallback(
     (attr: CategoryAttribute) => {
-      return locale === "bg" && attr.options_bg ? attr.options_bg : attr.options
+      return getCategoryAttributeOptions(attr, locale)
     },
     [locale]
   )
@@ -220,13 +222,10 @@ export function FilterModal({
 
   const setPendingAttrValues = useCallback((attrName: string, values: string[]) => {
     setPending((prev) => {
-      const next = { ...prev.attributes }
-      if (values.length === 0) {
-        delete next[attrName]
-      } else {
-        next[attrName] = values
+      return {
+        ...prev,
+        attributes: setPendingAttributeValues(prev.attributes, attrName, values),
       }
-      return { ...prev, attributes: next }
     })
   }, [])
 
@@ -628,7 +627,7 @@ export function FilterModal({
             <div className={contentPaddingClass}>{body}</div>
           </div>
 
-          <div className="p-4 bg-background border-t border-border/30 flex-shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <div className="p-4 bg-background border-t border-border/30 shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))]">
             <Button
               className="w-full h-11 rounded-full text-sm font-bold"
               onClick={applyFilters}
@@ -657,7 +656,7 @@ export function FilterModal({
         )}
         showCloseButton={false}
       >
-        <DialogHeader className="px-4 py-4 border-b border-border/50 flex-shrink-0">
+        <DialogHeader className="px-4 py-4 border-b border-border/50 shrink-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-lg font-semibold">{sectionLabel}</DialogTitle>
             <div className="flex items-center gap-2">
@@ -687,7 +686,7 @@ export function FilterModal({
           <div className={contentPaddingClass}>{body}</div>
         </div>
 
-        <div className="p-4 border-t border-border/50 bg-background flex-shrink-0 pb-safe-max">
+        <div className="p-4 border-t border-border/50 bg-background shrink-0 pb-safe-max">
           <Button
             className="w-full h-11 rounded-full text-sm font-bold"
             onClick={applyFilters}

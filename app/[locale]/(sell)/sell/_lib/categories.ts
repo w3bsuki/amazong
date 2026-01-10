@@ -64,7 +64,7 @@ export async function getSellCategories(): Promise<CategoryNode[]> {
   'use cache'
   // Sell flow needs a stable category tree (root + 3 levels) so the selector
   // can navigate without client-side fetching.
-  cacheTag('categories', 'sell-categories', 'sell-categories:depth:3')
+  cacheTag('categories:sell', 'categories:sell:depth:3')
   cacheLife('categories')
 
   try {

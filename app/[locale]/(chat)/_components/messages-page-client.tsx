@@ -171,7 +171,7 @@ function MessagesContent() {
               {/* Back button - goes to home */}
               <Link 
                 href="/"
-                className="flex items-center justify-center size-9 rounded-full hover:bg-muted active:scale-95 transition-all lg:hidden"
+                className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors lg:hidden"
                 aria-label={labels.back}
               >
                 <IconArrowLeft className="size-5" />
@@ -179,7 +179,7 @@ function MessagesContent() {
               <h1 className="text-xl font-bold">{labels.title}</h1>
             </div>
             <button 
-              className="flex items-center justify-center size-9 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all"
+              className="flex items-center justify-center size-9 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               aria-label={labels.newMessage}
             >
               <IconPencilPlus className="size-5" />
@@ -199,7 +199,7 @@ function MessagesContent() {
             </div>
             {/* New message button - desktop only (already have it in header on mobile) */}
             <button 
-              className="hidden lg:flex shrink-0 items-center justify-center size-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all"
+              className="hidden lg:flex shrink-0 items-center justify-center size-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               aria-label={labels.newMessage}
             >
               <IconPencilPlus className="size-5" />

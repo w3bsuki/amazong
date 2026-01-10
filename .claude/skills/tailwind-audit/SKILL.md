@@ -57,5 +57,5 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 | Topic | File |
 |-------|------|
 | Design tokens | `docs/DESIGN.md` |
-| Styling guide | `docs/guides/styling.md` |
+| Styling guide | `docs/styling/README.md` |
 | Globals CSS | `app/globals.css` |

@@ -1,6 +1,4 @@
 import type { ReactNode } from 'react'
-import { Suspense } from 'react'
-
 import { getMessages, setRequestLocale } from 'next-intl/server'
 
 import { ThemeProvider } from '@/components/providers/theme-provider'
@@ -10,7 +8,7 @@ import { CartProvider } from '@/components/providers/cart-context'
 import { WishlistProvider } from '@/components/providers/wishlist-context'
 import { MessageProvider } from '@/components/providers/message-context'
 
-async function LocaleProvidersWithMessages({
+export default async function LocaleProviders({
   locale,
   children,
 }: {
@@ -41,21 +39,5 @@ async function LocaleProvidersWithMessages({
         </AuthStateManager>
       </ThemeProvider>
     </IntlClientProvider>
-  )
-}
-
-export default function LocaleProviders({
-  locale,
-  children,
-}: {
-  locale: string
-  children: ReactNode
-}) {
-  // Ensure any request-bound uncached data (like next-intl messages resolution)
-  // happens inside a <Suspense> boundary when cacheComponents is enabled.
-  return (
-    <Suspense fallback={null}>
-      <LocaleProvidersWithMessages locale={locale}>{children}</LocaleProvidersWithMessages>
-    </Suspense>
   )
 }

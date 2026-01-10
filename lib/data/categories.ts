@@ -3,6 +3,7 @@ import 'server-only'
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 import { normalizeOptionalImageUrl } from '@/lib/normalize-image-url'
+import { logger } from '@/lib/logger'
 
 // =============================================================================
 // Type Definitions
@@ -233,14 +234,10 @@ export async function getCategoryHierarchy(
   depth: number = 2
 ): Promise<CategoryWithChildren[]> {
   'use cache'
-  cacheTag('categories', 'category-hierarchy-all')
+  cacheTag('categories:tree')
   cacheLife('categories')
   
   const supabase = createStaticClient()
-  if (!supabase) {
-    console.error('getCategoryHierarchy: Database connection failed')
-    return []
-  }
   
   // Clamp depth to max 2 (L3 is always lazy-loaded)
   const effectiveDepth = Math.min(depth, 2)
@@ -254,7 +251,7 @@ export async function getCategoryHierarchy(
     .order("display_order", { ascending: true })
 
   if (rootError) {
-    console.error("getCategoryHierarchy root error:", rootError)
+    logger.error('[getCategoryHierarchy] Root query error', rootError)
     return []
   }
 
@@ -276,7 +273,7 @@ export async function getCategoryHierarchy(
     .order("display_order", { ascending: true })
 
   if (l1Error) {
-    console.error("getCategoryHierarchy L1 error:", l1Error)
+    logger.error('[getCategoryHierarchy] L1 query error', l1Error)
   }
 
   // Fetch L2 categories if depth >= 2 (batched to avoid large IN clauses)
@@ -356,14 +353,10 @@ export async function getCategoryHierarchy(
  */
 export async function getCategoryBySlug(slug: string): Promise<CategoryWithParent | null> {
   'use cache'
-  cacheTag('categories', `category-${slug}`)
+  cacheTag(`category:${slug}`)
   cacheLife('categories')
   
   const supabase = createStaticClient()
-  if (!supabase) {
-    console.error('getCategoryBySlug: Database connection failed')
-    return null
-  }
   
   const { data, error } = await supabase
     .from('categories')
@@ -375,7 +368,7 @@ export async function getCategoryBySlug(slug: string): Promise<CategoryWithParen
     .single()
   
   if (error || !data) {
-    console.error('getCategoryBySlug error:', error)
+    logger.error('[getCategoryBySlug] Query error', error)
     return null
   }
   
@@ -397,14 +390,10 @@ export async function getCategoryBySlug(slug: string): Promise<CategoryWithParen
  */
 export async function getCategoryAncestry(slug: string): Promise<string[] | null> {
   'use cache'
-  cacheTag('categories', `ancestry-${slug}`)
+  cacheTag(`category:${slug}`)
   cacheLife('categories')
   
   const supabase = createStaticClient()
-  if (!supabase) {
-    console.error('getCategoryAncestry: Database connection failed')
-    return null
-  }
   
   // Recursively fetch category and its ancestors
   const ancestry: string[] = []
@@ -444,14 +433,10 @@ export async function getCategoryAncestry(slug: string): Promise<string[] | null
  */
 async function getCategoryAttributes(categoryId: string): Promise<CategoryAttribute[]> {
   'use cache'
-  cacheTag('attributes', `attrs-${categoryId}`)
+  cacheTag(`attrs:category:${categoryId}`)
   cacheLife('categories')
   
   const supabase = createStaticClient()
-  if (!supabase) {
-    console.error('getCategoryAttributes: Database connection failed')
-    return []
-  }
   
   const { data, error } = await supabase
     .from('category_attributes')
@@ -461,7 +446,7 @@ async function getCategoryAttributes(categoryId: string): Promise<CategoryAttrib
     .order('sort_order', { ascending: true })
   
   if (error) {
-    console.error('getCategoryAttributes error:', error)
+    logger.error('[getCategoryAttributes] Query error', error)
     return []
   }
   
@@ -477,14 +462,10 @@ async function getCategoryAttributes(categoryId: string): Promise<CategoryAttrib
  */
 async function getSiblingCategories(parentId: string | null): Promise<Category[]> {
   'use cache'
-  cacheTag('categories', `siblings-${parentId || 'root'}`)
+  cacheTag(`category-siblings:${parentId || 'root'}`)
   cacheLife('categories')
   
   const supabase = createStaticClient()
-  if (!supabase) {
-    console.error('getSiblingCategories: Database connection failed')
-    return []
-  }
   
   let query = supabase
     .from('categories')
@@ -502,7 +483,7 @@ async function getSiblingCategories(parentId: string | null): Promise<Category[]
   const { data, error } = await query
   
   if (error) {
-    console.error('getSiblingCategories error:', error)
+    logger.error('[getSiblingCategories] Query error', error)
     return []
   }
   
@@ -518,14 +499,10 @@ async function getSiblingCategories(parentId: string | null): Promise<Category[]
  */
 async function getChildCategories(categoryId: string): Promise<Category[]> {
   'use cache'
-  cacheTag('categories', `children-${categoryId}`)
+  cacheTag(`category-children:${categoryId}`)
   cacheLife('categories')
   
   const supabase = createStaticClient()
-  if (!supabase) {
-    console.error('getChildCategories: Database connection failed')
-    return []
-  }
   
   const { data, error } = await supabase
     .from('categories')
@@ -536,7 +513,7 @@ async function getChildCategories(categoryId: string): Promise<Category[]> {
     .order('name', { ascending: true })
   
   if (error) {
-    console.error('getChildCategories error:', error)
+    logger.error('[getChildCategories] Query error', error)
     return []
   }
   
@@ -552,14 +529,10 @@ async function getChildCategories(categoryId: string): Promise<Category[]> {
  */
 export async function getCategoryContext(slug: string): Promise<CategoryContext | null> {
   'use cache'
-  cacheTag('categories', `context-${slug}`)
+  cacheTag(`category:${slug}`)
   cacheLife('categories')
   
   const supabase = createStaticClient()
-  if (!supabase) {
-    console.error('getCategoryContext: Database connection failed')
-    return null
-  }
   
   // Get current category with parent
   const { data: current, error: currentError } = await supabase
@@ -572,7 +545,7 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     .single()
   
   if (currentError || !current) {
-    console.error('getCategoryContext: Category not found', currentError)
+    logger.error('[getCategoryContext] Category not found', currentError)
     return null
   }
   

@@ -27,6 +27,17 @@ import { useCart } from "@/components/providers/cart-context";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/lib/supabase/database.types";
 
+function getInitials(name: string): string {
+  const parts = name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (parts.length === 0) return "";
+  const first = parts[0]?.[0] ?? "";
+  const last = parts.length > 1 ? parts[parts.length - 1]?.[0] ?? "" : "";
+  return (first + last).toUpperCase();
+}
+
 // --- Types ---
 
 type StockStatusCode = "IN_STOCK" | "OUT_OF_STOCK";
@@ -187,8 +198,9 @@ export function ProductBuyBox({ productId, productSlug, sellerUsername, product,
 
         <div className="hidden lg:flex items-center gap-form-sm bg-background border border-border p-form-sm rounded-md">
           <Avatar className="h-9 w-9 border border-border shrink-0">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback className="bg-muted text-muted-foreground">BD</AvatarFallback>
+            <AvatarFallback className="bg-muted text-muted-foreground">
+              {getInitials(product.store.name) || "—"}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <div className="font-bold text-foreground text-sm hover:underline cursor-pointer truncate">

@@ -47,53 +47,56 @@ export function CategoryCircleVisual({
   const imageUrl = hasMeaningfulImageUrl(category.image_url) ? category.image_url : null
   const icon = hasMeaningfulIcon(category.icon) ? category.icon : null
 
-  // Treido Style:
-  // - Base: bg-zinc-50 (bg-secondary/30), border-zinc-200 (border-border/60)
-  // - Active: Scale down
+  // Treido Style: (Updated: Flat, clean, no glows)
+  // - Base: bg-muted/20 (very subtle), border-border/60
+  // - Active: border-primary (clean 1px border), no ring glows
   const styles = {
-    bg: "bg-secondary/30",
+    bg: "bg-muted/20",
     iconColor: "text-foreground",
     border: "border-border/60",
   }
 
-  // If active (selected state), use darker border
-  const activeStyles = active ? "border-primary ring-1 ring-primary/20" : styles.border
+  // If active (selected state), use cleaner border without glow rings
+  const activeStyles = active ? "border-primary bg-background" : styles.border
 
   return (
+
     <div
       className={cn(
         // Treido: w-[56px] h-[56px] -> we expect parent to pass size-14 (56px) or similar
         // If not, we enforce a good default in parent, but here we handle the visual properties.
         "rounded-full flex items-center justify-center overflow-hidden",
         "border",
-        "transition-all duration-200", // Smooth transition
+        "transition-[border-color,background-color,opacity] duration-150", // Specific properties for better perf
         "group-active:opacity-90", // Treido: active:opacity-90 (via group from parent)
         styles.bg,
         activeStyles,
         className
       )}
     >
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="h-full w-full object-cover"
-        />
-      ) : icon ? (
-        <span className={cn("text-lg leading-none", styles.iconColor)} aria-hidden="true">
-          {icon}
-        </span>
-      ) : (
-        <span aria-hidden="true">
-          {getCategoryIcon(category.slug, {
-            size: fallbackIconSize,
-            weight: fallbackIconWeight,
-            className: styles.iconColor,
-          })}
-        </span>
-      )}
-    </div>
+      {
+        imageUrl ? (
+          <img
+            src={imageUrl}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
+        ) : icon ? (
+          <span className={cn("text-lg leading-none", styles.iconColor)} aria-hidden="true">
+            {icon}
+          </span>
+        ) : (
+          <span aria-hidden="true">
+            {getCategoryIcon(category.slug, {
+              size: fallbackIconSize,
+              weight: "regular", // Treido: Regular weight for better legibility on flat design
+              className: styles.iconColor,
+            })}
+          </span>
+        )
+      }
+    </div >
   )
 }

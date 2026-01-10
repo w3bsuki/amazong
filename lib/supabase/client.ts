@@ -3,6 +3,7 @@ import 'client-only'
 import { createBrowserClient } from "@supabase/ssr"
 import type { Database } from "@/lib/supabase/database.types"
 import { logger } from "@/lib/logger"
+import { getPublicSupabaseEnvOptional } from "@/lib/supabase/shared"
 
 let supabaseInstance: ReturnType<typeof createBrowserClient<Database>> | null = null
 
@@ -18,10 +19,8 @@ export function createClient() {
     return supabaseInstance
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!supabaseUrl || !supabaseAnonKey) {
+  const env = getPublicSupabaseEnvOptional()
+  if (!env) {
     logger.error(
       "[Supabase] Missing required NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY",
       undefined,
@@ -36,6 +35,6 @@ export function createClient() {
     )
   }
 
-  supabaseInstance = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey)
+  supabaseInstance = createBrowserClient<Database>(env.url, env.anonKey)
   return supabaseInstance
 }

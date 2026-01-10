@@ -128,7 +128,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
             "flex items-center shrink-0 h-10 -ml-4",
             isProductPage && "ml-0"
           )}>
-            <span className="text-[20px] font-extrabold tracking-tighter leading-none text-foreground">treido.</span>
+            <span className="text-xl font-extrabold tracking-tighter leading-none text-foreground">treido.</span>
           </Link>
           <div className="flex-1" />
           <div className="flex items-center">
@@ -145,7 +145,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
               onClick={() => setIsMobileSearchOpen(true)}
               className={cn(
                 "w-full flex items-center gap-2 h-10 px-3 rounded-md",
-                "bg-muted border border-border/50",
+                "bg-muted/50 border border-border/40",
                 "text-muted-foreground text-sm text-left",
                 "active:bg-muted/80",
                 "touch-action-manipulation tap-transparent"
@@ -156,9 +156,6 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
             >
               <Search size={18} className="text-muted-foreground shrink-0" />
               <span className="flex-1 truncate font-normal">{searchPlaceholder}</span>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <ScanLine size={16} className="text-muted-foreground/60" />
-              </div>
             </button>
           </div>
         )}

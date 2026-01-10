@@ -27,7 +27,8 @@ interface CategoryChild {
 
 async function getChildrenCached(parentId: string): Promise<CategoryChild[]> {
   'use cache'
-  cacheTag('categories', `children-${parentId}`)
+  cacheTag('categories:tree')
+  cacheTag(`category-children:${parentId}`)
   cacheLife('categories')
 
   const supabase = createStaticClient()

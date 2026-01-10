@@ -66,7 +66,9 @@ export function PaymentsContent({ locale, initialPaymentMethods }: PaymentsConte
     const handleAddCard = async () => {
         setIsAddingCard(true)
         try {
-            const { url } = await createPaymentMethodSetupSession()
+            const { url } = await createPaymentMethodSetupSession({
+                locale: locale === "bg" ? "bg" : "en",
+            })
 
             // Redirect to Stripe's hosted payment method collection page
             if (url) {

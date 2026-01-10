@@ -2,18 +2,10 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
-import { StartSellingBanner } from "@/components/sections/start-selling-banner"
 import { DesktopCategoryRail } from "@/components/desktop/desktop-category-rail"
 
 // Desktop-only components
-import { DesktopHeroCTA } from "@/components/desktop/desktop-hero-cta"
 import { MarketplaceHero } from "@/components/desktop/marketplace-hero"
-
-// Async sections using cached data
-import { 
-  NewestListings, 
-  NewestListingsSectionSkeleton,
-} from "@/components/sections"
 
 import { SignInCTA } from "@/components/sections/sign-in-cta"
 
@@ -28,8 +20,6 @@ import { MoreWaysToShop } from "./_components/more-ways-to-shop"
 
 // Local components
 import { SignInCtaSkeleton } from "./_components/sign-in-cta-skeleton"
-
-import { createStaticClient } from "@/lib/supabase/server"
 import { getNewestProducts, toUI } from "@/lib/data/products"
 import { getCategoryHierarchy } from "@/lib/data/categories"
 
@@ -42,7 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale)
   return {
     title: locale === 'bg' ? 'Начало' : 'Home',
-    description: locale === 'bg' 
+    description: locale === 'bg'
       ? 'Добре дошли в Treido - вашият онлайн магазин за електроника, мода, дом и много други.'
       : 'Welcome to Treido - your online store for electronics, fashion, home and much more.',
   };
@@ -74,10 +64,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         3. Product Feed (Infinite Scroll)
       */}
       <div className="w-full md:hidden">
-        <MobileHomeTabs 
-          initialProducts={initialProducts} 
-          initialCategories={categoriesWithChildren} 
-        />
+        <Suspense fallback={<div className="h-screen w-full bg-background animate-pulse" />}>
+          <MobileHomeTabs
+            initialProducts={initialProducts}
+            initialCategories={categoriesWithChildren}
+          />
+        </Suspense>
       </div>
 
       {/* ================================================================
@@ -86,15 +78,15 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           - Main Product Feed
           ================================================================ */}
       <div className="hidden md:block w-full">
-        
+
         {/* Hero Section - Integrated Banner */}
         <div className="w-full bg-background pt-6 pb-8">
           <div className="container">
-            <MarketplaceHero 
-              locale={locale} 
+            <MarketplaceHero
+              locale={locale}
               categories={categoriesWithChildren}
             />
-            
+
             <div className="mt-8 rounded-md border bg-card p-4 shadow-sm dark:bg-card">
               <DesktopCategoryRail
                 locale={locale}
@@ -103,7 +95,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 className="max-w-full"
               />
             </div>
-            
+
             {/* Trust Bar - Below hero, above product feed */}
             <div className="mt-6">
               <TrustBar locale={locale} variant="desktop" />

@@ -64,26 +64,27 @@ export function SignUpForm({ locale }: { locale: string }) {
   const [state, formAction] = useActionState(signUp.bind(null, locale), initialState)
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout
-
-    const run = async () => {
+    let cancelled = false
+    const timeoutId: ReturnType<typeof setTimeout> = setTimeout(async () => {
       const cleaned = username.trim().toLowerCase()
       if (!cleaned || cleaned.length < 3) {
-        setUsernameAvailable(null)
+        if (!cancelled) setUsernameAvailable(null)
         return
       }
 
-      setIsCheckingUsername(true)
+      if (!cancelled) setIsCheckingUsername(true)
       try {
         const res = await checkUsernameAvailability(cleaned)
-        setUsernameAvailable(res.available)
+        if (!cancelled) setUsernameAvailable(res.available)
       } finally {
-        setIsCheckingUsername(false)
+        if (!cancelled) setIsCheckingUsername(false)
       }
-    }
+    }, 500)
 
-    timeoutId = setTimeout(run, 500)
-    return () => clearTimeout(timeoutId)
+    return () => {
+      cancelled = true
+      clearTimeout(timeoutId)
+    }
   }, [username])
 
   const strength = useMemo(() => getPasswordStrength(password), [password])

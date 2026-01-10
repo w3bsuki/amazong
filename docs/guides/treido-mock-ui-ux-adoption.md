@@ -8,16 +8,11 @@
 
 ---
 
-## 📁 Consolidated Guide Files (in `important/`)
+## 📁 Reference Files
 
-> **START HERE** — These files contain the complete, copy-paste ready guides extracted from the treido-mock repo:
-
-| File | Description |
-|------|-------------|
-| [TREIDO-MOCK-DESIGN-SYSTEM.md](../../important/TREIDO-MOCK-DESIGN-SYSTEM.md) | Complete design system: OKLCH tokens, color palette, core principles, CSS variables |
-| [TREIDO-MOCK-AGENT-PROMPT.md](../../important/TREIDO-MOCK-AGENT-PROMPT.md) | Master prompt for priming AI agents + quick reference card |
-| [TREIDO-MOCK-LAYOUT-PATTERNS.md](../../important/TREIDO-MOCK-LAYOUT-PATTERNS.md) | Copy-paste layout blocks: grids, control bars, property lists, headers, footers |
-| [TREIDO-MOCK-SHADCN-OVERRIDES.md](../../important/TREIDO-MOCK-SHADCN-OVERRIDES.md) | Shadcn component modifications for the "technical" aesthetic |
+> **Canonical design system**: `docs/DESIGN.md`
+> 
+> Historical treido-mock guides have been archived to `docs/archive/important/`.
 
 ---
 
@@ -360,7 +355,7 @@ className="border border-border"  // 1px borders, flat design
 - Inactive: outlined with hover state.
 
 **What we want in Amazong**:
-- Use the canonical chip styling from `important/DESIGN.md`:
+- Use the canonical chip styling from `docs/DESIGN.md`:
   - Active: `bg-foreground text-background border-foreground`
   - Inactive: `bg-background text-muted-foreground border-border/60 hover:bg-muted/40 hover:text-foreground`
 - Height: `h-touch-sm` (28px).
@@ -404,7 +399,7 @@ className="border border-border"  // 1px borders, flat design
 - Favorite button: `bg-white/60 backdrop-blur-md rounded-full border border-white/40`.
 
 **What we want in Amazong**:
-- Reuse approved patterns from `styling/PATTERNS.md`:
+- Reuse approved patterns from `docs/styling/PATTERNS.md`:
   - Product card: "Product Card (Hero Pattern)".
   - Grid: `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8`
 - Typography: `text-base font-semibold` for price, `text-sm` for title, `text-xs text-muted-foreground` for meta.
@@ -568,7 +563,7 @@ Every PR should verify:
 
 - [ ] Used semantic tokens instead of hard-coded colors?
 - [ ] Avoided arbitrary sizes unless absolutely required?
-- [ ] Reused an approved pattern from `styling/PATTERNS.md`?
+- [ ] Reused an approved pattern from `docs/styling/PATTERNS.md`?
 - [ ] Kept spacing dense (mobile `gap-2` baseline)?
 - [ ] No scale animations on hover/active?
 - [ ] No new gradients introduced?
@@ -672,7 +667,7 @@ className="overflow-x-auto no-scrollbar"
 className="flex items-center gap-2"  // or gap-3 max
 ```
 
-3. **For underline-tabs style** (Treido category strip), use approved pattern from `styling/PATTERNS.md`:
+3. **For underline-tabs style** (Treido category strip), use approved pattern from `docs/styling/PATTERNS.md`:
 ```tsx
 <TabsTrigger
   className={cn(
@@ -723,7 +718,7 @@ REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
 
 **Tasks**:
 
-1. **Align card structure** with `styling/PATTERNS.md` "Product Card (Hero Pattern)":
+1. **Align card structure** with `docs/styling/PATTERNS.md` "Product Card (Hero Pattern)":
 ```tsx
 <article className="tap-transparent group relative block h-full min-w-0 cursor-pointer overflow-hidden bg-transparent">
   <AspectRatio ratio={3/4} className="relative overflow-hidden bg-muted rounded-md border border-border">

@@ -43,22 +43,22 @@ export function PromoCard({
       />
       
       {/* Simple dark overlay for text readability */}
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-overlay-dark" />
       
-      {/* Badge - Treido: bg-gray-900 text-white uppercase */}
+      {/* Badge - Treido: inverted surface, uppercase */}
       {badge && (
-        <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-gray-900 text-white text-[10px] font-bold uppercase rounded-sm">
+        <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-foreground text-background text-2xs font-bold uppercase rounded-sm">
           {badge}
         </span>
       )}
       
       {/* Deal Content - Treido typography */}
-      <div className="absolute bottom-3 left-3 right-3 text-white">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-white/80">{dealText}</p>
-        <p className="text-[22px] font-extrabold tracking-tight leading-none">
+      <div className="absolute bottom-3 left-3 right-3 text-overlay-light">
+        <p className="text-tiny font-bold uppercase tracking-wide">{dealText}</p>
+        <p className="text-xl font-extrabold tracking-tight leading-none text-overlay-foreground">
           {highlight}
         </p>
-        <p className="mt-0.5 text-[13px] font-medium text-white/90 line-clamp-1">{subtitle}</p>
+        <p className="mt-0.5 text-sm font-medium line-clamp-1">{subtitle}</p>
       </div>
       
     </Link>

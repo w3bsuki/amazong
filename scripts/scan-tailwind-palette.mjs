@@ -39,6 +39,19 @@ const paletteAlt = paletteFamilies.join("|");
 const rePalette = new RegExp(`\\b(?:${paletteAlt})-\\d{2,3}(?:\\/\\d{1,3})?\\b`, "gi");
 const reFillPalette = new RegExp(`\\bfill-(?:${paletteAlt})-\\d{2,3}(?:\\/\\d{1,3})?\\b`, "gi");
 const gradientIgnoreBases = [/^slide-(?:in|out)-(?:from|to)-/];
+const reRawGradient = /\b(?:repeating-)?(?:linear|radial|conic)-gradient\(/gi;
+
+function stripComments(text, ext) {
+  // Best-effort: keep scans focused on actual runtime styling.
+  // Avoids counting class-like strings inside comments.
+  if (ext === ".css") {
+    return text.replace(/\/\*[\s\S]*?\*\//g, "");
+  }
+
+  return text
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(^|[^:])\/\/.*$/gm, "$1");
+}
 
 function stripVariants(token) {
   // Tailwind class tokens can be prefixed by variants (md:hover:from-*).
@@ -144,16 +157,21 @@ for (const abs of allFiles) {
     continue;
   }
 
-  const palette = countMatches(text, rePalette);
-  const fill = countMatches(text, reFillPalette);
-  const gradient = countGradientClusters(text);
-  const total = palette + fill + gradient;
+  const ext = path.extname(abs).toLowerCase();
+  const scanText = stripComments(text, ext);
+
+  const palette = countMatches(scanText, rePalette);
+  const fill = countMatches(scanText, reFillPalette);
+  const gradient = countGradientClusters(scanText);
+  const rawGradient = countMatches(scanText, reRawGradient);
+  const total = palette + fill + gradient + rawGradient;
 
   if (total === 0) continue;
 
   totals.palette += palette;
   totals.fill += fill;
   totals.gradient += gradient;
+  totals.rawGradient = (totals.rawGradient ?? 0) + rawGradient;
   totals.files += 1;
 
   byFile.push({
@@ -162,6 +180,7 @@ for (const abs of allFiles) {
     palette,
     fill,
     gradient,
+    rawGradient,
   });
 }
 
@@ -174,10 +193,14 @@ const reportLines = [];
 reportLines.push("Top offenders (rough match counts)");
 reportLines.push("--------------------------------");
 for (const row of byFile.slice(0, 50)) {
-  reportLines.push(`${row.file}  ~${row.total} (palette:${row.palette}, gradient:${row.gradient}, fill:${row.fill})`);
+  reportLines.push(
+    `${row.file}  ~${row.total} (palette:${row.palette}, gradient:${row.gradient}, rawGradient:${row.rawGradient}, fill:${row.fill})`
+  );
 }
 reportLines.push("--------------------------------");
-reportLines.push(`Totals: files=${totals.files} palette=${totals.palette} gradient=${totals.gradient} fill=${totals.fill}`);
+reportLines.push(
+  `Totals: files=${totals.files} palette=${totals.palette} gradient=${totals.gradient} rawGradient=${totals.rawGradient ?? 0} fill=${totals.fill}`
+);
 reportLines.push("");
 reportLines.push("Auth flow candidates");
 reportLines.push("--------------------");
@@ -203,6 +226,15 @@ for (const row of byFile.slice(0, topN)) {
   console.log(`${row.file}  ~${row.total}`);
 }
 console.log("--------------------------------");
-console.log(`Totals: files=${totals.files} palette=${totals.palette} gradient=${totals.gradient} fill=${totals.fill}`);
+console.log(
+  `Totals: files=${totals.files} palette=${totals.palette} gradient=${totals.gradient} rawGradient=${totals.rawGradient ?? 0} fill=${totals.fill}`
+);
 console.log(`Full report: ${path.relative(projectRoot, reportPath).replaceAll("\\", "/")}`);
 console.log(`Auth candidates found: ${authCandidates.length}`);
+
+if (process.env.FAIL_ON_FINDINGS === "1") {
+  const rawGradientTotal = totals.rawGradient ?? 0;
+  if (totals.palette > 0 || totals.fill > 0 || totals.gradient > 0 || rawGradientTotal > 0) {
+    process.exitCode = 1;
+  }
+}

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
-import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
 import { getStripeWebhookSecrets } from '@/lib/env';
 import type Stripe from 'stripe';
@@ -103,8 +102,7 @@ async function ensureOrderItems(
 
 export async function POST(req: Request) {
   const body = await req.text();
-  const headersList = await headers();
-  const sig = headersList.get('stripe-signature');
+  const sig = req.headers.get('stripe-signature');
 
   if (!sig) {
     console.error('Missing Stripe signature');
@@ -148,21 +146,22 @@ export async function POST(req: Request) {
 
       // Idempotency: avoid creating duplicate orders for the same payment intent.
       if (session.payment_intent) {
-        const { data: existingOrder } = await supabase
+        const { data: existingOrders, error: existingOrdersError } = await supabase
           .from('orders')
           .select('id')
           .eq('stripe_payment_intent_id', session.payment_intent as string)
-          .maybeSingle();
+          .order('created_at', { ascending: false })
+          .limit(1);
 
-        if (existingOrder?.id) {
+        if (existingOrdersError) {
+          console.error('Error checking existing orders:', existingOrdersError);
+        }
+
+        const existingOrderId = existingOrders?.[0]?.id;
+
+        if (existingOrderId) {
           if (itemsData.length > 0) {
-            const lineItems = await stripe.checkout.sessions.listLineItems(
-              session.id
-            );
-
-            if (lineItems.data.length > 0) {
-              await ensureOrderItems(existingOrder.id, itemsData);
-            }
+            await ensureOrderItems(existingOrderId, itemsData);
           }
 
           return NextResponse.json({ received: true });

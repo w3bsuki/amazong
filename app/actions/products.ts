@@ -2,6 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidateTag } from "next/cache"
+import type { SupabaseClient } from "@supabase/supabase-js"
+import type { Database } from "@/lib/supabase/database.types"
 import { z } from "zod"
 
 // Product validation schema - matches database columns
@@ -39,6 +41,83 @@ const setDiscountSchema = z.object({
 const clearDiscountSchema = z.object({
   productId: z.string().min(1),
 })
+
+type ProductFeedType = "deals" | "newest" | "bestsellers" | "featured" | "promo"
+
+async function getCategorySlugsByIds(
+  supabase: SupabaseClient<Database>,
+  categoryIds: Array<string | null | undefined>
+): Promise<string[]> {
+  const ids = Array.from(
+    new Set(categoryIds.filter((id): id is string => typeof id === "string" && id.length > 0))
+  )
+  if (ids.length === 0) return []
+
+  const { data } = await supabase
+    .from("categories")
+    .select("id, slug")
+    .in("id", ids)
+
+  const slugs = (data ?? [])
+    .map((row) => row?.slug)
+    .filter((slug): slug is string => typeof slug === "string" && slug.length > 0)
+
+  return Array.from(new Set(slugs))
+}
+
+async function getCategorySlugsForProducts(
+  supabase: SupabaseClient<Database>,
+  productIds: string[]
+): Promise<string[]> {
+  const ids = Array.from(new Set(productIds.filter((id) => typeof id === "string" && id.length > 0)))
+  if (ids.length === 0) return []
+
+  const { data: products } = await supabase
+    .from("products")
+    .select("id, category_id")
+    .in("id", ids)
+
+  const categoryIds = (products ?? [])
+    .map((p) => p?.category_id)
+    .filter((id): id is string => typeof id === "string" && id.length > 0)
+
+  return getCategorySlugsByIds(supabase, categoryIds)
+}
+
+async function revalidateProductCaches(params: {
+  supabase: SupabaseClient<Database>
+  sellerId: string
+  productIds?: string[]
+  categoryIds?: Array<string | null | undefined>
+  invalidateTypes?: ProductFeedType[]
+}) {
+  const { supabase, sellerId, productIds, categoryIds, invalidateTypes } = params
+
+  const tags: string[] = []
+
+  if (Array.isArray(productIds)) {
+    for (const id of productIds) {
+      if (typeof id === "string" && id.length > 0) tags.push(`product:${id}`)
+    }
+  }
+
+  if (typeof sellerId === "string" && sellerId.length > 0) {
+    tags.push(`seller-products-${sellerId}`, `seller-${sellerId}`)
+  }
+
+  const slugs = await getCategorySlugsByIds(supabase, categoryIds ?? [])
+  for (const slug of slugs) {
+    tags.push(`products:category:${slug}`)
+  }
+
+  for (const type of invalidateTypes ?? []) {
+    tags.push(`products:type:${type}`)
+  }
+
+  for (const tag of Array.from(new Set(tags))) {
+    revalidateTag(tag, "max")
+  }
+}
 
 /**
  * Create a new product
@@ -114,9 +193,14 @@ export async function createProduct(input: ProductInput): Promise<ActionResult<{
       console.error("[createProduct] Insert error:", insertError)
       return { success: false, error: insertError.message || "Failed to create product" }
     }
-    
-    revalidateTag("products:list", "max")
-    revalidateTag(`seller-products-${user.id}`, "max")
+
+    await revalidateProductCaches({
+      supabase,
+      sellerId: user.id,
+      productIds: [product.id],
+      categoryIds: [data.categoryId],
+      invalidateTypes: ["newest"],
+    })
     
     return { success: true, data: { id: product.id } }
   } catch (error) {
@@ -144,7 +228,7 @@ export async function updateProduct(
     // Check product ownership
     const { data: existingProduct, error: fetchError } = await supabase
       .from("products")
-      .select("id, seller_id")
+      .select("id, seller_id, category_id")
       .eq("id", productId)
       .single()
     
@@ -188,10 +272,20 @@ export async function updateProduct(
       return { success: false, error: "Failed to update product" }
     }
 
-    revalidateTag("products:list", "max")
-    revalidateTag(`product-${productId}`, "max")
-    revalidateTag(`seller-products-${user.id}`, "max")
-    revalidateTag(`seller-${user.id}`, "max")
+    const categoryIdsToInvalidate: Array<string | null | undefined> = [existingProduct.category_id]
+    if (input.categoryId !== undefined) categoryIdsToInvalidate.push(input.categoryId)
+
+    const invalidateTypes: ProductFeedType[] = []
+    // Price / compare-at changes affect promo list rendering.
+    if (input.price !== undefined || input.compareAtPrice !== undefined) invalidateTypes.push("promo")
+
+    await revalidateProductCaches({
+      supabase,
+      sellerId: user.id,
+      productIds: [productId],
+      categoryIds: categoryIdsToInvalidate,
+      invalidateTypes,
+    })
     
     return { success: true }
   } catch (error) {
@@ -216,7 +310,7 @@ export async function deleteProduct(productId: string): Promise<ActionResult> {
     // Check product ownership
     const { data: existingProduct, error: fetchError } = await supabase
       .from("products")
-      .select("id, seller_id")
+      .select("id, seller_id, category_id")
       .eq("id", productId)
       .single()
     
@@ -239,10 +333,13 @@ export async function deleteProduct(productId: string): Promise<ActionResult> {
       return { success: false, error: "Failed to delete product" }
     }
 
-    revalidateTag("products:list", "max")
-    revalidateTag(`product-${productId}`, "max")
-    revalidateTag(`seller-products-${user.id}`, "max")
-    revalidateTag(`seller-${user.id}`, "max")
+    await revalidateProductCaches({
+      supabase,
+      sellerId: user.id,
+      productIds: [productId],
+      categoryIds: [existingProduct.category_id],
+      invalidateTypes: ["newest", "promo", "deals", "featured", "bestsellers"],
+    })
     
     return { success: true }
   } catch (error) {
@@ -283,11 +380,20 @@ export async function bulkUpdateProductStatus(
       return { success: false, error: "Failed to update products" }
     }
 
-    revalidateTag("products:list", "max")
-    revalidateTag(`seller-products-${user.id}`, "max")
-    revalidateTag(`seller-${user.id}`, "max")
-    for (const row of data ?? []) {
-      if (row?.id) revalidateTag(`product-${row.id}`, "max")
+    const updatedIds = (data ?? [])
+      .map((row) => row?.id)
+      .filter((id): id is string => typeof id === "string" && id.length > 0)
+
+    const categorySlugs = await getCategorySlugsForProducts(supabase, updatedIds)
+    await revalidateProductCaches({
+      supabase,
+      sellerId: user.id,
+      productIds: updatedIds,
+      categoryIds: [],
+      invalidateTypes: ["newest", "promo", "deals", "featured", "bestsellers"],
+    })
+    for (const slug of categorySlugs) {
+      revalidateTag(`products:category:${slug}`, "max")
     }
     
     return { success: true, data: { updated: data?.length || 0 } }
@@ -321,7 +427,7 @@ export async function setProductDiscountPrice(
 
     const { data: product, error: fetchError } = await supabase
       .from("products")
-      .select("id, seller_id, price, list_price")
+      .select("id, seller_id, price, list_price, category_id")
       .eq("id", parsed.data.productId)
       .single()
 
@@ -363,10 +469,13 @@ export async function setProductDiscountPrice(
       return { success: false, error: updateError.message || "Failed to update product" }
     }
 
-    revalidateTag("products:list", "max")
-    revalidateTag(`product-${parsed.data.productId}`, "max")
-    revalidateTag(`seller-products-${user.id}`, "max")
-    revalidateTag(`seller-${user.id}`, "max")
+    await revalidateProductCaches({
+      supabase,
+      sellerId: user.id,
+      productIds: [parsed.data.productId],
+      categoryIds: [product.category_id],
+      invalidateTypes: ["promo", "deals"],
+    })
 
     return { success: true }
   } catch (error) {
@@ -397,7 +506,7 @@ export async function clearProductDiscount(
 
     const { data: product, error: fetchError } = await supabase
       .from("products")
-      .select("id, seller_id, price, list_price")
+      .select("id, seller_id, price, list_price, category_id")
       .eq("id", parsed.data.productId)
       .single()
 
@@ -431,10 +540,13 @@ export async function clearProductDiscount(
       return { success: false, error: updateError.message || "Failed to update product" }
     }
 
-    revalidateTag("products:list", "max")
-    revalidateTag(`product-${parsed.data.productId}`, "max")
-    revalidateTag(`seller-products-${user.id}`, "max")
-    revalidateTag(`seller-${user.id}`, "max")
+    await revalidateProductCaches({
+      supabase,
+      sellerId: user.id,
+      productIds: [parsed.data.productId],
+      categoryIds: [product.category_id],
+      invalidateTypes: ["promo", "deals"],
+    })
 
     return { success: true }
   } catch (error) {
@@ -469,11 +581,20 @@ export async function bulkDeleteProducts(productIds: string[]): Promise<ActionRe
       return { success: false, error: "Failed to delete products" }
     }
 
-    revalidateTag("products:list", "max")
-    revalidateTag(`seller-products-${user.id}`, "max")
-    revalidateTag(`seller-${user.id}`, "max")
-    for (const row of data ?? []) {
-      if (row?.id) revalidateTag(`product-${row.id}`, "max")
+    const deletedIds = (data ?? [])
+      .map((row) => row?.id)
+      .filter((id): id is string => typeof id === "string" && id.length > 0)
+
+    const categorySlugs = await getCategorySlugsForProducts(supabase, deletedIds)
+    await revalidateProductCaches({
+      supabase,
+      sellerId: user.id,
+      productIds: deletedIds,
+      categoryIds: [],
+      invalidateTypes: ["newest", "promo", "deals", "featured", "bestsellers"],
+    })
+    for (const slug of categorySlugs) {
+      revalidateTag(`products:category:${slug}`, "max")
     }
     
     return { success: true, data: { deleted: data?.length || 0 } }
@@ -518,10 +639,13 @@ async function updateProductStock(
       return { success: false, error: "Failed to update stock" }
     }
 
-    revalidateTag("products:list", "max")
-    revalidateTag(`product-${productId}`, "max")
-    revalidateTag(`seller-products-${user.id}`, "max")
-    revalidateTag(`seller-${user.id}`, "max")
+    // Stock changes may affect list badges; invalidate product + seller lists.
+    await revalidateProductCaches({
+      supabase,
+      sellerId: user.id,
+      productIds: [productId],
+      categoryIds: [],
+    })
     
     return { success: true }
   } catch (error) {
@@ -595,9 +719,12 @@ export async function duplicateProduct(productId: string): Promise<ActionResult<
       return { success: false, error: "Failed to duplicate product" }
     }
 
-    revalidateTag("products:list", "max")
-    revalidateTag(`seller-products-${user.id}`, "max")
-    revalidateTag(`seller-${user.id}`, "max")
+    await revalidateProductCaches({
+      supabase,
+      sellerId: user.id,
+      productIds: [duplicate.id],
+      categoryIds: [original.category_id],
+    })
     
     return { success: true, data: { id: duplicate.id } }
   } catch (error) {

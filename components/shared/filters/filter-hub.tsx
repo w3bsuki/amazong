@@ -21,6 +21,12 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer"
 import type { CategoryAttribute } from "@/lib/data/categories"
+import {
+  getCategoryAttributeLabel,
+  getCategoryAttributeOptions,
+  shouldForceMultiSelectCategoryAttribute,
+} from "@/lib/filters/category-attribute"
+import { setPendingAttributeValues } from "@/lib/filters/pending-attributes"
 import { ColorSwatches } from "./color-swatches"
 import { SizeTiles } from "./size-tiles"
 import { FilterList } from "./filter-list"
@@ -269,7 +275,7 @@ export function FilterHub({
 
     const attrSections: AttrFilterSection[] = visibleAttributes.map((attr) => ({
       id: `attr_${attr.id}`,
-      label: locale === "bg" && attr.name_bg ? attr.name_bg : attr.name,
+      label: getCategoryAttributeLabel(attr, locale),
       attribute: attr,
     }))
 
@@ -278,14 +284,13 @@ export function FilterHub({
 
   // Check if attribute should allow multi-select
   const shouldForceMultiSelect = useCallback((attr: CategoryAttribute) => {
-    const name = attr.name.trim().toLowerCase()
-    return FORCE_MULTISELECT_NAMES.includes(name)
+    return shouldForceMultiSelectCategoryAttribute(attr)
   }, [])
 
   // Get attribute options for current locale
   const getAttrOptions = useCallback(
     (attr: CategoryAttribute) => {
-      return locale === "bg" && attr.options_bg ? attr.options_bg : attr.options
+      return getCategoryAttributeOptions(attr, locale)
     },
     [locale]
   )
@@ -298,13 +303,10 @@ export function FilterHub({
 
   const setPendingAttrValues = useCallback((attrName: string, values: string[]) => {
     setPending((prev) => {
-      const next = { ...prev.attributes }
-      if (values.length === 0) {
-        delete next[attrName]
-      } else {
-        next[attrName] = values
+      return {
+        ...prev,
+        attributes: setPendingAttributeValues(prev.attributes, attrName, values),
       }
-      return { ...prev, attributes: next }
     })
   }, [])
 
@@ -825,7 +827,7 @@ export function FilterHub({
         </div>
 
         {/* Footer with Apply CTA + Live Count */}
-        <div className="p-4 bg-background border-t border-border/30 flex-shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="p-4 bg-background border-t border-border/30 shrink-0 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <Button
             className="w-full h-11 rounded-full text-sm font-bold"
             onClick={applyFilters}

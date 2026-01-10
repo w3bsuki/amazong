@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
  * 
  * Reference: treido-mock ProductPage.tsx lines 93-103
  * - Simple row with icon + text (no Card wrapper)
- * - bg-gray-50/50 background
+ * - subtle muted background
  * - px-4 py-3 padding
  */
 export function MobileBuyerProtectionBadge() {

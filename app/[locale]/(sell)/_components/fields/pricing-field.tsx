@@ -166,7 +166,7 @@ function QuantityStepper({
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
-        className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors active:scale-95 touch-manipulation border-r border-border/50"
+        className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation border-r border-border/50"
         aria-label="Decrease quantity"
       >
         <Minus className="size-4" weight="bold" />
@@ -188,7 +188,7 @@ function QuantityStepper({
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
-        className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors active:scale-95 touch-manipulation border-l border-border/50"
+        className="h-full px-4 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors touch-manipulation border-l border-border/50"
         aria-label="Increase quantity"
       >
         <Plus className="size-4" weight="bold" />

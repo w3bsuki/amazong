@@ -94,25 +94,26 @@ export async function submitSellerFeedback(
 
     const data = validated.data
 
-    // If orderId provided, verify user owns the order and it's delivered
+    // If orderId provided, verify user owns the order and it's delivered.
+    // Delivery is tracked on order_items.status (buyerConfirmDelivery updates the item).
     if (data.orderId) {
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .select(`
+      const { data: deliveredItem, error: deliveredError } = await supabase
+        .from("order_items")
+        .select(
+          `
           id,
-          user_id,
           status,
-          order_items!inner (
-            seller_id
-          )
-        `)
-        .eq("id", data.orderId)
-        .eq("user_id", user.id)
-        .eq("order_items.seller_id", data.sellerId)
-        .in("status", ["delivered", "completed"])
+          order:orders!inner(id, user_id)
+        `
+        )
+        .eq("order_id", data.orderId)
+        .eq("seller_id", data.sellerId)
+        .eq("orders.user_id", user.id)
+        .eq("status", "delivered")
+        .limit(1)
         .single()
 
-      if (orderError || !order) {
+      if (deliveredError || !deliveredItem) {
         return { success: false, error: "You can only leave feedback after order delivery" }
       }
 
@@ -128,24 +129,23 @@ export async function submitSellerFeedback(
         return { success: false, error: "You have already left feedback for this order" }
       }
     } else {
-      // Without orderId, check if user has ANY completed order from this seller
-      const { data: anyOrder } = await supabase
+      // Without orderId, check if user has ANY delivered order item from this seller
+      const { data: anyDeliveredItem } = await supabase
         .from("order_items")
-        .select(`
+        .select(
+          `
           id,
-          orders!inner (
-            id,
-            user_id,
-            status
-          )
-        `)
+          status,
+          orders!inner(id, user_id)
+        `
+        )
         .eq("seller_id", data.sellerId)
         .eq("orders.user_id", user.id)
-        .in("orders.status", ["delivered", "completed"])
+        .eq("status", "delivered")
         .limit(1)
         .single()
 
-      if (!anyOrder) {
+      if (!anyDeliveredItem) {
         return { success: false, error: "You can only leave feedback after purchasing from this seller" }
       }
     }

@@ -1,20 +1,15 @@
-import { createClient } from "@/lib/supabase/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { NextResponse } from "next/server"
-import { headers } from "next/headers"
 
-export async function POST() {
+export async function POST(request: import("next/server").NextRequest) {
     try {
-        const supabase = await createClient()
-        
-        if (!supabase) {
-            return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
-        }
+        const { supabase, applyCookies } = createRouteHandlerClient(request)
 
         const { data: { user } } = await supabase.auth.getUser()
         
         if (!user) {
-            return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+            return applyCookies(NextResponse.json({ error: "Not authenticated" }, { status: 401 }))
         }
 
         // Get or create Stripe customer
@@ -44,12 +39,11 @@ export async function POST() {
         }
 
             if (!stripeCustomerId) {
-                return NextResponse.json({ error: "Stripe customer creation failed" }, { status: 500 })
+                return applyCookies(NextResponse.json({ error: "Stripe customer creation failed" }, { status: 500 }))
             }
 
         // Get origin for redirect URLs
-        const headersList = await headers()
-        const origin = headersList.get("origin") || "http://localhost:3000"
+        const origin = request.headers.get("origin") || "http://localhost:3000"
 
         // Create a SetupIntent for adding a payment method
         const session = await stripe.checkout.sessions.create({
@@ -63,7 +57,7 @@ export async function POST() {
             }
         })
 
-        return NextResponse.json({ url: session.url })
+        return applyCookies(NextResponse.json({ url: session.url }))
     } catch (error) {
         console.error("Error creating setup session:", error)
         return NextResponse.json(

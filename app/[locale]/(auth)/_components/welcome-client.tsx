@@ -304,7 +304,7 @@ export function WelcomeClient({ locale }: { locale: string }) {
                           setUseCustomAvatar(false)
                         }}
                         className={cn(
-                          "p-2 rounded-md border-2 transition-all hover:scale-105",
+                          "p-2 rounded-md border-2 transition-colors",
                           !useCustomAvatar && selectedVariant === variant
                             ? "border-primary bg-muted"
                             : "border-border hover:border-border/80"

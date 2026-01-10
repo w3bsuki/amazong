@@ -183,7 +183,7 @@ export function SellFormSkeleton() {
       {/* Main content */}
       <main className="pt-14">
         <div className="container-content">
-          <div className="lg:grid lg:grid-cols-[1fr_340px] lg:gap-4 py-4 lg:py-6">
+          <div className="lg:grid lg:grid-cols-[1fr_20rem] xl:grid-cols-[1fr_22rem] lg:gap-4 py-4 lg:py-6">
             {/* Left column - Form sections */}
             <div className="space-y-6">
               {/* Page header */}

@@ -70,6 +70,7 @@ type OrderRow = {
   id: string
   created_at: string
   status: OrderStatus | null
+  fulfillment_status?: OrderStatus | null
   total_amount: number | string | null
   order_items: OrderItemRow[]
 }
@@ -103,6 +104,7 @@ export default async function OrdersPage({ params, searchParams }: OrdersPagePro
     .from("orders")
     .select(`
         *,
+      fulfillment_status,
         order_items (
             *,
             product:products(*)

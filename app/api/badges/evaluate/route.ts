@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { NextRequest, NextResponse } from "next/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 
 // Types for badge evaluation
 interface BadgeCriteria {
@@ -46,13 +46,16 @@ interface UserVerification {
  * 
  * Body: { user_id: string, context?: "sale" | "review" | "listing" | "signup" | "subscription" }
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const { supabase, applyCookies } = createRouteHandlerClient(request)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
+
   try {
-    const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return json({ error: "Unauthorized" }, { status: 401 })
     }
     
     const body = await request.json()
@@ -62,7 +65,7 @@ export async function POST(request: Request) {
     // Security: Only allow users to evaluate their own badges unless admin
     // For now, only self-evaluation is allowed
     if (userId !== user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+      return json({ error: "Forbidden" }, { status: 403 })
     }
     
     // Get the user's profile (seller fields are now on profiles)
@@ -125,7 +128,7 @@ export async function POST(request: Request) {
     
     if (badgesError) {
       console.error("Failed to fetch badge definitions:", badgesError)
-      return NextResponse.json({ error: "Failed to fetch badges" }, { status: 500 })
+      return json({ error: "Failed to fetch badges" }, { status: 500 })
     }
     
     // Get user's current badges
@@ -206,13 +209,13 @@ export async function POST(request: Request) {
       
       if (insertError) {
         console.error("Failed to insert badges:", insertError)
-        return NextResponse.json({ error: "Failed to award badges" }, { status: 500 })
+        return json({ error: "Failed to award badges" }, { status: 500 })
       }
       
       awardedBadges.push(...newBadges.map(b => b.badge_code))
     }
     
-    return NextResponse.json({
+    return json({
       success: true,
       awarded: awardedBadges,
       total_awarded: awardedBadges.length,
@@ -220,7 +223,7 @@ export async function POST(request: Request) {
     
   } catch (error) {
     console.error("Badge evaluation error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return json({ error: "Internal server error" }, { status: 500 })
   }
 }
 

@@ -100,11 +100,11 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
     .from("order_items")
     .select(`
       id,
-      order:orders!inner(buyer_id, status)
+      order:orders!inner(user_id, status)
     `)
     .eq("product_id", input.productId)
-    .eq("orders.buyer_id", user.id)
-    .in("orders.status", ["delivered", "completed"])
+    .eq("orders.user_id", user.id)
+    .in("orders.status", ["paid", "processing", "shipped", "delivered"])
     .limit(1)
     .maybeSingle()
 
@@ -117,6 +117,7 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
       product_id: input.productId,
       user_id: user.id,
       rating: input.rating,
+      title: input.title?.trim() || null,
       comment: input.comment?.trim() || null,
       verified_purchase: isVerifiedPurchase,
     })
@@ -135,9 +136,9 @@ export async function submitReview(input: SubmitReviewInput): Promise<ReviewResu
   }
 
   // 9. Revalidate cached product/review data
-  revalidateTag("reviews", "max")
+  revalidateTag(`reviews:product:${input.productId}`, "max")
   revalidateTag("products:list", "max")
-  revalidateTag(`product-${input.productId}`, "max")
+  revalidateTag(`product:${input.productId}`, "max")
   
   // Also revalidate the seller's store page
   const { data: sellerProfile } = await supabase
@@ -313,9 +314,9 @@ export async function deleteReview(reviewId: string): Promise<{ success: boolean
     return { success: false, error: "Failed to delete review" }
   }
 
-  revalidateTag("reviews", "max")
+  revalidateTag(`reviews:product:${review.product_id}`, "max")
   revalidateTag("products:list", "max")
-  revalidateTag(`product-${review.product_id}`, "max")
+  revalidateTag(`product:${review.product_id}`, "max")
 
   return { success: true }
 }

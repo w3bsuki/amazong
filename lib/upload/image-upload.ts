@@ -1,7 +1,9 @@
 import 'server-only'
 
+import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
 import sharp from 'sharp'
 
 export interface ImageUploadOptions {
@@ -40,7 +42,7 @@ export interface ImageUploadResult {
  * }
  */
 export async function handleImageUpload(
-  request: Request,
+  request: NextRequest,
   options: ImageUploadOptions = {}
 ): Promise<NextResponse> {
   const {
@@ -52,17 +54,16 @@ export async function handleImageUpload(
     maxFileSize = 5 * 1024 * 1024,
   } = options
 
-  try {
-    const supabase = await createClient()
+  const { supabase, applyCookies } = createRouteHandlerClient(request)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
 
-    if (!supabase) {
-      return NextResponse.json({ error: 'Database connection failed' }, { status: 500 })
-    }
+  try {
 
     // Check authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get form data
@@ -70,18 +71,18 @@ export async function handleImageUpload(
     const file = formData.get('file') as File
 
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+      return json({ error: 'No file provided' }, { status: 400 })
     }
 
     // Validate file size
     if (file.size > maxFileSize) {
       const maxMB = Math.round(maxFileSize / 1024 / 1024)
-      return NextResponse.json({ error: `File too large (max ${maxMB}MB)` }, { status: 400 })
+      return json({ error: `File too large (max ${maxMB}MB)` }, { status: 400 })
     }
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'File must be an image' }, { status: 400 })
+      return json({ error: 'File must be an image' }, { status: 400 })
     }
 
     // Convert to buffer
@@ -98,7 +99,7 @@ export async function handleImageUpload(
 
     // Generate unique filename
     const timestamp = Date.now()
-    const random = Math.random().toString(36).slice(2)
+    const random = crypto.randomUUID()
     const prefix = pathPrefix ? `${pathPrefix}/${user.id}` : user.id
     const fileName = `${prefix}/${timestamp}-${random}.webp`
 
@@ -114,8 +115,11 @@ export async function handleImageUpload(
       })
 
     if (uploadError) {
-      console.error('Image upload error:', uploadError)
-      return NextResponse.json({ error: 'Failed to upload image: ' + uploadError.message }, { status: 500 })
+      logger.error('[Upload] Image upload error', uploadError)
+      return json(
+        { error: 'Failed to upload image: ' + uploadError.message },
+        { status: 500 }
+      )
     }
 
     // Get public URL
@@ -153,14 +157,14 @@ export async function handleImageUpload(
           .getPublicUrl(thumbnailName)
         result.thumbnailUrl = thumbnailUrl
       } else {
-        console.error('Thumbnail upload error:', thumbError)
+        logger.error('[Upload] Thumbnail upload error', thumbError)
         // Continue even if thumbnail fails, we have the main image
       }
     }
 
-    return NextResponse.json(result)
+    return json(result)
   } catch (error) {
-    console.error('Image upload error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    logger.error('[Upload] Image upload error', error)
+    return json({ error: 'Internal server error' }, { status: 500 })
   }
 }

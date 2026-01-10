@@ -139,7 +139,7 @@ export function WriteReviewDialog({
                   onClick={() => setRating(star)}
                   onMouseEnter={() => setHoverRating(star)}
                   onMouseLeave={() => setHoverRating(0)}
-                  className="p-1 transition-transform hover:scale-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                  className="p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                   aria-label={`${star} ${tReviews("star")}`}
                 >
                   <Star

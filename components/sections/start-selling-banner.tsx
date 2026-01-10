@@ -39,8 +39,8 @@ export function StartSellingBanner({
           href="/sell"
           className={cn(
             "block w-full rounded-md",
-            "bg-foreground text-background",
-            "border border-border/50",
+            "bg-muted/30 text-foreground", // Treido: Flat, professional, no high contrast pop
+            "border border-border/60",
             "px-3 py-3",
             "active:opacity-95 transition-opacity",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -53,7 +53,7 @@ export function StartSellingBanner({
               <p className="text-sm font-semibold leading-snug">
                 {isBg ? "Продай за минути" : "Sell in minutes"}
               </p>
-              <p className="text-xs text-background/80 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {isBg
                   ? "Освободи място и спечели."
                   : "Clear space and earn."}
@@ -62,10 +62,10 @@ export function StartSellingBanner({
 
             {/* Right: Arrow pill */}
             <span
-              className="size-8 shrink-0 rounded-md bg-background/10 border border-background/10 flex items-center justify-center"
+              className="size-8 shrink-0 rounded-md bg-background border border-border/50 flex items-center justify-center text-muted-foreground"
               aria-hidden="true"
             >
-              <ArrowRight size={16} weight="bold" />
+              <ArrowRight size={16} weight="regular" />
             </span>
           </div>
         </Link>

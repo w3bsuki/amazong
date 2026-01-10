@@ -164,7 +164,7 @@ export default function CheckoutPageClient() {
 
     setIsProcessing(true)
     try {
-      const { url, error } = await createCheckoutSession(items)
+      const { url, error } = await createCheckoutSession(items, locale === "bg" ? "bg" : "en")
       if (error) {
         alert(error)
         return

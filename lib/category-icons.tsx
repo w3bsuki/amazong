@@ -6,21 +6,21 @@
  */
 
 import * as React from "react"
-import { 
-  Monitor, 
+import {
+  Monitor,
   Laptop,
-  House, 
+  House,
   ShoppingBag,
-  GameController, 
-  TShirt, 
-  Baby, 
+  GameController,
+  TShirt,
+  Baby,
   Heart,
   Wrench,
-  Car, 
-  Gift, 
-  BookOpen, 
-  Barbell, 
-  Dog, 
+  Car,
+  Gift,
+  BookOpen,
+  Barbell,
+  Dog,
   Lightbulb,
   DeviceMobile,
   Watch,
@@ -81,7 +81,8 @@ import {
   TennisBall,
   Wine,
   CoffeeBean,
-  Carrot
+  Carrot,
+  SquaresFour
 } from "@phosphor-icons/react/ssr"
 
 type PhosphorIcon = typeof Monitor
@@ -224,13 +225,13 @@ interface CategoryIconOptions {
  * @param options - Icon rendering options
  */
 export function getCategoryIcon(
-  slug: string, 
+  slug: string,
   options: CategoryIconOptions = {}
 ): React.ReactNode {
   const { size = 20, className = "", weight = "regular" } = options
-  
+
   const iconProps = { size, weight, className }
-  
+
   const iconMap: Record<string, React.ReactNode> = {
     // Electronics & Computers
     "electronics": <Monitor {...iconProps} />,
@@ -242,7 +243,7 @@ export function getCategoryIcon(
     "cameras": <Camera {...iconProps} />,
     "software": <Code {...iconProps} />,
     "software-services": <Code {...iconProps} />,
-    
+
     // Fashion & Accessories
     "fashion": <TShirt {...iconProps} />,
     "jewelry-watches": <Diamond {...iconProps} />,
@@ -279,7 +280,7 @@ export function getCategoryIcon(
     "bags": <Handbag {...iconProps} />,
     "handbags": <Handbag {...iconProps} />,
     "accessories": <CoatHanger {...iconProps} />,
-    
+
     // Home & Living
     "home": <House {...iconProps} />,
     "home-kitchen": <ForkKnife {...iconProps} />,
@@ -289,37 +290,37 @@ export function getCategoryIcon(
     "tools-home": <Hammer {...iconProps} />,
     "lighting": <Lightbulb {...iconProps} />,
     "real-estate": <Buildings {...iconProps} />,
-    
+
     // Sports & Gaming
     "gaming": <GameController {...iconProps} />,
     "sports": <Barbell {...iconProps} />,
     "sports-outdoors": <Barbell {...iconProps} />,
-    
+
     // Health & Beauty
     "beauty": <PaintBrush {...iconProps} />,
     "health": <Heart {...iconProps} />,
     "health-wellness": <Pill {...iconProps} />,
     "cbd-wellness": <Leaf {...iconProps} />,
-    
+
     // Family & Pets
     "baby": <Baby {...iconProps} />,
     "baby-kids": <Baby {...iconProps} />,
     "pets": <Dog {...iconProps} />,
     "pet-supplies": <Dog {...iconProps} />,
     "toys": <Gift {...iconProps} />,
-    
+
     // Media & Entertainment
     "books": <BookOpen {...iconProps} />,
     "music": <MusicNotes {...iconProps} />,
     "musical-instruments": <Guitar {...iconProps} />,
     "movies-music": <FilmStrip {...iconProps} />,
-    
+
     // Business & Office
     "office": <Briefcase {...iconProps} />,
     "office-school": <GraduationCap {...iconProps} />,
     "industrial-scientific": <Flask {...iconProps} />,
     "services": <Briefcase {...iconProps} />,
-    
+
     // Shopping & Deals
     "deals": <Tag {...iconProps} />,
     "grocery": <ShoppingCart {...iconProps} />,
@@ -327,17 +328,20 @@ export function getCategoryIcon(
     "collectibles": <Trophy {...iconProps} />,
     "gift-cards": <Gift {...iconProps} />,
     "tickets": <Ticket {...iconProps} />,
-    
+
     // Automotive & Transport
     "automotive": <Car {...iconProps} />,
     "e-mobility": <Lightning {...iconProps} />,
     "wholesale": <Truck {...iconProps} />,
-    
+
     // Regional & Special
     "bulgarian-traditional": <Flag {...iconProps} />,
     "hobbies": <Guitar {...iconProps} />,
+
+    // Navigation
+    "all": <SquaresFour {...iconProps} />,
   }
-  
+
   return iconMap[slug] || <Package {...iconProps} />
 }
 

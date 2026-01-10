@@ -259,7 +259,7 @@ export function BrandCombobox({
         "relative w-full flex flex-col justify-center h-14 px-4 rounded-md border transition-all text-left",
         "bg-background border border-border shadow-xs",
         "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
-        "transition-all active:scale-[0.98]",
+        "transition-colors",
         disabled && "opacity-50 cursor-not-allowed",
         className
       )}

@@ -1,11 +1,12 @@
-import { createClient } from "@/lib/supabase/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { cachedJsonResponse, noStoreJson } from "@/lib/api/response-helpers"
 import type { Database } from "@/lib/supabase/database.types"
+import type { NextRequest } from "next/server"
 
 type SharedWishlistRow = Database["public"]["Functions"]["get_shared_wishlist"]["Returns"][number]
 
 export async function GET(
-  _req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
   const { token } = await params
@@ -14,15 +15,12 @@ export async function GET(
     return noStoreJson({ error: "Invalid token" }, { status: 400 })
   }
 
-  const supabase = await createClient()
-  if (!supabase) {
-    return noStoreJson({ error: "Database unavailable" }, { status: 503 })
-  }
+  const { supabase, applyCookies } = createRouteHandlerClient(req)
 
   const { data, error } = await supabase.rpc("get_shared_wishlist", { p_share_token: token })
 
   if (error || !data || data.length === 0) {
-    return noStoreJson({ error: "Not found" }, { status: 404 })
+    return applyCookies(noStoreJson({ error: "Not found" }, { status: 404 }))
   }
 
   const meta = {
@@ -40,5 +38,5 @@ export async function GET(
     added_at: row.added_at,
   }))
 
-  return cachedJsonResponse({ meta, items }, "shared")
+  return applyCookies(cachedJsonResponse({ meta, items }, "shared"))
 }

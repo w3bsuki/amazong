@@ -1,6 +1,7 @@
 import 'server-only'
 
 import { createClient, createAdminClient } from "@/lib/supabase/server"
+import { logger } from "@/lib/logger"
 import { redirect } from "next/navigation"
 import { connection } from "next/server"
 
@@ -39,7 +40,7 @@ export async function requireAdmin(redirectTo: string = "/"): Promise<AdminUser>
     .single()
   
   if (profileError || !profile) {
-    console.error("Admin check failed - no profile:", profileError)
+    logger.error("[Admin] Admin check failed - no profile", profileError)
     redirect(redirectTo)
   }
   
@@ -53,29 +54,6 @@ export async function requireAdmin(redirectTo: string = "/"): Promise<AdminUser>
     email: profile.email || user.email || '',
     role: profile.role as UserRole,
     full_name: profile.full_name,
-  }
-}
-
-/**
- * Checks if a user is admin without redirecting.
- * Useful for conditional UI rendering.
- */
-async function isAdmin(): Promise<boolean> {
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) return false
-    
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-    
-    return profile?.role === 'admin'
-  } catch {
-    return false
   }
 }
 

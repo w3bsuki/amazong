@@ -10,22 +10,22 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Treido: Solid black default, no gradients
-        default: "bg-zinc-900 text-zinc-50 hover:bg-zinc-800 border border-zinc-900",
+        // Treido: Solid inverted default, no gradients
+        default: "bg-foreground text-background hover:bg-foreground/90 border border-foreground",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 dark:bg-destructive/60",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 dark:bg-destructive/60",
         outline:
-          "border border-zinc-200/80 bg-zinc-50/50 hover:bg-zinc-100 text-zinc-900 active:bg-zinc-200/50 backdrop-blur-sm shadow-sm",
+          "border border-border bg-background hover:bg-muted text-foreground active:bg-muted/80 shadow-none",
         secondary:
-          "bg-zinc-100 text-zinc-900 hover:bg-zinc-200",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost:
-          "hover:bg-zinc-100 text-zinc-900 active:bg-zinc-100",
-        link: "text-zinc-900 underline-offset-4 hover:underline",
+          "hover:bg-accent hover:text-accent-foreground active:bg-accent/80",
+        link: "text-link underline-offset-4 hover:underline hover:text-link-hover",
         // Marketplace CTA variants
-        cta: "bg-cta-trust-blue text-white hover:bg-cta-trust-blue-hover",
-        deal: "bg-deal text-white hover:bg-deal/90",
+        cta: "bg-cta-trust-blue text-cta-trust-blue-text hover:bg-cta-trust-blue-hover",
+        deal: "bg-deal text-background hover:bg-deal/90",
         // Treido black CTA (primary marketplace action)
-        black: "bg-zinc-900 text-white hover:bg-zinc-800 border border-zinc-900",
+        black: "bg-foreground text-background hover:bg-foreground/90 border border-foreground",
         // Brand purple (legacy)
         brand: "bg-primary text-primary-foreground hover:bg-primary/90",
       },
@@ -34,7 +34,7 @@ const buttonVariants = cva(
         sm: "h-9 px-3 text-xs gap-1.5 [&_svg]:size-3.5",       /* 36px - compact */
         default: "h-11 px-5 text-sm gap-2 [&_svg]:size-4",     /* 44px - Treido standard */
         lg: "h-12 px-8 text-sm gap-2 [&_svg]:size-4",          /* 48px - touch-safe large */
-        xl: "h-14 px-8 text-[15px] font-bold gap-2 [&_svg]:size-4.5", /* 56px - hero CTA */
+        xl: "h-14 px-8 text-base font-bold gap-2 [&_svg]:size-5", /* 56px - hero CTA */
         icon: "size-11 [&_svg]:size-5",                        /* 44px - Treido touch */
         "icon-sm": "size-9 [&_svg]:size-4",                    /* 36px */
         "icon-lg": "size-12 [&_svg]:size-6",                   /* 48px */

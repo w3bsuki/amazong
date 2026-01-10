@@ -64,7 +64,7 @@ function CategoryBanner({ category }: { category: Category }) {
         <CategoryCircleVisual
           category={category}
           active={false}
-          className="size-[56px] shrink-0 bg-secondary/30 border border-border/60"
+          className="size-(--spacing-category-circle) shrink-0 bg-secondary/30 border border-border/60"
           fallbackIconSize={24}
           fallbackIconWeight="light"
           variant="muted"

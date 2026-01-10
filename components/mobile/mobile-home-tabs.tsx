@@ -30,6 +30,7 @@ import {
 import { ContextualDoubleDeckerNav } from "./category-nav/contextual-double-decker-nav"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
+import { FilterChips } from "@/components/shared/filters/filter-chips"
 
 type Category = CategoryTreeNode
 
@@ -505,37 +506,14 @@ export function MobileHomeTabs({
       )}
 
       {/* "View all" link - homepage-only helper to jump into /categories/[slug]. */}
-      {showViewAllLink &&
-        initialProductsSlug === "all" &&
-        l0Style === "tabs" &&
-        !tabsNavigateToPages &&
-        !nav.isAllTab &&
-        nav.activeSlug !== "all" && (
-          <div className="bg-background px-(--page-inset) pt-2 pb-3 border-b border-border/40">
-            <Link
-              href={`/categories/${nav.activeSlug}`}
-              aria-label={locale === "bg" ? "Виж всички" : "View all"}
-              className={cn(
-                "w-full",
-                "h-8 rounded-lg",
-                "inline-flex items-center justify-between gap-2",
-                "bg-secondary text-secondary-foreground",
-                "border border-border/50",
-                "px-3",
-                "text-xs font-medium",
-                "hover:bg-secondary/80",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-              )}
-            >
-              <span className="whitespace-nowrap">
-                {locale === "bg" ? "Виж всички" : "View all"}
-              </span>
-              <CaretRight size={14} weight="bold" aria-hidden="true" />
-            </Link>
-          </div>
-        )}
 
 
+
+
+      {/* 5. Active Filter Chips (Tiny Badges) */}
+      <div className="bg-background px-4 pb-2">
+        <FilterChips />
+      </div>
 
       {/* 6. Product Feed */}
       <ProductFeed

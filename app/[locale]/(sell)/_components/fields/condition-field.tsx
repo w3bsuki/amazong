@@ -81,7 +81,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                       className={cn(
                         "relative w-full flex items-center h-12 px-4 rounded-md border transition-all text-left",
                         "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
-                        "touch-action-manipulation active:scale-[0.98]",
+                        "touch-action-manipulation",
                         fieldState.invalid ? "border-destructive bg-destructive/5" : "border-border bg-background hover:border-primary/30"
                       )}
                     >
@@ -121,7 +121,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                             }}
                             className={cn(
                               "w-full flex items-center justify-between h-14 px-4 rounded-md border transition-all",
-                              "touch-action-manipulation active:scale-[0.97]",
+                              "touch-action-manipulation",
                               isSelected
                                 ? "border-primary bg-primary/5 text-primary font-bold"
                                 : "border-transparent bg-muted/40 text-foreground hover:bg-muted/60"
@@ -151,7 +151,7 @@ export function ConditionField({ className, compact = false }: ConditionFieldPro
                         className={cn(
                           "flex items-center justify-center h-12 px-4 rounded-md border transition-all text-center",
                           "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/5",
-                          "touch-manipulation active:scale-[0.98]",
+                          "touch-manipulation",
                           isSelected
                             ? "border-primary bg-primary/10 text-primary font-bold shadow-xs"
                             : "border-border bg-background hover:border-primary/30 text-muted-foreground hover:text-foreground"

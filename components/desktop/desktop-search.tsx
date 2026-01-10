@@ -23,12 +23,11 @@ export function DesktopSearch() {
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
-  // IMPORTANT: `useRouter`/`Link` come from `@/i18n/routing` (next-intl navigation).
-  // Those helpers automatically prefix the active locale (localePrefix: 'always').
-  // So hrefs MUST be locale-agnostic (e.g. "/search"), otherwise we end up with
-  // duplicated paths like "/en/en/search".
   const buildSearchHref = useCallback((q: string) => {
-    return `/search?q=${encodeURIComponent(q)}`
+    return {
+      pathname: "/search",
+      query: { q },
+    } as const
   }, [])
   
   const [isOpen, setIsOpen] = React.useState(false)
@@ -123,7 +122,7 @@ export function DesktopSearch() {
           <form 
             ref={formRef}
             onSubmit={handleSearch}
-            action="/search"
+            action={`/${locale}/search`}
             method="get"
             className="flex h-full w-full rounded-full overflow-hidden bg-background border border-header-text/20 focus-within:border-header-text/35 focus-within:bg-background"
           >
@@ -132,8 +131,11 @@ export function DesktopSearch() {
               <MagnifyingGlass size={18} weight="regular" className="absolute left-4 text-muted-foreground pointer-events-none" />
               <Input
                 ref={inputRef}
-                type="text"
+                type="search"
+                inputMode="search"
+                enterKeyHint="search"
                 name="q"
+                required
                 placeholder={
                   locale === "bg"
                     ? "Търси продукти, марки и още..."

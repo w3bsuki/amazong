@@ -1,12 +1,12 @@
 import { getProductsByCategorySlug, toUI } from "@/lib/data/products"
 import { cachedJsonResponse, noStoreJson } from "@/lib/api/response-helpers"
-import { cookies } from "next/headers"
+import type { NextRequest } from "next/server"
 import { parseShippingRegion, type ShippingRegion } from "@/lib/shipping"
 
 const CACHEABLE_ZONE_VALUES = new Set(["BG", "UK", "EU", "US", "WW", "GB"])
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
@@ -29,8 +29,7 @@ export async function GET(
       userZone = parseShippingRegion(zoneParam)
       cacheable = true
     } else {
-      const cookieStore = await cookies()
-      userZone = parseShippingRegion(cookieStore.get("user-zone")?.value)
+      userZone = parseShippingRegion(request.cookies.get("user-zone")?.value)
     }
 
     const products = await getProductsByCategorySlug(slug, limit, userZone)

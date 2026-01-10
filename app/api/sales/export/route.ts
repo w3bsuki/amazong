@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { NextRequest, NextResponse } from "next/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 
 function csvEscape(value: unknown): string {
   const s = value == null ? "" : String(value)
@@ -16,15 +16,14 @@ function parseDateParam(value: string | null): Date | null {
   return d
 }
 
-export async function GET(req: Request) {
-  const supabase = await createClient()
-  if (!supabase) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
-  }
+export async function GET(req: NextRequest) {
+  const { supabase, applyCookies } = createRouteHandlerClient(req)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+    return json({ error: "Not authenticated" }, { status: 401 })
   }
 
   const url = new URL(req.url)
@@ -35,7 +34,7 @@ export async function GET(req: Request) {
   const toDate = parseDateParam(toParam)
 
   if (!fromDate || !toDate || fromDate > toDate) {
-    return NextResponse.json({ error: "Invalid date range" }, { status: 400 })
+    return json({ error: "Invalid date range" }, { status: 400 })
   }
 
   // Make `to` inclusive by advancing one day
@@ -134,11 +133,11 @@ export async function GET(req: Request) {
   const csv = rows.join("\n")
   const filename = `sales-${fromParam}_to_${toParam}.csv`
 
-  return new NextResponse(csv, {
+  return applyCookies(new NextResponse(csv, {
     headers: {
       "content-type": "text/csv; charset=utf-8",
       "content-disposition": `attachment; filename="${filename}"`,
       "cache-control": "no-store",
     },
-  })
+  }))
 }

@@ -57,7 +57,7 @@ export function MobileSellerCard({
               {name}
             </Link>
             {isVerified && (
-              <CheckCircle2 className="size-3.5 text-blue-600 fill-white shrink-0" />
+              <CheckCircle2 className="size-3.5 text-verified fill-background shrink-0" />
             )}
           </div>
 

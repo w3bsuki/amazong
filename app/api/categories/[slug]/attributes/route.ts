@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createStaticClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/database.types";
+import { cacheLife, cacheTag } from "next/cache";
+import { isNextPrerenderInterrupted } from "@/lib/next/is-next-prerender-interrupted";
 
 // Public endpoint: use anon key so RLS is still enforced
-const supabase = createStaticClient();
+
+// Align CDN cache headers with next.config.ts cacheLife.categories
+// (revalidate: 3600s, stale: 300s)
+const CACHE_TTL_SECONDS = 3600
+const CACHE_STALE_WHILE_REVALIDATE = 300
 
 // Use the generated database type for category attributes
 type CategoryAttributeRow = Database["public"]["Tables"]["category_attributes"]["Row"];
@@ -11,113 +17,131 @@ type CategoryAttributeRow = Database["public"]["Tables"]["category_attributes"][
 const CATEGORY_ATTRIBUTES_SELECT =
   "id,category_id,name,name_bg,attribute_type,is_required,is_filterable,options,options_bg,placeholder,placeholder_bg,validation_rules,sort_order,created_at" as const;
 
+async function getCategoryAttributesCached(slugOrId: string) {
+  'use cache'
+  cacheLife('categories')
+  cacheTag('categories:tree')
+
+  const supabase = createStaticClient()
+
+  // First, try to find the category by slug or ID
+  let categoryId = slugOrId
+
+  // If slug doesn't look like a UUID, look up by slug
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId)
+  if (!isUuid) {
+    cacheTag(`category:${slugOrId}`)
+
+    const { data: category, error: categoryError } = await supabase
+      .from("categories")
+      .select("id")
+      .eq("slug", slugOrId)
+      .single()
+
+    if (categoryError || !category) {
+      return { ok: false as const, status: 404 as const, message: "Category not found" }
+    }
+    categoryId = category.id
+  }
+
+  cacheTag(`attrs:category:${categoryId}`)
+
+  // Fetch attributes for this category
+  const { data: attributes, error } = await supabase
+    .from("category_attributes")
+    .select(CATEGORY_ATTRIBUTES_SELECT)
+    .eq("category_id", categoryId)
+    .order("sort_order", { ascending: true })
+
+  if (error) {
+    console.error("Error fetching category attributes:", error)
+    return { ok: false as const, status: 500 as const, message: "Failed to fetch category attributes" }
+  }
+
+  // Also fetch parent category attributes (if this category has a parent)
+  const { data: category } = await supabase
+    .from("categories")
+    .select("parent_id")
+    .eq("id", categoryId)
+    .single()
+
+  let parentAttributes: CategoryAttributeRow[] = []
+
+  if (category?.parent_id) {
+    cacheTag(`attrs:category:${category.parent_id}`)
+
+    const { data: parentAttrs } = await supabase
+      .from("category_attributes")
+      .select(CATEGORY_ATTRIBUTES_SELECT)
+      .eq("category_id", category.parent_id)
+      .order("sort_order", { ascending: true })
+
+    if (parentAttrs) parentAttributes = parentAttrs
+  }
+
+  // Merge attributes - category-specific attributes take precedence
+  const attributeNames = new Set(attributes?.map((a) => a.name) || [])
+  const inheritedAttributes = parentAttributes.filter((pa) => !attributeNames.has(pa.name))
+
+  const allAttributes = [...(attributes || []), ...inheritedAttributes]
+
+  // Transform to cleaner format for frontend
+  const formattedAttributes = allAttributes.map((attr) => ({
+    id: attr.id,
+    name: attr.name,
+    nameBg: attr.name_bg,
+    type: attr.attribute_type,
+    required: attr.is_required,
+    filterable: attr.is_filterable,
+    options: attr.options as string[] | null,
+    optionsBg: attr.options_bg as string[] | null,
+    placeholder: attr.placeholder,
+    placeholderBg: attr.placeholder_bg,
+    validationRules: attr.validation_rules as Record<string, unknown> | null,
+    sortOrder: attr.sort_order,
+  }))
+
+  return {
+    ok: true as const,
+    categoryId,
+    attributes: formattedAttributes,
+    count: formattedAttributes.length,
+  }
+}
+
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = await params;
+    const { slug } = await params
 
     if (!slug) {
-      return NextResponse.json(
-        { error: "Category slug/ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Category slug/ID is required" }, { status: 400 })
     }
 
-    // First, try to find the category by slug or ID
-    let categoryId = slug;
-    
-    // If slug doesn't look like a UUID, look up by slug
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
-    
-    if (!isUuid) {
-      const { data: category, error: categoryError } = await supabase
-        .from("categories")
-        .select("id")
-        .eq("slug", slug)
-        .single();
-      
-      if (categoryError || !category) {
-        return NextResponse.json(
-          { error: "Category not found" },
-          { status: 404 }
-        );
-      }
-      categoryId = category.id;
+    const result = await getCategoryAttributesCached(slug)
+    if (!result.ok) {
+      return NextResponse.json({ error: result.message }, { status: result.status })
     }
 
-    // Fetch attributes for this category
-    const { data: attributes, error } = await supabase
-      .from("category_attributes")
-      .select(CATEGORY_ATTRIBUTES_SELECT)
-      .eq("category_id", categoryId)
-      .order("sort_order", { ascending: true });
-
-    if (error) {
-      console.error("Error fetching category attributes:", error);
-      return NextResponse.json(
-        { error: "Failed to fetch category attributes" },
-        { status: 500 }
-      );
-    }
-
-    // Also fetch parent category attributes (if this category has a parent)
-    const { data: category } = await supabase
-      .from("categories")
-      .select("parent_id")
-      .eq("id", categoryId)
-      .single();
-
-    let parentAttributes: CategoryAttributeRow[] = [];
-
-    if (category?.parent_id) {
-      // Recursively get parent attributes
-      const { data: parentAttrs } = await supabase
-        .from("category_attributes")
-        .select(CATEGORY_ATTRIBUTES_SELECT)
-        .eq("category_id", category.parent_id)
-        .order("sort_order", { ascending: true });
-
-      if (parentAttrs) {
-        parentAttributes = parentAttrs;
-      }
-    }
-
-    // Merge attributes - category-specific attributes take precedence
-    const attributeNames = new Set(attributes?.map(a => a.name) || []);
-    const inheritedAttributes = parentAttributes.filter(
-      (pa) => !attributeNames.has(pa.name)
-    );
-
-    const allAttributes = [...(attributes || []), ...inheritedAttributes];
-
-    // Transform to cleaner format for frontend
-    const formattedAttributes = allAttributes.map((attr) => ({
-      id: attr.id,
-      name: attr.name,
-      nameBg: attr.name_bg,
-      type: attr.attribute_type,
-      required: attr.is_required,
-      filterable: attr.is_filterable,
-      options: attr.options as string[] | null,
-      optionsBg: attr.options_bg as string[] | null,
-      placeholder: attr.placeholder,
-      placeholderBg: attr.placeholder_bg,
-      validationRules: attr.validation_rules as Record<string, unknown> | null,
-      sortOrder: attr.sort_order,
-    }));
-
-    return NextResponse.json({
-      categoryId,
-      attributes: formattedAttributes,
-      count: formattedAttributes.length,
-    });
-  } catch (error) {
-    console.error("Unexpected error:", error);
     return NextResponse.json(
-      { error: "An unexpected error occurred" },
-      { status: 500 }
-    );
+      {
+        categoryId: result.categoryId,
+        attributes: result.attributes,
+        count: result.count,
+      },
+      {
+        headers: {
+          "Cache-Control": `public, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_STALE_WHILE_REVALIDATE}`,
+          "CDN-Cache-Control": `public, max-age=${CACHE_TTL_SECONDS}`,
+          "Vercel-CDN-Cache-Control": `public, max-age=${CACHE_TTL_SECONDS}`,
+        },
+      }
+    )
+  } catch (error) {
+    if (isNextPrerenderInterrupted(error)) throw error
+    console.error("Unexpected error:", error)
+    return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 })
   }
 }

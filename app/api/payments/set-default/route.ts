@@ -1,25 +1,21 @@
-import { createClient } from "@/lib/supabase/server"
+import { createRouteHandlerClient } from "@/lib/supabase/server"
 import { stripe } from "@/lib/stripe"
 import { NextResponse } from "next/server"
 
-export async function POST(request: Request) {
+export async function POST(request: import("next/server").NextRequest) {
     try {
-        const supabase = await createClient()
-        
-        if (!supabase) {
-            return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
-        }
+        const { supabase, applyCookies } = createRouteHandlerClient(request)
 
         const { data: { user } } = await supabase.auth.getUser()
         
         if (!user) {
-            return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+            return applyCookies(NextResponse.json({ error: "Not authenticated" }, { status: 401 }))
         }
 
         const { paymentMethodId, dbId } = await request.json()
 
         if (!paymentMethodId || !dbId) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+            return applyCookies(NextResponse.json({ error: "Missing required fields" }, { status: 400 }))
         }
 
         // Get profile with Stripe customer ID
@@ -30,7 +26,7 @@ export async function POST(request: Request) {
             .single()
 
         if (!profile?.stripe_customer_id) {
-            return NextResponse.json({ error: "No Stripe customer found" }, { status: 400 })
+            return applyCookies(NextResponse.json({ error: "No Stripe customer found" }, { status: 400 }))
         }
 
         // Update default payment method in Stripe
@@ -56,7 +52,7 @@ export async function POST(request: Request) {
             throw updateError
         }
 
-        return NextResponse.json({ success: true })
+        return applyCookies(NextResponse.json({ success: true }))
     } catch (error) {
         console.error("Error setting default payment method:", error)
         return NextResponse.json(

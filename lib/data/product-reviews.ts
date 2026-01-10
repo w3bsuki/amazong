@@ -19,13 +19,16 @@ export type ProductReview = {
 
 export async function fetchProductReviews(productId: string, limit = 8): Promise<ProductReview[]> {
   "use cache"
-  cacheTag("reviews", "product-reviews")
   cacheLife("products")
 
   if (typeof productId !== "string" || !UUID_REGEX.test(productId)) return []
 
+  // Product-granular invalidation: mutations should revalidate this tag.
+  cacheTag(`reviews:product:${productId}`)
+  // Align with existing product tag conventions used across the app.
+  cacheTag(`product:${productId}`)
+
   const supabase = createStaticClient()
-  if (!supabase) return []
 
   const { data, error } = await supabase
     .from("reviews")

@@ -75,22 +75,22 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
 
   return (
     <div className="py-4 bg-muted/30">
-      {/* Header - treido-mock: text-[14px] font-bold + text-[12px] font-medium */}
+      {/* Header */}
       <div className="flex items-center justify-between px-4 mb-3">
-        <h3 className="text-[14px] font-bold text-foreground">
+        <h3 className="text-sm font-bold text-foreground">
           {sellerFirstName ? moreFromText : (t("moreFromSeller") || "More from this seller")}
         </h3>
         {viewAllHref && (
           <Link 
             href={viewAllHref}
-            className="text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             {viewAllText}
           </Link>
         )}
       </div>
       
-      {/* Horizontal scroll cards - treido-mock: w-[130px] with price+title */}
+      {/* Horizontal scroll cards */}
       <div 
         ref={scrollRef}
         className="flex overflow-x-auto scrollbar-hide scroll-smooth px-4 gap-2.5"
@@ -99,9 +99,9 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
           <Link
             key={product.id}
             href={getProductHref(product)}
-            className="w-[130px] flex-shrink-0 bg-background rounded border border-border overflow-hidden"
+            className="w-32 flex-shrink-0 bg-background rounded border border-border overflow-hidden"
           >
-            {/* Image - treido-mock: aspect-square bg-gray-100 */}
+            {/* Image */}
             <div className="aspect-square bg-muted relative">
               {product.image && (
                 <Image
@@ -116,7 +116,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
             </div>
             {/* Content - treido-mock: p-2 with price bold + title muted */}
             <div className="p-2">
-              <p className="font-bold text-foreground text-[13px]">
+              <p className="font-bold text-foreground text-sm">
                 {new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
                   style: "currency",
                   currency: "EUR",
@@ -124,7 +124,7 @@ export function SellerProductsGrid({ products, totalCount, sellerUsername }: Sel
                   maximumFractionDigits: 0,
                 }).format(product.price)}
               </p>
-              <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+              <p className="text-tiny text-muted-foreground truncate mt-0.5">
                 {product.title}
               </p>
             </div>

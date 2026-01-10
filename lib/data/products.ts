@@ -2,6 +2,7 @@ import 'server-only'
 
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
 import { getShippingFilter, productShipsToRegion, type ShippingRegion } from '@/lib/shipping'
 
 // =============================================================================
@@ -229,11 +230,10 @@ export async function getProductsByCategorySlug(
   zone?: ShippingRegion
 ): Promise<Product[]> {
   'use cache'
-  cacheTag('products:list', `products:category:${categorySlug}`, 'products', `category:${categorySlug}`)
+  cacheTag('products:list', `products:category:${categorySlug}`)
   cacheLife('products')
 
   const supabase = createStaticClient()
-  if (!supabase) return []
 
   // OPTIMIZED: Flat category join - no 4-level nesting!
   // Use getCategoryPath() separately when breadcrumbs are needed.
@@ -255,7 +255,7 @@ export async function getProductsByCategorySlug(
 
   const { data, error } = await query.limit(limit)
   if (error) {
-    console.error(`[getProductsByCategorySlug:${categorySlug}]`, error.message)
+    logger.error(`[getProductsByCategorySlug:${categorySlug}] Supabase error`, error)
     return []
   }
 
@@ -280,11 +280,10 @@ export async function getProductsByCategorySlug(
  */
 export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRegion): Promise<Product[]> {
   'use cache'
-  cacheTag('products:list', `products:type:${type}`, 'products', type)
+  cacheTag('products:list', `products:type:${type}`)
   cacheLife('products')
 
   const supabase = createStaticClient()
-  if (!supabase) return []
 
   // OPTIMIZED: Flat category join - no 4-level nesting!
   // Use getCategoryPath() separately when breadcrumbs are needed.
@@ -326,7 +325,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
 
   const { data, error } = await query.limit(limit)
   if (error) {
-    console.error(`[getProducts:${type}]`, error.message)
+    logger.error(`[getProducts:${type}] Supabase error`, error)
     return []
   }
 
@@ -354,11 +353,10 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
 /** Fetch single product by ID */
 async function getProductById(id: string): Promise<Product | null> {
   'use cache'
-  cacheTag('products', `product-${id}`)
+  cacheTag(`product:${id}`)
   cacheLife('products')
 
   const supabase = createStaticClient()
-  if (!supabase) return null
 
   const productSelect =
     'id,title,price,seller_id,category_id,slug,description,condition,brand_id,images,is_boosted,boost_expires_at,is_featured,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,created_at,updated_at,status,stock,tags,seller_city,listing_type,meta_title,meta_description,barcode,cost_price,sku,track_inventory,weight,weight_unit,attributes' as const

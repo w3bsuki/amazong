@@ -12,7 +12,7 @@ const paymentMethodInputSchema = z.object({
   dbId: z.string().min(1),
 })
 
-export async function createPaymentMethodSetupSession() {
+export async function createPaymentMethodSetupSession(input?: { locale?: "en" | "bg" }) {
   const supabase = await createClient()
 
   if (!supabase) {
@@ -57,13 +57,14 @@ export async function createPaymentMethodSetupSession() {
 
   const headersList = await headers()
   const origin = headersList.get('origin') || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const locale = input?.locale === "bg" ? "bg" : "en"
 
   const session = await stripe.checkout.sessions.create({
     customer: stripeCustomerId,
     mode: 'setup',
     payment_method_types: ['card'],
-    success_url: `${origin}/account/payments?setup=success`,
-    cancel_url: `${origin}/account/payments?setup=canceled`,
+    success_url: `${origin}/${locale}/account/payments?setup=success`,
+    cancel_url: `${origin}/${locale}/account/payments?setup=canceled`,
     metadata: {
       user_id: user.id,
     },

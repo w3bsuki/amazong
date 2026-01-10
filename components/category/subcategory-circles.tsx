@@ -85,26 +85,26 @@ export function SubcategoryCircles({
               href={buildUrl(currentCategory.slug)}
               prefetch={true}
               className={cn(
-                "flex flex-col items-center gap-1 min-w-[72px] group shrink-0",
+                "flex flex-col items-center gap-1 min-w-(--spacing-category-item-lg) group shrink-0",
                 "touch-action-manipulation"
               )}
             >
               {/* Treido muted "All" circle */}
               <div className={cn(
                 "rounded-full flex items-center justify-center overflow-hidden",
-                "size-[56px] shrink-0",
+                "size-(--spacing-category-circle) shrink-0",
                 "bg-secondary/30 border border-border/60",
                 "transition-opacity group-active:opacity-90"
               )}>
-                <span className="text-[11px] font-medium text-foreground text-center px-1 leading-tight">
+                <span className="text-tiny font-medium text-foreground text-center px-1 leading-tight">
                   {tCommon("all")}
                 </span>
               </div>
 
               {/* Label */}
               <span className={cn(
-                "text-[11px] font-medium text-center text-foreground px-1 leading-tight",
-                "max-w-[72px] line-clamp-2"
+                "text-tiny font-medium text-center text-foreground px-1 leading-tight",
+                "max-w-(--spacing-category-item-lg) line-clamp-2"
               )}>
                 {tSearch("allProducts")}
               </span>
@@ -119,7 +119,7 @@ export function SubcategoryCircles({
                 href={buildUrl(subcat.slug)}
                 prefetch={true}
                 className={cn(
-                  "flex flex-col items-center gap-1.5 min-w-[72px] group shrink-0",
+                  "flex flex-col items-center gap-1.5 min-w-(--spacing-category-item-lg) group shrink-0",
                   "touch-action-manipulation"
                 )}
               >
@@ -127,17 +127,17 @@ export function SubcategoryCircles({
                 <CategoryCircleVisual
                   category={subcat}
                   active={false}
-                  className="size-[56px] shrink-0 bg-secondary/30 border border-border/60 group-active:opacity-90 transition-opacity"
+                  className="size-(--spacing-category-circle) shrink-0 bg-secondary/30 border border-border/60 group-active:opacity-90 transition-opacity"
                   fallbackIconSize={24}
                   fallbackIconWeight="light"
                   variant="muted"
                 />
 
-                {/* Category Name - Treido: text-[11px] font-medium */}
+                {/* Category Name - Treido: text-tiny font-medium */}
                 <span className={cn(
-                  "text-[11px] font-medium text-center text-foreground px-1 leading-tight",
+                  "text-tiny font-medium text-center text-foreground px-1 leading-tight",
                   "line-clamp-2",
-                  "w-full max-w-[72px]"
+                  "w-full max-w-(--spacing-category-item-lg)"
                 )}>
                   {getCategoryName(subcat)}
                 </span>

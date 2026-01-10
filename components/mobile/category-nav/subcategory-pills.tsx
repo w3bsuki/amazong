@@ -67,7 +67,7 @@ export function SubcategoryPills({
   // Base pill styles (shared)
   const pillBase = cn(
     "h-8 px-3.5 rounded-full", // Treido: h-8, generic px
-    "text-[13px] font-medium whitespace-nowrap", // Treido: text-[13px]
+    "text-compact font-medium whitespace-nowrap", // Treido: text-compact
     "border transition-all shrink-0", // Treido: Flat
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
   )

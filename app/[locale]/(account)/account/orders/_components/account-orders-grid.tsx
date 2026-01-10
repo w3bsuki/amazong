@@ -65,6 +65,7 @@ type OrderRow = {
   id: string
   created_at: string
   status: OrderStatus | null
+  fulfillment_status?: OrderStatus | null
   total_amount: number | string | null
   order_items: OrderItemRow[]
 }
@@ -117,6 +118,8 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
         return "bg-order-processing/10 text-order-processing border-order-processing/20"
       case "shipped":
         return "bg-account-info-soft text-account-info border-account-stat-border"
+      case "partially_shipped":
+        return "bg-account-info-soft text-account-info border-account-stat-border"
       case "delivered":
         return "bg-success/10 text-success border-success/20"
       case "cancelled":
@@ -137,6 +140,8 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
           return "Обработка"
         case "shipped":
           return "Изпратена"
+        case "partially_shipped":
+          return "Частично изпратена"
         case "delivered":
           return "Доставена"
         case "cancelled":
@@ -145,6 +150,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
           return status || "Неизвестен"
       }
     }
+    if (status === "partially_shipped") return "Partially shipped"
     return status ? status.charAt(0).toUpperCase() + status.slice(1) : "Unknown"
   }
 
@@ -190,7 +196,7 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
       {/* Mobile: Revolut-style order cards */}
       <div className="space-y-3 md:hidden">
         {orders.map((order) => {
-          const status = (order.status || "pending") as OrderStatus
+          const displayStatus = (order.fulfillment_status || order.status || "pending") as OrderStatus
           const itemCount = order.order_items.reduce(
             (sum, i) => sum + Number(i.quantity || 0),
             0
@@ -256,8 +262,8 @@ export function AccountOrdersGrid({ orders, locale }: AccountOrdersGridProps) {
                   {/* Footer: Status + Item count + View link */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={`text-2xs font-medium ${getStatusColor(status)}`}>
-                        {getStatusText(status)}
+                      <Badge variant="outline" className={`text-2xs font-medium ${getStatusColor(displayStatus)}`}>
+                        {getStatusText(displayStatus)}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
                         {itemCount} {itemCount === 1 ? t.item : t.items}

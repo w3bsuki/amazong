@@ -1,6 +1,5 @@
 import { stripe } from "@/lib/stripe"
 import { createAdminClient } from "@/lib/supabase/server"
-import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import { getStripeWebhookSecrets } from "@/lib/env"
 import { logError } from "@/lib/structured-log"
@@ -10,8 +9,7 @@ export async function POST(request: Request) {
     const supabase = createAdminClient()
 
     const body = await request.text()
-    const headersList = await headers()
-    const signature = headersList.get("stripe-signature")
+    const signature = request.headers.get("stripe-signature")
 
     if (!signature) {
         return NextResponse.json({ error: "No signature" }, { status: 400 })

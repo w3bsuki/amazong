@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
-import { createClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@/lib/supabase/server'
 import { buildLocaleUrl, inferLocaleFromRequest } from '@/lib/stripe-locale'
 import type Stripe from 'stripe'
 
@@ -11,7 +11,7 @@ const SUBSCRIPTION_PLAN_SELECT_FOR_CHECKOUT =
 type CheckoutSessionCreateParams = Stripe.Checkout.SessionCreateParams
 type CheckoutLineItem = Stripe.Checkout.SessionCreateParams.LineItem
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   // Parse body early to get locale for error URLs
   let body: { planId?: string; billingPeriod?: 'monthly' | 'yearly'; locale?: 'en' | 'bg' } = {}
   try {
@@ -32,17 +32,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing or invalid billingPeriod (expected "monthly" or "yearly")' }, { status: 400 })
   }
 
-  try {
-    const supabase = await createClient()
-    
-    if (!supabase) {
-      return NextResponse.json({ error: 'Database connection failed' }, { status: 500 })
-    }
+  const { supabase, applyCookies } = createRouteHandlerClient(req)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
 
+  try {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get profile info
@@ -53,7 +51,7 @@ export async function POST(req: Request) {
       .single()
 
     if (!profile) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+      return json({ error: 'Profile not found' }, { status: 404 })
     }
 
     // Get the subscription plan by ID
@@ -65,12 +63,12 @@ export async function POST(req: Request) {
       .single()
 
     if (!plan) {
-      return NextResponse.json({ error: 'Plan not found' }, { status: 404 })
+      return json({ error: 'Plan not found' }, { status: 404 })
     }
 
     // Can't subscribe to free tier via Stripe
     if (plan.price_monthly === 0) {
-      return NextResponse.json({ error: 'Cannot subscribe to free tier' }, { status: 400 })
+      return json({ error: 'Cannot subscribe to free tier' }, { status: 400 })
     }
 
     const price = billingPeriod === 'yearly' ? plan.price_yearly : plan.price_monthly
@@ -138,7 +136,7 @@ export async function POST(req: Request) {
       line_items: lineItems,
     })
 
-    return NextResponse.json({ sessionId: session.id, url: session.url })
+    return json({ sessionId: session.id, url: session.url })
   } catch (error) {
     // Log error details server-side (no secrets - Stripe SDK doesn't expose keys in errors)
     // Sanitize: only log error type + message, not full stack with potential request data
@@ -150,7 +148,7 @@ export async function POST(req: Request) {
     const isStripeError = error instanceof Error &&
       (error.message.includes('Stripe') || 'type' in error || 'statusCode' in error)
 
-    return NextResponse.json(
+    return json(
       { error: isStripeError ? 'Payment service error. Please try again.' : 'Internal server error' },
       { status: 500 }
     )

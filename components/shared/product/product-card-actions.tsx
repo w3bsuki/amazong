@@ -109,8 +109,8 @@ export function ProductCardActions({
                         "absolute right-2 top-2 z-10 w-8 h-8 rounded-full flex items-center justify-center outline-none transition-colors",
                         !inWishlist && "lg:pointer-events-none lg:opacity-0 lg:group-hover:pointer-events-auto lg:group-hover:opacity-100 lg:transition-opacity lg:duration-100",
                         inWishlist
-                            ? "bg-background/95 backdrop-blur text-red-500"
-                            : "bg-background/95 backdrop-blur text-muted-foreground active:text-red-500",
+                            ? "bg-background/95 backdrop-blur text-product-wishlist-active"
+                            : "bg-background/95 backdrop-blur text-muted-foreground active:text-product-wishlist-active",
                         isWishlistPending && "pointer-events-none opacity-50",
                         className
                     )}
@@ -122,7 +122,7 @@ export function ProductCardActions({
                     <Heart 
                         className={cn(
                             "w-4 h-4 stroke-[1.5]",
-                            inWishlist && "fill-red-500 text-red-500"
+                            inWishlist && "fill-product-wishlist-active text-product-wishlist-active"
                         )} 
                         weight={inWishlist ? "fill" : "regular"} 
                     />

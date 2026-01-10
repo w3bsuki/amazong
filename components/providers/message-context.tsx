@@ -22,9 +22,9 @@ import type { MessageContextValue } from "@/lib/types/messages"
 import { DEFAULT_MESSAGE_CONTEXT } from "@/lib/types/messages"
 
 // Hooks
-import { useMessagesState } from "@/hooks/use-messages-state"
-import { useMessagesRealtime, useTypingIndicator } from "@/hooks/use-messages-realtime"
-import { useMessagesActions } from "@/hooks/use-messages-actions"
+import { useMessagesState } from "@/components/providers/messages/use-messages-state"
+import { useMessagesRealtime, useTypingIndicator } from "@/components/providers/messages/use-messages-realtime"
+import { useMessagesActions } from "@/components/providers/messages/use-messages-actions"
 
 const MessageContext = createContext<MessageContextValue | undefined>(undefined)
 
@@ -136,3 +136,4 @@ export function MessageProvider({ children }: { children: React.ReactNode }) {
     </MessageContext.Provider>
   )
 }
+

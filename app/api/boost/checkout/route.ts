@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
-import { createClient } from '@/lib/supabase/server'
+import { createRouteHandlerClient } from '@/lib/supabase/server'
 
 const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
 
@@ -13,30 +13,28 @@ const BOOST_PRICING = {
 
 type BoostDuration = keyof typeof BOOST_PRICING
 
-export async function POST(req: Request) {
-  try {
-    const supabase = await createClient()
-    
-    if (!supabase) {
-      return NextResponse.json({ error: 'Database connection failed' }, { status: 500 })
-    }
+export async function POST(req: NextRequest) {
+  const { supabase, applyCookies } = createRouteHandlerClient(req)
+  const json = (body: unknown, init?: Parameters<typeof NextResponse.json>[1]) =>
+    applyCookies(NextResponse.json(body, init))
 
+  try {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await req.json()
     const { productId, durationDays } = body as { productId: string, durationDays: string }
 
     if (!productId || !durationDays) {
-      return NextResponse.json({ error: 'Missing required fields: productId, durationDays' }, { status: 400 })
+      return json({ error: 'Missing required fields: productId, durationDays' }, { status: 400 })
     }
 
     // Validate duration
     if (!(durationDays in BOOST_PRICING)) {
-      return NextResponse.json({ error: 'Invalid duration. Must be 7, 14, or 30 days' }, { status: 400 })
+      return json({ error: 'Invalid duration. Must be 7, 14, or 30 days' }, { status: 400 })
     }
 
     const duration = durationDays as BoostDuration
@@ -50,7 +48,7 @@ export async function POST(req: Request) {
       .single()
 
     if (!profile) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+      return json({ error: 'Profile not found' }, { status: 404 })
     }
 
     // Verify product belongs to seller
@@ -62,12 +60,12 @@ export async function POST(req: Request) {
       .single()
 
     if (!product) {
-      return NextResponse.json({ error: 'Product not found or not owned by you' }, { status: 404 })
+      return json({ error: 'Product not found or not owned by you' }, { status: 404 })
     }
 
     // Check if already boosted
     if (product.is_boosted) {
-      return NextResponse.json({ error: 'This product is already boosted' }, { status: 400 })
+      return json({ error: 'This product is already boosted' }, { status: 400 })
     }
 
     // Create or get Stripe customer
@@ -119,7 +117,7 @@ export async function POST(req: Request) {
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/sell?boost_canceled=true&product_id=${productId}`,
     })
 
-    return NextResponse.json({ 
+    return json({ 
       sessionId: session.id, 
       url: session.url,
       price: pricing.price,
@@ -127,7 +125,7 @@ export async function POST(req: Request) {
     })
   } catch (error) {
     console.error('Boost checkout error:', error)
-    return NextResponse.json(
+    return json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     )

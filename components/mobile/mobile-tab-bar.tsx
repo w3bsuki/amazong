@@ -62,7 +62,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-zinc-200 pb-safe lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border/60 pb-safe lg:hidden"
         role="navigation"
         aria-label="Mobile navigation"
         data-testid="mobile-tab-bar"
@@ -74,7 +74,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             href="/"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center gap-[2px] w-full h-full",
+              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
               "tap-highlight-transparent active:opacity-50 transition-opacity",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
@@ -82,12 +82,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-current={pathname === "/" ? "page" : undefined}
           >
             <Home className={cn(
-              "w-5 h-5 transition-all",
-              pathname === "/" ? "stroke-[2.5] text-zinc-900" : "stroke-[1.5] text-zinc-400"
+              "w-5 h-5 transition-colors",
+              pathname === "/" ? "text-primary" : "text-muted-foreground"
             )} />
             <span className={cn(
-              "text-[9px] font-medium leading-none tracking-tight",
-              pathname === "/" ? "text-zinc-900 font-bold" : "text-zinc-400"
+              "text-2xs font-medium leading-none tracking-tight",
+              pathname === "/" ? "text-primary font-bold" : "text-muted-foreground"
             )}>{t("home")}</span>
           </Link>
 
@@ -96,7 +96,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             type="button"
             onClick={() => menuSheetRef.current?.open()}
             className={cn(
-              "flex flex-col items-center justify-center gap-[2px] w-full h-full",
+              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
               "tap-highlight-transparent active:opacity-50 transition-opacity",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
@@ -104,12 +104,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-haspopup="dialog"
           >
             <LayoutGrid className={cn(
-              "w-5 h-5 transition-all",
-              isActive("/categories") ? "stroke-[2.5] text-zinc-900" : "stroke-[1.5] text-zinc-400"
+              "w-5 h-5 transition-colors",
+              isActive("/categories") ? "text-primary" : "text-muted-foreground"
             )} />
             <span className={cn(
-              "text-[9px] font-medium leading-none tracking-tight",
-              isActive("/categories") ? "text-zinc-900 font-bold" : "text-zinc-400"
+              "text-2xs font-medium leading-none tracking-tight",
+              isActive("/categories") ? "text-primary font-bold" : "text-muted-foreground"
             )}>{t("categories")}</span>
           </button>
 
@@ -118,7 +118,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             href="/sell"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center gap-[2px] w-full h-full",
+              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
               "tap-highlight-transparent active:opacity-50 transition-opacity",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
@@ -126,12 +126,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-current={isActive("/sell") ? "page" : undefined}
           >
             <PlusSquare className={cn(
-              "w-5 h-5 transition-all",
-              isActive("/sell") ? "stroke-[2.5] text-zinc-900" : "stroke-[1.5] text-zinc-400"
+              "w-5 h-5 transition-colors",
+              isActive("/sell") ? "text-primary" : "text-muted-foreground"
             )} />
             <span className={cn(
-              "text-[9px] font-medium leading-none tracking-tight",
-              isActive("/sell") ? "text-zinc-900 font-bold" : "text-zinc-400"
+              "text-2xs font-medium leading-none tracking-tight",
+              isActive("/sell") ? "text-primary font-bold" : "text-muted-foreground"
             )}>{t("sell")}</span>
           </Link>
 
@@ -140,7 +140,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             href="/chat"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center gap-[2px] w-full h-full",
+              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
               "tap-highlight-transparent active:opacity-50 transition-opacity",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
@@ -149,20 +149,20 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
           >
             <span className="relative">
               <MessageCircle className={cn(
-                "w-5 h-5 transition-all",
-                isActive("/chat") ? "stroke-[2.5] text-zinc-900" : "stroke-[1.5] text-zinc-400"
+                "w-5 h-5 transition-colors",
+                isActive("/chat") ? "text-primary" : "text-muted-foreground"
               )} />
               {unreadCount > 0 && (
                 <CountBadge
                   count={unreadCount}
-                  className="absolute -top-1 -right-2 bg-red-600 text-white text-2xs min-w-3.5 h-3.5 px-0.5"
+                  className="absolute -top-1 -right-2 bg-destructive text-destructive-foreground text-2xs min-w-3.5 h-3.5 px-0.5"
                   aria-hidden="true"
                 />
               )}
             </span>
             <span className={cn(
-              "text-[9px] font-medium leading-none tracking-tight",
-              isActive("/chat") ? "text-zinc-900 font-bold" : "text-zinc-400"
+              "text-2xs font-medium leading-none tracking-tight",
+              isActive("/chat") ? "text-primary font-bold" : "text-muted-foreground"
             )}>{t("chat")}</span>
           </Link>
 
@@ -171,7 +171,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             href="/account"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center gap-[2px] w-full h-full",
+              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
               "tap-highlight-transparent active:opacity-50 transition-opacity",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
             )}
@@ -179,12 +179,12 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-current={isActive("/account") ? "page" : undefined}
           >
             <User className={cn(
-              "w-5 h-5 transition-all",
-              isActive("/account") ? "stroke-[2.5] text-zinc-900" : "stroke-[1.5] text-zinc-400"
+              "w-5 h-5 transition-colors",
+              isActive("/account") ? "text-primary" : "text-muted-foreground"
             )} />
             <span className={cn(
-              "text-[9px] font-medium leading-none tracking-tight",
-              isActive("/account") ? "text-zinc-900 font-bold" : "text-zinc-400"
+              "text-2xs font-medium leading-none tracking-tight",
+              isActive("/account") ? "text-primary font-bold" : "text-muted-foreground"
             )}>{t("account")}</span>
           </Link>
         </div>

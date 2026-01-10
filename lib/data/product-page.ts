@@ -67,14 +67,13 @@ export async function fetchProductByUsernameAndSlug(
   productSlug: string
 ): Promise<ProductPageProduct | null> {
   'use cache'
-  cacheTag('products', 'product')
   cacheLife('products')
 
   const addEntityTags = (p: { id?: unknown; seller?: { id?: unknown; username?: unknown } } | null) => {
     if (!p) return
 
     if (typeof p.id === 'string' && p.id) {
-      cacheTag('products', `product-${p.id}`)
+      cacheTag(`product:${p.id}`)
     }
 
     const sellerId = p.seller?.id
@@ -100,10 +99,9 @@ export async function fetchProductByUsernameAndSlug(
   if (!safeUsername || !safeSlug) return null
 
   // Add granular tags for precise invalidation.
-  cacheTag(`product-${safeSlug}`, `seller-${safeUsername}`)
+  cacheTag(`product:slug:${safeSlug}`, `seller-${safeUsername}`)
 
   const supabase = createStaticClient()
-  if (!supabase) return null
 
   // Fetch profile and product in a single optimized query using joins
   const { data: product, error: productError } = await supabase
@@ -265,11 +263,9 @@ export async function fetchSellerProducts(
   limit = 10
 ) {
   'use cache'
-  cacheTag('products', 'seller-products')
   cacheLife('products')
 
   const supabase = createStaticClient()
-  if (!supabase) return []
 
   // In Cache Components mode, never allow implicit string coercion.
   // Avoid Postgres errors when sample/placeholder ids are passed in.

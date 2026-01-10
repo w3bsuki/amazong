@@ -58,7 +58,6 @@ export function UploadZone({
         <>
           <div className={cn(
             "flex size-12 items-center justify-center rounded-full bg-background border border-border shadow-sm mb-2",
-            isDragActive && "scale-105"
           )}>
             {isDragActive ? (
               <Plus className="size-5 text-primary" weight="bold" />

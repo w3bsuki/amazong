@@ -311,7 +311,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
           return (
             <div
               key={product.id}
-              className={`flex items-start gap-3 p-3 rounded-md bg-account-stat-bg border border-account-stat-border transition-all active:scale-[0.99] ${boosted ? 'ring-2 ring-primary/20 border-primary/30' : ''
+              className={`flex items-start gap-3 p-3 rounded-md bg-account-stat-bg border border-account-stat-border ${boosted ? 'ring-2 ring-primary/20 border-primary/30' : ''
                 }`}
             >
               {/* Product Image */}
