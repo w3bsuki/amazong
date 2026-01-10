@@ -1,11 +1,8 @@
 /* ============================================================
-   TREIDO DESIGN SYSTEM - Tailwind v4
-   
-   Structure:
-   - globals.css (this file) - imports + @theme tokens + @layer base
-   - utilities.css - custom utilities, scrollbar, richtext
-   - shadcn-components.css - shadcn/ui data-state selectors
-   - legacy-vars.css - component CSS vars (TODO: migrate out)
+   TREIDO DESIGN SYSTEM - Tailwind v4 + shadcn/ui neutral
+
+   Base: shadcn neutral theme (black/white, true neutrals)
+   Customizations: Tight radius, marketplace semantics
    ============================================================ */
 
 @import "tailwindcss";
@@ -19,7 +16,6 @@
 
 /* ===== iOS ZOOM PREVENTION ===== */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
-
   input[type="text"],
   input[type="search"],
   input[type="email"],
@@ -34,7 +30,137 @@
   }
 }
 
-/* ===== TAILWIND V4 THEME TOKENS ===== */
+/* ===== SHADCN NEUTRAL THEME ===== */
+:root {
+  /* Core palette (shadcn neutral) */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+
+  /* TIGHT RADIUS for marketplace (overrides shadcn's 0.625rem) */
+  --radius: 0.375rem;
+
+  /* Sidebar */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Charts */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+}
+
+/* ===== DARK MODE ===== */
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+
+  /* Sidebar dark */
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.922 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+
+  /* Charts dark */
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+}
+
+/* ===== TAILWIND V4 THEME BRIDGE ===== */
+@theme inline {
+  /* Map CSS vars to Tailwind */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Tight radius scale for marketplace */
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 6px);
+  --radius-3xl: calc(var(--radius) + 8px);
+  --radius-4xl: calc(var(--radius) + 12px);
+}
+
+/* ===== MARKETPLACE-SPECIFIC TOKENS ===== */
 @theme {
   /* === FONTS === */
   --font-sans: "Inter", var(--font-inter), ui-sans-serif, system-ui, -apple-system,
@@ -42,7 +168,7 @@
   --font-serif: "Source Serif 4", serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* === FONT SIZE: Custom scales === */
+  /* === FONT SIZE: Marketplace scales === */
   --text-2xs: 0.625rem;
   --text-2xs--line-height: 0.875rem;
   --text-tiny: 0.6875rem;
@@ -61,14 +187,6 @@
   --letter-spacing-normal: 0;
   --letter-spacing-wide: 0.01em;
   --letter-spacing-wider: 0.02em;
-
-  /* === BORDER RADIUS (Treido: Tight) === */
-  --radius-xs: 0.125rem;
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius-2xl: 1rem;
 
   /* === LAYOUT HEIGHTS === */
   --spacing-header: 3rem;
@@ -109,7 +227,7 @@
   --width-modal: 35rem;
   --width-modal-lg: 56.25rem;
 
-  /* === SHADOWS (FLAT by default) === */
+  /* === SHADOWS (FLAT - marketplace style) === */
   --shadow-2xs: none;
   --shadow-xs: none;
   --shadow-sm: none;
@@ -117,8 +235,8 @@
   --shadow-lg: none;
   --shadow-xl: none;
   --shadow-2xl: none;
-  --shadow-dropdown: 0 2px 4px 0 oklch(0 0 0 / 8%);
-  --shadow-modal: 0 4px 8px 0 oklch(0 0 0 / 10%);
+  --shadow-dropdown: 0 2px 8px 0 oklch(0 0 0 / 8%);
+  --shadow-modal: 0 4px 16px 0 oklch(0 0 0 / 12%);
 
   /* === TRANSITIONS === */
   --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
@@ -128,337 +246,54 @@
   --duration-normal: 200ms;
   --duration-slow: 300ms;
 
-  /* === COLORS: Brand === */
-  --color-brand: oklch(0.48 0.22 260);
-  --color-brand-light: oklch(0.58 0.18 260);
-  --color-brand-dark: oklch(0.40 0.24 260);
-  --color-brand-muted: oklch(0.96 0.04 260);
-
   /* === COLORS: Semantic Status === */
   --color-success: oklch(0.60 0.18 145);
   --color-warning: oklch(0.75 0.16 85);
   --color-error: oklch(0.55 0.25 27);
   --color-info: oklch(0.55 0.18 250);
 
-  /* === COLORS: Marketplace === */
-  --color-canvas: oklch(0.985 0 0);
-  --color-surface: oklch(1 0 0);
-  --color-border-subtle: oklch(0.88 0 0);
-  --color-overlay-dark: oklch(0 0 0 / 50%);
-  --color-overlay-light: oklch(1 0 0 / 80%);
-  --color-overlay-foreground: oklch(1 0 0);
-
   /* === COLORS: Prices === */
-  --color-price: oklch(0.15 0.01 250);
-  --color-price-regular: oklch(0.15 0.01 250);
+  --color-price: var(--foreground);
   --color-price-sale: oklch(0.50 0.22 27);
-  --color-price-original: oklch(0.55 0.01 250);
+  --color-price-original: var(--muted-foreground);
   --color-price-savings: oklch(0.50 0.18 145);
 
   /* === COLORS: Deals/Urgency === */
   --color-deal: oklch(0.55 0.25 27);
   --color-deal-light: oklch(0.96 0.03 27);
-  --color-stock-available: oklch(0.60 0.18 145);
-  --color-stock-low: oklch(0.70 0.18 65);
-  --color-stock-out: oklch(0.50 0.20 27);
 
   /* === COLORS: Ratings === */
   --color-rating: oklch(0.78 0.18 90);
   --color-rating-empty: oklch(0.88 0.03 90);
 
-  /* === COLORS: Shipping === */
-  --color-shipping-free: oklch(0.50 0.18 250);
-  --color-shipping-express: oklch(0.60 0.20 145);
-
-  /* === COLORS: Trust === */
-  --color-verified: oklch(0.55 0.18 250);
-  --color-top-rated: oklch(0.75 0.18 65);
-
-  /* === COLORS: Social === */
-  --color-social-instagram: oklch(0.60 0.22 350);
-  --color-social-tiktok: oklch(0.15 0 0);
-  --color-social-youtube: oklch(0.55 0.25 27);
-  --color-social-twitter: oklch(0.15 0 0);
-
-  /* === COLORS: Order Status === */
-  --color-order-pending: var(--color-warning);
-  --color-order-received: var(--color-info);
-  --color-order-processing: oklch(0.55 0.18 275);
-  --color-order-shipped: oklch(0.55 0.18 310);
-  --color-order-delivered: var(--color-success);
-  --color-order-cancelled: var(--color-error);
-
-  /* === COLORS: shadcn/ui Base (Light) === */
-  --color-background: var(--color-canvas);
-  --color-foreground: oklch(0.12 0 0);
-  --color-card: var(--color-surface);
-  --color-card-foreground: oklch(0.12 0 0);
-  --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.12 0 0);
-  --color-primary: var(--color-brand);
-  --color-primary-foreground: oklch(1 0 0);
-  --color-secondary: oklch(0.96 0 0);
-  --color-secondary-foreground: oklch(0.30 0 0);
-  --color-muted: oklch(0.96 0 0);
-  --color-muted-foreground: oklch(0.45 0 0);
-  --color-accent: oklch(0.96 0 0);
-  --color-accent-foreground: oklch(0.20 0 0);
-  --color-destructive: oklch(0.55 0.25 27);
-  --color-destructive-foreground: oklch(1 0 0);
-  --color-border: var(--color-border-subtle);
-  --color-input: oklch(0.97 0 0);
-  --color-ring: var(--color-brand);
-
-  /* === COLORS: Charts === */
-  --color-chart-1: oklch(0.72 0.06 250);
-  --color-chart-2: oklch(0.79 0.09 36);
-  --color-chart-3: oklch(0.58 0.08 254);
-  --color-chart-4: oklch(0.50 0.08 259);
-  --color-chart-5: oklch(0.42 0.10 264);
-
-  /* === COLORS: Sidebar === */
-  --color-sidebar: oklch(0.97 0 0);
-  --color-sidebar-foreground: oklch(0.20 0 0);
-  --color-sidebar-primary: var(--color-brand);
-  --color-sidebar-primary-foreground: oklch(1 0 0);
-  --color-sidebar-accent: oklch(0.95 0 0);
-  --color-sidebar-accent-foreground: oklch(0.30 0 0);
-  --color-sidebar-border: oklch(0.88 0 0);
-  --color-sidebar-ring: var(--color-brand);
-
-  /* === COLORS: Header === */
-  --color-header-bg: oklch(1 0 0);
-  --color-header-border: oklch(0.92 0 0);
-  --color-header-text: oklch(0.15 0 0);
-  --color-header-text-muted: oklch(0.45 0 0);
-  --color-header-hover: oklch(0.96 0 0);
-  --color-header-active: oklch(0.94 0 0);
-  --color-header-nav-bg: oklch(0.97 0 0);
-
-  /* === COLORS: Subheader === */
-  --color-subheader-text: oklch(0.20 0 0);
-  --color-subheader-bg: oklch(1 0 0);
-  --color-subheader-hover: oklch(0.96 0 0);
-
-  /* === COLORS: Footer === */
-  --color-footer-bg: oklch(0.15 0 0);
-  --color-footer-text: oklch(0.85 0 0);
-  --color-footer-link: oklch(0.70 0.06 260);
-  --color-footer-border: oklch(0.25 0 0);
-
-  /* === COLORS: Links === */
-  --color-link: oklch(0.48 0.20 260);
-  --color-link-hover: oklch(0.40 0.22 260);
-
-  /* === COLORS: Search === */
-  --color-search-bg: oklch(1 0 0);
-  --color-search-border: oklch(0.92 0.01 260);
-  --color-search-icon: var(--color-brand);
-
-  /* === COLORS: CTA Buttons === */
-  --color-cta-primary: var(--color-brand);
-  --color-cta-primary-hover: var(--color-brand-dark);
-  --color-cta-primary-text: oklch(1 0 0);
-  --color-cta-secondary: var(--color-brand);
-  --color-cta-secondary-hover: var(--color-brand-dark);
-  --color-cta-secondary-text: oklch(1 0 0);
-  --color-cta-trust-blue: oklch(0.50 0.20 255);
-  --color-cta-trust-blue-hover: oklch(0.42 0.22 255);
-  --color-cta-trust-blue-text: oklch(1 0 0);
-  --color-cta-buy-now: var(--color-brand);
-  --color-cta-add-cart: var(--color-brand);
-  --color-cta-add-cart-hover: var(--color-brand-dark);
-
-  /* === COLORS: Interactive === */
-  --color-interactive: var(--color-brand);
-  --color-interactive-hover: var(--color-brand-dark);
-
-  /* === COLORS: Notifications === */
+  /* === COLORS: Notification badges === */
   --color-notification: oklch(0.58 0.22 27);
   --color-cart-badge: oklch(0.58 0.22 27);
 
-  /* === COLORS: Product Card === */
-  --color-product-card-bg: oklch(1 0 0);
-  --color-product-card-border: oklch(0.90 0 0);
-  --color-product-wishlist: oklch(0.50 0.20 350);
-  --color-product-wishlist-active: oklch(0.58 0.25 350);
+  /* === COLORS: Wishlist === */
+  --color-wishlist: oklch(0.55 0.22 15);
+  --color-wishlist-active: oklch(0.58 0.25 15);
 
-  /* === COLORS: Filter === */
-  --color-filter-bg: oklch(1 0 0);
-  --color-filter-border: oklch(0.88 0 0);
-  --color-filter-active: var(--color-brand);
+  /* === COLORS: Order Status === */
+  --color-order-pending: var(--color-warning);
+  --color-order-processing: oklch(0.55 0.18 250);
+  --color-order-shipped: oklch(0.55 0.18 200);
+  --color-order-delivered: var(--color-success);
+  --color-order-cancelled: var(--color-error);
 
-  /* === COLORS: Breadcrumb === */
-  --color-breadcrumb-text: oklch(0.45 0 0);
-  --color-breadcrumb-link: oklch(0.48 0.18 260);
-  --color-breadcrumb-current: oklch(0.25 0 0);
-
-  /* === COLORS: Sections === */
-  --color-section-default: oklch(1 0 0);
-  --color-section-muted: oklch(0.97 0 0);
-  --color-section-deals: var(--color-deal);
-
-  /* === COLORS: Forms === */
-  --color-form-section-bg: oklch(1 0 0);
-  --color-form-section-border: oklch(0.92 0 0);
-  --color-form-input-bg: oklch(0.98 0 0);
-
-  /* === COLORS: Badges === */
-  --color-discount-badge-bg: var(--color-deal);
-  --color-discount-badge-text: oklch(1 0 0);
-  --color-badge-condition-bg: oklch(0.97 0 0);
-  --color-badge-condition-text: oklch(0.20 0 0);
-  --color-badge-condition-border: oklch(0.82 0 0);
-  --color-badge-shipping-bg: oklch(0.96 0.015 160);
-  --color-badge-shipping-text: oklch(0.30 0.08 160);
-  --color-badge-shipping-border: oklch(0.88 0.02 160);
-  --color-badge-stock-bg: oklch(0.96 0.03 85);
-  --color-badge-stock-text: oklch(0.35 0.12 85);
-  --color-badge-stock-border: oklch(0.88 0.04 85);
-
-  /* === COLORS: Urgency Banners === */
-  --color-urgency-stock-bg: oklch(0.96 0.04 85);
-  --color-urgency-stock-text: oklch(0.38 0.12 85);
-  --color-urgency-stock-border: oklch(0.90 0.06 85);
-  --color-urgency-sale-bg: oklch(0.96 0.03 250);
-  --color-urgency-sale-text: oklch(0.38 0.12 250);
-  --color-urgency-sale-border: oklch(0.90 0.04 250);
-  --color-urgency-viewers-bg: oklch(0.96 0.03 160);
-  --color-urgency-viewers-text: oklch(0.38 0.12 160);
-  --color-urgency-viewers-border: oklch(0.90 0.04 160);
-  --color-urgency-hot-bg: oklch(0.96 0.04 65);
-  --color-urgency-hot-text: oklch(0.38 0.12 50);
-  --color-urgency-hot-border: oklch(0.90 0.05 65);
-
-  /* === COLORS: Seller Card === */
-  --color-seller-card: oklch(0.98 0.01 250);
-  --color-seller-card-border: oklch(0.90 0.01 250);
-  --color-seller-banner: oklch(0.50 0.20 255);
-  --color-seller-banner-text: oklch(1 0 0);
-  --color-seller-banner-pill-bg: oklch(1 0 0);
-  --color-seller-banner-pill-text: oklch(0.40 0.18 255);
-
-  /* === COLORS: Category Badge === */
-  --color-category-badge-bg: oklch(0.97 0 0);
-  --color-category-badge-text: oklch(0.25 0 0);
-  --color-category-badge-border: oklch(0.88 0 0);
-  --color-category-badge-icon: oklch(0.50 0.15 250);
-}
-
-/* ===== DARK MODE ===== */
-.dark {
-  --color-brand: oklch(0.60 0.16 250);
-  --color-brand-light: oklch(0.70 0.14 250);
-  --color-brand-dark: oklch(0.50 0.18 250);
-
-  --color-success: oklch(0.65 0.16 145);
-  --color-warning: oklch(0.70 0.14 85);
-  --color-error: oklch(0.60 0.22 27);
-  --color-info: oklch(0.60 0.16 250);
-
-  --color-canvas: oklch(0.18 0.02 250);
-  --color-surface: oklch(0.22 0.02 250);
-  --color-border-subtle: oklch(0.35 0.02 250);
-
-  --shadow-dropdown: 0 2px 4px 0 oklch(0 0 0 / 20%);
-  --shadow-modal: 0 4px 12px 0 oklch(0 0 0 / 30%);
-
-  --color-background: var(--color-canvas);
-  --color-foreground: oklch(0.95 0 0);
-  --color-card: var(--color-surface);
-  --color-card-foreground: oklch(0.95 0 0);
-  --color-popover: oklch(0.20 0.02 250);
-  --color-popover-foreground: oklch(0.95 0 0);
-  --color-primary: var(--color-brand);
-  --color-primary-foreground: oklch(1 0 0);
-  --color-secondary: oklch(0.28 0.02 250);
-  --color-secondary-foreground: oklch(0.90 0 0);
-  --color-muted: oklch(0.28 0.02 250);
-  --color-muted-foreground: oklch(0.70 0 0);
-  --color-accent: oklch(0.32 0.04 250);
-  --color-accent-foreground: oklch(0.85 0.06 250);
-  --color-destructive: oklch(0.55 0.22 27);
-  --color-destructive-foreground: oklch(1 0 0);
-  --color-border: var(--color-border-subtle);
-  --color-input: oklch(0.35 0.02 250);
-  --color-ring: var(--color-brand);
-
-  --color-sidebar: oklch(0.22 0.02 250);
-  --color-sidebar-foreground: oklch(0.95 0 0);
-  --color-sidebar-primary: var(--color-brand);
-  --color-sidebar-border: oklch(0.35 0.02 250);
-
-  --color-header-bg: oklch(0.15 0.015 250);
-  --color-header-border: oklch(0.28 0.02 250);
-  --color-header-text: oklch(0.95 0 0);
-  --color-header-text-muted: oklch(0.70 0 0);
-  --color-header-hover: oklch(0.28 0.02 250);
-  --color-header-active: oklch(0.32 0.02 250);
-  --color-header-nav-bg: oklch(0.20 0.02 250);
-
-  --color-subheader-text: oklch(0.90 0 0);
-  --color-subheader-bg: oklch(0.18 0.02 250);
-  --color-subheader-hover: oklch(0.25 0.02 250);
-
-  --color-cta-trust-blue: oklch(0.55 0.18 255);
-  --color-cta-trust-blue-hover: oklch(0.48 0.20 255);
-
-  --color-footer-bg: oklch(0.15 0.015 250);
-  --color-footer-border: oklch(0.28 0.02 250);
-
-  --color-cta-primary: var(--color-brand);
-  --color-cta-primary-hover: var(--color-brand-dark);
-  --color-cta-secondary: oklch(0.95 0 0);
-  --color-cta-secondary-hover: oklch(0.90 0 0);
-  --color-cta-secondary-text: oklch(0.20 0.02 250);
-
-  --color-filter-bg: var(--color-surface);
-  --color-filter-border: var(--color-border-subtle);
-  --color-filter-active: var(--color-brand);
-
-  --color-product-card-bg: var(--color-surface);
-  --color-product-card-border: var(--color-border-subtle);
-
-  --color-form-section-bg: var(--color-surface);
-  --color-form-section-border: var(--color-border-subtle);
-  --color-form-input-bg: oklch(0.26 0.02 250);
-
-  --color-order-processing: oklch(0.65 0.14 275);
-  --color-order-shipped: oklch(0.65 0.14 310);
-
-  --color-urgency-stock-bg: oklch(0.25 0.04 85);
-  --color-urgency-stock-text: oklch(0.85 0.08 85);
-  --color-urgency-stock-border: oklch(0.35 0.05 85);
-  --color-urgency-sale-bg: oklch(0.25 0.03 250);
-  --color-urgency-sale-text: oklch(0.85 0.08 250);
-  --color-urgency-sale-border: oklch(0.35 0.04 250);
-  --color-urgency-viewers-bg: oklch(0.25 0.03 160);
-  --color-urgency-viewers-text: oklch(0.85 0.08 160);
-  --color-urgency-viewers-border: oklch(0.35 0.04 160);
-  --color-urgency-hot-bg: oklch(0.25 0.04 65);
-  --color-urgency-hot-text: oklch(0.85 0.08 50);
-  --color-urgency-hot-border: oklch(0.35 0.05 65);
-
-  --color-badge-condition-bg: oklch(0.25 0 0);
-  --color-badge-condition-text: oklch(0.92 0 0);
-  --color-badge-condition-border: oklch(0.38 0 0);
-  --color-badge-shipping-bg: oklch(0.22 0.02 160);
-  --color-badge-shipping-text: oklch(0.80 0.06 160);
-  --color-badge-shipping-border: oklch(0.35 0.02 160);
-  --color-badge-stock-bg: oklch(0.25 0.03 85);
-  --color-badge-stock-text: oklch(0.85 0.08 85);
-  --color-badge-stock-border: oklch(0.38 0.04 85);
-
-  --color-seller-card: oklch(0.22 0.01 250);
-  --color-seller-card-border: oklch(0.35 0.01 250);
-  --color-seller-banner: oklch(0.45 0.16 255);
-  --color-seller-banner-pill-bg: oklch(0.20 0 0);
-  --color-seller-banner-pill-text: oklch(0.85 0.10 250);
-
-  --color-category-badge-bg: oklch(0.25 0 0);
-  --color-category-badge-text: oklch(0.92 0 0);
-  --color-category-badge-border: oklch(0.35 0 0);
-  --color-category-badge-icon: oklch(0.70 0.12 250);
+  /* === LEGACY ALIASES (for backward compatibility) === */
+  /* These map old Treido tokens to shadcn equivalents */
+  --color-brand: var(--primary);
+  --color-brand-dark: var(--primary);
+  --color-brand-light: var(--muted-foreground);
+  --color-cta-trust-blue: var(--primary);
+  --color-cta-trust-blue-hover: var(--primary);
+  --color-cta-primary: var(--primary);
+  --color-cta-primary-hover: var(--primary);
+  --color-interactive: var(--primary);
+  --color-interactive-hover: var(--primary);
+  --color-link: var(--primary);
+  --color-link-hover: var(--foreground);
 }
 
 /* ===== BASE LAYER ===== */
@@ -468,12 +303,12 @@
   }
 
   ::selection {
-    background: var(--color-foreground);
-    color: var(--color-background);
+    background: var(--foreground);
+    color: var(--background);
   }
 
   :where(a, button, input, select, textarea, summary, [role="button"], [role="link"], [tabindex]:not([tabindex="-1"])):focus-visible {
-    outline: 2px solid var(--color-ring) !important;
+    outline: 2px solid var(--ring) !important;
     outline-offset: 2px !important;
   }
 

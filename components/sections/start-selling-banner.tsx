@@ -39,8 +39,8 @@ export function StartSellingBanner({
           href="/sell"
           className={cn(
             "block w-full rounded-md",
-            "bg-muted/30 text-foreground", // Treido: Flat, professional, no high contrast pop
-            "border border-border/60",
+            "bg-secondary text-foreground",
+            "border border-border",
             "px-3 py-3",
             "active:opacity-95 transition-opacity",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -62,10 +62,10 @@ export function StartSellingBanner({
 
             {/* Right: Arrow pill */}
             <span
-              className="size-8 shrink-0 rounded-md bg-background border border-border/50 flex items-center justify-center text-muted-foreground"
+              className="size-8 shrink-0 rounded-md bg-primary text-primary-foreground flex items-center justify-center"
               aria-hidden="true"
             >
-              <ArrowRight size={16} weight="regular" />
+              <ArrowRight size={16} weight="bold" />
             </span>
           </div>
         </Link>
@@ -91,16 +91,16 @@ export function StartSellingBanner({
       href="/sell"
       className={cn(
         "flex items-center justify-between w-full gap-3",
-        "border border-brand/30 bg-brand/5 text-foreground",
+        "border border-border bg-secondary text-foreground",
         "px-3 py-2.5 rounded-md",
-        "hover:bg-brand/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         "transition-colors duration-100",
         className
       )}
     >
       {/* Left Icon Block */}
       <span
-        className="size-9 shrink-0 rounded-md border border-brand/20 bg-brand/10 text-brand flex items-center justify-center"
+        className="size-9 shrink-0 rounded-md bg-primary text-primary-foreground flex items-center justify-center"
         aria-hidden="true"
       >
         <Storefront size={16} weight="fill" />
@@ -120,7 +120,7 @@ export function StartSellingBanner({
 
       {/* Right Arrow */}
       <span
-        className="size-8 shrink-0 rounded-md border border-brand/20 bg-brand/10 text-brand flex items-center justify-center"
+        className="size-8 shrink-0 rounded-md bg-primary text-primary-foreground flex items-center justify-center"
         aria-hidden="true"
       >
         <ArrowRight size={14} weight="bold" />

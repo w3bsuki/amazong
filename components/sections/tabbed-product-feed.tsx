@@ -324,7 +324,7 @@ export function TabbedProductFeed({
               <div className="overflow-x-auto no-scrollbar pb-1">
                 <TabsList
                   aria-label={t("tabsAriaLabel")}
-                  className="h-auto w-max min-w-full justify-start gap-4 rounded-none border-0 border-b border-border/50 bg-transparent p-0 pb-1 md:w-full md:justify-center"
+                  className="h-auto w-max min-w-full justify-start gap-2 rounded-none border-0 bg-transparent p-0 md:w-full md:justify-center"
                 >
                   {tabs.map((tab) => {
                     return (
@@ -332,13 +332,9 @@ export function TabbedProductFeed({
                         key={tab.id}
                         value={tab.id}
                         className={cn(
-                          "relative h-touch-sm flex-none rounded-none border-none bg-transparent px-1 py-2 text-sm md:text-base font-semibold",
-                          "text-muted-foreground hover:text-foreground",
-                          "data-[state=active]:bg-transparent data-[state=active]:text-foreground",
-                          "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:rounded-full",
-                          "after:bg-primary after:scale-x-0 after:transition-transform after:duration-100",
-                          "data-[state=active]:after:scale-x-100",
-                          "md:flex-1 md:justify-center"
+                          "h-8 flex-none rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
+                          "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground",
+                          "data-[state=active]:bg-foreground data-[state=active]:text-background"
                         )}
                       >
                         <span className="whitespace-nowrap">{tab.label}</span>

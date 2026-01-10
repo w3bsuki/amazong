@@ -51,8 +51,8 @@ function formatTimeAgo(input: string, locale: string): string | null {
 // =============================================================================
 
 const productCardVariants = cva(
-  // Treido: tap-transparent, subtle border, active feedback via opacity (not scale)
-  "tap-transparent group relative block h-full min-w-0 cursor-pointer rounded-md border-transparent shadow-sm bg-card p-2 active:opacity-95 transition-colors",
+  // Marketplace style: no shadow, no padding, tight and clean
+  "tap-transparent group relative block h-full min-w-0 cursor-pointer active:opacity-95 transition-colors",
   {
     variants: {
       variant: {
@@ -263,7 +263,7 @@ function ProductCard({
         <span className="sr-only">{title}</span>
       </Link>
 
-      {/* Image Container - Treido: aspect-square, bg-muted, rounded-sm (inner radius smaller than card) */}
+      {/* Image Container - tight rounded corners */}
       <div className="relative aspect-square overflow-hidden rounded-sm bg-muted">
         <ProductCardImage
           src={image}
