@@ -117,26 +117,29 @@ export function InlineFilterBar({
     >
       {/* Treido: 40px height, dense inline filter strip */}
       <div className="flex items-center h-10 px-(--page-inset) gap-2 overflow-x-auto no-scrollbar">
-        {/* All Filters button - prominent */}
+        {/* All Filters button - prominent, filled style per DESIGN.md */}
         <button
           type="button"
           onClick={onAllFiltersClick}
           className={cn(
             "flex items-center gap-1.5 shrink-0",
-            "h-8 bg-background px-3 rounded-md border border-border",
-            "text-compact font-semibold text-foreground",
-            "tap-highlight-transparent active:opacity-60",
+            "h-touch-sm px-3 rounded-full",
+            "text-sm font-medium",
+            "tap-highlight-transparent active:opacity-70",
             "transition-colors",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            activeFilterCount > 0
+              ? "bg-foreground text-background"
+              : "bg-muted text-foreground border border-border/60"
           )}
           aria-haspopup="dialog"
         >
-          <Sliders size={14} weight="bold" className="shrink-0 stroke-[2.5]" />
+          <Sliders size={14} weight="bold" className="shrink-0" />
           <span>{t("filters")}</span>
           {activeFilterCount > 0 && (
             <span
               className={cn(
-                "bg-foreground text-background",
+                "bg-background text-foreground",
                 "text-2xs font-bold rounded-full",
                 "min-w-4 h-4 px-1",
                 "flex items-center justify-center"
@@ -149,7 +152,7 @@ export function InlineFilterBar({
 
 
 
-        {/* Quick filter triggers - Treido: outlined pill style with dropdown caret */}
+        {/* Quick filter triggers - outlined pill style with dropdown caret */}
         {filters.map((filter) => {
           const isActive = searchParams.getAll(filter.paramKey).length > 0
 
@@ -160,23 +163,22 @@ export function InlineFilterBar({
               onClick={() => handleFilterTrigger(filter)}
               className={cn(
                 "flex items-center gap-1 shrink-0",
-                "h-8 px-4 rounded-md",
-                "border",
-                "text-compact font-semibold",
+                "h-touch-sm px-3 rounded-full",
+                "text-sm font-medium",
                 "whitespace-nowrap",
-                "tap-highlight-transparent active:bg-muted/30 active:opacity-90",
+                "tap-highlight-transparent active:opacity-70",
                 "transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 isActive
-                  ? "bg-foreground text-background border-foreground"
-                  : "bg-background text-muted-foreground border-border"
+                  ? "bg-foreground text-background"
+                  : "bg-background text-muted-foreground border border-border/60 hover:bg-muted/40 hover:text-foreground"
               )}
               aria-haspopup="dialog"
             >
               <span>{filter.label}</span>
               <CaretDown size={12} weight="bold" className={cn(
                 "shrink-0",
-                isActive ? "text-background/60" : "text-muted-foreground/50"
+                isActive ? "text-background/70" : "text-muted-foreground/60"
               )} />
             </button>
           )

@@ -197,25 +197,27 @@ export function QuickFilterRow({
                     role="group"
                     aria-label={tFilters("filters")}
                 >
-                    {/* All Filters Pill (first) */}
+                    {/* All Filters Pill (first) - filled style */}
                     <button
                         type="button"
                         onClick={handleAllFiltersClick}
                         className={cn(
-                            "shrink-0 h-touch-sm px-3 rounded-md",
+                            "shrink-0 h-touch-sm px-3 rounded-full",
                             "flex items-center gap-1.5",
-                            "text-xs font-medium",
-                            "border transition-colors",
+                            "text-sm font-medium",
+                            "transition-colors",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+                            "tap-highlight-transparent active:opacity-70",
                             activeFilterCount > 0
-                                ? "bg-muted text-foreground border-border/60"
-                                : "bg-background hover:bg-muted/40 active:bg-muted/60 border-border/60 text-foreground"
+                                ? "bg-foreground text-background"
+                                : "bg-muted text-foreground border border-border/60"
                         )}
                         aria-haspopup="dialog"
                     >
-                        <Sliders size={14} weight="regular" className="shrink-0" />
+                        <Sliders size={14} weight="bold" className="shrink-0" />
                         <span className="whitespace-nowrap">{tHub("allFilters")}</span>
                         {activeFilterCount > 0 && (
-                            <span className="bg-foreground text-background text-2xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
+                            <span className="bg-background text-foreground text-2xs font-bold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
                                 {activeFilterCount}
                             </span>
                         )}
@@ -224,25 +226,26 @@ export function QuickFilterRow({
                     {/* Divider (matches reference spacing) */}
                     <div className="h-4 w-px bg-border/60 mx-0.5 shrink-0" aria-hidden="true" />
 
-                    {/* Sort Pill (second) */}
+                    {/* Sort Pill (second) - ghost style */}
                     <button
                         type="button"
                         onClick={() => setSortOpen(true)}
                         className={cn(
-                            "shrink-0 h-touch-sm px-3 rounded-md",
+                            "shrink-0 h-touch-sm px-3 rounded-full",
                             "flex items-center gap-1.5",
-                            "text-xs font-medium whitespace-nowrap",
-                            "border transition-colors",
-                            "bg-transparent text-muted-foreground border-transparent",
+                            "text-sm font-medium whitespace-nowrap",
+                            "transition-colors",
+                            "bg-background text-muted-foreground border border-border/60",
                             "hover:bg-muted/40 hover:text-foreground",
-                            "active:bg-muted/60"
+                            "active:opacity-70",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                         )}
                         aria-haspopup="dialog"
                     >
                         <span>{tFilters("sortBy")}</span>
                     </button>
 
-                    {/* Quick Filter Pills */}
+                    {/* Quick Filter Pills - outlined style with inverted active */}
                     {pills.map((pill) => {
                         const Icon = pill.icon
                         return (
@@ -251,13 +254,15 @@ export function QuickFilterRow({
                                 type="button"
                                 onClick={() => handlePillClick({ section: pill.section, label: pill.label })}
                                 className={cn(
-                                    "shrink-0 h-touch-sm px-3 rounded-md",
+                                    "shrink-0 h-touch-sm px-3 rounded-full",
                                     "flex items-center gap-1.5",
-                                    "text-xs font-medium whitespace-nowrap",
-                                    "border transition-colors",
+                                    "text-sm font-medium whitespace-nowrap",
+                                    "transition-colors",
+                                    "tap-highlight-transparent active:opacity-70",
+                                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                                     pill.isActive
-                                        ? "bg-foreground text-background border-foreground"
-                                        : "bg-transparent text-muted-foreground border-transparent hover:bg-muted/40 hover:text-foreground active:bg-muted/60"
+                                        ? "bg-foreground text-background"
+                                        : "bg-background text-muted-foreground border border-border/60 hover:bg-muted/40 hover:text-foreground"
                                 )}
                                 aria-pressed={pill.isActive}
                                 aria-haspopup="dialog"
