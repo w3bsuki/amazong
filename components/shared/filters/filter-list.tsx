@@ -95,14 +95,14 @@ export function FilterList({
                 type="button"
                 onClick={() => handleSelect(option)}
                 className={cn(
-                  "w-full flex items-center justify-between px-4 h-12 transition-colors text-left",
+                  "w-full flex items-center justify-between px-4 h-10 transition-colors text-left",
                   isActive
                     ? "bg-muted/40 text-foreground font-medium"
                     : "text-foreground active:bg-muted/30"
                 )}
                 aria-pressed={isActive}
               >
-                <span className="text-base font-normal">{option}</span>
+                <span className="text-sm">{option}</span>
                 {isActive && <Check size={16} weight="bold" />}
               </button>
             )

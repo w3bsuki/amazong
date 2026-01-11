@@ -521,10 +521,10 @@ export function FilterHub({
                     key={section.id}
                     type="button"
                     onClick={() => setActiveSection(section.id)}
-                    className="w-full flex items-center justify-between px-(--page-inset) h-12 active:bg-muted/30 transition-colors text-left"
+                    className="w-full flex items-center justify-between px-(--page-inset) h-10 active:bg-muted/30 transition-colors text-left"
                   >
                     <div className="flex flex-col">
-                      <span className="text-base font-normal text-foreground">
+                      <span className="text-sm text-foreground">
                         {section.label}
                       </span>
                       {summary && (
@@ -560,7 +560,7 @@ export function FilterHub({
                           }))
                         }
                         className={cn(
-                          "w-full flex items-center gap-3 px-(--page-inset) h-12 transition-colors text-left",
+                          "w-full flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
                           isActive
                             ? "bg-muted/40 text-foreground font-medium"
                             : "text-foreground active:bg-muted/30"
@@ -576,7 +576,7 @@ export function FilterHub({
                             />
                           ))}
                         </div>
-                        <span className="text-base font-normal">{t("andUp")}</span>
+                        <span className="text-sm">{t("andUp")}</span>
                         {isActive && (
                           <Check size={16} weight="bold" className="ml-auto" />
                         )}
@@ -609,7 +609,7 @@ export function FilterHub({
                       }))
                     }
                     className={cn(
-                      "w-full flex items-center gap-3 px-(--page-inset) h-12 transition-colors text-left",
+                      "w-full flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
                       pending.availability === "instock"
                         ? "bg-muted/40 text-foreground font-medium"
                         : "text-foreground active:bg-muted/30"
@@ -632,7 +632,7 @@ export function FilterHub({
                         />
                       )}
                     </div>
-                    <span className="text-base font-normal">{t("inStock")}</span>
+                    <span className="text-sm">{t("inStock")}</span>
                   </button>
                 </div>
               )}
@@ -645,14 +645,14 @@ export function FilterHub({
                     type="button"
                     onClick={() => setPendingCategorySlug(null)}
                     className={cn(
-                      "w-full flex items-center justify-between px-(--page-inset) h-12 transition-colors text-left",
+                      "w-full flex items-center justify-between px-(--page-inset) h-10 transition-colors text-left",
                       pendingCategorySlug === null
                         ? "bg-muted/40 text-foreground font-medium"
                         : "text-foreground active:bg-muted/30"
                     )}
                     aria-pressed={pendingCategorySlug === null}
                   >
-                    <span className="text-base font-normal">
+                    <span className="text-sm">
                       {tHub("allInCategory", { category: categoryName || "" })}
                     </span>
                     {pendingCategorySlug === null && <Check size={16} weight="bold" />}
@@ -668,14 +668,14 @@ export function FilterHub({
                         type="button"
                         onClick={() => setPendingCategorySlug(isActive ? null : subcat.slug)}
                         className={cn(
-                          "w-full flex items-center justify-between px-(--page-inset) h-12 transition-colors text-left",
+                          "w-full flex items-center justify-between px-(--page-inset) h-10 transition-colors text-left",
                           isActive
                             ? "bg-muted/40 text-foreground font-medium"
                             : "text-foreground active:bg-muted/30"
                         )}
                         aria-pressed={isActive}
                       >
-                        <span className="text-base font-normal">{subcatName}</span>
+                        <span className="text-sm">{subcatName}</span>
                         {isActive && <Check size={16} weight="bold" />}
                       </button>
                     )
@@ -704,7 +704,7 @@ export function FilterHub({
                         setPendingAttrValues(attr.name, isChecked ? [] : ["true"])
                       }
                       className={cn(
-                        "-mx-(--page-inset) w-[calc(100%+var(--page-inset)*2)] flex items-center gap-3 px-(--page-inset) h-12 transition-colors text-left",
+                        "-mx-(--page-inset) w-[calc(100%+var(--page-inset)*2)] flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
                         isChecked
                           ? "bg-muted/40 text-foreground font-medium"
                           : "text-foreground active:bg-muted/30"
@@ -725,7 +725,7 @@ export function FilterHub({
                           />
                         )}
                       </div>
-                      <span className="text-base font-normal">
+                      <span className="text-sm">
                         {locale === "bg" ? "Да" : "Yes"}
                       </span>
                     </button>
@@ -804,14 +804,14 @@ export function FilterHub({
                               setPendingAttrValues(attr.name, newValues)
                             }}
                             className={cn(
-                              "w-full flex items-center justify-between px-(--page-inset) h-12 transition-colors text-left",
+                              "w-full flex items-center justify-between px-(--page-inset) h-10 transition-colors text-left",
                               isActive
                                 ? "bg-muted/40 text-foreground font-medium"
                                 : "text-foreground active:bg-muted/30"
                             )}
                             aria-pressed={isActive}
                           >
-                            <span className="text-base font-normal">{option}</span>
+                            <span className="text-sm">{option}</span>
                             {isActive && <Check size={16} weight="bold" />}
                           </button>
                         )

@@ -332,7 +332,7 @@ export function FilterModal({
           type="button"
           onClick={() => setPendingAttrValues(attribute.name, isChecked ? [] : ["true"])}
           className={cn(
-            "w-full flex items-center gap-3 px-3 h-12 rounded-lg transition-colors",
+            "w-full flex items-center gap-3 px-3 h-10 rounded-lg transition-colors",
             isChecked ? "bg-secondary text-primary font-medium" : "active:bg-muted"
           )}
           aria-pressed={isChecked}
@@ -347,7 +347,7 @@ export function FilterModal({
               <Check size={12} weight="bold" className="text-primary-foreground" />
             )}
           </div>
-          <span className="text-base font-normal">{locale === "bg" ? "Да" : "Yes"}</span>
+          <span className="text-sm">{locale === "bg" ? "Да" : "Yes"}</span>
         </button>
       )
     }
@@ -418,7 +418,7 @@ export function FilterModal({
                   setPendingAttrValues(attribute.name, newValues)
                 }}
                 className={cn(
-                  "w-full flex items-center justify-between h-12 transition-colors text-left",
+                  "w-full flex items-center justify-between h-10 transition-colors text-left",
                   rowPadClass,
                   isActive
                     ? "bg-muted/40 text-foreground font-medium"
@@ -426,7 +426,7 @@ export function FilterModal({
                 )}
                 aria-pressed={isActive}
               >
-                <span className="text-base font-normal">{option}</span>
+                <span className="text-sm">{option}</span>
                 {isActive && <Check size={18} weight="bold" />}
               </button>
             )
@@ -466,7 +466,7 @@ export function FilterModal({
                   }))
                 }
                 className={cn(
-                  "w-full flex items-center gap-3 h-12 transition-colors text-left",
+                  "w-full flex items-center gap-3 h-10 transition-colors text-left",
                   rowPadClass,
                   isActive
                     ? "bg-muted/40 text-foreground font-medium"
@@ -479,7 +479,7 @@ export function FilterModal({
                     <Star key={i} size={18} weight={i < stars ? "fill" : "regular"} />
                   ))}
                 </div>
-                <span className="text-base font-normal">{t("andUp")}</span>
+                <span className="text-sm">{t("andUp")}</span>
                 {isActive && <Check size={18} weight="bold" className="ml-auto" />}
               </button>
             )
@@ -499,7 +499,7 @@ export function FilterModal({
               }))
             }
             className={cn(
-              "w-full flex items-center gap-3 h-12 transition-colors text-left",
+              "w-full flex items-center gap-3 h-10 transition-colors text-left",
               rowPadClass,
               pending.availability === "instock"
                 ? "bg-muted/40 text-foreground font-medium"
@@ -517,7 +517,7 @@ export function FilterModal({
                 <Check size={12} weight="bold" className="text-primary-foreground" />
               )}
             </div>
-            <span className="text-base font-normal">{t("inStock")}</span>
+            <span className="text-sm">{t("inStock")}</span>
           </button>
         </div>
       )}
@@ -530,7 +530,7 @@ export function FilterModal({
               type="button"
               onClick={() => setPendingCategorySlug(null)}
               className={cn(
-                "w-full flex items-center justify-between h-12 transition-colors text-left",
+                "w-full flex items-center justify-between h-10 transition-colors text-left",
                 rowPadClass,
                 pendingCategorySlug === null
                   ? "bg-muted/40 text-foreground font-medium"
@@ -538,7 +538,7 @@ export function FilterModal({
               )}
               aria-pressed={pendingCategorySlug === null}
             >
-              <span className="text-base font-normal">{t("browseAllCategories")}</span>
+              <span className="text-sm">{t("browseAllCategories")}</span>
               {pendingCategorySlug === null && <Check size={18} weight="bold" />}
             </button>
           )}
@@ -548,7 +548,7 @@ export function FilterModal({
               type="button"
               onClick={() => setPendingCategorySlug(null)}
               className={cn(
-                "w-full flex items-center justify-between h-12 transition-colors text-left",
+                "w-full flex items-center justify-between h-10 transition-colors text-left",
                 rowPadClass,
                 pendingCategorySlug === null
                   ? "bg-muted/40 text-foreground font-medium"
@@ -556,7 +556,7 @@ export function FilterModal({
               )}
               aria-pressed={pendingCategorySlug === null}
             >
-              <span className="text-base font-medium">
+              <span className="text-sm font-medium">
                 {tHub("allInCategory", { category: categoryName || "" })}
               </span>
               {pendingCategorySlug === null && <Check size={18} weight="bold" />}
@@ -572,7 +572,7 @@ export function FilterModal({
                 type="button"
                 onClick={() => setPendingCategorySlug(isActive ? null : subcat.slug)}
                 className={cn(
-                  "w-full flex items-center justify-between h-12 transition-colors text-left",
+                  "w-full flex items-center justify-between h-10 transition-colors text-left",
                   rowPadClass,
                   isActive
                     ? "bg-muted/40 text-foreground font-medium"
@@ -580,7 +580,7 @@ export function FilterModal({
                 )}
                 aria-pressed={isActive}
               >
-                <span className="text-base font-normal">{subcatName}</span>
+                <span className="text-sm">{subcatName}</span>
                 {isActive && <Check size={18} weight="bold" />}
               </button>
             )
