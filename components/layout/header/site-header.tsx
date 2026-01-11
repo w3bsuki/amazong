@@ -3,6 +3,7 @@
 // Modular dropdown components
 import {
   AccountDropdown,
+  MessagesDropdown,
   NotificationsDropdown,
   LocaleDeliveryDropdown,
   WishlistDropdown,
@@ -131,6 +132,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
           </Link>
           <div className="flex-1" />
           <div className="flex items-center">
+            {user && <MessagesDropdown user={user} />}
             {user && <NotificationsDropdown user={user} />}
             <MobileWishlistButton />
             <MobileCartDropdown />
@@ -172,7 +174,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
         <div className="container grid grid-cols-[auto_1fr_auto] items-center h-14 md:h-16 gap-3">
           {/* Left Section - Logo + Location */}
           <div className="flex items-center gap-1">
-            <Link href="/" prefetch={true} className="flex items-center shrink-0 outline-none">
+            <Link href="/" prefetch={true} className="flex items-center shrink-0 outline-none" aria-label={locale === "bg" ? "Начало" : "Home"}>
               <span className="text-xl font-semibold tracking-tight leading-none text-header-text">treido.</span>
             </Link>
             <div className="hidden lg:block">
@@ -198,6 +200,10 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
                 </div>
 
                 <div className="hidden md:block">
+                  <MessagesDropdown user={user} />
+                </div>
+
+                <div className="hidden md:block">
                   <NotificationsDropdown user={user} />
                 </div>
 
@@ -205,8 +211,8 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
                   <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"} title={locale === "bg" ? "Продай" : "Sell"}>
                     <Button
                       variant="ghost"
-                      size="icon-lg"
-                      className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
+                      size="icon"
+                      className="size-10 [&_svg]:size-6 border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
                     >
                       <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
                       <Camera weight="regular" aria-hidden="true" />
@@ -243,8 +249,8 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
                   <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"} title={locale === "bg" ? "Продай" : "Sell"}>
                     <Button
                       variant="ghost"
-                      size="icon-lg"
-                      className="border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
+                      size="icon"
+                      className="size-10 [&_svg]:size-6 border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative"
                     >
                       <span className="sr-only">{locale === "bg" ? "Продай" : "Sell"}</span>
                       <Camera weight="regular" aria-hidden="true" />

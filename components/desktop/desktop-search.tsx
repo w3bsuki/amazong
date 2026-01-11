@@ -116,7 +116,7 @@ export function DesktopSearch() {
 
 
   return (
-    <div className="w-full h-10">
+    <div className="w-full">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverAnchor asChild>
           <form 
@@ -124,47 +124,47 @@ export function DesktopSearch() {
             onSubmit={handleSearch}
             action={`/${locale}/search`}
             method="get"
-            className="flex h-full w-full rounded-full overflow-hidden bg-background border border-header-text/20 focus-within:border-header-text/35 focus-within:bg-background"
+            className="relative flex h-11 w-full items-center rounded-full border border-input bg-background transition-colors focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]"
           >
-            {/* Search Input */}
-            <div className="relative flex-1 flex items-center">
-              <MagnifyingGlass size={18} weight="regular" className="absolute left-4 text-muted-foreground pointer-events-none" />
-              <Input
-                ref={inputRef}
-                type="search"
-                inputMode="search"
-                enterKeyHint="search"
-                name="q"
-                required
-                placeholder={
-                  locale === "bg"
-                    ? "Търси продукти, марки и още..."
-                    : "Search products, brands, and more..."
-                }
-                className="h-full border-0 rounded-none focus-visible:ring-0 text-foreground pl-11 pr-10 text-sm placeholder:text-muted-foreground bg-transparent"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setIsOpen(true)}
-                onClick={() => setIsOpen(true)}
-                onKeyDown={handleKeyDown}
-                autoComplete="off"
-              />
-              {query && (
-                <button
-                  type="button"
-                  onClick={handleClearInput}
-                  className="absolute right-3 text-muted-foreground hover:text-foreground"
-                >
-                  <X size={16} weight="regular" />
-                </button>
-              )}
-            </div>
+            <MagnifyingGlass
+              size={18}
+              weight="regular"
+              className="absolute left-4 text-muted-foreground pointer-events-none"
+            />
 
-            {/* Search Button */}
+            <Input
+              ref={inputRef}
+              type="search"
+              inputMode="search"
+              enterKeyHint="search"
+              name="q"
+              placeholder={t("searchPlaceholder")}
+              className="h-full w-full rounded-full border-0 bg-transparent pl-11 pr-24 text-sm placeholder:text-muted-foreground focus-visible:border-0 focus-visible:ring-0"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setIsOpen(true)}
+              onClick={() => setIsOpen(true)}
+              onKeyDown={handleKeyDown}
+              autoComplete="off"
+            />
+
+            {query && (
+              <button
+                type="button"
+                onClick={handleClearInput}
+                aria-label={t("clearSearch")}
+                className="absolute right-12 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X size={16} weight="regular" />
+              </button>
+            )}
+
             <Button
               type="submit"
-              aria-label={t("searchPlaceholder")}
-              className="size-9 my-auto mr-1 bg-brand hover:bg-brand/90 text-primary-foreground rounded-full p-0 border-none flex items-center justify-center shrink-0"
+              variant="black"
+              size="icon-sm"
+              aria-label={t("search")}
+              className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full focus-visible:outline-none"
             >
               <MagnifyingGlass size={16} weight="bold" />
             </Button>

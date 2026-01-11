@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { getCategoryIcon, type IconSize } from "@/lib/category-icons"
+import { getCategoryIcon, getCategoryColor, type IconSize } from "@/lib/category-icons"
 import { PLACEHOLDER_IMAGE_PATH } from "@/lib/normalize-image-url"
 
 type CategoryLike = {
@@ -33,7 +33,7 @@ export interface CategoryCircleVisualProps {
   /** Phosphor icon weight when falling back. */
   fallbackIconWeight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone"
   /** Visual style per surface. */
-  variant?: "muted" | "menu" | "rail"
+  variant?: "muted" | "menu" | "rail" | "colorful"
 }
 
 export function CategoryCircleVisual({
@@ -41,26 +41,33 @@ export function CategoryCircleVisual({
   active = false,
   className,
   fallbackIconSize = 24,
-  fallbackIconWeight = "light", // Treido uses thin stroke (1.5px approx)
-  variant = "muted",
+  fallbackIconWeight = "regular",
+  variant = "colorful", // Default to colorful OLX-style
 }: CategoryCircleVisualProps) {
   const imageUrl = hasMeaningfulImageUrl(category.image_url) ? category.image_url : null
   const icon = hasMeaningfulIcon(category.icon) ? category.icon : null
-
-  // Treido Style: Clean, minimal
-  // Use ring for visible border on ALL circles (rings don't get covered by content)
-  const activeStyles = active 
-    ? "ring-2 ring-primary" 
-    : "ring-1 ring-border"  // Default border using ring (visible even with images)
+  
+  // Get category-specific colors
+  const colors = getCategoryColor(category.slug)
+  
+  // Determine background and ring styles based on variant
+  const isColorful = variant === "colorful"
+  const bgClass = isColorful ? colors.bg : "bg-muted/20"
+  const iconColorClass = isColorful ? colors.text : "text-foreground"
+  
+  // Ring style: active uses category color, inactive uses subtle border
+  const ringClass = active 
+    ? cn("ring-2", isColorful ? colors.ring : "ring-primary")
+    : "ring-1 ring-border/50"
 
   return (
     <div
       className={cn(
         "rounded-full flex items-center justify-center overflow-hidden",
-        "bg-muted/20",
+        bgClass,
         "transition-all duration-150",
-        "group-active:opacity-90",
-        activeStyles,
+        "group-active:scale-95",
+        ringClass,
         className
       )}
     >
@@ -74,15 +81,15 @@ export function CategoryCircleVisual({
             className="h-full w-full object-cover"
           />
         ) : icon ? (
-          <span className="text-lg leading-none text-foreground" aria-hidden="true">
+          <span className={cn("text-lg leading-none", iconColorClass)} aria-hidden="true">
             {icon}
           </span>
         ) : (
           <span aria-hidden="true">
             {getCategoryIcon(category.slug, {
               size: fallbackIconSize,
-              weight: "regular",
-              className: "text-foreground",
+              weight: fallbackIconWeight,
+              className: iconColorClass,
             })}
           </span>
         )

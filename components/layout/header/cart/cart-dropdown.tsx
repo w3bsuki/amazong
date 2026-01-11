@@ -38,9 +38,13 @@ export function CartDropdown() {
   return (
     <HoverCard openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <Link href="/cart" className="block" aria-label={`${tNav("cart")}${mounted && displayItems > 0 ? ` (${displayItems} items)` : ""}`}>
+        <Link
+          href="/cart"
+          className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
+          aria-label={`${tNav("cart")}${mounted && displayItems > 0 ? ` (${displayItems} items)` : ""}`}
+        >
           <div
-            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-5 cursor-pointer"
+            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer"
           >
             <span className="relative" aria-hidden="true">
               <ShoppingCart weight="regular" />
@@ -57,7 +61,7 @@ export function CartDropdown() {
         </Link>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-(--container-dropdown) p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-md"
+        className="w-72 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-dropdown"
         align="end"
         sideOffset={8}
         collisionPadding={10}

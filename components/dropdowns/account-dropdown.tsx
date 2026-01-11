@@ -3,9 +3,9 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { User } from "@supabase/supabase-js"
-import { SpinnerGap, UserCircle } from "@phosphor-icons/react"
+import { SpinnerGap, UserCircle, Package, Storefront, ChatCircle, Gear, SignOut, CaretRight } from "@phosphor-icons/react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 
@@ -17,8 +17,7 @@ interface AccountDropdownProps {
 
 export function AccountDropdown({ user, variant = "icon", className }: AccountDropdownProps) {
   const t = useTranslations("Header")
-  const tOrders = useTranslations("ReturnsDropdown")
-  const tSelling = useTranslations("SellingDropdown")
+  const locale = useLocale()
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   // For non-authenticated users with icon variant, show a simple Sign In link
@@ -58,9 +57,9 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
     </div>
   ) : (
     <div
-      className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-touch cursor-pointer", className)}
+      className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer", className)}
     >
-      <UserCircle weight="fill" className="size-6" />
+      <UserCircle weight="fill" />
     </div>
   )
 
@@ -68,119 +67,86 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
   return (
     <HoverCard openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <Link href={user ? "/account" : "/auth/login"} className="block" aria-label={`${t("hello")}, ${user?.email?.split("@")[0] || t("signIn")}. ${t("accountAndLists")}`}>
+        <Link
+          href={user ? "/account" : "/auth/login"}
+          className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
+          aria-label={`${t("hello")}, ${user?.email?.split("@")[0] || t("signIn")}. ${t("accountAndLists")}`}
+        >
           {triggerContent}
         </Link>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-(--container-dropdown-lg) p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-md"
+        className="w-56 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-dropdown"
         align={variant === "full" ? "start" : "end"}
         sideOffset={8}
         collisionPadding={10}
       >
         {!user ? (
-          <div className="flex flex-col items-center p-4 bg-muted border-b border-border gap-4">
-            <div className="flex flex-col items-center gap-2">
-              <Link href="/auth/login">
-                <Button className="w-56 bg-cta-primary hover:bg-cta-primary-hover text-cta-primary-text">
-                  {t("signIn")}
-                </Button>
-              </Link>
-              <div className="text-xs text-muted-foreground">
-                {t("newCustomer")} <Link href="/auth/sign-up" className="text-link hover:underline hover:text-link-hover">{t("startHere")}</Link>
-              </div>
-            </div>
+          <div className="p-3">
+            <Link href="/auth/login" className="block">
+              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                {t("signIn")}
+              </Button>
+            </Link>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              {t("newCustomer")} <Link href="/auth/sign-up" className="text-primary hover:underline">{t("startHere")}</Link>
+            </p>
           </div>
         ) : (
           <>
-            <div className="flex flex-col items-center p-4 bg-muted border-b border-border">
-              <div className="w-full flex flex-col items-center gap-2">
-                <p className="text-sm font-medium">
-                  {t("hello")}, {user.email}
-                </p>
-                <form action="/api/auth/signout" method="post" onSubmit={() => setIsSigningOut(true)}>
-                  <Button
-                    type="submit"
-                    disabled={isSigningOut}
-                    className="w-56 h-8 text-xs bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text disabled:opacity-70"
-                  >
-                    {isSigningOut ? (
-                      <>
-                        <SpinnerGap className="size-4 mr-2" />
-                        {t("signingOut") || "Signing out..."}
-                      </>
-                    ) : (
-                      t("signOut")
-                    )}
-                  </Button>
-                </form>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-0 p-5">
-              <div className="pr-5 border-r border-border">
-                <h3 className="font-semibold text-base mb-2 text-foreground">{tOrders("title")}</h3>
-                <ul className="space-y-1.5 text-sm text-muted-foreground">
-                  <li>
-                    <Link href="/account/orders" className="hover:text-link-hover hover:underline">
-                      {tOrders("trackOrders")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/returns" className="hover:text-link-hover hover:underline">
-                      {tOrders("startReturn")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/chat" className="hover:text-link-hover hover:underline">
-                      {t("messages")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/account" className="hover:text-link-hover hover:underline">
-                      {t("account")}
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="pl-5">
-                <h3 className="font-semibold text-base mb-2 text-foreground">{tSelling("title")}</h3>
-                <ul className="space-y-1.5 text-sm text-muted-foreground">
-                  <li>
-                    <Link href="/sell" className="hover:text-link-hover hover:underline">
-                      {tSelling("createListing")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/sell/orders" className="hover:text-link-hover hover:underline">
-                      {tSelling("sellerOrders")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/account/sales" className="hover:text-link-hover hover:underline">
-                      {tSelling("sales")}
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/account/wishlist" className="hover:text-link-hover hover:underline">
-                      {t("wishlist")}
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+            {/* User info */}
+            <div className="px-3 py-2.5 border-b border-border bg-muted/50">
+              <p className="text-sm font-medium text-foreground truncate">
+                {user.user_metadata?.full_name || user.email?.split("@")[0]}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 p-3 bg-muted border-t border-border">
-              <Link href="/account/orders" className="w-full">
-                <Button className="w-full h-9 text-sm bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text">
-                  {tOrders("viewAllOrders")}
-                </Button>
+            {/* Navigation links */}
+            <nav className="py-1">
+              <Link href="/account/orders" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
+                <Package size={16} weight="regular" className="text-muted-foreground" />
+                {locale === "bg" ? "Поръчки" : "Orders"}
               </Link>
-              <Link href="/sell" className="w-full">
-                <Button className="w-full h-9 text-sm bg-cta-secondary hover:bg-cta-secondary-hover text-cta-secondary-text">
-                  {tSelling("createListing")}
-                </Button>
+              <Link href="/account/sales" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
+                <Storefront size={16} weight="regular" className="text-muted-foreground" />
+                {locale === "bg" ? "Продажби" : "Sales"}
               </Link>
+              <Link href="/chat" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
+                <ChatCircle size={16} weight="regular" className="text-muted-foreground" />
+                {locale === "bg" ? "Съобщения" : "Messages"}
+              </Link>
+              <Link href="/account/settings" className="flex items-center gap-2.5 px-3 py-2 text-sm text-foreground hover:bg-accent">
+                <Gear size={16} weight="regular" className="text-muted-foreground" />
+                {locale === "bg" ? "Настройки" : "Settings"}
+              </Link>
+            </nav>
+
+            {/* Account link */}
+            <div className="border-t border-border py-1">
+              <Link href="/account" className="flex items-center justify-between px-3 py-2 text-sm text-foreground hover:bg-accent">
+                <span>{locale === "bg" ? "Моят акаунт" : "My Account"}</span>
+                <CaretRight size={14} weight="regular" className="text-muted-foreground" />
+              </Link>
+            </div>
+
+            {/* Sign out */}
+            <div className="border-t border-border p-2">
+              <form action="/api/auth/signout" method="post" onSubmit={() => setIsSigningOut(true)}>
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  disabled={isSigningOut}
+                  className="w-full h-8 justify-start gap-2.5 text-sm text-muted-foreground hover:text-foreground"
+                >
+                  {isSigningOut ? (
+                    <SpinnerGap size={16} className="animate-spin" />
+                  ) : (
+                    <SignOut size={16} weight="regular" />
+                  )}
+                  {t("signOut")}
+                </Button>
+              </form>
             </div>
           </>
         )}

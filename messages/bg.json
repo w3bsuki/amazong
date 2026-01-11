@@ -86,6 +86,7 @@
     "Navigation": {
         "deliverTo": "Доставка до",
         "searchPlaceholder": "Търсене в продукти, марки и още...",
+        "clearSearch": "Изчисти търсенето",
         "yourOrders": "Моите",
         "ordersLabel": "Поръчки",
         "cart": "Кошница",
@@ -1091,18 +1092,19 @@
         "notificationsDesc": "Актуализации за поръчки и сигнали",
         "viewAllMessages": "Виж всички съобщения"
     },
+    "MessagesDropdown": {
+        "title": "Съобщения",
+        "unreadDescription": "{count, plural, one {Имаш # непрочетено съобщение} other {Имаш # непрочетени съобщения}}",
+        "noMessages": "Няма нови съобщения",
+        "openInbox": "Отвори съобщения"
+    },
     "NotificationsDropdown": {
-        "title": "Входящи",
+        "title": "Известия",
         "ariaNotificationsHint": "(известия)",
         "loading": "Зареждане...",
         "noNotifications": "Все още няма нови",
         "markAllRead": "Маркирай като прочетени",
-        "messagesSection": "Съобщения",
-        "unreadMessages": "{count, plural, one {# непрочетено съобщение} other {# непрочетени съобщения}}",
-        "noUnreadMessages": "Няма непрочетени съобщения",
-        "updatesSection": "Обновления",
-        "openMessages": "Съобщения",
-        "viewAll": "Всички обновления"
+        "viewAll": "Виж всички"
     },
     "WishlistDropdown": {
         "title": "Любими",
@@ -1599,8 +1601,25 @@
         "endOfResults": "{count, plural, one {# продукт} other {# продукта}}"
     },
     "TabbedProductFeed": {
+        "categories": {
+            "all": "Всички категории",
+            "allIn": "Всички",
+            "allInLabel": "Всички в {category}"
+        },
         "sectionAriaLabel": "Обяви",
         "tabsAriaLabel": "Филтър на обявите",
+        "categoryTabsAriaLabel": "Табове за категории",
+        "subcategoryTabsAriaLabel": "Табове за подкатегории",
+        "sortPlaceholder": "Сортиране",
+        "browseCategories": "Категории",
+        "categoryFinder": {
+            "title": "Разгледай категории",
+            "description": "Търси и отвори категория.",
+            "placeholder": "Търси категории...",
+            "empty": "Няма намерени категории.",
+            "groupAll": "Всички",
+            "groupCategories": "Категории"
+        },
         "tabs": {
             "all": "Всички",
             "newest": "Най-нови",

@@ -4,13 +4,17 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
-import { CaretRight, TrendUp, GridFour, Fire, Percent, Star, Tag, MapPin, ChartLineUp, Eye } from "@phosphor-icons/react"
+import { TrendUp, GridFour, Fire, Percent, Star, Tag, MapPin, ChartLineUp, Eye, CaretRight } from "@phosphor-icons/react"
+import { Link } from "@/i18n/routing"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
-import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { getCategoryName } from "@/lib/category-display"
+import { CategoryCircle } from "@/components/shared/category/category-circle"
+import type { CategoryTreeNode } from "@/lib/category-tree"
 
 type FeedTab =
   | "all"
@@ -55,6 +59,10 @@ interface Product {
 
 interface TabbedProductFeedProps {
   locale: string
+  /** Categories (L0 + L1 recommended) for desktop browse tabs */
+  categories?: CategoryTreeNode[]
+  /** Initial tab for the sort/feed selector */
+  initialTab?: FeedTab
   /** Initial products fetched server-side to avoid client waterfall */
   initialProducts?: Product[]
   /** Whether more products are available after initial load */
@@ -71,18 +79,23 @@ interface TabbedProductFeedProps {
  */
 export function TabbedProductFeed({
   locale: _locale,
+  categories = [],
+  initialTab = "newest",
   initialProducts = [],
   initialHasMore = true
 }: TabbedProductFeedProps) {
   const t = useTranslations("TabbedProductFeed")
-  const [activeTab, setActiveTab] = useState<FeedTab>("all")
+  const [activeTab, setActiveTab] = useState<FeedTab>(initialTab)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  // State for expanded L0 category (OLX-style: click circle to show L1 subcategories)
+  const [expandedL0, setExpandedL0] = useState<string | null>(null)
   // Initialize with server-side data to avoid loading state flash
   const [products, setProducts] = useState<Product[]>(initialProducts)
   const [isLoading, setIsLoading] = useState(false) // Start false since we have initial data
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(initialHasMore)
-  const [pageSize, setPageSize] = useState(12)
+
+  const pageSize = 24
 
   const router = useRouter()
   const pathname = usePathname()
@@ -102,33 +115,6 @@ export function TabbedProductFeed({
     const qs = next.toString()
     router.replace(`${pathname}${qs ? `?${qs}` : ""}#listings`, { scroll: false })
   }, [pathname, router, searchParams])
-
-  // Keep the homepage module compact
-  useEffect(() => {
-    const computePageSize = () => {
-      const w = window.innerWidth
-      if (w >= 1536) return 14
-      if (w >= 1280) return 10
-      if (w >= 1024) return 8
-      if (w >= 768) return 6
-      return 4
-    }
-
-    const apply = () => setPageSize(computePageSize())
-    apply()
-
-    let t: ReturnType<typeof setTimeout> | null = null
-    const onResize = () => {
-      if (t) clearTimeout(t)
-      t = setTimeout(apply, 150)
-    }
-
-    window.addEventListener("resize", onResize)
-    return () => {
-      if (t) clearTimeout(t)
-      window.removeEventListener("resize", onResize)
-    }
-  }, [])
 
   const tabs: { id: FeedTab; label: string; icon: typeof GridFour; color?: string }[] = [
     { id: "all", label: t("tabs.all"), icon: GridFour },
@@ -258,7 +244,6 @@ export function TabbedProductFeed({
   // Track previous values to detect actual changes - prevents infinite loops
   const prevTabRef = useRef(activeTab)
   const prevCategoryRef = useRef(activeCategory)
-  const prevPageSizeRef = useRef(pageSize)
   // Mark as done if we have server-side initial data for "all" tab
   const initialFetchDone = useRef(initialProducts.length > 0)
 
@@ -268,7 +253,6 @@ export function TabbedProductFeed({
 
     prevTabRef.current = activeTab
     prevCategoryRef.current = activeCategory
-    prevPageSizeRef.current = pageSize
 
     // Need initial fetch if no server-side data was provided
     const needsInitialFetch = !initialFetchDone.current
@@ -284,13 +268,12 @@ export function TabbedProductFeed({
       setPage(1)
       fetchProducts(activeTab, 1, pageSize, false, activeCategory)
     }
-  }, [pageSize, fetchProducts, activeTab, activeCategory])
+  }, [fetchProducts, activeTab, activeCategory])
 
   const handleTabChange = (tab: FeedTab) => {
-    if (tab === activeTab) return // Prevent redundant updates
+    if (tab === activeTab) return
     setActiveTab(tab)
     setPage(1)
-    // Don't setProducts([]) - causes flash
   }
 
   const handleCategoryChange = (slug: string | null) => {
@@ -302,6 +285,21 @@ export function TabbedProductFeed({
     // Don't setProducts([]) - causes flash
   }
 
+  // Handle L0 circle click: toggle subcategory expansion (OLX-style)
+  const handleCircleClick = (slug: string | null) => {
+    if (slug === null) {
+      // "All" clicked - collapse any expanded L0 and clear category filter
+      setExpandedL0(null)
+      handleCategoryChange(null)
+    } else if (expandedL0 === slug) {
+      // Same L0 clicked again - collapse it
+      setExpandedL0(null)
+    } else {
+      // Different L0 clicked - expand it (don't filter yet, let user pick L1 or "View all")
+      setExpandedL0(slug)
+    }
+  }
+
   const loadMore = () => {
     if (!isLoading && hasMore) {
       const nextPage = page + 1
@@ -310,127 +308,199 @@ export function TabbedProductFeed({
     }
   }
 
+  const topCategories = categories
+    .slice()
+    .sort((a, b) => {
+      const ao = a.display_order ?? 9999
+      const bo = b.display_order ?? 9999
+      if (ao !== bo) return ao - bo
+      return getCategoryName(a, _locale).localeCompare(getCategoryName(b, _locale))
+    })
+
+  // L0 categories displayed in the horizontal rail (limit to 16 for visual balance)
+  const railL0 = topCategories.slice(0, 16)
+
+  // Get expanded L0 category data for OLX-style subcategory display
+  const expandedL0Data = expandedL0 ? topCategories.find((c) => c.slug === expandedL0) : null
+
   return (
     <section id="listings" className="w-full" aria-label={t("sectionAriaLabel")}>
-      {/* Unified Navigation Row - Professional Nav Pills */}
-      <div className="flex flex-col gap-3 mb-3">
-        <div className="-mx-4 px-4 md:mx-0 md:px-0">
-          <Tabs
-            value={activeTab}
-            onValueChange={(next) => handleTabChange(next as FeedTab)}
-            className="w-full"
-          >
-            <div className="relative">
-              <div className="overflow-x-auto no-scrollbar pb-1">
-                <TabsList
-                  aria-label={t("tabsAriaLabel")}
-                  className="h-auto w-max min-w-full justify-start gap-2 rounded-none border-0 bg-transparent p-0 md:w-full md:justify-center"
-                >
-                  {tabs.map((tab) => {
-                    return (
-                      <TabsTrigger
-                        key={tab.id}
-                        value={tab.id}
-                        className={cn(
-                          "h-8 flex-none rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
-                          "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground",
-                          "data-[state=active]:bg-foreground data-[state=active]:text-background"
-                        )}
-                      >
-                        <span className="whitespace-nowrap">{tab.label}</span>
-                      </TabsTrigger>
-                    )
-                  })}
-                </TabsList>
+      <div className="mb-4 flex flex-col gap-3">
+        {/* Category Circles (OLX-style) - bigger circles, scrollable */}
+        {railL0.length > 0 && (
+          <ScrollArea className="w-full" aria-label={t("categoryTabsAriaLabel")}>
+            <div className="flex items-start gap-2 py-3 pr-4">
+              {/* "All" circle */}
+              <CategoryCircle
+                category={{ slug: "all" }}
+                label={t("categories.all")}
+                active={!expandedL0 && !activeCategory}
+                onClick={() => handleCircleClick(null)}
+                circleClassName="size-16 lg:size-18"
+                fallbackIconSize={32}
+                fallbackIconWeight="regular"
+                variant="colorful"
+                className="w-20 lg:w-22 shrink-0"
+                labelClassName={cn(
+                  "w-full text-center text-xs font-medium leading-tight line-clamp-2 mt-2",
+                  !expandedL0 && !activeCategory ? "text-foreground" : "text-muted-foreground"
+                )}
+              />
+
+              {/* L0 Category circles - uses image_url if available, falls back to colorful icons */}
+              {railL0.map((cat) => {
+                const label = getCategoryName(cat, _locale)
+                const isExpanded = expandedL0 === cat.slug
+                return (
+                  <CategoryCircle
+                    key={cat.slug}
+                    category={cat}
+                    label={label}
+                    active={isExpanded}
+                    onClick={() => handleCircleClick(cat.slug)}
+                    circleClassName="size-16 lg:size-18"
+                    fallbackIconSize={32}
+                    fallbackIconWeight="regular"
+                    variant="colorful"
+                    className="w-20 lg:w-22 shrink-0"
+                    labelClassName={cn(
+                      "w-full text-center text-xs font-medium leading-tight line-clamp-2 mt-2",
+                      isExpanded ? "text-foreground" : "text-muted-foreground"
+                    )}
+                  />
+                )
+              })}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        )}
+
+        {/* Subcategory Pills (shown when L0 is expanded) */}
+        {expandedL0Data && expandedL0Data.children && expandedL0Data.children.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card/50 p-3">
+            {/* "View all" pill - first in row */}
+            <Link
+              href={`/categories/${expandedL0Data.slug}`}
+              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              <span>
+                {_locale === "bg"
+                  ? `Виж всички в ${getCategoryName(expandedL0Data, _locale)}`
+                  : `View all in ${getCategoryName(expandedL0Data, _locale)}`}
+              </span>
+              <CaretRight className="size-4" weight="bold" />
+            </Link>
+
+            {/* L1 Subcategory pills */}
+            {expandedL0Data.children.map((l1) => (
+              <Link
+                key={l1.slug}
+                href={`/categories/${l1.slug}`}
+                className="inline-flex items-center rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted hover:border-foreground/20 transition-colors"
+              >
+                {getCategoryName(l1, _locale)}
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Sort Dropdown - positioned below category expansion, above product grid */}
+        <div className="flex items-center justify-end">
+          <Select value={activeTab} onValueChange={(next) => handleTabChange(next as FeedTab)}>
+            <SelectTrigger size="sm" className="w-44 h-10 rounded-full">
+              <SelectValue placeholder={t("sortPlaceholder")} />
+            </SelectTrigger>
+            <SelectContent align="end">
+              {tabs.map((tab) => (
+                <SelectItem key={tab.id} value={tab.id}>
+                  {tab.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Product Grid */}
+      <div role="list" aria-live="polite">
+        {products.length === 0 && isLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2" aria-busy="true">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="space-y-3">
+                <Skeleton className="aspect-3/4 w-full rounded-lg" />
+                <div className="space-y-1">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
               </div>
+            ))}
+          </div>
+        ) : products.length === 0 ? (
+          <EmptyStateCTA
+            variant={activeCategory ? "no-category" : "no-listings"}
+            {...(activeCategory ? { categoryName: activeCategory } : {})}
+          />
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8">
+              {products.map((product, index) => (
+                <div key={product.id} role="listitem">
+                  {(() => {
+                    const sellerName = (product.sellerName || product.storeSlug) || undefined
+                    return (
+                      <ProductCard
+                        id={product.id}
+                        title={product.title}
+                        price={product.price}
+                        originalPrice={product.listPrice ?? null}
+                        isOnSale={Boolean(product.isOnSale)}
+                        salePercent={product.salePercent ?? 0}
+                        saleEndDate={product.saleEndDate ?? null}
+                        image={product.image}
+                        rating={product.rating ?? 0}
+                        reviews={product.reviews ?? 0}
+                        slug={product.slug ?? null}
+                        username={product.storeSlug ?? null}
+                        sellerId={product.sellerId ?? null}
+                        {...(sellerName ? { sellerName } : {})}
+                        sellerAvatarUrl={product.sellerAvatarUrl ?? null}
+                        {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
+                        sellerVerified={Boolean(product.sellerVerified)}
+                        {...(product.location ? { location: product.location } : {})}
+                        {...(product.brand ? { brand: product.brand } : {})}
+                        {...(product.condition ? { condition: product.condition } : {})}
+                        {...(product.make ? { make: product.make } : {})}
+                        {...(product.model ? { model: product.model } : {})}
+                        {...(product.year ? { year: product.year } : {})}
+                        tags={product.tags ?? []}
+                        state={product.isBoosted ? "promoted" : undefined}
+                        index={index}
+                      />
+                    )
+                  })()}
+                </div>
+              ))}
             </div>
 
-            {/* Keep a real tabpanel in the DOM for a11y without duplicating content */}
-            <TabsContent value={activeTab} className="mt-0">
-              {/* Product Grid */}
-              <div role="list" aria-live="polite">
-                {products.length === 0 && isLoading ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2" aria-busy="true">
-                    {Array.from({ length: 12 }).map((_, i) => (
-                      <div key={i} className="space-y-3">
-                        <Skeleton className="aspect-3/4 w-full rounded-lg" />
-                        <div className="space-y-1">
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-2/3" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : products.length === 0 ? (
-                  <EmptyStateCTA
-                    variant={activeCategory ? "no-category" : "no-listings"}
-                    {...(activeCategory ? { categoryName: activeCategory } : {})}
-                  />
-                ) : (
-                  <>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8">
-                      {products.map((product, index) => (
-                        <div key={product.id} role="listitem">
-                          {(() => {
-                            const sellerName = (product.sellerName || product.storeSlug) || undefined
-                            return (
-                              <ProductCard
-                                id={product.id}
-                                title={product.title}
-                                price={product.price}
-                                originalPrice={product.listPrice ?? null}
-                                isOnSale={Boolean(product.isOnSale)}
-                                salePercent={product.salePercent ?? 0}
-                                saleEndDate={product.saleEndDate ?? null}
-                                image={product.image}
-                                rating={product.rating ?? 0}
-                                reviews={product.reviews ?? 0}
-                                slug={product.slug ?? null}
-                                username={product.storeSlug ?? null}
-                                sellerId={product.sellerId ?? null}
-                                {...(sellerName ? { sellerName } : {})}
-                                sellerAvatarUrl={product.sellerAvatarUrl ?? null}
-                                {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
-                                sellerVerified={Boolean(product.sellerVerified)}
-                                {...(product.location ? { location: product.location } : {})}
-                                {...(product.brand ? { brand: product.brand } : {})}
-                                {...(product.condition ? { condition: product.condition } : {})}
-                                {...(product.make ? { make: product.make } : {})}
-                                {...(product.model ? { model: product.model } : {})}
-                                {...(product.year ? { year: product.year } : {})}
-                                tags={product.tags ?? []}
-                                state={product.isBoosted ? "promoted" : undefined}
-                                index={index}
-                              />
-                            )
-                          })()}
-                        </div>
-                      ))}
-                    </div>
-
-                    {hasMore && (
-                      <div className="mt-12 text-center">
-                        <Button onClick={loadMore} disabled={isLoading} size="lg">
-                          {isLoading ? (
-                            <span className="flex items-center gap-2">
-                              <span
-                                className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin"
-                                aria-hidden="true"
-                              />
-                              {t("loading")}
-                            </span>
-                          ) : (
-                            t("loadMore")
-                          )}
-                        </Button>
-                      </div>
-                    )}
-                  </>
-                )}
+            {hasMore && (
+              <div className="mt-12 text-center">
+                <Button onClick={loadMore} disabled={isLoading} size="lg">
+                  {isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <span
+                        className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                        aria-hidden="true"
+                      />
+                      {t("loading")}
+                    </span>
+                  ) : (
+                    t("loadMore")
+                  )}
+                </Button>
               </div>
-            </TabsContent>
-          </Tabs>
-        </div>
+            )}
+          </>
+        )}
       </div>
     </section>
   )
@@ -439,17 +509,17 @@ export function TabbedProductFeed({
 export function TabbedProductFeedSkeleton() {
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-3 mb-3">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-6 w-24" />
-          <Skeleton className="h-4 w-16" />
-        </div>
-        <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex items-center gap-2 shrink-0">
-            {Array.from({ length: 7 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-32 rounded-full" />
-            ))}
+      <div className="flex flex-col gap-3 mb-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex-1 overflow-hidden">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-10 w-28 rounded-full" />
+              {Array.from({ length: 10 }).map((_, i) => (
+                <Skeleton key={i} className="h-16 w-20 rounded-lg" />
+              ))}
+            </div>
           </div>
+          <Skeleton className="h-9 w-44 rounded-md" />
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2">

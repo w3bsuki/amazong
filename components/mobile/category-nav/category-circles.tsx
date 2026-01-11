@@ -175,26 +175,26 @@ export function CategoryCircles({
   }
 
   return (
-    <div className={cn("px-(--page-inset) py-2 overflow-x-auto no-scrollbar", className)}>
+    <div className={cn("px-(--page-inset) py-3 overflow-x-auto no-scrollbar", className)}>
       <div
         ref={containerRef}
-        className="flex items-start gap-2"
+        className="flex items-start gap-3"
       >
         {/* 'All' Circle (Static - Always visible) */}
         <CategoryCircle
-          category={{ slug: 'all' }} // Icon handled by getCategoryIcon via slug
+          category={{ slug: 'all' }}
           label={locale === 'bg' ? 'Всички' : 'All'}
-          active={!activeL2} // Active if no subcategory selected
-          onClick={() => onBack()} // Acts as 'Reset' to parent L1
-          circleClassName="size-(--spacing-category-circle) bg-muted/50 border-2 border-transparent data-[active=true]:border-foreground"
+          active={!activeL2}
+          onClick={() => onBack()}
+          circleClassName="size-14"
           fallbackIconSize={24}
           fallbackIconWeight="regular"
-          variant="muted"
-          className="flex-none w-(--spacing-category-item)"
+          variant="colorful"
+          className="flex-none w-16"
           labelClassName={cn(
-            "w-full text-2xs text-center leading-tight line-clamp-2 px-1 mt-2",
-            "text-muted-foreground font-medium",
-            !activeL2 && "text-foreground font-bold"
+            "w-full text-2xs text-center leading-tight line-clamp-2 px-0.5 mt-1.5",
+            "font-medium",
+            !activeL2 ? "text-foreground" : "text-muted-foreground"
           )}
         />
         {circles.map((sub) => {
@@ -202,11 +202,6 @@ export function CategoryCircles({
             ? activeL2 === sub.slug
             : activeL1 === sub.slug
 
-          // In showroom mode, no dimming - all circles equally visible
-          const dimmed = false
-
-          // Use href navigation when circlesNavigateToPages is enabled.
-          // Prefetch=true gives near-instant navigation with loading.tsx skeleton.
           const href = allowHrefNavigation ? (`/categories/${sub.slug}` as const) : undefined
 
           return (
@@ -215,16 +210,16 @@ export function CategoryCircles({
               category={sub}
               {...(href ? { href, prefetch: true } : { onClick: () => onCircleClick(sub) })}
               active={isActive}
-              dimmed={dimmed}
-              circleClassName="size-(--spacing-category-circle)"
-              fallbackIconSize={20}
-              fallbackIconWeight="light"
-              variant="muted"
+              circleClassName="size-14"
+              fallbackIconSize={24}
+              fallbackIconWeight="regular"
+              variant="colorful"
               label={getCategoryShortName(sub, locale)}
-              className="flex-none w-(--spacing-category-item)"
+              className="flex-none w-16"
               labelClassName={cn(
-                "w-full text-2xs text-center leading-tight line-clamp-2 px-1 mt-2",
-                "text-muted-foreground font-medium"
+                "w-full text-2xs text-center leading-tight line-clamp-2 px-0.5 mt-1.5",
+                "font-medium",
+                isActive ? "text-foreground" : "text-muted-foreground"
               )}
             />
           )

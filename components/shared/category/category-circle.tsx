@@ -38,7 +38,7 @@ export interface CategoryCircleProps {
   /** Classes for the label text. */
   labelClassName?: string
 
-  variant?: "muted" | "menu" | "rail"
+  variant?: "muted" | "menu" | "rail" | "colorful"
   fallbackIconSize?: IconSize
   fallbackIconWeight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone"
 }

@@ -293,15 +293,31 @@
   --color-order-delivered: var(--color-success);
   --color-order-cancelled: var(--color-error);
 
+  /* === COLORS: Header (Desktop) === */
+  --color-header-bg: var(--background);
+  --color-header-border: var(--border);
+  --color-header-text: var(--foreground);
+  --color-header-text-muted: var(--muted-foreground);
+  --color-header-hover: var(--accent);
+  --color-header-active: var(--muted);
+  --color-header-nav-bg: var(--secondary);
+  --color-subheader-hover: var(--accent);
+
+  /* === COLORS: CTA Buttons === */
+  --color-cta-trust-blue: var(--primary);
+  --color-cta-trust-blue-hover: var(--primary);
+  --color-cta-trust-blue-text: var(--primary-foreground);
+  --color-cta-primary: var(--primary);
+  --color-cta-primary-hover: var(--primary);
+  --color-cta-primary-text: var(--primary-foreground);
+  --color-cta-secondary: var(--secondary);
+  --color-cta-secondary-hover: var(--muted);
+  --color-cta-secondary-text: var(--secondary-foreground);
+
   /* === LEGACY ALIASES (for backward compatibility) === */
-  /* These map old Treido tokens to shadcn equivalents */
   --color-brand: var(--primary);
   --color-brand-dark: var(--primary);
   --color-brand-light: var(--muted-foreground);
-  --color-cta-trust-blue: var(--primary);
-  --color-cta-trust-blue-hover: var(--primary);
-  --color-cta-primary: var(--primary);
-  --color-cta-primary-hover: var(--primary);
   --color-interactive: var(--primary);
   --color-interactive-hover: var(--primary);
   --color-link: var(--primary);

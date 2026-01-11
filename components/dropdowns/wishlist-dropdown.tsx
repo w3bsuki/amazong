@@ -41,9 +41,13 @@ export function WishlistDropdown() {
   return (
     <HoverCard openDelay={100} closeDelay={200}>
       <HoverCardTrigger asChild>
-        <Link href="/account/wishlist" className="block" aria-label={`${tNav("wishlist")}${mounted && displayItems > 0 ? ` (${displayItems})` : ""}`}>
+        <Link
+          href="/account/wishlist"
+          className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
+          aria-label={`${tNav("wishlist")}${mounted && displayItems > 0 ? ` (${displayItems})` : ""}`}
+        >
           <div
-            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-5 cursor-pointer"
+            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer"
           >
             <span className="relative" aria-hidden="true">
               <Heart weight="regular" />
@@ -60,7 +64,7 @@ export function WishlistDropdown() {
       </HoverCardTrigger>
 
       <HoverCardContent
-        className="w-(--container-dropdown) p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-md"
+        className="w-72 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-dropdown"
         align="end"
         sideOffset={8}
         collisionPadding={10}

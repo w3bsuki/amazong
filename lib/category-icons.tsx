@@ -353,4 +353,89 @@ export function getCategoryIcon(
 // Use getCategoryIcon(slug, { size: 20, className: "mega-menu-icon" }) for mega menu icons
 // The getCategoryIcon function above handles all icon lookups with a unified API.
 
+// ============================================================================
+// CATEGORY COLORS (OLX-style vibrant backgrounds)
+// ============================================================================
+// These colors are used for category circles to make them visually distinct.
+// Each category gets a unique pastel/vibrant background color.
+
+export type CategoryColorScheme = {
+  bg: string      // Background color class
+  text: string    // Icon/text color class  
+  ring: string    // Active ring color class
+}
+
+const categoryColors: Record<string, CategoryColorScheme> = {
+  // Electronics - Blue/Cyan
+  electronics: { bg: "bg-sky-100", text: "text-sky-600", ring: "ring-sky-500" },
+  computers: { bg: "bg-blue-100", text: "text-blue-600", ring: "ring-blue-500" },
+  phones: { bg: "bg-cyan-100", text: "text-cyan-600", ring: "ring-cyan-500" },
+  software: { bg: "bg-indigo-100", text: "text-indigo-600", ring: "ring-indigo-500" },
+  
+  // Fashion - Pink/Purple
+  fashion: { bg: "bg-pink-100", text: "text-pink-600", ring: "ring-pink-500" },
+  "jewelry-watches": { bg: "bg-amber-100", text: "text-amber-600", ring: "ring-amber-500" },
+  
+  // Home - Teal/Green  
+  home: { bg: "bg-teal-100", text: "text-teal-600", ring: "ring-teal-500" },
+  garden: { bg: "bg-emerald-100", text: "text-emerald-600", ring: "ring-emerald-500" },
+  "real-estate": { bg: "bg-slate-100", text: "text-slate-600", ring: "ring-slate-500" },
+  
+  // Health/Beauty - Rose/Fuchsia
+  beauty: { bg: "bg-fuchsia-100", text: "text-fuchsia-600", ring: "ring-fuchsia-500" },
+  health: { bg: "bg-rose-100", text: "text-rose-600", ring: "ring-rose-500" },
+  
+  // Sports/Gaming - Orange/Red
+  sports: { bg: "bg-orange-100", text: "text-orange-600", ring: "ring-orange-500" },
+  gaming: { bg: "bg-violet-100", text: "text-violet-600", ring: "ring-violet-500" },
+  
+  // Baby/Pets - Soft colors
+  baby: { bg: "bg-pink-50", text: "text-pink-500", ring: "ring-pink-400" },
+  pets: { bg: "bg-amber-50", text: "text-amber-500", ring: "ring-amber-400" },
+  
+  // Automotive - Gray/Steel
+  automotive: { bg: "bg-zinc-100", text: "text-zinc-600", ring: "ring-zinc-500" },
+  "e-mobility": { bg: "bg-lime-100", text: "text-lime-600", ring: "ring-lime-500" },
+  
+  // Food/Grocery - Green/Yellow
+  grocery: { bg: "bg-green-100", text: "text-green-600", ring: "ring-green-500" },
+  
+  // Books/Media - Warm colors
+  books: { bg: "bg-amber-100", text: "text-amber-700", ring: "ring-amber-500" },
+  music: { bg: "bg-purple-100", text: "text-purple-600", ring: "ring-purple-500" },
+  
+  // Services/Business - Professional colors
+  services: { bg: "bg-blue-50", text: "text-blue-500", ring: "ring-blue-400" },
+  office: { bg: "bg-gray-100", text: "text-gray-600", ring: "ring-gray-500" },
+  wholesale: { bg: "bg-stone-100", text: "text-stone-600", ring: "ring-stone-500" },
+  
+  // Special
+  "bulgarian-traditional": { bg: "bg-red-100", text: "text-red-600", ring: "ring-red-500" },
+  hobbies: { bg: "bg-yellow-100", text: "text-yellow-600", ring: "ring-yellow-500" },
+  collectibles: { bg: "bg-amber-100", text: "text-amber-600", ring: "ring-amber-500" },
+  
+  // All/Default
+  all: { bg: "bg-muted", text: "text-muted-foreground", ring: "ring-primary" },
+  default: { bg: "bg-muted/50", text: "text-muted-foreground", ring: "ring-border" },
+}
+
+/**
+ * Get the color scheme for a category slug
+ * @param slug - The category slug
+ * @returns CategoryColorScheme with bg, text, and ring classes
+ */
+export function getCategoryColor(slug: string): CategoryColorScheme {
+  // Direct match
+  if (categoryColors[slug]) return categoryColors[slug]
+  
+  // Fuzzy match - check if slug contains a known key
+  const slugLower = slug.toLowerCase()
+  for (const [key, colors] of Object.entries(categoryColors)) {
+    if (key === "default" || key === "all") continue
+    if (slugLower.includes(key) || key.includes(slugLower)) return colors
+  }
+  
+  return categoryColors.default!
+}
+
 
