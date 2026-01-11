@@ -31,7 +31,7 @@ export function StartSellingBanner({
       { icon: ChatCircleDots, text: "24/7 support" },
     ]
 
-  // Full-bleed: prominent banner but respects page rhythm
+  // Full-bleed: INVERTED banner for primary CTA emphasis
   if (variant === "full-bleed") {
     return (
       <div className="px-(--page-inset) bg-background">
@@ -39,10 +39,9 @@ export function StartSellingBanner({
           href="/sell"
           className={cn(
             "block w-full rounded-md",
-            "bg-secondary text-foreground",
-            "border border-border",
+            "bg-foreground text-background",
             "px-3 py-3",
-            "active:opacity-95 transition-opacity",
+            "active:opacity-90 transition-opacity",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             className
           )}
@@ -53,16 +52,16 @@ export function StartSellingBanner({
               <p className="text-sm font-semibold leading-snug">
                 {isBg ? "Продай за минути" : "Sell in minutes"}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-background/70 mt-0.5">
                 {isBg
                   ? "Освободи място и спечели."
                   : "Clear space and earn."}
               </p>
             </div>
 
-            {/* Right: Arrow pill */}
+            {/* Right: Arrow pill - inverted back to light */}
             <span
-              className="size-8 shrink-0 rounded-md bg-primary text-primary-foreground flex items-center justify-center"
+              className="size-8 shrink-0 rounded-md bg-background text-foreground flex items-center justify-center"
               aria-hidden="true"
             >
               <ArrowRight size={16} weight="bold" />

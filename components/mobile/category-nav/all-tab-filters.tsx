@@ -52,11 +52,11 @@ export function AllTabFilters({
               onClick={() => onFilterClick(filter.id)}
               className={cn(
                 "flex items-center gap-1.5 h-8 px-3 shrink-0 snap-start rounded-full text-xs font-medium",
-                "border-0 transition-colors",
+                "border border-transparent transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                 isActive
-                  ? "bg-foreground text-background"
-                  : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
+                  ? "bg-foreground text-background border-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground border-border/40"
               )}
               aria-pressed={isActive}
             >

@@ -20,8 +20,7 @@ import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
 import { DesktopSearch } from "@/components/desktop/desktop-search"
 import { Button } from "@/components/ui/button"
-import { Search, ChevronLeft, ScanLine } from "lucide-react"
-import { Camera } from "@phosphor-icons/react"
+import { MagnifyingGlass, CaretLeft, Camera } from "@phosphor-icons/react"
 
 // Utilities
 import { getCountryName } from "@/lib/geolocation"
@@ -119,7 +118,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
               className="flex items-center justify-center h-touch w-touch rounded-full text-muted-foreground active:opacity-50"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
-              <ChevronLeft size={20} strokeWidth={2} />
+              <CaretLeft size={20} weight="bold" />
             </button>
           ) : (
             <SidebarMenu user={user} categories={categories} triggerClassName="justify-start" />
@@ -154,7 +153,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
               aria-haspopup="dialog"
               aria-expanded={isMobileSearchOpen}
             >
-              <Search size={18} className="text-muted-foreground shrink-0" />
+              <MagnifyingGlass size={18} weight="regular" className="text-muted-foreground shrink-0" />
               <span className="flex-1 truncate font-normal">{searchPlaceholder}</span>
             </button>
           </div>

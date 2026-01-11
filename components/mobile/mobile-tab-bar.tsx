@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useEffect, useRef, useState } from "react"
-import { Home, LayoutGrid, MessageCircle, User, PlusSquare } from "lucide-react"
+import { House, SquaresFour, ChatCircle, User, Plus } from "@phosphor-icons/react"
 import { Link, usePathname } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import { CountBadge } from "@/components/shared/count-badge"
@@ -81,13 +81,17 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-label={t("home")}
             aria-current={pathname === "/" ? "page" : undefined}
           >
-            <Home className={cn(
-              "w-5 h-5 transition-colors",
-              pathname === "/" ? "text-primary" : "text-muted-foreground"
-            )} />
+            <House 
+              size={20}
+              weight={pathname === "/" ? "fill" : "regular"}
+              className={cn(
+                "transition-colors",
+                pathname === "/" ? "text-foreground" : "text-muted-foreground"
+              )} 
+            />
             <span className={cn(
               "text-2xs font-medium leading-none tracking-tight",
-              pathname === "/" ? "text-primary font-bold" : "text-muted-foreground"
+              pathname === "/" ? "text-foreground font-semibold" : "text-muted-foreground"
             )}>{t("home")}</span>
           </Link>
 
@@ -103,36 +107,36 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-label={t("categories")}
             aria-haspopup="dialog"
           >
-            <LayoutGrid className={cn(
-              "w-5 h-5 transition-colors",
-              isActive("/categories") ? "text-primary" : "text-muted-foreground"
-            )} />
+            <SquaresFour 
+              size={20}
+              weight={isActive("/categories") ? "fill" : "regular"}
+              className={cn(
+                "transition-colors",
+                isActive("/categories") ? "text-foreground" : "text-muted-foreground"
+              )} 
+            />
             <span className={cn(
               "text-2xs font-medium leading-none tracking-tight",
-              isActive("/categories") ? "text-primary font-bold" : "text-muted-foreground"
+              isActive("/categories") ? "text-foreground font-semibold" : "text-muted-foreground"
             )}>{t("categories")}</span>
           </button>
 
-          {/* Sell - Central action button with label to match other items */}
+          {/* Sell - Central action button - Large inverted circle (Vinted/Depop pattern) */}
           <Link
             href="/sell"
             prefetch={true}
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 w-full h-full",
-              "tap-highlight-transparent active:opacity-50 transition-opacity",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
+              "flex flex-col items-center justify-center w-full h-full",
+              "tap-highlight-transparent active:scale-95 transition-transform",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full",
             )}
             aria-label={t("sell")}
             aria-current={isActive("/sell") ? "page" : undefined}
           >
-            <PlusSquare className={cn(
-              "w-5 h-5 transition-colors",
-              isActive("/sell") ? "text-primary" : "text-muted-foreground"
-            )} />
-            <span className={cn(
-              "text-2xs font-medium leading-none tracking-tight",
-              isActive("/sell") ? "text-primary font-bold" : "text-muted-foreground"
-            )}>{t("sell")}</span>
+            {/* Large inverted circle - primary CTA */}
+            <span className="size-10 flex items-center justify-center bg-foreground text-background rounded-full shadow-sm">
+              <Plus size={24} weight="bold" />
+            </span>
           </Link>
 
           {/* Chat */}
@@ -148,10 +152,14 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-current={isActive("/chat") ? "page" : undefined}
           >
             <span className="relative">
-              <MessageCircle className={cn(
-                "w-5 h-5 transition-colors",
-                isActive("/chat") ? "text-primary" : "text-muted-foreground"
-              )} />
+              <ChatCircle 
+                size={20}
+                weight={isActive("/chat") ? "fill" : "regular"}
+                className={cn(
+                  "transition-colors",
+                  isActive("/chat") ? "text-foreground" : "text-muted-foreground"
+                )} 
+              />
               {unreadCount > 0 && (
                 <CountBadge
                   count={unreadCount}
@@ -162,7 +170,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             </span>
             <span className={cn(
               "text-2xs font-medium leading-none tracking-tight",
-              isActive("/chat") ? "text-primary font-bold" : "text-muted-foreground"
+              isActive("/chat") ? "text-foreground font-semibold" : "text-muted-foreground"
             )}>{t("chat")}</span>
           </Link>
 
@@ -178,13 +186,17 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-label={t("account")}
             aria-current={isActive("/account") ? "page" : undefined}
           >
-            <User className={cn(
-              "w-5 h-5 transition-colors",
-              isActive("/account") ? "text-primary" : "text-muted-foreground"
-            )} />
+            <User 
+              size={20}
+              weight={isActive("/account") ? "fill" : "regular"}
+              className={cn(
+                "transition-colors",
+                isActive("/account") ? "text-foreground" : "text-muted-foreground"
+              )} 
+            />
             <span className={cn(
               "text-2xs font-medium leading-none tracking-tight",
-              isActive("/account") ? "text-primary font-bold" : "text-muted-foreground"
+              isActive("/account") ? "text-foreground font-semibold" : "text-muted-foreground"
             )}>{t("account")}</span>
           </Link>
         </div>
