@@ -175,7 +175,7 @@ export function CategoryCircles({
   }
 
   return (
-    <div className={cn("px-(--page-inset) py-0 overflow-x-auto no-scrollbar", className)}>
+    <div className={cn("px-(--page-inset) py-2 overflow-x-auto no-scrollbar", className)}>
       <div
         ref={containerRef}
         className="flex items-start gap-2"
@@ -190,7 +190,7 @@ export function CategoryCircles({
           fallbackIconSize={24}
           fallbackIconWeight="regular"
           variant="muted"
-          className="w-(--spacing-category-item) shrink-0"
+          className="flex-none w-(--spacing-category-item)"
           labelClassName={cn(
             "w-full text-2xs text-center leading-tight line-clamp-2 px-1 mt-2",
             "text-muted-foreground font-medium",
@@ -221,7 +221,7 @@ export function CategoryCircles({
               fallbackIconWeight="light"
               variant="muted"
               label={getCategoryShortName(sub, locale)}
-              className="w-(--spacing-category-item) shrink-0"
+              className="flex-none w-(--spacing-category-item)"
               labelClassName={cn(
                 "w-full text-2xs text-center leading-tight line-clamp-2 px-1 mt-2",
                 "text-muted-foreground font-medium"

@@ -55,7 +55,7 @@ export function ContextualCategoryHeader({
     >
       {/* Treido: 48px height standard */}
       <div className="pt-safe-top">
-        <div className="flex items-center justify-between px-3 h-12 border-b border-border/40">
+        <div className="flex items-center justify-between px-3 h-12 border-b border-border/50">
           <div className="flex items-center">
             {/* Back button - 36px touch area */}
             {onBack ? (

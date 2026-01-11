@@ -112,7 +112,7 @@ export function InlineFilterBar({
 
   return (
     <div
-      className={cn(sticky && "sticky z-20", "bg-background border-b border-border/60", className)}
+      className={cn(sticky && "sticky z-20", "bg-background border-b border-border/50", className)}
       style={sticky ? { top: stickyTop } : undefined}
     >
       {/* Treido: 40px height, dense inline filter strip */}

@@ -336,7 +336,7 @@ export function MobileHomeTabs({
         {/* 2) Subcategory Circles (Contextual Mode) - Scrolls away */}
         {/* Uses Link navigation for SEO + proper loading.tsx states */}
         {contextualSubcategories.length > 0 && (
-          <div className="bg-muted/20 border-b border-border/30 py-1">
+          <div className="bg-background border-b border-border/50">
             <CategoryCircles
               circles={(instant.children as any) ?? contextualSubcategories}
               activeL1={null}
@@ -352,7 +352,7 @@ export function MobileHomeTabs({
               circlesNavigateToPages={false}
               activeTab="categories"
               hideBackButton={true}
-              className="py-1"
+              className=""
               onCircleClick={handleCircleClick}
               onBack={() => { }}
               onPillClick={() => { }}
