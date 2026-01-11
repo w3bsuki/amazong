@@ -3,19 +3,22 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function CategorySlugLoading() {
   return (
     <div className="min-h-screen bg-background">
-      {/* MOBILE Loading State */}
+      {/* MOBILE Loading State - Matches contextual mode layout */}
       <div className="lg:hidden">
-        {/* Pills/Tabs skeleton */}
-        <div className="sticky top-0 z-30 bg-background border-b border-border/40">
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar px-4 py-2">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="shrink-0 h-7 w-20 rounded-full" />
-            ))}
+        {/* Contextual Header skeleton (48px) */}
+        <div className="sticky top-0 z-50 bg-background border-b border-border/40">
+          <div className="flex items-center h-12 px-4 gap-3">
+            <Skeleton className="size-8 rounded-full" /> {/* Back button */}
+            <Skeleton className="h-5 w-32" /> {/* Title */}
+            <div className="ml-auto flex items-center gap-2">
+              <Skeleton className="size-8 rounded-full" /> {/* Search */}
+              <Skeleton className="size-8 rounded-full" /> {/* Cart */}
+            </div>
           </div>
         </div>
         
         {/* Subcategory circles skeleton */}
-        <div className="px-4 py-3">
+        <div className="bg-muted/20 border-b border-border/30 px-4 py-2">
           <div className="flex gap-3 overflow-x-auto no-scrollbar">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="flex flex-col items-center gap-1.5 shrink-0">
@@ -26,17 +29,18 @@ export default function CategorySlugLoading() {
           </div>
         </div>
         
-        {/* Filter/Sort row skeleton */}
-        <div className="px-4 py-2 flex items-center gap-2">
-          <Skeleton className="h-9 w-24 rounded-lg" />
-          <Skeleton className="h-9 w-32 rounded-lg" />
-          <div className="ml-auto">
-            <Skeleton className="h-5 w-12" />
+        {/* Inline Filter Bar skeleton (40px) */}
+        <div className="sticky top-12 z-30 bg-background border-b border-border/60">
+          <div className="flex items-center h-10 px-4 gap-2 overflow-x-auto no-scrollbar">
+            <Skeleton className="h-8 w-20 rounded-full" /> {/* Filters */}
+            <Skeleton className="h-8 w-24 rounded-full" /> {/* Filter 1 */}
+            <Skeleton className="h-8 w-20 rounded-full" /> {/* Filter 2 */}
+            <Skeleton className="h-8 w-16 rounded-full" /> {/* Filter 3 */}
           </div>
         </div>
         
         {/* Product grid skeleton */}
-        <div className="px-4 grid grid-cols-2 gap-2">
+        <div className="px-4 pt-2 grid grid-cols-2 gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <Skeleton className="aspect-square w-full rounded-lg" />

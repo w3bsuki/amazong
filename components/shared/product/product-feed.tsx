@@ -65,7 +65,11 @@ export function ProductFeed({
   const loadingLabel = tFeed("loadingProducts")
 
   // Intersection Observer for infinite scroll
+  // Only observe if we have products AND hasMore - avoid spam on empty categories
   useEffect(() => {
+    // Don't set up observer if no products loaded yet (empty category)
+    if (products.length === 0) return
+
     const observer = new IntersectionObserver(
       (entries) => {
         const firstEntry = entries.at(0)
@@ -81,7 +85,7 @@ export function ProductFeed({
     }
 
     return () => observer.disconnect()
-  }, [hasMore, isLoading, onLoadMore])
+  }, [hasMore, isLoading, onLoadMore, products.length])
 
   return (
     <div className="pt-1">

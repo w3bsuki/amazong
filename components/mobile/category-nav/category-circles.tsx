@@ -71,10 +71,9 @@ export function CategoryCircles({
 }: CategoryCirclesProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // In Treido drill-down mode, circle clicks must be instant (state-based), not route navigation.
-  // We only allow href-based navigation in "contextual" browse mode where the circles are
-  // intended to jump to a different page.
-  const allowHrefNavigation = circlesNavigateToPages && hideBackButton
+  // When circlesNavigateToPages is true, circles become Link elements for SEO + prefetch.
+  // This gives us proper loading.tsx skeleton states during navigation.
+  const allowHrefNavigation = circlesNavigateToPages
 
   // ==========================================================================
   // STATE B: Drilled Down (Treido-mock "Shelf" view)
@@ -206,14 +205,15 @@ export function CategoryCircles({
           // In showroom mode, no dimming - all circles equally visible
           const dimmed = false
 
-          // Only allow href navigation in contextual browse mode.
-          const href = allowHrefNavigation && activeTab !== "all" ? (`/categories/${sub.slug}` as const) : undefined
+          // Use href navigation when circlesNavigateToPages is enabled.
+          // Prefetch=true gives near-instant navigation with loading.tsx skeleton.
+          const href = allowHrefNavigation ? (`/categories/${sub.slug}` as const) : undefined
 
           return (
             <CategoryCircle
               key={sub.slug}
               category={sub}
-              {...(href ? { href } : { onClick: () => onCircleClick(sub) })}
+              {...(href ? { href, prefetch: true } : { onClick: () => onCircleClick(sub) })}
               active={isActive}
               dimmed={dimmed}
               circleClassName="size-(--spacing-category-circle)"

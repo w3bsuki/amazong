@@ -291,16 +291,20 @@ export function MobileHomeTabs({
     })
 
     const handleBack = async () => {
+      // Use instant client-side navigation (no page reload)
       if (instant.parent?.slug) {
-        await instant.goBack()
+        await instant.setCategorySlug(instant.parent.slug, { clearAttrFilters: true })
         return
       }
+      // Only use router.push for going back to /categories index (no parent)
       router.push(backHref)
     }
 
+    // Use instant client-side navigation for circle clicks
     const handleCircleClick = async (cat: any) => {
-      if (!cat?.slug) return
-      await instant.setCategorySlug(String(cat.slug), { clearAttrFilters: true })
+      if (cat?.slug) {
+        await instant.setCategorySlug(cat.slug, { clearAttrFilters: true })
+      }
     }
 
     const handleApplyFilters = async (next: { queryString: string; finalPath: string }) => {
@@ -330,6 +334,7 @@ export function MobileHomeTabs({
         </div>
 
         {/* 2) Subcategory Circles (Contextual Mode) - Scrolls away */}
+        {/* Uses Link navigation for SEO + proper loading.tsx states */}
         {contextualSubcategories.length > 0 && (
           <div className="bg-muted/20 border-b border-border/30 py-1">
             <CategoryCircles

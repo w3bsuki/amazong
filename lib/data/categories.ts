@@ -620,38 +620,37 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     ancestorAttributes = (grandparentAttrsRaw || []).map(toCategoryAttribute)
   }
 
-  // Merge: ancestor attrs first, current attrs win on duplicates
-  const attrMap = new Map<string, CategoryAttribute>()
+  // Merge: Build map tracking which attrs are from current category vs inherited
+  // Key insight: category-specific attrs should come FIRST, inherited universal attrs second
+  const attrMap = new Map<string, CategoryAttribute & { isOwn: boolean }>()
   
+  // Add ancestor attrs first (marked as inherited)
   for (const attr of ancestorAttributes) {
-    attrMap.set(normalizeAttributeName(attr.name), attr)
+    attrMap.set(normalizeAttributeName(attr.name), { ...attr, isOwn: false })
   }
+  // Current category attrs override ancestors (marked as own)
   for (const attr of currentAttributes) {
-    // Current category attrs override ancestors, but borrow options if missing
     const existing = attrMap.get(normalizeAttributeName(attr.name))
     attrMap.set(
       normalizeAttributeName(attr.name),
-      existing ? withFallbackOptions(attr, existing) : attr
+      {
+        ...(existing ? withFallbackOptions(attr, existing) : attr),
+        isOwn: true
+      }
     )
   }
 
-  // Sort: universal filters first, then by sort_order
-  const PRIORITY_ATTRS = ['condition', 'brand', 'size', 'color', 'material', 'make', 'model', 'year']
-  
-  const attributes = Array.from(attrMap.values()).sort((a, b) => {
-    const aName = normalizeAttributeName(a.name)
-    const bName = normalizeAttributeName(b.name)
-    const aIdx = PRIORITY_ATTRS.indexOf(aName)
-    const bIdx = PRIORITY_ATTRS.indexOf(bName)
-    
-    // Priority attrs come first in defined order
-    if (aIdx !== -1 && bIdx === -1) return -1
-    if (bIdx !== -1 && aIdx === -1) return 1
-    if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx
-    
-    // Then by sort_order
-    return (a.sort_order ?? 999) - (b.sort_order ?? 999)
-  })
+  // Sort: category's OWN attrs first (by sort_order), then inherited (by sort_order)
+  // This ensures category-specific filters (Processor, RAM) appear before universal (Condition, Brand)
+  const attributes = Array.from(attrMap.values())
+    .sort((a, b) => {
+      // Own attrs come first
+      if (a.isOwn && !b.isOwn) return -1
+      if (!a.isOwn && b.isOwn) return 1
+      // Within same group, sort by sort_order
+      return (a.sort_order ?? 999) - (b.sort_order ?? 999)
+    })
+    .map(({ isOwn: _isOwn, ...attr }) => attr as CategoryAttribute) // Strip isOwn flag from output
   
   return {
     current: {

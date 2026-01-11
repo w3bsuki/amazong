@@ -204,16 +204,23 @@ export async function GET(request: NextRequest) {
         .range(offset, offset + safeLimit - 1)
 
       if (error) {
-        console.error("[API] Products by category error:", error.message)
-        return NextResponse.json({ 
-          products: [], 
-          hasMore: false,
-          error: error.message 
-        }, { status: 500 })
+        // Range errors (requesting beyond available data) return malformed errors.
+        // If page > 1 and we get an error, treat as empty results (hasMore=false).
+        if (page > 1) {
+          productRows = []
+          totalCount = count ?? 0
+        } else {
+          console.error("[API] Products by category error:", error)
+          return NextResponse.json({ 
+            products: [], 
+            hasMore: false,
+            error: typeof error.message === 'string' ? error.message : 'Query failed'
+          }, { status: 500 })
+        }
+      } else {
+        productRows = (data ?? []) as unknown as ProductRowWithRelations[]
+        totalCount = count ?? 0
       }
-
-      productRows = (data ?? []) as unknown as ProductRowWithRelations[]
-      totalCount = count ?? 0
     } else {
       // =================================================================
       // ALL PRODUCTS (no category filter)
@@ -264,16 +271,23 @@ export async function GET(request: NextRequest) {
         .range(offset, offset + safeLimit - 1)
 
       if (error) {
-        console.error("[API] Newest products error:", error.message)
-        return NextResponse.json({ 
-          products: [], 
-          hasMore: false,
-          error: error.message 
-        }, { status: 500 })
+        // Range errors (requesting beyond available data) return malformed errors.
+        // If page > 1 and we get an error, treat as empty results (hasMore=false).
+        if (page > 1) {
+          productRows = []
+          totalCount = count ?? 0
+        } else {
+          console.error("[API] Newest products error:", error)
+          return NextResponse.json({ 
+            products: [], 
+            hasMore: false,
+            error: typeof error.message === 'string' ? error.message : 'Query failed'
+          }, { status: 500 })
+        }
+      } else {
+        productRows = (data ?? []) as unknown as ProductRowWithRelations[]
+        totalCount = count ?? 0
       }
-
-      productRows = (data ?? []) as unknown as ProductRowWithRelations[]
-      totalCount = count ?? 0
     }
 
     // Transform to UI format using shared normalizer
