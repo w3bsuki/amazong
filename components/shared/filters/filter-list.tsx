@@ -95,15 +95,22 @@ export function FilterList({
                 type="button"
                 onClick={() => handleSelect(option)}
                 className={cn(
-                  "w-full flex items-center justify-between px-4 h-10 transition-colors text-left",
+                  "w-full flex items-center gap-3 px-4 h-10 transition-colors text-left",
                   isActive
                     ? "bg-muted/40 text-foreground font-medium"
                     : "text-foreground active:bg-muted/30"
                 )}
                 aria-pressed={isActive}
               >
+                <div
+                  className={cn(
+                    "size-5 rounded border flex items-center justify-center transition-colors shrink-0",
+                    isActive ? "bg-primary border-primary" : "border-input"
+                  )}
+                >
+                  {isActive && <Check size={12} weight="bold" className="text-primary-foreground" />}
+                </div>
                 <span className="text-sm">{option}</span>
-                {isActive && <Check size={16} weight="bold" />}
               </button>
             )
           })

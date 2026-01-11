@@ -567,6 +567,14 @@ export function FilterHub({
                         )}
                         aria-pressed={isActive}
                       >
+                        <div
+                          className={cn(
+                            "size-5 rounded border flex items-center justify-center transition-colors shrink-0",
+                            isActive ? "bg-primary border-primary" : "border-input"
+                          )}
+                        >
+                          {isActive && <Check size={12} weight="bold" className="text-primary-foreground" />}
+                        </div>
                         <div className="flex text-rating">
                           {[...Array(5)].map((_, i) => (
                             <Star
@@ -577,9 +585,6 @@ export function FilterHub({
                           ))}
                         </div>
                         <span className="text-sm">{t("andUp")}</span>
-                        {isActive && (
-                          <Check size={16} weight="bold" className="ml-auto" />
-                        )}
                       </button>
                     )
                   })}
@@ -645,17 +650,24 @@ export function FilterHub({
                     type="button"
                     onClick={() => setPendingCategorySlug(null)}
                     className={cn(
-                      "w-full flex items-center justify-between px-(--page-inset) h-10 transition-colors text-left",
+                      "w-full flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
                       pendingCategorySlug === null
                         ? "bg-muted/40 text-foreground font-medium"
                         : "text-foreground active:bg-muted/30"
                     )}
                     aria-pressed={pendingCategorySlug === null}
                   >
+                    <div
+                      className={cn(
+                        "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
+                        pendingCategorySlug === null ? "bg-primary border-primary" : "border-input"
+                      )}
+                    >
+                      {pendingCategorySlug === null && <div className="size-2 rounded-full bg-primary-foreground" />}
+                    </div>
                     <span className="text-sm">
                       {tHub("allInCategory", { category: categoryName || "" })}
                     </span>
-                    {pendingCategorySlug === null && <Check size={16} weight="bold" />}
                   </button>
 
                   {/* Subcategory options */}
@@ -668,15 +680,22 @@ export function FilterHub({
                         type="button"
                         onClick={() => setPendingCategorySlug(isActive ? null : subcat.slug)}
                         className={cn(
-                          "w-full flex items-center justify-between px-(--page-inset) h-10 transition-colors text-left",
+                          "w-full flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
                           isActive
                             ? "bg-muted/40 text-foreground font-medium"
                             : "text-foreground active:bg-muted/30"
                         )}
                         aria-pressed={isActive}
                       >
+                        <div
+                          className={cn(
+                            "size-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
+                            isActive ? "bg-primary border-primary" : "border-input"
+                          )}
+                        >
+                          {isActive && <div className="size-2 rounded-full bg-primary-foreground" />}
+                        </div>
                         <span className="text-sm">{subcatName}</span>
-                        {isActive && <Check size={16} weight="bold" />}
                       </button>
                     )
                   })}
@@ -804,15 +823,22 @@ export function FilterHub({
                               setPendingAttrValues(attr.name, newValues)
                             }}
                             className={cn(
-                              "w-full flex items-center justify-between px-(--page-inset) h-10 transition-colors text-left",
+                              "w-full flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
                               isActive
                                 ? "bg-muted/40 text-foreground font-medium"
                                 : "text-foreground active:bg-muted/30"
                             )}
                             aria-pressed={isActive}
                           >
+                            <div
+                              className={cn(
+                                "size-5 rounded border flex items-center justify-center transition-colors shrink-0",
+                                isActive ? "bg-primary border-primary" : "border-input"
+                              )}
+                            >
+                              {isActive && <Check size={12} weight="bold" className="text-primary-foreground" />}
+                            </div>
                             <span className="text-sm">{option}</span>
-                            {isActive && <Check size={16} weight="bold" />}
                           </button>
                         )
                       })}
