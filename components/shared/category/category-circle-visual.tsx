@@ -47,29 +47,19 @@ export function CategoryCircleVisual({
   const imageUrl = hasMeaningfulImageUrl(category.image_url) ? category.image_url : null
   const icon = hasMeaningfulIcon(category.icon) ? category.icon : null
 
-  // Treido Style: Clean, minimal, professional
-  // - Base: subtle border to define edge (especially for light images)
-  // - Active: primary border for clear selection state
-  const baseStyles = {
-    bg: "bg-muted/30",
-    iconColor: "text-foreground",
-    border: "border border-border/40",
-  }
-
-  // Active state: clean primary ring
+  // Treido Style: Clean, minimal
+  // Use ring for visible border on ALL circles (rings don't get covered by content)
   const activeStyles = active 
-    ? "ring-2 ring-primary ring-offset-1 ring-offset-background border-transparent" 
-    : ""
+    ? "ring-2 ring-primary" 
+    : "ring-1 ring-border"  // Default border using ring (visible even with images)
 
   return (
-
     <div
       className={cn(
         "rounded-full flex items-center justify-center overflow-hidden",
+        "bg-muted/20",
         "transition-all duration-150",
         "group-active:opacity-90",
-        baseStyles.bg,
-        baseStyles.border,
         activeStyles,
         className
       )}
@@ -84,7 +74,7 @@ export function CategoryCircleVisual({
             className="h-full w-full object-cover"
           />
         ) : icon ? (
-          <span className={cn("text-lg leading-none", baseStyles.iconColor)} aria-hidden="true">
+          <span className="text-lg leading-none text-foreground" aria-hidden="true">
             {icon}
           </span>
         ) : (
@@ -92,11 +82,11 @@ export function CategoryCircleVisual({
             {getCategoryIcon(category.slug, {
               size: fallbackIconSize,
               weight: "regular",
-              className: baseStyles.iconColor,
+              className: "text-foreground",
             })}
           </span>
         )
       }
-    </div >
+    </div>
   )
 }
