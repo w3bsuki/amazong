@@ -255,7 +255,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
         >
           {/* Header */}
           <DrawerHeader className={cn(
-            "px-(--page-inset) h-14 flex-shrink-0 border-b border-border/60 flex items-center",
+            "px-(--page-inset) min-h-touch-lg flex-shrink-0 border-b border-border/50 flex items-center py-3",
             activeSection ? "justify-start" : "justify-between"
           )}>
             {activeSection ? (
@@ -273,7 +273,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
               </DrawerClose>
             )}
             
-            <h2 className="text-base font-bold text-foreground flex-1 text-center">
+            <h2 className="text-base font-semibold text-foreground flex-1 text-center">
               {activeSection 
                 ? filterSections.find(s => s.id === activeSection)?.label 
                 : t('filters')

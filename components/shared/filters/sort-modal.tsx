@@ -90,7 +90,7 @@ export function SortModal({
         </div>
 
         <DrawerHeader className="px-(--page-inset) pt-4 pb-3 border-b border-border/50">
-          <DrawerTitle className="text-base font-bold text-center">
+          <DrawerTitle className="text-base font-semibold text-center">
             {t("sortBy")}
           </DrawerTitle>
         </DrawerHeader>
@@ -106,18 +106,18 @@ export function SortModal({
                     onClick={() => handleSortChange(option.value)}
                     className={cn(
                       "w-full flex items-center justify-between",
-                      "px-(--page-inset) h-14",
-                      "text-base font-medium text-left",
+                      "px-(--page-inset) h-11",
+                      "text-sm font-medium text-left",
                       "transition-colors",
                       isActive
-                        ? "bg-primary/10 text-primary"
-                        : "text-foreground active:bg-muted/50"
+                        ? "bg-muted/50 text-foreground"
+                        : "text-foreground active:bg-muted/30"
                     )}
                     aria-pressed={isActive}
                   >
                     <span>{t(option.labelKey)}</span>
                     {isActive && (
-                      <Check size={18} weight="bold" className="text-primary shrink-0" />
+                      <Check size={16} weight="bold" className="shrink-0" />
                     )}
                   </button>
                 </DrawerClose>

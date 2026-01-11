@@ -452,7 +452,7 @@ export function FilterHub({
             {/* Single mode: show title + close button */}
             {isSingleMode ? (
               <>
-                <DrawerTitle className="text-lg font-bold">
+                <DrawerTitle className="text-base font-semibold">
                   {currentSectionLabel}
                 </DrawerTitle>
                 <div className="flex items-center gap-2">
@@ -483,13 +483,13 @@ export function FilterHub({
                 className="flex items-center gap-2 text-foreground font-semibold active:opacity-70 transition-opacity"
               >
                 <CaretLeft size={20} weight="bold" />
-                <span className="text-lg">
+                <span className="text-base">
                   {currentSectionLabel}
                 </span>
               </button>
             ) : (
               /* Full mode: main list view */
-              <DrawerTitle className="text-lg font-bold">
+              <DrawerTitle className="text-base font-semibold">
                 {tHub("refineSearch")}
               </DrawerTitle>
             )}
