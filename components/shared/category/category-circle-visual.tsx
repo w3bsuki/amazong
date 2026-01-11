@@ -47,29 +47,29 @@ export function CategoryCircleVisual({
   const imageUrl = hasMeaningfulImageUrl(category.image_url) ? category.image_url : null
   const icon = hasMeaningfulIcon(category.icon) ? category.icon : null
 
-  // Treido Style: (Updated: Flat, clean, no glows)
-  // - Base: bg-muted/20 (very subtle), border-border/60
-  // - Active: border-primary (clean 1px border), no ring glows
-  const styles = {
-    bg: "bg-muted/20",
+  // Treido Style: Clean, minimal, professional
+  // - Base: subtle border to define edge (especially for light images)
+  // - Active: primary border for clear selection state
+  const baseStyles = {
+    bg: "bg-muted/30",
     iconColor: "text-foreground",
-    border: "border-border/60",
+    border: "border border-border/40",
   }
 
-  // If active (selected state), use cleaner border without glow rings
-  const activeStyles = active ? "border-primary bg-background" : styles.border
+  // Active state: clean primary ring
+  const activeStyles = active 
+    ? "ring-2 ring-primary ring-offset-1 ring-offset-background border-transparent" 
+    : ""
 
   return (
 
     <div
       className={cn(
-        // Treido: w-[56px] h-[56px] -> we expect parent to pass size-14 (56px) or similar
-        // If not, we enforce a good default in parent, but here we handle the visual properties.
         "rounded-full flex items-center justify-center overflow-hidden",
-        "border",
-        "transition-[border-color,background-color,opacity] duration-150", // Specific properties for better perf
-        "group-active:opacity-90", // Treido: active:opacity-90 (via group from parent)
-        styles.bg,
+        "transition-all duration-150",
+        "group-active:opacity-90",
+        baseStyles.bg,
+        baseStyles.border,
         activeStyles,
         className
       )}
@@ -84,15 +84,15 @@ export function CategoryCircleVisual({
             className="h-full w-full object-cover"
           />
         ) : icon ? (
-          <span className={cn("text-lg leading-none", styles.iconColor)} aria-hidden="true">
+          <span className={cn("text-lg leading-none", baseStyles.iconColor)} aria-hidden="true">
             {icon}
           </span>
         ) : (
           <span aria-hidden="true">
             {getCategoryIcon(category.slug, {
               size: fallbackIconSize,
-              weight: "regular", // Treido: Regular weight for better legibility on flat design
-              className: styles.iconColor,
+              weight: "regular",
+              className: baseStyles.iconColor,
             })}
           </span>
         )
