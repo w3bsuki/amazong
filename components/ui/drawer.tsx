@@ -38,6 +38,8 @@ function DrawerOverlay({
       data-slot="drawer-overlay"
       className={cn(
         "fixed inset-0 z-50 bg-overlay-dark",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         className
       )}
       {...props}
@@ -52,7 +54,7 @@ function DrawerTitle({
   return (
     <DrawerPrimitive.Title
       data-slot="drawer-title"
-      className={cn("text-base font-semibold text-foreground leading-tight", className)}
+      className={cn("text-foreground font-semibold", className)}
       {...props}
     />
   )
@@ -126,8 +128,8 @@ function DrawerContent({
         {!hasTitle && (
           <DrawerTitle className="sr-only">{ariaLabel ?? "Dialog"}</DrawerTitle>
         )}
-        {/* Compact drag handle - 32×4px, subtle styling per Temu pattern */}
-        <div className="mx-auto mt-2 mb-1 hidden h-1 w-8 shrink-0 rounded-full bg-muted-foreground/30 group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+        {/* Drag handle - visible on bottom drawer */}
+        <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
@@ -139,7 +141,9 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-header"
       className={cn(
-        "flex flex-col gap-1 px-(--page-inset) py-2 md:py-3 md:gap-1.5",
+        "flex flex-col gap-1.5 p-4",
+        "group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center",
+        "group-data-[vaul-drawer-direction=top]/drawer-content:text-center",
         className
       )}
       {...props}
@@ -152,7 +156,7 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="drawer-footer"
       className={cn(
-        "mt-auto flex flex-col gap-2 px-(--page-inset) py-3 pb-safe",
+        "mt-auto flex flex-col gap-2 p-4 pb-safe",
         className
       )}
       {...props}
