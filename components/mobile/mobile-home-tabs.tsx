@@ -337,6 +337,19 @@ export function MobileHomeTabs({
       await instant.setFilters(params)
     }
 
+    // Remove a single filter (for FilterChips in instant mode)
+    const handleRemoveFilter = async (key: string, key2?: string) => {
+      const params = new URLSearchParams(instant.appliedSearchParams?.toString() ?? "")
+      params.delete(key)
+      if (key2) params.delete(key2)
+      await instant.setFilters(params)
+    }
+
+    // Clear all filters
+    const handleClearAllFilters = async () => {
+      await instant.setFilters(new URLSearchParams())
+    }
+
     return (
       <div className="w-full min-h-screen bg-background">
         {/*
@@ -396,7 +409,16 @@ export function MobileHomeTabs({
           className="z-30"
         />
 
-        {/* 4. Product Feed */}
+        {/* 4) Active Filter Chips (removable pills) */}
+        <div className="bg-background px-4 py-2">
+          <FilterChips
+            appliedSearchParams={instant.appliedSearchParams}
+            onRemoveFilter={handleRemoveFilter}
+            onClearAll={handleClearAllFilters}
+          />
+        </div>
+
+        {/* 5. Product Feed */}
         <ProductFeed
           products={instant.feed.products}
           hasMore={instant.feed.hasMore}

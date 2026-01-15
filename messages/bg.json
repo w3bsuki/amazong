@@ -1058,6 +1058,7 @@
         "deliveryDay": "Ден на доставка",
         "freeShipping": "Безплатна доставка",
         "clearAllFilters": "Изчисти всички филтри",
+        "removeFilter": "Премахни филтър",
         "brand": "Марка",
         "clearBrand": "Изчисти филтър за марка",
         "min": "Мин",

@@ -1,22 +1,53 @@
 "use client"
 
-import { useMemo } from "react"
-import { useSearchParams } from "next/navigation"
+import { useMemo, useCallback } from "react"
+import { useSearchParams, type ReadonlyURLSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/routing"
-import { X, Star, Truck, Package, Percent, Tag } from "@phosphor-icons/react"
+import { X, Star, Truck, Package, Percent, Tag } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
+// =============================================================================
+// ACTIVE FILTER CHIPS — Removable pills showing applied filters
+//
+// Design system compliance (DESIGN.md):
+// - Consistent chip height (h-7 = 28px, compact but touchable)
+// - rounded-full for pill shape (per token reference)
+// - Semantic tokens (bg-secondary, text-muted-foreground)
+// - lucide-react icons (repo standard)
+// - Hover state shows X more prominently
+// =============================================================================
+
 interface FilterChipsProps {
+  /** Current category context (shown as removable chip) */
   currentCategory?: { name: string; slug: string } | null
-  basePath?: string // e.g., "/categories/electronics" or undefined for "/search"
+  /** Base path for URL updates (e.g., "/categories/electronics") */
+  basePath?: string
+  /** External search params (for instant-apply flows without URL navigation) */
+  appliedSearchParams?: URLSearchParams | ReadonlyURLSearchParams
+  /** Callback when filters are removed (for instant-apply mode) */
+  onRemoveFilter?: (key: string, key2?: string) => void
+  /** Callback to clear all filters (for instant-apply mode) */
+  onClearAll?: () => void
+  /** Additional CSS classes */
   className?: string
 }
 
-export function FilterChips({ currentCategory: _currentCategory, basePath, className }: FilterChipsProps) {
+export function FilterChips({
+  currentCategory,
+  basePath,
+  appliedSearchParams,
+  onRemoveFilter,
+  onClearAll,
+  className,
+}: FilterChipsProps) {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const t = useTranslations('SearchFilters')
+  const searchParamsFromRouter = useSearchParams()
+  const searchParams = appliedSearchParams ?? searchParamsFromRouter
+  const t = useTranslations("SearchFilters")
+
+  // Determine if we're in "instant" mode (external params + callbacks)
+  const isInstantMode = Boolean(appliedSearchParams && onRemoveFilter)
 
   const currentMinPrice = searchParams.get("minPrice")
   const currentMaxPrice = searchParams.get("maxPrice")
@@ -40,36 +71,40 @@ export function FilterChips({ currentCategory: _currentCategory, basePath, class
     return attrs
   }, [searchParams])
 
-  const removeParam = (key: string, key2?: string) => {
-    // Handle Category Chip Removal
-    if (key === 'category') {
-      if (basePath) {
-        // If we differ from basepath, go up? 
-        // Actually, if we are removing the "current category", we likely want to go to the PARENT or Root.
-        // Simple heuristic: Go to "/categories" or "/" if we are "removing" the category context.
-        router.push('/categories')
-      } else {
-        // Search mode: remove category param
-        const params = new URLSearchParams(searchParams.toString())
-        params.delete("category")
-        params.delete("page")
-        router.push(`/search?${params.toString()}`)
+  const removeParam = useCallback(
+    (key: string, key2?: string) => {
+      // Instant mode: delegate to callback
+      if (isInstantMode && onRemoveFilter) {
+        onRemoveFilter(key, key2)
+        return
       }
-      return
-    }
 
-    const params = new URLSearchParams(searchParams.toString())
-    params.delete(key)
-    if (key2) params.delete(key2)
-    // Reset pagination when filters change
-    params.delete("page")
-    const queryString = params.toString()
-    if (basePath) {
-      router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
-    } else {
-      router.push(`/search?${queryString}`)
-    }
-  }
+      // Handle Category Chip Removal
+      if (key === "category") {
+        if (basePath) {
+          router.push("/categories")
+        } else {
+          const params = new URLSearchParams(searchParams.toString())
+          params.delete("category")
+          params.delete("page")
+          router.push(`/search?${params.toString()}`)
+        }
+        return
+      }
+
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete(key)
+      if (key2) params.delete(key2)
+      params.delete("page")
+      const queryString = params.toString()
+      if (basePath) {
+        router.push(`${basePath}${queryString ? `?${queryString}` : ""}`)
+      } else {
+        router.push(`/search?${queryString}`)
+      }
+    },
+    [isInstantMode, onRemoveFilter, basePath, router, searchParams]
+  )
 
   const chips: Array<{
     key: string
@@ -80,137 +115,168 @@ export function FilterChips({ currentCategory: _currentCategory, basePath, class
   }> = []
 
   // Current Category Chip
-  if (_currentCategory) {
+  if (currentCategory) {
     chips.push({
-      key: 'category',
-      label: _currentCategory.name,
-      icon: <Tag size={14} weight="regular" />, // Using Tag icon for category
-      color: 'bg-primary/5 text-primary border-primary/20'
+      key: "category",
+      label: currentCategory.name,
+      icon: <Tag className="size-3.5" />,
     })
   }
 
   // Free Shipping chip
   if (currentFreeShipping === "true") {
     chips.push({
-      key: 'freeShipping',
-      label: t('freeShipping'),
-      icon: <Truck size={14} weight="regular" />,
-      color: 'bg-shipping-free/10 text-shipping-free border-shipping-free/20'
+      key: "freeShipping",
+      label: t("freeShipping"),
+      icon: <Truck className="size-3.5" />,
     })
   }
 
   // Rating chip
   if (currentRating) {
     chips.push({
-      key: 'minRating',
-      label: `${currentRating}+ ${t('stars')}`,
-      icon: <Star size={14} weight="fill" className="text-rating" />,
-      color: 'bg-rating/10 text-rating border-rating/20'
+      key: "minRating",
+      label: `${currentRating}+ ${t("stars")}`,
+      icon: <Star className="size-3.5 fill-current" />,
     })
   }
 
   // Price chip
   if (currentMinPrice || currentMaxPrice) {
-    let priceLabel = ''
+    let priceLabel = ""
     if (currentMinPrice && currentMaxPrice) {
-      priceLabel = `$${currentMinPrice} - $${currentMaxPrice}`
+      priceLabel = `€${currentMinPrice} – €${currentMaxPrice}`
     } else if (currentMinPrice) {
-      priceLabel = `$${currentMinPrice}+`
+      priceLabel = `€${currentMinPrice}+`
     } else if (currentMaxPrice) {
-      priceLabel = `${t('under')} $${currentMaxPrice}`
+      priceLabel = `${t("under")} €${currentMaxPrice}`
     }
     chips.push({
-      key: 'minPrice',
-      key2: 'maxPrice',
+      key: "minPrice",
+      key2: "maxPrice",
       label: priceLabel,
-      color: 'bg-secondary text-foreground border-border'
     })
   }
 
   // Deals chip
   if (currentDeals === "true") {
     chips.push({
-      key: 'deals',
-      label: t('todaysDeals'),
-      icon: <Percent size={14} weight="regular" />,
-      color: 'bg-deal/10 text-deal border-deal/20'
+      key: "deals",
+      label: t("todaysDeals"),
+      icon: <Percent className="size-3.5" />,
     })
   }
 
   // Availability chip
   if (currentAvailability === "instock") {
     chips.push({
-      key: 'availability',
-      label: t('inStock'),
-      icon: <Package size={14} weight="regular" />,
-      color: 'bg-stock-available/10 text-stock-available border-stock-available/20'
+      key: "availability",
+      label: t("inStock"),
+      icon: <Package className="size-3.5" />,
     })
   }
 
   // Attribute filter chips (attr_*)
   for (const { name, values } of attributeFilters) {
-    // Format the attribute name for display (capitalize first letter)
     const displayName = name.charAt(0).toUpperCase() + name.slice(1)
-    const label = values.length === 1
-      ? `${displayName}: ${values[0]}`
-      : `${displayName}: ${values.length} selected`
+    const label =
+      values.length === 1
+        ? `${displayName}: ${values[0]}`
+        : `${displayName}: ${values.length}`
 
     chips.push({
       key: `attr_${name}`,
       label,
-      icon: <Tag size={14} weight="regular" />,
-      color: 'bg-primary/10 text-primary border-primary/20'
+      icon: <Tag className="size-3.5" />,
     })
   }
+
+  const handleClearAll = useCallback(() => {
+    if (isInstantMode && onClearAll) {
+      onClearAll()
+      return
+    }
+    if (basePath) {
+      router.push(basePath)
+    } else {
+      const params = new URLSearchParams()
+      const q = searchParams.get("q")
+      const category = searchParams.get("category")
+      if (q) params.set("q", q)
+      if (category) params.set("category", category)
+      router.push(`/search?${params.toString()}`)
+    }
+  }, [isInstantMode, onClearAll, basePath, router, searchParams])
 
   // Don't render if no active filters
   if (chips.length === 0) return null
 
   return (
-    <div className={cn("flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap", className)}>
-      {/* Active filters label */}
-      <span className="text-sm text-muted-foreground shrink-0 py-1.5 hidden sm:flex items-center">
-        {t('activeFilters')}:
-      </span>
-
+    <div
+      className={cn(
+        "flex items-center gap-1.5 overflow-x-auto no-scrollbar",
+        "-mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap",
+        className
+      )}
+      role="list"
+      aria-label={t("activeFilters")}
+    >
       {chips.map((chip) => (
         <button
           key={chip.key}
+          type="button"
           onClick={() => removeParam(chip.key, chip.key2)}
           className={cn(
-            "inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-sm whitespace-nowrap",
-            "border group",
-            "hover:bg-destructive/10 hover:border-destructive/20 hover:text-destructive",
-            chip.color || "bg-secondary text-foreground border-border hover:bg-secondary/80"
+            // Layout
+            "inline-flex items-center gap-1 h-7 pl-2.5 pr-1.5 shrink-0",
+            // Shape (pill per DESIGN.md)
+            "rounded-full",
+            // Colors (neutral, inverted on hover)
+            "bg-secondary text-foreground",
+            "hover:bg-destructive hover:text-destructive-foreground",
+            // Typography
+            "text-xs font-medium whitespace-nowrap",
+            // Interaction
+            "transition-colors duration-150",
+            "tap-highlight-transparent",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
+            "group"
           )}
+          role="listitem"
+          aria-label={`${t("removeFilter")}: ${chip.label}`}
         >
-          {chip.icon}
-          <span className="font-medium">{chip.label}</span>
-          <X size={14} weight="regular" className="opacity-60 group-hover:opacity-100 transition-opacity" />
+          {chip.icon && <span aria-hidden="true">{chip.icon}</span>}
+          <span>{chip.label}</span>
+          <span
+            className={cn(
+              "size-4 rounded-full inline-flex items-center justify-center",
+              "bg-foreground/10 group-hover:bg-destructive-foreground/20",
+              "transition-colors"
+            )}
+            aria-hidden="true"
+          >
+            <X className="size-3" />
+          </span>
         </button>
       ))}
 
       {/* Clear All button when multiple filters */}
       {chips.length > 1 && (
         <button
-          onClick={() => {
-            if (basePath) {
-              router.push(basePath)
-            } else {
-              const params = new URLSearchParams()
-              const q = searchParams.get("q")
-              const category = searchParams.get("category")
-              if (q) params.set("q", q)
-              if (category) params.set("category", category)
-              router.push(`/search?${params.toString()}`)
-            }
-          }}
+          type="button"
+          onClick={handleClearAll}
           className={cn(
-            "inline-flex items-center gap-1 px-3 h-8 rounded-md text-sm whitespace-nowrap",
-            "text-muted-foreground hover:text-destructive font-medium"
+            "inline-flex items-center gap-1 h-7 px-2.5 shrink-0",
+            "rounded-full",
+            "text-xs font-medium whitespace-nowrap",
+            "text-muted-foreground hover:text-destructive",
+            "transition-colors duration-150",
+            "tap-highlight-transparent",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           )}
         >
-          {t('clearAllFilters')}
+          <X className="size-3.5" aria-hidden="true" />
+          <span>{t("clearAllFilters")}</span>
         </button>
       )}
     </div>

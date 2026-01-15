@@ -1047,6 +1047,7 @@
         "deliveryDay": "Delivery Day",
         "freeShipping": "Free Shipping",
         "clearAllFilters": "Clear all filters",
+        "removeFilter": "Remove filter",
         "brand": "Brand",
         "clearBrand": "Clear brand filter",
         "min": "Min",
