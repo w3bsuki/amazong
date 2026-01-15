@@ -158,7 +158,7 @@ function MessagesContent() {
   }
 
   return (
-    <div className="flex h-full w-full min-h-0 flex-1 bg-background">
+    <div className="flex h-full w-full min-h-0 flex-1 overflow-hidden bg-background">
       {/* Conversation list - full width on mobile, sidebar on desktop */}
       <div
         className={cn(
