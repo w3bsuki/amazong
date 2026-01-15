@@ -40,7 +40,7 @@ export function StartSellingBanner({
           className={cn(
             "block w-full rounded-md",
             "bg-foreground text-background",
-            "px-3 py-3",
+            "px-3.5 py-2.5",
             "active:opacity-90 transition-opacity",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             className
@@ -49,10 +49,10 @@ export function StartSellingBanner({
           <div className="flex items-center justify-between w-full gap-3">
             {/* Left: Text */}
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold leading-snug">
+              <p className="text-base font-bold leading-snug tracking-tight">
                 {isBg ? "Продай за минути" : "Sell in minutes"}
               </p>
-              <p className="text-xs text-background/70 mt-0.5">
+              <p className="text-xs text-background/70">
                 {isBg
                   ? "Освободи място и спечели."
                   : "Clear space and earn."}
@@ -61,10 +61,10 @@ export function StartSellingBanner({
 
             {/* Right: Arrow pill - inverted back to light */}
             <span
-              className="size-8 shrink-0 rounded-md bg-background text-foreground flex items-center justify-center"
+              className="size-9 shrink-0 rounded-md bg-background text-foreground flex items-center justify-center"
               aria-hidden="true"
             >
-              <ArrowRight size={16} weight="bold" />
+              <ArrowRight size={18} weight="bold" />
             </span>
           </div>
         </Link>

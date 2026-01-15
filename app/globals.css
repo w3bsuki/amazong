@@ -341,7 +341,7 @@
     color: var(--background);
   }
 
-  :where(a, button, input, select, textarea, summary, [role="button"], [role="link"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  :where(a, button, input, select, textarea, summary, [role="button"], [role="link"], [tabindex]:not([tabindex="-1"])):focus-visible:not(.no-focus-ring) {
     outline: 2px solid var(--ring) !important;
     outline-offset: 2px !important;
   }

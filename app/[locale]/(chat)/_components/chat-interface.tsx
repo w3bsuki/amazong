@@ -5,6 +5,9 @@ import { format, isToday, isYesterday, isSameDay } from "date-fns"
 import { useTranslations, useLocale } from "next-intl"
 import { bg, enUS } from "date-fns/locale"
 import { cn, safeAvatarSrc } from "@/lib/utils"
+import { AVATAR_VARIANTS, COLOR_PALETTES } from "@/lib/avatar-palettes"
+import { Avatar as UiAvatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import BoringAvatar from "boring-avatars"
 import { useMessages, type Message } from "@/components/providers/message-context"
 import { createClient } from "@/lib/supabase/client"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -24,6 +27,7 @@ import {
   Package,
   ProhibitInset,
   Flag,
+  ChatCircle,
 } from "@phosphor-icons/react"
 import {
   DropdownMenu,
@@ -258,20 +262,12 @@ export function ChatInterface({
         )}
       >
         <div className="flex flex-col items-center gap-4 p-4 text-center max-w-sm">
-          <div className="flex size-20 items-center justify-center rounded-full border-2 border-foreground/20">
-            <svg
-              className="size-10 text-foreground/60"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"
-              />
-            </svg>
+          <div className="flex size-20 items-center justify-center rounded-full border-2 border-border">
+            <ChatCircle
+              size={40}
+              weight="regular"
+              className="text-muted-foreground"
+            />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-foreground mb-1">
@@ -302,7 +298,20 @@ export function ChatInterface({
   const avatarUrl = otherProfile?.avatar_url ||
     (isBuyer ? currentConversation.seller?.profile?.avatar_url : currentConversation.buyer?.avatar_url)
 
-  const avatarSrc = safeAvatarSrc(avatarUrl)
+  const parseBoringAvatar = (value?: string | null) => {
+    if (!value || !value.startsWith("boring-avatar:")) return null
+    const [, variantRaw, paletteRaw, seedRaw] = value.split(":")
+    const variant = AVATAR_VARIANTS.includes(variantRaw as (typeof AVATAR_VARIANTS)[number])
+      ? (variantRaw as (typeof AVATAR_VARIANTS)[number])
+      : AVATAR_VARIANTS[0]
+    const paletteIndex = Number.parseInt(paletteRaw || "0", 10)
+    const colors = COLOR_PALETTES[Number.isNaN(paletteIndex) ? 0 : paletteIndex] ?? COLOR_PALETTES[0]
+    const name = seedRaw || displayName || "user"
+    return { variant, colors, name }
+  }
+
+  const boringAvatar = parseBoringAvatar(avatarUrl)
+  const avatarSrc = boringAvatar ? undefined : safeAvatarSrc(avatarUrl)
 
   const initials = (displayName || "?")
     .split(" ")
@@ -340,7 +349,7 @@ export function ChatInterface({
     <div className={cn("flex h-full min-h-0 flex-col bg-background", className)}>
       {/* Header - Compact mobile style with safe area */}
       {showHeader && (
-        <div className="shrink-0 border-b border-border px-2 py-2 safe-area-top">
+        <div className="shrink-0 border-b border-border px-2 py-2 pt-[max(0.5rem,env(safe-area-inset-top))]">
           <div className="flex items-center gap-2">
             {/* Back button (mobile) */}
             {onBack && (
@@ -354,19 +363,23 @@ export function ChatInterface({
 
             {/* Avatar - smaller on mobile */}
             <Link href={`/seller/${currentConversation.seller_id}`} className="shrink-0">
-              {avatarSrc ? (
-                <Image
-                  src={avatarSrc}
-                  alt={displayName}
-                  width={40}
-                  height={40}
-                  className="size-10 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex size-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-                  {initials}
-                </div>
-              )}
+              <UiAvatar className="size-10">
+                {avatarSrc ? <AvatarImage src={avatarSrc} alt={displayName} /> : null}
+                {boringAvatar ? (
+                  <AvatarFallback className="bg-transparent p-0">
+                    <BoringAvatar
+                      size={40}
+                      name={boringAvatar.name}
+                      variant={boringAvatar.variant}
+                      colors={boringAvatar.colors}
+                    />
+                  </AvatarFallback>
+                ) : (
+                  <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
+                    {initials}
+                  </AvatarFallback>
+                )}
+              </UiAvatar>
             </Link>
 
             {/* Name and status - tighter */}
@@ -477,19 +490,23 @@ export function ChatInterface({
           <div className="flex flex-col items-center justify-center h-full text-center">
             {/* Profile card for new conversations */}
             <div className="flex flex-col items-center gap-3 mb-6">
-              {avatarSrc ? (
-                <Image
-                  src={avatarSrc}
-                  alt={displayName}
-                  width={96}
-                  height={96}
-                  className="size-24 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex size-24 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground">
-                  {initials}
-                </div>
-              )}
+              <UiAvatar className="size-24">
+                {avatarSrc ? <AvatarImage src={avatarSrc} alt={displayName} /> : null}
+                {boringAvatar ? (
+                  <AvatarFallback className="bg-transparent p-0">
+                    <BoringAvatar
+                      size={96}
+                      name={boringAvatar.name}
+                      variant={boringAvatar.variant}
+                      colors={boringAvatar.colors}
+                    />
+                  </AvatarFallback>
+                ) : (
+                  <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
+                    {initials}
+                  </AvatarFallback>
+                )}
+              </UiAvatar>
               <div>
                 <h3 className="text-lg font-semibold text-foreground">{displayName}</h3>
                 {currentConversation.product && (
@@ -666,20 +683,25 @@ export function ChatInterface({
                   {/* Avatar - only show for received messages and last in group */}
                   {!isOwn && (
                     <div className="shrink-0 w-7">
-                      {isLastInGroup &&
-                        (avatarSrc ? (
-                          <Image
-                            src={avatarSrc}
-                            alt={displayName}
-                            width={28}
-                            height={28}
-                            className="size-7 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex size-7 items-center justify-center rounded-full bg-primary text-2xs font-semibold text-primary-foreground">
-                            {initials}
-                          </div>
-                        ))}
+                      {isLastInGroup && (
+                        <UiAvatar className="size-7">
+                          {avatarSrc ? <AvatarImage src={avatarSrc} alt={displayName} /> : null}
+                          {boringAvatar ? (
+                            <AvatarFallback className="bg-transparent p-0">
+                              <BoringAvatar
+                                size={28}
+                                name={boringAvatar.name}
+                                variant={boringAvatar.variant}
+                                colors={boringAvatar.colors}
+                              />
+                            </AvatarFallback>
+                          ) : (
+                            <AvatarFallback className="bg-primary text-primary-foreground text-2xs font-semibold">
+                              {initials}
+                            </AvatarFallback>
+                          )}
+                        </UiAvatar>
+                      )}
                     </div>
                   )}
 
@@ -759,9 +781,9 @@ export function ChatInterface({
         )}
       </div>
 
-      {/* Typing indicator */}
-      {isOtherUserTyping && !isClosed && (
-        <div className="px-4 pb-1">
+      {/* Typing indicator - fixed height to prevent layout shift */}
+      <div className="h-6 px-4 flex items-center">
+        {isOtherUserTyping && !isClosed && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <div className="flex gap-1">
               <span
@@ -781,11 +803,11 @@ export function ChatInterface({
               {displayName} {locale === "bg" ? "пише..." : "is typing..."}
             </span>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Input area - with safe area for mobile */}
-      <div className="shrink-0 border-t border-border px-2 py-2 bg-background safe-area-bottom">
+      <div className="shrink-0 border-t border-border px-2 py-2 bg-background pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {isClosed ? (
           <div className="flex items-center justify-center py-2 px-4 rounded-full bg-muted">
             <p className="text-sm text-muted-foreground">{t("conversationClosed")}</p>
@@ -814,8 +836,8 @@ export function ChatInterface({
               )}
             </button>
 
-            {/* Input container - full width, rounded */}
-            <div className="flex-1 flex items-end gap-2 px-3 py-2 rounded-full border border-border bg-muted/40 focus-within:border-primary/50 transition-colors min-h-10">
+            {/* Input container - using ring pattern from shadcn */}
+            <div className="flex-1 flex items-end gap-2 px-3 py-2 rounded-full bg-muted/50 ring-1 ring-border focus-within:ring-2 focus-within:ring-ring transition-shadow min-h-10">
               <textarea
                 ref={inputRef}
                 value={inputValue}
@@ -824,7 +846,7 @@ export function ChatInterface({
                 placeholder={t("typeMessage")}
                 disabled={isSending || isUploadingImage}
                 rows={1}
-                className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground resize-none outline-none min-h-5 max-h-24 py-0 leading-5"
+                className="no-focus-ring flex-1 bg-transparent text-base placeholder:text-muted-foreground resize-none outline-none min-h-5 max-h-24 py-0 leading-5"
               />
             </div>
 

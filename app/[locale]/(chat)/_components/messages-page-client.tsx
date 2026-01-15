@@ -7,7 +7,7 @@ import { MessageProvider, useMessages } from "@/components/providers/message-con
 import { ConversationList } from "./conversation-list"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import { IconPencilPlus, IconSearch, IconArrowLeft, IconInbox, IconMail, IconShoppingCart, IconBuildingStore } from "@tabler/icons-react"
+import { PencilSimpleLine, MagnifyingGlass, ArrowLeft, Tray, EnvelopeSimple, ShoppingCart, Storefront, ChatCircle } from "@phosphor-icons/react"
 import { Input } from "@/components/ui/input"
 import { Link } from "@/i18n/routing"
 
@@ -69,14 +69,14 @@ function ChatBottomTabs({
   const t = useTranslations("Messages")
   
   const tabs = [
-    { id: "all" as const, label: t("tabAll"), icon: IconInbox },
-    { id: "unread" as const, label: t("tabUnread"), icon: IconMail },
-    { id: "buying" as const, label: t("tabBuying"), icon: IconShoppingCart },
-    { id: "selling" as const, label: t("tabSelling"), icon: IconBuildingStore },
+    { id: "all" as const, label: t("tabAll"), icon: Tray },
+    { id: "unread" as const, label: t("tabUnread"), icon: EnvelopeSimple },
+    { id: "buying" as const, label: t("tabBuying"), icon: ShoppingCart },
+    { id: "selling" as const, label: t("tabSelling"), icon: Storefront },
   ]
 
   return (
-    <div className="shrink-0 border-t border-border/50 bg-background/95 backdrop-blur-sm safe-area-bottom lg:hidden">
+    <div className="shrink-0 border-t border-border/50 bg-background/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)] lg:hidden">
       <div className="flex items-center justify-around h-14">
         {tabs.map((tab) => {
           const Icon = tab.icon
@@ -92,7 +92,10 @@ function ChatBottomTabs({
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className={cn("size-5", isActive && "stroke-[2.5]")} />
+              <Icon 
+                className="size-5" 
+                weight={isActive ? "fill" : "regular"}
+              />
               <span className={cn(
                 "text-2xs font-medium",
                 isActive && "font-semibold"
@@ -164,7 +167,7 @@ function MessagesContent() {
         )}
       >
         {/* Header with back button, title and search */}
-        <div className="shrink-0 p-3 lg:p-4 border-b border-border/50 safe-area-top">
+        <div className="shrink-0 p-3 lg:p-4 border-b border-border/50 pt-[max(0.75rem,env(safe-area-inset-top))]">
           {/* Title row with back button */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -174,7 +177,7 @@ function MessagesContent() {
                 className="flex items-center justify-center size-9 rounded-full hover:bg-muted transition-colors lg:hidden"
                 aria-label={labels.back}
               >
-                <IconArrowLeft className="size-5" />
+                <ArrowLeft size={20} weight="regular" />
               </Link>
               <h1 className="text-xl font-bold">{labels.title}</h1>
             </div>
@@ -182,19 +185,19 @@ function MessagesContent() {
               className="flex items-center justify-center size-9 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               aria-label={labels.newMessage}
             >
-              <IconPencilPlus className="size-5" />
+              <PencilSimpleLine size={20} weight="regular" />
             </button>
           </div>
           
           {/* Search bar */}
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={labels.searchPlaceholder}
-                className="pl-9 h-10 rounded-full bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary/50"
+                className="pl-9 h-10 rounded-full bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-ring"
               />
             </div>
             {/* New message button - desktop only (already have it in header on mobile) */}
@@ -202,7 +205,7 @@ function MessagesContent() {
               className="hidden lg:flex shrink-0 items-center justify-center size-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
               aria-label={labels.newMessage}
             >
-              <IconPencilPlus className="size-5" />
+              <PencilSimpleLine size={20} weight="regular" />
             </button>
           </div>
         </div>
@@ -236,9 +239,7 @@ function MessagesContent() {
           <div className="hidden lg:flex flex-col items-center justify-center h-full bg-muted/30">
             <div className="flex flex-col items-center gap-4 p-4 text-center max-w-sm">
               <div className="flex size-20 items-center justify-center rounded-full border-2 border-border bg-background">
-                <svg className="size-10 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
-                </svg>
+                <ChatCircle size={40} weight="regular" className="text-muted-foreground" />
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-1">{t("selectConversation")}</h3>

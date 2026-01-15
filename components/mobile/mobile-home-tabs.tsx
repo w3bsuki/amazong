@@ -474,7 +474,7 @@ export function MobileHomeTabs({
       <div
         className={cn(
           "bg-background",
-          !nav.isDrilledDown && "pt-2 pb-1"
+          !nav.isDrilledDown && "py-2"
         )}
       >
         {nav.isAllTab ? (

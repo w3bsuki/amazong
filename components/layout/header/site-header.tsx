@@ -109,16 +109,16 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
     >
       {/* Mobile Header + Search - Treido native iOS pattern - visible on mobile only */}
       <div className="md:hidden bg-background/90 backdrop-blur-md border-b border-border/50 text-foreground pt-safe">
-        {/* Top row - Logo & Actions - h-12 touch-friendly */}
+        {/* Top row - Logo & Actions */}
         <div className={cn(
-          "h-12 px-(--page-inset) flex items-center gap-0",
+          "h-10 px-(--page-inset) flex items-center gap-0",
           isProductPage && "border-b border-border/50"
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
           {isProductPage ? (
             <button
               onClick={() => router.back()}
-              className="flex items-center justify-center h-touch w-touch rounded-full text-muted-foreground active:opacity-50"
+              className="flex items-center justify-center size-9 rounded-full text-muted-foreground active:opacity-50"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
               <CaretLeft size={20} weight="bold" />
@@ -127,14 +127,14 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
             <SidebarMenu user={user} categories={categories} triggerClassName="justify-start" />
           )}
           <Link href="/" className={cn(
-            "flex items-center shrink-0 h-10 -ml-4",
+            "flex items-center shrink-0 -ml-3",
             isProductPage && "ml-0"
           )}>
             <span className="text-xl font-extrabold tracking-tighter leading-none text-foreground">treido.</span>
           </Link>
           <div className="flex-1" />
+          {/* Mobile: wishlist + notifications + cart. Messages in bottom nav. */}
           <div className="flex items-center">
-            {user && <MessagesDropdown user={user} />}
             {user && <NotificationsDropdown user={user} />}
             <MobileWishlistButton />
             <MobileCartDropdown />
@@ -143,7 +143,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
 
         {/* Search bar row */}
         {!isProductPage && (
-          <div className="px-(--page-inset) pb-2 pt-0">
+          <div className="px-(--page-inset) pb-1.5">
             <button
               onClick={() => setIsMobileSearchOpen(true)}
               className={cn(
