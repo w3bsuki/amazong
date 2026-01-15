@@ -385,13 +385,12 @@ export function MobileHomeTabs({
           </div>
         )}
 
-        {/* 3) Inline Filter Bar (scrolls away like Treido reference) */}
+        {/* 3) Inline Filter Bar (50/50 split: Filters | Sort) */}
         <InlineFilterBar
           locale={locale}
           onAllFiltersClick={() => setFilterHubOpen(true)}
           attributes={(instant.attributes as any) ?? filterableAttributes}
           appliedSearchParams={instant.appliedSearchParams}
-          onApply={handleApplyFilters}
           stickyTop={48}
           sticky={true}
           className="z-30"

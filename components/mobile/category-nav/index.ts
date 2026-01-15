@@ -18,7 +18,7 @@ export type { ContextualCategoryHeaderProps } from "./contextual-category-header
 export { SubcategoryPills } from "./subcategory-pills"
 export type { SubcategoryPillsProps } from "./subcategory-pills"
 export { InlineFilterBar } from "./inline-filter-bar"
-export type { InlineFilterBarProps, FilterDropdownConfig } from "./inline-filter-bar"
+export type { InlineFilterBarProps } from "./inline-filter-bar"
 
 // Phase 2: Treido-mock Smart Anchor Navigation (Morphing Row)
 export { SmartAnchorNav } from "./smart-anchor-nav"
