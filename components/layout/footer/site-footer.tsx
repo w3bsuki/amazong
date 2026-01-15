@@ -54,8 +54,6 @@ export function SiteFooter() {
         window.scrollTo({ top: 0, behavior: "smooth" })
     }
 
-    const currentYear = new Date().getFullYear()
-
     const footerSections = [
         {
             id: "company",
@@ -104,13 +102,15 @@ export function SiteFooter() {
     ]
 
     const socialLinks = [
-        { name: "Pinterest", href: "#", icon: PinterestIcon },
-        { name: "Facebook", href: "#", icon: FacebookIcon },
-        { name: "Instagram", href: "#", icon: InstagramIcon },
-        { name: "X", href: "#", icon: XIcon },
-        { name: "YouTube", href: "#", icon: YouTubeIcon },
-        { name: "TikTok", href: "#", icon: TikTokIcon },
-    ]
+        { name: "Pinterest", href: process.env.NEXT_PUBLIC_SOCIAL_PINTEREST_URL, icon: PinterestIcon },
+        { name: "Facebook", href: process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK_URL, icon: FacebookIcon },
+        { name: "Instagram", href: process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM_URL, icon: InstagramIcon },
+        { name: "X", href: process.env.NEXT_PUBLIC_SOCIAL_X_URL, icon: XIcon },
+        { name: "YouTube", href: process.env.NEXT_PUBLIC_SOCIAL_YOUTUBE_URL, icon: YouTubeIcon },
+        { name: "TikTok", href: process.env.NEXT_PUBLIC_SOCIAL_TIKTOK_URL, icon: TikTokIcon },
+    ].filter((social): social is { name: string; href: string; icon: () => React.ReactElement } => {
+        return typeof social.href === "string" && social.href.trim().length > 0 && social.href.trim() !== "#"
+    })
 
     const legalLinks = [
         { label: t('terms'), href: "/terms" },
@@ -128,7 +128,7 @@ export function SiteFooter() {
         >
             {/* Back to Top */}
             <button
-                className="w-full bg-primary/90 hover:bg-primary/80 py-3.5 text-center transition-colors tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-primary group"
+                className="hidden lg:block w-full bg-primary/90 hover:bg-primary/80 py-3.5 text-center transition-colors tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-primary group"
                 onClick={scrollToTop}
                 aria-label={t('backToTop')}
             >
@@ -138,8 +138,8 @@ export function SiteFooter() {
                 </span>
             </button>
 
-            {/* Mobile Footer - Accordion */}
-            <div className="md:hidden px-4 py-6">
+            {/* Mobile/Tablet Footer - Accordion */}
+            <div className="lg:hidden px-4 py-6">
                 <Accordion type="single" collapsible className="w-full">
                     {footerSections.map((section) => (
                         <AccordionItem key={section.id} value={section.id} className="border-border/20">
@@ -168,7 +168,7 @@ export function SiteFooter() {
             </div>
 
             {/* Desktop Footer Links - 4-Column Grid */}
-            <div className="hidden md:block border-b border-border/20">
+            <div className="hidden lg:block border-b border-border/20">
                 <div className="container py-12">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
                         {footerSections.map((section) => (
@@ -207,21 +207,23 @@ export function SiteFooter() {
                     </Link>
                 </div>
 
-                {/* Social Media Icons */}
-                <nav aria-label={t('socialMedia')} className="flex justify-center gap-3 mb-4">
-                    {socialLinks.map((social) => (
-                        <a
-                            key={social.name}
-                            href={social.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="size-11 rounded-full bg-primary-foreground/10 hover:bg-accent/20 flex items-center justify-center text-primary-foreground/70 hover:text-accent tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                            aria-label={social.name}
-                        >
-                            <social.icon />
-                        </a>
-                    ))}
-                </nav>
+                {/* Social Media Icons (only render if links exist) */}
+                {socialLinks.length > 0 ? (
+                    <nav aria-label={t('socialMedia')} className="flex justify-center gap-3 mb-4">
+                        {socialLinks.map((social) => (
+                            <a
+                                key={social.name}
+                                href={social.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="size-11 rounded-full bg-primary-foreground/10 hover:bg-accent/20 flex items-center justify-center text-primary-foreground/70 hover:text-accent tap-transparent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                aria-label={social.name}
+                            >
+                                <social.icon />
+                            </a>
+                        ))}
+                    </nav>
+                ) : null}
 
                 {/* Legal Links */}
                 <nav aria-label={t('legalLinks')} className="flex flex-wrap justify-center gap-x-3 gap-y-1 text-xs text-primary-foreground/90 mb-3">
@@ -255,7 +257,7 @@ export function SiteFooter() {
 
                 {/* Copyright */}
                 <p className="text-xs text-primary-foreground/80 text-center">
-                    {t('copyright', { year: currentYear })}
+                    {t('copyright', { year: new Date().getFullYear() })}
                 </p>
             </div>
         </footer>

@@ -14,6 +14,7 @@ function toTopSeller(seller: SellerQueryResult): Seller {
 
   return {
     id: seller.id,
+    username: seller.username,
     store_name: seller.display_name || seller.business_name || seller.username || "Unknown",
     description: seller.bio,
     verified: seller.verified || false,

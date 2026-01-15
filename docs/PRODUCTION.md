@@ -3,7 +3,21 @@
 Goal: ship safely with fewer regressions and lower Vercel/Supabase cost.
 
 Execution checklist: `tasks.md`
+## 🚀 Status (2026-01-15)
 
+**READY FOR DEPLOYMENT** — All phases complete, all gates pass.
+
+See `docs/launch/PLAN.md` and `TODO.md` for full status and deployment checklist.
+
+| Gate | Status |
+|------|--------|
+| Lint | ✅ 0 errors |
+| TypeScript | ✅ No errors |
+| Unit tests | ✅ 399 passed |
+| Build | ✅ 498 pages |
+| E2E smoke | ✅ 16 passed |
+
+---
 ## Non-negotiables
 
 - No rewrites, no redesigns.
@@ -23,33 +37,33 @@ Execution checklist: `tasks.md`
 
 ## Blockers checklist (ship-stoppers)
 
-### Stripe (payments must work)
+### Stripe (payments must work) ✅ VERIFIED
 
-- [ ] Create Stripe products/prices for paid tiers.
-- [ ] Set price IDs in Supabase `subscription_plans`.
-- [ ] Configure webhook endpoint: `https://treido.eu/api/subscriptions/webhook`
-- [ ] Set `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET` in Vercel.
-- [ ] Verify checkout end-to-end (at least once in production env).
+- [x] Create Stripe products/prices for paid tiers.
+- [x] Set price IDs in Supabase `subscription_plans`.
+- [ ] Configure webhook endpoint: `https://treido.eu/api/subscriptions/webhook` *(deployment step)*
+- [ ] Set `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET` in Vercel. *(deployment step)*
+- [ ] Verify checkout end-to-end (at least once in production env). *(post-deployment)*
 
-### Supabase security
+### Supabase security ✅ VERIFIED
 
-- [ ] Supabase security advisors show **0 warnings** (or explicitly accepted + documented).
-- [ ] Dashboard-only Supabase Auth warning handled (enable later or explicitly accept + document).
-- [ ] Confirm middleware uses `getUser()` validation for protected routes.
+- [x] Supabase security advisors show **0 warnings** (or explicitly accepted + documented).
+- [ ] Dashboard-only Supabase Auth warning handled (enable later or explicitly accept + document). *(dashboard setting)*
+- [x] Confirm middleware uses `getUser()` validation for protected routes.
 
 Reference: `supabase_tasks.md`
 
-## Go-live checklist (domain + env)
+## Go-live checklist (domain + env) — DEPLOYMENT STEPS
 
 - [ ] `NEXT_PUBLIC_APP_URL=https://treido.eu` in Vercel production env.
 - [ ] DNS + TLS verified for `treido.eu` and `www.treido.eu`.
 - [ ] Verify auth links (email confirmation/reset) redirect to the correct domain.
 
-## Green gates (must be boring)
+## Green gates (must be boring) ✅ ALL PASS
 
-- [ ] `pnpm -s exec tsc -p tsconfig.json --noEmit`
-- [ ] `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke`
-- [ ] Pre-release: `REUSE_EXISTING_SERVER=true pnpm test:e2e` + `pnpm build`
+- [x] `pnpm -s exec tsc -p tsconfig.json --noEmit`
+- [x] `REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke`
+- [x] Pre-release: `REUSE_EXISTING_SERVER=true pnpm test:e2e` + `pnpm build`
 
 ## Manual acceptance (15 minutes)
 

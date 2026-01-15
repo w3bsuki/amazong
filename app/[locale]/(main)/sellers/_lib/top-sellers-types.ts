@@ -1,5 +1,6 @@
 export interface Seller {
   id: string
+  username: string | null
   store_name: string
   description: string | null
   verified: boolean

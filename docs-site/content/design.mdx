@@ -1,0 +1,130 @@
+# Design System
+
+Visual design guidelines and component patterns for Amazong Marketplace.
+
+## Color Tokens
+
+We use CSS variables via Tailwind v4. **No arbitrary color values allowed.**
+
+### Semantic Colors
+
+| Token | Usage |
+|-------|-------|
+| `--background` | Page backgrounds |
+| `--foreground` | Primary text |
+| `--muted` | Secondary backgrounds |
+| `--muted-foreground` | Secondary text |
+| `--primary` | Brand color, CTAs |
+| `--primary-foreground` | Text on primary |
+| `--destructive` | Error states, delete actions |
+| `--border` | Borders, dividers |
+| `--ring` | Focus rings |
+
+### Usage Example
+
+```tsx
+// ✅ Correct - use semantic tokens
+<div className="bg-background text-foreground border-border" />
+
+// ❌ Wrong - arbitrary values
+<div className="bg-[#f5f5f5] text-[#333]" />
+```
+
+## Spacing Scale
+
+Use Tailwind's default spacing scale. Common values:
+
+| Class | Size | Use Case |
+|-------|------|----------|
+| `p-2` | 8px | Tight padding |
+| `p-4` | 16px | Standard padding |
+| `p-6` | 24px | Comfortable padding |
+| `gap-2` | 8px | Tight gaps |
+| `gap-4` | 16px | Standard gaps |
+| `space-y-6` | 24px | Section spacing |
+
+## Typography
+
+| Element | Classes |
+|---------|---------|
+| Page title | `text-2xl font-bold` |
+| Section heading | `text-xl font-semibold` |
+| Card title | `text-lg font-medium` |
+| Body text | `text-base` |
+| Caption | `text-sm text-muted-foreground` |
+
+## Component Patterns
+
+### Cards
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+    <CardDescription>Description</CardDescription>
+  </CardHeader>
+  <CardContent>
+    {/* Content */}
+  </CardContent>
+  <CardFooter>
+    {/* Actions */}
+  </CardFooter>
+</Card>
+```
+
+### Buttons
+
+```tsx
+// Primary action
+<Button>Save Changes</Button>
+
+// Secondary action
+<Button variant="outline">Cancel</Button>
+
+// Destructive action
+<Button variant="destructive">Delete</Button>
+
+// Ghost (minimal)
+<Button variant="ghost">Learn More</Button>
+```
+
+### Forms
+
+```tsx
+<form className="space-y-4">
+  <div className="space-y-2">
+    <Label htmlFor="email">Email</Label>
+    <Input id="email" type="email" />
+  </div>
+  <Button type="submit">Submit</Button>
+</form>
+```
+
+## Icons
+
+We use **lucide-react** for icons. Import only what you need:
+
+```tsx
+import { ShoppingCart, User, Search } from 'lucide-react'
+
+<ShoppingCart className="h-5 w-5" />
+```
+
+## Responsive Design
+
+Mobile-first approach:
+
+```tsx
+// Mobile: stack, Tablet+: side by side
+<div className="flex flex-col md:flex-row gap-4">
+  <Sidebar />
+  <MainContent />
+</div>
+```
+
+## Forbidden Patterns
+
+- ❌ Gradients (`bg-gradient-*`)
+- ❌ Arbitrary values (`bg-[#xxx]`, `w-[123px]`)
+- ❌ Inline styles
+- ❌ Custom animations without design approval

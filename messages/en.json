@@ -235,7 +235,7 @@
         "deliveryLabel": "Delivery:",
         "returnsLabel": "Returns:",
         "payments": "Payments:",
-        "condition": "Condition:",
+        "conditionLabel": "Condition:",
         "conditionNew": "New",
         "conditionNewWithTags": "New with Tags",
         "conditionUsed": "Used",
@@ -293,6 +293,8 @@
         "nextImage": "Next image",
         "imagePreview": "Image Preview",
         "clickToEnlarge": "Click to enlarge",
+        "goToImage": "Go to image {index}",
+        "moreImages": "+{count} more images",
         "sold": "sold",
         "positivePercentage": "positive",
         "moreFrom": "More from",
@@ -311,8 +313,12 @@
         "promoted": "Promoted",
         "productDetails": "Product Details",
         "shippingReturns": "Shipping & Returns",
+        "freeShipping": "Free Shipping",
+        "freeShippingSubtitle": "Tracking and support",
         "defaultShipping": "Shipping calculated at checkout",
         "defaultReturns": "30 days returns. Buyer pays for return shipping.",
+        "returnsTitle": "30-day Returns",
+        "returnsSubtitle": "Return if item is not as described",
         "back": "Back",
         "share": "Share",
         "moreOptions": "More options",
@@ -323,8 +329,36 @@
         "showLess": "Less",
         "buyerProtectionBadgeTitle": "Buyer Protection",
         "buyerProtectionBadgeSubtitle": "Inspect and test before payment. Secure delivery.",
+        "buyerProtectionInline": "Protected",
         "noDescription": "No description provided",
         "noDetails": "No details available"
+    },
+    "Freshness": {
+        "justNow": "Just now",
+        "today": "Today",
+        "yesterday": "Yesterday"
+    },
+    "ViewMode": {
+        "ariaLabel": "View mode",
+        "grid": "Grid",
+        "list": "List",
+        "gridView": "Grid view",
+        "listView": "List view"
+    },
+    "ProductSocialProof": {
+        "viewCount": "{count, plural, one {# person viewed this} other {# people viewed this}}",
+        "favoritesCount": "{count, plural, one {# person saved this} other {# people saved this}}",
+        "popular": "Popular"
+    },
+    "SaveSearch": {
+        "saveSearch": "Save search",
+        "saved": "Saved",
+        "savedTitle": "Search saved",
+        "savedDescription": "We'll show this in your saved searches",
+        "removedTitle": "Search removed",
+        "removedDescription": "Search removed from your saved list",
+        "emptySearchTitle": "No search to save",
+        "emptySearchDescription": "Add a search query or select a category first"
     },
     "CustomerService": {
         "title": "Welcome to Treido Customer Service",
@@ -365,6 +399,7 @@
     },
     "GiftCards": {
         "title": "Treido Gift Cards",
+        "metaDescription": "Give the perfect gift for any occasion. Treido Gift Cards are available in digital and physical formats, with free delivery on all purchases.",
         "allGiftCards": "All Gift Cards",
         "eGiftCards": "eGift Cards",
         "printAtHome": "Print at Home",
@@ -587,6 +622,14 @@
         "companyInfo": "Treido Ltd. • Sofia, Bulgaria • Company Reg: BG123456789 • VAT: BG123456789",
         "copyright": "TM & © {year} Treido, Inc. or its affiliates"
     },
+    "FAQPage": {
+        "metaTitle": "FAQ",
+        "metaDescription": "Find answers to frequently asked questions about shopping, shipping, returns, and more."
+    },
+    "MembersPage": {
+        "metaTitle": "Members",
+        "metaDescription": "Discover members of the Treido community. Browse sellers and buyers, filter by ratings and activity."
+    },
     "Common": {
         "search": "Search",
         "loading": "Loading...",
@@ -605,6 +648,7 @@
         "goToNextPage": "Go to next page",
         "goToPreviousPage": "Go to previous page",
         "all": "All",
+        "allCategories": "All Categories",
         "filter": "Filter",
         "clear": "Clear",
         "apply": "Apply",
@@ -622,7 +666,7 @@
         "whatToExpect": "What to expect"
     },
     "Feedback": {
-        "metaTitle": "Feedback | Treido",
+        "metaTitle": "Feedback",
         "metaDescription": "Share your feedback with Treido. We value your input to help us improve our marketplace.",
         "breadcrumbHome": "Home",
         "breadcrumbFeedback": "Feedback",
@@ -679,7 +723,7 @@
         ]
     },
     "InvestorsPage": {
-        "metaTitle": "Investor Relations | Treido",
+        "metaTitle": "Investor Relations",
         "metaDescription": "Learn about investment opportunities with Treido, Bulgaria's growing online marketplace.",
         "title": "Investor Relations",
         "description": "Interested in the growth potential of e-commerce in Bulgaria? Get updates on our journey.",
@@ -692,7 +736,7 @@
         ]
     },
     "AffiliatesPage": {
-        "metaTitle": "Affiliate Program | Treido",
+        "metaTitle": "Affiliate Program",
         "metaDescription": "Join Treido's affiliate program and earn commissions by promoting our marketplace.",
         "title": "Affiliates & Partners",
         "description": "Earn commissions by promoting Treido. Our affiliate program rewards content creators and partners.",
@@ -718,7 +762,7 @@
         ]
     },
     "SuppliersPage": {
-        "metaTitle": "Supplier Portal | Treido",
+        "metaTitle": "Supplier Portal",
         "metaDescription": "Become an official supplier on Treido. Access wholesale opportunities and brand partnerships.",
         "title": "Supplier Portal",
         "description": "Are you a brand or wholesaler? Partner with us for exclusive distribution opportunities.",
@@ -731,7 +775,7 @@
         ]
     },
     "StoreLocatorPage": {
-        "metaTitle": "Store Locator | Treido",
+        "metaTitle": "Store Locator",
         "metaDescription": "Find physical stores from Treido sellers near you. Business accounts can list their locations.",
         "title": "Store Locator",
         "description": "Find physical stores from our verified business sellers. Coming soon for business account holders.",
@@ -744,7 +788,7 @@
         ]
     },
     "FreeShippingPage": {
-        "metaTitle": "Shipping Information | Treido",
+        "metaTitle": "Shipping Information",
         "metaDescription": "Learn about shipping options, delivery times, and free shipping thresholds on Treido.",
         "title": "Shipping Information",
         "description": "Everything you need to know about delivery options, shipping costs, and how to get free shipping.",
@@ -757,7 +801,7 @@
         ]
     },
     "AccessibilityPage": {
-        "metaTitle": "Accessibility | Treido",
+        "metaTitle": "Accessibility",
         "metaDescription": "Treido is committed to making our platform accessible to all users.",
         "title": "Accessibility",
         "description": "We're committed to making Treido accessible to everyone. Learn about our accessibility features.",
@@ -788,7 +832,7 @@
         "privacyNotice": "Privacy Notice",
         "and": "and",
         "help": "Help Center",
-        "copyright": "© 2024 Treido. All rights reserved.",
+        "copyright": "© {year} Treido. All rights reserved.",
         "error": "An unexpected error occurred. Please try again.",
         "signInDescription": "Enter your credentials to access your account",
         "signUpDescription": "Create your account to start shopping",
@@ -1137,7 +1181,10 @@
         "deliveryOptions": "Products shown will ship to your selected zone",
         "popularLocations": "Popular locations",
         "shippingZones": "Shipping zones",
-        "manageAddresses": "Manage addresses"
+        "manageAddresses": "Manage addresses",
+        "currency": "Currency",
+        "currencyEur": "Euro",
+        "currencyBgn": "Bulgarian Lev"
     },
     "About": {
         "title": "About Us",
@@ -1542,6 +1589,48 @@
         "sinceLabel": "Since",
         "chatLabel": "Chat"
     },
+    "SellerVerification": {
+        "verifiedBusiness": "Verified Business",
+        "idVerified": "ID Verified",
+        "phoneVerified": "Phone Verified",
+        "emailVerified": "Email Verified",
+        "email": "Email",
+        "phone": "Phone",
+        "id": "ID"
+    },
+    "ProfilePage": {
+        "business": "Business",
+        "seller": "Seller",
+        "editProfile": "Edit profile",
+        "share": "Share",
+        "about": "About",
+        "stats": "Stats",
+        "sales": "Sales",
+        "sellerRating": "Seller rating",
+        "followers": "Followers",
+        "purchases": "Purchases",
+        "buyerRating": "Buyer rating",
+        "noReviewsYet": "No reviews yet",
+        "forSale": "For sale",
+        "reviews": "Reviews",
+        "viewAll": "View all",
+        "noActiveListings": "No active listings",
+        "accurate": "Accurate",
+        "fastShipping": "Fast shipping",
+        "goodComms": "Good comms",
+        "promptPayment": "Prompt payment"
+    },
+    "SellersDirectory": {
+        "title": "Top sellers | Treido",
+        "description": "Discover top-rated sellers on Treido. Shop from verified merchants with great reviews.",
+        "count": "{count, plural, one {# seller} other {# sellers}}",
+        "productsCount": "{count, plural, one {# product} other {# products}}",
+        "searchPlaceholder": "Search sellers",
+        "sortLabel": "Sort",
+        "sortNewest": "Newest",
+        "sortRating": "Rating",
+        "sortProducts": "Most products"
+    },
     "Messages": {
         "pageTitle": "Messages",
         "pageDescription": "Communicate with sellers about your orders and inquiries",
@@ -1620,8 +1709,37 @@
             "price_low": "Lowest Price",
             "nearby": "Near Me"
         },
+        "scroll": {
+            "left": "Scroll left",
+            "right": "Scroll right"
+        },
         "loadMore": "Load more",
         "loading": "Loading..."
+    },
+    "HeroSearch": {
+        "placeholder": "What are you looking for?",
+        "search": "Search",
+        "clear": "Clear",
+        "selectLocation": "Select location",
+        "allBulgaria": "All Bulgaria",
+        "popularCities": "Popular cities",
+        "allCities": "All cities"
+    },
+    "QuickFilters": {
+        "urgent": "Urgent",
+        "free": "Free",
+        "freeShipping": "Free Shipping",
+        "newOnly": "New Only",
+        "onSale": "On Sale",
+        "today": "Today"
+    },
+    "FilterSidebar": {
+        "title": "Filters",
+        "clearAll": "Clear all",
+        "priceRange": "Price Range",
+        "condition": "Condition",
+        "sellerType": "Seller Type",
+        "freeShippingOnly": "Free Shipping Only"
     },
     "GeoWelcome": {
         "title": "Hello! We detected you're visiting from {country}",
@@ -1651,5 +1769,89 @@
         "allInCategory": "All in {category}",
         "subcategories": "Subcategories",
         "allFilters": "All filters"
+    },
+    "Boost": {
+        "title": "Boost Listing",
+        "description": "Get up to 10x more views with a boosted listing",
+        "selectDuration": "Select duration",
+        "days": "days",
+        "hours": "hours",
+        "popular": "Popular",
+        "bestValue": "Best Value",
+        "features": "What you get",
+        "feature1": "Top position in search",
+        "feature2": "\"Boosted\" badge",
+        "feature3": "Up to 10x more views",
+        "feature4": "Featured on homepage",
+        "trigger": "Boost",
+        "boostNow": "Boost Now",
+        "processing": "Processing...",
+        "alreadyBoosted": "Already boosted",
+        "boostActive": "Boost active",
+        "boostActiveUntil": "Active until {date}",
+        "boostExpired": "Boost expired",
+        "reboost": "Reboost",
+        "timeLeft": "{days}d {hours}h left",
+        "expiresIn": "Expires in",
+        "perDay": "/day",
+        "or": "or",
+        "upgradePlan": "Upgrade Your Plan",
+        "upgradeDesc": "Get 5+ free boosts per month",
+        "priceEur": "€{price}",
+        "priceBgn": "≈{price} лв",
+        "duration24h": "24 hours",
+        "duration7d": "7 days",
+        "duration30d": "30 days",
+        "checkoutItemName": "Listing boost ({duration})",
+        "checkoutItemDescription": "Boost \"{productTitle}\" for {duration} with premium visibility.",
+        "paymentSuccess": "Boost activated successfully!",
+        "paymentCanceled": "Payment was cancelled",
+        "paymentError": "Error creating payment. Please try again.",
+        "errors": {
+            "dbConnectionFailed": "Database connection failed.",
+            "unauthorized": "Please sign in to continue.",
+            "missingFields": "Please complete all required fields.",
+            "invalidDuration": "Invalid duration selected.",
+            "profileNotFound": "Profile not found.",
+            "productNotFound": "Product not found or not owned by you.",
+            "alreadyBoosted": "This product is already boosted.",
+            "internal": "Internal server error. Please try again."
+        }
+    },
+    "SellingProducts": {
+        "deleteSuccess": "Product deleted successfully!",
+        "deleteError": "Failed to delete",
+        "pauseSuccess": "Product paused",
+        "activateSuccess": "Product activated",
+        "updateError": "Failed to update",
+        "invalidPrice": "Enter a valid price",
+        "priceMustBeLower": "New price must be lower",
+        "discountSaved": "Discount saved",
+        "discountSaveError": "Failed to save",
+        "discountRemoved": "Discount removed",
+        "discountRemoveError": "Failed to remove",
+        "noProductsTitle": "No products yet",
+        "noProductsDesc": "Start selling by creating your first product listing",
+        "createListing": "Create Listing",
+        "outOfStock": "Out of stock",
+        "inStock": "{count} in stock",
+        "discountTooltip": "Discount",
+        "activateTooltip": "Activate",
+        "pauseTooltip": "Pause",
+        "viewSrOnly": "View",
+        "editSrOnly": "Edit",
+        "deleteSrOnly": "Delete",
+        "deleteDialogTitle": "Delete Product",
+        "deleteDialogDesc": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+        "cancelButton": "Cancel",
+        "deleteButton": "Delete",
+        "setDiscountTitle": "Set discount",
+        "setDiscountDesc": "Enter the new price for \"{title}\".",
+        "setDiscountDescGeneric": "Enter the new price.",
+        "currentPriceLabel": "Current price:",
+        "newPriceLabel": "New price",
+        "newPricePlaceholder": "e.g. 49.99",
+        "removeDiscountButton": "Remove discount",
+        "saveButton": "Save"
     }
 }

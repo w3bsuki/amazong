@@ -1,0 +1,142 @@
+# Testing Guide
+
+Writing and running tests for Amazong.
+
+## Test Stack
+
+- **Vitest** — Unit tests
+- **React Testing Library** — Component tests
+- **Playwright** — E2E tests
+
+## Unit Tests
+
+### Location
+
+```
+__tests__/
+├── currency.test.ts
+├── shipping.test.ts
+├── hooks/
+│   └── useCart.test.ts
+└── components/
+    └── ProductCard.test.tsx
+```
+
+### Writing Tests
+
+```tsx
+// __tests__/currency.test.ts
+import { describe, it, expect } from 'vitest'
+import { formatPrice } from '@/lib/currency'
+
+describe('formatPrice', () => {
+  it('formats BGN correctly', () => {
+    expect(formatPrice(1999, 'BGN')).toBe('19,99 лв.')
+  })
+
+  it('formats EUR correctly', () => {
+    expect(formatPrice(1999, 'EUR')).toBe('€19.99')
+  })
+
+  it('handles zero', () => {
+    expect(formatPrice(0, 'BGN')).toBe('0,00 лв.')
+  })
+})
+```
+
+### Component Tests
+
+```tsx
+// __tests__/components/ProductCard.test.tsx
+import { render, screen } from '@testing-library/react'
+import { ProductCard } from '@/components/common/ProductCard'
+
+const mockProduct = {
+  id: '1',
+  title: 'Test Product',
+  price: 1999,
+  image: '/test.jpg',
+}
+
+describe('ProductCard', () => {
+  it('renders product info', () => {
+    render(<ProductCard product={mockProduct} />)
+    
+    expect(screen.getByText('Test Product')).toBeInTheDocument()
+    expect(screen.getByText('19,99 лв.')).toBeInTheDocument()
+  })
+})
+```
+
+### Running Unit Tests
+
+```bash
+# Run all tests
+pnpm test:unit
+
+# Watch mode
+pnpm test:unit --watch
+
+# Coverage
+pnpm test:unit --coverage
+```
+
+## E2E Tests
+
+### Location
+
+```
+e2e/
+├── smoke.spec.ts       # Critical paths
+├── auth.spec.ts        # Auth flows
+├── seller-routes.spec.ts
+└── orders.spec.ts
+```
+
+### Writing E2E Tests
+
+```tsx
+// e2e/smoke.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('Smoke tests', () => {
+  test('homepage loads', async ({ page }) => {
+    await page.goto('/')
+    await expect(page).toHaveTitle(/Amazong/)
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+  })
+
+  test('search works', async ({ page }) => {
+    await page.goto('/')
+    await page.fill('[placeholder="Search..."]', 'phone')
+    await page.press('[placeholder="Search..."]', 'Enter')
+    await expect(page).toHaveURL(/search\?q=phone/)
+  })
+})
+```
+
+### Running E2E Tests
+
+```bash
+# Run all E2E tests
+pnpm test:e2e
+
+# Run smoke tests only
+REUSE_EXISTING_SERVER=true pnpm test:e2e:smoke
+
+# With UI
+pnpm test:e2e --ui
+
+# Specific file
+pnpm test:e2e e2e/auth.spec.ts
+```
+
+## Test Checklist
+
+Before merging:
+
+- [ ] All unit tests pass
+- [ ] E2E smoke tests pass
+- [ ] No flaky tests
+- [ ] New features have tests
+- [ ] Coverage maintained

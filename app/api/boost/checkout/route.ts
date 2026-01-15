@@ -1,17 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createRouteHandlerClient } from '@/lib/supabase/server'
+import { eurToBgnApprox } from '@/lib/currency'
+import { isBoostActive } from '@/lib/boost/boost-status'
+import { getTranslations } from 'next-intl/server'
 
 const PROFILE_SELECT_FOR_STRIPE = 'id,stripe_customer_id'
 
-// Boost pricing options (in BGN)
 const BOOST_PRICING = {
-  '7': { price: 2.99, label: '7 days' },
-  '14': { price: 5.00, label: '14 days' },
-  '30': { price: 9.99, label: '30 days' },
+  '1': { priceEur: 0.99, durationKey: 'duration24h' },
+  '7': { priceEur: 4.99, durationKey: 'duration7d' },
+  '30': { priceEur: 14.99, durationKey: 'duration30d' },
 } as const
 
 type BoostDuration = keyof typeof BOOST_PRICING
+
+type BoostLocale = 'en' | 'bg'
+
+function toBoostLocale(locale: string | undefined): BoostLocale {
+  return locale === 'bg' ? 'bg' : 'en'
+}
 
 export async function POST(req: NextRequest) {
   const { supabase, applyCookies } = createRouteHandlerClient(req)
@@ -22,19 +30,21 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      return json({ error: 'Unauthorized' }, { status: 401 })
+      return json({ errorKey: 'errors.unauthorized' }, { status: 401 })
     }
 
     const body = await req.json()
-    const { productId, durationDays } = body as { productId: string, durationDays: string }
+    const { productId, durationDays, locale } = body as { productId: string, durationDays: string, locale?: string }
+    const resolvedLocale = toBoostLocale(locale)
+    const t = await getTranslations({ locale: resolvedLocale, namespace: 'Boost' })
 
     if (!productId || !durationDays) {
-      return json({ error: 'Missing required fields: productId, durationDays' }, { status: 400 })
+      return json({ errorKey: 'errors.missingFields' }, { status: 400 })
     }
 
     // Validate duration
     if (!(durationDays in BOOST_PRICING)) {
-      return json({ error: 'Invalid duration. Must be 7, 14, or 30 days' }, { status: 400 })
+      return json({ errorKey: 'errors.invalidDuration' }, { status: 400 })
     }
 
     const duration = durationDays as BoostDuration
@@ -48,24 +58,24 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (!profile) {
-      return json({ error: 'Profile not found' }, { status: 404 })
+      return json({ errorKey: 'errors.profileNotFound' }, { status: 404 })
     }
 
     // Verify product belongs to seller
     const { data: product } = await supabase
       .from('products')
-      .select('id, title, seller_id, is_boosted')
+      .select('id, title, seller_id, is_boosted, boost_expires_at')
       .eq('id', productId)
       .eq('seller_id', user.id)
       .single()
 
     if (!product) {
-      return json({ error: 'Product not found or not owned by you' }, { status: 404 })
+      return json({ errorKey: 'errors.productNotFound' }, { status: 404 })      
     }
 
     // Check if already boosted
-    if (product.is_boosted) {
-      return json({ error: 'This product is already boosted' }, { status: 400 })
+    if (isBoostActive({ is_boosted: product.is_boosted, boost_expires_at: product.boost_expires_at })) {
+      return json({ errorKey: 'errors.alreadyBoosted' }, { status: 400 })       
     }
 
     // Create or get Stripe customer
@@ -88,21 +98,25 @@ export async function POST(req: NextRequest) {
         .eq('id', profile.id)
     }
 
-    // Create Stripe Checkout Session for one-time boost payment
+    // Create Stripe Checkout Session for one-time boost payment (EUR per DEC-003)
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'payment', // One-time payment, not subscription
       payment_method_types: ['card'],
+      locale: resolvedLocale,
       line_items: [
         {
           price_data: {
-            currency: 'bgn',
+            currency: 'eur',
             product_data: {
-              name: `Listing Boost - ${pricing.label}`,
-              description: `Boost "${product.title}" for ${pricing.label} with premium visibility`,
+              name: t('checkoutItemName', { duration: t(pricing.durationKey) }),
+              description: t('checkoutItemDescription', {
+                productTitle: product.title,
+                duration: t(pricing.durationKey),
+              }),
               images: [], // Could add product image here
             },
-            unit_amount: Math.round(pricing.price * 100), // Stripe uses stotinki (cents)
+            unit_amount: Math.round(pricing.priceEur * 100), // Stripe uses cents
           },
           quantity: 1,
         },
@@ -113,20 +127,24 @@ export async function POST(req: NextRequest) {
         duration_days: durationDays,
         type: 'listing_boost',
       },
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/account/selling?boost_success=true&product_id=${productId}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/sell?boost_canceled=true&product_id=${productId}`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/${resolvedLocale}/account/selling?boost_success=true&product_id=${productId}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/${resolvedLocale}/sell?boost_canceled=true&product_id=${productId}`,
     })
 
     return json({ 
       sessionId: session.id, 
       url: session.url,
-      price: pricing.price,
-      duration: pricing.label 
+      priceEur: pricing.priceEur,
+      priceBgn: eurToBgnApprox(pricing.priceEur),
+      durationKey: pricing.durationKey,
+      locale: resolvedLocale,
     })
   } catch (error) {
-    console.error('Boost checkout error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorType = error instanceof Error ? error.constructor.name : typeof error
+    console.error(`[boost-checkout] ${errorType}: ${errorMessage}`)
     return json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { errorKey: 'errors.internal' },
       { status: 500 }
     )
   }
@@ -135,11 +153,12 @@ export async function POST(req: NextRequest) {
 // Get available boost pricing
 export async function GET() {
   return NextResponse.json({
-    options: Object.entries(BOOST_PRICING).map(([days, { price, label }]) => ({
+    options: Object.entries(BOOST_PRICING).map(([days, { priceEur, durationKey }]) => ({
       days: Number.parseInt(days),
-      price,
-      label,
-      currency: 'BGN'
+      priceEur,
+      priceBgn: eurToBgnApprox(priceEur),
+      durationKey,
+      currency: 'EUR'
     }))
   })
 }

@@ -4,6 +4,7 @@ import { getCategoryHierarchy } from "@/lib/data/categories"
 import { getCategoryShortName } from "@/lib/category-display"
 import { CaretRight, Storefront, Sparkle } from "@phosphor-icons/react/dist/ssr"
 import { CategoryCircleVisual } from "@/components/shared/category/category-circle-visual"
+import type { Metadata } from "next"
 
 // =============================================================================
 // CATEGORIES INDEX PAGE — Browse All Categories (Directory Style)
@@ -17,6 +18,23 @@ import { CategoryCircleVisual } from "@/components/shared/category/category-circ
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+  setRequestLocale(locale)
+
+  return {
+    title: locale === "bg" ? "Категории" : "Categories",
+    description: locale === "bg" 
+      ? "Разгледайте всички категории продукти в Treido. Намерете електроника, мода, дом и градина и още."
+      : "Browse all product categories at Treido. Find electronics, fashion, home & garden, and more.",
+  }
 }
 
 export default async function CategoriesPage({

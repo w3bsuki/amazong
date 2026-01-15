@@ -25,20 +25,20 @@ import {
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { createBoostCheckoutSession } from "@/app/actions/boost"
+import { useTranslations } from "next-intl"
+import { eurToBgnApprox } from "@/lib/currency"
 
 interface BoostOption {
   days: number
-  price: number
-  label: string
+  priceEur: number
   popular?: boolean
+  bestValue?: boolean
 }
 
-// Boost pricing options (must match API)
 const BOOST_OPTIONS: BoostOption[] = [
-  { days: 7, price: 2.99, label: "7 дни" },
-  { days: 14, price: 5.00, label: "14 дни", popular: true },
-  { days: 30, price: 9.99, label: "30 дни" },
+  { days: 1, priceEur: 0.99 },
+  { days: 7, priceEur: 4.99, popular: true },
+  { days: 30, priceEur: 14.99, bestValue: true },
 ]
 
 interface Product {
@@ -56,47 +56,56 @@ interface BoostDialogProps {
 }
 
 export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoostSuccess }: BoostDialogProps) {
-  const [selectedDays, setSelectedDays] = useState<number>(14)
+  const [selectedDays, setSelectedDays] = useState<number>(7)
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const t = useTranslations('Boost')
 
-  const t = {
-    boostListing: locale === 'bg' ? 'Промотирай обявата' : 'Boost Listing',
-    boostDesc: locale === 'bg'
-      ? 'Получете до 10 пъти повече гледания с промотирана обява'
-      : 'Get up to 10x more views with a boosted listing',
-    selectDuration: locale === 'bg' ? 'Изберете продължителност' : 'Select duration',
-    days: locale === 'bg' ? 'дни' : 'days',
-    popular: locale === 'bg' ? 'Популярен' : 'Popular',
-    features: locale === 'bg' ? 'Какво получавате' : 'What you get',
-    feature1: locale === 'bg' ? 'Топ позиция в търсенето' : 'Top position in search',
-    feature2: locale === 'bg' ? 'Маркер "Промотирано"' : '"Boosted" badge',
-    feature3: locale === 'bg' ? 'До 10x повече гледания' : 'Up to 10x more views',
-    feature4: locale === 'bg' ? 'Показване на началната страница' : 'Featured on homepage',
-    boostNow: locale === 'bg' ? 'Промотирай сега' : 'Boost Now',
-    processing: locale === 'bg' ? 'Обработка...' : 'Processing...',
-    alreadyBoosted: locale === 'bg' ? 'Вече е промотирано' : 'Already boosted',
-    boostActive: locale === 'bg' ? 'Промоцията е активна' : 'Boost is active',
-    expiresIn: locale === 'bg' ? 'Изтича' : 'Expires',
-    perDay: locale === 'bg' ? '/ден' : '/day',
-  }
-
-  const formatPrice = (price: number) => {
+  const formatPriceEur = (price: number) => {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: 'BGN',
+      currency: 'EUR',
       minimumFractionDigits: 2,
     }).format(price)
+  }
+
+  const formatPriceBgn = (price: number) => {
+    return t('priceBgn', { price: price.toFixed(2) })
   }
 
   const handleBoost = async () => {
     setIsLoading(true)
 
     try {
-      const { url } = await createBoostCheckoutSession({
-        productId: product.id,
-        durationDays: selectedDays.toString(),
+      const response = await fetch("/api/boost/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          durationDays: selectedDays.toString(),
+          locale,
+        }),
       })
+
+      const data = (await response.json()) as {
+        url?: string | null
+        errorKey?: string
+        durationKey?: string
+      }
+
+      if (!response.ok || data.errorKey) {
+        toast.error(t(data.errorKey ?? "errors.internal"))
+        return
+      }
+
+      if (!data.durationKey) {
+        toast.error(t("errors.internal"))
+        return
+      }
+
+      const url = data.url
 
       // Redirect to Stripe checkout
       if (url) {
@@ -104,31 +113,59 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
       }
     } catch (error) {
       console.error('Boost error:', error)
-      toast.error(
-        locale === 'bg'
-          ? 'Грешка при създаване на плащане. Моля, опитайте отново.'
-          : 'Error creating payment. Please try again.'
-      )
+      toast.error(t('paymentError'))
     } finally {
       setIsLoading(false)
     }
   }
 
-  // If already boosted, show status instead
-  if (product.is_boosted && product.boost_expires_at) {
+  // Compute boost status using shared logic
+  const isCurrentlyBoosted = product.is_boosted && product.boost_expires_at 
+    ? new Date(product.boost_expires_at) > new Date() 
+    : false
+  
+  // Calculate time left for active boost
+  const getTimeLeft = () => {
+    if (!product.boost_expires_at) return null
     const expiresAt = new Date(product.boost_expires_at)
     const now = new Date()
-    const daysLeft = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-
-    if (daysLeft > 0) {
-      return (
+    const diffMs = expiresAt.getTime() - now.getTime()
+    if (diffMs <= 0) return null
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    return { days, hours }
+  }
+  
+  const formatDate = (dateStr: string) => {
+    return new Intl.DateTimeFormat(locale, { 
+      dateStyle: 'medium', 
+      timeStyle: 'short' 
+    }).format(new Date(dateStr))
+  }
+  
+  // If boost is currently active, show detailed status badge (not a dialog)
+  if (isCurrentlyBoosted && product.boost_expires_at) {
+    const timeLeft = getTimeLeft()
+    return (
+      <div className="flex flex-col gap-1">
         <Badge className="bg-primary/10 text-primary border-0 gap-1">
           <Lightning className="size-3" weight="fill" />
-          {t.boostActive} ({daysLeft} {t.days})
+          {timeLeft 
+            ? t('timeLeft', { days: timeLeft.days, hours: timeLeft.hours })
+            : t('boostActive')
+          }
         </Badge>
-      )
-    }
+        <span className="text-2xs text-muted-foreground">
+          {t('boostActiveUntil', { date: formatDate(product.boost_expires_at) })}
+        </span>
+      </div>
+    )
   }
+  
+  // Check if there was a previous boost that expired (allow re-boost)
+  const wasBoostExpired = product.is_boosted && product.boost_expires_at 
+    ? new Date(product.boost_expires_at) <= new Date() 
+    : false
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -136,7 +173,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
         {trigger || (
           <Button variant="outline" size="sm" className="gap-1.5 text-primary border-primary/30 hover:bg-primary/10 hover:text-primary">
             <Lightning className="size-4" weight="bold" />
-            {locale === 'bg' ? 'Промотирай' : 'Boost'}
+            {wasBoostExpired ? t('reboost') : t('trigger')}
           </Button>
         )}
       </DialogTrigger>
@@ -146,9 +183,9 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
             <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <Rocket className="size-5 text-primary" weight="fill" />
             </div>
-            {t.boostListing}
+            {t('title')}
           </DialogTitle>
-          <DialogDescription>{t.boostDesc}</DialogDescription>
+          <DialogDescription>{t('description')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 pt-2">
@@ -159,11 +196,12 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
 
           {/* Duration Selection */}
           <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">{t.selectDuration}</p>
+            <p className="text-sm font-medium text-muted-foreground">{t('selectDuration')}</p>
             <div className="grid grid-cols-3 gap-2">
               {BOOST_OPTIONS.map((option) => {
                 const isSelected = selectedDays === option.days
-                const pricePerDay = option.price / option.days
+                const pricePerDayEur = option.priceEur / (option.days === 1 ? 1 : option.days)
+                const priceBgn = eurToBgnApprox(option.priceEur)
 
                 return (
                   <button
@@ -181,20 +219,33 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
                         className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xs px-1.5 py-0"
                         variant="default"
                       >
-                        {t.popular}
+                        {t('popular')}
                       </Badge>
                     )}
-                    <span className="text-lg font-bold">{option.days}</span>
-                    <span className="text-xs text-muted-foreground">{t.days}</span>
+                    {option.bestValue && (
+                      <Badge
+                        className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xs px-1.5 py-0 bg-success"
+                        variant="default"
+                      >
+                        {t('bestValue')}
+                      </Badge>
+                    )}
+                    <span className="text-lg font-bold">{option.days === 1 ? '24' : option.days}</span>
+                    <span className="text-xs text-muted-foreground">{option.days === 1 ? t('hours') : t('days')}</span>
                     <span className={cn(
                       "text-sm font-semibold mt-1",
                       isSelected ? "text-primary" : "text-foreground"
                     )}>
-                      {formatPrice(option.price)}
+                      {formatPriceEur(option.priceEur)}
                     </span>
                     <span className="text-2xs text-muted-foreground">
-                      {formatPrice(pricePerDay)}{t.perDay}
+                      {formatPriceBgn(priceBgn)}
                     </span>
+                    {option.days > 1 && (
+                      <span className="text-2xs text-muted-foreground mt-0.5">
+                        {formatPriceEur(pricePerDayEur)}{t('perDay')}
+                      </span>
+                    )}
                   </button>
                 )
               })}
@@ -203,13 +254,13 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
 
           {/* Features */}
           <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">{t.features}</p>
+            <p className="text-sm font-medium text-muted-foreground">{t('features')}</p>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { icon: TrendUp, text: t.feature1 },
-                { icon: Lightning, text: t.feature2 },
-                { icon: Eye, text: t.feature3 },
-                { icon: Clock, text: t.feature4 },
+                { icon: TrendUp, text: t('feature1') },
+                { icon: Lightning, text: t('feature2') },
+                { icon: Eye, text: t('feature3') },
+                { icon: Clock, text: t('feature4') },
               ].map((feature, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
                   <CheckCircle className="size-4 text-success" weight="fill" />
@@ -229,12 +280,12 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
             {isLoading ? (
               <>
                 <SpinnerGap className="size-4 animate-spin" />
-                {t.processing}
+                {t('processing')}
               </>
             ) : (
               <>
                 <Lightning className="size-4" weight="fill" />
-                {t.boostNow} • {formatPrice(BOOST_OPTIONS.find(o => o.days === selectedDays)?.price || 0)}
+                {t('boostNow')} • {formatPriceEur(BOOST_OPTIONS.find(o => o.days === selectedDays)?.priceEur || 0)}
               </>
             )}
           </Button>
@@ -246,7 +297,7 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                {locale === 'bg' ? 'или' : 'or'}
+                {t('or')}
               </span>
             </div>
           </div>
@@ -263,12 +314,10 @@ export function BoostDialog({ product, locale, trigger, onBoostSuccess: _onBoost
               </div>
               <div className="text-left">
                 <p className="text-sm font-medium">
-                  {locale === 'bg' ? 'Надградете плана си' : 'Upgrade Your Plan'}
+                  {t('upgradePlan')}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {locale === 'bg'
-                    ? 'Вземете 5+ безплатни буста на месец'
-                    : 'Get 5+ free boosts per month'}
+                  {t('upgradeDesc')}
                 </p>
               </div>
             </div>

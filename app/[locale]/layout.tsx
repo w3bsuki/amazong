@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://treido.eu'),
   title: {
     template: '%s | Treido',
-    default: 'Treido - Online Shopping',
+    default: 'Treido',
   },
   description: 'Discover the best products at affordable prices.',
   authors: [{ name: 'Treido', url: 'https://treido.eu' }],
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     apple: '/apple-icon.png',
   },
   openGraph: {
-    title: 'Treido - Online Shopping',
+    title: 'Treido',
     description: 'Discover the best products at affordable prices.',
     type: 'website',
     siteName: 'Treido',
@@ -61,13 +61,13 @@ export const metadata: Metadata = {
         url: '/og-image.svg',
         width: 1200,
         height: 630,
-        alt: 'Treido - Online Shopping in Europe',
+        alt: 'Treido',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Treido - Online Shopping',
+    title: 'Treido',
     description: 'Discover the best products at affordable prices.',
     images: ['/og-image.svg'],
   },

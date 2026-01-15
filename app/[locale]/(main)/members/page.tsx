@@ -1,13 +1,20 @@
 import { routing, validateLocale } from "@/i18n/routing"
-import { setRequestLocale } from "next-intl/server"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 import type { Metadata } from "next"
 import MembersPageClient from "./_components/members-page-client"
 import type { MembersSearchParams } from "./_lib/members-types"
 import { getMembersPageData } from "./_lib/get-members-page-data"
 
-export const metadata: Metadata = {
-  title: "Members | Treido Community",
-  description: "Discover members of the Treido community. Browse sellers and buyers, filter by ratings and activity.",
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+  setRequestLocale(locale)
+
+  const t = await getTranslations({ locale, namespace: 'MembersPage' })
+  return {
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+  }
 }
 
 interface MembersPageProps {

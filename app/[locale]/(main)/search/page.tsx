@@ -103,11 +103,13 @@ export default async function SearchPage({
 
   if (supabase) {
     // Fetch L0 categories first (with subcategories fetched separately)
+    // Order by display_order first (curated), then name (DEC-002 compliance)
     const { data: rootCats, error: rootError } = await supabase
       .from("categories")
-      .select("id, name, name_bg, slug, parent_id, image_url")
+      .select("id, name, name_bg, slug, parent_id, image_url, display_order")
       .is("parent_id", null)
-      .order("name")
+      .order("display_order", { ascending: true })
+      .order("name", { ascending: true })
 
     if (rootError) {
       console.error("[SearchPage] Root categories fetch error:", rootError)
@@ -117,12 +119,14 @@ export default async function SearchPage({
       allCategories = rootCats
 
       // Fetch L1 subcategories for all root categories
+      // Order by display_order first (curated), then name (DEC-002 compliance)
       const rootIds = rootCats.map(c => c.id)
       const { data: subCats } = await supabase
         .from("categories")
-        .select("id, name, name_bg, slug, parent_id, image_url")
+        .select("id, name, name_bg, slug, parent_id, image_url, display_order")
         .in("parent_id", rootIds)
-        .order("name")
+        .order("display_order", { ascending: true })
+        .order("name", { ascending: true })
 
       // Build the hierarchical structure for the sidebar
       allCategoriesWithSubs = rootCats.map(cat => ({
@@ -228,9 +232,9 @@ export default async function SearchPage({
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="container overflow-x-hidden">
         <div className="flex flex-col lg:flex-row gap-4">
-          {/* Sidebar Filters - Hidden on mobile */}
-          <aside className="w-64 hidden lg:block shrink-0 border-r border-border">
-            <div className="sticky top-28 py-4 pr-4 space-y-5 max-h-(--search-sidebar-max-h) overflow-y-auto no-scrollbar">
+          {/* Sidebar Filters - Hidden on mobile, uses bg-sidebar for visual differentiation */}
+          <aside className="w-64 hidden lg:block shrink-0">
+            <div className="sticky top-28 py-4 px-3 bg-sidebar rounded-lg max-h-(--search-sidebar-max-h) overflow-y-auto no-scrollbar">
               <Suspense>
                 <SearchFilters
                   categories={allCategories}
@@ -258,6 +262,7 @@ export default async function SearchPage({
               <Suspense>
                 <SearchHeader
                   query={query}
+                  category={searchParams.category}
                   totalResults={products.length}
                 />
               </Suspense>

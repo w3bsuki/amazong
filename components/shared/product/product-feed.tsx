@@ -130,6 +130,9 @@ export function ProductFeed({
               sellerAvatarUrl={product.sellerAvatarUrl || null}
               sellerTier={product.sellerTier ?? "basic"}
               sellerVerified={Boolean(product.sellerVerified)}
+              sellerEmailVerified={Boolean(product.sellerEmailVerified)}
+              sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
+              sellerIdVerified={Boolean(product.sellerIdVerified)}
               {...(product.condition ? { condition: product.condition } : {})}
               {...(product.brand ? { brand: product.brand } : {})}
               {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}

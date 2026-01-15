@@ -2,15 +2,16 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { safeAvatarSrc } from "@/lib/utils"
-import { SealCheck } from "@phosphor-icons/react"
+import { SellerVerificationBadge, type VerificationLevel } from "./seller-verification-badge"
 
 // =============================================================================
 // TYPES
 // =============================================================================
 
-interface ProductCardSellerProps {
+interface ProductCardSellerProps extends Partial<VerificationLevel> {
   name: string
   avatarUrl?: string | null | undefined
+  /** @deprecated Use emailVerified, phoneVerified, idVerified instead */
   verified?: boolean | undefined
 }
 
@@ -18,7 +19,18 @@ interface ProductCardSellerProps {
 // COMPONENT
 // =============================================================================
 
-function ProductCardSeller({ name, avatarUrl, verified }: ProductCardSellerProps) {
+function ProductCardSeller({ 
+  name, 
+  avatarUrl, 
+  verified,
+  emailVerified,
+  phoneVerified,
+  idVerified,
+  isVerifiedBusiness,
+}: ProductCardSellerProps) {
+  // Backwards compatibility: if only `verified` is passed, treat as email verified
+  const hasAnyVerification = emailVerified || phoneVerified || idVerified || isVerifiedBusiness || verified
+
   return (
     <div className="flex min-w-0 items-center gap-1.5">
       <Avatar className="size-5 shrink-0 ring-1 ring-border/50">
@@ -28,8 +40,14 @@ function ProductCardSeller({ name, avatarUrl, verified }: ProductCardSellerProps
         </AvatarFallback>
       </Avatar>
       <span className="truncate text-xs text-muted-foreground">{name}</span>
-      {verified && (
-        <SealCheck size={10} weight="fill" className="shrink-0 text-verified" />
+      {hasAnyVerification && (
+        <SellerVerificationBadge
+          emailVerified={emailVerified ?? verified}
+          phoneVerified={phoneVerified}
+          idVerified={idVerified}
+          isVerifiedBusiness={isVerifiedBusiness}
+          size="sm"
+        />
       )}
     </div>
   )

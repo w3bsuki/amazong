@@ -66,6 +66,10 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
     return "/" + segments.join("/")
   })()
 
+  // Keep the desktop category subheader visible on the categories INDEX (/categories),
+  // but hide it on category browsing/detail routes (/categories/...) and product pages.
+  const isCategoryDetailRoute = pathWithoutLocale.startsWith("/categories/")
+
   // Product pages get special UX: back button instead of hamburger, no search bar.
   // Avoid heuristics (like segment counts) and rely on the route-group layout passing variant="product".
   const isProductPage = variant === "product"
@@ -101,8 +105,6 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
       className={cn(
         "sticky top-0 z-50 w-full flex flex-col bg-header-bg md:border-b md:border-header-border",
         hideOnMobile && "hidden",
-        // Force hide on category pages to prevent double header (Contextual Header takes over)
-        pathWithoutLocale.startsWith("/categories") && "hidden"
       )}
     >
       {/* Mobile Header + Search - Treido native iOS pattern - visible on mobile only */}
@@ -268,8 +270,8 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
         </div>
       </div>
 
-      {/* Category Subheader - Hide on category/product pages (eBay/Target pattern) */}
-      {!pathWithoutLocale.startsWith("/categories") && !isProductPage && !hideSubheader && (
+      {/* Category Subheader - Hide on category detail/product pages (eBay/Target pattern) */}
+      {!isCategoryDetailRoute && !isProductPage && !hideSubheader && (
         <nav className="hidden sm:block bg-header-nav-bg text-sm border-t border-border/50 relative">
           <div className="container text-foreground">
             {/* Mobile/Tablet: Quick Links with Sidebar Menu */}

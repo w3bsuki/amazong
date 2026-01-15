@@ -127,7 +127,7 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://treido.eu"
   const canonicalUrl = `${siteUrl}/${locale}/${username}`
   
-  const title = `${displayName} (@${profile.username}) | Treido`
+  const title = `${displayName} (@${profile.username})`
   const totalSales = sellerStats?.total_sales ?? 0
   const avgRating = sellerStats?.average_rating ?? 0
   const description = profile.bio

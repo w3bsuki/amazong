@@ -77,8 +77,10 @@ export async function GET(request: NextRequest) {
     // Apply Type-specific Filters and Sorting
     switch (type) {
       case 'promoted':
+        // Only show products with ACTIVE boosts (not expired) and use fair rotation
         query = query.eq('is_boosted', true)
-        query = query.order('created_at', { ascending: false })
+        query = query.gt('boost_expires_at', nowIso)
+        query = query.order('boost_expires_at', { ascending: true }) // Fair rotation: soonest-expiring first
         break
       
       case 'deals':

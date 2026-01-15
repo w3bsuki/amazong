@@ -6,8 +6,9 @@ import { Link } from "@/i18n/routing"
 import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import { Languages } from "lucide-react"
-import { MapPin, Check } from "@phosphor-icons/react"
+import { MapPin, Check, CurrencyEur } from "@phosphor-icons/react"
 import { useState } from "react"
+import { useCurrencyOptional, type Currency } from "@/components/providers/currency-context"
 
 interface LocaleDeliveryDropdownProps {
   /** Locale-stripped pathname from `usePathname()` in `@/i18n/routing`. */
@@ -131,6 +132,11 @@ export function LocaleDeliveryDropdown({ pathname, country, onCountryChange, cla
 
         <div className="h-px bg-border" />
 
+        {/* Currency */}
+        <CurrencySection tLocation={tLocation} />
+
+        <div className="h-px bg-border" />
+
         {/* Delivery */}
         <div className="p-2">
           <p className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase">{tNav("deliverTo")}</p>
@@ -177,5 +183,55 @@ export function LocaleDeliveryDropdown({ pathname, country, onCountryChange, cla
         </div>
       </HoverCardContent>
     </HoverCard>
+  )
+}
+
+// =============================================================================
+// CURRENCY SECTION (extracted for cleaner code)
+// =============================================================================
+
+interface CurrencySectionProps {
+  tLocation: ReturnType<typeof useTranslations<"LocationDropdown">>
+}
+
+function CurrencySection({ tLocation }: CurrencySectionProps) {
+  const currencyCtx = useCurrencyOptional()
+  
+  // If CurrencyProvider isn't available, don't render section
+  if (!currencyCtx) return null
+  
+  const { currency, setCurrency } = currencyCtx
+  
+  const currencies: { code: Currency; label: string; symbol: string }[] = [
+    { code: "EUR", label: tLocation("currencyEur"), symbol: "€" },
+    { code: "BGN", label: tLocation("currencyBgn"), symbol: "лв." },
+  ]
+  
+  return (
+    <div className="p-2">
+      <p className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase">{tLocation("currency")}</p>
+      <div className="grid grid-cols-2 gap-2 px-2">
+        {currencies.map((c) => (
+          <button
+            key={c.code}
+            onClick={() => setCurrency(c.code)}
+            className={[
+              "flex items-center justify-between gap-2 px-3 py-2 rounded-md hover:bg-muted text-sm border border-transparent transition-colors",
+              currency === c.code ? "bg-accent/30 border-border" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            <div className="flex items-center gap-2">
+              <span className={currency === c.code ? "font-medium text-foreground" : "text-muted-foreground"}>
+                {c.symbol}
+              </span>
+              {currency === c.code && <Check weight="bold" className="size-3.5 text-primary" />}
+            </div>
+            <span className="text-xs text-muted-foreground">{c.code}</span>
+          </button>
+        ))}
+      </div>
+    </div>
   )
 }

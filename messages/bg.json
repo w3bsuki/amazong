@@ -235,7 +235,7 @@
         "deliveryLabel": "Доставка:",
         "returnsLabel": "Връщане:",
         "payments": "Плащания:",
-        "condition": "Състояние:",
+        "conditionLabel": "Състояние:",
         "conditionNew": "Ново",
         "conditionNewWithTags": "Ново с етикети",
         "conditionUsed": "Използвано",
@@ -293,6 +293,8 @@
         "nextImage": "Следваща снимка",
         "imagePreview": "Преглед на снимка",
         "clickToEnlarge": "Натисни за увеличаване",
+        "goToImage": "Отиди към снимка {index}",
+        "moreImages": "+{count} още снимки",
         "sold": "продадени",
         "positivePercentage": "положителни",
         "moreFrom": "Други артикули от",
@@ -311,8 +313,12 @@
         "promoted": "Промотирано",
         "productDetails": "Характеристики",
         "shippingReturns": "Доставка и връщане",
+        "freeShipping": "Безплатна доставка",
+        "freeShippingSubtitle": "Проследяване и поддръжка",
         "defaultShipping": "Доставката се изчислява при поръчка",
         "defaultReturns": "30 дни връщане. Купувачът плаща за връщане.",
+        "returnsTitle": "30 дни връщане",
+        "returnsSubtitle": "Връщане при несъответствие",
         "back": "Назад",
         "share": "Сподели",
         "moreOptions": "Още опции",
@@ -323,8 +329,36 @@
         "showLess": "По-малко",
         "buyerProtectionBadgeTitle": "Защита на купувача",
         "buyerProtectionBadgeSubtitle": "Преглед и тест преди плащане. Сигурна доставка.",
+        "buyerProtectionInline": "Защитен",
         "noDescription": "Няма описание",
         "noDetails": "Няма детайли"
+    },
+    "Freshness": {
+        "justNow": "Току-що",
+        "today": "Днес",
+        "yesterday": "Вчера"
+    },
+    "ViewMode": {
+        "ariaLabel": "Режим на изглед",
+        "grid": "Мрежа",
+        "list": "Списък",
+        "gridView": "Изглед мрежа",
+        "listView": "Изглед списък"
+    },
+    "ProductSocialProof": {
+        "viewCount": "{count, plural, one {# човек разгледа това} other {# души разгледаха това}}",
+        "favoritesCount": "{count, plural, one {# човек запази това} other {# души запазиха това}}",
+        "popular": "Популярно"
+    },
+    "SaveSearch": {
+        "saveSearch": "Запази търсене",
+        "saved": "Запазено",
+        "savedTitle": "Търсенето е запазено",
+        "savedDescription": "Ще го покажем в твоите запазени търсения",
+        "removedTitle": "Търсенето е премахнато",
+        "removedDescription": "Търсенето е премахнато от запазените",
+        "emptySearchTitle": "Няма какво да запазите",
+        "emptySearchDescription": "Първо добавете заявка за търсене или изберете категория"
     },
     "CustomerService": {
         "title": "Добре дошли в обслужването на клиенти на Treido",
@@ -365,6 +399,7 @@
     },
     "GiftCards": {
         "title": "Подаръчни карти на Treido",
+        "metaDescription": "Подарете перфектния подарък за всяка оказия. Подаръчните карти на Treido са налични в дигитален и физически формат, с безплатна доставка за всички покупки.",
         "allGiftCards": "Всички подаръчни карти",
         "eGiftCards": "Електронни подаръчни карти",
         "printAtHome": "Принтирай у дома",
@@ -587,6 +622,14 @@
         "companyInfo": "Treido Ltd. • София, България • Рег. №: BG123456789 • ДДС: BG123456789",
         "copyright": "TM & © {year} Treido, Inc. или партньори"
     },
+    "FAQPage": {
+        "metaTitle": "Често задавани въпроси",
+        "metaDescription": "Намерете отговори на често задавани въпроси за пазаруване, доставка, връщания и още."
+    },
+    "MembersPage": {
+        "metaTitle": "Членове",
+        "metaDescription": "Открийте членовете на общността на Treido. Разглеждайте продавачи и купувачи и филтрирайте по оценки и активност."
+    },
     "Common": {
         "search": "Търсене",
         "loading": "Зареждане...",
@@ -605,6 +648,7 @@
         "goToNextPage": "Към следващата страница",
         "goToPreviousPage": "Към предишната страница",
         "all": "Всички",
+        "allCategories": "Всички категории",
         "filter": "Филтрирай",
         "clear": "Изчисти",
         "apply": "Приложи",
@@ -622,7 +666,7 @@
         "whatToExpect": "Какво да очаквате"
     },
     "Feedback": {
-        "metaTitle": "Обратна връзка | Treido",
+        "metaTitle": "Обратна връзка",
         "metaDescription": "Споделете вашите мнения с Treido. Вашият принос ни помага да подобрим нашия пазар.",
         "breadcrumbHome": "Начало",
         "breadcrumbFeedback": "Обратна връзка",
@@ -679,7 +723,7 @@
         ]
     },
     "InvestorsPage": {
-        "metaTitle": "Връзки с инвеститори | Treido",
+        "metaTitle": "Връзки с инвеститори",
         "metaDescription": "Научете за инвестиционни възможности с Treido, растящия онлайн пазар в България.",
         "title": "Връзки с инвеститори",
         "description": "Интересувате се от потенциала за растеж на електронната търговия в България? Получете актуализации за нашето пътуване.",
@@ -692,7 +736,7 @@
         ]
     },
     "AffiliatesPage": {
-        "metaTitle": "Партньорска програма | Treido",
+        "metaTitle": "Партньорска програма",
         "metaDescription": "Присъединете се към партньорската програма на Treido и печелете комисионни.",
         "title": "Партньори и сътрудници",
         "description": "Печелете комисионни, като популяризирате Treido. Нашата партньорска програма възнаграждава създатели на съдържание.",
@@ -718,7 +762,7 @@
         ]
     },
     "SuppliersPage": {
-        "metaTitle": "Портал за доставчици | Treido",
+        "metaTitle": "Портал за доставчици",
         "metaDescription": "Станете официален доставчик в Treido. Достъп до възможности за търговия на едро.",
         "title": "Портал за доставчици",
         "description": "Вие сте бранд или търговец на едро? Партнирайте с нас за ексклузивни възможности за дистрибуция.",
@@ -731,7 +775,7 @@
         ]
     },
     "StoreLocatorPage": {
-        "metaTitle": "Намери магазин | Treido",
+        "metaTitle": "Намери магазин",
         "metaDescription": "Намерете физически магазини от продавачи в Treido близо до вас.",
         "title": "Намери магазин",
         "description": "Намерете физически магазини от нашите верифицирани бизнес продавачи. Скоро за притежатели на бизнес акаунти.",
@@ -744,7 +788,7 @@
         ]
     },
     "FreeShippingPage": {
-        "metaTitle": "Информация за доставка | Treido",
+        "metaTitle": "Информация за доставка",
         "metaDescription": "Научете за опциите за доставка, времена и безплатна доставка в Treido.",
         "title": "Информация за доставка",
         "description": "Всичко, което трябва да знаете за опциите за доставка, цените и как да получите безплатна доставка.",
@@ -757,7 +801,7 @@
         ]
     },
     "AccessibilityPage": {
-        "metaTitle": "Достъпност | Treido",
+        "metaTitle": "Достъпност",
         "metaDescription": "Treido е ангажиран да направи платформата достъпна за всички потребители.",
         "title": "Достъпност",
         "description": "Ангажирани сме да направим Treido достъпен за всички. Научете за нашите функции за достъпност.",
@@ -1148,7 +1192,10 @@
         "deliveryOptions": "Показват се продукти, които се доставят до избраната зона",
         "popularLocations": "Популярни локации",
         "shippingZones": "Зони за доставка",
-        "manageAddresses": "Управлявай адреси"
+        "manageAddresses": "Управлявай адреси",
+        "currency": "Валута",
+        "currencyEur": "Евро",
+        "currencyBgn": "Лев"
     },
     "About": {
         "title": "За нас",
@@ -1553,6 +1600,48 @@
         "sinceLabel": "От",
         "chatLabel": "Чат"
     },
+    "SellerVerification": {
+        "verifiedBusiness": "Верифициран бизнес",
+        "idVerified": "Потвърдено ID",
+        "phoneVerified": "Потвърден телефон",
+        "emailVerified": "Потвърден имейл",
+        "email": "Имейл",
+        "phone": "Телефон",
+        "id": "ID"
+    },
+    "ProfilePage": {
+        "business": "Бизнес",
+        "seller": "Продавач",
+        "editProfile": "Редактирай профил",
+        "share": "Сподели",
+        "about": "За мен",
+        "stats": "Статистика",
+        "sales": "Продажби",
+        "sellerRating": "Рейтинг продавач",
+        "followers": "Последователи",
+        "purchases": "Покупки",
+        "buyerRating": "Рейтинг купувач",
+        "noReviewsYet": "Няма отзиви",
+        "forSale": "Обяви",
+        "reviews": "Отзиви",
+        "viewAll": "Виж всички",
+        "noActiveListings": "Няма активни обяви",
+        "accurate": "Точно описание",
+        "fastShipping": "Бърза доставка",
+        "goodComms": "Комуникация",
+        "promptPayment": "Бързо плащане"
+    },
+    "SellersDirectory": {
+        "title": "Топ продавачи | Treido",
+        "description": "Открий топ продавачи в Treido. Пазарувай от потвърдени продавачи с добри отзиви.",
+        "count": "{count, plural, one {# продавач} other {# продавачи}}",
+        "productsCount": "{count, plural, one {# продукт} other {# продукта}}",
+        "searchPlaceholder": "Търси продавачи",
+        "sortLabel": "Сортиране",
+        "sortNewest": "Най-нови",
+        "sortRating": "Рейтинг",
+        "sortProducts": "Най-много продукти"
+    },
     "Messages": {
         "pageTitle": "Съобщения",
         "pageDescription": "Комуникирайте с продавачи относно вашите поръчки и запитвания",
@@ -1629,10 +1718,39 @@
             "promoted": "Промотирани",
             "deals": "Оферти",
             "price_low": "Най-ниска цена",
-            "nearby": "Близо до мен"
+            "nearby": "Наблизо"
+        },
+        "scroll": {
+            "left": "Скрол наляво",
+            "right": "Скрол надясно"
         },
         "loadMore": "Зареди още",
         "loading": "Зареждане..."
+    },
+    "HeroSearch": {
+        "placeholder": "Какво търсиш?",
+        "search": "Търсене",
+        "clear": "Изчисти",
+        "selectLocation": "Избери локация",
+        "allBulgaria": "Цяла България",
+        "popularCities": "Популярни градове",
+        "allCities": "Всички градове"
+    },
+    "QuickFilters": {
+        "urgent": "Спешно",
+        "free": "Безплатно",
+        "freeShipping": "Безп. доставка",
+        "newOnly": "Само ново",
+        "onSale": "Намаление",
+        "today": "Днес"
+    },
+    "FilterSidebar": {
+        "title": "Филтри",
+        "clearAll": "Изчисти всички",
+        "priceRange": "Ценови диапазон",
+        "condition": "Състояние",
+        "sellerType": "Тип продавач",
+        "freeShippingOnly": "Само безплатна доставка"
     },
     "GeoWelcome": {
         "title": "Здравейте! Установихме, че посещавате от {country}",
@@ -1662,5 +1780,89 @@
         "allInCategory": "Всички в {category}",
         "subcategories": "Подкатегории",
         "allFilters": "Всички филтри"
+    },
+    "Boost": {
+        "title": "Промотирай обявата",
+        "description": "Получи до 10 пъти повече гледания с промотирана обява",
+        "selectDuration": "Изберете продължителност",
+        "days": "дни",
+        "hours": "часа",
+        "popular": "Популярен",
+        "bestValue": "Най-изгоден",
+        "features": "Какво получавате",
+        "feature1": "Топ позиция в търсенето",
+        "feature2": "Маркер \"Промотирано\"",
+        "feature3": "До 10x повече гледания",
+        "feature4": "Показване на началната страница",
+        "trigger": "Промотирай",
+        "boostNow": "Промотирай сега",
+        "processing": "Обработка...",
+        "alreadyBoosted": "Вече е промотирано",
+        "boostActive": "Промоцията е активна",
+        "boostActiveUntil": "Активна до {date}",
+        "boostExpired": "Промоцията изтече",
+        "reboost": "Промотирай отново",
+        "timeLeft": "{days}д {hours}ч оставащо",
+        "expiresIn": "Изтича след",
+        "perDay": "/ден",
+        "or": "или",
+        "upgradePlan": "Надградете плана си",
+        "upgradeDesc": "Вземете 5+ безплатни буста на месец",
+        "priceEur": "€{price}",
+        "priceBgn": "≈{price} лв",
+        "duration24h": "24 часа",
+        "duration7d": "7 дни",
+        "duration30d": "30 дни",
+        "checkoutItemName": "Промотиране на обява ({duration})",
+        "checkoutItemDescription": "Промотирайте \"{productTitle}\" за {duration} с премиум видимост.",
+        "paymentSuccess": "Промоцията е активирана успешно!",
+        "paymentCanceled": "Плащането беше отменено",
+        "paymentError": "Грешка при създаване на плащане. Моля, опитайте отново.",
+        "errors": {
+            "dbConnectionFailed": "Неуспешна връзка с базата данни.",
+            "unauthorized": "Моля, влезте в профила си, за да продължите.",
+            "missingFields": "Моля, попълнете всички задължителни полета.",
+            "invalidDuration": "Избрана е невалидна продължителност.",
+            "profileNotFound": "Профилът не е намерен.",
+            "productNotFound": "Обявата не е намерена или не е ваша.",
+            "alreadyBoosted": "Тази обява вече е промотирана.",
+            "internal": "Вътрешна грешка. Моля, опитайте отново."
+        }
+    },
+    "SellingProducts": {
+        "deleteSuccess": "Продуктът е изтрит успешно!",
+        "deleteError": "Грешка при изтриване",
+        "pauseSuccess": "Продуктът е поставен на пауза",
+        "activateSuccess": "Продуктът е активен отново",
+        "updateError": "Грешка при промяна",
+        "invalidPrice": "Въведете валидна цена",
+        "priceMustBeLower": "Новата цена трябва да е по-ниска",
+        "discountSaved": "Отстъпката е запазена",
+        "discountSaveError": "Грешка при запазване",
+        "discountRemoved": "Отстъпката е премахната",
+        "discountRemoveError": "Грешка при премахване",
+        "noProductsTitle": "Нямате продукти все още",
+        "noProductsDesc": "Започнете да продавате, като създадете първата си обява",
+        "createListing": "Създай обява",
+        "outOfStock": "Изчерпан",
+        "inStock": "{count} в склад",
+        "discountTooltip": "Отстъпка",
+        "activateTooltip": "Активирай",
+        "pauseTooltip": "Постави на пауза",
+        "viewSrOnly": "Виж",
+        "editSrOnly": "Редактирай",
+        "deleteSrOnly": "Изтрий",
+        "deleteDialogTitle": "Изтриване на продукт",
+        "deleteDialogDesc": "Сигурни ли сте, че искате да изтриете \"{title}\"? Това действие не може да бъде отменено.",
+        "cancelButton": "Отказ",
+        "deleteButton": "Изтрий",
+        "setDiscountTitle": "Задай отстъпка",
+        "setDiscountDesc": "Въведете новата цена за \"{title}\".",
+        "setDiscountDescGeneric": "Въведете новата цена.",
+        "currentPriceLabel": "Текуща цена:",
+        "newPriceLabel": "Нова цена",
+        "newPricePlaceholder": "напр. 49.99",
+        "removeDiscountButton": "Премахни отстъпка",
+        "saveButton": "Запази"
     }
 }

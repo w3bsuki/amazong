@@ -13,6 +13,8 @@ interface Category {
   slug: string
   parent_id: string | null
   image_url?: string | null
+  /** Subtree product count from category_stats (optional, DEC-002) */
+  subtree_product_count?: number
 }
 
 interface SubcategoryTabsProps {
@@ -20,13 +22,18 @@ interface SubcategoryTabsProps {
   subcategories: Category[]
   parentCategory?: Category | null // Kept for backward compatibility (not used here, breadcrumb is separate)
   basePath?: string // "/categories" or undefined for "/search?category="
+  variant?: "default" | "desktop" // desktop = larger circles
+  /** Slug of the currently active subcategory for desktop highlighting */
+  activeSubcategorySlug?: string | null | undefined
+  /** Show product counts under category names (DEC-002 curated browse UX) */
+  showCounts?: boolean
 }
 
 /**
  * Category header section with title and subcategory circles.
  * Shows a banner when at the deepest level (no subcategories).
  */
-export function SubcategoryTabs({ currentCategory, subcategories, basePath }: SubcategoryTabsProps) {
+export function SubcategoryTabs({ currentCategory, subcategories, basePath, variant = "default", activeSubcategorySlug, showCounts = false }: SubcategoryTabsProps) {
   const searchParams = useSearchParams()
 
   if (!currentCategory) return null
@@ -38,11 +45,14 @@ export function SubcategoryTabs({ currentCategory, subcategories, basePath }: Su
 
   // Has subcategories - show circles
   return (
-    <div className="mb-4 pb-2 border-b border-border">
+    <div className="mb-4 pb-3 border-b border-border">
       <SubcategoryCircles
         subcategories={subcategories}
         currentCategory={currentCategory}
         searchParamsString={searchParams.toString()}
+        variant={variant}
+        activeSubcategorySlug={activeSubcategorySlug}
+        showCounts={showCounts}
         {...(basePath ? { basePath } : {})}
       />
     </div>

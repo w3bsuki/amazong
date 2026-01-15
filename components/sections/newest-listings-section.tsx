@@ -126,9 +126,9 @@ export function NewestListingsSection({
   const active = tabData[activeTab] || { products: [], page: 0, hasMore: true }
 
   const getEndpointForTab = useCallback((tab: string) => {
-    if (tab === "promoted") return "/api/products/promoted"
+    // Consolidated: all feed types use /api/products/newest with ?type= param
+    // promoted = active boosts only (is_boosted=true AND boost_expires_at > now)
     if (tab === "near_me") return "/api/products/nearby"
-    if (tab.startsWith("cat:")) return "/api/products/newest"
     return "/api/products/newest"
   }, [])
 
@@ -136,6 +136,11 @@ export function NewestListingsSection({
     async (tab: string, nextPage: number) => {
       const endpoint = getEndpointForTab(tab)
       let url = `${endpoint}?page=${nextPage}&limit=12`
+
+      // Add type=promoted for promoted tab (canonical: is_boosted=true AND boost_expires_at > now)
+      if (tab === "promoted") {
+        url += "&type=promoted"
+      }
 
       if (tab === "near_me") {
         url += `&city=${encodeURIComponent(nearMeCity)}`
@@ -422,7 +427,7 @@ export function NewestListingsSection({
               image={product.image}
               rating={product.rating ?? 0}
               reviews={product.reviews ?? 0}
-              {...((activeTab === "promoted" || product.isBoosted) ? { state: "promoted" as const } : {})}
+              {...(product.isBoosted ? { state: "promoted" as const } : {})}
               index={index}
               slug={product.slug ?? null}
               username={product.storeSlug ?? null}
@@ -433,6 +438,9 @@ export function NewestListingsSection({
               sellerAvatarUrl={product.sellerAvatarUrl ?? null}
               sellerTier={product.sellerTier ?? "basic"}
               sellerVerified={Boolean(product.sellerVerified)}
+              sellerEmailVerified={Boolean(product.sellerEmailVerified)}
+              sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
+              sellerIdVerified={Boolean(product.sellerIdVerified)}
               {...(product.condition ? { condition: product.condition } : {})}
               {...(product.brand ? { brand: product.brand } : {})}
               {...(product.categorySlug ? { categorySlug: product.categorySlug } : {})}

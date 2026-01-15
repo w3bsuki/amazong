@@ -7,13 +7,15 @@ import { cn } from "@/lib/utils"
 import { TrendUp, GridFour, Fire, Percent, Star, Tag, MapPin, ChartLineUp, Eye, CaretRight } from "@phosphor-icons/react"
 import { Link } from "@/i18n/routing"
 import { ProductCard } from "@/components/shared/product/product-card"
+import { ProductCardList } from "@/components/shared/product/product-card-list"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getCategoryName } from "@/lib/category-display"
 import { CategoryCircle } from "@/components/shared/category/category-circle"
+import { useCategoryCounts } from "@/hooks/use-category-counts"
+import { useViewMode } from "@/hooks/use-view-mode"
+import { ViewModeToggle } from "@/components/shared/filters/view-mode-toggle"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 
 type FeedTab =
@@ -35,6 +37,7 @@ interface Product {
   isOnSale?: boolean
   salePercent?: number
   saleEndDate?: string | null
+  createdAt?: string | null
   image: string
   rating?: number
   reviews?: number
@@ -45,6 +48,9 @@ interface Product {
   sellerAvatarUrl?: string | null
   sellerTier?: 'basic' | 'premium' | 'business'
   sellerVerified?: boolean
+  sellerEmailVerified?: boolean
+  sellerPhoneVerified?: boolean
+  sellerIdVerified?: boolean
   categorySlug?: string | null
   location?: string
   condition?: string
@@ -67,6 +73,8 @@ interface TabbedProductFeedProps {
   initialProducts?: Product[]
   /** Whether more products are available after initial load */
   initialHasMore?: boolean
+  /** Optional hero/banner content to show at top of discovery card */
+  children?: React.ReactNode
 }
 
 /**
@@ -82,7 +90,8 @@ export function TabbedProductFeed({
   categories = [],
   initialTab = "newest",
   initialProducts = [],
-  initialHasMore = true
+  initialHasMore = true,
+  children,
 }: TabbedProductFeedProps) {
   const t = useTranslations("TabbedProductFeed")
   const [activeTab, setActiveTab] = useState<FeedTab>(initialTab)
@@ -94,6 +103,12 @@ export function TabbedProductFeed({
   const [isLoading, setIsLoading] = useState(false) // Start false since we have initial data
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(initialHasMore)
+
+  // View mode persistence (grid vs list)
+  const [viewMode, setViewMode] = useViewMode("grid")
+
+  // Category counts for abundance display
+  const { counts: categoryCounts } = useCategoryCounts()
 
   const pageSize = 24
 
@@ -189,6 +204,7 @@ export function TabbedProductFeed({
         const make = typeof p.make === 'string' ? p.make : undefined
         const model = typeof p.model === 'string' ? p.model : undefined
         const year = typeof p.year === 'string' ? p.year : undefined
+        const createdAt = (typeof p.createdAt === 'string') ? p.createdAt : (typeof (p as { created_at?: unknown }).created_at === 'string') ? ((p as { created_at?: string }).created_at ?? null) : null
 
         const base: Product = {
           id: p.id as string,
@@ -202,12 +218,14 @@ export function TabbedProductFeed({
           sellerId: typeof p.sellerId === 'string' ? p.sellerId : null,
           sellerName: typeof p.sellerName === 'string' ? p.sellerName : null,
           sellerAvatarUrl: typeof p.sellerAvatarUrl === 'string' ? p.sellerAvatarUrl : null,
-          isBoosted: tab === 'promoted' || Boolean(p.isBoosted) || Boolean((p as { is_boosted?: boolean | null }).is_boosted),
+          // Rely only on API-computed boost status (is_boosted && boost_expires_at > now)
+          isBoosted: Boolean(p.isBoosted) || Boolean((p as { is_boosted?: boolean | null }).is_boosted),
           tags: Array.isArray(p.tags) ? (p.tags as unknown[]).filter((x): x is string => typeof x === 'string') : [],
         }
 
         return {
           ...base,
+          ...(createdAt ? { createdAt } : {}),
           ...(listPrice !== undefined ? { listPrice } : {}),
           ...(isOnSale !== undefined ? { isOnSale } : {}),
           ...(salePercent !== undefined ? { salePercent } : {}),
@@ -317,40 +335,52 @@ export function TabbedProductFeed({
       return getCategoryName(a, _locale).localeCompare(getCategoryName(b, _locale))
     })
 
-  // L0 categories displayed in the horizontal rail (limit to 16 for visual balance)
-  const railL0 = topCategories.slice(0, 16)
+  // L0 categories displayed in the grid (14 + "All" = 15 total for perfect single row)
+  const railL0 = topCategories.slice(0, 14)
 
   // Get expanded L0 category data for OLX-style subcategory display
   const expandedL0Data = expandedL0 ? topCategories.find((c) => c.slug === expandedL0) : null
 
+  // Scroll ref for category rail
+  const categoryRailRef = useRef<HTMLDivElement>(null)
+
   return (
     <section id="listings" className="w-full" aria-label={t("sectionAriaLabel")}>
-      <div className="mb-4 flex flex-col gap-3">
-        {/* Category Circles (OLX-style) - bigger circles, scrollable */}
+      {/* Discovery Card - Hero + Categories */}
+      <div className="mb-4 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+        {/* Hero Banner Slot */}
+        {children && (
+          <div className="p-4 pb-0">
+            {children}
+          </div>
+        )}
+
+        {/* Category Circles - Static 15-column Grid for Desktop */}
         {railL0.length > 0 && (
-          <ScrollArea className="w-full" aria-label={t("categoryTabsAriaLabel")}>
-            <div className="flex items-start gap-2 py-3 pr-4">
+          <div className="px-4 py-3">
+            <div className="grid grid-cols-[repeat(15,1fr)] gap-1">
               {/* "All" circle */}
               <CategoryCircle
                 category={{ slug: "all" }}
                 label={t("categories.all")}
                 active={!expandedL0 && !activeCategory}
                 onClick={() => handleCircleClick(null)}
-                circleClassName="size-16 lg:size-18"
-                fallbackIconSize={32}
+                circleClassName="size-[68px] mx-auto"
+                fallbackIconSize={26}
                 fallbackIconWeight="regular"
-                variant="colorful"
-                className="w-20 lg:w-22 shrink-0"
+                variant="muted"
+                className="w-full"
                 labelClassName={cn(
-                  "w-full text-center text-xs font-medium leading-tight line-clamp-2 mt-2",
+                  "w-full text-center text-[11px] font-medium leading-tight line-clamp-2 mt-1",
                   !expandedL0 && !activeCategory ? "text-foreground" : "text-muted-foreground"
                 )}
               />
 
-              {/* L0 Category circles - uses image_url if available, falls back to colorful icons */}
+              {/* Category circles */}
               {railL0.map((cat) => {
                 const label = getCategoryName(cat, _locale)
                 const isExpanded = expandedL0 === cat.slug
+                const count = categoryCounts[cat.slug]
                 return (
                   <CategoryCircle
                     key={cat.slug}
@@ -358,27 +388,61 @@ export function TabbedProductFeed({
                     label={label}
                     active={isExpanded}
                     onClick={() => handleCircleClick(cat.slug)}
-                    circleClassName="size-16 lg:size-18"
-                    fallbackIconSize={32}
+                    circleClassName="size-[68px] mx-auto"
+                    fallbackIconSize={26}
                     fallbackIconWeight="regular"
                     variant="colorful"
-                    className="w-20 lg:w-22 shrink-0"
+                    count={count}
+                    className="w-full"
                     labelClassName={cn(
-                      "w-full text-center text-xs font-medium leading-tight line-clamp-2 mt-2",
+                      "w-full text-center text-[11px] font-medium leading-tight line-clamp-2 mt-1",
                       isExpanded ? "text-foreground" : "text-muted-foreground"
                     )}
                   />
                 )
               })}
             </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          </div>
         )}
+      </div>
 
-        {/* Subcategory Pills (shown when L0 is expanded) */}
-        {expandedL0Data && expandedL0Data.children && expandedL0Data.children.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card/50 p-3">
-            {/* "View all" pill - first in row */}
+      {/* Quick Filter Pills + View Mode Toggle */}
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div className="flex-1 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2">
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              const isActive = activeTab === tab.id
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabChange(tab.id)}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors shrink-0",
+                    "border",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    isActive
+                      ? "bg-foreground text-background border-foreground"
+                      : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground hover:border-muted-foreground/30"
+                  )}
+                >
+                  <Icon size={16} weight={isActive ? "fill" : "regular"} />
+                  {tab.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+        {/* View Mode Toggle - Desktop only */}
+        <div className="hidden lg:block shrink-0">
+          <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+        </div>
+      </div>
+
+      {/* Subcategory Pills (when L0 expanded) */}
+      {expandedL0Data && expandedL0Data.children && expandedL0Data.children.length > 0 && (
+        <div className="mb-4">
+          <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/30 p-3">
             <Link
               href={`/categories/${expandedL0Data.slug}`}
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
@@ -390,8 +454,6 @@ export function TabbedProductFeed({
               </span>
               <CaretRight className="size-4" weight="bold" />
             </Link>
-
-            {/* L1 Subcategory pills */}
             {expandedL0Data.children.map((l1) => (
               <Link
                 key={l1.slug}
@@ -402,37 +464,37 @@ export function TabbedProductFeed({
               </Link>
             ))}
           </div>
-        )}
-
-        {/* Sort Dropdown - positioned below category expansion, above product grid */}
-        <div className="flex items-center justify-end">
-          <Select value={activeTab} onValueChange={(next) => handleTabChange(next as FeedTab)}>
-            <SelectTrigger size="sm" className="w-44 h-10 rounded-full">
-              <SelectValue placeholder={t("sortPlaceholder")} />
-            </SelectTrigger>
-            <SelectContent align="end">
-              {tabs.map((tab) => (
-                <SelectItem key={tab.id} value={tab.id}>
-                  {tab.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
-      </div>
+      )}
 
-      {/* Product Grid */}
+      {/* Product Grid/List */}
       <div role="list" aria-live="polite">
         {products.length === 0 && isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2" aria-busy="true">
+          <div className={cn(
+            viewMode === "list"
+              ? "flex flex-col gap-3"
+              : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2"
+          )} aria-busy="true">
             {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="space-y-3">
-                <Skeleton className="aspect-3/4 w-full rounded-lg" />
-                <div className="space-y-1">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
+              viewMode === "list" ? (
+                <div key={i} className="flex gap-4 rounded-lg border border-border p-3">
+                  <Skeleton className="w-32 h-32 sm:w-40 sm:h-40 rounded-md shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-6 w-24 mt-auto" />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div key={i} className="space-y-3">
+                  <Skeleton className="aspect-3/4 w-full rounded-lg" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                </div>
+              )
             ))}
           </div>
         ) : products.length === 0 ? (
@@ -442,11 +504,32 @@ export function TabbedProductFeed({
           />
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8">
+            <div className={cn(
+              viewMode === "list"
+                ? "flex flex-col gap-3"
+                : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8"
+            )}>
               {products.map((product, index) => (
                 <div key={product.id} role="listitem">
-                  {(() => {
-                    const sellerName = (product.sellerName || product.storeSlug) || undefined
+                  {viewMode === "list" ? (
+                    <ProductCardList
+                      id={product.id}
+                      title={product.title}
+                      price={product.price}
+                      originalPrice={product.listPrice ?? null}
+                      image={product.image}
+                      createdAt={product.createdAt ?? null}
+                      slug={product.slug ?? null}
+                      username={product.storeSlug ?? null}
+                      sellerId={product.sellerId ?? null}
+                      sellerName={product.sellerName || product.storeSlug || undefined}
+                      sellerVerified={Boolean(product.sellerVerified)}
+                      location={product.location}
+                      condition={product.condition}
+                      freeShipping={false}
+                    />
+                  ) : (() => {
+                    const resolvedSellerName = product.sellerName ?? product.storeSlug ?? undefined
                     return (
                       <ProductCard
                         id={product.id}
@@ -456,26 +539,30 @@ export function TabbedProductFeed({
                         isOnSale={Boolean(product.isOnSale)}
                         salePercent={product.salePercent ?? 0}
                         saleEndDate={product.saleEndDate ?? null}
+                        createdAt={product.createdAt ?? null}
                         image={product.image}
                         rating={product.rating ?? 0}
                         reviews={product.reviews ?? 0}
                         slug={product.slug ?? null}
                         username={product.storeSlug ?? null}
                         sellerId={product.sellerId ?? null}
-                        {...(sellerName ? { sellerName } : {})}
+                        {...(resolvedSellerName ? { sellerName: resolvedSellerName } : {})}
                         sellerAvatarUrl={product.sellerAvatarUrl ?? null}
                         {...(product.sellerTier ? { sellerTier: product.sellerTier } : {})}
                         sellerVerified={Boolean(product.sellerVerified)}
-                        {...(product.location ? { location: product.location } : {})}
-                        {...(product.brand ? { brand: product.brand } : {})}
-                        {...(product.condition ? { condition: product.condition } : {})}
-                        {...(product.make ? { make: product.make } : {})}
-                        {...(product.model ? { model: product.model } : {})}
-                        {...(product.year ? { year: product.year } : {})}
-                        tags={product.tags ?? []}
-                        state={product.isBoosted ? "promoted" : undefined}
-                        index={index}
-                      />
+                        sellerEmailVerified={Boolean(product.sellerEmailVerified)}
+                        sellerPhoneVerified={Boolean(product.sellerPhoneVerified)}
+                        sellerIdVerified={Boolean(product.sellerIdVerified)}
+                      {...(product.location ? { location: product.location } : {})}
+                      {...(product.brand ? { brand: product.brand } : {})}
+                      {...(product.condition ? { condition: product.condition } : {})}
+                      {...(product.make ? { make: product.make } : {})}
+                      {...(product.model ? { model: product.model } : {})}
+                      {...(product.year ? { year: product.year } : {})}
+                      tags={product.tags ?? []}
+                      state={product.isBoosted ? "promoted" : undefined}
+                      index={index}
+                    />
                     )
                   })()}
                 </div>

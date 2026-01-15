@@ -163,9 +163,10 @@ export async function GET(request: NextRequest) {
         .select(productSelect, { count: 'exact' })
         .filter('category_ancestors', 'cs', `{${categoryData.id}}`)
 
-      // Feed type filters
+      // Feed type filters: promoted = active boosts only (is_boosted=true AND boost_expires_at > now)
       if (type === 'promoted') {
         query = query.eq('is_boosted', true)
+        query = query.gt('boost_expires_at', new Date().toISOString())
       }
 
       // Base filters
@@ -230,9 +231,10 @@ export async function GET(request: NextRequest) {
         .from('products')
         .select(productSelect, { count: 'exact' })
 
-      // Feed type filters
+      // Feed type filters: promoted = active boosts only (is_boosted=true AND boost_expires_at > now)
       if (type === 'promoted') {
         query = query.eq('is_boosted', true)
+        query = query.gt('boost_expires_at', new Date().toISOString())
       }
 
       // Base filters

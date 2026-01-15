@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCategoryHierarchy } from "@/lib/data/categories";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import type { CategoryTreeNode } from "@/lib/category-tree";
 
 import { OnboardingProvider } from "@/components/providers/onboarding-provider";
 import { Toaster } from "@/components/providers/sonner";
@@ -18,6 +19,17 @@ import { SkipLinks } from "@/components/shared/skip-links";
 // Generate static params for all supported locales
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }));
+}
+
+/**
+ * Async server component to fetch user and render header.
+ * Moved outside MainLayout to avoid "Cannot create components during render" lint error.
+ */
+async function HeaderWithUser({ categories }: { categories: CategoryTreeNode[] }) {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+
+    return <SiteHeader user={data.user} categories={categories} />;
 }
 
 /**
@@ -44,13 +56,6 @@ export default async function MainLayout({
 
     const categories = await getCategoryHierarchy(null, 2);
 
-    async function HeaderWithUser() {
-        const supabase = await createClient();
-        const { data } = await supabase.auth.getUser();
-
-        return <SiteHeader user={data.user} categories={categories} />;
-    }
-
     return (
         <OnboardingProvider locale={locale}>
             <div className="bg-background min-h-screen flex flex-col">
@@ -58,7 +63,7 @@ export default async function MainLayout({
                 <SkipLinks />
 
                 <Suspense fallback={<div className="h-(--header-skeleton-h) w-full bg-header-bg md:h-(--header-skeleton-h-md)" />}>
-                    <HeaderWithUser />
+                    <HeaderWithUser categories={categories} />
                 </Suspense>
 
                 <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">

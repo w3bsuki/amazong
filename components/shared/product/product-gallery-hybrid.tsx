@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
 import "photoswipe/style.css";
 import { ZoomIn } from "lucide-react";
@@ -29,6 +30,7 @@ interface ProductGalleryHybridProps {
 }
 
 export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: ProductGalleryHybridProps) {
+  const t = useTranslations("Product");
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const lightboxRef = useRef<PhotoSwipeLightbox | null>(null);
@@ -39,11 +41,11 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
       children: "a",
       bgOpacity: 1,
       wheelToZoom: true,
-      arrowPrev: false,
-      arrowNext: false,
-      close: false,
-      zoom: false,
-      counter: false,
+      arrowPrev: true,
+      arrowNext: true,
+      close: true,
+      zoom: true,
+      counter: true,
       mainClass: "[&>div:first-child]:!bg-background",
       pswpModule: () => import("photoswipe"),
     });
@@ -99,12 +101,19 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
               ))}
             </CarouselContent>
           </Carousel>
+
+          {/* Image Count Indicator */}
+          {images.length > 1 ? (
+            <div className="absolute top-4 left-4 z-10 rounded-full bg-background/90 border border-border px-2 py-1 text-xs font-medium text-foreground">
+              {current + 1}/{images.length}
+            </div>
+          ) : null}
           
           {/* Zoom Button - Desktop only, no hover animation per design system */}
           <div className="absolute bottom-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-150 hidden lg:flex">
              <Button
                type="button"
-               aria-label="Open image zoom"
+               aria-label={t("clickToEnlarge")}
                size="icon"
                variant="secondary"
                className="h-10 w-10 rounded-full bg-background/90 hover:bg-background border border-border"
@@ -121,7 +130,7 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
                 <button 
                   key={index}
                   type="button"
-                  aria-label={`Go to image ${index + 1}`}
+                  aria-label={t("goToImage", { index: index + 1 })}
                   onClick={() => api?.scrollTo(index)}
                   className={cn(
                     "size-2 rounded-full transition-colors",
@@ -141,6 +150,8 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
         {images.slice(0, 4).map((img, index) => (
           <button
             key={index}
+            type="button"
+            aria-label={t("goToImage", { index: index + 1 })}
             className={cn(
               "cursor-pointer overflow-hidden rounded-lg border transition-all bg-card relative",
               current === index 
@@ -161,11 +172,12 @@ export function ProductGalleryHybrid({ images, galleryID = "product-gallery" }: 
         ))}
         {images.length > 4 && (
           <button
+            type="button"
             className="rounded-lg border border-border/50 bg-muted/30 hover:ring-2 hover:ring-foreground/50 flex items-center justify-center transition-all group"
             onClick={() => lightboxRef.current?.loadAndOpen(4)}
           >
             <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground">
-              +{images.length - 4} more
+              {t("moreImages", { count: images.length - 4 })}
             </span>
           </button>
         )}

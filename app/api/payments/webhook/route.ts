@@ -46,9 +46,87 @@ export async function POST(request: Request) {
     try {
         switch ((event as any).type) {
             case 'checkout.session.completed': {
-            const session = (event as any).data.object
+                const session = (event as any).data.object
 
-                // Only handle setup mode sessions
+                // Handle listing boost payments (DEC-003)
+                if (session.mode === 'payment' && session.metadata?.type === 'listing_boost') {
+                    const productId = session.metadata.product_id
+                    const sellerId = session.metadata.profile_id
+                    const durationDays = parseInt(session.metadata.duration_days || '7', 10)
+                    const sessionId = session.id
+                    const amountTotal = session.amount_total // in cents
+                    const currency = session.currency?.toUpperCase() || 'EUR'
+
+                    if (!productId || !sellerId) {
+                        logError("stripe_webhook_boost_missing_metadata", null, {
+                            route: "api/payments/webhook",
+                            sessionId,
+                        })
+                        break
+                    }
+
+                    // Idempotency check: skip if already processed
+                    const { data: existingBoost } = await supabase
+                        .from('listing_boosts')
+                        .select('id')
+                        .eq('stripe_checkout_session_id', sessionId)
+                        .maybeSingle()
+
+                    if (existingBoost) {
+                        // Already processed, skip
+                        break
+                    }
+
+                    // Calculate expiration
+                    const now = new Date()
+                    const expiresAt = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000)
+
+                    // Insert listing_boosts row
+                    const { error: boostInsertError } = await supabase
+                        .from('listing_boosts')
+                        .insert({
+                            product_id: productId,
+                            seller_id: sellerId,
+                            price_paid: amountTotal ? amountTotal / 100 : 0,
+                            currency,
+                            duration_days: durationDays,
+                            starts_at: now.toISOString(),
+                            expires_at: expiresAt.toISOString(),
+                            is_active: true,
+                            stripe_checkout_session_id: sessionId,
+                        })
+
+                    if (boostInsertError) {
+                        logError("stripe_webhook_boost_insert_failed", boostInsertError, {
+                            route: "api/payments/webhook",
+                            productId,
+                            sellerId,
+                        })
+                        break
+                    }
+
+                    // Update product: set is_boosted=true and boost_expires_at
+                    const { error: productUpdateError } = await supabase
+                        .from('products')
+                        .update({
+                            is_boosted: true,
+                            boost_expires_at: expiresAt.toISOString(),
+                            listing_type: 'boosted',
+                        })
+                        .eq('id', productId)
+                        .eq('seller_id', sellerId)
+
+                    if (productUpdateError) {
+                        logError("stripe_webhook_product_boost_update_failed", productUpdateError, {
+                            route: "api/payments/webhook",
+                            productId,
+                        })
+                    }
+
+                    break
+                }
+
+                // Handle setup mode sessions (saved payment methods)
                 if (session.mode !== 'setup') break
 
                 const customerId = session.customer as string

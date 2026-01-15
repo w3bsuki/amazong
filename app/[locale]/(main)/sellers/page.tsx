@@ -3,15 +3,26 @@ import type { Metadata } from "next"
 import { routing, validateLocale } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
 import { setRequestLocale } from "next-intl/server"
+import { getTranslations } from "next-intl/server"
 
 import { getTopSellers } from "./_lib/get-top-sellers"
 import SellersEmptyState from "./_components/sellers-empty-state"
-import SellersGrid from "./_components/sellers-grid"
+import SellersDirectoryClient from "./_components/sellers-directory-client"
 import TopSellersHero from "./_components/top-sellers-hero"
 
-export const metadata: Metadata = {
-  title: 'Top Sellers | Treido',
-  description: 'Discover top-rated sellers on Treido. Shop from verified merchants with great reviews.',
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+  const t = await getTranslations({ locale, namespace: "SellersDirectory" })
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  }
 }
 
 export function generateStaticParams() {
@@ -27,6 +38,7 @@ export default async function SellersPage({
   const locale = validateLocale(localeParam)
   setRequestLocale(locale)
   const supabase = await createClient()
+  const t = await getTranslations({ locale, namespace: "SellersDirectory" })
 
   const sellersWithStats = await getTopSellers(supabase)
 
@@ -38,12 +50,11 @@ export default async function SellersPage({
       <div className="container py-6">
         {/* Results count */}
         <p className="text-sm text-muted-foreground mb-4">
-          <span className="font-semibold text-foreground">{sellersWithStats.length}</span>{" "}
-          {locale === "bg" ? "продавачи" : "sellers"}
+          {t("count", { count: sellersWithStats.length })}
         </p>
 
         {/* Sellers Grid */}
-        <SellersGrid sellers={sellersWithStats} locale={locale} />
+        <SellersDirectoryClient sellers={sellersWithStats} />
 
         {/* Empty state */}
         {sellersWithStats.length === 0 && (

@@ -1,69 +1,43 @@
 import { Link } from "@/i18n/routing"
 import { Button } from "@/components/ui/button"
-import { Storefront, ShoppingBag, Users } from "@phosphor-icons/react/dist/ssr"
-
-interface Category {
-  id: string
-  name: string
-  name_bg: string | null
-  slug: string
-}
+import { Storefront } from "@phosphor-icons/react/dist/ssr"
 
 interface MarketplaceHeroProps {
   locale: string
-  categories: Category[]
 }
 
-export function MarketplaceHero({ locale, categories }: MarketplaceHeroProps) {
+/**
+ * MarketplaceHero - Slim promotional banner (no search - header handles that)
+ * 
+ * OLX/Bazar-inspired but cleaner:
+ * - Trust badge with user count
+ * - Value proposition headline
+ * - Single CTA to sell
+ */
+export function MarketplaceHero({ locale }: MarketplaceHeroProps) {
   const isBg = locale === "bg"
 
   return (
-    <div className="w-full">
-      {/* Main Hero Banner - Full Width */}
-      <div className="relative w-full overflow-hidden rounded-md border border-border bg-cta-trust-blue">
-        <div className="relative px-6 py-5 lg:px-8 lg:py-6">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-            {/* Left Content */}
-            <div className="text-center lg:text-left max-w-2xl">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-cta-trust-blue-text/12 px-3 py-1 text-xs font-medium text-cta-trust-blue-text/95 mb-3 border border-cta-trust-blue-text/25 mx-auto lg:mx-0">
-                <Users weight="fill" className="size-3.5" />
-                <span>{isBg ? "10,000+ потребители" : "10,000+ users"}</span>
-              </div>
-
-              <h1 className="text-2xl lg:text-3xl font-bold text-cta-trust-blue-text tracking-tight mb-2 text-balance leading-tight">
-                {isBg ? "Твоят нов онлайн пазар в България" : "Your New Marketplace in Bulgaria"}
-              </h1>
-
-              <p className="text-sm lg:text-base text-cta-trust-blue-text/90 font-normal mb-0 text-pretty leading-relaxed">
-                {isBg
-                  ? "Купувай и продавай лесно. Безплатно публикуване, без такси за купувача."
-                  : "Buy and sell easily. Free listings, no buyer fees."}
-              </p>
-            </div>
-
-            {/* Right Content - Buttons */}
-            <div className="flex flex-wrap justify-center gap-3 shrink-0">
-              <Button asChild size="lg" className="bg-cta-secondary text-cta-trust-blue hover:bg-cta-secondary-hover font-semibold">
-                <Link href="/sell">
-                  <Storefront weight="fill" className="size-4 mr-2" />
-                  {isBg ? "Започни да продаваш" : "Start Selling"}
-                </Link>
-              </Button>
-
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-cta-trust-blue-text/25 bg-cta-trust-blue-text/10 text-cta-trust-blue-text hover:bg-cta-trust-blue-text/15 hover:text-cta-trust-blue-text font-medium"
-              >
-                <Link href="/search">
-                  <ShoppingBag weight="fill" className="size-4 mr-2" />
-                  {isBg ? "Разгледай обяви" : "Browse Listings"}
-                </Link>
-              </Button>
-            </div>
+    <div className="relative w-full overflow-hidden rounded-xl border border-border bg-cta-trust-blue">
+      <div className="relative px-5 py-3 lg:px-6">
+        <div className="flex items-center justify-between gap-4">
+          {/* Left Content */}
+          <div className="min-w-0">
+            <h1 className="text-base lg:text-lg font-semibold text-cta-trust-blue-text tracking-tight">
+              {isBg ? "Купувай и продавай лесно" : "Buy and sell easily"}
+            </h1>
+            <p className="text-xs text-cta-trust-blue-text/80 hidden sm:block">
+              {isBg ? "Безплатно публикуване • Без такси • Бърза доставка" : "Free listings • No fees • Fast shipping"}
+            </p>
           </div>
+
+          {/* Right Content - CTA */}
+          <Button asChild size="sm" className="bg-cta-secondary text-cta-trust-blue hover:bg-cta-secondary-hover font-semibold shrink-0">
+            <Link href="/sell">
+              <Storefront weight="fill" className="size-4 mr-1.5" />
+              {isBg ? "Продай" : "Sell"}
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

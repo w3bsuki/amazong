@@ -217,9 +217,15 @@
 
   /* === CATEGORY NAVIGATION === */
   --spacing-category-circle: 3.5rem;
+  --spacing-category-circle-desktop: 5rem;
   --spacing-category-item: 3.75rem;
   --spacing-category-item-lg: 4.5rem;
+  --spacing-category-item-desktop: 6.5rem;
   --spacing-nav-row: 3rem;
+
+  /* === FILTER SIDEBAR === */
+  --spacing-filter-sidebar: 15rem;
+  --spacing-sidebar-max-h: calc(100vh - 6rem);
 
   /* === CONTAINER WIDTHS === */
   --container-3xs: 16rem;

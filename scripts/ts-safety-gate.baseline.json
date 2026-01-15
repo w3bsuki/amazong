@@ -594,12 +594,6 @@
     "kind": "any"
   },
   {
-    "file": "app/api/products/promoted/route.ts",
-    "line": 97,
-    "column": 27,
-    "kind": "as-any"
-  },
-  {
     "file": "app/api/products/route.ts",
     "line": 88,
     "column": 13,

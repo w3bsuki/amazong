@@ -9,6 +9,9 @@ import { ProductCardImage } from "./product-card-image"
 import { ProductCardPrice } from "./product-card-price"
 import { ProductCardSeller } from "./product-card-seller"
 import { ProductCardSocialProof } from "./product-card-social-proof"
+import { BuyerProtectionBadge } from "./buyer-protection-badge"
+import { FavoritesCount } from "./favorites-count"
+import { FreshnessIndicator } from "./freshness-indicator"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { buildHeroBadgeText } from "@/lib/product-card-hero-attributes"
@@ -101,6 +104,9 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   sellerName?: string
   sellerAvatarUrl?: string | null
   sellerVerified?: boolean
+  sellerEmailVerified?: boolean
+  sellerPhoneVerified?: boolean
+  sellerIdVerified?: boolean
 
   // Shipping
   freeShipping?: boolean
@@ -124,6 +130,10 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
   rating?: number
   reviews?: number
   soldCount?: number
+  favoritesCount?: number
+
+  // Trust indicators
+  showBuyerProtection?: boolean
 
   // Condition for C2C
   condition?: "new" | "like_new" | "used" | "refurbished" | string
@@ -171,6 +181,9 @@ function ProductCard({
   sellerName,
   sellerAvatarUrl,
   sellerVerified,
+  sellerEmailVerified,
+  sellerPhoneVerified,
+  sellerIdVerified,
   freeShipping = false,
   slug,
   username,
@@ -187,6 +200,8 @@ function ProductCard({
   rating,
   reviews,
   soldCount,
+  favoritesCount,
+  showBuyerProtection = false,
   condition,
   location,
   // B2B props
@@ -237,18 +252,6 @@ function ProductCard({
     return condition.slice(0, 8)
   }, [condition, t])
 
-  const createdAtLabel = React.useMemo(() => {
-    if (!createdAt) return null
-    return formatTimeAgo(createdAt, locale)
-  }, [createdAt, locale])
-
-  const metaParts = React.useMemo(() => {
-    const parts: string[] = []
-    if (typeof location === "string" && location.trim()) parts.push(location.trim())
-    if (typeof createdAtLabel === "string" && createdAtLabel.trim()) parts.push(createdAtLabel.trim())
-    return parts
-  }, [location, createdAtLabel])
-
   return (
     <div
       ref={ref}
@@ -288,6 +291,13 @@ function ProductCard({
           inStock={inStock}
           isOwnProduct={isOwnProduct}
         />
+
+        {/* Favorites count - bottom left overlay (Vinted style) */}
+        {favoritesCount && favoritesCount > 0 && (
+          <div className="absolute bottom-1.5 left-1.5 z-10 bg-background/80 backdrop-blur-sm rounded-full px-1.5 py-0.5">
+            <FavoritesCount count={favoritesCount} />
+          </div>
+        )}
       </div>
 
       {/* Content Area */}
@@ -297,20 +307,24 @@ function ProductCard({
           {title}
         </p>
 
-        {/* Price + Condition */}
+        {/* Price + Condition + Protection */}
         <ProductCardPrice
           price={price}
           originalPrice={originalPrice}
           locale={locale}
           conditionLabel={conditionLabel}
+          showBuyerProtection={showBuyerProtection}
+          buyerProtectionLabel={t("buyerProtectionInline")}
         />
 
-        {/* Meta (C2C-style): location • time - Treido: text-tiny text-muted-foreground */}
-        {metaParts.length > 0 && (
-          <p className="line-clamp-1 text-tiny text-muted-foreground truncate">
-            {metaParts.join(' • ')}
-          </p>
-        )}
+        {/* Meta row: Location + Freshness indicator */}
+        <div className="flex items-center gap-1.5 text-tiny">
+          {location && (
+            <span className="text-muted-foreground truncate max-w-[60%]">{location}</span>
+          )}
+          {location && createdAt && <span className="text-muted-foreground">•</span>}
+          <FreshnessIndicator createdAt={createdAt} />
+        </div>
 
         {/* Free Shipping - Treido subtle style */}
         {freeShipping && (
@@ -348,6 +362,9 @@ function ProductCard({
               name={displaySellerName}
               avatarUrl={sellerAvatarUrl}
               verified={sellerVerified}
+              emailVerified={sellerEmailVerified}
+              phoneVerified={sellerPhoneVerified}
+              idVerified={sellerIdVerified}
             />
           ) : (
             <div className="flex-1" />

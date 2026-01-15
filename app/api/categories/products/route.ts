@@ -8,7 +8,10 @@ import { cacheLife, cacheTag } from "next/cache"
 const CACHE_TTL_SECONDS = 300
 const CACHE_STALE_WHILE_REVALIDATE = 60
 
-// Get one featured product per subcategory for mega-menu
+// Get one top-rated product per subcategory for mega-menu display.
+// NOTE: This is NOT boost/promoted logic - it's selecting the best-rated product
+// per subcategory to showcase in the navigation. "Featured" here means
+// "representative product for the category", not a paid boost.
 export async function GET(request: import("next/server").NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -18,7 +21,7 @@ export async function GET(request: import("next/server").NextRequest) {
       return NextResponse.json({ error: "parentId is required" }, { status: 400 })
     }
 
-    const productsByCategory = await getFeaturedProductsBySubcategoryCached(parentId)
+    const productsByCategory = await getTopRatedProductsBySubcategoryCached(parentId)
 
     return NextResponse.json(
       { products: productsByCategory },
@@ -38,7 +41,7 @@ export async function GET(request: import("next/server").NextRequest) {
   }
 }
 
-type FeaturedProduct = {
+type TopRatedProduct = {
   id: string
   title: string
   price: number
@@ -48,7 +51,12 @@ type FeaturedProduct = {
   slug: string | null
 }
 
-async function getFeaturedProductsBySubcategoryCached(parentId: string): Promise<Record<string, FeaturedProduct>> {
+/**
+ * Get one top-rated product per subcategory.
+ * Used for mega-menu navigation to show representative products.
+ * NOTE: This is unrelated to paid boosts - it's organic ranking by rating.
+ */
+async function getTopRatedProductsBySubcategoryCached(parentId: string): Promise<Record<string, TopRatedProduct>> {
   'use cache'
   cacheLife('products')
   cacheTag('categories:tree')
@@ -97,7 +105,7 @@ async function getFeaturedProductsBySubcategoryCached(parentId: string): Promise
   }
 
   // Group by category_id and take only the first (best rated) product per category
-  const productsByCategory: Record<string, FeaturedProduct> = {}
+  const productsByCategory: Record<string, TopRatedProduct> = {}
 
   if (products) {
     for (const product of products) {

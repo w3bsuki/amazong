@@ -569,6 +569,7 @@ export type Database = {
       listing_boosts: {
         Row: {
           created_at: string | null
+          currency: string
           duration_days: number
           expires_at: string
           id: string
@@ -577,9 +578,11 @@ export type Database = {
           product_id: string
           seller_id: string
           starts_at: string | null
+          stripe_checkout_session_id: string | null
         }
         Insert: {
           created_at?: string | null
+          currency?: string
           duration_days?: number
           expires_at: string
           id?: string
@@ -588,9 +591,11 @@ export type Database = {
           product_id: string
           seller_id: string
           starts_at?: string | null
+          stripe_checkout_session_id?: string | null
         }
         Update: {
           created_at?: string | null
+          currency?: string
           duration_days?: number
           expires_at?: string
           id?: string
@@ -599,6 +604,7 @@ export type Database = {
           product_id?: string
           seller_id?: string
           starts_at?: string | null
+          stripe_checkout_session_id?: string | null
         }
         Relationships: [
           {
@@ -1098,6 +1104,7 @@ export type Database = {
           title: string
           track_inventory: boolean | null
           updated_at: string
+          view_count: number | null
           weight: number | null
           weight_unit: string | null
         }
@@ -1149,6 +1156,7 @@ export type Database = {
           title: string
           track_inventory?: boolean | null
           updated_at?: string
+          view_count?: number | null
           weight?: number | null
           weight_unit?: string | null
         }
@@ -1200,6 +1208,7 @@ export type Database = {
           title?: string
           track_inventory?: boolean | null
           updated_at?: string
+          view_count?: number | null
           weight?: number | null
           weight_unit?: string | null
         }
@@ -1246,8 +1255,10 @@ export type Database = {
           insertion_fee: number | null
           is_seller: boolean | null
           is_verified_business: boolean | null
+          last_active: string | null
           last_username_change: string | null
           location: string | null
+          onboarding_completed: boolean | null
           per_order_fee: number | null
           phone: string | null
           region_auto_detected: boolean | null
@@ -1272,6 +1283,7 @@ export type Database = {
           commission_rate?: number | null
           country_code?: string | null
           created_at?: string
+          default_city?: string | null
           display_name?: string | null
           email?: string | null
           final_value_fee?: number | null
@@ -1280,8 +1292,10 @@ export type Database = {
           insertion_fee?: number | null
           is_seller?: boolean | null
           is_verified_business?: boolean | null
+          last_active?: string | null
           last_username_change?: string | null
           location?: string | null
+          onboarding_completed?: boolean | null
           per_order_fee?: number | null
           phone?: string | null
           region_auto_detected?: boolean | null
@@ -1315,8 +1329,10 @@ export type Database = {
           insertion_fee?: number | null
           is_seller?: boolean | null
           is_verified_business?: boolean | null
+          last_active?: string | null
           last_username_change?: string | null
           location?: string | null
+          onboarding_completed?: boolean | null
           per_order_fee?: number | null
           phone?: string | null
           region_auto_detected?: boolean | null
@@ -2353,6 +2369,7 @@ export type Database = {
         }[]
       }
       increment_helpful_count: { Args: { review_id: string }; Returns: number }
+      increment_view_count: { Args: { product_id: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
       is_blocked_bidirectional: {
         Args: { p_user_a: string; p_user_b: string }

@@ -15,7 +15,6 @@ export function CartDropdown() {
   const t = useTranslations("CartDropdown")
   const tNav = useTranslations("Navigation")
   const locale = useLocale()
-
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     setMounted(true)
@@ -43,9 +42,7 @@ export function CartDropdown() {
           className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
           aria-label={`${tNav("cart")}${mounted && displayItems > 0 ? ` (${displayItems} items)` : ""}`}
         >
-          <div
-            className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer"
-          >
+          <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer">
             <span className="relative" aria-hidden="true">
               <ShoppingCart weight="regular" />
               {mounted && displayItems > 0 && (
@@ -61,7 +58,7 @@ export function CartDropdown() {
         </Link>
       </HoverCardTrigger>
       <HoverCardContent
-        className="w-72 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-dropdown"
+        className="w-80 p-0 bg-popover text-popover-foreground border border-border z-50 rounded-md overflow-hidden shadow-dropdown"
         align="end"
         sideOffset={8}
         collisionPadding={10}
@@ -120,40 +117,44 @@ export function CartDropdown() {
                     )}
                     <div className="flex items-center gap-1.5 mt-1">
                       <span className="text-sm font-semibold text-foreground">{formatPrice(item.price)}</span>
-                      <span className="text-xs text-muted-foreground">× {item.quantity}</span>
                     </div>
-                    <div className="flex items-center gap-1 mt-1">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (item.quantity > 1) {
-                            updateQuantity(item.id, item.quantity - 1, item.variantId)
-                          } else {
-                            removeFromCart(item.id, item.variantId)
-                          }
-                        }}
-                        className="size-5 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
-                      >
-                        <Minus size={10} weight="bold" />
-                      </button>
-                      <span className="text-xs font-medium text-foreground w-4 text-center">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          updateQuantity(item.id, item.quantity + 1, item.variantId)
-                        }}
-                        className="size-5 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
-                      >
-                        <Plus size={10} weight="bold" />
-                      </button>
+                    <div className="flex items-center justify-between gap-2 mt-1">
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            if (item.quantity > 1) {
+                              updateQuantity(item.id, item.quantity - 1, item.variantId)
+                            } else {
+                              removeFromCart(item.id, item.variantId)
+                            }
+                          }}
+                          className="size-5 shrink-0 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                          aria-label={locale === "bg" ? "Намали количеството" : "Decrease quantity"}
+                        >
+                          <Minus size={10} weight="bold" />
+                        </button>
+                        <span className="text-xs font-medium text-foreground w-4 text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault()
+                            updateQuantity(item.id, item.quantity + 1, item.variantId)
+                          }}
+                          className="size-5 shrink-0 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+                          aria-label={locale === "bg" ? "Увеличи количеството" : "Increase quantity"}
+                        >
+                          <Plus size={10} weight="bold" />
+                        </button>
+                      </div>
                       <button
                         onClick={(e) => {
                           e.preventDefault()
                           removeFromCart(item.id, item.variantId)
                         }}
-                        className="size-5 flex items-center justify-center rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive ml-auto"
+                        className="size-5 shrink-0 flex items-center justify-center rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                        aria-label={locale === "bg" ? "Премахни" : "Remove"}
                       >
                         <Trash size={12} weight="regular" />
                       </button>

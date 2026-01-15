@@ -20,6 +20,7 @@ type SellerStatsSummary = Pick<
   | "follower_count"
   | "total_sales"
   | "response_time_hours"
+  | "active_listings"
 >
 
 type ProductSeller = Pick<
@@ -50,10 +51,10 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 const isUuid = (value: unknown): value is string => typeof value === 'string' && UUID_REGEX.test(value)
 
 const PRODUCT_SELECT =
-  'id,title,slug,price,list_price,description,condition,images,attributes,sku,meta_description,rating,review_count,stock,pickup_only,seller_id,category_id' as const
+  'id,title,slug,price,list_price,description,condition,images,attributes,sku,meta_description,rating,review_count,stock,pickup_only,seller_id,category_id,view_count,created_at' as const
 
 const SELLER_STATS_SELECT =
-  'seller_id,average_rating,total_reviews,positive_feedback_pct,follower_count,total_sales,response_time_hours' as const
+  'seller_id,average_rating,total_reviews,positive_feedback_pct,follower_count,total_sales,response_time_hours,active_listings' as const
 
 /**
  * Fetch product by seller username + product slug.
@@ -109,7 +110,7 @@ export async function fetchProductByUsernameAndSlug(
     .select(`
       ${PRODUCT_SELECT},
       seller:profiles!products_seller_id_fkey (
-        id, username, display_name, avatar_url, verified, is_seller, created_at
+        id, username, display_name, avatar_url, verified, is_seller, created_at, last_active
       ),
       category:categories (
         id, name, name_bg, slug, parent_id, icon
@@ -137,7 +138,7 @@ export async function fetchProductByUsernameAndSlug(
     // Fallback: Try the two-step approach if join fails
     const { data: exactProfile } = await supabase
       .from("profiles")
-      .select("id, username, display_name, avatar_url, verified, is_seller, created_at")
+      .select("id, username, display_name, avatar_url, verified, is_seller, created_at, last_active")
       .eq("username", safeUsername)
       .maybeSingle()
 
@@ -145,7 +146,7 @@ export async function fetchProductByUsernameAndSlug(
       ?? (
         await supabase
           .from("profiles")
-          .select("id, username, display_name, avatar_url, verified, is_seller, created_at")
+          .select("id, username, display_name, avatar_url, verified, is_seller, created_at, last_active")
           .ilike("username", safeUsername)
           .maybeSingle()
       ).data as unknown as ProductSeller | null
@@ -289,5 +290,30 @@ export async function fetchSellerProducts(
 
   const { data } = await query
   return data || []
+}
+
+/**
+ * Fetch favorites count for a product.
+ * Counts how many users have this product in their wishlists.
+ * 
+ * CACHED: Uses 'use cache' with product-specific tags.
+ */
+export async function fetchProductFavoritesCount(productId: string): Promise<number> {
+  'use cache'
+  cacheLife('products')
+  
+  if (!isUuid(productId)) return 0
+  
+  cacheTag(`product:${productId}`, `product-favorites:${productId}`)
+  
+  const supabase = createStaticClient()
+  
+  const { count, error } = await supabase
+    .from("wishlists")
+    .select("*", { count: "exact", head: true })
+    .eq("product_id", productId)
+  
+  if (error) return 0
+  return count ?? 0
 }
 

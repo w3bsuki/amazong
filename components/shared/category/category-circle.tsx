@@ -16,6 +16,19 @@ type CategoryLike = {
 
 type LinkHref = React.ComponentProps<typeof Link>["href"]
 
+/**
+ * Format a number as a compact string (e.g., 51089 -> "51K")
+ */
+function formatCount(count: number): string {
+  if (count >= 1000000) {
+    return `${(count / 1000000).toFixed(count >= 10000000 ? 0 : 1).replace(/\.0$/, '')}M`
+  }
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(count >= 10000 ? 0 : 1).replace(/\.0$/, '')}K`
+  }
+  return count.toString()
+}
+
 export interface CategoryCircleProps {
   category: CategoryLike
   label: string
@@ -31,12 +44,17 @@ export interface CategoryCircleProps {
   active?: boolean
   dimmed?: boolean
 
+  /** Listing count to display below the label */
+  count?: number | undefined
+
   /** Size class for the circle itself (e.g. `size-12`, `size-14`). */
   circleClassName?: string
   /** Classes for the wrapper (Link/button). */
   className?: string
   /** Classes for the label text. */
   labelClassName?: string
+  /** Classes for the count text. */
+  countClassName?: string
 
   variant?: "muted" | "menu" | "rail" | "colorful"
   fallbackIconSize?: IconSize
@@ -53,18 +71,24 @@ export function CategoryCircle({
   onClick,
   active,
   dimmed,
+  count,
   circleClassName,
   className,
   labelClassName,
+  countClassName,
   variant = "muted",
   fallbackIconSize = 24,
   fallbackIconWeight = "regular",
 }: CategoryCircleProps) {
   const baseClasses = cn(
     "group snap-start shrink-0",
-    "flex flex-col items-center gap-1.5",
+    "flex flex-col items-center justify-start",
+    "p-1",
+    "rounded-md",
+    "transition-colors",
+    "hover:bg-muted/50",
     "touch-action-manipulation",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
     dimmed ? "opacity-50" : "opacity-100",
     className
   )
@@ -74,12 +98,17 @@ export function CategoryCircle({
       <CategoryCircleVisual
         category={category}
         active={!!active}
-        className={circleClassName ?? ""}
+        className={cn("mx-auto", circleClassName)}
         fallbackIconSize={fallbackIconSize}
         fallbackIconWeight={fallbackIconWeight}
         variant={variant}
       />
-      <span className={labelClassName}>{label}</span>
+      <span className={cn("mt-1.5", labelClassName)}>{label}</span>
+      {typeof count === "number" && count > 0 && (
+        <span className={cn("text-2xs text-muted-foreground/70 leading-none", countClassName)}>
+          {formatCount(count)}
+        </span>
+      )}
     </>
   )
 

@@ -1,0 +1,233 @@
+"use client"
+
+import * as React from "react"
+import { Link } from "@/i18n/routing"
+import { useLocale, useTranslations } from "next-intl"
+import { cn } from "@/lib/utils"
+import { ProductCardActions } from "./product-card-actions"
+import { FreshnessIndicator } from "./freshness-indicator"
+import { Truck, MapPin, ShieldCheck } from "@phosphor-icons/react"
+import Image from "next/image"
+import { normalizeImageUrl } from "@/lib/normalize-image-url"
+
+interface ProductCardListProps {
+  // Required
+  id: string
+  title: string
+  price: number
+  image: string
+
+  // Meta
+  createdAt?: string | null | undefined
+  description?: string | null
+
+  // Pricing
+  originalPrice?: number | null
+  isOnSale?: boolean
+  salePercent?: number
+
+  // Seller
+  sellerId?: string | null
+  sellerName?: string | undefined
+  sellerAvatarUrl?: string | null
+  sellerVerified?: boolean
+
+  // Shipping
+  freeShipping?: boolean
+
+  // Location
+  location?: string | undefined
+
+  // URLs
+  slug?: string | null
+  username?: string | null
+
+  // Feature toggles
+  showWishlist?: boolean
+
+  // Context
+  currentUserId?: string | null
+  inStock?: boolean
+  className?: string
+
+  // Condition for C2C
+  condition?: "new" | "like_new" | "used" | "refurbished" | string | undefined
+
+  // Trust
+  showBuyerProtection?: boolean
+}
+
+/**
+ * ProductCardList - Horizontal list view card showing more info
+ * OLX/Bazar-style with image on left, details on right
+ */
+export function ProductCardList({
+  id,
+  title,
+  price,
+  image,
+  createdAt,
+  description,
+  originalPrice,
+  sellerId,
+  sellerName,
+  sellerVerified,
+  freeShipping = false,
+  location,
+  slug,
+  username,
+  showWishlist = true,
+  currentUserId,
+  inStock = true,
+  className,
+  condition,
+  showBuyerProtection = false,
+}: ProductCardListProps) {
+  const t = useTranslations("Product")
+  const locale = useLocale()
+
+  // URLs
+  const productUrl = username ? `/${username}/${slug || id}` : "#"
+
+  // Check if own product
+  const isOwnProduct = !!(currentUserId && sellerId && currentUserId === sellerId)
+
+  // Condition badge helper
+  const conditionLabel = React.useMemo(() => {
+    if (!condition) return null
+    const c = condition.toLowerCase()
+    if (c === "new" || c === "novo" || c === "ново") return t("condition.new")
+    if (c === "like_new" || c === "like new" || c === "като ново") return t("condition.likeNew")
+    if (c === "used" || c === "употребявано") return t("condition.usedShort")
+    if (c === "refurbished" || c === "рефърбиш") return t("condition.refurbShort")
+    return condition.slice(0, 8)
+  }, [condition, t])
+
+  // Format price
+  const formattedPrice = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "EUR",
+  }).format(price)
+
+  const formattedOriginalPrice = originalPrice
+    ? new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: "EUR",
+      }).format(originalPrice)
+    : null
+
+  const hasDiscount = originalPrice && originalPrice > price
+
+  return (
+    <div
+      className={cn(
+        "group relative flex gap-4 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-muted/30",
+        className
+      )}
+    >
+      {/* Full-card link for accessibility */}
+      <Link href={productUrl} className="absolute inset-0 z-0" aria-label={t("openProduct", { title })}>
+        <span className="sr-only">{title}</span>
+      </Link>
+
+      {/* Image - Left side */}
+      <div className="relative flex-shrink-0 w-32 h-32 sm:w-40 sm:h-40 rounded-md overflow-hidden bg-muted">
+        <Image
+          src={normalizeImageUrl(image)}
+          alt={title}
+          fill
+          sizes="(max-width: 640px) 128px, 160px"
+          className="object-cover"
+        />
+
+        {/* Wishlist button overlay */}
+        <div className="absolute top-1.5 right-1.5 z-10">
+          <ProductCardActions
+            id={id}
+            title={title}
+            price={price}
+            image={image}
+            slug={slug ?? null}
+            username={username ?? null}
+            showQuickAdd={false}
+            showWishlist={showWishlist}
+            inStock={inStock}
+            isOwnProduct={isOwnProduct}
+          />
+        </div>
+
+        {/* Out of stock overlay */}
+        {!inStock && (
+          <div className="absolute inset-0 flex items-center justify-center bg-background/70">
+            <span className="text-xs font-medium text-muted-foreground">{t("outOfStock")}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Content - Right side */}
+      <div className="relative z-1 flex-1 min-w-0 flex flex-col">
+        {/* Title */}
+        <h3 className="font-medium text-sm sm:text-base line-clamp-2 text-foreground mb-1">
+          {title}
+        </h3>
+
+        {/* Description (if available) */}
+        {description && (
+          <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+            {description}
+          </p>
+        )}
+
+        {/* Meta row: condition, location, freshness */}
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
+          {conditionLabel && (
+            <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase">
+              {conditionLabel}
+            </span>
+          )}
+          {location && (
+            <span className="inline-flex items-center gap-0.5">
+              <MapPin size={12} />
+              {location}
+            </span>
+          )}
+          <FreshnessIndicator createdAt={createdAt} showIcon />
+        </div>
+
+        {/* Price row */}
+        <div className="flex items-baseline gap-2 mt-auto">
+          <span className="text-lg font-bold text-foreground">{formattedPrice}</span>
+          {hasDiscount && formattedOriginalPrice && (
+            <span className="text-sm text-muted-foreground line-through">{formattedOriginalPrice}</span>
+          )}
+        </div>
+
+        {/* Badges row */}
+        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+          {freeShipping && (
+            <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
+              <Truck size={14} weight="bold" />
+              {t("freeShipping")}
+            </span>
+          )}
+          {showBuyerProtection && (
+            <span className="inline-flex items-center gap-1 text-xs text-blue-600">
+              <ShieldCheck size={14} weight="fill" />
+              {t("buyerProtectionInline")}
+            </span>
+          )}
+        </div>
+
+        {/* Seller row */}
+        {sellerName && (
+          <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
+            <span>{sellerName}</span>
+            {sellerVerified && (
+              <span className="text-blue-500">✓</span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

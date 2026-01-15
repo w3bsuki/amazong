@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { useTranslations } from "next-intl";
 import { RecentlyViewedTracker } from "@/components/shared/product/recently-viewed-tracker";
 import { ProductGalleryHybrid } from "@/components/shared/product/product-gallery-hybrid";
 import { ProductBuyBox } from "@/components/shared/product/product-buy-box";
@@ -10,6 +11,9 @@ import { CategoryBadge } from "@/components/shared/product/category-badge";
 import { SellerBanner } from "@/components/shared/product/seller-banner";
 import { SellersNote } from "@/components/shared/product/sellers-note";
 import { TrustBadges } from "@/components/shared/product/trust-badges";
+import { ProductSocialProof } from "@/components/shared/product/product-social-proof";
+import { FreshnessIndicator } from "@/components/shared/product/freshness-indicator";
+import { ViewTracker } from "@/components/shared/product/view-tracker";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import type { ProductPageViewModel } from "@/lib/view-models/product-page";
@@ -30,6 +34,7 @@ type SellerSummary = {
   avatar_url?: string | null;
   verified?: boolean | null;
   created_at?: string | null;
+  last_active?: string | null;
 };
 
 type CategorySummary = {
@@ -116,9 +121,11 @@ interface ProductPageLayoutProps {
   viewModel: ProductPageViewModel;
   variants?: ProductVariantRow[];
   submitReview?: SubmitReviewFn;
+  favoritesCount?: number;
 }
 
 export function ProductPageLayout(props: ProductPageLayoutProps) {
+  const tProduct = useTranslations("Product");
   const {
     locale,
     username,
@@ -133,6 +140,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
     viewModel,
     variants,
     submitReview,
+    favoritesCount,
   } = props;
 
   const primaryImageSrc = viewModel.galleryImages?.[0]?.src ?? null;
@@ -144,6 +152,12 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
       : "—",
     verified: Boolean(viewModel.sellerVerified),
   };
+
+  const shippingText = !product.pickup_only
+    ? tProduct("freeShipping")
+    : tProduct("defaultShipping");
+
+  const returnsText = tProduct("defaultReturns");
 
   return (
     <>
@@ -188,19 +202,31 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
           }}
         />
 
+        {/* Track view count */}
+        <ViewTracker productId={product.id} />
+
         <div className="container px-6 py-8">
           <div className="grid grid-cols-12 gap-6 items-start">
             {/* Left column - Gallery & Details */}
             <div className="col-span-7 flex flex-col gap-3">
               <ProductGalleryHybrid images={viewModel.galleryImages} />
 
-              <div className="flex items-center gap-3">
+              {/* Meta row: Category badge + Freshness + Social proof */}
+              <div className="flex flex-wrap items-center gap-3">
                 <CategoryBadge
                   locale={locale}
                   category={rootCategory}
                   subcategory={category}
                 />
+                <FreshnessIndicator createdAt={product.created_at} variant="badge" showIcon />
               </div>
+
+              {/* Social Proof - View count and favorites */}
+              <ProductSocialProof
+                viewCount={(product as { view_count?: number | null }).view_count ?? null}
+                favoritesCount={favoritesCount ?? null}
+                showHotIndicator
+              />
 
               <ItemSpecifics
                 attributes={viewModel.itemSpecifics.attributes ?? null}
@@ -242,10 +268,10 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                     store: storeForBuyBox,
                     images: viewModel.galleryImages.map((img) => ({ src: img.src, alt: img.alt })),
                     shipping: {
-                      text: !product.pickup_only ? "Free shipping" : "Shipping calculated at checkout",
+                      text: shippingText,
                       canShip: true,
                     },
-                    returns: "30 days returns. Buyer pays for return shipping.",
+                    returns: returnsText,
                     ...(product.description ? { description: product.description } : {}),
                     itemSpecifics: (
                       <ItemSpecifics
@@ -259,7 +285,7 @@ export function ProductPageLayout(props: ProductPageLayoutProps) {
                   variants={variants ?? []}
                 />
 
-                <TrustBadges locale={locale} verifiedSeller={viewModel.sellerVerified} />
+                <TrustBadges verifiedSeller={viewModel.sellerVerified} />
               </div>
             </div>
           </div>

@@ -1,0 +1,77 @@
+# Engineering Guide
+
+Technical documentation for Amazong Marketplace development.
+
+## Stack Overview
+
+| Layer | Technology | Version |
+|-------|------------|---------|
+| Framework | Next.js | 16 (App Router) |
+| UI | React | 19 |
+| Styling | Tailwind CSS | 4 |
+| Components | shadcn/ui | Latest |
+| Database | Supabase (Postgres) | - |
+| Auth | Supabase Auth | - |
+| Storage | Supabase Storage | - |
+| Payments | Stripe | - |
+| i18n | next-intl | - |
+| Testing | Vitest + Playwright | - |
+
+## Code Boundaries
+
+### Component Organization
+
+```
+components/
+├── ui/           # shadcn primitives ONLY (no app hooks)
+├── common/       # Shared composites (cards, sections)
+├── layout/       # Shell components (headers, nav)
+├── auth/         # Auth-specific components
+├── buyer/        # Buyer flow components
+├── seller/       # Seller flow components
+└── mobile/       # Mobile-specific components
+```
+
+### Route Organization
+
+```
+app/[locale]/
+├── (public)/     # Public pages (home, browse, search)
+├── (auth)/       # Auth pages (login, register)
+├── (buyer)/      # Buyer dashboard, orders, reviews
+├── (seller)/     # Seller dashboard, listings, analytics
+└── _components/  # Route-private components (don't import across groups)
+```
+
+## Key Principles
+
+1. **No arbitrary Tailwind values** — Use design tokens only
+2. **No gradients** — Flat design system
+3. **All user strings via next-intl** — en.json + bg.json
+4. **No secrets in logs** — Environment-aware logging
+5. **Small PRs** — No "rewrite" PRs, verifiable changes only
+
+## Database Schema
+
+Main entities:
+
+- `profiles` — User profiles (extends Supabase auth.users)
+- `listings` — Product listings
+- `categories` — Category hierarchy
+- `orders` — Purchase orders
+- `reviews` — Product/seller reviews
+- `messages` — User-to-user messaging
+
+## Environment Variables
+
+```bash
+# Required
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# Optional
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+```

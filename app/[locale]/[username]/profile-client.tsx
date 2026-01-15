@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Link } from "@/i18n/routing"
-import { formatDistanceToNow } from "date-fns"
+import { useLocale, useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -31,6 +31,7 @@ import {
 } from "@phosphor-icons/react"
 import { ProductCard } from "@/components/shared/product/product-card"
 import { FollowSellerButton } from "@/components/seller/follow-seller-button"
+import { SellerVerificationBadge } from "@/components/shared/product/seller-verification-badge"
 import { safeAvatarSrc } from "@/lib/utils"
 
 // =============================================================================
@@ -137,6 +138,37 @@ function StarRating({ rating, count, size = "sm" }: { rating: number; count: num
   )
 }
 
+function formatTimeAgo(input: string, locale: string): string | null {
+  const d = new Date(input)
+  const ms = d.getTime()
+  if (!Number.isFinite(ms)) return null
+
+  const diffSeconds = Math.round((ms - Date.now()) / 1000)
+  const abs = Math.abs(diffSeconds)
+
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" })
+
+  if (abs < 60) return rtf.format(diffSeconds, "second")
+
+  const diffMinutes = Math.round(diffSeconds / 60)
+  if (Math.abs(diffMinutes) < 60) return rtf.format(diffMinutes, "minute")
+
+  const diffHours = Math.round(diffMinutes / 60)
+  if (Math.abs(diffHours) < 24) return rtf.format(diffHours, "hour")
+
+  const diffDays = Math.round(diffHours / 24)
+  if (Math.abs(diffDays) < 7) return rtf.format(diffDays, "day")
+
+  const diffWeeks = Math.round(diffDays / 7)
+  if (Math.abs(diffWeeks) < 5) return rtf.format(diffWeeks, "week")
+
+  const diffMonths = Math.round(diffDays / 30)
+  if (Math.abs(diffMonths) < 12) return rtf.format(diffMonths, "month")
+
+  const diffYears = Math.round(diffDays / 365)
+  return rtf.format(diffYears, "year")
+}
+
 export function PublicProfileClient({
   profile,
   products,
@@ -147,9 +179,12 @@ export function PublicProfileClient({
   buyerReviewCount,
   isOwnProfile,
   isFollowing,
-  locale,
 }: PublicProfileClientProps) {
-  const [activeTab, setActiveTab] = useState(profile.is_seller ? "listings" : "reviews")
+  const locale = useLocale()
+  const tProfile = useTranslations("ProfilePage")
+  const tSeller = useTranslations("Seller")
+
+  const [activeTab, setActiveTab] = useState(profile.is_seller ? "listings" : "buyer-reviews")
 
   const displayName = profile.display_name || profile.username || 'User'
   const initials = displayName.slice(0, 2).toUpperCase()
@@ -162,6 +197,10 @@ export function PublicProfileClient({
     tiktok: <TiktokLogo className="size-5" weight="fill" />,
     youtube: <YoutubeLogo className="size-5" weight="fill" />,
   }
+
+  const memberSinceLabel = tSeller("memberSince", {
+    date: new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(memberSince),
+  })
 
   return (
     <div className="min-h-screen bg-background pb-20 sm:pb-8">
@@ -205,17 +244,27 @@ export function PublicProfileClient({
                 {profile.account_type === "business" && (
                   <Badge variant="secondary" className="gap-1">
                     <Storefront className="size-3.5" />
-                    {locale === "bg" ? "Бизнес" : "Business"}
+                    {tProfile("business")}
                   </Badge>
                 )}
                 {profile.is_seller && (
                   <Badge variant="outline" className="gap-1 text-success border-success/20 bg-success/10">
                     <Package className="size-3.5" />
-                    {locale === "bg" ? "Продавач" : "Seller"}
+                    {tProfile("seller")}
                   </Badge>
                 )}
+                <SellerVerificationBadge
+                  variant="badge"
+                  size="sm"
+                  isVerifiedBusiness={Boolean(profile.is_verified_business)}
+                />
               </div>
               <p className="text-muted-foreground">@{profile.username}</p>
+              {profile.is_seller && sellerReviewCount > 0 && profile.average_rating ? (
+                <div className="mt-1">
+                  <StarRating rating={profile.average_rating} count={sellerReviewCount} />
+                </div>
+              ) : null}
               {profile.business_name && (
                 <p className="text-sm text-muted-foreground mt-0.5">{profile.business_name}</p>
               )}
@@ -226,7 +275,7 @@ export function PublicProfileClient({
                 <Link href="/account/profile">
                   <Button variant="outline" size="sm" className="gap-2">
                     <PencilSimple className="size-4" />
-                    {locale === "bg" ? "Редактирай" : "Edit Profile"}
+                    {tProfile("editProfile")}
                   </Button>
                 </Link>
               ) : profile.is_seller ? (
@@ -237,17 +286,51 @@ export function PublicProfileClient({
                     locale={locale}
                     size="sm"
                   />
-                  <Button variant="ghost" size="icon" className="size-9">
+                  <Button variant="ghost" size="icon" className="size-9" aria-label={tProfile("share")}>
                     <ShareNetwork className="size-4" />
                   </Button>
                 </>
               ) : (
-                <Button variant="ghost" size="icon" className="size-9">
+                <Button variant="ghost" size="icon" className="size-9" aria-label={tProfile("share")}>
                   <ShareNetwork className="size-4" />
                 </Button>
               )}
             </div>
           </div>
+        </div>
+
+        {/* Stats strip (desktop-first) */}
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {profile.is_seller && (
+            <Card>
+              <CardContent className="p-4">
+                <p className="text-xs text-muted-foreground">{tProfile("forSale")}</p>
+                <p className="text-xl font-semibold tabular-nums">{productCount}</p>
+              </CardContent>
+            </Card>
+          )}
+          {profile.is_seller && (
+            <Card>
+              <CardContent className="p-4">
+                <p className="text-xs text-muted-foreground">{tProfile("sales")}</p>
+                <p className="text-xl font-semibold tabular-nums">{profile.total_sales}</p>
+              </CardContent>
+            </Card>
+          )}
+          {profile.is_seller && (
+            <Card>
+              <CardContent className="p-4">
+                <p className="text-xs text-muted-foreground">{tProfile("followers")}</p>
+                <p className="text-xl font-semibold tabular-nums">{profile.follower_count ?? 0}</p>
+              </CardContent>
+            </Card>
+          )}
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">{tProfile("purchases")}</p>
+              <p className="text-xl font-semibold tabular-nums">{profile.total_purchases}</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Bio and Info */}
@@ -267,7 +350,7 @@ export function PublicProfileClient({
               )}
               <span className="flex items-center gap-1.5">
                 <Calendar className="size-4" />
-                {locale === "bg" ? "Член от" : "Member since"} {memberSince.toLocaleDateString(locale === "bg" ? "bg-BG" : "en-US", { month: "long", year: "numeric" })}
+                {memberSinceLabel}
               </span>
             </div>
 
@@ -312,26 +395,26 @@ export function PublicProfileClient({
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground flex items-center gap-1.5">
                         <Package className="size-4" />
-                        {locale === "bg" ? "Продажби" : "Sales"}
+                        {tProfile("sales")}
                       </span>
                       <span className="font-semibold">{profile.total_sales}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">
-                        {locale === "bg" ? "Рейтинг продавач" : "Seller Rating"}
+                        {tProfile("sellerRating")}
                       </span>
                       {sellerReviewCount > 0 && profile.average_rating ? (
                         <StarRating rating={profile.average_rating} count={sellerReviewCount} />
                       ) : (
                         <span className="text-sm text-muted-foreground">
-                          {locale === "bg" ? "Няма отзиви" : "No reviews yet"}
+                          {tProfile("noReviewsYet")}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground flex items-center gap-1.5">
                         <Heart className="size-4" />
-                        {locale === "bg" ? "Последователи" : "Followers"}
+                        {tProfile("followers")}
                       </span>
                       <span className="font-semibold">{profile.follower_count ?? 0}</span>
                     </div>
@@ -344,19 +427,19 @@ export function PublicProfileClient({
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground flex items-center gap-1.5">
                       <ShoppingBag className="size-4" />
-                      {locale === "bg" ? "Покупки" : "Purchases"}
+                      {tProfile("purchases")}
                     </span>
                     <span className="font-semibold">{profile.total_purchases}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">
-                      {locale === "bg" ? "Рейтинг купувач" : "Buyer Rating"}
+                      {tProfile("buyerRating")}
                     </span>
                     {buyerReviewCount > 0 ? (
-                      <span className="text-sm font-medium">{buyerReviewCount} {locale === "bg" ? "отзива" : "reviews"}</span>
+                      <span className="text-sm font-medium">{buyerReviewCount}</span>
                     ) : (
                       <span className="text-sm text-muted-foreground">
-                        {locale === "bg" ? "Няма отзиви" : "No reviews yet"}
+                        {tProfile("noReviewsYet")}
                       </span>
                     )}
                   </div>
@@ -374,19 +457,19 @@ export function PublicProfileClient({
             {profile.is_seller && (
               <TabsTrigger value="listings">
                 <Package className="size-4 md:size-5 mr-1" />
-                <span className="tabular-nums">({productCount})</span>
+                {tProfile("forSale")} <span className="tabular-nums">({productCount})</span>
               </TabsTrigger>
             )}
             {profile.is_seller && (
               <TabsTrigger value="seller-reviews">
                 <Star className="size-4 md:size-5 mr-2" />
-                {locale === "bg" ? "Продавач" : "Seller"} ({sellerReviewCount})
+                {tProfile("reviews")} <span className="tabular-nums">({sellerReviewCount})</span>
               </TabsTrigger>
             )}
-            {profile.total_purchases > 0 && (
+            {(!profile.is_seller || profile.total_purchases > 0) && (
               <TabsTrigger value="buyer-reviews">
                 <Star className="size-4 md:size-5 mr-2" />
-                {locale === "bg" ? "Купувач" : "Buyer"} ({buyerReviewCount})
+                {tProfile("buyerRating")} <span className="tabular-nums">({buyerReviewCount})</span>
               </TabsTrigger>
             )}
           </TabsList>
@@ -420,7 +503,7 @@ export function PublicProfileClient({
                     <div className="mt-6 flex justify-center">
                       <Link href={`/search?seller=${profile.id}`}>
                         <Button variant="outline" className="gap-2">
-                          {locale === "bg" ? "Виж всички" : "View All"} ({productCount})
+                          {tProfile("viewAll")} ({productCount})
                           <ArrowRight className="size-4" />
                         </Button>
                       </Link>
@@ -430,7 +513,7 @@ export function PublicProfileClient({
               ) : (
                 <div className="py-12 text-center text-muted-foreground">
                   <Package className="size-12 mx-auto mb-3 opacity-50" />
-                  <p>{locale === "bg" ? "Няма активни обяви" : "No active listings"}</p>
+                  <p>{tProfile("noActiveListings")}</p>
                 </div>
               )}
             </TabsContent>
@@ -453,14 +536,20 @@ export function PublicProfileClient({
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
-                              <Link
-                                href={`/u/${review.buyer?.username}`}
-                                className="font-medium hover:underline"
-                              >
-                                {review.buyer?.display_name || review.buyer?.username}
-                              </Link>
+                              {review.buyer?.username ? (
+                                <Link
+                                  href={`/${review.buyer.username}`}
+                                  className="font-medium hover:underline"
+                                >
+                                  {review.buyer.display_name || review.buyer.username}
+                                </Link>
+                              ) : (
+                                <span className="font-medium">
+                                  {review.buyer?.display_name || review.buyer?.username}
+                                </span>
+                              )}
                               <span className="text-xs text-muted-foreground">
-                                {formatDistanceToNow(new Date(review.created_at), { addSuffix: true })}
+                                {formatTimeAgo(review.created_at, locale) ?? ""}
                               </span>
                             </div>
                             <div className="flex items-center gap-2 mt-1">
@@ -468,17 +557,17 @@ export function PublicProfileClient({
                               <div className="flex gap-1 text-xs">
                                 {review.item_as_described && (
                                   <Badge variant="secondary" className="text-2xs py-0">
-                                    {locale === "bg" ? "Точно описание" : "Accurate"}
+                                    {tProfile("accurate")}
                                   </Badge>
                                 )}
                                 {review.shipping_speed && (
                                   <Badge variant="secondary" className="text-2xs py-0">
-                                    {locale === "bg" ? "Бърза доставка" : "Fast shipping"}
+                                    {tProfile("fastShipping")}
                                   </Badge>
                                 )}
                                 {review.communication && (
                                   <Badge variant="secondary" className="text-2xs py-0">
-                                    {locale === "bg" ? "Добра комуникация" : "Good comms"}
+                                    {tProfile("goodComms")}
                                   </Badge>
                                 )}
                               </div>
@@ -495,14 +584,14 @@ export function PublicProfileClient({
               ) : (
                 <div className="py-12 text-center text-muted-foreground">
                   <Star className="size-12 mx-auto mb-3 opacity-50" />
-                  <p>{locale === "bg" ? "Няма отзиви все още" : "No reviews yet"}</p>
+                  <p>{tProfile("noReviewsYet")}</p>
                 </div>
               )}
             </TabsContent>
           )}
 
           {/* Buyer Reviews Tab */}
-          {profile.total_purchases > 0 && (
+          {(!profile.is_seller || profile.total_purchases > 0) && (
             <TabsContent value="buyer-reviews" className="mt-6">
               {buyerReviews.length > 0 ? (
                 <div className="space-y-4 max-w-3xl">
@@ -518,14 +607,20 @@ export function PublicProfileClient({
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
-                              <Link
-                                href={`/u/${review.seller?.username}`}
-                                className="font-medium hover:underline"
-                              >
-                                {review.seller?.display_name || review.seller?.username}
-                              </Link>
+                              {review.seller?.username ? (
+                                <Link
+                                  href={`/${review.seller.username}`}
+                                  className="font-medium hover:underline"
+                                >
+                                  {review.seller.display_name || review.seller.username}
+                                </Link>
+                              ) : (
+                                <span className="font-medium">
+                                  {review.seller?.display_name || review.seller?.username}
+                                </span>
+                              )}
                               <span className="text-xs text-muted-foreground">
-                                {formatDistanceToNow(new Date(review.created_at), { addSuffix: true })}
+                                {formatTimeAgo(review.created_at, locale) ?? ""}
                               </span>
                             </div>
                             <div className="flex items-center gap-2 mt-1">
@@ -533,12 +628,12 @@ export function PublicProfileClient({
                               <div className="flex gap-1 text-xs">
                                 {review.payment_promptness && (
                                   <Badge variant="secondary" className="text-2xs py-0">
-                                    {locale === "bg" ? "Бързо плащане" : "Prompt payment"}
+                                    {tProfile("promptPayment")}
                                   </Badge>
                                 )}
                                 {review.communication && (
                                   <Badge variant="secondary" className="text-2xs py-0">
-                                    {locale === "bg" ? "Добра комуникация" : "Good comms"}
+                                    {tProfile("goodComms")}
                                   </Badge>
                                 )}
                               </div>
@@ -555,7 +650,7 @@ export function PublicProfileClient({
               ) : (
                 <div className="py-12 text-center text-muted-foreground">
                   <Star className="size-12 mx-auto mb-3 opacity-50" />
-                  <p>{locale === "bg" ? "Няма отзиви все още" : "No reviews yet"}</p>
+                  <p>{tProfile("noReviewsYet")}</p>
                 </div>
               )}
             </TabsContent>

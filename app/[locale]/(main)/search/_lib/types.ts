@@ -20,6 +20,7 @@ export interface Product {
   tags?: string[]
   slug?: string | null
   store_slug?: string | null
+  is_boosted?: boolean
   profiles?: {
     id: string | null
     username: string | null

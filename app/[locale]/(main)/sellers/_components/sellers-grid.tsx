@@ -1,41 +1,40 @@
+"use client"
+
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import Image from "next/image"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Link } from "@/i18n/routing"
 import { safeAvatarSrc } from "@/lib/utils"
+import { useLocale, useTranslations } from "next-intl"
 
 import type { Seller } from "../_lib/top-sellers-types"
 
 export default function SellersGrid({
   sellers,
-  locale,
 }: {
   sellers: Seller[]
-  locale: string
 }) {
+  const tSeller = useTranslations("Seller")
+  const tDirectory = useTranslations("SellersDirectory")
+  const locale = useLocale()
+
   return (
     <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
       {sellers.map((seller) => {
         const avatarUrl = safeAvatarSrc(seller.avatar_url)
+        const href = seller.username ? `/${seller.username}` : `/search?seller=${seller.id}`
 
         return (
-          <Link href={`/search?seller=${seller.id}`} key={seller.id}>
+          <Link href={href} key={seller.id}>
             <Card className="h-full cursor-pointer border-border rounded-lg overflow-hidden group">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="size-14 rounded-full bg-brand flex items-center justify-center text-white font-bold text-xl shrink-0 overflow-hidden">
-                    {avatarUrl ? (
-                      <Image
-                        src={avatarUrl}
-                        alt={seller.store_name}
-                        width={56}
-                        height={56}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      seller.store_name.charAt(0).toUpperCase()
-                    )}
-                  </div>
+                  <Avatar className="size-14 shrink-0">
+                    <AvatarImage src={avatarUrl} alt={seller.store_name} />
+                    <AvatarFallback className="font-semibold">
+                      {seller.store_name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
@@ -46,19 +45,16 @@ export default function SellersGrid({
                         variant="secondary"
                         className="bg-success/10 text-success text-xs px-1.5 py-0 shrink-0"
                       >
-                        {locale === "bg" ? "Потвърден" : "Verified"}
+                        {tSeller("verified")}
                       </Badge>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    {locale === "bg" ? "Член от" : "Member since"}{" "}
-                    {new Date(seller.created_at).toLocaleDateString(
-                      locale === "bg" ? "bg-BG" : "en-US",
-                      {
-                        year: "numeric",
-                        month: "short",
-                      }
-                    )}
+                    {tSeller("memberSince", {
+                      date: new Intl.DateTimeFormat(locale, { year: "numeric", month: "short" }).format(
+                        new Date(seller.created_at)
+                      ),
+                    })}
                   </p>
                 </div>
               </div>
@@ -79,8 +75,9 @@ export default function SellersGrid({
                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                     />
                   </svg>
-                  <span className="font-medium text-foreground">{seller.product_count}</span>
-                  <span>{locale === "bg" ? "продукта" : "products"}</span>
+                  <span className="font-medium text-foreground">
+                    {tDirectory("productsCount", { count: seller.product_count })}
+                  </span>
                 </div>
                 {seller.total_rating && (
                   <div className="flex items-center gap-1 text-muted-foreground">

@@ -21,8 +21,15 @@ export function getTestUserCredentials(): TestUserCredentials | null {
 
 const baseURL = process.env.BASE_URL || 'http://localhost:3000'
 
+function redactEmail(value: string) {
+  const [user, domain] = value.split('@')
+  if (!domain) return '<redacted>'
+  const safeUser = user.length <= 2 ? `${user[0] ?? ''}*` : `${user.slice(0, 2)}***`
+  return `${safeUser}@${domain}`
+}
+
 export async function loginWithPassword(page: Page, creds: TestUserCredentials) {
-  console.log(`[E2E Auth] Starting login for ${creds.email}`)
+  console.log(`[E2E Auth] Starting login for ${redactEmail(creds.email)}`)
   await page.goto(`${baseURL}/en/auth/login`, { waitUntil: 'domcontentloaded' })
 
   // Wait for form to be fully loaded and hydrated

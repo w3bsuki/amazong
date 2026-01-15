@@ -425,6 +425,71 @@ export async function getCategoryAncestry(slug: string): Promise<string[] | null
 }
 
 /**
+ * Breadcrumb category with minimal fields for sidebar display
+ */
+export interface BreadcrumbCategory {
+  slug: string
+  name: string
+  name_bg: string | null
+}
+
+/**
+ * Get full ancestry chain with category objects (for breadcrumb display).
+ * Returns array from root (L0) to target category with names for display.
+ * 
+ * @param slug - Category slug to get ancestry for
+ * @returns Array of BreadcrumbCategory objects [L0, L1, L2?, L3?] or empty array
+ */
+export async function getCategoryAncestryFull(slug: string): Promise<BreadcrumbCategory[]> {
+  'use cache'
+  cacheTag(`category:${slug}:ancestry`)
+  cacheLife('categories')
+  
+  const supabase = createStaticClient()
+  
+  // Recursively fetch category and its ancestors with names
+  const ancestry: BreadcrumbCategory[] = []
+  let currentSlug: string | null = slug
+  
+  while (currentSlug) {
+    const result = await supabase
+      .from('categories')
+      .select(`
+        slug,
+        name,
+        name_bg,
+        parent:parent_id (slug)
+      `)
+      .eq('slug', currentSlug)
+      .single()
+    
+    if (result.error || !result.data) {
+      break
+    }
+    
+    const catData = result.data as {
+      slug: string
+      name: string
+      name_bg: string | null
+      parent: { slug: string } | { slug: string }[] | null
+    }
+    
+    // Add to beginning (building from leaf to root)
+    ancestry.unshift({
+      slug: catData.slug,
+      name: catData.name,
+      name_bg: catData.name_bg,
+    })
+    
+    // Get parent slug if exists
+    const parentData = Array.isArray(catData.parent) ? catData.parent[0] : catData.parent
+    currentSlug = parentData?.slug ?? null
+  }
+  
+  return ancestry
+}
+
+/**
  * Fetch filterable attributes for a category.
  * Used to build dynamic filter UIs on category pages.
  * 
@@ -549,8 +614,8 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     return null
   }
   
-  // Fetch siblings, children, and attributes in parallel
-  const [siblingsResult, childrenResult, attributesResult] = await Promise.all([
+  // Fetch siblings, children (DEC-002), and attributes in parallel
+  const [siblingsResult, childrenWithCounts, attributesResult] = await Promise.all([
     // Siblings (same parent, exclude hidden)
     current.parent_id
       ? supabase
@@ -568,14 +633,8 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
           .order('display_order')
           .order('name'),
     
-    // Children (exclude hidden categories with display_order >= 9999)
-    supabase
-      .from('categories')
-      .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
-      .eq('parent_id', current.id)
-      .lt('display_order', 9999)
-      .order('display_order')
-      .order('name'),
+    // Children: DEC-002 compliant (curated ordering + visibility filtering)
+    getSubcategoriesForBrowse(current.id, true),
     
     // Filterable attributes for current category
     supabase
@@ -666,15 +725,152 @@ export async function getCategoryContext(slug: string): Promise<CategoryContext 
     // Supabase returns parent as array for relations, take first element
     parent: (Array.isArray(current.parent) ? current.parent[0] : current.parent) as Category | null,
     siblings: (siblingsResult.data || []) as Category[],
-    children: (childrenResult.data || []) as Category[],
+    // DEC-002: Children filtered/sorted via getSubcategoriesForBrowse (curated + populated)
+    children: childrenWithCounts as Category[],
     attributes
   }
 }
 
-/**
- * Fetch all root (L0) categories with their L1 children.
- * Optimized for mega menu and category index pages.
- * 
- * @returns Array of root categories with subcategories
- */
+// =============================================================================
+// Category Stats (DEC-002 Support)
+// =============================================================================
 
+export interface CategoryWithCount extends Category {
+  subtree_product_count: number
+}
+
+/**
+ * Fetch subcategories with their product counts from category_stats.
+ * Used for buyer browse UX to filter out empty categories.
+ * 
+ * @param parentId - Parent category UUID (null for root categories)
+ * @param populatedOnly - If true, only return categories with products (default: false)
+ * @returns Array of subcategories with subtree_product_count
+ */
+export async function getSubcategoriesWithCounts(
+  parentId: string | null,
+  populatedOnly: boolean = false
+): Promise<CategoryWithCount[]> {
+  'use cache'
+  cacheTag(`subcategories:${parentId || 'root'}:counts`)
+  cacheLife('categories')
+  
+  const supabase = createStaticClient()
+  
+  // 2-query merge approach: avoids PostgREST relationship issues with materialized views
+  // Query 1: Get categories by parent
+  let catQuery = supabase
+    .from('categories')
+    .select('id, name, name_bg, slug, parent_id, image_url, icon, display_order')
+    .lt('display_order', 9000)
+    .order('display_order', { ascending: true })
+    .order('name', { ascending: true })
+  
+  if (parentId) {
+    catQuery = catQuery.eq('parent_id', parentId)
+  } else {
+    catQuery = catQuery.is('parent_id', null)
+  }
+  
+  const { data: categories, error: catError } = await catQuery
+  
+  if (catError) {
+    logger.error('[getSubcategoriesWithCounts] Categories query error', catError)
+    return []
+  }
+  
+  if (!categories || categories.length === 0) {
+    return []
+  }
+  
+  // Query 2: Get counts for these category IDs from category_stats (materialized view)
+  // Note: category_stats isn't in generated types, use raw query
+  const categoryIds = categories.map(c => c.id)
+  
+  // Direct PostgREST query since category_stats materialized view isn't in generated types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: statsRaw, error: statsError } = await (supabase as any)
+    .from('category_stats')
+    .select('category_id, subtree_product_count')
+    .in('category_id', categoryIds)
+  
+  if (statsError) {
+    logger.error('[getSubcategoriesWithCounts] Stats query error', statsError)
+    // Fallback: return categories with 0 counts rather than failing completely
+  }
+  
+  // Type the stats response
+  type CategoryStat = { category_id: string; subtree_product_count: number }
+  const stats: CategoryStat[] = statsRaw ?? []
+  
+  // Build lookup map for counts
+  const countMap = new Map<string, number>()
+  for (const stat of stats) {
+    countMap.set(stat.category_id, stat.subtree_product_count ?? 0)
+  }
+  
+  // Merge categories with counts
+  const result: CategoryWithCount[] = categories.map(cat => ({
+    id: cat.id,
+    name: cat.name,
+    name_bg: cat.name_bg,
+    slug: cat.slug,
+    parent_id: cat.parent_id,
+    image_url: normalizeOptionalImageUrl(cat.image_url),
+    icon: cat.icon,
+    display_order: cat.display_order,
+    subtree_product_count: countMap.get(cat.id) ?? 0
+  }))
+  
+  // Filter for populated only if requested
+  if (populatedOnly) {
+    return result.filter(cat => cat.subtree_product_count > 0)
+  }
+  
+  return result
+}
+
+/**
+ * Get subcategories ordered by curated first, then by product count.
+ * Implements DEC-002 ordering: display_order > 0 first, then by subtree_product_count DESC.
+ * 
+ * DEC-002 visibility rule: show if (count > 0) OR (display_order > 0) — curated empties are visible.
+ * 
+ * @param parentId - Parent category UUID (null for root categories)
+ * @param filterForBrowse - If true (default), only return visible categories per DEC-002 rule
+ * @returns Array of subcategories sorted by curated then popularity
+ */
+export async function getSubcategoriesForBrowse(
+  parentId: string | null,
+  filterForBrowse: boolean = true
+): Promise<CategoryWithCount[]> {
+  // Always fetch all counts (we filter in TS for flexibility)
+  const subcats = await getSubcategoriesWithCounts(parentId, false)
+  
+  // DEC-002: Filter to show categories that are populated OR curated
+  const visible = filterForBrowse
+    ? subcats.filter(cat => {
+        const isCurated = (cat.display_order ?? 0) > 0 && (cat.display_order ?? 9999) < 9000
+        const isPopulated = cat.subtree_product_count > 0
+        return isPopulated || isCurated
+      })
+    : subcats
+  
+  // Sort: curated (display_order > 0 && display_order < 9000) first, then by product count DESC
+  return visible.sort((a, b) => {
+    const aCurated = (a.display_order ?? 0) > 0 && (a.display_order ?? 9999) < 9000
+    const bCurated = (b.display_order ?? 0) > 0 && (b.display_order ?? 9999) < 9000
+    
+    // Curated categories first
+    if (aCurated && !bCurated) return -1
+    if (!aCurated && bCurated) return 1
+    
+    // Within curated: sort by display_order
+    if (aCurated && bCurated) {
+      return (a.display_order ?? 999) - (b.display_order ?? 999)
+    }
+    
+    // Within non-curated: sort by product count DESC
+    return b.subtree_product_count - a.subtree_product_count
+  })
+}

@@ -1,0 +1,79 @@
+# Production Checklist
+
+Pre-launch requirements for Amazong Marketplace.
+
+## Infrastructure
+
+- [ ] Supabase project configured (production tier)
+- [ ] Stripe account verified and connected
+- [ ] Domain configured with SSL
+- [ ] CDN enabled for static assets
+- [ ] Error tracking set up (Sentry or similar)
+- [ ] Analytics configured
+
+## Security
+
+- [ ] RLS policies reviewed and tested
+- [ ] API rate limiting configured
+- [ ] CORS settings locked down
+- [ ] Environment variables secured
+- [ ] No secrets in client bundle
+- [ ] CSP headers configured
+
+## Performance
+
+- [ ] Lighthouse score > 90 on all pages
+- [ ] Core Web Vitals passing
+- [ ] Images optimized (next/image)
+- [ ] Bundle size analyzed
+- [ ] Database indexes verified
+
+## SEO
+
+- [ ] Meta tags on all pages
+- [ ] OpenGraph images
+- [ ] sitemap.xml generated
+- [ ] robots.txt configured
+- [ ] Structured data for products
+
+## Legal
+
+- [ ] Privacy Policy page
+- [ ] Terms of Service page
+- [ ] Cookie consent banner
+- [ ] GDPR compliance verified
+
+## Testing
+
+- [ ] E2E smoke tests passing
+- [ ] Unit tests passing
+- [ ] Manual QA completed
+- [ ] Cross-browser testing
+- [ ] Mobile testing (iOS + Android)
+
+## Monitoring
+
+- [ ] Uptime monitoring
+- [ ] Error alerting
+- [ ] Performance monitoring
+- [ ] Database query monitoring
+
+## Deployment
+
+```bash
+# Build production
+pnpm build
+
+# Run production locally
+pnpm start
+
+# Deploy (Vercel)
+vercel --prod
+```
+
+## Post-Launch
+
+- [ ] Monitor error rates for 24h
+- [ ] Check payment flows end-to-end
+- [ ] Verify email delivery
+- [ ] Test customer support flow

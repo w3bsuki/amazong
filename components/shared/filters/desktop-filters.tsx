@@ -1,16 +1,21 @@
 "use client"
 
-import { useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/routing"
-import { CaretDown, Star, Truck, Check, X } from "@phosphor-icons/react"
+import { Star, Sliders, Check, CurrencyDollar } from "@phosphor-icons/react"
+import { ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { DesktopFilterModal } from "@/components/desktop/desktop-filter-modal"
 import type { CategoryAttribute } from "@/lib/data/categories"
 
@@ -21,8 +26,8 @@ interface DesktopFiltersProps {
 }
 
 // =============================================================================
-// Component: Simplified Desktop Filters
-// Now shows only 2 quick pills (Price, Rating) + "All Filters" modal
+// Desktop Filters — Clean dropdown menus following shadcn patterns
+// Matches SortSelect styling for visual consistency
 // =============================================================================
 
 export function DesktopFilters({ attributes = [], categorySlug, categoryId }: DesktopFiltersProps) {
@@ -30,37 +35,21 @@ export function DesktopFilters({ attributes = [], categorySlug, categoryId }: De
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const t = useTranslations('SearchFilters')
-  
-  const [priceOpen, setPriceOpen] = useState(false)
-  const [ratingOpen, setRatingOpen] = useState(false)
-  
+
   const currentMinPrice = searchParams.get("minPrice")
   const currentMaxPrice = searchParams.get("maxPrice")
   const currentRating = searchParams.get("minRating")
 
-  // Build the base path for navigation (preserve current path)
   const basePath = categorySlug ? pathname : '/search'
 
-  const updateParams = (key: string, value: string | null) => {
+  const updateParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString())
-    if (value === null) {
-      params.delete(key)
-    } else {
-      params.set(key, value)
+    for (const [key, value] of Object.entries(updates)) {
+      if (value === null) params.delete(key)
+      else params.set(key, value)
     }
     const queryString = params.toString()
     router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
-  }
-
-  const handlePriceClick = (min: string | null, max: string | null) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (min) params.set("minPrice", min)
-    else params.delete("minPrice")
-    if (max) params.set("maxPrice", max)
-    else params.delete("maxPrice")
-    const queryString = params.toString()
-    router.push(`${basePath}${queryString ? `?${queryString}` : ''}`)
-    setPriceOpen(false)
   }
 
   const priceRanges = [
@@ -72,151 +61,158 @@ export function DesktopFilters({ attributes = [], categorySlug, categoryId }: De
   ]
 
   const getPriceLabel = () => {
-    if (currentMinPrice && currentMaxPrice) return `$${currentMinPrice}-$${currentMaxPrice}`
+    if (currentMinPrice && currentMaxPrice) return `$${currentMinPrice}–$${currentMaxPrice}`
     if (currentMinPrice) return `$${currentMinPrice}+`
-    if (currentMaxPrice) return `Under $${currentMaxPrice}`
+    if (currentMaxPrice) return `${t('under')} $${currentMaxPrice}`
     return t('price')
   }
 
   const getRatingLabel = () => {
-    if (currentRating) return `${currentRating}+ Stars`
+    if (currentRating) return `${currentRating}★ ${t('andUp')}`
     return t('customerReviews')
   }
 
   const hasPriceFilter = currentMinPrice || currentMaxPrice
   const hasRatingFilter = !!currentRating
-  
-  // Check if we have any attributes to show the filter modal
   const hasAttributes = attributes.length > 0
 
-  const pillBase = "inline-flex items-center gap-2 h-8 px-3.5 rounded-md"
-  const pillText = "text-sm font-medium transition-colors border"
-  const pillCaret = "transition-transform duration-100"
+  // Count all active filters for badge
+  const activeFilterCount = (() => {
+    let count = 0
+    if (hasPriceFilter) count++
+    if (hasRatingFilter) count++
+    // Count attr_* params
+    for (const key of searchParams.keys()) {
+      if (key.startsWith('attr_')) count++
+    }
+    return count
+  })()
+
+  // Shared trigger styling (matches SortSelect)
+  const triggerClass = cn(
+    "h-8 px-3 gap-1.5 rounded-lg",
+    "bg-muted/50 hover:bg-muted/70 border border-border/40",
+    "text-xs font-medium text-foreground",
+    "focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-ring",
+  )
+  const triggerActiveClass = "bg-primary/10 text-primary border-primary/20 hover:bg-primary/15"
 
   return (
-    <>
-      {/* Price Filter - Quick Pill */}
-      <Popover open={priceOpen} onOpenChange={setPriceOpen}>
-        <PopoverTrigger asChild>
-          <button
-            className={cn(
-              pillBase,
-              pillText,
-              hasPriceFilter
-                ? "bg-primary/10 text-primary border-primary/20"
-                : "bg-secondary hover:bg-secondary/80 text-foreground border-border/50 hover:border-border"
-            )}
+    <div className="flex items-center gap-2">
+      {/* Price Filter */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(triggerClass, hasPriceFilter && triggerActiveClass)}
           >
-            <span>{getPriceLabel()}</span>
-            <CaretDown size={16} weight="regular" className={cn(pillCaret, priceOpen && "rotate-180")} />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-56 p-2 rounded-md shadow-dropdown border-border/50" align="start">
-          {priceRanges.map(({ label, min, max }) => {
-            const isActive = currentMinPrice === min && currentMaxPrice === max
-            return (
-              <button
-                key={label}
-                onClick={() => handlePriceClick(min, max)}
-                className={cn(
-                  "w-full text-left px-3 py-2 rounded-md text-sm flex items-center justify-between transition-colors",
-                  isActive
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-foreground hover:bg-muted"
-                )}
-              >
-                {label}
-                {isActive && <Check className="h-4 w-4" />}
-              </button>
-            )
-          })}
+            <CurrencyDollar size={14} weight="regular" className="shrink-0" />
+            <span className="max-w-24 truncate">{getPriceLabel()}</span>
+            <ChevronDown className="size-3 opacity-50 shrink-0" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-48">
+          <DropdownMenuGroup>
+            {priceRanges.map(({ label, min, max }) => {
+              const isActive = currentMinPrice === min && currentMaxPrice === max
+              return (
+                <DropdownMenuItem
+                  key={label}
+                  onClick={() => updateParams({ minPrice: min, maxPrice: max })}
+                  className={cn(isActive && "bg-accent")}
+                >
+                  <span className="flex-1">{label}</span>
+                  {isActive && <Check className="size-4 text-primary" />}
+                </DropdownMenuItem>
+              )
+            })}
+          </DropdownMenuGroup>
           {hasPriceFilter && (
             <>
-              <div className="h-px bg-border my-1" />
-              <button
-                onClick={() => handlePriceClick(null, null)}
-                className="w-full text-left px-3 py-2 rounded-md text-sm text-destructive hover:bg-destructive/10"
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => updateParams({ minPrice: null, maxPrice: null })}
+                variant="destructive"
               >
                 {t('clearPrice')}
-              </button>
+              </DropdownMenuItem>
             </>
           )}
-        </PopoverContent>
-      </Popover>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      {/* Rating Filter - Quick Pill */}
-      <Popover open={ratingOpen} onOpenChange={setRatingOpen}>
-        <PopoverTrigger asChild>
-          <button
-            className={cn(
-              pillBase,
-              pillText,
-              hasRatingFilter
-                ? "bg-primary/10 text-primary border-primary/20"
-                : "bg-secondary hover:bg-secondary/80 text-foreground border-border/50 hover:border-border"
-            )}
+      {/* Rating Filter */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(triggerClass, hasRatingFilter && triggerActiveClass)}
           >
-            <Star size={16} weight={hasRatingFilter ? "fill" : "regular"} className={hasRatingFilter ? "text-current" : ""} />
-            <span>{getRatingLabel()}</span>
-            <CaretDown size={16} weight="regular" className={cn(pillCaret, ratingOpen && "rotate-180")} />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-56 p-2 rounded-md shadow-dropdown border-border/50" align="start">
-          {[4, 3, 2, 1].map((stars) => {
-            const isActive = currentRating === stars.toString()
-            return (
-              <button
-                key={stars}
-                onClick={() => {
-                  updateParams("minRating", isActive ? null : stars.toString())
-                  setRatingOpen(false)
-                }}
-                className={cn(
-                  "w-full flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
-                  isActive
-                    ? "bg-primary/10"
-                    : "hover:bg-muted"
-                )}
-              >
-                <div className="flex text-rating">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      weight={i < stars ? "fill" : "regular"}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm text-foreground">{t('andUp')}</span>
-                {isActive && <Check size={16} weight="regular" className="ml-auto text-primary" />}
-              </button>
-            )
-          })}
+            <Star size={14} weight={hasRatingFilter ? "fill" : "regular"} className="shrink-0 text-rating" />
+            <span className="max-w-28 truncate">{getRatingLabel()}</span>
+            <ChevronDown className="size-3 opacity-50 shrink-0" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-52">
+          <DropdownMenuGroup>
+            {[4, 3, 2, 1].map((stars) => {
+              const isActive = currentRating === stars.toString()
+              return (
+                <DropdownMenuItem
+                  key={stars}
+                  onClick={() => updateParams({ minRating: isActive ? null : stars.toString() })}
+                  className={cn("gap-2", isActive && "bg-accent")}
+                >
+                  <span className="flex text-rating">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={14} weight={i < stars ? "fill" : "regular"} />
+                    ))}
+                  </span>
+                  <span className="text-muted-foreground">{t('andUp')}</span>
+                  {isActive && <Check className="size-4 ml-auto text-primary" />}
+                </DropdownMenuItem>
+              )
+            })}
+          </DropdownMenuGroup>
           {hasRatingFilter && (
             <>
-              <div className="h-px bg-border my-1" />
-              <button
-                onClick={() => {
-                  updateParams("minRating", null)
-                  setRatingOpen(false)
-                }}
-                className="w-full text-left px-3 py-2 rounded-md text-sm text-destructive hover:bg-destructive/10"
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => updateParams({ minRating: null })}
+                variant="destructive"
               >
                 {t('clearRating')}
-              </button>
+              </DropdownMenuItem>
             </>
           )}
-        </PopoverContent>
-      </Popover>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      {/* All Filters Modal - Only show if we have category attributes */}
+      {/* All Filters - Only show when we have category attributes */}
       {hasAttributes && categorySlug && (
-        <DesktopFilterModal 
+        <DesktopFilterModal
           attributes={attributes}
           categorySlug={categorySlug}
           categoryId={categoryId}
+          trigger={
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(triggerClass, activeFilterCount > 0 && triggerActiveClass)}
+            >
+              <Sliders size={14} weight="regular" className="shrink-0" />
+              <span>{t('filters')}</span>
+              {activeFilterCount > 0 && (
+                <Badge variant="default" className="h-4 min-w-4 px-1 text-2xs rounded-full">
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </Button>
+          }
         />
       )}
-    </>
+    </div>
   )
 }

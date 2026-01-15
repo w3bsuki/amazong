@@ -154,24 +154,21 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
     const firstName = getFirstName()
     const isLoggedIn = !!user
 
-    // SSR placeholder
+    // SSR placeholder - renders same visual appearance without disabled state
+    // Button is non-functional until hydration completes, but looks ready
     if (!mounted) {
         return (
-            <Button
-                type="button"
-                variant="ghost"
-                size="icon"
+            <span
+                role="button"
                 className={cn(
-                    "rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
+                    "inline-flex items-center justify-center h-9 w-9 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer",
                     triggerClassName
                 )}
                 aria-label={locale === "bg" ? "Меню" : "Menu"}
                 data-testid="mobile-menu-trigger"
-                disabled
-                aria-disabled="true"
             >
                 <List size={28} weight="bold" />
-            </Button>
+            </span>
         )
     }
 

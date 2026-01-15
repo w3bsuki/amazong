@@ -68,76 +68,8 @@ export async function POST(req: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
 
-        // ============================================================
-        // HANDLE LISTING BOOST PAYMENTS (one-time payment)
-        // ============================================================
-        if (session.metadata?.type === 'listing_boost' && session.mode === 'payment') {
-          const sellerId = session.metadata.seller_id ?? session.metadata.profile_id
-          const productId = session.metadata.product_id
-          const rawDuration = Number.parseInt(session.metadata.duration_days || '7', 10)
-          const durationDays = Math.min(365, Math.max(1, Number.isFinite(rawDuration) ? rawDuration : 7))
-          const amountPaid = (session.amount_total || 0) / 100 // Convert from stotinki
-
-          // Safe no-op if required metadata is missing
-          if (!sellerId || !productId) {
-            logWebhookError('listing-boost', new Error('Missing seller_id or product_id in metadata'))
-            break
-          }
-
-          // Calculate expiry date
-          const startsAt = new Date()
-          const expiresAt = new Date(startsAt.getTime() + durationDays * 24 * 60 * 60 * 1000)
-
-          // Idempotency guard: if already boosted and not expired, avoid duplicate inserts
-          const nowIso = new Date().toISOString()
-          const { data: existingBoost, error: existingBoostError } = await supabase
-            .from('listing_boosts')
-            .select('id')
-            .eq('product_id', productId)
-            .eq('is_active', true)
-            .gt('expires_at', nowIso)
-            .maybeSingle()
-
-          if (existingBoostError) {
-            logWebhookError('listing-boost-idempotency', existingBoostError)
-          }
-
-          if (existingBoost?.id) {
-            break
-          }
-
-          // Create listing_boost record
-          const { error: boostError } = await supabase
-            .from('listing_boosts')
-            .insert({
-              product_id: productId,
-              seller_id: sellerId,
-              price_paid: amountPaid,
-              duration_days: durationDays,
-              starts_at: startsAt.toISOString(),
-              expires_at: expiresAt.toISOString(),
-              is_active: true,
-            })
-
-          if (boostError) {
-            logWebhookError('listing-boost-insert', boostError)
-          }
-
-          // Update product to mark as boosted
-          const { error: productError } = await supabase
-            .from('products')
-            .update({
-              is_boosted: true,
-              boost_expires_at: expiresAt.toISOString(),
-              listing_type: 'boosted',
-            })
-            .eq('id', productId)
-
-          if (productError) {
-            logWebhookError('listing-boost-product', productError)
-          }
-          break
-        }
+        // NOTE: Listing boost payments are handled by app/api/payments/webhook/route.ts
+        // to avoid duplicate processing. Do not add boost handling here.
 
         // ============================================================
         // HANDLE SUBSCRIPTION PAYMENTS (recurring)

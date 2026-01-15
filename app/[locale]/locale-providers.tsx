@@ -7,6 +7,7 @@ import { AuthStateManager } from '@/components/providers/auth-state-manager'
 import { CartProvider } from '@/components/providers/cart-context'
 import { WishlistProvider } from '@/components/providers/wishlist-context'
 import { MessageProvider } from '@/components/providers/message-context'
+import { CurrencyProvider } from '@/components/providers/currency-context'
 
 export default async function LocaleProviders({
   locale,
@@ -32,9 +33,11 @@ export default async function LocaleProviders({
       >
         <AuthStateManager>
           <MessageProvider>
-            <CartProvider>
-              <WishlistProvider>{children}</WishlistProvider>
-            </CartProvider>
+            <CurrencyProvider>
+              <CartProvider>
+                <WishlistProvider>{children}</WishlistProvider>
+              </CartProvider>
+            </CurrencyProvider>
           </MessageProvider>
         </AuthStateManager>
       </ThemeProvider>

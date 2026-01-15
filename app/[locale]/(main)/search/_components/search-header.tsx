@@ -3,13 +3,15 @@
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import { CaretRight, MagnifyingGlass } from "@phosphor-icons/react"
+import { SaveSearchButton } from "@/components/shared/search/save-search-button"
 
 interface SearchHeaderProps {
   query?: string
+  category?: string | undefined
   totalResults: number
 }
 
-export function SearchHeader({ query, totalResults }: SearchHeaderProps) {
+export function SearchHeader({ query, category, totalResults }: SearchHeaderProps) {
   const t = useTranslations('SearchFilters')
 
   return (
@@ -35,20 +37,23 @@ export function SearchHeader({ query, totalResults }: SearchHeaderProps) {
         </ol>
       </nav>
 
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-          {query ? (
-            <>
-              {t('resultsFor')} "<span className="text-primary">{query}</span>"
-            </>
-          ) : (
-            t('exploreAllProducts')
-          )}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {totalResults.toLocaleString()} {t('productsFound')}
-        </p>
+      {/* Page Header with Save Search button */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
+            {query ? (
+              <>
+                {t('resultsFor')} "<span className="text-primary">{query}</span>"
+              </>
+            ) : (
+              t('exploreAllProducts')
+            )}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {totalResults.toLocaleString()} {t('productsFound')}
+          </p>
+        </div>
+        <SaveSearchButton query={query} category={category} />
       </div>
     </div>
   )

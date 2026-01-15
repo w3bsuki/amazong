@@ -148,10 +148,11 @@ test.describe("Product Reviews", () => {
 
     // Attempt a submit and assert we get a guardrail (sign-in required and/or purchase required).
     await dialog.getByRole("button", { name: /^5\b/ }).first().click()
-    await dialog.getByRole("button", { name: /submit review/i }).click()
+    await dialog.getByRole("button", { name: /^submit$/i }).click()
 
+    // The error appears as a toast notification when unauthenticated
     await expect(
-      page.getByText(/please sign in to write a review|purchase required|purchase this product|you need to purchase/i).first()
+      page.getByText(/please sign in|must be logged in|sign in to leave a review/i).first()
     ).toBeVisible({ timeout: 15_000 })
   })
 

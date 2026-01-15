@@ -1,0 +1,174 @@
+"use client"
+
+import { SealCheck, EnvelopeSimple, Phone, IdentificationCard, Buildings } from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+
+// =============================================================================
+// TYPES
+// =============================================================================
+
+interface VerificationLevel {
+  emailVerified?: boolean | undefined
+  phoneVerified?: boolean | undefined
+  idVerified?: boolean | undefined
+  isVerifiedBusiness?: boolean | undefined
+}
+
+interface SellerVerificationBadgeProps extends VerificationLevel {
+  /** Show as compact icon only or expanded with label */
+  variant?: "icon" | "badge"
+  /** Size of the icon */
+  size?: "sm" | "md"
+  className?: string
+}
+
+// =============================================================================
+// HELPERS
+// =============================================================================
+
+function getVerificationTier(v: VerificationLevel): number {
+  if (v.isVerifiedBusiness) return 4 // Business verified = top tier
+  if (v.idVerified) return 3
+  if (v.phoneVerified) return 2
+  if (v.emailVerified) return 1
+  return 0
+}
+
+function getVerificationColor(tier: number): string {
+  switch (tier) {
+    case 4: return "text-blue-600" // Business
+    case 3: return "text-emerald-600" // ID
+    case 2: return "text-green-500" // Phone
+    case 1: return "text-blue-400" // Email
+    default: return "text-muted-foreground"
+  }
+}
+
+// =============================================================================
+// COMPONENT
+// =============================================================================
+
+/**
+ * SellerVerificationBadge - Tiered verification indicator
+ * 
+ * Tiers:
+ * - Tier 1: Email verified (✓)
+ * - Tier 2: Phone verified (✓✓)
+ * - Tier 3: ID verified (✓✓✓)
+ * - Tier 4: Verified Business (checkmark + building)
+ */
+function SellerVerificationBadge({
+  emailVerified,
+  phoneVerified,
+  idVerified,
+  isVerifiedBusiness,
+  variant = "icon",
+  size = "sm",
+  className,
+}: SellerVerificationBadgeProps) {
+  const t = useTranslations("SellerVerification")
+  const tier = getVerificationTier({ emailVerified, phoneVerified, idVerified, isVerifiedBusiness })
+  
+  if (tier === 0) return null
+
+  const iconSize = size === "sm" ? 12 : 16
+  const color = getVerificationColor(tier)
+
+  const label =
+    (isVerifiedBusiness && t("verifiedBusiness")) ||
+    (idVerified && t("idVerified")) ||
+    (phoneVerified && t("phoneVerified")) ||
+    (emailVerified && t("emailVerified")) ||
+    ""
+
+  // Build tooltip content showing all verification levels
+  const tooltipContent = (
+    <div className="space-y-1 text-xs">
+      <div className={cn("flex items-center gap-1.5", emailVerified ? "text-foreground" : "text-muted-foreground/50")}>
+        <EnvelopeSimple size={12} weight={emailVerified ? "fill" : "regular"} />
+        <span>{t("email")}</span>
+        {emailVerified && <span className="text-green-500">✓</span>}
+      </div>
+      <div className={cn("flex items-center gap-1.5", phoneVerified ? "text-foreground" : "text-muted-foreground/50")}>
+        <Phone size={12} weight={phoneVerified ? "fill" : "regular"} />
+        <span>{t("phone")}</span>
+        {phoneVerified && <span className="text-green-500">✓</span>}
+      </div>
+      <div className={cn("flex items-center gap-1.5", idVerified ? "text-foreground" : "text-muted-foreground/50")}>
+        <IdentificationCard size={12} weight={idVerified ? "fill" : "regular"} />
+        <span>{t("id")}</span>
+        {idVerified && <span className="text-green-500">✓</span>}
+      </div>
+      {isVerifiedBusiness && (
+        <div className="flex items-center gap-1.5 text-blue-600 font-medium pt-1 border-t border-border">
+          <Buildings size={12} weight="fill" />
+          <span>{t("verifiedBusiness")}</span>
+        </div>
+      )}
+    </div>
+  )
+
+  if (variant === "badge") {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={cn(
+            "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-2xs font-medium",
+            tier === 4 && "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400",
+            tier === 3 && "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400",
+            tier === 2 && "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400",
+            tier === 1 && "bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400",
+            className
+          )}>
+            <SealCheck size={iconSize} weight="fill" />
+            <span>{label}</span>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="p-2">
+          {tooltipContent}
+        </TooltipContent>
+      </Tooltip>
+    )
+  }
+
+  // Icon variant - just the checkmark(s)
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className={cn("inline-flex items-center shrink-0", color, className)}>
+          {tier >= 4 ? (
+            // Business: Building icon
+            <Buildings size={iconSize} weight="fill" />
+          ) : (
+            // Personal: 1-3 checkmarks based on tier
+            <>
+              <SealCheck size={iconSize} weight="fill" />
+              {tier >= 2 && <SealCheck size={iconSize} weight="fill" className="-ml-1" />}
+              {tier >= 3 && <SealCheck size={iconSize} weight="fill" className="-ml-1" />}
+            </>
+          )}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="p-2">
+        {tooltipContent}
+      </TooltipContent>
+    </Tooltip>
+  )
+}
+
+// =============================================================================
+// EXPORTS
+// =============================================================================
+
+export { 
+  SellerVerificationBadge, 
+  getVerificationTier, 
+  type SellerVerificationBadgeProps,
+  type VerificationLevel 
+}

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
+  EUR_TO_BGN_RATE,
+  eurToBgnApprox,
   formatPrice,
   formatPriceParts,
   getCurrencyCode,
@@ -142,6 +144,26 @@ describe('lib/currency', () => {
       // Should be within a week from now
       const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
       expect(estimated.getTime()).toBeLessThan(weekFromNow.getTime())
+    })
+  })
+
+  describe('eurToBgnApprox', () => {
+    it('uses the fixed BGN/EUR rate constant', () => {
+      expect(EUR_TO_BGN_RATE).toBeCloseTo(1.95583, 5)
+    })
+
+    it('rounds to 2 decimals for display (examples)', () => {
+      expect(eurToBgnApprox(0)).toBe(0)
+      expect(eurToBgnApprox(1)).toBe(1.96)
+      expect(eurToBgnApprox(0.99)).toBe(1.94)
+      expect(eurToBgnApprox(4.99)).toBe(9.76)
+      expect(eurToBgnApprox(14.99)).toBe(29.32)
+    })
+
+    it('is stable for formatting via toFixed(2)', () => {
+      expect(eurToBgnApprox(0.99).toFixed(2)).toBe('1.94')
+      expect(eurToBgnApprox(4.99).toFixed(2)).toBe('9.76')
+      expect(eurToBgnApprox(14.99).toFixed(2)).toBe('29.32')
     })
   })
 })

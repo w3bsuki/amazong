@@ -22,6 +22,7 @@ import {
 } from "@phosphor-icons/react"
 import { BoostDialog } from "./_components/boost-dialog"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { deleteProduct, bulkUpdateProductStatus, setProductDiscountPrice, clearProductDiscount } from "@/app/actions/products"
 import {
   AlertDialog,
@@ -75,6 +76,8 @@ interface SellingProductsListProps {
 export function SellingProductsList({ products, locale }: SellingProductsListProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const tBoost = useTranslations("Boost")
+  const t = useTranslations("SellingProducts")
   const [productsList, setProductsList] = useState(products)
   const [_isPending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -93,15 +96,11 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
     startTransition(async () => {
       const result = await deleteProduct(productId)
       if (result.success) {
-        toast.success(
-          locale === 'bg'
-            ? 'Продуктът е изтрит успешно!'
-            : 'Product deleted successfully!'
-        )
+        toast.success(t('deleteSuccess'))
         setProductsList(prev => prev.filter(p => p.id !== productId))
         router.refresh()
       } else {
-        toast.error(result.error || (locale === 'bg' ? 'Грешка при изтриване' : 'Failed to delete'))
+        toast.error(result.error || t('deleteError'))
       }
       setDeletingId(null)
     })
@@ -115,16 +114,14 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
       const result = await bulkUpdateProductStatus([productId], newStatus)
       if (result.success) {
         toast.success(
-          locale === 'bg'
-            ? (newStatus === 'draft' ? 'Продуктът е поставен на пауза' : 'Продуктът е активен отново')
-            : (newStatus === 'draft' ? 'Product paused' : 'Product activated')
+          newStatus === 'draft' ? t('pauseSuccess') : t('activateSuccess')
         )
         setProductsList(prev => prev.map(p =>
           p.id === productId ? { ...p, status: newStatus } : p
         ))
         router.refresh()
       } else {
-        toast.error(result.error || (locale === 'bg' ? 'Грешка при промяна' : 'Failed to update'))
+        toast.error(result.error || t('updateError'))
       }
       setTogglingId(null)
     })
@@ -133,19 +130,11 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
   // Handle boost success/cancel URL params
   useEffect(() => {
     if (searchParams.get('boost_success') === 'true') {
-      toast.success(
-        locale === 'bg'
-          ? 'Промоцията е активирана успешно!'
-          : 'Boost activated successfully!'
-      )
+      toast.success(tBoost('paymentSuccess'))
       // Clean up URL
       window.history.replaceState({}, '', window.location.pathname)
     } else if (searchParams.get('boost_canceled') === 'true') {
-      toast.info(
-        locale === 'bg'
-          ? 'Плащането беше отменено'
-          : 'Payment was cancelled'
-      )
+      toast.info(tBoost('paymentCanceled'))
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [searchParams, locale])
@@ -191,7 +180,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
 
     const newPrice = Number(discountPrice)
     if (!Number.isFinite(newPrice) || newPrice <= 0) {
-      toast.error(locale === 'bg' ? 'Въведете валидна цена' : 'Enter a valid price')
+      toast.error(t('invalidPrice'))
       return
     }
 
@@ -200,7 +189,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
       : Number(activeDiscountProduct.price)
 
     if (!(newPrice < base)) {
-      toast.error(locale === 'bg' ? 'Новата цена трябва да е по-ниска' : 'New price must be lower')
+      toast.error(t('priceMustBeLower'))
       return
     }
 
@@ -208,7 +197,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
     startTransition(async () => {
       const result = await setProductDiscountPrice(activeDiscountProduct.id, newPrice)
       if (result.success) {
-        toast.success(locale === 'bg' ? 'Отстъпката е запазена' : 'Discount saved')
+        toast.success(t('discountSaved'))
 
         setProductsList((prev) =>
           prev.map((p) => {
@@ -226,7 +215,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
         router.refresh()
         closeDiscountDialog()
       } else {
-        toast.error(result.error || (locale === 'bg' ? 'Грешка при запазване' : 'Failed to save'))
+        toast.error(result.error || t('discountSaveError'))
       }
       setDiscountingId(null)
     })
@@ -239,7 +228,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
     startTransition(async () => {
       const result = await clearProductDiscount(activeDiscountProduct.id)
       if (result.success) {
-        toast.success(locale === 'bg' ? 'Отстъпката е премахната' : 'Discount removed')
+        toast.success(t('discountRemoved'))
         setProductsList((prev) =>
           prev.map((p) => {
             if (p.id !== activeDiscountProduct.id) return p
@@ -254,7 +243,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
         router.refresh()
         closeDiscountDialog()
       } else {
-        toast.error(result.error || (locale === 'bg' ? 'Грешка при премахване' : 'Failed to remove'))
+        toast.error(result.error || t('discountRemoveError'))
       }
       setDiscountingId(null)
     })
@@ -266,12 +255,36 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
     return new Date(product.boost_expires_at) > new Date()
   }
 
-  // Get days left for active boost
-  const getBoostDaysLeft = (product: Product) => {
-    if (!product.boost_expires_at) return 0
+  // Check if there was a boost that has now expired (allow re-boost)
+  const isBoostExpired = (product: Product) => {
+    if (!product.is_boosted || !product.boost_expires_at) return false
+    return new Date(product.boost_expires_at) <= new Date()
+  }
+
+  // Get days and hours left for active boost
+  const getBoostTimeLeft = (product: Product) => {
+    if (!product.boost_expires_at) return null
     const expiresAt = new Date(product.boost_expires_at)
     const now = new Date()
-    return Math.max(0, Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
+    const diffMs = expiresAt.getTime() - now.getTime()
+    if (diffMs <= 0) return null
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    return { days, hours }
+  }
+
+  // Format boost expiration date for display
+  const formatBoostExpiry = (dateStr: string) => {
+    return new Intl.DateTimeFormat(locale, { 
+      dateStyle: 'short', 
+      timeStyle: 'short' 
+    }).format(new Date(dateStr))
+  }
+
+  // Legacy helper for backwards compatibility
+  const getBoostDaysLeft = (product: Product) => {
+    const timeLeft = getBoostTimeLeft(product)
+    return timeLeft?.days ?? 0
   }
 
   if (productsList.length === 0) {
@@ -281,17 +294,15 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
           <Package weight="duotone" className="size-8 sm:size-10 text-account-stat-icon" />
         </div>
         <h3 className="text-lg font-semibold text-foreground mb-2">
-          {locale === 'bg' ? 'Нямате продукти все още' : 'No products yet'}
+          {t('noProductsTitle')}
         </h3>
         <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-          {locale === 'bg'
-            ? 'Започнете да продавате, като създадете първата си обява'
-            : 'Start selling by creating your first product listing'}
+          {t('noProductsDesc')}
         </p>
         <Button asChild className="rounded-full">
           <Link href="/sell">
             <Plus weight="bold" className="size-4 mr-2" />
-            {locale === 'bg' ? 'Създай обява' : 'Create Listing'}
+            {t('createListing')}
           </Link>
         </Button>
       </div>
@@ -304,7 +315,8 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
       <div className="space-y-3 md:hidden">
         {productsList.map((product) => {
           const boosted = isBoostActive(product)
-          const daysLeft = getBoostDaysLeft(product)
+          const boostExpired = isBoostExpired(product)
+          const timeLeft = getBoostTimeLeft(product)
           const saleActive = isSaleActive(product)
           const salePercent = getSalePercentForDisplay(product)
 
@@ -362,14 +374,19 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                     <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground">
                       <span className={product.stock < 5 && product.stock > 0 ? "text-account-warning font-medium" : product.stock === 0 ? "text-account-error font-medium" : ""}>
                         {product.stock === 0
-                          ? (locale === 'bg' ? 'Изчерпан' : 'Out of stock')
-                          : `${product.stock} ${locale === 'bg' ? 'в склад' : 'in stock'}`
+                          ? t('outOfStock')
+                          : t('inStock', { count: product.stock })
                         }
                       </span>
-                      {boosted && (
+                      {boosted && timeLeft && (
                         <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-2xs px-1.5 py-0">
                           <Lightning weight="fill" className="size-2.5 mr-0.5" />
-                          {daysLeft}d
+                          {tBoost('timeLeft', { days: timeLeft.days, hours: timeLeft.hours })}
+                        </Badge>
+                      )}
+                      {boostExpired && (
+                        <Badge variant="secondary" className="bg-muted text-muted-foreground border-0 text-2xs px-1.5 py-0">
+                          {tBoost('boostExpired')}
                         </Badge>
                       )}
                     </div>
@@ -398,11 +415,12 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       size="icon"
                       className="size-8"
                       onClick={() => openDiscountDialog(product)}
-                      title={locale === 'bg' ? 'Отстъпка' : 'Discount'}
+                      title={t('discountTooltip')}
                     >
                       <Tag className="size-4" weight="bold" />
                     </Button>
-                    {!boosted && (
+                    {/* Show boost dialog if not currently boosted OR if boost expired (re-boost) */}
+                    {(!boosted) && (
                       <BoostDialog
                         product={product}
                         locale={locale}
@@ -410,7 +428,8 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="size-8 text-primary hover:bg-primary/10"
+                            className={`size-8 ${boostExpired ? 'text-muted-foreground hover:text-primary' : 'text-primary'} hover:bg-primary/10`}
+                            title={boostExpired ? tBoost('reboost') : tBoost('trigger')}
                           >
                             <Lightning className="size-4" weight="bold" />
                           </Button>
@@ -451,24 +470,21 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
-                            {locale === 'bg' ? 'Изтриване на продукт' : 'Delete Product'}
+                            {t('deleteDialogTitle')}
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            {locale === 'bg'
-                              ? `Сигурни ли сте, че искате да изтриете "${product.title}"? Това действие не може да бъде отменено.`
-                              : `Are you sure you want to delete "${product.title}"? This action cannot be undone.`
-                            }
+                            {t('deleteDialogDesc', { title: product.title })}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>
-                            {locale === 'bg' ? 'Отказ' : 'Cancel'}
+                            {t('cancelButton')}
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDelete(product.id)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
-                            {locale === 'bg' ? 'Изтрий' : 'Delete'}
+                            {t('deleteButton')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -485,7 +501,8 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
       <div className="hidden md:block divide-y divide-border">
         {productsList.map((product) => {
           const boosted = isBoostActive(product)
-          const daysLeft = getBoostDaysLeft(product)
+          const boostExpired = isBoostExpired(product)
+          const timeLeft = getBoostTimeLeft(product)
           const saleActive = isSaleActive(product)
           const salePercent = getSalePercentForDisplay(product)
 
@@ -534,10 +551,15 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       -{salePercent}%
                     </Badge>
                   )}
-                  {boosted && (
-                    <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-xs shrink-0">
+                  {boosted && timeLeft && (
+                    <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-xs shrink-0" title={product.boost_expires_at ? tBoost('boostActiveUntil', { date: formatBoostExpiry(product.boost_expires_at) }) : undefined}>
                       <Lightning weight="fill" className="size-3 mr-0.5" />
-                      {daysLeft} {locale === 'bg' ? 'дни' : 'days'}
+                      {tBoost('timeLeft', { days: timeLeft.days, hours: timeLeft.hours })}
+                    </Badge>
+                  )}
+                  {boostExpired && (
+                    <Badge variant="secondary" className="bg-muted text-muted-foreground border-0 text-xs shrink-0">
+                      {tBoost('boostExpired')}
                     </Badge>
                   )}
                 </div>
@@ -554,8 +576,8 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                   </div>
                   <span className={product.stock < 5 && product.stock > 0 ? "text-account-warning font-medium" : product.stock === 0 ? "text-account-error font-medium" : ""}>
                     {product.stock === 0
-                      ? (locale === 'bg' ? 'Изчерпан' : 'Out of stock')
-                      : `${product.stock} ${locale === 'bg' ? 'в склад' : 'in stock'}`
+                      ? t('outOfStock')
+                      : t('inStock', { count: product.stock })
                     }
                   </span>
                   {product.category && (
@@ -582,7 +604,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
 
               {/* Actions */}
               <div className="flex items-center gap-2 shrink-0">
-                {/* Boost Button */}
+                {/* Boost/Reboost Button - show if not currently active (includes expired) */}
                 {!boosted && (
                   <BoostDialog
                     product={product}
@@ -591,10 +613,10 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       <Button
                         variant="outline"
                         size="sm"
-                        className="gap-1.5 text-primary border-primary/30 hover:bg-primary/10 hover:text-primary h-9 px-3 rounded-full"
+                        className={`gap-1.5 ${boostExpired ? 'text-muted-foreground border-muted-foreground/30 hover:text-primary hover:border-primary/30' : 'text-primary border-primary/30'} hover:bg-primary/10 h-9 px-3 rounded-full`}
                       >
                         <Lightning className="size-4" weight="bold" />
-                        {locale === 'bg' ? 'Промотирай' : 'Boost'}
+                        {boostExpired ? tBoost('reboost') : tBoost('trigger')}
                       </Button>
                     }
                   />
@@ -605,7 +627,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                   size="icon"
                   className="size-9"
                   onClick={() => openDiscountDialog(product)}
-                  title={locale === 'bg' ? 'Отстъпка' : 'Discount'}
+                  title={t('discountTooltip')}
                 >
                   <Tag className="size-4" weight="bold" />
                 </Button>
@@ -617,8 +639,8 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                   onClick={() => handleToggleStatus(product.id, product.status)}
                   disabled={togglingId === product.id}
                   title={product.status === 'draft'
-                    ? (locale === 'bg' ? 'Активирай' : 'Activate')
-                    : (locale === 'bg' ? 'Постави на пауза' : 'Pause')
+                    ? t('activateTooltip')
+                    : t('pauseTooltip')
                   }
                 >
                   {product.status === 'draft' ? (
@@ -630,13 +652,13 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                 <Button asChild variant="ghost" size="icon" className="size-9">
                   <Link href={`/product/${product.id}`}>
                     <Eye className="size-4" />
-                    <span className="sr-only">View</span>
+                    <span className="sr-only">{t('viewSrOnly')}</span>
                   </Link>
                 </Button>
                 <Button asChild variant="ghost" size="icon" className="size-9">
                   <Link href={`/account/selling/edit?id=${product.id}`}>
                     <Pencil className="size-4" />
-                    <span className="sr-only">Edit</span>
+                    <span className="sr-only">{t('editSrOnly')}</span>
                   </Link>
                 </Button>
                 {/* Delete Button */}
@@ -649,30 +671,27 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                       disabled={deletingId === product.id}
                     >
                       <Trash className="size-4" />
-                      <span className="sr-only">Delete</span>
+                      <span className="sr-only">{t('deleteSrOnly')}</span>
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        {locale === 'bg' ? 'Изтриване на продукт' : 'Delete Product'}
+                        {t('deleteDialogTitle')}
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        {locale === 'bg'
-                          ? `Сигурни ли сте, че искате да изтриете "${product.title}"? Това действие не може да бъде отменено.`
-                          : `Are you sure you want to delete "${product.title}"? This action cannot be undone.`
-                        }
+                        {t('deleteDialogDesc', { title: product.title })}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>
-                        {locale === 'bg' ? 'Отказ' : 'Cancel'}
+                        {t('cancelButton')}
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleDelete(product.id)}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
-                        {locale === 'bg' ? 'Изтрий' : 'Delete'}
+                        {t('deleteButton')}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -687,13 +706,11 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
       <Dialog open={!!discountProductId} onOpenChange={(open) => { if (!open) closeDiscountDialog() }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{locale === 'bg' ? 'Задай отстъпка' : 'Set discount'}</DialogTitle>
+            <DialogTitle>{t('setDiscountTitle')}</DialogTitle>
             <DialogDescription>
               {activeDiscountProduct
-                ? (locale === 'bg'
-                  ? `Въведете новата цена за "${activeDiscountProduct.title}".`
-                  : `Enter the new price for "${activeDiscountProduct.title}".`)
-                : (locale === 'bg' ? 'Въведете новата цена.' : 'Enter the new price.')}
+                ? t('setDiscountDesc', { title: activeDiscountProduct.title })
+                : t('setDiscountDescGeneric')}
             </DialogDescription>
           </DialogHeader>
 
@@ -701,7 +718,7 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
             <div className="space-y-4">
               <div className="text-sm text-muted-foreground">
                 <span className="font-medium text-foreground">
-                  {locale === 'bg' ? 'Текуща цена:' : 'Current price:'}
+                  {t('currentPriceLabel')}
                 </span>{" "}
                 {formatCurrency(Number(activeDiscountProduct.price))}
                 {activeDiscountProduct.list_price && Number(activeDiscountProduct.list_price) > Number(activeDiscountProduct.price) && (
@@ -715,13 +732,13 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="discount-price">{locale === 'bg' ? 'Нова цена' : 'New price'}</Label>
+                <Label htmlFor="discount-price">{t('newPriceLabel')}</Label>
                 <Input
                   id="discount-price"
                   inputMode="decimal"
                   value={discountPrice}
                   onChange={(e) => setDiscountPrice(e.target.value)}
-                  placeholder={locale === 'bg' ? 'напр. 49.99' : 'e.g. 49.99'}
+                  placeholder={t('newPricePlaceholder')}
                 />
               </div>
             </div>
@@ -735,18 +752,18 @@ export function SellingProductsList({ products, locale }: SellingProductsListPro
                 onClick={handleClearDiscount}
                 disabled={discountingId === activeDiscountProduct.id}
               >
-                {locale === 'bg' ? 'Премахни отстъпка' : 'Remove discount'}
+                {t('removeDiscountButton')}
               </Button>
             ) : null}
             <Button type="button" variant="outline" onClick={closeDiscountDialog}>
-              {locale === 'bg' ? 'Отказ' : 'Cancel'}
+              {t('cancelButton')}
             </Button>
             <Button
               type="button"
               onClick={handleApplyDiscount}
               disabled={!!activeDiscountProduct && discountingId === activeDiscountProduct.id}
             >
-              {locale === 'bg' ? 'Запази' : 'Save'}
+              {t('saveButton')}
             </Button>
           </DialogFooter>
         </DialogContent>

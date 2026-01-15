@@ -10,9 +10,10 @@ import { useTranslations } from "next-intl"
 interface FilterChipsProps {
   currentCategory?: { name: string; slug: string } | null
   basePath?: string // e.g., "/categories/electronics" or undefined for "/search"
+  className?: string
 }
 
-export function FilterChips({ currentCategory: _currentCategory, basePath }: FilterChipsProps) {
+export function FilterChips({ currentCategory: _currentCategory, basePath, className }: FilterChipsProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations('SearchFilters')
@@ -166,7 +167,7 @@ export function FilterChips({ currentCategory: _currentCategory, basePath }: Fil
   if (chips.length === 0) return null
 
   return (
-    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap">
+    <div className={cn("flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 lg:mx-0 lg:px-0 lg:flex-wrap", className)}>
       {/* Active filters label */}
       <span className="text-sm text-muted-foreground shrink-0 py-1.5 hidden sm:flex items-center">
         {t('activeFilters')}:

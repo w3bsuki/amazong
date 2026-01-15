@@ -18,6 +18,10 @@ import {
   getCategoryContext,
   getCategoryHierarchy,
   getCategoryAncestry,
+  getCategoryAncestryFull,
+  getSubcategoriesForBrowse,
+  type BreadcrumbCategory,
+  type CategoryWithCount,
 } from "@/lib/data/categories"
 import { searchProducts } from "./_lib/search-products"
 import type { Product } from "./_lib/types"
@@ -125,12 +129,18 @@ function CategoryPageContent({
   const categoryContext = use(getCategoryContext(slug))
   const categoriesWithChildren = use(getCategoryHierarchy(null, 2))
   const ancestry = use(getCategoryAncestry(slug))
+  const ancestryFull = use(getCategoryAncestryFull(slug))
 
   if (!categoryContext) {
     notFound()
   }
 
   const { current: currentCategory, parent: parentCategory, children: subcategories } = categoryContext
+  
+  // DEC-002: Fetch subcategories with counts for curated browse UX
+  // filterForBrowse=true enforces "show if populated OR curated" rule
+  const subcategoriesWithCounts = use(getSubcategoriesForBrowse(currentCategory.id, true))
+  
   const allCategoriesWithSubs = categoriesWithChildren.map((c) => ({
     category: c,
     subs: c.children ?? [],
@@ -163,12 +173,14 @@ function CategoryPageContent({
       currentCategory={currentCategory}
       parentCategory={parentCategory}
       subcategories={subcategories}
+      subcategoriesWithCounts={subcategoriesWithCounts}
       filterableAttributes={filterableAttributes}
       categoryName={categoryName}
       defaultTab={defaultTab}
       defaultSubTab={defaultSubTab}
       defaultL2={defaultL2}
       defaultL3={defaultL3}
+      ancestryFull={ancestryFull}
     />
   )
 }
@@ -184,12 +196,14 @@ function CategoryPageDynamicContent({
   currentCategory,
   parentCategory,
   subcategories,
+  subcategoriesWithCounts,
   filterableAttributes,
   categoryName,
   defaultTab,
   defaultSubTab,
   defaultL2,
   defaultL3,
+  ancestryFull,
 }: {
   locale: string
   slug: string
@@ -225,12 +239,15 @@ function CategoryPageDynamicContent({
       ? CH
       : never
     : never
+  /** DEC-002: Subcategories with product counts for curated browse UX */
+  subcategoriesWithCounts: CategoryWithCount[]
   filterableAttributes: any[]
   categoryName: string
   defaultTab: string | null
   defaultSubTab: string | null
   defaultL2: string | null
   defaultL3: string | null
+  ancestryFull: BreadcrumbCategory[]
 }) {
   // React/Next can only stream partial prerenders when request-bound data is
   // accessed via Suspense. `use()` will suspend this segment properly.
@@ -329,7 +346,8 @@ function CategoryPageDynamicContent({
               ? `/categories/${parentCategory.slug}`
               : `/categories`
           }
-          contextualSubcategories={subcategories}
+          // DEC-002: Use subcategoriesWithCounts for curated ordering + visibility filtering
+          contextualSubcategories={subcategoriesWithCounts}
           categoryId={categoryId}
           parentCategory={parentCategory ? {
             id: parentCategory.id,
@@ -342,10 +360,22 @@ function CategoryPageDynamicContent({
       </div>
 
       <div className="hidden lg:block min-h-screen bg-background">
-        <div className="container px-2 sm:px-4 py-1">
-          <div className="flex gap-0">
-            <aside className="w-56 shrink-0 border-r border-border">
-              <div className="sticky top-16 pr-4 py-1 max-h-(--category-sidebar-max-h) overflow-y-auto no-scrollbar">
+        <div className="container px-4 xl:px-6 py-4">
+          {/* Subcategory circles - full width above grid (DEC-002: curated ordering + counts) */}
+          <SubcategoryTabs
+            currentCategory={currentCategory}
+            subcategories={subcategoriesWithCounts}
+            parentCategory={parentCategory}
+            basePath="/categories"
+            variant="desktop"
+            showCounts={true}
+          />
+
+          {/* Main grid: sidebar + content */}
+          <div className="grid grid-cols-[var(--spacing-filter-sidebar)_1fr] gap-6">
+            {/* Sidebar - uses bg-sidebar for subtle differentiation from main content */}
+            <aside className="shrink-0">
+              <div className="sticky top-20 max-h-(--spacing-sidebar-max-h) overflow-y-auto bg-sidebar rounded-lg p-4 -ml-2">
                 <SearchFilters
                   categories={allCategories}
                   subcategories={subcategories}
@@ -354,42 +384,30 @@ function CategoryPageDynamicContent({
                   allCategoriesWithSubs={allCategoriesWithSubs}
                   brands={[]}
                   basePath={`/categories/${slug}`}
+                  ancestry={ancestryFull}
                 />
               </div>
             </aside>
 
-            <div className="flex-1 min-w-0 lg:pl-5">
-              <SubcategoryTabs
-                currentCategory={currentCategory}
-                subcategories={subcategories}
-                parentCategory={parentCategory}
-                basePath="/categories"
-              />
-
-              <div className="mb-2 sm:mb-4 flex items-center gap-2">
-                <div className="lg:contents">
+            {/* Main content */}
+            <main className="min-w-0">
+              {/* Toolbar - single row with sort/count on left, filters on right */}
+              <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-border">
+                <div className="flex items-center gap-4 shrink-0">
                   <SortSelect />
+                  <p className="text-sm text-muted-foreground whitespace-nowrap">
+                    <span className="font-semibold text-foreground">{totalProducts}</span>
+                    {' '}{t('results')} {t('in')} <span className="font-medium text-foreground">{categoryName}</span>
+                  </p>
                 </div>
-
-                <p className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
-                  <span className="font-semibold text-foreground">{totalProducts}</span>
-                  <span> {t('results')}</span>
-                  <span className="hidden lg:inline">
-                    {' '}
-                    {t('in')} <span className="font-medium">{categoryName}</span>
-                  </span>
-                </p>
-
-                <div className="hidden lg:flex items-center gap-2 flex-wrap ml-auto">
-                  <DesktopFilters attributes={filterableAttributes} categorySlug={slug} categoryId={categoryId} />
-                </div>
+                <DesktopFilters attributes={filterableAttributes} categorySlug={slug} categoryId={categoryId} />
               </div>
 
-              <div className="mb-4">
-                <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} />
-              </div>
+              {/* Active filter chips */}
+              <FilterChips currentCategory={currentCategory} basePath={`/categories/${slug}`} className="mb-4" />
 
-              <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {/* Product grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {products.map((product) => {
                   const image = product.image_url || product.images?.[0] || "/placeholder.svg"
                   const sellerName =
@@ -431,11 +449,11 @@ function CategoryPageDynamicContent({
                     />
                   )
                 })}
-              </div>
 
-              {products.length === 0 && (
-                <EmptyStateCTA variant="no-category" categoryName={categoryName} className="mt-8" />
-              )}
+                {products.length === 0 && (
+                  <EmptyStateCTA variant="no-category" categoryName={categoryName} className="mt-8 col-span-full" />
+                )}
+              </div>
 
               {products.length > 0 && (
                 <SearchPagination
@@ -444,7 +462,7 @@ function CategoryPageDynamicContent({
                   currentPage={currentPage}
                 />
               )}
-            </div>
+            </main>
           </div>
         </div>
       </div>

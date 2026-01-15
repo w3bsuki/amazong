@@ -3,6 +3,7 @@ import 'server-only'
 import { cacheTag, cacheLife } from 'next/cache'
 import { createStaticClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
+import { isBoostActive } from '@/lib/boost/boost-status'
 import { getShippingFilter, productShipsToRegion, type ShippingRegion } from '@/lib/shipping'
 
 // =============================================================================
@@ -27,8 +28,11 @@ export interface Product {
     display_order?: number | null
     is_primary?: boolean | null
   }> | null
+  /** True if product has an active boost (is_boosted=true AND boost_expires_at > now) */
   is_boosted?: boolean | null
+  /** Boost expiration timestamp - used with is_boosted to determine active boost status */
   boost_expires_at?: string | null
+  /** @deprecated Legacy field - not used. For promoted listings, use is_boosted + boost_expires_at */
   is_featured?: boolean | null
   created_at?: string | null
   ships_to_bulgaria?: boolean | null
@@ -62,6 +66,10 @@ export interface Product {
     tier?: string | null
     account_type?: string | null
     is_verified_business?: boolean | null
+    // Verification fields from user_verification join
+    email_verified?: boolean | null
+    phone_verified?: boolean | null
+    id_verified?: boolean | null
   } | null
   /** Product attributes - Json from DB, we accept any */
   attributes?: import("@/lib/supabase/database.types").Json | null
@@ -98,6 +106,9 @@ export interface UIProduct {
   sellerAvatarUrl?: string | null
   sellerTier?: 'basic' | 'premium' | 'business'
   sellerVerified?: boolean
+  sellerEmailVerified?: boolean
+  sellerPhoneVerified?: boolean
+  sellerIdVerified?: boolean
 
   attributes?: Record<string, string>
   condition?: string
@@ -220,6 +231,41 @@ function pickPrimaryImage(p: Product): string {
 
 type QueryType = 'deals' | 'newest' | 'bestsellers' | 'featured' | 'promo'
 
+async function fetchBoostedFirst<T>(
+  makeQuery: () => any,
+  {
+    limit,
+    nowIso,
+    applySecondaryOrder,
+  }: {
+    limit: number
+    nowIso: string
+    applySecondaryOrder: (q: any) => any
+  }
+): Promise<{ data: T[]; error: unknown | null }> {
+  const boostedQuery = applySecondaryOrder(
+    makeQuery()
+      .eq('is_boosted', true)
+      .gt('boost_expires_at', nowIso)
+      .order('boost_expires_at', { ascending: false, nullsFirst: false })
+  )
+
+  const { data: boostedData, error: boostedError } = await boostedQuery.limit(limit)
+  if (boostedError) return { data: [], error: boostedError }
+
+  const boosted = (boostedData || []) as T[]
+  if (boosted.length >= limit) return { data: boosted, error: null }
+
+  const restQuery = applySecondaryOrder(
+    makeQuery().or(`boost_expires_at.is.null,boost_expires_at.lte.${nowIso}`)
+  )
+
+  const { data: restData, error: restError } = await restQuery.limit(limit - boosted.length)
+  if (restError) return { data: boosted, error: restError }
+
+  return { data: [...boosted, ...((restData || []) as T[])], error: null }
+}
+
 /**
  * Cached category query.
  * Mirrors `getProducts` but filters by `categories.slug`.
@@ -234,26 +280,40 @@ export async function getProductsByCategorySlug(
   cacheLife('products')
 
   const supabase = createStaticClient()
+  const nowIso = new Date().toISOString()
 
-  // OPTIMIZED: Flat category join - no 4-level nesting!
-  // Use getCategoryPath() separately when breadcrumbs are needed.
-  let query = supabase
-    .from('products')
-    .select(
-      'id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, seller:profiles(id,username,avatar_url,tier), categories!inner(id,slug,name,name_bg,icon)'
-    )
-    .eq('categories.slug', categorySlug)
-    .order('created_at', { ascending: false })
+  // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
+  const productSelect =
+    `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, 
+     seller:profiles!seller_id(id,username,avatar_url,tier,account_type,is_verified_business,user_verification(email_verified,phone_verified,id_verified)), 
+     categories!inner(id,slug,name,name_bg,icon)`
 
-  // Apply shipping zone filter (WW = show all, so no filter)
-  if (zone && zone !== 'WW') {
-    const shippingFilter = getShippingFilter(zone)
-    if (shippingFilter) {
-      query = query.or(shippingFilter)
+  const makeBaseQuery = () => {
+    // OPTIMIZED: Flat category join - no 4-level nesting!
+    // Use getCategoryPath() separately when breadcrumbs are needed.
+    // Note: user_verification joins to profiles via user_id, and we join profiles via seller_id
+    let q = supabase
+      .from('products')
+      .select(productSelect)
+      .eq('categories.slug', categorySlug)
+
+    // Apply shipping zone filter (WW = show all, so no filter)
+    if (zone && zone !== 'WW') {
+      const shippingFilter = getShippingFilter(zone)
+      if (shippingFilter) {
+        q = q.or(shippingFilter)
+      }
     }
+
+    return q
   }
 
-  const { data, error } = await query.limit(limit)
+  const { data, error } = await fetchBoostedFirst(makeBaseQuery, {
+    limit,
+    nowIso,
+    applySecondaryOrder: (q) => q.order('created_at', { ascending: false }),
+  })
+
   if (error) {
     logger.error(`[getProductsByCategorySlug:${categorySlug}] Supabase error`, error)
     return []
@@ -263,13 +323,29 @@ export async function getProductsByCategorySlug(
     const row = p as unknown as Record<string, unknown>
     const categories = normalizeCategoryNode(row.categories)
     const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
+    // Extract nested user_verification from seller
+    const uv = (seller?.user_verification && typeof seller.user_verification === 'object')
+      ? (Array.isArray(seller.user_verification) ? seller.user_verification[0] : seller.user_verification) as Record<string, unknown>
+      : null
+
+    const rawProduct = p as unknown as { is_boosted?: boolean | null; boost_expires_at?: string | null }
+    const activeBoost = isBoostActive({
+      is_boosted: rawProduct.is_boosted ?? null,
+      boost_expires_at: rawProduct.boost_expires_at ?? null,
+    })
 
     return {
       ...(p as unknown as Product),
+      is_boosted: activeBoost,
       categories,
       category_slug: categories?.slug ?? null,
       store_slug: (typeof seller?.username === 'string') ? (seller.username as string) : null,
-      seller_profile: (row.seller as Product['seller_profile']) ?? null,
+      seller_profile: {
+        ...(seller as Product['seller_profile']),
+        email_verified: uv?.email_verified === true ? true : null,
+        phone_verified: uv?.phone_verified === true ? true : null,
+        id_verified: uv?.id_verified === true ? true : null,
+      },
     } as Product
   })
 }
@@ -284,66 +360,106 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   cacheLife('products')
 
   const supabase = createStaticClient()
+  const nowIso = new Date().toISOString()
 
-  // OPTIMIZED: Flat category join - no 4-level nesting!
-  // Use getCategoryPath() separately when breadcrumbs are needed.
-  let query = supabase
-    .from('products')
-    .select('id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, is_featured, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, seller:profiles(id,username,avatar_url,tier), categories(id,slug,name,name_bg,icon)')
+  // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
+  const productSelect = `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, 
+      seller:profiles!seller_id(id,username,avatar_url,tier,account_type,is_verified_business,user_verification(email_verified,phone_verified,id_verified)), 
+      categories(id,slug,name,name_bg,icon)`
 
-  // Apply shipping zone filter (WW = show all, so no filter)
-  if (zone && zone !== 'WW') {
-    const shippingFilter = getShippingFilter(zone)
-    if (shippingFilter) {
-      query = query.or(shippingFilter)
+  const makeBaseQuery = () => {
+    // OPTIMIZED: Flat category join - no 4-level nesting!
+    // Use getCategoryPath() separately when breadcrumbs are needed.
+    // Note: user_verification joins to profiles via user_id, and we join profiles via seller_id
+    let q = supabase
+      .from('products')
+      .select(productSelect)
+
+    // Apply shipping zone filter (WW = show all, so no filter)
+    if (zone && zone !== 'WW') {
+      const shippingFilter = getShippingFilter(zone)
+      if (shippingFilter) {
+        q = q.or(shippingFilter)
+      }
+    }
+
+    // Apply type filters (but no boost ordering here)
+    switch (type) {
+      case 'deals':
+        // Truth semantics: deals are explicitly marked on-sale.
+        q = q.eq('is_on_sale', true).gt('sale_percent', 0)
+        break
+      case 'promo':
+        // Legacy "promo" uses compare-at pricing.
+        q = q.not('list_price', 'is', null).gt('list_price', 0)
+        break
+      case 'featured':
+        // Only show products with active (non-expired) boosts
+        q = q.eq('is_boosted', true).gt('boost_expires_at', nowIso)
+        break
+    }
+
+    return q
+  }
+
+  const applySecondaryOrder = (q: any) => {
+    switch (type) {
+      case 'newest':
+        return q.order('created_at', { ascending: false })
+      case 'bestsellers':
+        return q.order('review_count', { ascending: false })
+      case 'featured':
+        // Fair rotation of active boosts
+        return q.order('boost_expires_at', { ascending: true })
+      default:
+        return q
     }
   }
 
-  switch (type) {
-    case 'deals':
-      // Truth semantics: deals are explicitly marked on-sale.
-      query = query.eq('is_on_sale', true).gt('sale_percent', 0)
-      break
-    case 'promo':
-      // Legacy "promo" uses compare-at pricing.
-      query = query.not('list_price', 'is', null).gt('list_price', 0)
-      break
-    case 'newest':
-      query = query.order('created_at', { ascending: false })
-      break
-    case 'bestsellers':
-      query = query.order('review_count', { ascending: false })
-      break
-    case 'featured':
-      // Only show products with active (non-expired) boosts
-      query = query
-        .eq('is_boosted', true)
-        .gt('boost_expires_at', new Date().toISOString())
-        .order('boost_expires_at', { ascending: true }) // Fair rotation
-      break
-  }
+  const { data, error } =
+    type === 'featured'
+      ? await applySecondaryOrder(makeBaseQuery()).limit(limit)
+      : await fetchBoostedFirst(makeBaseQuery, {
+          limit,
+          nowIso,
+          applySecondaryOrder,
+        })
 
-  const { data, error } = await query.limit(limit)
   if (error) {
     logger.error(`[getProducts:${type}] Supabase error`, error)
     return []
   }
 
   return (data || [])
-    .map((p) => {
+    .map((p: { is_boosted?: boolean | null; boost_expires_at?: string | null }) => {
       const row = p as unknown as Record<string, unknown>
       const categories = normalizeCategoryNode(row.categories)
       const seller = (row.seller && typeof row.seller === 'object') ? (row.seller as Record<string, unknown>) : null
+      // Extract nested user_verification from seller
+      const uv = (seller?.user_verification && typeof seller.user_verification === 'object')
+        ? (Array.isArray(seller.user_verification) ? seller.user_verification[0] : seller.user_verification) as Record<string, unknown>
+        : null
+
+      const activeBoost = isBoostActive({
+        is_boosted: p.is_boosted ?? null,
+        boost_expires_at: p.boost_expires_at ?? null,
+      })
 
       return {
         ...(p as unknown as Product),
+        is_boosted: activeBoost,
         categories,
         category_slug: categories?.slug ?? null,
         store_slug: (typeof seller?.username === 'string') ? (seller.username as string) : null,
-        seller_profile: (row.seller as Product['seller_profile']) ?? null,
+        seller_profile: {
+          ...(seller as Product['seller_profile']),
+          email_verified: uv?.email_verified === true ? true : null,
+          phone_verified: uv?.phone_verified === true ? true : null,
+          id_verified: uv?.id_verified === true ? true : null,
+        },
       } as Product
     })
-    .filter((p) =>
+    .filter((p: Product) =>
       type === 'deals' || type === 'promo'
         ? (p.list_price ?? 0) > p.price
         : true
@@ -358,8 +474,9 @@ async function getProductById(id: string): Promise<Product | null> {
 
   const supabase = createStaticClient()
 
+  // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
   const productSelect =
-    'id,title,price,seller_id,category_id,slug,description,condition,brand_id,images,is_boosted,boost_expires_at,is_featured,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,created_at,updated_at,status,stock,tags,seller_city,listing_type,meta_title,meta_description,barcode,cost_price,sku,track_inventory,weight,weight_unit,attributes' as const
+    'id,title,price,seller_id,category_id,slug,description,condition,brand_id,images,is_boosted,boost_expires_at,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,created_at,updated_at,status,stock,tags,seller_city,listing_type,meta_title,meta_description,barcode,cost_price,sku,track_inventory,weight,weight_unit,attributes' as const
 
   const { data, error } = await supabase
     .from('products')
@@ -447,6 +564,11 @@ export function normalizeProductRow(p: {
     parent?: unknown
   } | null
 }): Product {
+  const activeBoost = isBoostActive({
+    is_boosted: p.is_boosted ?? null,
+    boost_expires_at: p.boost_expires_at ?? null,
+  })
+
   const result: Product = {
     id: p.id,
     title: p.title,
@@ -462,7 +584,7 @@ export function normalizeProductRow(p: {
     images: p.images ?? null,
     product_images: p.product_images ?? null,
     product_attributes: p.product_attributes ?? null,
-    is_boosted: p.is_boosted ?? null,
+    is_boosted: activeBoost,
     boost_expires_at: p.boost_expires_at ?? null,
     slug: p.slug ?? null,
     store_slug: p.seller?.username ?? null,
@@ -483,7 +605,7 @@ export function toUI(p: Product): UIProduct {
   const attrs = buildAttributesMap(p)
   const sellerDisplayName = p.seller_profile?.display_name || p.seller_profile?.business_name || p.seller_profile?.username || null
   const rawTier = (p.seller_profile?.tier || '').toLowerCase()
-  const accountType = (p.seller_profile?.account_type || '').toLowerCase()
+  const accountType = (p.seller_profile?.account_type || '').toLowerCase()  
   const sellerTier: UIProduct['sellerTier'] =
     accountType === 'business' ? 'business' :
     rawTier === 'premium' ? 'premium' :
@@ -518,6 +640,9 @@ export function toUI(p: Product): UIProduct {
     sellerAvatarUrl: p.seller_profile?.avatar_url ?? null,
     sellerTier,
     sellerVerified,
+    sellerEmailVerified: p.seller_profile?.email_verified ?? false,
+    sellerPhoneVerified: p.seller_profile?.phone_verified ?? false,
+    sellerIdVerified: p.seller_profile?.id_verified ?? false,
     ...(Object.keys(attrs).length ? { attributes: attrs } : {}),
     ...(typeof attrs.condition === "string" ? { condition: attrs.condition } : {}),
     ...(typeof attrs.brand === "string" ? { brand: attrs.brand } : {}),
@@ -569,4 +694,9 @@ const getGlobalDeals = (limit = 50, zone?: ShippingRegion) => getProducts('deals
 export const getNewestProducts = (limit = 36, zone?: ShippingRegion) => getProducts('newest', limit, zone)
 const getPromoProducts = (limit = 36, zone?: ShippingRegion) => getProducts('promo', limit, zone)
 const getBestSellers = (limit = 36, zone?: ShippingRegion) => getProducts('bestsellers', limit, zone)
-const getFeaturedProducts = (limit = 36, zone?: ShippingRegion) => getProducts('featured', limit, zone)
+/**
+ * Get products with active boosts (is_boosted=true AND boost_expires_at > now).
+ * Uses fair rotation: ORDER BY boost_expires_at ASC (soonest-expiring first).
+ * Note: The "featured" type in getProducts() handles this properly.
+ */
+const getBoostedProducts = (limit = 36, zone?: ShippingRegion) => getProducts('featured', limit, zone)

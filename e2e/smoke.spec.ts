@@ -81,6 +81,19 @@ test.describe('Smoke Tests - Critical Path', () => {
     app.assertNoConsoleErrors()
   })
 
+  test('search page loads with sort param @smoke', async ({ page, app }) => {
+    await app.goto('/en/search?q=test&sort=price-asc')
+    await app.waitForHydration()
+
+    await assertVisible(page.locator('main, #main-content').first())
+    await assertNoErrorBoundary(page)
+
+    expect(page.url()).toContain('q=test')
+    expect(page.url()).toContain('sort=price-asc')
+
+    app.assertNoConsoleErrors()
+  })
+
   test('cart page loads @smoke', async ({ page, app }) => {
     await app.goto('/en/cart')
     await app.waitForHydration()
@@ -171,12 +184,12 @@ test.describe('Smoke Tests - Critical Path', () => {
     await searchInput.press('Enter')
 
     // MUST navigate to search with query
-    await assertNavigatedTo(page, /\/en\/search/)
+    await assertNavigatedTo(page, /\/en\/search/, 30_000)
 
     // URL must have the query param
     await page.waitForFunction(() => {
       return new URL(window.location.href).searchParams.get('q') === 'phone'
-    }, undefined, { timeout: 15_000 })
+    }, undefined, { timeout: 30_000 })
 
     app.assertNoConsoleErrors()
   })

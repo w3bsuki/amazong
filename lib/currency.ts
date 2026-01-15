@@ -7,6 +7,13 @@
 
 export type SupportedLocale = 'en' | 'bg'
 
+/** BGN/EUR fixed exchange rate (Bulgarian Lev pegged to Euro) */
+export const EUR_TO_BGN_RATE = 1.95583
+
+export function eurToBgnApprox(eurAmount: number): number {
+  return Math.round(eurAmount * EUR_TO_BGN_RATE * 100) / 100
+}
+
 /**
  * Currency configuration - EUR for all locales
  * Only display formatting differs by locale

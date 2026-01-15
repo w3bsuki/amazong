@@ -3,9 +3,28 @@ import { routing, validateLocale } from "@/i18n/routing"
 import { Lightning as Zap } from "@phosphor-icons/react/dist/ssr"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import TodaysDealsPageClient from "./_components/todays-deals-page-client"
+import type { Metadata } from "next"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale: localeParam } = await params
+  const locale = validateLocale(localeParam)
+  setRequestLocale(locale)
+  const t = await getTranslations("TodaysDeals")
+
+  return {
+    title: t("title"),
+    description: locale === "bg"
+      ? "Открийте днешните най-добри оферти в Treido. Спестете до 70% на хиляди продукти."
+      : "Discover today's best deals at Treido. Save up to 70% on thousands of items.",
+  }
 }
 
 export default async function TodaysDealsPage({

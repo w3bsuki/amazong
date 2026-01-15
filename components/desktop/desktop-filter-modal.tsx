@@ -37,6 +37,8 @@ interface DesktopFilterModalProps {
   categorySlug?: string | undefined
   categoryId?: string | undefined
   className?: string
+  /** Custom trigger element - if not provided, uses default button */
+  trigger?: React.ReactNode
 }
 
 // =============================================================================
@@ -47,7 +49,8 @@ export function DesktopFilterModal({
   attributes = [], 
   categorySlug,
   categoryId,
-  className 
+  className,
+  trigger
 }: DesktopFilterModalProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -176,25 +179,30 @@ export function DesktopFilterModal({
     { label: t('above200'), min: '200', max: '' }
   ]
 
+  // Default trigger if none provided
+  const defaultTrigger = (
+    <Button
+      variant="ghost"
+      className={cn(
+        'h-9 px-4 rounded-full gap-2 bg-secondary/50 hover:bg-secondary',
+        activeFilterCount > 0 && 'bg-primary/10 text-primary hover:bg-primary/20',
+        className
+      )}
+    >
+      <Sliders size={16} weight="regular" />
+      <span>{t('filters')}</span>
+      {activeFilterCount > 0 && (
+        <Badge variant="default" className="h-5 min-w-5 px-1.5 text-xs">
+          {activeFilterCount}
+        </Badge>
+      )}
+    </Button>
+  )
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          className={cn(
-            'h-9 px-4 rounded-full gap-2 bg-secondary/50 hover:bg-secondary',
-            activeFilterCount > 0 && 'bg-primary/10 text-primary hover:bg-primary/20',
-            className
-          )}
-        >
-          <Sliders size={16} weight="regular" />
-          <span>{t('filters')}</span>
-          {activeFilterCount > 0 && (
-            <Badge variant="default" className="h-5 min-w-5 px-1.5 text-xs">
-              {activeFilterCount}
-            </Badge>
-          )}
-        </Button>
+        {trigger ?? defaultTrigger}
       </DialogTrigger>
 
       <DialogContent 

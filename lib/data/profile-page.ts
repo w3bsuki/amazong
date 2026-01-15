@@ -148,9 +148,9 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
     
     // Products (if seller)
     profile.is_seller
-      ? supabase
-          .from("products")
-          .select(`
+      ? (async () => {
+          const nowIso = new Date().toISOString()
+          const baseSelect = `
             id,
             title,
             slug,
@@ -161,14 +161,38 @@ export async function getPublicProfileData(username: string): Promise<ProfilePag
             review_count,
             created_at,
             is_boosted,
+            boost_expires_at,
             seller_id,
             condition
-          `, { count: "exact" })
-          .eq("seller_id", profile.id)
-          .eq("status", "active")
-          .order("is_boosted", { ascending: false })
-          .order("created_at", { ascending: false })
-          .limit(12)
+          `
+
+          const baseQuery = () =>
+            supabase
+              .from("products")
+              .select(baseSelect, { count: "exact" })
+              .eq("seller_id", profile.id)
+              .eq("status", "active")
+
+          const { data: boosted, error: boostedError, count } = await baseQuery()
+            .eq("is_boosted", true)
+            .gt("boost_expires_at", nowIso)
+            .order("boost_expires_at", { ascending: false, nullsFirst: false })
+            .order("created_at", { ascending: false })
+            .limit(12)
+
+          if (boostedError) return { data: [], count: count ?? 0 }
+          if ((boosted?.length ?? 0) >= 12) return { data: boosted ?? [], count: count ?? 0 }
+
+          const remaining = 12 - (boosted?.length ?? 0)
+
+          const { data: rest, error: restError } = await baseQuery()
+            .or(`boost_expires_at.is.null,boost_expires_at.lte.${nowIso}`)
+            .order("created_at", { ascending: false })
+            .limit(remaining)
+
+          if (restError) return { data: boosted ?? [], count: count ?? 0 }
+          return { data: [...(boosted ?? []), ...(rest ?? [])], count: count ?? 0 }
+        })()
       : Promise.resolve({ data: [], count: 0 }),
     
     // Seller reviews

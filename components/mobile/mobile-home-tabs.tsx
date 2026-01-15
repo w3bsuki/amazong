@@ -248,10 +248,46 @@ export function MobileHomeTabs({
   const contextualInitialTitle = contextualCategoryName || ""
 
   // ==========================================================================
+  // Contextual Mode Hook (must be called unconditionally per React rules)
+  // ==========================================================================
+  // Convert CategoryTreeNode[] to CategoryLite[] for the hook
+  const initialChildrenForHook = contextualSubcategories.map(cat => ({
+    id: cat.id,
+    name: cat.name,
+    name_bg: cat.name_bg,
+    slug: cat.slug,
+    parent_id: cat.parent_id ?? null,
+    icon: cat.icon ?? null,
+    image_url: cat.image_url ?? null,
+  }))
+
+  const instant = useInstantCategoryBrowse({
+    enabled: contextualMode,
+    locale,
+    initialSlug: initialProductsSlug,
+    initialTitle: contextualInitialTitle,
+    initialCategoryId: categoryId,
+    initialParent: parentCategory
+      ? {
+        id: parentCategory.id,
+        slug: parentCategory.slug,
+        parent_id: parentCategory.parent_id,
+        name: parentCategory.name ?? parentCategory.slug,
+        name_bg: parentCategory.name_bg ?? null,
+      }
+      : null,
+    initialChildren: initialChildrenForHook,
+    initialAttributes: filterableAttributes,
+    initialProducts,
+  })
+
+  // ==========================================================================
   // Contextual Mode Rendering (Vinted-style)
   // ==========================================================================
 
-  // Hide main site header on mobile when contextual mode is active
+  // Hide the main site header ONLY on mobile when contextual mode is active.
+  // IMPORTANT: This component may still be mounted on desktop (e.g. `lg:hidden`),
+  // so we must not blindly hide the header for all viewports.
   useEffect(() => {
     if (!contextualMode) return
 
@@ -259,36 +295,24 @@ export function MobileHomeTabs({
     const siteHeader = document.querySelector('body > div > header')
     if (!(siteHeader instanceof HTMLElement)) return
 
-    // Hide on mobile AND desktop (since we are matching mobile-only design)
-    siteHeader.style.display = 'none'
+    const previousDisplay = siteHeader.style.display
+    const mql = window.matchMedia('(max-width: 767px)')
+
+    const sync = () => {
+      siteHeader.style.display = mql.matches ? 'none' : previousDisplay
+    }
+
+    sync()
+    mql.addEventListener?.('change', sync)
 
     return () => {
-      siteHeader.style.display = ''
+      mql.removeEventListener?.('change', sync)
+      siteHeader.style.display = previousDisplay
     }
   }, [contextualMode])
 
   if (contextualMode) {
     const backHref = contextualBackHref || `/categories`
-
-    const instant = useInstantCategoryBrowse({
-      enabled: true,
-      locale,
-      initialSlug: initialProductsSlug,
-      initialTitle: contextualInitialTitle,
-      initialCategoryId: categoryId,
-      initialParent: parentCategory
-        ? {
-          id: parentCategory.id,
-          slug: parentCategory.slug,
-          parent_id: parentCategory.parent_id,
-          name: parentCategory.name ?? parentCategory.slug,
-          name_bg: parentCategory.name_bg ?? null,
-        }
-        : null,
-      initialChildren: (contextualSubcategories as any) ?? [],
-      initialAttributes: filterableAttributes as any,
-      initialProducts,
-    })
 
     const handleBack = async () => {
       // Use instant client-side navigation (no page reload)

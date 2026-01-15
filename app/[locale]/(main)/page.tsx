@@ -59,26 +59,23 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
       {/* ================================================================
           DESKTOP: Clean Product-First Layout
-          - Integrated Hero with Category Quick Entry
-          - Main Product Feed
+          - Slim Hero Banner
+          - Unified Discovery Section (Categories + Filters + Products)
           ================================================================ */}
       <div className="hidden md:block w-full">
-        {/* Desktop hero banner (separates header from listings) */}
-        <div className="w-full bg-background pt-6 pb-6">
-          <div className="container">
-            <MarketplaceHero locale={locale} categories={categoriesWithChildren} />
-          </div>
-        </div>
-
-        <div className="w-full bg-background pb-12">
-          <div className="container">
+        {/* Unified Discovery Container - Everything in one visual block */}
+        <div className="w-full bg-background py-4">
+          <div className="container space-y-4">
+            {/* Product Feed with integrated hero + category circles + filters */}
             <Suspense fallback={<TabbedProductFeedSkeleton />}>
               <TabbedProductFeed
                 locale={locale}
                 categories={categoriesWithChildren}
                 initialTab="newest"
                 initialProducts={initialProducts}
-              />
+              >
+                <MarketplaceHero locale={locale} />
+              </TabbedProductFeed>
             </Suspense>
           </div>
         </div>

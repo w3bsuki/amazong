@@ -4,7 +4,7 @@ import { setRequestLocale } from "next-intl/server"
 import { connection } from "next/server"
 
 import { createStaticClient } from "@/lib/supabase/server"
-import { fetchProductByUsernameAndSlug, fetchSellerProducts, type ProductPageProduct } from "@/lib/data/product-page"
+import { fetchProductByUsernameAndSlug, fetchSellerProducts, fetchProductFavoritesCount, type ProductPageProduct } from "@/lib/data/product-page"
 import { fetchProductReviews, type ProductReview } from "@/lib/data/product-reviews"
 import { submitReview } from "@/app/actions/reviews"
 
@@ -40,17 +40,38 @@ export async function generateStaticParams() {
     }))
   }
 
-  // Fetch top 25 products with their seller usernames
-  // Ordered by review_count (popularity proxy) and boosted status
-  const { data: products } = await supabase
+  const nowIso = new Date().toISOString()
+
+  // Fetch top products with seller usernames.
+  // Important: Only prioritize ACTIVE boosts (boost_expires_at > now).
+  const boostedResult = await supabase
     .from("products")
     .select("slug, seller:profiles!products_seller_id_fkey(username)")
     .eq("status", "active")
     .not("slug", "is", null)
-    .order("is_boosted", { ascending: false })
+    .eq("is_boosted", true)
+    .gt("boost_expires_at", nowIso)
+    .order("boost_expires_at", { ascending: false, nullsFirst: false })
     .order("review_count", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false })
     .limit(25)
+
+  const boosted = boostedResult.data || []
+
+  const remaining = 25 - boosted.length
+  const restResult = remaining > 0
+    ? await supabase
+        .from("products")
+        .select("slug, seller:profiles!products_seller_id_fkey(username)")
+        .eq("status", "active")
+        .not("slug", "is", null)
+        .or(`boost_expires_at.is.null,boost_expires_at.lte.${nowIso}`)
+        .order("review_count", { ascending: false, nullsFirst: false })
+        .order("created_at", { ascending: false })
+        .limit(remaining)
+    : { data: [] as any[] }
+
+  const products = [...boosted, ...(restResult.data || [])]
 
   if (!products || products.length === 0) {
     return routing.locales.map((locale) => ({ 
@@ -148,7 +169,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const rootCategory = parentCategory?.parent_id ? parentCategory : parentCategory ?? category
 
-  const relatedProductsRaw = await fetchSellerProducts(seller.id, productData.id, 10)
+  // Fetch related products and favorites count in parallel
+  const [relatedProductsRaw, favoritesCount] = await Promise.all([
+    fetchSellerProducts(seller.id, productData.id, 10),
+    fetchProductFavoritesCount(productData.id),
+  ])
 
   const reviews: ProductReview[] = isUuid(productData.id)
     ? await fetchProductReviews(productData.id, 8)
@@ -180,6 +205,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       viewModel={viewModel}
       variants={productData.product_variants ?? []}
       submitReview={submitReview}
+      favoritesCount={favoritesCount}
     />
   )
 }
