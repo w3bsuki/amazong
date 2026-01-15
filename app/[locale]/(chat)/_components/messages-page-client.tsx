@@ -158,11 +158,11 @@ function MessagesContent() {
   }
 
   return (
-    <div className="flex h-full w-full min-h-0 flex-1 overflow-hidden bg-background">
+    <div className="flex h-full w-full overflow-hidden bg-background">
       {/* Conversation list - full width on mobile, sidebar on desktop */}
       <div
         className={cn(
-          "w-full flex min-h-0 flex-col overflow-hidden lg:w-80 xl:w-96 lg:border-r border-border/40",
+          "w-full flex flex-col overflow-hidden lg:w-80 xl:w-96 lg:border-r border-border/40",
           showChat ? "hidden lg:flex" : "flex"
         )}
       >
@@ -227,7 +227,7 @@ function MessagesContent() {
 
       {/* Chat area */}
       <div className={cn(
-        "min-w-0 flex-1 min-h-0 flex flex-col overflow-hidden",
+        "flex-1 flex flex-col overflow-hidden",
         showChat ? "flex" : "hidden lg:flex"
       )}>
         {currentConversation ? (

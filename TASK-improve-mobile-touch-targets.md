@@ -295,23 +295,220 @@ Sync DESIGN.md with actual token values.
 
 ---
 
-## Files to Investigate
+## Complete Component Audit
 
-- [ ] `components/layout/sidebar/sidebar-menu-v2.tsx` — hamburger trigger
-- [ ] `components/dropdowns/notifications-dropdown.tsx` — bell icon
-- [ ] `components/shared/wishlist/mobile-wishlist-button.tsx` — heart icon
-- [ ] `components/layout/header/cart/mobile-cart-dropdown.tsx` — cart icon
-- [ ] `components/mobile/category-nav/*` — category pills
-- [ ] `components/mobile/mobile-home-tabs.tsx` — filter tabs
+### ✅ Files Investigated
+
+| Component | File | Current Size | Analysis |
+|-----------|------|--------------|----------|
+| Mobile Tab Bar | `mobile-tab-bar.tsx` | `h-12` (48px) grid cells | **Good** — Full cell height gives excellent touch |
+| Mobile Header Row | `site-header.tsx` | `h-10` (40px) | **Acceptable** — WCAG compliant |
+| Back Button | `site-header.tsx` | `size-9` (36px) | ⚠️ **Borderline** — could improve |
+| Hamburger Trigger | `sidebar-menu-v2.tsx` | `h-9 w-9` (36px) via Button `size="icon"` | ⚠️ **Undersized** — should be 40px |
+| Wishlist Button | `mobile-wishlist-button.tsx` | `size-touch` = **36px** | ⚠️ **Uses custom token** — check token value |
+| Cart Button | `mobile-cart-dropdown.tsx` | `size-touch` = **36px** | ⚠️ **Same issue** |
+| Notifications | `notifications-dropdown.tsx` | `size-10` (40px) | **Good** ✓ |
+| Search Bar | `site-header.tsx` | `h-10` (40px) | **Good** ✓ |
+
+### Critical Finding: Token Discrepancy
+
+The `size-touch` utility maps to `--spacing-touch` which is **2.25rem = 36px**.
+
+But the actual values in globals.css are:
+```css
+--spacing-touch-xs: 1.75rem;   /* 28px - NOT 24px as documented */
+--spacing-touch-sm: 2rem;      /* 32px - NOT 28px as documented */  
+--spacing-touch:    2.25rem;   /* 36px - NOT 32px as documented */
+--spacing-touch-lg: 2.75rem;   /* 44px - NOT 36px as documented */
+```
+
+**The docs are ONE STEP BEHIND the actual tokens!**
+
+This means elements using `size-touch` (36px) are actually:
+- 36px = `h-9` in Tailwind scale
+- Slightly below the ideal 40px (`h-10`) for comfortable mobile tapping
 
 ---
 
-## Decision Needed
+## Recommended Fix Plan
 
-**Before implementation, choose:**
+### Strategy: Bump Touch Tokens +4px (One Tailwind Step)
 
-- [ ] **Option A:** Bump all touch tokens +4px (bigger change, cleaner)
-- [ ] **Option C:** Keep tokens, use padding/margin tricks (surgical, same visual)
-- [ ] **Hybrid:** Fix individual components to use existing larger tokens
+Since the layout already uses tokens (not hardcoded values), we can update the token definitions to increase all touch targets consistently.
 
-Recommend: **Hybrid** — promote undersized elements to use `h-10` / `size-10` (40px) where they currently use `h-9` / `size-9` (36px). This is one Tailwind step (4px) but only applied to problematic areas.
+**New token values:**
+
+```css
+/* Before */
+--spacing-touch-xs: 1.75rem;   /* 28px */
+--spacing-touch-sm: 2rem;      /* 32px */
+--spacing-touch:    2.25rem;   /* 36px */
+--spacing-touch-lg: 2.75rem;   /* 44px */
+
+/* After (+4px each) */
+--spacing-touch-xs: 2rem;      /* 32px */
+--spacing-touch-sm: 2.25rem;   /* 36px */
+--spacing-touch:    2.5rem;    /* 40px */  ← Now matches h-10
+--spacing-touch-lg: 3rem;      /* 48px */  ← Now matches h-12
+```
+
+### Impact Analysis
+
+| Component | Token Used | Before | After | Visual Impact |
+|-----------|------------|--------|-------|---------------|
+| Wishlist Button | `size-touch` | 36px | 40px | +4px each side |
+| Cart Button | `size-touch` | 36px | 40px | +4px each side |
+| Hamburger Menu | `Button size="icon"` | 36px | N/A (doesn't use token) | **Separate fix needed** |
+| Back Button | `size-9` hardcoded | 36px | N/A | **Separate fix needed** |
+
+### Additional Component Fixes
+
+1. **Hamburger Menu Trigger** (`sidebar-menu-v2.tsx`)
+   - Change: Add `size-10` to SSR placeholder span
+   - Change: Button already uses `size="icon"` which is 36px — need explicit `size-10`
+
+2. **Back Button** (`site-header.tsx`)
+   - Change: `size-9` → `size-10`
+
+3. **Header Row Height** (`site-header.tsx`)
+   - Optional: `h-10` → `h-11` (40px → 44px) to accommodate larger buttons
+   - Risk: May increase total header height by 4px
+
+---
+
+## Implementation Checklist
+
+### Phase 1: Token Update (globals.css)
+- [ ] Update `--spacing-touch-xs`: 1.75rem → 2rem
+- [ ] Update `--spacing-touch-sm`: 2rem → 2.25rem
+- [ ] Update `--spacing-touch`: 2.25rem → 2.5rem
+- [ ] Update `--spacing-touch-lg`: 2.75rem → 3rem
+
+### Phase 2: Hardcoded Size Fixes
+- [ ] `sidebar-menu-v2.tsx`: SSR span `h-9 w-9` → `size-10`
+- [ ] `sidebar-menu-v2.tsx`: Button add explicit class override or use `size-touch`
+- [ ] `site-header.tsx`: Back button `size-9` → `size-10`
+
+### Phase 3: Documentation Update
+- [ ] `docs/DESIGN.md`: Sync touch target table with actual values
+
+### Phase 4: Verification
+- [ ] Run typecheck
+- [ ] Run E2E smoke tests
+- [ ] Manual iPhone test
+- [ ] Verify header height doesn't break sticky positioning
+
+---
+
+## Decision: APPROVED
+
+**Approach:** Bump all touch tokens +4px AND fix hardcoded sizes.
+
+**Rationale:**
+1. Uses proper token system (no arbitrary values)
+2. Consistent 4px grid alignment
+3. Minimal layout impact (most elements already have flex/grid containers)
+4. All touch targets will be ≥40px, exceeding WCAG 2.2 AA (24px min)
+
+**Risk:** Low — touch targets becoming slightly larger is universally positive for mobile UX.
+
+---
+
+## Status: Ready for Implementation
+
+Next steps:
+1. Implement Phase 1 (token update)
+2. Implement Phase 2 (hardcoded fixes)
+3. Run verification gates
+4. Update documentation
+
+---
+
+## Desktop Audit Results
+
+### Button Component Sizes (button.tsx)
+
+The Button component already has well-considered Treido sizing:
+
+| Size | Height | Comment |
+|------|--------|---------|
+| `xs` | 32px (h-8) | Minimum for density |
+| `sm` | 36px (h-9) | Compact |
+| `default` | **44px (h-11)** | Treido standard ✓ |
+| `lg` | 48px (h-12) | Touch-safe large ✓ |
+| `xl` | 56px (h-14) | Hero CTA |
+| `icon` | **44px (size-11)** | Treido touch ✓ |
+| `icon-sm` | 36px (size-9) | Compact icon |
+| `icon-lg` | 48px (size-12) | Large icon ✓ |
+
+**Desktop buttons are FINE** — they use generous 44px defaults.
+
+### Desktop Header Icons (dropdowns/)
+
+| Component | Current | Status |
+|-----------|---------|--------|
+| Wishlist | `size-10` (40px) | ✓ Good |
+| Notifications | `size-10` (40px) | ✓ Good |
+| Messages | `size-10` (40px) | ✓ Good |
+| Account (icon variant) | `size-10` (40px) | ✓ Good |
+| Account (full variant) | `h-10` (40px) | ✓ Good |
+
+### Desktop Navigation (category-subheader.tsx)
+
+| Element | Current | Status |
+|---------|---------|--------|
+| All Categories button | `h-10` (40px) | ✓ Good |
+| Category nav items | `min-h-10` (40px) | ✓ Good |
+
+### Desktop Search (desktop-search.tsx)
+
+| Element | Current | Status |
+|---------|---------|--------|
+| Search form | `h-11` (44px) | ✓ Good |
+| Submit button | `size="icon-sm"` = 36px | Acceptable (inside input) |
+
+### Desktop Filter Modal
+
+| Element | Current | Notes |
+|---------|---------|-------|
+| Trigger pill | `h-9` (36px) | ⚠️ Slightly small |
+| Search input | `h-9` (36px) | Acceptable for modal |
+| Inputs | `h-8` (32px) | Acceptable for dense filter UI |
+
+---
+
+## Desktop Conclusion: NO CHANGES NEEDED
+
+Desktop touch targets are already excellent:
+- All header icons: 40px ✓
+- Default buttons: 44px ✓  
+- Navigation items: 40px ✓
+- Search bar: 44px ✓
+
+The only slightly tight elements are inside modals/popovers where density is acceptable.
+
+**Desktop uses mouse precision, not finger taps** — current sizes are appropriate.
+
+---
+
+## Final Implementation Scope
+
+**Mobile-only changes:**
+
+### 1. Token Update (globals.css)
+Bump touch tokens +4px to align with modern mobile UX:
+```css
+--spacing-touch-xs: 2rem;      /* 32px (was 28px) */
+--spacing-touch-sm: 2.25rem;   /* 36px (was 32px) */
+--spacing-touch:    2.5rem;    /* 40px (was 36px) */
+--spacing-touch-lg: 3rem;      /* 48px (was 44px) */
+```
+
+### 2. Hardcoded Mobile Fixes
+- `sidebar-menu-v2.tsx`: SSR span + Button → `size-10`
+- `site-header.tsx`: Back button → `size-10`
+
+### 3. Documentation Sync
+- Update `docs/DESIGN.md` touch target table
+
+**No desktop changes required.**
