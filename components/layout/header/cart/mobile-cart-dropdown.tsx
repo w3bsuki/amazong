@@ -56,11 +56,11 @@ export function MobileCartDropdown() {
         return (
             <Link
                 href="/cart"
-                className="flex items-center justify-center size-touch rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
+                className="flex items-center justify-center size-10 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
                 aria-label={tNav('cart')}
             >
                 <span className="relative" aria-hidden="true">
-                    <ShoppingCart size={22} weight="regular" className="text-header-text" />
+                    <ShoppingCart size={26} weight="regular" className="text-header-text" />
                 </span>
             </Link>
         )
@@ -70,11 +70,11 @@ export function MobileCartDropdown() {
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <button
-                    className="flex items-center justify-center size-touch rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
+                    className="flex items-center justify-center size-10 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
                     aria-label={tNav('cart')}
                 >
                     <span className="relative" aria-hidden="true">
-                        <ShoppingCart size={24} weight="regular" className="text-header-text" />
+                        <ShoppingCart size={26} weight="regular" className="text-header-text" />
                         {totalItems > 0 && (
                             <CountBadge
                                 count={totalItems}

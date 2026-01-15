@@ -375,7 +375,7 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
           className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
           aria-label={`${t("title")} ${t("ariaNotificationsHint")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
         >
-          <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer">
+          <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-[26px] cursor-pointer">
           <span className="relative" aria-hidden="true">
             <Bell weight="regular" />
             {unreadCount > 0 && (

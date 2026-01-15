@@ -100,12 +100,12 @@ Engineering boundaries and production rails: see `docs/ENGINEERING.md`.
 
 | Token | Size | Use |
 |-------|------|-----|
-| `h-touch-xs` | 24px | Minimum (inline icons) |
-| `h-touch-sm` | 28px | **Compact buttons, chips** |
-| `h-touch` | 32px | Standard buttons |
-| `h-touch-lg` | 36px | Primary CTA buttons |
+| `h-touch-xs` | 32px | Minimum (inline icons, compact chips) |
+| `h-touch-sm` | 36px | **Compact buttons, chips** |
+| `h-touch` | 40px | Standard buttons, icon buttons |
+| `h-touch-lg` | 48px | Primary CTA buttons |
 
-**Rule**: All tappable elements ≥24px. Pills/chips = `h-touch-sm rounded-full`.
+**Rule**: All tappable elements ≥32px. Pills/chips = `h-touch-sm rounded-full`.
 
 ### Semantic Colors
 

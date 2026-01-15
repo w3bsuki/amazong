@@ -82,7 +82,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-current={pathname === "/" ? "page" : undefined}
           >
             <House 
-              size={20}
+              size={24}
               weight={pathname === "/" ? "fill" : "regular"}
               className={cn(
                 "transition-colors",
@@ -108,7 +108,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-haspopup="dialog"
           >
             <SquaresFour 
-              size={20}
+              size={24}
               weight={isActive("/categories") ? "fill" : "regular"}
               className={cn(
                 "transition-colors",
@@ -153,7 +153,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
           >
             <span className="relative">
               <ChatCircle 
-                size={20}
+                size={24}
                 weight={isActive("/chat") ? "fill" : "regular"}
                 className={cn(
                   "transition-colors",
@@ -187,7 +187,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
             aria-current={isActive("/account") ? "page" : undefined}
           >
             <User 
-              size={20}
+              size={24}
               weight={isActive("/account") ? "fill" : "regular"}
               className={cn(
                 "transition-colors",

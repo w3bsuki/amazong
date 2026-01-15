@@ -161,13 +161,13 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
             <span
                 role="button"
                 className={cn(
-                    "inline-flex items-center justify-center h-9 w-9 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer",
+                    "inline-flex items-center justify-center size-10 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer [&_svg]:size-[26px]",
                     triggerClassName
                 )}
                 aria-label={locale === "bg" ? "Меню" : "Menu"}
                 data-testid="mobile-menu-trigger"
             >
-                <List size={28} weight="bold" />
+                <List weight="bold" />
             </span>
         )
     }
@@ -180,13 +180,13 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                     variant="ghost"
                     size="icon"
                     className={cn(
-                        "rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0",
+                        "size-10 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-[26px]",
                         triggerClassName
                     )}
                     aria-label={locale === "bg" ? "Меню" : "Menu"}
                     data-testid="mobile-menu-trigger"
                 >
-                    <List size={28} weight="bold" />
+                    <List weight="bold" />
                 </Button>
             </DrawerTrigger>
 

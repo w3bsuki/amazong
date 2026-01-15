@@ -37,19 +37,19 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
   const triggerContent = variant === "full" ? (
     <div
       className={cn(
-        "h-10 px-3 text-xs font-semibold leading-none border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover transition-all flex items-center cursor-pointer",
+        "h-11 px-3 text-sm font-semibold leading-none border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover transition-all flex items-center cursor-pointer",
         className
       )}
     >
-      <div className="flex items-center gap-1.5" aria-hidden="true">
+      <div className="flex items-center gap-2" aria-hidden="true">
         <div className="flex items-center justify-center text-header-text/90">
-          <UserCircle weight="fill" className="size-6" />
+          <UserCircle weight="fill" className="size-7" />
         </div>
         <div className="flex flex-col items-start leading-none gap-0.5">
-          <span className="text-2xs text-header-text/70 font-normal">
+          <span className="text-xs text-header-text/70 font-normal">
             {t("hello")}
           </span>
-          <span className="text-xs font-bold truncate max-w-20 lg:max-w-32">
+          <span className="text-sm font-bold truncate max-w-24 lg:max-w-36">
             {user ? (user.user_metadata?.full_name || user.email?.split("@")[0] || "User") : t("signIn")}
           </span>
         </div>
@@ -57,7 +57,7 @@ export function AccountDropdown({ user, variant = "icon", className }: AccountDr
     </div>
   ) : (
     <div
-      className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-10 [&_svg]:size-6 cursor-pointer", className)}
+      className={cn("inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-11 [&_svg]:size-6 cursor-pointer", className)}
     >
       <UserCircle weight="fill" />
     </div>

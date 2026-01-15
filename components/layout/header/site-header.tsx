@@ -118,10 +118,10 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
           {isProductPage ? (
             <button
               onClick={() => router.back()}
-              className="flex items-center justify-center size-9 rounded-full text-muted-foreground active:opacity-50"
+              className="flex items-center justify-center size-10 rounded-full text-muted-foreground active:opacity-50"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
-              <CaretLeft size={20} weight="bold" />
+              <CaretLeft size={26} weight="bold" />
             </button>
           ) : (
             <SidebarMenu user={user} categories={categories} triggerClassName="justify-start" />
@@ -175,9 +175,9 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
       <div className="hidden md:block bg-header-bg text-header-text">
         <div className="container grid grid-cols-[auto_1fr_auto] items-center h-14 md:h-16 gap-3">
           {/* Left Section - Logo + Location */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <Link href="/" prefetch={true} className="flex items-center shrink-0 outline-none" aria-label={locale === "bg" ? "Начало" : "Home"}>
-              <span className="text-xl font-semibold tracking-tight leading-none text-header-text">treido.</span>
+              <span className="text-2xl font-bold tracking-tight leading-none text-header-text">treido.</span>
             </Link>
             <div className="hidden lg:block">
               <AccountDropdown user={user} variant="full" />

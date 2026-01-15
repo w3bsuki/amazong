@@ -424,70 +424,11 @@ Next steps:
 
 ---
 
-## Desktop Audit Results
+## Desktop Audit
 
-### Button Component Sizes (button.tsx)
+See separate file: [AUDIT-desktop-touch-targets.md](AUDIT-desktop-touch-targets.md)
 
-The Button component already has well-considered Treido sizing:
-
-| Size | Height | Comment |
-|------|--------|---------|
-| `xs` | 32px (h-8) | Minimum for density |
-| `sm` | 36px (h-9) | Compact |
-| `default` | **44px (h-11)** | Treido standard ✓ |
-| `lg` | 48px (h-12) | Touch-safe large ✓ |
-| `xl` | 56px (h-14) | Hero CTA |
-| `icon` | **44px (size-11)** | Treido touch ✓ |
-| `icon-sm` | 36px (size-9) | Compact icon |
-| `icon-lg` | 48px (size-12) | Large icon ✓ |
-
-**Desktop buttons are FINE** — they use generous 44px defaults.
-
-### Desktop Header Icons (dropdowns/)
-
-| Component | Current | Status |
-|-----------|---------|--------|
-| Wishlist | `size-10` (40px) | ✓ Good |
-| Notifications | `size-10` (40px) | ✓ Good |
-| Messages | `size-10` (40px) | ✓ Good |
-| Account (icon variant) | `size-10` (40px) | ✓ Good |
-| Account (full variant) | `h-10` (40px) | ✓ Good |
-
-### Desktop Navigation (category-subheader.tsx)
-
-| Element | Current | Status |
-|---------|---------|--------|
-| All Categories button | `h-10` (40px) | ✓ Good |
-| Category nav items | `min-h-10` (40px) | ✓ Good |
-
-### Desktop Search (desktop-search.tsx)
-
-| Element | Current | Status |
-|---------|---------|--------|
-| Search form | `h-11` (44px) | ✓ Good |
-| Submit button | `size="icon-sm"` = 36px | Acceptable (inside input) |
-
-### Desktop Filter Modal
-
-| Element | Current | Notes |
-|---------|---------|-------|
-| Trigger pill | `h-9` (36px) | ⚠️ Slightly small |
-| Search input | `h-9` (36px) | Acceptable for modal |
-| Inputs | `h-8` (32px) | Acceptable for dense filter UI |
-
----
-
-## Desktop Conclusion: NO CHANGES NEEDED
-
-Desktop touch targets are already excellent:
-- All header icons: 40px ✓
-- Default buttons: 44px ✓  
-- Navigation items: 40px ✓
-- Search bar: 44px ✓
-
-The only slightly tight elements are inside modals/popovers where density is acceptable.
-
-**Desktop uses mouse precision, not finger taps** — current sizes are appropriate.
+**Result:** No desktop changes needed.
 
 ---
 

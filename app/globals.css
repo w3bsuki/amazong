@@ -210,10 +210,17 @@
   --spacing-search: 2.75rem;
 
   /* === TOUCH TARGETS (Dense Marketplace) === */
-  --spacing-touch-xs: 1.75rem;
-  --spacing-touch-sm: 2rem;
-  --spacing-touch: 2.25rem;
-  --spacing-touch-lg: 2.75rem;
+  --spacing-touch-xs: 2rem;      /* 32px - minimum WCAG */
+  --spacing-touch-sm: 2.25rem;   /* 36px - compact */
+  --spacing-touch: 2.5rem;       /* 40px - header icons */
+  --spacing-touch-lg: 3rem;      /* 48px - bottom nav */
+
+  /* === ICON SIZES (65% fill ratio for touch targets) === */
+  --size-icon-xs: 1.25rem;       /* 20px - small inline */
+  --size-icon-sm: 1.375rem;      /* 22px - compact header */
+  --size-icon: 1.5rem;           /* 24px - bottom nav (50% of 48px) */
+  --size-icon-header: 1.625rem;  /* 26px - header icons (65% of 40px) */
+  --size-icon-lg: 1.75rem;       /* 28px - large/bold */
 
   /* === CATEGORY NAVIGATION === */
   --spacing-category-circle: 3.5rem;
