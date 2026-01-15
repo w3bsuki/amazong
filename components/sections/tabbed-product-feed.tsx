@@ -335,8 +335,8 @@ export function TabbedProductFeed({
       return getCategoryName(a, _locale).localeCompare(getCategoryName(b, _locale))
     })
 
-  // L0 categories displayed in the grid (14 + "All" = 15 total for perfect single row)
-  const railL0 = topCategories.slice(0, 14)
+  // L0 categories displayed in the grid (13 + "All" = 14 total)
+  const railL0 = topCategories.slice(0, 13)
 
   // Get expanded L0 category data for OLX-style subcategory display
   const expandedL0Data = expandedL0 ? topCategories.find((c) => c.slug === expandedL0) : null
@@ -347,31 +347,41 @@ export function TabbedProductFeed({
   return (
     <section id="listings" className="w-full" aria-label={t("sectionAriaLabel")}>
       {/* Discovery Card - Hero + Categories */}
-      <div className="mb-4 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+      <div className="mb-5 rounded-xl border border-border bg-card shadow-sm overflow-hidden">
         {/* Hero Banner Slot */}
         {children && (
-          <div className="p-4 pb-0">
+          <div className="border-b border-border/50 px-5 py-4">
             {children}
           </div>
         )}
 
-        {/* Category Circles - Static 15-column Grid for Desktop */}
+        {/* Category Circles - Responsive grid that fits screen width naturally */}
         {railL0.length > 0 && (
-          <div className="px-4 py-3">
-            <div className="grid grid-cols-[repeat(15,1fr)] gap-1">
+          <div className="px-5 py-4">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-foreground">{t("browseCategories")}</h2>
+              <Link
+                href="/categories"
+                className="text-sm font-medium text-primary hover:underline underline-offset-2"
+              >
+                {t("categories.all")}
+              </Link>
+            </div>
+            {/* Responsive grid: auto-fit circles */}
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(5.5rem,1fr))] gap-x-2 gap-y-3 justify-items-center">
               {/* "All" circle */}
               <CategoryCircle
                 category={{ slug: "all" }}
                 label={t("categories.all")}
                 active={!expandedL0 && !activeCategory}
                 onClick={() => handleCircleClick(null)}
-                circleClassName="size-[68px] mx-auto"
-                fallbackIconSize={26}
+                circleClassName="size-20"
+                fallbackIconSize={32}
                 fallbackIconWeight="regular"
                 variant="muted"
-                className="w-full"
+                className="w-full max-w-22"
                 labelClassName={cn(
-                  "w-full text-center text-[11px] font-medium leading-tight line-clamp-2 mt-1",
+                  "w-full text-center text-xs font-medium leading-tight line-clamp-2 mt-1.5",
                   !expandedL0 && !activeCategory ? "text-foreground" : "text-muted-foreground"
                 )}
               />
@@ -388,84 +398,86 @@ export function TabbedProductFeed({
                     label={label}
                     active={isExpanded}
                     onClick={() => handleCircleClick(cat.slug)}
-                    circleClassName="size-[68px] mx-auto"
-                    fallbackIconSize={26}
+                    circleClassName="size-20"
+                    fallbackIconSize={32}
                     fallbackIconWeight="regular"
                     variant="colorful"
                     count={count}
-                    className="w-full"
+                    className="w-full max-w-22"
                     labelClassName={cn(
-                      "w-full text-center text-[11px] font-medium leading-tight line-clamp-2 mt-1",
+                      "w-full text-center text-xs font-medium leading-tight line-clamp-2 mt-1.5",
                       isExpanded ? "text-foreground" : "text-muted-foreground"
                     )}
                   />
                 )
               })}
             </div>
+
+            {/* Subcategory Pills - inside discovery card, right below circles for better UX */}
+            {expandedL0Data && expandedL0Data.children && expandedL0Data.children.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-border/50">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Link
+                    href={`/categories/${expandedL0Data.slug}`}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                  >
+                    <span>
+                      {_locale === "bg"
+                        ? `Виж всички в ${getCategoryName(expandedL0Data, _locale)}`
+                        : `View all in ${getCategoryName(expandedL0Data, _locale)}`}
+                    </span>
+                    <CaretRight className="size-4" weight="bold" />
+                  </Link>
+                  {expandedL0Data.children.map((l1) => (
+                    <Link
+                      key={l1.slug}
+                      href={`/categories/${l1.slug}`}
+                      className="inline-flex items-center rounded-full border border-border/80 bg-background px-3.5 py-1.5 text-sm font-medium text-foreground hover:bg-muted/60 hover:border-foreground/20 transition-colors"
+                    >
+                      {getCategoryName(l1, _locale)}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
 
       {/* Quick Filter Pills + View Mode Toggle */}
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <div className="flex-1 overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-2">
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => handleTabChange(tab.id)}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors shrink-0",
-                    "border",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    isActive
-                      ? "bg-foreground text-background border-foreground"
-                      : "bg-background text-muted-foreground border-border hover:bg-muted hover:text-foreground hover:border-muted-foreground/30"
-                  )}
-                >
-                  <Icon size={16} weight={isActive ? "fill" : "regular"} />
-                  {tab.label}
-                </button>
-              )
-            })}
+      <div className="mb-5 rounded-xl border border-border bg-muted/30 px-4 py-3">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-2.5 pr-10 lg:pr-16">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                const isActive = activeTab === tab.id
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleTabChange(tab.id)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors shrink-0",
+                      "border",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      isActive
+                      ? "bg-foreground text-background border-foreground shadow-sm"
+                      : "bg-background text-muted-foreground border-border/80 hover:bg-muted/60 hover:text-foreground hover:border-foreground/20"
+                    )}
+                  >
+                    <Icon size={16} weight={isActive ? "fill" : "regular"} />
+                    {tab.label}
+                  </button>
+                )
+              })}
+            </div>
           </div>
-        </div>
-        {/* View Mode Toggle - Desktop only */}
-        <div className="hidden lg:block shrink-0">
-          <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+          {/* View Mode Toggle - Desktop only */}
+          <div className="hidden lg:flex items-center shrink-0 pl-4 border-l border-border/50">
+            <ViewModeToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+          </div>
         </div>
       </div>
-
-      {/* Subcategory Pills (when L0 expanded) */}
-      {expandedL0Data && expandedL0Data.children && expandedL0Data.children.length > 0 && (
-        <div className="mb-4">
-          <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/30 p-3">
-            <Link
-              href={`/categories/${expandedL0Data.slug}`}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-            >
-              <span>
-                {_locale === "bg"
-                  ? `Виж всички в ${getCategoryName(expandedL0Data, _locale)}`
-                  : `View all in ${getCategoryName(expandedL0Data, _locale)}`}
-              </span>
-              <CaretRight className="size-4" weight="bold" />
-            </Link>
-            {expandedL0Data.children.map((l1) => (
-              <Link
-                key={l1.slug}
-                href={`/categories/${l1.slug}`}
-                className="inline-flex items-center rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted hover:border-foreground/20 transition-colors"
-              >
-                {getCategoryName(l1, _locale)}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Product Grid/List */}
       <div role="list" aria-live="polite">
@@ -507,7 +519,7 @@ export function TabbedProductFeed({
             <div className={cn(
               viewMode === "list"
                 ? "flex flex-col gap-3"
-                : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-4 gap-y-8"
+                : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-5 gap-y-6"
             )}>
               {products.map((product, index) => (
                 <div key={product.id} role="listitem">
@@ -570,8 +582,8 @@ export function TabbedProductFeed({
             </div>
 
             {hasMore && (
-              <div className="mt-12 text-center">
-                <Button onClick={loadMore} disabled={isLoading} size="lg">
+              <div className="mt-10 text-center">
+                <Button onClick={loadMore} disabled={isLoading} size="lg" className="min-w-36">
                   {isLoading ? (
                     <span className="flex items-center gap-2">
                       <span

@@ -343,7 +343,9 @@
         "grid": "Мрежа",
         "list": "Списък",
         "gridView": "Изглед мрежа",
-        "listView": "Изглед списък"
+        "listView": "Изглед списък",
+        "switchToGrid": "Превключи на мрежа",
+        "switchToList": "Превключи на списък"
     },
     "ProductSocialProof": {
         "viewCount": "{count, plural, one {# човек разгледа това} other {# души разгледаха това}}",

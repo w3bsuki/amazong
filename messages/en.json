@@ -343,7 +343,9 @@
         "grid": "Grid",
         "list": "List",
         "gridView": "Grid view",
-        "listView": "List view"
+        "listView": "List view",
+        "switchToGrid": "Switch to grid view",
+        "switchToList": "Switch to list view"
     },
     "ProductSocialProof": {
         "viewCount": "{count, plural, one {# person viewed this} other {# people viewed this}}",

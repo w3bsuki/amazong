@@ -55,18 +55,17 @@ export function CategoryCircleVisual({
   const bgClass = isColorful ? colors.bg : "bg-muted/20"
   const iconColorClass = isColorful ? colors.text : "text-foreground"
   
-  // Ring style: active uses category color, inactive uses subtle border
+  // Ring style: active uses category color, inactive uses subtle border with hover
   const ringClass = active
-    ? cn("ring-2", isColorful ? colors.ring : "ring-primary")
-    : "ring-1 ring-border/50 group-hover:ring-2 group-hover:ring-foreground/15"
+    ? cn("ring-2 ring-offset-2 ring-offset-background", isColorful ? colors.ring : "ring-primary")
+    : "ring-1 ring-border/60 group-hover:ring-2 group-hover:ring-border"
 
   return (
     <div
       className={cn(
         "rounded-full flex items-center justify-center overflow-hidden",
         bgClass,
-        "transition-all duration-150",
-        "group-active:scale-95",
+        "transition-shadow duration-150",
         ringClass,
         className
       )}

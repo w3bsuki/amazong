@@ -86,7 +86,6 @@ export function CategoryCircle({
     "p-1",
     "rounded-md",
     "transition-colors",
-    "hover:bg-muted/50",
     "touch-action-manipulation",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
     dimmed ? "opacity-50" : "opacity-100",

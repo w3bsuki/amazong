@@ -64,8 +64,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           ================================================================ */}
       <div className="hidden md:block w-full">
         {/* Unified Discovery Container - Everything in one visual block */}
-        <div className="w-full bg-background py-4">
-          <div className="container space-y-4">
+        <div className="w-full bg-background py-5">
+          <div className="container space-y-5">
             {/* Product Feed with integrated hero + category circles + filters */}
             <Suspense fallback={<TabbedProductFeedSkeleton />}>
               <TabbedProductFeed

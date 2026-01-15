@@ -14,50 +14,25 @@ interface ViewModeToggleProps {
 }
 
 /**
- * ViewModeToggle - Toggle between grid and list views
- * OLX/Bazar-style segmented control
+ * ViewModeToggle - Single button that toggles between grid and list views
  */
 export function ViewModeToggle({ viewMode, onViewModeChange, className }: ViewModeToggleProps) {
   const t = useTranslations("ViewMode")
+  const isGrid = viewMode === "grid"
+  const nextMode = isGrid ? "list" : "grid"
+  const Icon = isGrid ? SquaresFour : List
+  const label = isGrid ? t("grid") : t("list")
 
   return (
-    <div
-      className={cn("inline-flex items-center rounded-md border border-border bg-muted/30 p-0.5", className)}
-      role="group"
-      aria-label={t("ariaLabel")}
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => onViewModeChange(nextMode)}
+      className={cn("gap-1.5", className)}
+      aria-label={isGrid ? t("switchToList") : t("switchToGrid")}
     >
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onViewModeChange("grid")}
-        className={cn(
-          "h-8 px-2.5 rounded-sm gap-1.5 transition-colors",
-          viewMode === "grid"
-            ? "bg-background text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground hover:bg-transparent"
-        )}
-        aria-pressed={viewMode === "grid"}
-        aria-label={t("gridView")}
-      >
-        <SquaresFour size={16} weight={viewMode === "grid" ? "fill" : "regular"} />
-        <span className="sr-only sm:not-sr-only text-xs font-medium">{t("grid")}</span>
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => onViewModeChange("list")}
-        className={cn(
-          "h-8 px-2.5 rounded-sm gap-1.5 transition-colors",
-          viewMode === "list"
-            ? "bg-background text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground hover:bg-transparent"
-        )}
-        aria-pressed={viewMode === "list"}
-        aria-label={t("listView")}
-      >
-        <List size={16} weight={viewMode === "list" ? "fill" : "regular"} />
-        <span className="sr-only sm:not-sr-only text-xs font-medium">{t("list")}</span>
-      </Button>
-    </div>
+      <Icon size={16} weight="fill" />
+      <span className="text-sm font-medium">{label}</span>
+    </Button>
   )
 }
