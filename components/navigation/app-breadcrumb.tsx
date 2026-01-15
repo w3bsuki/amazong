@@ -99,22 +99,25 @@ export function AppBreadcrumb({
 
 /**
  * Pre-configured breadcrumb items for common pages.
- * Use with AppBreadcrumb: `<AppBreadcrumb items={breadcrumbPresets.account} />`
+ * Use with AppBreadcrumb: `<AppBreadcrumb items={breadcrumbPresets(locale).account} />`
  */
-export const breadcrumbPresets = {
-  todaysDeals: [{ label: "Today's Deals" }],
-  customerService: [{ label: "Customer Service" }],
-  giftCards: [{ label: "Gift Cards" }],
-  registry: [{ label: "Registry & Gift Lists" }],
-  sell: [{ label: "Sell on Treido" }],
-  account: [{ label: "Your Account" }],
-  cart: [{ label: "Shopping Cart" }],
-  checkout: [{ label: "Checkout" }],
-  wishlist: [{ label: "Wishlist" }],
-  about: [{ label: "About Us" }],
-  contact: [{ label: "Contact Us" }],
-  privacy: [{ label: "Privacy Policy" }],
-  terms: [{ label: "Terms of Service" }],
-  cookies: [{ label: "Cookie Policy" }],
-  returns: [{ label: "Returns & Refunds" }],
-} as const
+export const breadcrumbPresets = (locale: string) => {
+  const isBg = locale === "bg"
+  return {
+    todaysDeals: [{ label: isBg ? "Днешни оферти" : "Today's Deals" }],
+    customerService: [{ label: isBg ? "Обслужване" : "Customer Service" }],
+    giftCards: [{ label: isBg ? "Подаръчни карти" : "Gift Cards" }],
+    registry: [{ label: isBg ? "Регистър и списъци" : "Registry & Gift Lists" }],
+    sell: [{ label: isBg ? "Продай в Treido" : "Sell on Treido" }],
+    account: [{ label: isBg ? "Моят акаунт" : "Your Account" }],
+    cart: [{ label: isBg ? "Количка" : "Shopping Cart" }],
+    checkout: [{ label: isBg ? "Плащане" : "Checkout" }],
+    wishlist: [{ label: isBg ? "Любими" : "Wishlist" }],
+    about: [{ label: isBg ? "За нас" : "About Us" }],
+    contact: [{ label: isBg ? "Контакти" : "Contact Us" }],
+    privacy: [{ label: isBg ? "Политика за поверителност" : "Privacy Policy" }],
+    terms: [{ label: isBg ? "Условия за ползване" : "Terms of Service" }],
+    cookies: [{ label: isBg ? "Политика за бисквитки" : "Cookie Policy" }],
+    returns: [{ label: isBg ? "Връщания и възстановявания" : "Returns & Refunds" }],
+  } as const
+}

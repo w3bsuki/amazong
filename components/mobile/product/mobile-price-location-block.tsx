@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
+import { useEffect, useState } from "react";
 import { MapPin } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { bg, enUS } from "date-fns/locale";
@@ -32,6 +33,11 @@ export function MobilePriceLocationBlock({
   createdAt,
 }: MobilePriceLocationBlockProps) {
   const locale = useLocale();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Format price with locale-aware formatting
   const formatPrice = (p: number) =>
@@ -43,7 +49,7 @@ export function MobilePriceLocationBlock({
     }).format(p);
 
   // Calculate relative time (e.g., "2 hours ago")
-  const timeAgo = createdAt
+  const timeAgo = mounted && createdAt
     ? formatDistanceToNow(new Date(createdAt), {
         addSuffix: true,
         locale: locale === "bg" ? bg : enUS,

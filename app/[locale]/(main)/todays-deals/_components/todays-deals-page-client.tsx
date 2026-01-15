@@ -143,6 +143,15 @@ export default function TodaysDealsPageClient({
     const [activeCategory, setActiveCategory] = useState("all")
     const [activeTab, setActiveTab] = useState("all")
 
+    const formatPrice = (value: number) => {
+        return new Intl.NumberFormat(locale === "bg" ? "bg-BG" : "en-IE", {
+            style: "currency",
+            currency: "EUR",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(value)
+    }
+
     const tabs = [
         { id: "all", label: tabLabels.allDeals },
         { id: "available", label: tabLabels.available },
@@ -282,10 +291,10 @@ export default function TodaysDealsPageClient({
                             {/* Price */}
                             <div className="mb-1.5 sm:mb-2">
                                 <span className="text-lg sm:text-2xl font-bold text-foreground">
-                                    ${deal.price.toFixed(2)}
+                                    {formatPrice(deal.price)}
                                 </span>
                                 <span className="text-muted-foreground text-xs sm:text-sm line-through ml-2">
-                                    ${deal.originalPrice.toFixed(2)}
+                                    {formatPrice(deal.originalPrice)}
                                 </span>
                             </div>
 

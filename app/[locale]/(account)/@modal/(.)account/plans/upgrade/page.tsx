@@ -6,6 +6,12 @@ import { UpgradeContent } from "@/app/[locale]/(account)/account/plans/upgrade/u
 import { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 import { connection } from "next/server"
+import { routing } from "@/i18n/routing"
+
+// Generate static params for all locales - required for Next.js 16 Cache Components
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
 
 const PROFILE_SELECT_FOR_UPGRADE = 'id,tier,commission_rate,stripe_customer_id'
 const SUBSCRIPTION_PLANS_SELECT_FOR_UPGRADE =

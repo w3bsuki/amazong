@@ -2,6 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns"
 import { bg, enUS } from "date-fns/locale"
+import { useEffect, useState } from "react"
 import { Link } from "@/i18n/routing"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
@@ -61,8 +62,16 @@ interface AccountRecentActivityProps {
 
 export function AccountRecentActivity({ orders, products, sales, locale }: AccountRecentActivityProps) {
   const dateLocale = locale === 'bg' ? bg : enUS
+  const [mounted, setMounted] = useState(false)
 
-  const withLocale = (path: string) => `/${locale}${path}`
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const formatRelative = (value: string, withSuffix: boolean) => {
+    if (!mounted) return ""
+    return formatDistanceToNow(new Date(value), { addSuffix: withSuffix, locale: dateLocale })
+  }
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat(locale, {
@@ -122,7 +131,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
     <div className="space-y-6">
       {/* Recent Orders Section - Horizontal scroll on mobile */}
       <div>
-        <SectionHeader title={t.recentOrders} href={withLocale("/account/orders")} viewAllText={t.viewAll} />
+        <SectionHeader title={t.recentOrders} href="/account/orders" viewAllText={t.viewAll} />
         {orders.length === 0 ? (
           <div className="rounded-md bg-account-stat-bg border border-account-stat-border p-4 text-center">
             <div className="flex size-14 mx-auto items-center justify-center rounded-md bg-account-stat-icon-bg border border-account-stat-border mb-3">
@@ -148,7 +157,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                   return (
                     <Link
                       key={order.id}
-                      href={withLocale(`/account/orders/${order.id}`)}
+                      href={`/account/orders/${order.id}`}
                       className="flex flex-col w-36 rounded-md bg-account-stat-bg border border-account-stat-border p-3 transition-colors"
                     >
                       {/* Order Image */}
@@ -178,9 +187,11 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                       <p className="text-sm font-bold text-foreground mb-0.5">
                         {formatCurrency(order.total_amount)}
                       </p>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        {formatDistanceToNow(new Date(order.created_at), { addSuffix: false, locale: dateLocale })}
-                      </p>
+                      {formatRelative(order.created_at, false) && (
+                        <p className="text-xs text-muted-foreground mb-2">
+                          {formatRelative(order.created_at, false)}
+                        </p>
+                      )}
                       <Badge variant="outline" className={`text-2xs font-medium w-fit ${getStatusColor(order.status)}`}>
                         {getStatusText(order.status)}
                       </Badge>
@@ -206,7 +217,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                   return (
                     <Link
                       key={order.id}
-                      href={withLocale(`/account/orders/${order.id}`)}
+                      href={`/account/orders/${order.id}`}
                       className="flex items-center gap-3 p-4 hover:bg-account-card-hover transition-colors"
                     >
                       <div className="relative size-11 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
@@ -235,9 +246,11 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                         <p className="text-sm font-semibold text-account-stat-value">
                           {formatCurrency(order.total_amount)}
                         </p>
-                        <p className="text-xs text-account-stat-label mt-0.5">
-                          {formatDistanceToNow(new Date(order.created_at), { addSuffix: true, locale: dateLocale })}
-                        </p>
+                        {formatRelative(order.created_at, true) && (
+                          <p className="text-xs text-account-stat-label mt-0.5">
+                            {formatRelative(order.created_at, true)}
+                          </p>
+                        )}
                       </div>
                       <Badge variant="outline" className={`text-2xs font-medium shrink-0 ${getStatusColor(order.status)}`}>
                         {getStatusText(order.status)}
@@ -254,7 +267,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       {/* My Products Section - Only show if has products */}
       {products.length > 0 && (
         <div>
-          <SectionHeader title={t.myProducts} href={withLocale("/account/selling")} viewAllText={t.viewAll} />
+          <SectionHeader title={t.myProducts} href="/account/selling" viewAllText={t.viewAll} />
 
           {/* Mobile: Horizontal scroll cards */}
           <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
@@ -262,7 +275,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
               {products.slice(0, 5).map((product) => (
                 <Link
                   key={product.id}
-                  href={withLocale(`/product/${product.id}`)}
+                  href={`/product/${product.id}`}
                   className="flex flex-col w-36 rounded-md bg-account-stat-bg border border-account-stat-border p-3 transition-colors"
                 >
                   {/* Product Image */}
@@ -303,7 +316,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
               {products.slice(0, 3).map((product) => (
                 <Link
                   key={product.id}
-                  href={withLocale(`/product/${product.id}`)}
+                  href={`/product/${product.id}`}
                   className="flex items-center gap-3 p-4 hover:bg-account-card-hover transition-colors"
                 >
                   <div className="relative size-11 rounded-md overflow-hidden bg-account-stat-bg border border-account-stat-border shrink-0">
@@ -342,7 +355,7 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
       {/* Recent Sales Section - Only show if has sales */}
       {sales.length > 0 && (
         <div>
-          <SectionHeader title={t.recentSales} href={withLocale("/account/sales")} viewAllText={t.viewAll} />
+          <SectionHeader title={t.recentSales} href="/account/sales" viewAllText={t.viewAll} />
           <div className="rounded-md bg-account-stat-bg border border-account-stat-border overflow-hidden">
             <div className="divide-y divide-account-stat-border/50">
               {sales.slice(0, 3).map((sale, index) => (
@@ -373,9 +386,9 @@ export function AccountRecentActivity({ orders, products, sales, locale }: Accou
                     <p className="text-sm font-semibold text-account-stat-value truncate">
                       {sale.product_title || `Item #${sale.id.slice(0, 6)}`}
                     </p>
-                    {sale.created_at && (
+                    {sale.created_at && formatRelative(sale.created_at, true) && (
                       <p className="text-xs text-account-stat-label mt-0.5">
-                        {formatDistanceToNow(new Date(sale.created_at), { addSuffix: true, locale: dateLocale })}
+                        {formatRelative(sale.created_at, true)}
                       </p>
                     )}
                   </div>

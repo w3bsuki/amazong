@@ -132,7 +132,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     })
     .filter((item) => Boolean(item.id))
 
-    setItems(nextItems)
+    setItems((prev) => (nextItems.length > 0 ? nextItems : prev))
   }, [])
 
   const syncLocalCartToServer = useCallback(async (activeUserId: string) => {

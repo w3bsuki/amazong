@@ -279,7 +279,7 @@ function ConversationItem({
                 size={48}
                 name={boringAvatar.name}
                 variant={boringAvatar.variant}
-                colors={boringAvatar.colors}
+                {...(boringAvatar.colors ? { colors: boringAvatar.colors } : {})}
               />
             </AvatarFallback>
           ) : (

@@ -125,12 +125,17 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
   const t = useTranslations("NotificationsDropdown")
   const locale = useLocale()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
   const [prefs, setPrefs] = useState<NotificationPreferences>(DEFAULT_PREFS)
   const lastToastIdRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const fetchPreferences = useCallback(async () => {
     if (!user) return
@@ -458,9 +463,11 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
                         {notification.body}
                       </p>
                     )}
-                    <p className="text-2xs text-muted-foreground/70 mt-1">
-                      {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
-                    </p>
+                    {mounted && (
+                      <p className="text-2xs text-muted-foreground/70 mt-1">
+                        {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                      </p>
+                    )}
                   </div>
                   {!notification.is_read && (
                     <div className="shrink-0 w-1.5 h-1.5 rounded-full bg-brand mt-2" />

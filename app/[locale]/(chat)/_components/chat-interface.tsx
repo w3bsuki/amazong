@@ -371,7 +371,7 @@ export function ChatInterface({
                       size={40}
                       name={boringAvatar.name}
                       variant={boringAvatar.variant}
-                      colors={boringAvatar.colors}
+                      {...(boringAvatar.colors ? { colors: boringAvatar.colors } : {})}
                     />
                   </AvatarFallback>
                 ) : (
@@ -498,7 +498,7 @@ export function ChatInterface({
                       size={96}
                       name={boringAvatar.name}
                       variant={boringAvatar.variant}
-                      colors={boringAvatar.colors}
+                      {...(boringAvatar.colors ? { colors: boringAvatar.colors } : {})}
                     />
                   </AvatarFallback>
                 ) : (
@@ -692,7 +692,7 @@ export function ChatInterface({
                                 size={28}
                                 name={boringAvatar.name}
                                 variant={boringAvatar.variant}
-                                colors={boringAvatar.colors}
+                                {...(boringAvatar.colors ? { colors: boringAvatar.colors } : {})}
                               />
                             </AvatarFallback>
                           ) : (

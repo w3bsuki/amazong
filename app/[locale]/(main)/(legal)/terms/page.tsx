@@ -57,7 +57,7 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
       heroIcon={FileText}
       title={t('title')}
       lastUpdated={`${t('lastUpdated')}: ${t('lastUpdatedDate')}`}
-      breadcrumbItems={breadcrumbPresets.terms}
+      breadcrumbItems={breadcrumbPresets(locale).terms}
       tocLabel={t('tableOfContents')}
       introNotice={t('importantNotice')}
       introText={t('introText')}

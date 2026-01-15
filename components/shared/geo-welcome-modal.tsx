@@ -145,7 +145,7 @@ export function GeoWelcomeModal({ locale }: GeoWelcomeModalProps) {
 
   // Avoid SSR/client mismatches by only rendering after the app is safe to open dialogs.
   // Also require that the cookie consent banner has been acted on first to avoid overlapping dialogs.
-  if (isE2E || !safeToOpen || isLoading || !isOpen) {
+  if (isE2E || !safeToOpen || !hasCookieDecision || isLoading || !isOpen) {
     return null;
   }
 

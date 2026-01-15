@@ -37,7 +37,7 @@ export default async function GiftCardsPage({ params }: { params: Promise<{ loca
   return (
     <div className="min-h-screen bg-muted pb-12">
       <div className="container pt-4">
-        <AppBreadcrumb items={breadcrumbPresets.giftCards} />
+        <AppBreadcrumb items={breadcrumbPresets(locale).giftCards} />
       </div>
 
       <GiftCardsHero t={t} />

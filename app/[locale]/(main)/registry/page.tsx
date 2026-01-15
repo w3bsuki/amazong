@@ -36,7 +36,7 @@ export default async function RegistryPage({
     return (
         <div className="min-h-screen bg-background">
             <div className="container pt-4">
-                <AppBreadcrumb items={breadcrumbPresets.registry} />
+                <AppBreadcrumb items={breadcrumbPresets(locale).registry} />
             </div>
             
             {/* Hero Section */}

@@ -25,6 +25,8 @@ import { useTranslations, useLocale } from "next-intl"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { MobileCartHeader } from "./mobile-cart-header"
+import { useRecentlyViewed } from "@/hooks/use-recently-viewed"
+import { ProductCard } from "@/components/shared/product/product-card"
 
 /**
  * Hook to hide the parent SiteHeader on mobile for this page.
@@ -52,6 +54,7 @@ export default function CartPageClient() {
   const t = useTranslations("CartPage")
   const locale = useLocale()
   const [mounted, setMounted] = useState(false)
+  const { products: recentlyViewed, isLoaded: recentlyViewedLoaded } = useRecentlyViewed()
 
   // Hide the parent SiteHeader on mobile (cart has its own MobileCartHeader)
   useHideParentHeaderOnMobile()
@@ -93,13 +96,17 @@ export default function CartPageClient() {
   }
 
   if (items.length === 0) {
+    const recentItems = recentlyViewed
+      .filter((product) => product.username || product.storeSlug)
+      .slice(0, 4)
+
     return (
       <div className="bg-secondary/30 min-h-(--page-section-min-h-lg) pt-14 lg:pt-0">
         {/* Mobile Header - only visible on mobile */}
         <MobileCartHeader />
         
         <div className="container py-6">
-          <AppBreadcrumb items={breadcrumbPresets.cart} className="hidden lg:flex" />
+          <AppBreadcrumb items={breadcrumbPresets(locale).cart} className="hidden lg:flex" />
 
           <div className="mt-8 lg:mt-12 max-w-md mx-auto text-center">
             <div className="size-24 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -123,6 +130,30 @@ export default function CartPageClient() {
               </Button>
             </div>
           </div>
+
+          {recentlyViewedLoaded && recentItems.length > 0 && (
+            <section className="mt-10">
+              <h2 className="text-sm font-semibold text-foreground mb-3">
+                {t("recentlyViewedTitle")}
+              </h2>
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                {recentItems.map((product) => (
+                  <ProductCard
+                    key={`recent-${product.id}`}
+                    id={product.id}
+                    title={product.title}
+                    price={product.price}
+                    image={product.image || "/placeholder.svg"}
+                    slug={product.slug}
+                    username={product.username ?? product.storeSlug ?? null}
+                    showQuickAdd={false}
+                    showSeller={false}
+                    showWishlist={false}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     )
@@ -134,7 +165,7 @@ export default function CartPageClient() {
       <MobileCartHeader />
       
       <div className="container py-4 lg:py-6">
-        <AppBreadcrumb items={breadcrumbPresets.cart} className="hidden lg:flex" />
+        <AppBreadcrumb items={breadcrumbPresets(locale).cart} className="hidden lg:flex" />
 
         <div className="mt-4 mb-6 flex items-baseline justify-between">
           <div>

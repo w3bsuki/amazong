@@ -24,10 +24,9 @@ export function DesktopSearch() {
   const formRef = useRef<HTMLFormElement>(null)
 
   const buildSearchHref = useCallback((q: string) => {
-    return {
-      pathname: "/search",
-      query: { q },
-    } as const
+    const trimmed = q.trim()
+    if (!trimmed) return "/search"
+    return `/search?q=${encodeURIComponent(trimmed)}`
   }, [])
   
   const [isOpen, setIsOpen] = React.useState(false)

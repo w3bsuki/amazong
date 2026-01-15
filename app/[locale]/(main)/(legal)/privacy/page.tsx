@@ -52,7 +52,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
       heroIcon={Shield}
       title={t('title')}
       lastUpdated={`${t('lastUpdated')}: ${t('lastUpdatedDate')}`}
-      breadcrumbItems={breadcrumbPresets.privacy}
+      breadcrumbItems={breadcrumbPresets(locale).privacy}
       tocLabel={t('tableOfContents')}
       introNotice={t('introNotice')}
       introText={t('introText')}

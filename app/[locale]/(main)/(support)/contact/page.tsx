@@ -53,7 +53,7 @@ export default async function ContactPage({
       <div className="bg-header-bg text-white">
         <div className="container py-10 md:py-16">
           <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
-            <AppBreadcrumb items={breadcrumbPresets.contact} />
+            <AppBreadcrumb items={breadcrumbPresets(locale).contact} />
           </div>
           <div className="max-w-2xl">
             <h1 className="text-2xl md:text-4xl font-bold mb-3">{t('heroTitle')}</h1>

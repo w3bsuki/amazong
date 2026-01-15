@@ -46,7 +46,7 @@ export default async function ReturnsPage({ params }: { params: Promise<{ locale
       <div className="bg-header-bg text-white">
         <div className="container py-10 md:py-16">
           <div className="[&_nav]:border-white/20 [&_nav]:mb-4 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
-            <AppBreadcrumb items={breadcrumbPresets.returns} />
+            <AppBreadcrumb items={breadcrumbPresets(locale).returns} />
           </div>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="max-w-2xl">

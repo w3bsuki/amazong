@@ -62,7 +62,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border/60 pb-safe lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border/60 pb-safe md:hidden"
         role="navigation"
         aria-label="Mobile navigation"
         data-testid="mobile-tab-bar"

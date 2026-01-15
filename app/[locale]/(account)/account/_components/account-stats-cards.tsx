@@ -17,13 +17,6 @@ interface AccountStatsProps {
 }
 
 export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
-  const withLocale = (path: string) => {
-    if (!path.startsWith("/")) return path
-    if (path === "/") return `/${locale}`
-    if (path.startsWith(`/${locale}/`) || path === `/${locale}`) return path
-    return `/${locale}${path}`
-  }
-
   const t = {
     orders: locale === 'bg' ? 'Поръчки' : 'Orders',
     sales: locale === 'bg' ? 'Продажби' : 'Sales',
@@ -82,7 +75,7 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
           {quickActions.slice(0, 5).map((action) => (
             <Link
               key={action.href}
-              href={withLocale(action.href)}
+              href={action.href}
               className="flex flex-col items-center gap-1.5 py-2"
             >
               {/* Circular neutral icon */}
@@ -109,7 +102,7 @@ export function AccountStatsCards({ totals, locale }: AccountStatsProps) {
         {quickActions.map((action) => (
           <Link
             key={action.href}
-            href={withLocale(action.href)}
+            href={action.href}
             className="group flex items-center gap-2 px-4 py-2 rounded-full bg-account-stat-bg border border-account-stat-border hover:bg-account-card-hover transition-all shrink-0"
           >
             <div className="flex size-7 items-center justify-center rounded-full bg-account-stat-icon-bg">

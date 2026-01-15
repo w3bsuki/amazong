@@ -5,13 +5,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useOptimis
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useAuth } from "./auth-state-manager"
-
-// Detect locale from cookie (same pattern as Next-intl)
-function getLocale(): "en" | "bg" {
-  if (typeof document === "undefined") return "en"
-  const match = document.cookie.match(/NEXT_LOCALE=([^;]+)/)
-  return (match?.[1] === "bg" ? "bg" : "en")
-}
+import { useLocale } from "next-intl"
 
 // Wishlist toast messages (i18n)
 const messages = {
@@ -61,6 +55,8 @@ const WishlistContext = createContext<WishlistContextType | undefined>(undefined
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading } = useAuth()
+  const locale = useLocale()
+  const localeKey = locale === "bg" ? "bg" : "en"
   const [items, setItems] = useState<WishlistItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const hasSyncedRef = useRef<string | null>(null)
@@ -188,8 +184,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }, [optimisticItems])
 
   const addToWishlist = async (product: { id: string; title: string; price: number; image: string }) => {
-    const locale = getLocale()
-    const t = messages[locale]
+    const t = messages[localeKey]
     
     if (!user?.id) {
       toast.error(t.signInRequired, {
@@ -244,7 +239,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }
 
   const removeFromWishlist = async (productId: string) => {
-    const t = messages[getLocale()]
+    const t = messages[localeKey]
     
     if (!user?.id) return
 

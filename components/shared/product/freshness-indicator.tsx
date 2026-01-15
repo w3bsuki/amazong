@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useLocale, useTranslations } from "next-intl"
 import { Clock } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
@@ -82,8 +83,13 @@ export function FreshnessIndicator({
 }: FreshnessIndicatorProps) {
   const locale = useLocale()
   const t = useTranslations("Freshness")
+  const [hydrated, setHydrated] = useState(false)
 
-  if (!createdAt) return null
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
+  if (!createdAt || !hydrated) return null
 
   const { label, isFresh, isToday } = formatFreshness(createdAt, locale, t)
 

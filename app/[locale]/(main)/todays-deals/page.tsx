@@ -46,7 +46,7 @@ export default async function TodaysDealsPage({
           {/* Breadcrumb */}
           <div className="[&_nav]:border-white/20 [&_nav]:mb-2 [&_a]:text-white/80 [&_a:hover]:text-white [&_span[aria-current]]:text-white [&_svg]:text-white/50">
             <AppBreadcrumb
-              items={breadcrumbPresets.todaysDeals}
+              items={breadcrumbPresets(locale).todaysDeals}
               homeLabel={locale === "bg" ? "Начало" : "Treido"}
             />
           </div>

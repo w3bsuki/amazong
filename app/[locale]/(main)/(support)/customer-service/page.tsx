@@ -48,7 +48,7 @@ export default async function CustomerServicePage({ params }: { params: Promise<
     return (
         <div className="min-h-screen bg-background pb-12 overflow-x-hidden">
             <div className="container py-8 px-4 sm:px-6">
-                <AppBreadcrumb items={breadcrumbPresets.customerService} />
+                <AppBreadcrumb items={breadcrumbPresets(locale).customerService} />
                 
                 <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
 

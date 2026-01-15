@@ -52,7 +52,7 @@ export default async function CookiesPage({ params }: { params: Promise<{ locale
       heroIcon={Cookie}
       title={t('pageTitle')}
       lastUpdated={`${t('lastUpdated')}: ${t('lastUpdatedDate')}`}
-      breadcrumbItems={breadcrumbPresets.cookies}
+      breadcrumbItems={breadcrumbPresets(locale).cookies}
       tocLabel={t('tableOfContents')}
       introNotice={t('introNotice')}
       introText={t('introText')}
