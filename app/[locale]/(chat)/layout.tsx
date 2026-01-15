@@ -30,7 +30,7 @@ export default async function ChatLayout({
     setRequestLocale(locale);
 
     return (
-        <div className="flex h-dvh w-full min-h-0 bg-background overflow-hidden">
+        <div className="fixed inset-0 flex w-full bg-background overflow-hidden">
             {children}
         </div>
     );
