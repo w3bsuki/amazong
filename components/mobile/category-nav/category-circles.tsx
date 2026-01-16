@@ -181,7 +181,7 @@ export function CategoryCircles({
     <div className={cn("px-(--page-inset) py-3 overflow-x-auto no-scrollbar", className)}>
       <div
         ref={containerRef}
-        className="flex items-start gap-3"
+        className="flex items-start gap-2"
       >
         {/* 'All' Circle (Static - Always visible) */}
         <CategoryCircle
@@ -189,11 +189,11 @@ export function CategoryCircles({
           label={locale === 'bg' ? 'Всички' : 'All'}
           active={!activeL2}
           onClick={() => onBack()}
-          circleClassName="size-14"
+          circleClassName="size-(--spacing-category-circle)"
           fallbackIconSize={24}
           fallbackIconWeight="regular"
           variant="colorful"
-          className="flex-none w-[4.5rem]"
+          className="flex-none w-(--spacing-category-item-lg)"
           labelClassName={cn(
             "w-full text-2xs text-center leading-tight line-clamp-2 px-0 mt-1.5",
             "font-medium",
@@ -215,12 +215,12 @@ export function CategoryCircles({
               {...(href ? { href, prefetch: true } : { onClick: () => onCircleClick(sub) })}
               active={isActive}
               loading={isLoading}
-              circleClassName="size-14"
+              circleClassName="size-(--spacing-category-circle)"
               fallbackIconSize={24}
               fallbackIconWeight="regular"
               variant="colorful"
               label={getCategoryShortName(sub, locale)}
-              className="flex-none w-[4.5rem]"
+              className="flex-none w-(--spacing-category-item-lg)"
               labelClassName={cn(
                 "w-full text-2xs text-center leading-tight line-clamp-2 px-0 mt-1.5",
                 "font-medium",

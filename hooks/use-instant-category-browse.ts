@@ -40,9 +40,18 @@ function withoutAttrParams(params: URLSearchParams): URLSearchParams {
   return next
 }
 
-function replaceUrlSilently(nextPath: string) {
+/**
+ * Update URL for category navigation.
+ * - For filters: use replaceState (no history entry)
+ * - For category changes: use pushState (proper back button support)
+ */
+function updateUrl(nextPath: string, createHistoryEntry: boolean) {
   try {
-    window.history.replaceState(null, "", nextPath)
+    if (createHistoryEntry) {
+      window.history.pushState(null, "", nextPath)
+    } else {
+      window.history.replaceState(null, "", nextPath)
+    }
   } catch {
     // Non-blocking; URL sync is a UX enhancement.
   }
@@ -119,10 +128,14 @@ export function useInstantCategoryBrowse(options: {
     return `/api/products/newest?${next.toString()}`
   }, [])
 
-  const syncUrl = useCallback((slug: string, params: URLSearchParams) => {
+  /**
+   * Sync URL with current category state.
+   * @param createHistoryEntry - true for category changes (back button works), false for filter changes
+   */
+  const syncUrl = useCallback((slug: string, params: URLSearchParams, createHistoryEntry: boolean = false) => {
     const qs = params.toString()
     const nextPath = `/${locale}/categories/${encodeURIComponent(slug)}${qs ? `?${qs}` : ""}`
-    replaceUrlSilently(nextPath)
+    updateUrl(nextPath, createHistoryEntry)
   }, [locale])
 
   const loadPage = useCallback(async (opts: {
@@ -172,25 +185,31 @@ export function useInstantCategoryBrowse(options: {
     if (!enabled) return
 
     // New filters apply instantly to current category.
+    // Use replaceState (no history entry) - filters shouldn't pollute back button
     setAppliedParams(nextParams)
-    syncUrl(categorySlug, nextParams)
+    syncUrl(categorySlug, nextParams, false)
 
     await loadPage({ slug: categorySlug, params: nextParams, page: 1, append: false })
   }, [enabled, categorySlug, loadPage, syncUrl])
 
-  const setCategorySlug = useCallback(async (nextSlug: string, opts?: { clearAttrFilters?: boolean }) => {
-    if (!enabled) return
-    if (!nextSlug || nextSlug === categorySlug) return
-
-    const nextParams = opts?.clearAttrFilters ? withoutAttrParams(appliedParams) : new URLSearchParams(appliedParams.toString())
-
-    // Set loading slug immediately for instant visual feedback
+  /**
+   * Internal navigation - fetches context + products for a category.
+   * Shared by both user-initiated navigation and popstate handler.
+   */
+  const navigateToCategory = useCallback(async (
+    nextSlug: string,
+    nextParams: URLSearchParams,
+    updateHistory: boolean
+  ) => {
     setLoadingSlug(nextSlug)
     setCategorySlugState(nextSlug)
     setAppliedParams(nextParams)
-    syncUrl(nextSlug, nextParams)
 
-    // Context (cached) + products (fresh/cached)
+    if (updateHistory) {
+      syncUrl(nextSlug, nextParams, true)
+    }
+
+    // Context (cached) + products
     try {
       const cached = contextCacheRef.current.get(nextSlug)
       const context = cached ?? (await fetchJson<CategoryContextResponse>(`/api/categories/${encodeURIComponent(nextSlug)}/context`))
@@ -202,13 +221,23 @@ export function useInstantCategoryBrowse(options: {
       setChildren(context.children)
       setAttributes(context.attributes)
     } catch {
-      // If context fails, we still let products load (best-effort).
+      // If context fails, products still load (best-effort).
     }
 
     await loadPage({ slug: nextSlug, params: nextParams, page: 1, append: false })
-    // Clear loading slug after navigation completes
     setLoadingSlug(null)
-  }, [enabled, categorySlug, appliedParams, loadPage, locale, syncUrl])
+  }, [loadPage, locale, syncUrl])
+
+  const setCategorySlug = useCallback(async (nextSlug: string, opts?: { clearAttrFilters?: boolean }) => {
+    if (!enabled) return
+    if (!nextSlug || nextSlug === categorySlug) return
+
+    const nextParams = opts?.clearAttrFilters
+      ? withoutAttrParams(appliedParams)
+      : new URLSearchParams(appliedParams.toString())
+
+    await navigateToCategory(nextSlug, nextParams, true)
+  }, [enabled, categorySlug, appliedParams, navigateToCategory])
 
   const goBack = useCallback(async () => {
     if (!enabled) return
@@ -247,6 +276,26 @@ export function useInstantCategoryBrowse(options: {
       prefetchCategory(child.slug)
     })
   }, [enabled, children, prefetchCategory])
+
+  // Handle browser back/forward navigation (popstate)
+  useEffect(() => {
+    if (!enabled) return
+
+    const handlePopState = () => {
+      const path = window.location.pathname
+      const match = path.match(/\/categories\/([^/?]+)/)
+      const urlSlug = match?.[1] ? decodeURIComponent(match[1]) : null
+
+      if (urlSlug && urlSlug !== categorySlug) {
+        const params = new URLSearchParams(window.location.search)
+        // Don't create new history entry - we're responding to existing navigation
+        navigateToCategory(urlSlug, params, false)
+      }
+    }
+
+    window.addEventListener("popstate", handlePopState)
+    return () => window.removeEventListener("popstate", handlePopState)
+  }, [enabled, categorySlug, navigateToCategory])
 
   return {
     categorySlug,

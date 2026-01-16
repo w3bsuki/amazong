@@ -90,8 +90,8 @@ export function SubcategoryCircles({
       <div className="relative">
         <div
           className={cn(
-            "flex gap-2 py-1 pb-2 pr-4 overflow-x-auto scrollbar-hide",
-            isDesktop ? "gap-3 flex-wrap overflow-x-visible" : "sm:flex-wrap sm:overflow-x-visible"
+            "flex gap-1.5 py-1 pb-2 pr-4 overflow-x-auto scrollbar-hide",
+            isDesktop ? "gap-2.5 flex-wrap overflow-x-visible" : "sm:flex-wrap sm:overflow-x-visible"
           )}
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >

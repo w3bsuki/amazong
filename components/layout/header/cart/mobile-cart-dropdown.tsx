@@ -209,10 +209,10 @@ export function MobileCartDropdown() {
                     </div>
                 )}
 
-                <DrawerFooter className="border-t border-border pt-2 gap-1.5">
+                <DrawerFooter className="border-t border-border gap-1.5">
                     {items.length === 0 ? (
                         <Link href="/search" onClick={() => setOpen(false)} className="w-full">
-                            <Button variant="cta" size="lg" className="w-full">
+                            <Button variant="cta" size="default" className="w-full">
                                 {t('startShopping')}
                             </Button>
                         </Link>
@@ -223,12 +223,12 @@ export function MobileCartDropdown() {
                                 <span className="text-base font-bold text-foreground">{formatPrice(subtotal)}</span>
                             </div>
                             <Link href="/checkout" onClick={() => setOpen(false)} className="block">
-                                <Button variant="cta" size="lg" className="w-full">
+                                <Button variant="cta" size="default" className="w-full">
                                     {t('checkout')}
                                 </Button>
                             </Link>
                             <Link href="/cart" onClick={() => setOpen(false)} className="block">
-                                <Button variant="outline" size="default" className="w-full">
+                                <Button variant="outline" size="sm" className="w-full">
                                     {t('viewCart')}
                                 </Button>
                             </Link>

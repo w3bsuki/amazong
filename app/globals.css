@@ -289,11 +289,11 @@
   --size-icon-lg: 1.75rem;       /* 28px - large/bold */
 
   /* === CATEGORY NAVIGATION === */
-  --spacing-category-circle: 3.5rem;
+  --spacing-category-circle: 3.75rem;
   --spacing-category-circle-desktop: 5rem;
-  --spacing-category-item: 3.75rem;
-  --spacing-category-item-lg: 4.5rem;
-  --spacing-category-item-desktop: 6.5rem;
+  --spacing-category-item: 4rem;
+  --spacing-category-item-lg: 4rem;
+  --spacing-category-item-desktop: 5.5rem;
   --spacing-nav-row: 3rem;
 
   /* === FILTER SIDEBAR === */

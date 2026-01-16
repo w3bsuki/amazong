@@ -86,7 +86,6 @@ export function CategoryCircle({
   const baseClasses = cn(
     "group snap-start shrink-0",
     "flex flex-col items-center justify-start",
-    "p-1",
     "rounded-md",
     "transition-colors",
     "touch-action-manipulation",

@@ -179,11 +179,12 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
                 ))}
               </div>
 
-              <DrawerFooter className="border-t border-border pt-2 gap-1.5">
+              <DrawerFooter className="border-t border-border gap-1.5">
                 <Button 
                   asChild 
                   variant="cta"
-                  size="lg"
+                  size="default"
+                  className="w-full"
                   onClick={() => setOpen(false)}
                 >
                   <Link href="/account/wishlist" className="gap-1.5">
