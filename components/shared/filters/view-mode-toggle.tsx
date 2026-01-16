@@ -26,13 +26,13 @@ export function ViewModeToggle({ viewMode, onViewModeChange, className }: ViewMo
   return (
     <Button
       variant="outline"
-      size="sm"
+      size="icon-sm"
       onClick={() => onViewModeChange(nextMode)}
-      className={cn("gap-1.5", className)}
+      className={cn("gap-0", className)}
       aria-label={isGrid ? t("switchToList") : t("switchToGrid")}
     >
       <Icon size={16} weight="fill" />
-      <span className="text-sm font-medium">{label}</span>
+      <span className="sr-only">{label}</span>
     </Button>
   )
 }

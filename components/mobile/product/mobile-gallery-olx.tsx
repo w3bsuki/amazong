@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, type ReactNode } from "react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -23,6 +23,8 @@ interface GalleryImage {
 interface MobileGalleryOlxProps {
   images: GalleryImage[];
   className?: string;
+  /** Optional overlay element (e.g., CategoryBadge) positioned top-left */
+  overlayBadge?: ReactNode;
 }
 
 /**
@@ -33,11 +35,12 @@ interface MobileGalleryOlxProps {
  * - Simple solid dot indicators (not pill-shaped)
  * - Swipe-only navigation (no arrow buttons)
  * - 4:3 aspect ratio for better product visibility
- * - Clean background
+ * - Optional overlay badge (category) in top-left corner
  */
 export function MobileGalleryOlx({ 
   images, 
-  className 
+  className,
+  overlayBadge,
 }: MobileGalleryOlxProps) {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
@@ -98,6 +101,13 @@ export function MobileGalleryOlx({
           ))}
         </CarouselContent>
       </Carousel>
+
+      {/* Category Badge Overlay - Top Left */}
+      {overlayBadge && (
+        <div className="absolute top-3 left-3 z-10">
+          {overlayBadge}
+        </div>
+      )}
 
       {/* Dot Indicators - OLX Style (solid circles only) */}
       {images.length > 1 && (

@@ -49,7 +49,12 @@ export const MobileMenuSheet = forwardRef<MobileMenuSheetHandle, MobileMenuSheet
     }
 
     return (
-      <Drawer open={open} onOpenChange={setOpen} shouldScaleBackground={false}>
+      <Drawer
+        open={open}
+        onOpenChange={setOpen}
+        direction="left"
+        shouldScaleBackground={false}
+      >
         <DrawerContent className="max-h-(--dialog-max-h)">
           {/* Header - Compact with proper touch target for close */}
           <DrawerHeader className="py-2 px-(--page-inset) border-b border-border">

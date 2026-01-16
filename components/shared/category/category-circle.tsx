@@ -84,9 +84,9 @@ export function CategoryCircle({
   fallbackIconWeight = "regular",
 }: CategoryCircleProps) {
   const baseClasses = cn(
-    "group snap-start shrink-0",
+    "group",
     "flex flex-col items-center justify-start",
-    "rounded-md",
+    "rounded-md p-0.5",
     "transition-colors",
     "touch-action-manipulation",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
@@ -116,9 +116,9 @@ export function CategoryCircle({
           </div>
         )}
       </div>
-      <span className={cn("mt-1.5", labelClassName)}>{label}</span>
+      <span className={cn("mt-1", labelClassName)}>{label}</span>
       {typeof count === "number" && count > 0 && (
-        <span className={cn("text-2xs text-muted-foreground/70 leading-none", countClassName)}>
+        <span className={cn("text-2xs text-muted-foreground/70 leading-none -mt-0.5", countClassName)}>
           {formatCount(count)}
         </span>
       )}

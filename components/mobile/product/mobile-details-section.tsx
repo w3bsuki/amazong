@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 interface DetailItem {
   label: string;
@@ -9,6 +10,8 @@ interface DetailItem {
 
 interface MobileDetailsSectionProps {
   details: DetailItem[] | null;
+  /** When true, hides bottom border (e.g., when description section follows) */
+  noBorder?: boolean;
 }
 
 /**
@@ -33,13 +36,14 @@ interface MobileDetailsSectionProps {
  */
 export function MobileDetailsSection({
   details,
+  noBorder = false,
 }: MobileDetailsSectionProps) {
   const t = useTranslations("Product");
 
   if (!details || details.length === 0) return null;
 
   return (
-    <div className="px-4 py-4 border-b border-border">
+    <div className={cn("px-4 py-4", !noBorder && "border-b border-border")}>
       {/* Section Header - OLX/treido style */}
       <h3 className="text-sm font-bold text-foreground mb-3">
         {t("detailsTitle")}

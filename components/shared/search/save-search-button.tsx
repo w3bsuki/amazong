@@ -121,7 +121,7 @@ export function SaveSearchButton({ query, category, className }: SaveSearchButto
     >
       {isSaved ? (
         <>
-          <Check size={16} weight="bold" className="text-emerald-600" />
+          <Check size={16} weight="bold" className="text-success" />
           <span className="hidden sm:inline">{t("saved")}</span>
         </>
       ) : (

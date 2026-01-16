@@ -111,7 +111,12 @@
         "categories": "Categories"
     },
     "Categories": {
-        "bannerDescription": "Browse products in this category"
+        "bannerDescription": "Browse products in this category",
+        "all": "All",
+        "viewAll": "View all categories",
+        "showMore": "Show more categories",
+        "showLess": "Show fewer categories",
+        "allIn": "All in {category}"
     },
     "Home": {
         "title": "Welcome to Treido",
@@ -1711,7 +1716,8 @@
             "promoted": "Promoted",
             "deals": "Deals",
             "price_low": "Lowest Price",
-            "nearby": "Near Me"
+            "nearby": "Near Me",
+            "more": "More"
         },
         "scroll": {
             "left": "Scroll left",

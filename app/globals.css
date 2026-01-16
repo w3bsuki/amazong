@@ -343,6 +343,27 @@
   --color-error: oklch(0.55 0.25 27);
   --color-info: oklch(0.55 0.18 250);
 
+  /* === COLORS: Marketplace Semantic === */
+  --color-verified: oklch(0.55 0.18 250);            /* Blue - verified sellers/badges */
+  --color-shipping-free: oklch(0.60 0.18 145);       /* Green - free shipping indicator */
+
+  /* === COLORS: Category Badge === */
+  --color-category-badge-bg: var(--muted);
+  --color-category-badge-border: var(--border);
+  --color-category-badge-text: var(--foreground);
+  --color-category-badge-icon: var(--muted-foreground);
+
+  /* === COLORS: Badge Variants === */
+  --color-badge-condition-bg: var(--foreground);
+  --color-badge-condition-border: transparent;
+  --color-badge-condition-text: var(--background);
+  --color-badge-shipping-bg: oklch(0.95 0.03 145);
+  --color-badge-shipping-border: oklch(0.85 0.08 145);
+  --color-badge-shipping-text: oklch(0.40 0.15 145);
+  --color-badge-stock-bg: oklch(0.95 0.03 85);
+  --color-badge-stock-border: oklch(0.85 0.08 85);
+  --color-badge-stock-text: oklch(0.45 0.15 85);
+
   /* === COLORS: Prices === */
   --color-price: var(--foreground);
   --color-price-sale: oklch(0.50 0.22 27);
@@ -352,6 +373,37 @@
   /* === COLORS: Deals/Urgency === */
   --color-deal: oklch(0.55 0.25 27);
   --color-deal-light: oklch(0.96 0.03 27);
+
+  /* === COLORS: Condition Badges (C2C Marketplace) === */
+  --color-condition-new: oklch(0.55 0.16 155);
+  --color-condition-new-bg: oklch(0.95 0.03 155);
+  --color-condition-likenew: oklch(0.55 0.14 230);
+  --color-condition-likenew-bg: oklch(0.95 0.03 230);
+  --color-condition-good: oklch(0.60 0.14 80);
+  --color-condition-good-bg: oklch(0.95 0.03 80);
+  --color-condition-fair: oklch(0.58 0.14 50);
+  --color-condition-fair-bg: oklch(0.95 0.03 50);
+  --color-condition-used: var(--muted-foreground);
+  --color-condition-used-bg: var(--muted);
+  --color-condition-refurb: oklch(0.55 0.14 290);
+  --color-condition-refurb-bg: oklch(0.95 0.03 290);
+
+  /* === COLORS: Verification Tiers === */
+  --color-verify-email: oklch(0.60 0.12 230);
+  --color-verify-phone: oklch(0.58 0.15 145);
+  --color-verify-id: oklch(0.55 0.16 155);
+  --color-verify-business: oklch(0.55 0.16 250);
+
+  /* === COLORS: Freshness Indicators === */
+  --color-fresh: oklch(0.55 0.16 155);
+  --color-fresh-bg: oklch(0.95 0.03 155);
+  --color-recent: oklch(0.55 0.14 230);
+  --color-recent-bg: oklch(0.95 0.03 230);
+
+  /* === COLORS: Social Proof === */
+  --color-hot: oklch(0.58 0.18 40);
+  --color-hot-bg: oklch(0.95 0.03 40);
+  --color-favorite: oklch(0.58 0.22 15);
 
   /* === COLORS: Ratings === */
   --color-rating: oklch(0.78 0.18 90);
@@ -379,8 +431,16 @@
   --color-header-text-muted: var(--muted-foreground);
   --color-header-hover: var(--accent);
   --color-header-active: var(--muted);
-  --color-header-nav-bg: var(--secondary);
+  --color-header-nav-bg: var(--background);
   --color-subheader-hover: var(--accent);
+
+  /* === COLORS: Search Bar (Twitter-style) === */
+  --color-search-bg: var(--muted);
+  --color-search-border: var(--border);
+  --color-search-text: var(--foreground);
+  --color-search-placeholder: var(--muted-foreground);
+  --color-search-focus-border: var(--primary);
+  --color-search-focus-ring: var(--primary);
 
   /* === COLORS: CTA Buttons === */
   --color-cta-trust-blue: var(--primary);
@@ -401,6 +461,49 @@
   --color-interactive-hover: var(--primary);
   --color-link: var(--primary);
   --color-link-hover: var(--foreground);
+
+  /* === COLORS: Seller UI === */
+  --color-seller-card: var(--card);
+  --color-seller-card-border: var(--border);
+  --color-seller-banner: var(--muted);
+  --color-seller-banner-pill: var(--background);
+
+  /* === COLORS: Urgency Banners === */
+  --color-urgency-stock-bg: oklch(0.96 0.03 85);
+  --color-urgency-stock-border: oklch(0.90 0.06 85);
+  --color-urgency-stock-text: oklch(0.45 0.12 85);
+  --color-urgency-stock-icon: oklch(0.55 0.15 85);
+  --color-urgency-stock-icon-bg: oklch(0.92 0.05 85);
+
+  --color-urgency-sale-bg: oklch(0.96 0.03 27);
+  --color-urgency-sale-border: oklch(0.90 0.06 27);
+  --color-urgency-sale-text: oklch(0.50 0.18 27);
+  --color-urgency-sale-icon: oklch(0.55 0.22 27);
+  --color-urgency-sale-icon-bg: oklch(0.92 0.05 27);
+
+  --color-urgency-viewers-bg: oklch(0.96 0.02 250);
+  --color-urgency-viewers-border: oklch(0.90 0.04 250);
+  --color-urgency-viewers-text: oklch(0.45 0.12 250);
+  --color-urgency-viewers-icon: oklch(0.55 0.16 250);
+  --color-urgency-viewers-icon-bg: oklch(0.92 0.04 250);
+
+  /* === COLORS: Social Platforms === */
+  --color-social-instagram: oklch(0.60 0.22 350);
+  --color-social-tiktok: oklch(0.15 0 0);
+  --color-social-youtube: oklch(0.55 0.25 27);
+  --color-social-twitter: oklch(0.15 0 0);
+
+  /* === COLORS: Live/Activity === */
+  --color-live-dot: oklch(0.60 0.20 145);
+
+  /* === COLORS: Status (aliases to semantic) === */
+  --color-status-success: var(--color-success);
+  --color-status-warning: var(--color-warning);
+  --color-status-error: var(--color-error);
+  --color-status-info: var(--color-info);
+
+  /* === COLORS: Order Received (additional status) === */
+  --color-order-received: oklch(0.55 0.16 155);
 }
 
 /* ===== BASE LAYER ===== */

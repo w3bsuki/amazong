@@ -178,10 +178,10 @@ export function CategoryCircles({
   }
 
   return (
-    <div className={cn("px-(--page-inset) py-3 overflow-x-auto no-scrollbar", className)}>
+    <div className={cn("px-(--page-inset) py-2 overflow-x-auto no-scrollbar", className)}>
       <div
         ref={containerRef}
-        className="flex items-start gap-2"
+        className="flex items-start gap-1.5"
       >
         {/* 'All' Circle (Static - Always visible) */}
         <CategoryCircle
@@ -195,7 +195,7 @@ export function CategoryCircles({
           variant="colorful"
           className="flex-none w-(--spacing-category-item-lg)"
           labelClassName={cn(
-            "w-full text-2xs text-center leading-tight line-clamp-2 px-0 mt-1.5",
+            "w-full text-2xs text-center leading-tight line-clamp-2 px-0 mt-1",
             "font-medium",
             !activeL2 ? "text-foreground" : "text-muted-foreground"
           )}
@@ -222,7 +222,7 @@ export function CategoryCircles({
               label={getCategoryShortName(sub, locale)}
               className="flex-none w-(--spacing-category-item-lg)"
               labelClassName={cn(
-                "w-full text-2xs text-center leading-tight line-clamp-2 px-0 mt-1.5",
+                "w-full text-2xs text-center leading-tight line-clamp-2 px-0 mt-1",
                 "font-medium",
                 isActive ? "text-foreground" : "text-muted-foreground"
               )}

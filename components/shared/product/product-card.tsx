@@ -101,7 +101,7 @@ interface ProductCardProps extends VariantProps<typeof productCardVariants> {
 
   // Seller
   sellerId?: string | null
-  sellerName?: string
+  sellerName?: string | undefined
   sellerAvatarUrl?: string | null
   sellerVerified?: boolean
   sellerEmailVerified?: boolean

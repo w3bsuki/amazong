@@ -123,12 +123,12 @@ export function DesktopSearch() {
             onSubmit={handleSearch}
             action={`/${locale}/search`}
             method="get"
-            className="relative flex h-11 w-full items-center rounded-full border border-input bg-background transition-colors focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]"
+            className="relative flex h-11 w-full items-center rounded-full bg-search-bg border border-search-border transition-colors focus-within:border-search-focus-border focus-within:ring-search-focus-ring/30 focus-within:ring-[3px] focus-within:bg-background"
           >
             <MagnifyingGlass
               size={18}
               weight="regular"
-              className="absolute left-4 text-muted-foreground pointer-events-none"
+              className="absolute left-4 text-search-placeholder pointer-events-none"
             />
 
             <Input
@@ -138,7 +138,7 @@ export function DesktopSearch() {
               enterKeyHint="search"
               name="q"
               placeholder={t("searchPlaceholder")}
-              className="h-full w-full rounded-full border-0 bg-transparent pl-11 pr-24 text-sm placeholder:text-muted-foreground focus-visible:border-0 focus-visible:ring-0"
+              className="h-full w-full rounded-full border-0 bg-transparent pl-11 pr-24 text-sm text-search-text placeholder:text-search-placeholder focus-visible:border-0 focus-visible:ring-0"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => setIsOpen(true)}

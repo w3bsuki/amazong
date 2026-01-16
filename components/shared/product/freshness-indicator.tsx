@@ -100,8 +100,8 @@ export function FreshnessIndicator({
       <span
         className={cn(
           "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
-          isToday && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-          !isToday && isFresh && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+          isToday && "bg-fresh-bg text-fresh",
+          !isToday && isFresh && "bg-recent-bg text-recent",
           !isFresh && "bg-muted text-muted-foreground",
           className
         )}
@@ -116,7 +116,7 @@ export function FreshnessIndicator({
     <span
       className={cn(
         "inline-flex items-center gap-0.5 text-tiny",
-        isFresh ? "font-medium text-emerald-600 dark:text-emerald-400" : "text-muted-foreground",
+        isFresh ? "font-medium text-fresh" : "text-muted-foreground",
         className
       )}
     >

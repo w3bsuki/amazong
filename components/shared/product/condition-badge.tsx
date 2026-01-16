@@ -20,62 +20,62 @@ interface ConditionBadgeProps {
 // =============================================================================
 
 const CONDITION_STYLES: Record<string, { bg: string; text: string; label: string; labelBg: string }> = {
-  // New conditions (green tones)
+  // New conditions (semantic green)
   new: {
-    bg: "bg-emerald-100 dark:bg-emerald-950/50",
-    text: "text-emerald-700 dark:text-emerald-400",
+    bg: "bg-condition-new-bg",
+    text: "text-condition-new",
     label: "New",
     labelBg: "Ново",
   },
   new_with_tags: {
-    bg: "bg-emerald-100 dark:bg-emerald-950/50",
-    text: "text-emerald-700 dark:text-emerald-400",
+    bg: "bg-condition-new-bg",
+    text: "text-condition-new",
     label: "New with tags",
     labelBg: "Ново с етикет",
   },
   new_without_tags: {
-    bg: "bg-emerald-50 dark:bg-emerald-950/30",
-    text: "text-emerald-600 dark:text-emerald-400",
+    bg: "bg-condition-new-bg/70",
+    text: "text-condition-new",
     label: "New w/o tags",
     labelBg: "Ново без етикет",
   },
-  // Like new / very good (blue tones)
+  // Like new / very good (semantic blue)
   like_new: {
-    bg: "bg-blue-100 dark:bg-blue-950/50",
-    text: "text-blue-700 dark:text-blue-400",
+    bg: "bg-condition-likenew-bg",
+    text: "text-condition-likenew",
     label: "Like new",
     labelBg: "Като ново",
   },
   very_good: {
-    bg: "bg-sky-100 dark:bg-sky-950/50",
-    text: "text-sky-700 dark:text-sky-400",
+    bg: "bg-condition-likenew-bg/70",
+    text: "text-condition-likenew",
     label: "Very good",
     labelBg: "Много добро",
   },
-  // Good (amber tones)
+  // Good (semantic amber)
   good: {
-    bg: "bg-amber-100 dark:bg-amber-950/50",
-    text: "text-amber-700 dark:text-amber-400",
+    bg: "bg-condition-good-bg",
+    text: "text-condition-good",
     label: "Good",
     labelBg: "Добро",
   },
-  // Fair / used (orange tones)
+  // Fair / used (semantic orange/neutral)
   fair: {
-    bg: "bg-orange-100 dark:bg-orange-950/50",
-    text: "text-orange-700 dark:text-orange-400",
+    bg: "bg-condition-fair-bg",
+    text: "text-condition-fair",
     label: "Fair",
     labelBg: "Задоволително",
   },
   used: {
-    bg: "bg-stone-100 dark:bg-stone-800/50",
-    text: "text-stone-600 dark:text-stone-400",
+    bg: "bg-condition-used-bg",
+    text: "text-condition-used",
     label: "Used",
     labelBg: "Употребявано",
   },
-  // Refurbished (purple)
+  // Refurbished (semantic purple)
   refurbished: {
-    bg: "bg-violet-100 dark:bg-violet-950/50",
-    text: "text-violet-700 dark:text-violet-400",
+    bg: "bg-condition-refurb-bg",
+    text: "text-condition-refurb",
     label: "Refurbished",
     labelBg: "Рефърбиш",
   },

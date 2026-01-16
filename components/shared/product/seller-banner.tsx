@@ -93,7 +93,7 @@ export function SellerBanner(props: {
               <AvatarFallback className="text-xs">{initials(displayName)}</AvatarFallback>
             </Avatar>
             {isOnline && (
-              <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-seller-card" />
+              <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-success border-2 border-seller-card" />
             )}
           </div>
 

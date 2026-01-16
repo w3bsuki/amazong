@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { MarketplaceHero } from "@/components/desktop/marketplace-hero"
-import { TabbedProductFeed, TabbedProductFeedSkeleton } from "@/components/sections/tabbed-product-feed"
+import { DesktopProductFeed, DesktopProductFeedSkeleton } from "@/components/sections/desktop-product-feed"
 import { MobileHomeTabs } from "@/components/mobile/mobile-home-tabs"
 import { getNewestProducts, toUI } from "@/lib/data/products"
 import { getCategoryHierarchy } from "@/lib/data/categories"
@@ -66,16 +66,17 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         {/* Unified Discovery Container - Everything in one visual block */}
         <div className="w-full bg-background py-5">
           <div className="container space-y-5">
-            {/* Product Feed with integrated hero + category circles + filters */}
-            <Suspense fallback={<TabbedProductFeedSkeleton />}>
-              <TabbedProductFeed
+            {/* Hero Section */}
+            <MarketplaceHero locale={locale} />
+            
+            {/* Product Feed with categories and filters */}
+            <Suspense fallback={<DesktopProductFeedSkeleton />}>
+              <DesktopProductFeed
                 locale={locale}
                 categories={categoriesWithChildren}
                 initialTab="newest"
                 initialProducts={initialProducts}
-              >
-                <MarketplaceHero locale={locale} />
-              </TabbedProductFeed>
+              />
             </Suspense>
           </div>
         </div>

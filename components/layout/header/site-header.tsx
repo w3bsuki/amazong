@@ -57,6 +57,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
   const t = useTranslations('Navigation')
   const locale = useLocale()
   const pathname = usePathname()
+  const isSubheaderEnabled = false
   const router = useRouter()
 
   const pathWithoutLocale = (() => {
@@ -273,18 +274,18 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
       </div>
 
       {/* Category Subheader - Hide on category detail/product pages (eBay/Target pattern) */}
-      {!isCategoryDetailRoute && !isProductPage && !hideSubheader && (
+      {isSubheaderEnabled && !isCategoryDetailRoute && !isProductPage && !hideSubheader && (
         <nav className="hidden sm:block bg-header-nav-bg text-sm border-t border-border/50 relative">
-          <div className="container text-foreground">
+          <div className="container text-header-text">
             {/* Mobile/Tablet: Quick Links with Sidebar Menu */}
             <div className="lg:hidden">
               <div className="w-full flex items-center gap-0.5 overflow-x-auto no-scrollbar">
                 <SidebarMenu user={user} categories={categories} {...(userStats && { userStats })} />
-                <Link href="/todays-deals" prefetch={true} className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
-                <Link href="/customer-service" className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
-                <Link href="/registry" className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('registry')}</Link>
-                <Link href="/gift-cards" className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('giftCards')}</Link>
-                <Link href="/sell" className="font-normal text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
+                <Link href="/todays-deals" prefetch={true} className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
+                <Link href="/customer-service" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
+                <Link href="/registry" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('registry')}</Link>
+                <Link href="/gift-cards" className="text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('giftCards')}</Link>
+                <Link href="/sell" className="font-normal text-header-text hover:text-header-text hover:bg-header-hover min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('sell')}</Link>
               </div>
             </div>
 

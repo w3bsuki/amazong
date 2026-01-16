@@ -157,8 +157,13 @@ export function MobileProductPage(props: MobileProductPageProps) {
 
   return (
     <div className="min-h-screen bg-background pb-24 lg:hidden">
-      {/* Mobile Product Header - Back, Seller Avatar, Search, Share, Wishlist, Cart */}
-      <MobileProductHeader />
+      {/* Mobile Product Header - Back, Seller Avatar + Title, Share */}
+      <MobileProductHeader
+        title={product.title}
+        sellerName={viewModel.sellerName || seller?.display_name || seller?.username}
+        sellerUsername={seller?.username || username}
+        sellerAvatarUrl={viewModel.sellerAvatarUrl}
+      />
 
       {/* JSON-LD Structured Data for SEO */}
       <script
@@ -184,22 +189,23 @@ export function MobileProductPage(props: MobileProductPageProps) {
 
       {/* ===== ABOVE THE FOLD ===== */}
       
-      {/* Gallery - Edge to Edge - OLX Style */}
+      {/* Gallery - Edge to Edge - OLX Style with Category Badge Overlay */}
       <div className="w-full">
-        <MobileGalleryOlx images={viewModel.galleryImages} />
+        <MobileGalleryOlx 
+          images={viewModel.galleryImages}
+          overlayBadge={
+            (category || rootCategory) ? (
+              <CategoryBadge
+                locale={locale}
+                category={rootCategory || category}
+                subcategory={category && rootCategory && category.slug !== rootCategory.slug ? category : null}
+                size="sm"
+                className="bg-background/90 backdrop-blur-sm shadow-sm"
+              />
+            ) : undefined
+          }
+        />
       </div>
-
-      {/* Category Badge - FIRST after gallery for context */}
-      {(category || rootCategory) && (
-        <div className="px-4 pt-2">
-          <CategoryBadge
-            locale={locale}
-            category={rootCategory || category}
-            subcategory={category && rootCategory && category.slug !== rootCategory.slug ? category : null}
-            size="sm"
-          />
-        </div>
-      )}
 
       {/* Title + Heart Row (treido-mock style - same line) */}
       <div className="flex items-start justify-between gap-4 px-4 pt-3">
@@ -286,9 +292,11 @@ export function MobileProductPage(props: MobileProductPageProps) {
       {/* ===== BELOW THE FOLD ===== */}
 
       {/* Details Section - Clean key-value list (treido-mock style) */}
+      {/* Hide bottom border when description section follows to avoid double border */}
       {viewModel.itemSpecifics.details && viewModel.itemSpecifics.details.length > 0 && (
         <MobileDetailsSection
           details={viewModel.itemSpecifics.details}
+          noBorder={Boolean(product.description)}
         />
       )}
 

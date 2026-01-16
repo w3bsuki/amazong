@@ -205,13 +205,13 @@ export function ProductCardList({
         {/* Badges row */}
         <div className="flex flex-wrap items-center gap-2 mt-1.5">
           {freeShipping && (
-            <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
+            <span className="inline-flex items-center gap-1 text-xs text-shipping-free">
               <Truck size={14} weight="bold" />
               {t("freeShipping")}
             </span>
           )}
           {showBuyerProtection && (
-            <span className="inline-flex items-center gap-1 text-xs text-blue-600">
+            <span className="inline-flex items-center gap-1 text-xs text-verified">
               <ShieldCheck size={14} weight="fill" />
               {t("buyerProtectionInline")}
             </span>
@@ -223,7 +223,7 @@ export function ProductCardList({
           <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
             <span>{sellerName}</span>
             {sellerVerified && (
-              <span className="text-blue-500">✓</span>
+              <span className="text-verified">✓</span>
             )}
           </div>
         )}

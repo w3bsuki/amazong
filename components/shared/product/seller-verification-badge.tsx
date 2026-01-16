@@ -42,10 +42,10 @@ function getVerificationTier(v: VerificationLevel): number {
 
 function getVerificationColor(tier: number): string {
   switch (tier) {
-    case 4: return "text-blue-600" // Business
-    case 3: return "text-emerald-600" // ID
-    case 2: return "text-green-500" // Phone
-    case 1: return "text-blue-400" // Email
+    case 4: return "text-verify-business" // Business
+    case 3: return "text-verify-id" // ID
+    case 2: return "text-verify-phone" // Phone
+    case 1: return "text-verify-email" // Email
     default: return "text-muted-foreground"
   }
 }
@@ -93,20 +93,20 @@ function SellerVerificationBadge({
       <div className={cn("flex items-center gap-1.5", emailVerified ? "text-foreground" : "text-muted-foreground/50")}>
         <EnvelopeSimple size={12} weight={emailVerified ? "fill" : "regular"} />
         <span>{t("email")}</span>
-        {emailVerified && <span className="text-green-500">✓</span>}
+        {emailVerified && <span className="text-success">✓</span>}
       </div>
       <div className={cn("flex items-center gap-1.5", phoneVerified ? "text-foreground" : "text-muted-foreground/50")}>
         <Phone size={12} weight={phoneVerified ? "fill" : "regular"} />
         <span>{t("phone")}</span>
-        {phoneVerified && <span className="text-green-500">✓</span>}
+        {phoneVerified && <span className="text-success">✓</span>}
       </div>
       <div className={cn("flex items-center gap-1.5", idVerified ? "text-foreground" : "text-muted-foreground/50")}>
         <IdentificationCard size={12} weight={idVerified ? "fill" : "regular"} />
         <span>{t("id")}</span>
-        {idVerified && <span className="text-green-500">✓</span>}
+        {idVerified && <span className="text-success">✓</span>}
       </div>
       {isVerifiedBusiness && (
-        <div className="flex items-center gap-1.5 text-blue-600 font-medium pt-1 border-t border-border">
+        <div className="flex items-center gap-1.5 text-verify-business font-medium pt-1 border-t border-border">
           <Buildings size={12} weight="fill" />
           <span>{t("verifiedBusiness")}</span>
         </div>
@@ -120,10 +120,10 @@ function SellerVerificationBadge({
         <TooltipTrigger asChild>
           <span className={cn(
             "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-2xs font-medium",
-            tier === 4 && "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-400",
-            tier === 3 && "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400",
-            tier === 2 && "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400",
-            tier === 1 && "bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400",
+            tier === 4 && "bg-verify-business/15 text-verify-business",
+            tier === 3 && "bg-verify-id/15 text-verify-id",
+            tier === 2 && "bg-verify-phone/15 text-verify-phone",
+            tier === 1 && "bg-verify-email/15 text-verify-email",
             className
           )}>
             <SealCheck size={iconSize} weight="fill" />

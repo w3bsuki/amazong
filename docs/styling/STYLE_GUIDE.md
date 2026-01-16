@@ -117,6 +117,71 @@ className="bg-oklch(0.48 0.22 260)"
 | `bg-deal` | Deal badges |
 | `text-success` / `text-error` | Status colors |
 
+### Condition Badges (C2C Marketplace)
+
+| Token | Use |
+|-------|-----|
+| `text-condition-new` / `bg-condition-new-bg` | New items |
+| `text-condition-likenew` / `bg-condition-likenew-bg` | Like new / Very good |
+| `text-condition-good` / `bg-condition-good-bg` | Good condition |
+| `text-condition-fair` / `bg-condition-fair-bg` | Fair condition |
+| `text-condition-used` / `bg-condition-used-bg` | Used items |
+| `text-condition-refurb` / `bg-condition-refurb-bg` | Refurbished |
+
+### Verification & Trust
+
+| Token | Use |
+|-------|-----|
+| `text-verify-email` | Email verified tier |
+| `text-verify-phone` | Phone verified tier |
+| `text-verify-id` | ID verified tier |
+| `text-verify-business` | Business verified tier |
+| `text-verified` | Generic verified badge |
+| `text-shipping-free` | Free shipping indicator |
+
+### Freshness & Social Proof
+
+| Token | Use |
+|-------|-----|
+| `text-fresh` / `bg-fresh-bg` | "Today" freshness |
+| `text-recent` / `bg-recent-bg` | "Yesterday/Recent" |
+| `text-hot` / `bg-hot-bg` | Popular/trending items |
+| `text-favorite` | Wishlist/favorites |
+
+### Urgency Banners
+
+| Token | Use |
+|-------|-----|
+| `bg-urgency-stock-bg` / `text-urgency-stock-text` | Low stock warnings |
+| `bg-urgency-sale-bg` / `text-urgency-sale-text` | Sale ending soon |
+| `bg-urgency-viewers-bg` / `text-urgency-viewers-text` | "X people viewing" |
+
+### Seller UI
+
+| Token | Use |
+|-------|-----|
+| `bg-seller-card` / `border-seller-card-border` | Seller info cards |
+| `bg-seller-banner` / `bg-seller-banner-pill` | Seller banners |
+
+### Social Platforms
+
+| Token | Use |
+|-------|-----|
+| `bg-social-instagram` | Instagram brand color |
+| `bg-social-tiktok` | TikTok brand color |
+| `bg-social-youtube` | YouTube brand color |
+| `bg-social-twitter` | Twitter/X brand color |
+
+### Status Aliases
+
+| Token | Use |
+|-------|-----|
+| `text-status-success` | Success states |
+| `text-status-warning` | Warning states |
+| `text-status-error` | Error states |
+| `text-status-info` | Info states |
+| `bg-live-dot` | Live/online indicator |
+
 ---
 
 ## 3.1 Project-Defined Utilities (Important)
