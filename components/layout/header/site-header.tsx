@@ -14,7 +14,7 @@ import { CategorySubheader } from "@/components/navigation/category-subheader"
 
 // Other components
 // V2 hamburger menu - cleaner layout, language selector moved to settings section
-import { SidebarMenuV2 as SidebarMenu } from "@/components/layout/sidebar/sidebar-menu-v2"
+import { SidebarMenuV2 as SidebarMenu, type UserListingStats } from "@/components/layout/sidebar/sidebar-menu-v2"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
@@ -45,9 +45,11 @@ interface SiteHeaderProps {
    * - product: product detail UX (back button, no search)
    */
   variant?: "default" | "product"
+  /** User listing stats for hamburger menu footer (active + boosted listings) */
+  userStats?: UserListingStats
 }
 
-export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobile = false, variant = "default" }: SiteHeaderProps) {
+export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobile = false, variant = "default", userStats }: SiteHeaderProps) {
   const [country, setCountry] = useState("Bulgaria")
   const [, setCountryCode] = useState("BG") // Used for shipping zone filtering
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
@@ -124,7 +126,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
               <CaretLeft size={26} weight="bold" />
             </button>
           ) : (
-            <SidebarMenu user={user} categories={categories} triggerClassName="justify-start" />
+            <SidebarMenu user={user} categories={categories} {...(userStats && { userStats })} triggerClassName="justify-start" />
           )}
           <Link href="/" className={cn(
             "flex items-center shrink-0 -ml-3",
@@ -277,7 +279,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
             {/* Mobile/Tablet: Quick Links with Sidebar Menu */}
             <div className="lg:hidden">
               <div className="w-full flex items-center gap-0.5 overflow-x-auto no-scrollbar">
-                <SidebarMenu user={user} categories={categories} />
+                <SidebarMenu user={user} categories={categories} {...(userStats && { userStats })} />
                 <Link href="/todays-deals" prefetch={true} className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('todaysDeals')}</Link>
                 <Link href="/customer-service" className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('customerService')}</Link>
                 <Link href="/registry" className="text-foreground hover:text-primary hover:bg-muted min-h-10 px-3 flex items-center rounded-sm shrink-0">{t('registry')}</Link>

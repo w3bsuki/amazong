@@ -1,4 +1,5 @@
 import { SiteHeader } from "@/components/layout/header/site-header";
+import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu-v2";
 import { SiteFooter } from "@/components/layout/footer/site-footer";
 import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
 // MobileSearchBar is now integrated into SiteHeader
@@ -29,7 +30,34 @@ async function HeaderWithUser({ categories }: { categories: CategoryTreeNode[] }
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser();
 
-    return <SiteHeader user={data.user} categories={categories} />;
+    let userStats: UserListingStats | undefined;
+
+    // If user is authenticated, fetch their listing stats
+    if (data.user) {
+        const now = new Date().toISOString();
+
+        // Fetch active and boosted listing counts in parallel
+        const [activeResult, boostedResult] = await Promise.all([
+            supabase
+                .from("products")
+                .select("id", { count: "exact", head: true })
+                .eq("seller_id", data.user.id)
+                .eq("status", "active"),
+            supabase
+                .from("products")
+                .select("id", { count: "exact", head: true })
+                .eq("seller_id", data.user.id)
+                .eq("is_boosted", true)
+                .gt("boost_expires_at", now),
+        ]);
+
+        userStats = {
+            activeListings: activeResult.count ?? 0,
+            boostedListings: boostedResult.count ?? 0,
+        };
+    }
+
+    return <SiteHeader user={data.user} categories={categories} {...(userStats && { userStats })} />;
 }
 
 /**

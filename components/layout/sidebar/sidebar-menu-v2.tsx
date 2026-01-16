@@ -37,8 +37,17 @@ import {
     ChartLineUp,
     CaretRight,
     UserCircle,
-    Question,
     Gear,
+    Package,
+    RocketLaunch,
+    Plus,
+    Lifebuoy,
+    MapPin,
+    CreditCard,
+    SquaresFour,
+    User,
+    Bell,
+    Storefront,
 } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
@@ -47,77 +56,47 @@ import { useEffect, useState } from "react"
 import { useTranslations, useLocale } from "next-intl"
 import { User as SupabaseUser } from "@supabase/supabase-js"
 import { cn } from "@/lib/utils"
-import { getCategoryName } from "@/lib/category-display"
-import { CategoryCircle } from "@/components/shared/category/category-circle"
-import type { CategoryTreeNode } from "@/lib/category-tree"
+
+/** User listing statistics for the hamburger menu footer */
+export interface UserListingStats {
+    activeListings: number
+    boostedListings: number
+}
 
 interface SidebarMenuV2Props {
     user?: SupabaseUser | null
-    categories: CategoryTreeNode[]
+    // Categories no longer needed - we link to /categories instead
+    categories?: unknown[]
     triggerClassName?: string
+    /** User's listing stats (active + boosted count) - fetched server-side */
+    userStats?: UserListingStats
 }
 
 // ============================================================================
-// Category Grid - Lazy mount when drawer opens
+// Navigation Link Component
 // ============================================================================
 
-function CategoryGrid({
-    open,
-    locale,
-    categories,
-    onNavigate,
+function NavLink({
+    href,
+    icon: Icon,
+    label,
+    onClick,
 }: {
-    open: boolean
-    locale: string
-    categories: CategoryTreeNode[]
-    onNavigate: () => void
+    href: string
+    icon: React.ComponentType<{ size?: number; weight?: "regular" | "duotone"; className?: string }>
+    label: string
+    onClick: () => void
 }) {
-    if (!open) return null
-    return <CategoryGridInner locale={locale} categories={categories} onNavigate={onNavigate} />
-}
-
-function CategoryGridInner({
-    locale,
-    categories,
-    onNavigate,
-}: {
-    locale: string
-    categories: CategoryTreeNode[]
-    onNavigate: () => void
-}) {
-    if (categories.length === 0) {
-        return (
-            <div className="grid grid-cols-4 gap-3">
-                {Array.from({ length: 12 }).map((_, i) => (
-                    <div key={i} className="flex flex-col items-center gap-1.5">
-                        <div className="size-14 rounded-full bg-muted animate-pulse" />
-                        <div className="h-2.5 w-10 rounded bg-muted animate-pulse" />
-                    </div>
-                ))}
-            </div>
-        )
-    }
-
     return (
-        <div className="grid grid-cols-4 gap-y-4 gap-x-2">
-            {categories.map((cat) => {
-                const name = getCategoryName(cat, locale)
-                return (
-                    <CategoryCircle
-                        key={cat.slug}
-                        category={cat}
-                        href={`/categories/${cat.slug}`}
-                        onClick={onNavigate}
-                        circleClassName="size-16"
-                        fallbackIconSize={28}
-                        fallbackIconWeight="regular"
-                        variant="menu"
-                        label={name}
-                        labelClassName="text-2xs font-medium text-center text-foreground leading-tight line-clamp-2 w-full"
-                    />
-                )
-            })}
-        </div>
+        <Link
+            href={href}
+            onClick={onClick}
+            className="flex items-center gap-4 px-4 h-12 rounded-lg hover:bg-muted/50 active:bg-muted/70 transition-colors"
+        >
+            <Icon size={24} weight="duotone" className="text-muted-foreground shrink-0" />
+            <span className="text-sm font-medium text-foreground flex-1">{label}</span>
+            <CaretRight size={18} weight="bold" className="text-muted-foreground/40 shrink-0" />
+        </Link>
     )
 }
 
@@ -125,7 +104,7 @@ function CategoryGridInner({
 // Main Component
 // ============================================================================
 
-export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMenuV2Props) {
+export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenuV2Props) {
     const [open, setOpen] = useState(false)
     const [isSigningOut, setIsSigningOut] = useState(false)
     const [mounted, setMounted] = useState(false)
@@ -173,7 +152,7 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
     }
 
     return (
-        <Drawer open={open} onOpenChange={setOpen} direction="left">
+        <Drawer open={open} onOpenChange={setOpen} direction="left" shouldScaleBackground={false}>
             <DrawerTrigger asChild>
                 <Button
                     type="button"
@@ -190,7 +169,10 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                 </Button>
             </DrawerTrigger>
 
-            <DrawerContent className="p-0 bg-background text-foreground gap-0 flex flex-col h-full data-[vaul-drawer-direction=left]:w-full data-[vaul-drawer-direction=left]:max-w-full data-[vaul-drawer-direction=left]:sm:max-w-sm border-none rounded-none shadow-none">
+            <DrawerContent
+                className="p-0 bg-background text-foreground gap-0 flex flex-col h-full border-none rounded-none shadow-none sm:max-w-sm"
+                style={{ '--initial-transform': 'calc(-100% - 1px)' } as React.CSSProperties}
+            >
                 <DrawerTitle className="sr-only">
                     {locale === 'bg' ? 'Меню' : 'Menu'}
                 </DrawerTitle>
@@ -240,18 +222,8 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
 
                         <div className="flex-1" />
 
-                        {/* RIGHT: Help, Settings (if logged in), Language, Close */}
+                        {/* RIGHT: Settings, Language, Close */}
                         <div className="flex items-center">
-                            {/* Help */}
-                            <Link
-                                href="/customer-service"
-                                onClick={() => setOpen(false)}
-                                className="size-9 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-                                aria-label={locale === 'bg' ? 'Помощ' : 'Help'}
-                            >
-                                <Question size={24} weight="regular" />
-                            </Link>
-
                             {/* Settings - only logged in */}
                             {isLoggedIn && (
                                 <Link
@@ -311,118 +283,256 @@ export function SidebarMenuV2({ user, categories, triggerClassName }: SidebarMen
                             </DrawerClose>
                         </div>
                     </div>
-
-                    {/* Quick Actions row - in blue header */}
-                    {isLoggedIn && (
-                        <div className="mx-3 mb-3 p-3 rounded-xl bg-white/10 border border-white/20">
-                            <div className="grid grid-cols-4 gap-1">
-                                {[
-                                    { href: "/account/orders", icon: Receipt, label: locale === 'bg' ? 'Поръчки' : 'Orders' },
-                                    { href: "/account/sales", icon: ChartLineUp, label: locale === 'bg' ? 'Продажби' : 'Sales' },
-                                    { href: "/wishlist", icon: Heart, label: locale === 'bg' ? 'Любими' : 'Saved' },
-                                    { href: "/chat", icon: ChatCircleText, label: locale === 'bg' ? 'Чат' : 'Chat' },
-                                ].map(({ href, icon: Icon, label }) => (
-                                    <Link
-                                        key={href}
-                                        href={href}
-                                        onClick={() => setOpen(false)}
-                                        className="flex flex-col items-center gap-1 py-2 rounded-lg hover:bg-white/10 group active:opacity-90 transition-all"
-                                    >
-                                        <Icon size={28} weight="regular" className="text-white" />
-                                        <span className="text-xs font-medium text-white/90">
-                                            {label}
-                                        </span>
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-                    )}
                 </header>
 
                 {/* ================================================================
-                    CATEGORIES - Main scrollable area
+                    MAIN CONTENT - App-focused account hub
                 ================================================================ */}
                 <div
                     data-vaul-no-drag
                     className="flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar touch-pan-y"
                 >
-                    <section className="px-3 py-3">
-                        <div className="flex items-center justify-between mb-3">
-                            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                {locale === 'bg' ? 'Категории' : 'Categories'}
-                            </h2>
-                            <Link
-                                href="/categories"
-                                onClick={() => setOpen(false)}
-                                className="text-xs text-primary font-medium flex items-center gap-0.5 hover:underline"
-                            >
-                                {locale === 'bg' ? 'Виж всички' : 'See all'}
-                                <CaretRight size={12} weight="bold" />
-                            </Link>
-                        </div>
-                        <CategoryGrid
-                            open={open}
-                            locale={locale}
-                            categories={categories}
-                            onNavigate={() => setOpen(false)}
-                        />
-                    </section>
+                    {isLoggedIn ? (
+                        <>
+                            {/* My Listings Section - OLX style */}
+                            <section className="px-4 py-4 border-b border-border/50">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                        {locale === 'bg' ? 'Моите обяви' : 'My Listings'}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    {/* New Listing CTA */}
+                                    <Link
+                                        href="/sell"
+                                        onClick={() => setOpen(false)}
+                                        className="flex items-center justify-center gap-1.5 px-4 h-10 rounded-lg bg-brand text-white font-semibold hover:bg-brand/90 transition-colors"
+                                    >
+                                        <Plus size={18} weight="bold" className="shrink-0" />
+                                        <span className="text-sm">{locale === 'bg' ? 'Нова' : 'New'}</span>
+                                    </Link>
+
+                                    {/* Active Listings */}
+                                    <Link
+                                        href="/account/selling"
+                                        onClick={() => setOpen(false)}
+                                        className="flex-1 flex items-center justify-center gap-2 px-3 h-10 rounded-lg bg-muted/50 border border-border/60 hover:bg-muted/80 transition-colors"
+                                    >
+                                        <Package size={18} weight="duotone" className="text-muted-foreground shrink-0" />
+                                        <span className="text-sm font-semibold tabular-nums">{userStats?.activeListings ?? 0}</span>
+                                        <span className="text-xs text-muted-foreground">{locale === 'bg' ? 'Активни' : 'Active'}</span>
+                                    </Link>
+
+                                    {/* Boosted Listings */}
+                                    <Link
+                                        href="/account/selling"
+                                        onClick={() => setOpen(false)}
+                                        className="flex-1 flex items-center justify-center gap-2 px-3 h-10 rounded-lg bg-muted/50 border border-border/60 hover:bg-muted/80 transition-colors"
+                                    >
+                                        <RocketLaunch size={18} weight="duotone" className="text-primary shrink-0" />
+                                        <span className="text-sm font-semibold tabular-nums">{userStats?.boostedListings ?? 0}</span>
+                                        <span className="text-xs text-muted-foreground">{locale === 'bg' ? 'Буустнати' : 'Boosted'}</span>
+                                    </Link>
+                                </div>
+                            </section>
+
+                            {/* Activity Section */}
+                            <section className="px-4 py-3">
+                                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                                    {locale === 'bg' ? 'Активност' : 'Activity'}
+                                </h3>
+                                <nav className="-mx-4">
+                                    <NavLink
+                                        href="/account/orders"
+                                        icon={Receipt}
+                                        label={locale === 'bg' ? 'Поръчки' : 'Orders'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                    <NavLink
+                                        href="/account/sales"
+                                        icon={ChartLineUp}
+                                        label={locale === 'bg' ? 'Продажби' : 'Sales'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                    <NavLink
+                                        href="/wishlist"
+                                        icon={Heart}
+                                        label={locale === 'bg' ? 'Любими' : 'Favorites'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                    <NavLink
+                                        href="/chat"
+                                        icon={ChatCircleText}
+                                        label={locale === 'bg' ? 'Съобщения' : 'Messages'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                    <NavLink
+                                        href="/account/notifications"
+                                        icon={Bell}
+                                        label={locale === 'bg' ? 'Известия' : 'Notifications'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                </nav>
+                            </section>
+
+                            {/* Account Section */}
+                            <section className="px-4 py-3 border-t border-border/50">
+                                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                                    {locale === 'bg' ? 'Акаунт' : 'Account'}
+                                </h3>
+                                <nav className="-mx-4">
+                                    <NavLink
+                                        href="/account/profile"
+                                        icon={User}
+                                        label={locale === 'bg' ? 'Профил' : 'Profile'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                    <NavLink
+                                        href="/account/selling"
+                                        icon={Storefront}
+                                        label={locale === 'bg' ? 'Моят магазин' : 'My Store'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                    <NavLink
+                                        href="/account/addresses"
+                                        icon={MapPin}
+                                        label={locale === 'bg' ? 'Адреси' : 'Addresses'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                    <NavLink
+                                        href="/account/payments"
+                                        icon={CreditCard}
+                                        label={locale === 'bg' ? 'Плащания' : 'Payments'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                    <NavLink
+                                        href="/account/settings"
+                                        icon={Gear}
+                                        label={locale === 'bg' ? 'Настройки' : 'Settings'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                </nav>
+                            </section>
+
+                            {/* Browse & Help Section */}
+                            <section className="px-4 py-3 border-t border-border/50">
+                                <nav className="-mx-4">
+                                    <NavLink
+                                        href="/categories"
+                                        icon={SquaresFour}
+                                        label={locale === 'bg' ? 'Разгледай категории' : 'Browse Categories'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                    <NavLink
+                                        href="/customer-service"
+                                        icon={Lifebuoy}
+                                        label={locale === 'bg' ? 'Помощ' : 'Help'}
+                                        onClick={() => setOpen(false)}
+                                    />
+                                </nav>
+                            </section>
+                        </>
+                    ) : (
+                        /* Unauthenticated - Show categories link and info */
+                        <section className="px-3 py-4">
+                            <div className="text-center py-8">
+                                <UserCircle size={48} weight="duotone" className="mx-auto text-muted-foreground/50 mb-3" />
+                                <h3 className="text-base font-semibold text-foreground mb-1">
+                                    {locale === 'bg' ? 'Влез в акаунта си' : 'Sign in to your account'}
+                                </h3>
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    {locale === 'bg' 
+                                        ? 'Запазвай любими, проследявай поръчки и продавай' 
+                                        : 'Save favorites, track orders, and start selling'}
+                                </p>
+                                <div className="flex items-center gap-2 justify-center">
+                                    <Link
+                                        href="/auth/login"
+                                        onClick={() => setOpen(false)}
+                                        className="flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-brand text-white text-sm font-semibold hover:bg-brand/90 transition-colors"
+                                    >
+                                        <SignInIcon size={18} weight="bold" />
+                                        <span>{locale === 'bg' ? 'Влез' : 'Sign In'}</span>
+                                    </Link>
+                                    <Link
+                                        href="/auth/sign-up"
+                                        onClick={() => setOpen(false)}
+                                        className="flex items-center justify-center h-10 px-6 rounded-full border border-border text-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
+                                    >
+                                        {locale === 'bg' ? 'Регистрация' : 'Register'}
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Browse Categories - always visible */}
+                            <div className="border-t border-border/50 pt-3 mt-3">
+                                <NavLink
+                                    href="/categories"
+                                    icon={SquaresFour}
+                                    label={locale === 'bg' ? 'Разгледай категории' : 'Browse Categories'}
+                                    onClick={() => setOpen(false)}
+                                />
+                            </div>
+                        </section>
+                    )}
                 </div>
 
                 {/* ================================================================
-                    FOOTER - Just Sign Out (minimal)
+                    FOOTER - Sign Out only (Help moved to Account section)
                 ================================================================ */}
-                {isLoggedIn && (
-                    <footer className="shrink-0 border-t border-border/50 pb-safe">
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <button
-                                    type="button"
-                                    disabled={isSigningOut}
-                                    className="flex items-center justify-center gap-2 w-full h-12 text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-muted/50 transition-colors"
-                                >
-                                    {isSigningOut ? (
-                                        <SpinnerGap size={16} className="animate-spin" />
-                                    ) : (
-                                        <SignOut size={16} weight="regular" />
-                                    )}
-                                    <span>{locale === 'bg' ? 'Изход от акаунта' : 'Sign Out'}</span>
-                                </button>
-                            </AlertDialogTrigger>
-
-                            <AlertDialogContent className="max-w-sm rounded-lg border-border">
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle className="text-base font-semibold text-foreground">
-                                        {locale === "bg" ? "Изход от акаунта" : "Sign out"}
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription className="text-sm text-muted-foreground">
-                                        {locale === "bg"
-                                            ? "Ще излезете от акаунта си."
-                                            : "You will be signed out."}
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter className="flex-row gap-2 sm:flex-row">
-                                    <AlertDialogCancel className="flex-1 h-10 text-sm font-medium">
-                                        {locale === "bg" ? "Отказ" : "Cancel"}
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        className="flex-1 h-10 text-sm font-medium bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text"
-                                        onClick={() => {
-                                            setIsSigningOut(true)
-                                            const form = document.createElement('form')
-                                            form.method = 'POST'
-                                            form.action = '/api/auth/signout'
-                                            document.body.appendChild(form)
-                                            form.submit()
-                                        }}
+                <footer className="shrink-0 border-t border-border/50 pb-safe">
+                    {isLoggedIn ? (
+                        <div className="flex items-center justify-center">
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <button
+                                        type="button"
+                                        disabled={isSigningOut}
+                                        className="flex-1 flex items-center justify-center gap-2 h-12 text-sm text-muted-foreground hover:text-destructive hover:bg-muted/50 transition-colors"
                                     >
-                                        {locale === "bg" ? "Да, излез" : "Yes, sign out"}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </footer>
-                )}
+                                        {isSigningOut ? (
+                                            <SpinnerGap size={18} className="animate-spin" />
+                                        ) : (
+                                            <SignOut size={18} weight="regular" />
+                                        )}
+                                        <span>{locale === 'bg' ? 'Изход' : 'Sign Out'}</span>
+                                    </button>
+                                </AlertDialogTrigger>
+
+                                <AlertDialogContent className="max-w-sm rounded-lg border-border">
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle className="text-base font-semibold text-foreground">
+                                            {locale === "bg" ? "Изход от акаунта" : "Sign out"}
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription className="text-sm text-muted-foreground">
+                                            {locale === "bg"
+                                                ? "Ще излезете от акаунта си."
+                                                : "You will be signed out."}
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter className="flex-row gap-2 sm:flex-row">
+                                        <AlertDialogCancel className="flex-1 h-10 text-sm font-medium">
+                                            {locale === "bg" ? "Отказ" : "Cancel"}
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction
+                                            className="flex-1 h-10 text-sm font-medium bg-cta-trust-blue hover:bg-cta-trust-blue-hover text-cta-trust-blue-text"
+                                            onClick={() => {
+                                                setIsSigningOut(true)
+                                                const form = document.createElement('form')
+                                                form.method = 'POST'
+                                                form.action = '/api/auth/signout'
+                                                document.body.appendChild(form)
+                                                form.submit()
+                                            }}
+                                        >
+                                            {locale === "bg" ? "Да, излез" : "Yes, sign out"}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
+                    ) : null}
+                </footer>
             </DrawerContent>
         </Drawer>
     )
