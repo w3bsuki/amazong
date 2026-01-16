@@ -5,6 +5,7 @@ import type { UIProduct } from "@/lib/data/products"
 import { ProductCard, ProductCardSkeletonGrid, ProductGrid } from "@/components/shared/product/product-card"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { useTranslations } from "next-intl"
+import { cn } from "@/lib/utils"
 
 // =============================================================================
 // Types
@@ -25,6 +26,8 @@ export interface ProductFeedProps {
   isAllTab: boolean
   activeCategoryName: string | null
   onLoadMore: () => void
+  /** When true, shows loading overlay instead of replacing content (smoother category switching) */
+  showLoadingOverlay?: boolean
 }
 
 // =============================================================================
@@ -54,6 +57,7 @@ export function ProductFeed({
   isAllTab,
   activeCategoryName,
   onLoadMore,
+  showLoadingOverlay = false,
 }: ProductFeedProps) {
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const tFeed = useTranslations("ProductFeed")
@@ -94,7 +98,16 @@ export function ProductFeed({
         {categoryAnnouncement}
       </div>
 
-      <div aria-busy={isLoading} aria-label={isLoading ? loadingLabel : undefined}>
+      <div aria-busy={isLoading} aria-label={isLoading ? loadingLabel : undefined} className="relative">
+      {/* Loading overlay for smooth category transitions */}
+      {showLoadingOverlay && isLoading && products.length > 0 && (
+        <div className="absolute inset-0 bg-background/60 z-10 flex items-start justify-center pt-20">
+          <div className="flex flex-col items-center gap-2">
+            <div className="size-8 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin" />
+            <span className="text-xs text-muted-foreground">{loadingLabel}</span>
+          </div>
+        </div>
+      )}
       {products.length === 0 && !isLoading ? (
         <EmptyStateCTA
           variant={isAllTab ? "no-listings" : "no-category"}
@@ -107,7 +120,7 @@ export function ProductFeed({
           className="py-1"
         />
       ) : (
-        <ProductGrid density="compact" className="py-1">
+        <ProductGrid density="compact" className={cn("py-1 transition-opacity duration-200", showLoadingOverlay && isLoading && "opacity-50")}>
           {products.map((product, index) => (
             <ProductCard
               key={`${product.id}-${activeSlug}`}

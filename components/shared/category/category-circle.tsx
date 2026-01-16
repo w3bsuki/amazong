@@ -43,6 +43,8 @@ export interface CategoryCircleProps {
 
   active?: boolean
   dimmed?: boolean
+  /** Show loading spinner overlay on the circle */
+  loading?: boolean
 
   /** Listing count to display below the label */
   count?: number | undefined
@@ -71,6 +73,7 @@ export function CategoryCircle({
   onClick,
   active,
   dimmed,
+  loading,
   count,
   circleClassName,
   className,
@@ -94,14 +97,26 @@ export function CategoryCircle({
 
   const content = (
     <>
-      <CategoryCircleVisual
-        category={category}
-        active={!!active}
-        className={cn("mx-auto", circleClassName)}
-        fallbackIconSize={fallbackIconSize}
-        fallbackIconWeight={fallbackIconWeight}
-        variant={variant}
-      />
+      <div className="relative">
+        <CategoryCircleVisual
+          category={category}
+          active={!!active}
+          className={cn(
+            "mx-auto transition-opacity",
+            circleClassName,
+            loading && "opacity-60"
+          )}
+          fallbackIconSize={fallbackIconSize}
+          fallbackIconWeight={fallbackIconWeight}
+          variant={variant}
+        />
+        {/* Loading spinner overlay - subtle ring pulse */}
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="size-full rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
+          </div>
+        )}
+      </div>
       <span className={cn("mt-1.5", labelClassName)}>{label}</span>
       {typeof count === "number" && count > 0 && (
         <span className={cn("text-2xs text-muted-foreground/70 leading-none", countClassName)}>

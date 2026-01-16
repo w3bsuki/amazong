@@ -31,6 +31,8 @@ export interface CategoryCirclesProps {
   selectedPill?: string | null
   /** L3 loading state */
   isL3Loading?: boolean
+  /** Slug of the category currently being loaded (for loading indicator) */
+  loadingSlug?: string | null
   locale: string
   circlesNavigateToPages: boolean
   activeTab: string
@@ -59,6 +61,7 @@ export function CategoryCircles({
   l3Categories = [],
   selectedPill,
   isL3Loading = false,
+  loadingSlug,
   locale,
   circlesNavigateToPages,
   activeTab,
@@ -190,9 +193,9 @@ export function CategoryCircles({
           fallbackIconSize={24}
           fallbackIconWeight="regular"
           variant="colorful"
-          className="flex-none w-16"
+          className="flex-none w-[4.5rem]"
           labelClassName={cn(
-            "w-full text-2xs text-center leading-tight line-clamp-2 px-0.5 mt-1.5",
+            "w-full text-2xs text-center leading-tight line-clamp-2 px-0 mt-1.5",
             "font-medium",
             !activeL2 ? "text-foreground" : "text-muted-foreground"
           )}
@@ -201,6 +204,7 @@ export function CategoryCircles({
           const isActive = showL2Circles
             ? activeL2 === sub.slug
             : activeL1 === sub.slug
+          const isLoading = loadingSlug === sub.slug
 
           const href = allowHrefNavigation ? (`/categories/${sub.slug}` as const) : undefined
 
@@ -210,14 +214,15 @@ export function CategoryCircles({
               category={sub}
               {...(href ? { href, prefetch: true } : { onClick: () => onCircleClick(sub) })}
               active={isActive}
+              loading={isLoading}
               circleClassName="size-14"
               fallbackIconSize={24}
               fallbackIconWeight="regular"
               variant="colorful"
               label={getCategoryShortName(sub, locale)}
-              className="flex-none w-16"
+              className="flex-none w-[4.5rem]"
               labelClassName={cn(
-                "w-full text-2xs text-center leading-tight line-clamp-2 px-0.5 mt-1.5",
+                "w-full text-2xs text-center leading-tight line-clamp-2 px-0 mt-1.5",
                 "font-medium",
                 isActive ? "text-foreground" : "text-muted-foreground"
               )}

@@ -385,6 +385,7 @@ export function MobileHomeTabs({
               l3Categories={[]}
               selectedPill={null}
               isL3Loading={false}
+              loadingSlug={instant.loadingSlug}
               locale={locale}
               circlesNavigateToPages={false}
               activeTab="categories"
@@ -428,6 +429,7 @@ export function MobileHomeTabs({
           isAllTab={false}
           activeCategoryName={instant.activeCategoryName}
           onLoadMore={instant.loadMore}
+          showLoadingOverlay={true}
         />
 
         {/* FilterHub Drawer (fallback for complex filters) */}

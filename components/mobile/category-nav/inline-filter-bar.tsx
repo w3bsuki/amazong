@@ -6,7 +6,6 @@ import { SlidersHorizontal, ArrowUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { SortModal } from "@/components/shared/filters/sort-modal"
-import { Badge } from "@/components/ui/badge"
 import type { CategoryAttribute } from "@/lib/data/categories"
 
 // =============================================================================
@@ -26,14 +25,14 @@ import type { CategoryAttribute } from "@/lib/data/categories"
 /** Shared styles for filter/sort tab buttons */
 const tabButtonStyles = cn(
   // Layout
-  "flex-1 h-11",
-  "inline-flex items-center justify-center gap-2",
+  "flex-1 h-10",
+  "inline-flex items-center justify-center gap-1.5",
   // Typography
   "text-sm font-medium",
   // Interaction
   "tap-highlight-transparent",
   "transition-colors duration-150",
-  "active:bg-muted/60",
+  "active:bg-muted/50",
   // Focus (shadcn pattern)
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0"
 )
@@ -116,21 +115,20 @@ export function InlineFilterBar({
     <>
       <div
         className={cn(
-          "bg-background border-b border-border",
+          "bg-background border-b border-border/60",
           sticky && "sticky z-20",
           className
         )}
         style={sticky ? { top: stickyTop } : undefined}
       >
         {/* 50/50 Tab Bar */}
-        <div className="flex items-stretch" role="group" aria-label={t("filters")}>
+        <div className="flex items-stretch divide-x divide-border/60" role="group" aria-label={t("filters")}>
           {/* Filters Tab */}
           <button
             type="button"
             onClick={onAllFiltersClick}
             className={cn(
               tabButtonStyles,
-              "border-r border-border",
               hasActiveFilters ? "text-foreground" : "text-muted-foreground"
             )}
             aria-haspopup="dialog"
@@ -139,9 +137,9 @@ export function InlineFilterBar({
             <SlidersHorizontal className="size-4 shrink-0" aria-hidden="true" />
             <span>{t("filters")}</span>
             {hasActiveFilters && (
-              <Badge variant="default" className="h-5 min-w-5 px-1.5 text-xs font-semibold">
+              <span className="inline-flex items-center justify-center size-5 rounded-full bg-foreground text-background text-xs font-semibold">
                 {activeFilterCount}
-              </Badge>
+              </span>
             )}
           </button>
 

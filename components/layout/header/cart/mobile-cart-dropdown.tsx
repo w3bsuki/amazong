@@ -56,7 +56,7 @@ export function MobileCartDropdown() {
         return (
             <Link
                 href="/cart"
-                className="flex items-center justify-center size-10 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
+                className="flex items-center justify-center size-(--spacing-touch) rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
                 aria-label={tNav('cart')}
             >
                 <span className="relative" aria-hidden="true">
@@ -70,7 +70,7 @@ export function MobileCartDropdown() {
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <button
-                    className="flex items-center justify-center size-10 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
+                    className="flex items-center justify-center size-(--spacing-touch) rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
                     aria-label={tNav('cart')}
                 >
                     <span className="relative" aria-hidden="true">

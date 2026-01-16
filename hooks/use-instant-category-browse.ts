@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryAttribute } from "@/lib/data/categories"
 
@@ -97,6 +97,8 @@ export function useInstantCategoryBrowse(options: {
     hasMore: true,
   }))
   const [isLoading, setIsLoading] = useState(false)
+  // Track which category slug is currently being navigated to (for loading indicators)
+  const [loadingSlug, setLoadingSlug] = useState<string | null>(null)
 
   const productsCacheRef = useRef(new Map<string, { products: UIProduct[]; hasMore: boolean }>())
   const contextCacheRef = useRef(new Map<string, CategoryContextResponse>())
@@ -182,6 +184,8 @@ export function useInstantCategoryBrowse(options: {
 
     const nextParams = opts?.clearAttrFilters ? withoutAttrParams(appliedParams) : new URLSearchParams(appliedParams.toString())
 
+    // Set loading slug immediately for instant visual feedback
+    setLoadingSlug(nextSlug)
     setCategorySlugState(nextSlug)
     setAppliedParams(nextParams)
     syncUrl(nextSlug, nextParams)
@@ -202,6 +206,8 @@ export function useInstantCategoryBrowse(options: {
     }
 
     await loadPage({ slug: nextSlug, params: nextParams, page: 1, append: false })
+    // Clear loading slug after navigation completes
+    setLoadingSlug(null)
   }, [enabled, categorySlug, appliedParams, loadPage, locale, syncUrl])
 
   const goBack = useCallback(async () => {
@@ -218,6 +224,30 @@ export function useInstantCategoryBrowse(options: {
     await loadPage({ slug: categorySlug, params: appliedParams, page: feed.page + 1, append: true })
   }, [enabled, isLoading, feed.hasMore, feed.page, loadPage, categorySlug, appliedParams])
 
+  // Prefetch category context for faster navigation
+  const prefetchCategory = useCallback((slug: string) => {
+    if (!enabled) return
+    if (contextCacheRef.current.has(slug)) return // Already cached
+
+    // Fire-and-forget prefetch
+    fetchJson<CategoryContextResponse>(`/api/categories/${encodeURIComponent(slug)}/context`)
+      .then((context) => {
+        contextCacheRef.current.set(slug, context)
+      })
+      .catch(() => {
+        // Prefetch failures are silent - non-critical
+      })
+  }, [enabled])
+
+  // Auto-prefetch children categories for instant drilling down
+  useEffect(() => {
+    if (!enabled) return
+    // Prefetch all child categories in background
+    children.forEach((child) => {
+      prefetchCategory(child.slug)
+    })
+  }, [enabled, children, prefetchCategory])
+
   return {
     categorySlug,
     categoryId,
@@ -228,11 +258,13 @@ export function useInstantCategoryBrowse(options: {
     appliedSearchParams: appliedParams,
     feed,
     isLoading,
+    loadingSlug,
     activeSlug,
     activeCategoryName,
     setFilters,
     setCategorySlug,
     goBack,
     loadMore,
+    prefetchCategory,
   }
 }

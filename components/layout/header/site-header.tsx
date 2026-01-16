@@ -118,7 +118,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
           {isProductPage ? (
             <button
               onClick={() => router.back()}
-              className="flex items-center justify-center size-10 rounded-full text-muted-foreground active:opacity-50"
+              className="flex items-center justify-center size-(--spacing-touch) rounded-full text-muted-foreground active:opacity-50"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
               <CaretLeft size={26} weight="bold" />

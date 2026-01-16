@@ -68,7 +68,7 @@ export function MobileTabBar({ categories }: MobileTabBarProps) {
         data-testid="mobile-tab-bar"
       >
         {/* Treido: 48px height, 5-column grid */}
-        <div className="grid grid-cols-5 h-12 items-center">
+        <div className="grid grid-cols-5 h-(--spacing-touch-lg) items-center">
           {/* Home */}
           <Link
             href="/"
