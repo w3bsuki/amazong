@@ -662,7 +662,9 @@
         "apply": "Apply",
         "select": "Select",
         "yes": "Yes",
-        "no": "No"
+        "no": "No",
+        "wishlist": "Wishlist",
+        "cart": "Cart"
     },
     "ComingSoon": {
         "backToHome": "Back to Home",

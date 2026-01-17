@@ -115,7 +115,7 @@ export function DesktopSearch() {
 
 
   return (
-    <div className="w-full">
+    <div className="w-full" data-desktop-search>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverAnchor asChild>
           <form 

@@ -58,6 +58,8 @@ interface MobileHomeTabsProps {
   l0Style?: "tabs" | "pills"
   /** Show the eBay-style quick filter row (All filters / Sort / priority pills). */
   showQuickFilters?: boolean
+  /** Show inline filter/sort bar (demo-style 50/50 split). Cleaner than quickFilters. */
+  showInlineFilters?: boolean
   /** Show deep L3 pills row (defaults to true). Category pages may disable this to reduce stacked controls. */
   showL3Pills?: boolean
   /**
@@ -151,6 +153,7 @@ export function MobileHomeTabs({
   showL0Tabs = true,
   l0Style = "tabs",
   showQuickFilters = false,
+  showInlineFilters = false,
   showL3Pills = true,
   tabsNavigateToPages = false,
   circlesNavigateToPages = false,
@@ -172,7 +175,7 @@ export function MobileHomeTabs({
   // Filter state for "All" tab
   const [activeAllFilter, setActiveAllFilter] = useState<string>("newest")
 
-  // Contextual mode state
+  // Filter Hub state (shared by contextual + inline filter modes)
   const [filterHubOpen, setFilterHubOpen] = useState(false)
 
   // Use the extracted navigation hook
@@ -559,8 +562,16 @@ export function MobileHomeTabs({
 
       {/* "View all" link - homepage-only helper to jump into /categories/[slug]. */}
 
-
-
+      {/* Inline Filter Bar (demo-style 50/50 split: Filters | Sort) */}
+      {showInlineFilters && (
+        <InlineFilterBar
+          locale={locale}
+          onAllFiltersClick={() => setFilterHubOpen(true)}
+          attributes={filterableAttributes}
+          sticky={false}
+          className="border-b border-border/50"
+        />
+      )}
 
       {/* 5. Active Filter Chips (Tiny Badges) */}
       <div className="bg-background px-4 pb-2">
@@ -578,6 +589,29 @@ export function MobileHomeTabs({
         activeCategoryName={nav.activeCategoryName}
         onLoadMore={nav.loadMoreProducts}
       />
+
+      {/* FilterHub Drawer (for inline filter mode) */}
+      {showInlineFilters && (
+        <FilterHub
+          open={filterHubOpen}
+          onOpenChange={setFilterHubOpen}
+          locale={locale}
+          {...(nav.activeSlug !== "all" ? { categorySlug: nav.activeSlug } : {})}
+          {...(() => {
+            if (nav.selectedPill) {
+              const id = nav.l3Categories.find((c) => c.slug === nav.selectedPill)?.id
+              return id ? { categoryId: id } : {}
+            }
+            if (nav.activeL2 && nav.currentL2) return { categoryId: nav.currentL2.id }
+            if (nav.activeL1 && nav.currentL1) return { categoryId: nav.currentL1.id }
+            if (nav.activeTab !== "all" && nav.currentL0) return { categoryId: nav.currentL0.id }
+            return {}
+          })()}
+          attributes={filterableAttributes}
+          mode="full"
+          initialSection={null}
+        />
+      )}
     </div>
   )
 }

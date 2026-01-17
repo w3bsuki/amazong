@@ -41,6 +41,7 @@ export interface Product {
   ships_to_usa?: boolean | null
   ships_to_worldwide?: boolean | null
   pickup_only?: boolean | null
+  free_shipping?: boolean | null
   category_slug?: string | null
   slug?: string | null
   store_slug?: string | null
@@ -109,6 +110,7 @@ export interface UIProduct {
   sellerEmailVerified?: boolean
   sellerPhoneVerified?: boolean
   sellerIdVerified?: boolean
+  freeShipping?: boolean
 
   attributes?: Record<string, string>
   condition?: string
@@ -284,7 +286,7 @@ export async function getProductsByCategorySlug(
 
   // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
   const productSelect =
-    `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, 
+    `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug, 
      seller:profiles!seller_id(id,username,avatar_url,tier,account_type,is_verified_business,user_verification(email_verified,phone_verified,id_verified)), 
      categories!inner(id,slug,name,name_bg,icon)`
 
@@ -363,7 +365,7 @@ export async function getProducts(type: QueryType, limit = 36, zone?: ShippingRe
   const nowIso = new Date().toISOString()
 
   // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
-  const productSelect = `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, category_id, slug, 
+  const productSelect = `id, title, price, seller_id, list_price, is_on_sale, sale_percent, sale_end_date, rating, review_count, images, is_boosted, boost_expires_at, created_at, ships_to_bulgaria, ships_to_uk, ships_to_europe, ships_to_usa, ships_to_worldwide, pickup_only, free_shipping, category_id, slug, 
       seller:profiles!seller_id(id,username,avatar_url,tier,account_type,is_verified_business,user_verification(email_verified,phone_verified,id_verified)), 
       categories(id,slug,name,name_bg,icon)`
 
@@ -476,7 +478,7 @@ async function getProductById(id: string): Promise<Product | null> {
 
   // Note: is_featured is a legacy field - we use is_boosted + boost_expires_at for promoted listings
   const productSelect =
-    'id,title,price,seller_id,category_id,slug,description,condition,brand_id,images,is_boosted,boost_expires_at,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,created_at,updated_at,status,stock,tags,seller_city,listing_type,meta_title,meta_description,barcode,cost_price,sku,track_inventory,weight,weight_unit,attributes' as const
+    'id,title,price,seller_id,category_id,slug,description,condition,brand_id,images,is_boosted,boost_expires_at,is_on_sale,list_price,sale_percent,sale_end_date,rating,review_count,pickup_only,ships_to_bulgaria,ships_to_uk,ships_to_europe,ships_to_usa,ships_to_worldwide,free_shipping,created_at,updated_at,status,stock,tags,seller_city,listing_type,meta_title,meta_description,barcode,cost_price,sku,track_inventory,weight,weight_unit,attributes' as const
 
   const { data, error } = await supabase
     .from('products')
@@ -643,6 +645,7 @@ export function toUI(p: Product): UIProduct {
     sellerEmailVerified: p.seller_profile?.email_verified ?? false,
     sellerPhoneVerified: p.seller_profile?.phone_verified ?? false,
     sellerIdVerified: p.seller_profile?.id_verified ?? false,
+    freeShipping: Boolean(p.free_shipping),
     ...(Object.keys(attrs).length ? { attributes: attrs } : {}),
     ...(typeof attrs.condition === "string" ? { condition: attrs.condition } : {}),
     ...(typeof attrs.brand === "string" ? { brand: attrs.brand } : {}),
@@ -699,4 +702,4 @@ const getBestSellers = (limit = 36, zone?: ShippingRegion) => getProducts('bests
  * Uses fair rotation: ORDER BY boost_expires_at ASC (soonest-expiring first).
  * Note: The "featured" type in getProducts() handles this properly.
  */
-const getBoostedProducts = (limit = 36, zone?: ShippingRegion) => getProducts('featured', limit, zone)
+export const getBoostedProducts = (limit = 36, zone?: ShippingRegion) => getProducts('featured', limit, zone)

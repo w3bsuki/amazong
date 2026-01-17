@@ -1,0 +1,299 @@
+"use client"
+
+import * as React from "react"
+import { useState } from "react"
+import {
+  IconPlus,
+  IconPin,
+  IconPinFilled,
+  IconTrash,
+  IconEdit,
+} from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
+import { cn } from "@/lib/utils"
+
+interface AdminNote {
+  id: string
+  title: string
+  content: string | null
+  is_pinned: boolean | null
+  author_id: string | null
+  created_at: string | null
+  updated_at: string | null
+}
+
+export function AdminNotesContent({ initialNotes }: { initialNotes: AdminNote[] }) {
+  const [notes, setNotes] = useState(initialNotes)
+  const [editingNote, setEditingNote] = useState<AdminNote | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  
+  const supabase = createClient()
+
+  const sortedNotes = [...notes].sort((a, b) => {
+    if (a.is_pinned !== b.is_pinned) return (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0)
+    return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+  })
+
+  const handleTogglePin = async (note: AdminNote) => {
+    const { error } = await supabase
+      .from("admin_notes")
+      .update({ is_pinned: !note.is_pinned, updated_at: new Date().toISOString() })
+      .eq("id", note.id)
+    
+    if (error) {
+      toast.error("Failed to update note")
+      return
+    }
+    
+    setNotes(notes.map((n) => (n.id === note.id ? { ...n, is_pinned: !n.is_pinned } : n)))
+  }
+
+  const handleSave = async (note: Partial<AdminNote> & { id?: string }) => {
+    if (note.id) {
+      // Update - build object conditionally to satisfy exactOptionalPropertyTypes
+      const updateData: Record<string, string | null> = {
+        updated_at: new Date().toISOString(),
+      }
+      if (note.title !== undefined) updateData.title = note.title
+      if (note.content !== undefined) updateData.content = note.content
+      
+      const { error } = await supabase
+        .from("admin_notes")
+        .update(updateData)
+        .eq("id", note.id)
+      
+      if (error) {
+        toast.error("Failed to update note")
+        return
+      }
+      
+      setNotes(notes.map((n) => (n.id === note.id ? { ...n, ...note } : n)))
+      toast.success("Note updated")
+    } else {
+      // Create
+      if (!note.title) {
+        toast.error("Title is required")
+        return
+      }
+      const { data, error } = await supabase
+        .from("admin_notes")
+        .insert({
+          title: note.title,
+          content: note.content ?? null,
+        })
+        .select()
+        .single()
+      
+      if (error) {
+        toast.error("Failed to create note")
+        return
+      }
+      
+      if (data) {
+        setNotes([data, ...notes])
+        toast.success("Note created")
+      }
+    }
+    
+    setIsDialogOpen(false)
+    setEditingNote(null)
+  }
+
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("admin_notes").delete().eq("id", id)
+    
+    if (error) {
+      toast.error("Failed to delete note")
+      return
+    }
+    
+    setNotes(notes.filter((n) => n.id !== id))
+    toast.success("Note deleted")
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <div className="text-sm text-muted-foreground">
+          {notes.length} notes • {notes.filter((n) => n.is_pinned).length} pinned
+        </div>
+        <Button onClick={() => { setEditingNote(null); setIsDialogOpen(true) }}>
+          <IconPlus className="size-4 mr-2" />
+          New Note
+        </Button>
+      </div>
+
+      {/* Notes Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {sortedNotes.length === 0 ? (
+          <div className="col-span-full text-center py-12 text-muted-foreground">
+            No notes yet. Create your first note!
+          </div>
+        ) : (
+          sortedNotes.map((note) => (
+            <NoteCard
+              key={note.id}
+              note={note}
+              onTogglePin={() => handleTogglePin(note)}
+              onEdit={() => { setEditingNote(note); setIsDialogOpen(true) }}
+              onDelete={() => {
+                if (confirm("Delete this note?")) {
+                  handleDelete(note.id)
+                }
+              }}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Edit/Create Dialog */}
+      <NoteDialog
+        note={editingNote}
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSave={handleSave}
+      />
+    </div>
+  )
+}
+
+function NoteCard({
+  note,
+  onTogglePin,
+  onEdit,
+  onDelete,
+}: {
+  note: AdminNote
+  onTogglePin: () => void
+  onEdit: () => void
+  onDelete: () => void
+}) {
+  return (
+    <Card className={cn("group", note.is_pinned && "border-primary/50 bg-primary/5")}>
+      <CardHeader className="p-4 pb-2">
+        <div className="flex items-start justify-between gap-2">
+          <CardTitle className="text-base leading-tight">{note.title}</CardTitle>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 shrink-0"
+            onClick={onTogglePin}
+          >
+            {note.is_pinned ? (
+              <IconPinFilled className="size-4 text-primary" />
+            ) : (
+              <IconPin className="size-4" />
+            )}
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 pt-0">
+        {note.content && (
+          <p className="text-sm text-muted-foreground line-clamp-4 whitespace-pre-wrap">
+            {note.content}
+          </p>
+        )}
+        <div className="flex items-center justify-between mt-3 pt-3 border-t">
+          <span className="text-xs text-muted-foreground">
+            {note.updated_at ? new Date(note.updated_at).toLocaleDateString() : "—"}
+          </span>
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button variant="ghost" size="icon" className="size-7" onClick={onEdit}>
+              <IconEdit className="size-3.5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="size-7" onClick={onDelete}>
+              <IconTrash className="size-3.5" />
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function NoteDialog({
+  note,
+  open,
+  onOpenChange,
+  onSave,
+}: {
+  note: AdminNote | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSave: (note: Partial<AdminNote> & { id?: string }) => void
+}) {
+  const [title, setTitle] = useState(note?.title || "")
+  const [content, setContent] = useState(note?.content || "")
+
+  React.useEffect(() => {
+    if (open) {
+      setTitle(note?.title || "")
+      setContent(note?.content || "")
+    }
+  }, [open, note])
+
+  const handleSubmit = () => {
+    if (!title.trim()) {
+      toast.error("Title is required")
+      return
+    }
+    onSave({
+      ...(note?.id ? { id: note.id } : {}),
+      title,
+      content: content || null,
+    })
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{note ? "Edit Note" : "New Note"}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Note title"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="content">Content</Label>
+            <Textarea
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Write your note..."
+              rows={8}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit}>
+            {note ? "Save Changes" : "Create Note"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}

@@ -14,6 +14,11 @@ The goal is to ship Treido.eu safely and avoid scope creep.
 
 - `docs/roadmap/v1.md` — V1 launch (classifieds-first + boosts)
 - `docs/roadmap/v2.md` — V2 launch (card payments + seller payouts)
+- `docs/roadmap/v3.md` — V3 launch (scale & expansion)
+
+## Market Research
+
+- `docs/research/bulgarian-market-2026.md` — Bulgarian marketplace competitive analysis
 
 ## How to use this roadmap
 
@@ -32,3 +37,4 @@ Define success per phase:
 
 - **V1:** listings created, messages sent, repeat visits, boost attach rate
 - **V2:** checkout adoption rate, successful payouts, refund rate, dispute rate, GMV
+- **V3:** mobile app users, regional expansion, AI feature adoption, shipping integration usage

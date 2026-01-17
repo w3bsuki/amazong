@@ -375,13 +375,13 @@ export function NotificationsDropdown({ user }: NotificationsDropdownProps) {
           className="block rounded-md outline-none focus-visible:outline-2 focus-visible:outline-ring"
           aria-label={`${t("title")} ${t("ariaNotificationsHint")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`}
         >
-          <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-(--spacing-touch) [&_svg]:size-[26px] cursor-pointer">
+          <div className="inline-flex items-center justify-center border border-transparent hover:border-header-text/20 rounded-md text-header-text hover:text-header-text hover:bg-header-hover relative size-9 md:size-(--spacing-touch) [&_svg]:size-[22px] md:[&_svg]:size-[26px] cursor-pointer">
           <span className="relative" aria-hidden="true">
             <Bell weight="regular" />
             {unreadCount > 0 && (
               <CountBadge
                 count={unreadCount}
-                className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
+                className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 bg-destructive text-white ring-2 ring-header-bg h-4 min-w-4 md:h-4.5 md:min-w-4.5 px-1 text-2xs shadow-sm"
                 aria-hidden="true"
               />
             )}

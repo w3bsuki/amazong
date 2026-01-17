@@ -29,8 +29,11 @@ development + product + business docs live under `docs/`.
 | `docs/roadmap/README.md` | Phases overview + principles |
 | `docs/roadmap/v1.md` | V1 launch scope (classifieds-first + boosts) |
 | `docs/roadmap/v2.md` | V2 scope (card payments + marketplace payouts) |
+| `docs/roadmap/v3.md` | V3 scope (scale & expansion) |
 | `docs/business/model.md` | Monetization model (V1 vs V2) |
 | `docs/business/plans.md` | Plans, perks, and access (personal vs business) |
+| `docs/business/PLAN-admin-docs-structure.md` | Master plan for /admin/docs system |
+| `docs/research/bulgarian-market-2026.md` | Bulgarian market analysis + competitor pricing |
 
 ### Supporting (deep-dives, not policy)
 | Location | Purpose |

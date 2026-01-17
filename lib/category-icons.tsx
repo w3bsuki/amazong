@@ -211,7 +211,7 @@ function getCategoryIconForSlug(slug: string): PhosphorIcon {
   return categoryIconComponents.default ?? Package
 }
 
-export type IconSize = 16 | 20 | 24 | 26 | 28 | 32 | 36 | 40
+export type IconSize = 14 | 16 | 18 | 20 | 24 | 26 | 28 | 32 | 36 | 40
 
 interface CategoryIconOptions {
   size?: IconSize

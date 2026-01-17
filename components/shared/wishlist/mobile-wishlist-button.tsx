@@ -23,11 +23,11 @@ export function MobileWishlistButton() {
     return (
       <span
         role="button"
-        className="flex items-center justify-center size-(--spacing-touch) p-0 rounded-lg relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer"
+        className="flex items-center justify-center size-9 p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
-          <Heart size={26} weight="regular" className="text-header-text" />
+          <Heart size={22} weight="regular" className="text-header-text" />
         </span>
       </span>
     )
@@ -37,15 +37,15 @@ export function MobileWishlistButton() {
     <>
       <button
         onClick={() => drawerRef.current?.open()}
-        className="flex items-center justify-center size-(--spacing-touch) p-0 rounded-lg relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
+        className="flex items-center justify-center size-9 p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
-          <Heart size={26} weight="regular" className="text-header-text" />
+          <Heart size={22} weight="regular" className="text-header-text" />
           {totalItems > 0 && (
             <CountBadge
               count={totalItems}
-              className="absolute -top-1 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4.5 min-w-4.5 px-1 text-2xs shadow-sm"
+              className="absolute -top-0.5 -right-0.5 bg-destructive text-white ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs shadow-sm"
               aria-hidden="true"
             />
           )}

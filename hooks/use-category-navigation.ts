@@ -111,10 +111,8 @@ export function useCategoryNavigation({
   // Initialize from URL params or props
   const urlInitialTab = searchParams.get("tab")
   const urlInitialSubTab = searchParams.get("sub")
-  const pillsDefaultTab =
-    l0Style === "pills" && displayCategories.length > 0
-      ? displayCategories[0]?.slug ?? "all"
-      : "all"
+  // Always default to "all" tab so promoted listings/recommendations show
+  const pillsDefaultTab = "all"
 
   const initialTab = defaultTab || urlInitialTab || pillsDefaultTab
   const initialSubTab = defaultSubTab || urlInitialSubTab || null

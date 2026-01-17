@@ -43,8 +43,9 @@ interface SiteHeaderProps {
    * Header rendering variant.
    * - default: full header (search + menus)
    * - product: product detail UX (back button, no search)
+   * - landing: homepage style - no bottom border, integrates with content
    */
-  variant?: "default" | "product"
+  variant?: "default" | "product" | "landing"
   /** User listing stats for hamburger menu footer (active + boosted listings) */
   userStats?: UserListingStats
 }
@@ -76,6 +77,9 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
   // Product pages get special UX: back button instead of hamburger, no search bar.
   // Avoid heuristics (like segment counts) and rely on the route-group layout passing variant="product".
   const isProductPage = variant === "product"
+  // Landing page: homepage gets seamless header (no bottom border)
+  // Detect via pathname - "/" is homepage
+  const isLandingPage = variant === "landing" || pathWithoutLocale === "/"
 
   const searchPlaceholder = locale === "bg"
     ? "Търсене..."
@@ -106,7 +110,10 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
     <header
       ref={headerRef}
       className={cn(
-        "sticky top-0 z-50 w-full flex flex-col bg-header-bg md:border-b md:border-header-border",
+        "sticky top-0 z-50 w-full flex flex-col bg-header-bg",
+        // Landing page: no border, seamless with content
+        // Default/Product: border on desktop
+        !isLandingPage && "md:border-b md:border-header-border",
         hideOnMobile && "hidden",
       )}
     >
@@ -114,30 +121,27 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
       <div className="md:hidden bg-background/90 backdrop-blur-md border-b border-border/50 text-foreground pt-safe">
         {/* Top row - Logo & Actions */}
         <div className={cn(
-          "h-10 px-(--page-inset) flex items-center gap-0",
+          "h-11 px-3 flex items-center gap-1",
           isProductPage && "border-b border-border/50"
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
           {isProductPage ? (
             <button
               onClick={() => router.back()}
-              className="flex items-center justify-center size-(--spacing-touch) rounded-full text-muted-foreground active:opacity-50"
+              className="flex items-center justify-center size-9 -ml-1.5 rounded-full text-muted-foreground active:opacity-50"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
-              <CaretLeft size={26} weight="bold" />
+              <CaretLeft size={22} weight="bold" />
             </button>
           ) : (
-            <SidebarMenu user={user} categories={categories} {...(userStats && { userStats })} triggerClassName="justify-start" />
+            <SidebarMenu user={user} categories={categories} {...(userStats && { userStats })} />
           )}
-          <Link href="/" className={cn(
-            "flex items-center shrink-0 -ml-3",
-            isProductPage && "ml-0"
-          )}>
-            <span className="text-xl font-extrabold tracking-tighter leading-none text-foreground">treido.</span>
+          <Link href="/" className="flex items-center shrink-0">
+            <span className="text-lg font-extrabold tracking-tighter leading-none text-foreground">treido.</span>
           </Link>
           <div className="flex-1" />
           {/* Mobile: wishlist + notifications + cart. Messages in bottom nav. */}
-          <div className="flex items-center">
+          <div className="flex items-center -mr-1.5">
             {user && <NotificationsDropdown user={user} />}
             <MobileWishlistButton />
             <MobileCartDropdown />

@@ -56,11 +56,11 @@ export function MobileCartDropdown() {
         return (
             <Link
                 href="/cart"
-                className="flex items-center justify-center size-(--spacing-touch) rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
+                className="flex items-center justify-center size-9 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
                 aria-label={tNav('cart')}
             >
                 <span className="relative" aria-hidden="true">
-                    <ShoppingCart size={26} weight="regular" className="text-header-text" />
+                    <ShoppingCart size={22} weight="regular" className="text-header-text" />
                 </span>
             </Link>
         )
@@ -70,16 +70,16 @@ export function MobileCartDropdown() {
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <button
-                    className="flex items-center justify-center size-(--spacing-touch) rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
+                    className="flex items-center justify-center size-9 rounded-md relative hover:bg-header-hover active:bg-header-active touch-action-manipulation tap-transparent"
                     aria-label={tNav('cart')}
                 >
                     <span className="relative" aria-hidden="true">
-                        <ShoppingCart size={26} weight="regular" className="text-header-text" />
+                        <ShoppingCart size={22} weight="regular" className="text-header-text" />
                         {totalItems > 0 && (
                             <CountBadge
                                 count={totalItems}
                                 max={9}
-                                className="absolute -top-1 -right-1.5 bg-destructive text-white ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
+                                className="absolute -top-0.5 -right-1 bg-destructive text-white ring-2 ring-header-bg h-4 min-w-4 px-1 text-2xs"
                                 aria-hidden="true"
                             />
                         )}

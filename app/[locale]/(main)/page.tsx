@@ -2,11 +2,11 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
-import { MarketplaceHero } from "@/components/desktop/marketplace-hero"
 import { DesktopProductFeed, DesktopProductFeedSkeleton } from "@/components/sections/desktop-product-feed"
-import { MobileHomeTabs } from "@/components/mobile/mobile-home-tabs"
-import { getNewestProducts, toUI } from "@/lib/data/products"
+import { MobileHomeUnified1 } from "@/components/mobile/mobile-home-unified1"
+import { getNewestProducts, getBoostedProducts, toUI } from "@/lib/data/products"
 import { getCategoryHierarchy } from "@/lib/data/categories"
+import { createClient } from "@/lib/supabase/server"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -31,44 +31,53 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const { locale } = await params
   setRequestLocale(locale)
 
+  // Fetch user for wishlist/notifications
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   // Fetch categories with children for mobile subcategory circles.
   // L0 + L1 + L2 only (~3,400 categories, ~60KB gzipped).
   // L3 (~9,700 categories) are lazy-loaded when L2 is clicked.
   const categoriesWithChildren = await getCategoryHierarchy(null, 2)
 
-  // Fetch initial products for mobile tabs
-  const newestProducts = await getNewestProducts(24)
+  // Fetch initial products for mobile tabs (newest) AND promoted listings
+  const [newestProducts, boostedProducts] = await Promise.all([
+    getNewestProducts(24),
+    getBoostedProducts(10), // Promoted listings for flash deals section
+  ])
   const initialProducts = newestProducts.map(p => toUI(p))
+  const promotedProducts = boostedProducts.map(p => toUI(p))
 
   return (
-    <main className="flex min-h-screen flex-col bg-background pb-20">
+    <main className="flex min-h-screen flex-col bg-background md:pb-0">
       {/* 
-        MOBILE LAYOUT (Temu-style Tabs):
-        1. Sticky Tabs (Categories)
-        2. Subcategory Circles (when category selected)
-        3. Product Feed (Infinite Scroll)
+        MOBILE LAYOUT (Demo-style unified header):
+        - Unified sticky header: Hamburger + Logo + Search + Category Pills
+        - Filter/Sort bar with drawer triggers
+        - Product Feed with real data
+        - Uses existing MobileTabBar from layout
       */}
       <div className="w-full md:hidden">
         <Suspense fallback={<div className="h-screen w-full bg-background animate-pulse" />}>
-          <MobileHomeTabs
+          <MobileHomeUnified1
             initialProducts={initialProducts.slice(0, 12)}
+            promotedProducts={promotedProducts}
             initialCategories={categoriesWithChildren}
+            locale={locale}
+            user={user ? { id: user.id } : null}
           />
         </Suspense>
       </div>
 
       {/* ================================================================
           DESKTOP: Clean Product-First Layout
-          - Slim Hero Banner
+          - No hero banner - content starts immediately
           - Unified Discovery Section (Categories + Filters + Products)
           ================================================================ */}
       <div className="hidden md:block w-full">
-        {/* Unified Discovery Container - Everything in one visual block */}
-        <div className="w-full bg-background py-5">
-          <div className="container space-y-5">
-            {/* Hero Section */}
-            <MarketplaceHero locale={locale} />
-            
+        {/* Unified Discovery Container - seamless with header */}
+        <div className="w-full bg-background pt-4 pb-6">
+          <div className="container">
             {/* Product Feed with categories and filters */}
             <Suspense fallback={<DesktopProductFeedSkeleton />}>
               <DesktopProductFeed

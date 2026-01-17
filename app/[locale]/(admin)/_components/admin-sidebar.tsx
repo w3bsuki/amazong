@@ -15,6 +15,9 @@ import {
   IconHome,
   IconMessage,
   IconCrown,
+  IconFileText,
+  IconChecklist,
+  IconNote,
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/layout/nav-main"
@@ -35,6 +38,21 @@ const adminNavItems = [
     title: "Dashboard",
     url: "/admin",
     icon: IconDashboard,
+  },
+  {
+    title: "Tasks",
+    url: "/admin/tasks",
+    icon: IconChecklist,
+  },
+  {
+    title: "Docs",
+    url: "/admin/docs",
+    icon: IconFileText,
+  },
+  {
+    title: "Notes",
+    url: "/admin/notes",
+    icon: IconNote,
   },
   {
     title: "Users",

@@ -26,7 +26,7 @@ export function generateStaticParams() {
  * Async server component to fetch user and render header.
  * Moved outside MainLayout to avoid "Cannot create components during render" lint error.
  */
-async function HeaderWithUser({ categories }: { categories: CategoryTreeNode[] }) {
+async function HeaderWithUser({ categories, variant }: { categories: CategoryTreeNode[]; variant?: "default" | "product" | "landing" }) {
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser();
 
@@ -57,7 +57,7 @@ async function HeaderWithUser({ categories }: { categories: CategoryTreeNode[] }
         };
     }
 
-    return <SiteHeader user={data.user} categories={categories} {...(userStats && { userStats })} />;
+    return <SiteHeader user={data.user} categories={categories} variant={variant ?? "default"} {...(userStats && { userStats })} />;
 }
 
 /**
