@@ -34,7 +34,7 @@ export function StartSellingBanner({
   // Full-bleed: INVERTED banner for primary CTA emphasis
   if (variant === "full-bleed") {
     return (
-      <div className="px-(--page-inset) bg-background">
+      <div className="px-inset bg-background">
         <Link
           href="/sell"
           className={cn(

@@ -58,7 +58,7 @@ export function CategoryQuickPills({
     >
       <div
         ref={tabsContainerRef}
-        className="flex items-center gap-0.5 overflow-x-auto no-scrollbar px-(--page-inset) py-1"
+        className="flex items-center gap-0.5 overflow-x-auto no-scrollbar px-inset py-1"
         role="tablist"
       >
         {/* "All" Pill */}

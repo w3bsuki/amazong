@@ -1,7 +1,7 @@
 "use client"
 
 /**
- * Integrated Desktop Layout V1
+ * Integrated Desktop Layout
  * 
  * A unified header + content approach where:
  * - Logo and user actions stay in a slim top bar
@@ -34,12 +34,19 @@ import { useViewMode } from "@/hooks/use-view-mode"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName } from "@/lib/category-display"
 import { getCategoryIcon } from "@/lib/category-icons"
+
+// Real dropdown components from SiteHeader
 import {
-  Heart,
-  ChatCircle,
-  Bell,
+  AccountDropdown,
+  MessagesDropdown,
+  NotificationsDropdown,
+  WishlistDropdown,
+} from "@/components/dropdowns"
+import { CartDropdown } from "@/components/layout/header/cart/cart-dropdown"
+import { DesktopSearch } from "@/components/desktop/desktop-search"
+
+import {
   Camera,
-  ShoppingCart,
   MagnifyingGlass,
   CaretDown,
   CaretRight,
@@ -54,9 +61,8 @@ import {
   Fire,
   Tag,
   Rows,
-  User,
   X,
-  Sliders,
+  Check,
 } from "@phosphor-icons/react"
 import {
   DropdownMenu,
@@ -65,6 +71,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
+import type { User } from "@supabase/supabase-js"
 
 // =============================================================================
 // TYPES
@@ -119,141 +126,101 @@ interface IntegratedDesktopLayoutProps {
   locale: string
   categories: CategoryTreeNode[]
   initialProducts?: Product[]
-  user?: { id: string; email?: string } | null
+  user?: User | null
 }
 
 // =============================================================================
-// SLIM TOP BAR - Just logo + user actions
+// SLIM TOP BAR - With real dropdown components from SiteHeader
 // =============================================================================
 
 function SlimTopBar({ 
   locale, 
   user,
-  onSearchClick,
 }: { 
   locale: string
-  user?: { id: string; email?: string } | null
-  onSearchClick?: () => void
+  user?: User | null
 }) {
+  const t = useTranslations('Navigation')
+  
   return (
     <header className="sticky top-0 z-50 w-full bg-background border-b border-border">
       <div className="container h-16 flex items-center justify-between gap-4">
-        {/* Left: Logo + Greeting */}
-        <div className="flex items-center gap-3">
+        {/* Left: Logo + Account */}
+        <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center shrink-0">
             <span className="text-xl font-bold tracking-tight text-foreground">treido.</span>
           </Link>
-          {user && (
-            <div className="hidden lg:block">
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/40 border border-border/30 hover:bg-muted/60 hover:border-border/50 transition-all duration-150">
-                  <div className="size-7 rounded-full bg-muted flex items-center justify-center">
-                    <User size={14} weight="regular" className="text-muted-foreground" />
-                  </div>
-                  <div className="text-left text-sm">
-                    <span className="text-muted-foreground text-xs block leading-none">{locale === "bg" ? "Здравей," : "Hello,"}</span>
-                    <span className="font-medium text-foreground leading-tight">{user.email?.split("@")[0] || "User"}</span>
-                  </div>
-                  <CaretDown size={12} weight="bold" className="text-muted-foreground" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="min-w-48">
-                  <DropdownMenuItem asChild>
-                    <Link href="/account">
-                      {locale === "bg" ? "Моят профил" : "My Profile"}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/account/orders">
-                      {locale === "bg" ? "Поръчки" : "Orders"}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/auth/logout">
-                      {locale === "bg" ? "Изход" : "Log out"}
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
+          {/* Account dropdown with full variant (shows greeting) */}
+          <div className="hidden lg:block">
+            <AccountDropdown user={user ?? null} variant="full" />
+          </div>
         </div>
 
-        {/* Center: Search Bar (Desktop) - Hero search with focus enhancement */}
+        {/* Center: Desktop Search with real dropdown overlay */}
         <div className="flex-1 max-w-2xl">
-          <button
-            onClick={onSearchClick}
-            className={cn(
-              "w-full flex items-center gap-3 h-11 px-4 rounded-full",
-              "bg-muted/40 border border-border/50",
-              "text-muted-foreground text-sm text-left",
-              "hover:bg-muted/60 hover:border-border hover:shadow-sm",
-              "active:bg-muted/70",
-              "transition-all duration-150",
-            )}
-          >
-            <MagnifyingGlass size={18} weight="regular" className="shrink-0 text-muted-foreground" />
-            <span className="flex-1 truncate">
-              {locale === "bg" ? "Търсене в продукти, марки и още..." : "Search products, brands and more..."}
-            </span>
-            <div className="shrink-0 size-8 rounded-full bg-foreground flex items-center justify-center">
-              <MagnifyingGlass size={14} weight="bold" className="text-background" />
-            </div>
-          </button>
+          <DesktopSearch />
         </div>
 
-        {/* Right: Actions - Icon tray with hover containment */}
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="size-10 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent hover:border-border/40 transition-all duration-150" asChild>
-            <Link href="/wishlist" aria-label={locale === "bg" ? "Любими" : "Wishlist"}>
-              <Heart size={22} weight="regular" />
-            </Link>
-          </Button>
-          
-          {user && (
+        {/* Right: Actions with real dropdown components */}
+        <div className="flex items-center gap-0.5">
+          {user ? (
             <>
-              <Button variant="ghost" size="icon" className="size-10 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent hover:border-border/40 transition-all duration-150" asChild>
-                <Link href="/messages" aria-label={locale === "bg" ? "Съобщения" : "Messages"}>
-                  <ChatCircle size={22} weight="regular" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" className="size-10 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent hover:border-border/40 transition-all duration-150 relative">
-                <Bell size={22} weight="regular" />
-                <span className="absolute top-1.5 right-1.5 size-2 bg-notification rounded-full" />
-              </Button>
+              {/* Wishlist Dropdown */}
+              <WishlistDropdown />
+              
+              {/* Messages Dropdown */}
+              <MessagesDropdown user={user} />
+              
+              {/* Notifications Dropdown */}
+              <NotificationsDropdown user={user} />
+              
+              {/* Sell Button */}
+              <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-10 [&_svg]:size-6 border border-transparent hover:border-border/40 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                >
+                  <Camera weight="regular" aria-hidden="true" />
+                </Button>
+              </Link>
+              
+              {/* Account (icon only, for md-lg screens) */}
+              <div className="hidden md:block lg:hidden">
+                <AccountDropdown user={user} />
+              </div>
+              
+              {/* Cart Dropdown */}
+              <CartDropdown />
             </>
-          )}
-          
-          <Button variant="ghost" size="icon" className="size-10 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent hover:border-border/40 transition-all duration-150" asChild>
-            <Link href="/sell" aria-label={locale === "bg" ? "Продай" : "Sell"}>
-              <Camera size={22} weight="regular" />
-            </Link>
-          </Button>
-
-          <Button variant="ghost" size="icon" className="size-10 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent hover:border-border/40 transition-all duration-150 relative" asChild>
-            <Link href="/cart" aria-label={locale === "bg" ? "Количка" : "Cart"}>
-              <ShoppingCart size={22} weight="regular" />
-              <span className="absolute -top-0.5 -right-0.5 size-5 bg-cart-badge text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                3
-              </span>
-            </Link>
-          </Button>
-
-          {!user && (
-            <div className="flex items-center gap-2 ml-2">
-              <Link
-                href="/auth/login"
-                className="text-sm font-medium text-foreground hover:text-foreground/80 px-3 py-2"
-              >
-                {locale === "bg" ? "Вход" : "Sign In"}
-              </Link>
-              <Link
-                href="/auth/sign-up"
-                className="text-sm font-medium bg-foreground text-background hover:bg-foreground/90 px-4 py-2 rounded-md"
-              >
-                {locale === "bg" ? "Регистрация" : "Register"}
-              </Link>
-            </div>
+          ) : (
+            <>
+              {/* Unauthenticated: Sign In / Register + Sell + Cart */}
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/auth/login"
+                  className="text-sm font-medium text-foreground hover:bg-muted/50 px-3 py-2 rounded-md transition-colors"
+                >
+                  {t('signIn')}
+                </Link>
+                <Link
+                  href="/auth/sign-up"
+                  className="text-sm font-medium bg-foreground text-background hover:bg-foreground/90 px-4 py-2 rounded-md transition-colors"
+                >
+                  {t('register')}
+                </Link>
+                <Link href="/sell" aria-label={locale === "bg" ? "Създай обява" : "Create listing"}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-10 [&_svg]:size-6 border border-transparent hover:border-border/40 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  >
+                    <Camera weight="regular" aria-hidden="true" />
+                  </Button>
+                </Link>
+                <CartDropdown />
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -265,13 +232,16 @@ function SlimTopBar({
 // INLINE SEARCH ROW - Search bar that lives with the content
 // =============================================================================
 
-function InlineSearchRow({
+function FeedToolbar({
   locale,
   productCount,
   activeTab,
   onTabChange,
   viewMode,
   onViewModeChange,
+  categorySlug,
+  filters,
+  onFiltersChange,
 }: {
   locale: string
   productCount: number
@@ -279,9 +249,10 @@ function InlineSearchRow({
   onTabChange: (tab: FeedTab) => void
   viewMode: "grid" | "list"
   onViewModeChange: (mode: "grid" | "list") => void
+  categorySlug: string | null
+  filters: FilterState
+  onFiltersChange: (f: FilterState) => void
 }) {
-  const [searchValue, setSearchValue] = useState("")
-
   const tabs: { id: FeedTab; label: string; icon: typeof TrendUp }[] = [
     { id: "newest", label: locale === "bg" ? "Най-нови" : "Newest", icon: TrendUp },
     { id: "best_sellers", label: locale === "bg" ? "Топ продажби" : "Best Sellers", icon: ChartLineUp },
@@ -294,93 +265,185 @@ function InlineSearchRow({
   const activeTabData = tabs.find((t) => t.id === activeTab) ?? tabs[0]!
   const ActiveIcon = activeTabData.icon
 
+  // Dynamic category-specific filters
+  const categoryFilters: { id: string; label: string; options: { value: string; label: string }[] }[] = []
+
+  if (categorySlug?.includes("electron") || categorySlug?.includes("phone") || categorySlug?.includes("computer")) {
+    categoryFilters.push(
+      { id: "brand", label: locale === "bg" ? "Марка" : "Brand", options: [
+        { value: "apple", label: "Apple" },
+        { value: "samsung", label: "Samsung" },
+        { value: "sony", label: "Sony" },
+      ]},
+      { id: "storage", label: locale === "bg" ? "Памет" : "Storage", options: [
+        { value: "64gb", label: "64GB" },
+        { value: "128gb", label: "128GB" },
+        { value: "256gb", label: "256GB" },
+      ]}
+    )
+  }
+
+  // Condition filter appears when any category is selected
+  if (categorySlug) {
+    categoryFilters.push({
+      id: "condition",
+      label: locale === "bg" ? "Състояние" : "Condition",
+      options: [
+        { value: "new", label: locale === "bg" ? "Ново" : "New" },
+        { value: "like_new", label: locale === "bg" ? "Като ново" : "Like new" },
+        { value: "used", label: locale === "bg" ? "Използвано" : "Used" },
+      ],
+    })
+  }
+
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+
   return (
     <div className="flex items-center gap-3 mb-4">
-      {/* Inline Search */}
-      <div className="relative flex-1">
-        <MagnifyingGlass
-          size={16}
-          weight="regular"
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-        />
-        <Input
-          type="search"
-          placeholder={locale === "bg" ? "Търси в обяви..." : "Search listings..."}
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          className="h-9 pl-9 pr-3 bg-background border-border/60 text-sm rounded-md"
-        />
-      </div>
-
-      {/* Product count */}
-      <span className="text-sm font-medium text-foreground whitespace-nowrap">
-        {productCount.toLocaleString()}{" "}
-        <span className="text-muted-foreground font-normal">
-          {locale === "bg" ? "обяви" : "listings"}
+      {/* LEFT: Product count + Category filter pills */}
+      <div className="flex items-center gap-2 flex-1 min-w-0 overflow-x-auto no-scrollbar">
+        <span className="text-sm font-medium text-foreground whitespace-nowrap shrink-0">
+          {productCount.toLocaleString()}{" "}
+          <span className="text-muted-foreground font-normal">
+            {locale === "bg" ? "обяви" : "listings"}
+          </span>
         </span>
-      </span>
 
-      {/* Sort */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        {/* Category filter pills - only show when category selected */}
+        {categoryFilters.map((filter) => (
+          <DropdownMenu 
+            key={filter.id} 
+            open={activeDropdown === filter.id} 
+            onOpenChange={(open) => setActiveDropdown(open ? filter.id : null)}
+          >
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-3 h-9 text-sm rounded-full border whitespace-nowrap shrink-0",
+                  "bg-background border-border hover:bg-muted/50 transition-colors",
+                )}
+              >
+                {filter.label}
+                <CaretDown size={12} weight="bold" className="text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="min-w-36">
+              {filter.options.map((opt) => {
+                const isSelected = filter.id === "condition" && filters.condition === opt.value
+                return (
+                  <DropdownMenuItem
+                    key={opt.value}
+                    onClick={() => {
+                      if (filter.id === "condition") {
+                        onFiltersChange({
+                          ...filters,
+                          condition: filters.condition === opt.value ? null : opt.value,
+                        })
+                      }
+                    }}
+                    className={cn("cursor-pointer", isSelected && "bg-muted font-medium")}
+                  >
+                    <span className="w-4 flex items-center justify-center mr-1">
+                      {isSelected && <Check size={14} weight="bold" />}
+                    </span>
+                    {opt.label}
+                  </DropdownMenuItem>
+                )
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ))}
+
+        {/* Active filter badges */}
+        {filters.condition && (
           <button
             type="button"
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-md px-3 h-8",
-              "text-sm font-medium whitespace-nowrap border",
-              "bg-background text-foreground border-border/60 hover:bg-muted/50",
-            )}
+            onClick={() => onFiltersChange({ ...filters, condition: null })}
+            className="inline-flex items-center gap-1.5 px-3 h-9 text-sm rounded-full bg-foreground text-background font-medium whitespace-nowrap shrink-0"
           >
-            <ActiveIcon size={14} weight="fill" />
-            <span>{activeTabData.label}</span>
-            <CaretDown size={12} weight="bold" />
+            {filters.condition === "new" ? (locale === "bg" ? "Ново" : "New") :
+             filters.condition === "like_new" ? (locale === "bg" ? "Като ново" : "Like new") :
+             locale === "bg" ? "Използвано" : "Used"}
+            <X size={14} weight="bold" className="text-background/70" />
           </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="min-w-40">
-          {tabs.map((tab) => {
-            const Icon = tab.icon
-            return (
-              <DropdownMenuItem
-                key={tab.id}
-                onClick={() => onTabChange(tab.id)}
-                className={cn("cursor-pointer", activeTab === tab.id && "bg-muted font-medium")}
-              >
-                <Icon size={14} weight={activeTab === tab.id ? "fill" : "regular"} className="mr-2" />
-                {tab.label}
-              </DropdownMenuItem>
-            )
-          })}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        )}
+      </div>
 
-      {/* View Toggle */}
-      <div className="flex items-center rounded-md border border-border/60 bg-muted/30">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onViewModeChange("grid")}
-          className={cn(
-            "size-8 rounded-l-md rounded-r-none border-r border-border/50",
-            viewMode === "grid"
-              ? "bg-background text-foreground"
-              : "text-muted-foreground hover:text-foreground bg-transparent"
-          )}
-        >
-          <SquaresFour size={16} weight={viewMode === "grid" ? "fill" : "regular"} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => onViewModeChange("list")}
-          className={cn(
-            "size-8 rounded-r-md rounded-l-none",
-            viewMode === "list"
-              ? "bg-background text-foreground"
-              : "text-muted-foreground hover:text-foreground bg-transparent"
-          )}
-        >
-          <Rows size={16} weight={viewMode === "list" ? "fill" : "regular"} />
-        </Button>
+      {/* RIGHT: Sort + View Toggle */}
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Sort */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-md px-3 h-9",
+                "text-sm font-medium whitespace-nowrap",
+                "bg-muted/40 text-foreground border border-border/50",
+                "hover:bg-muted/60 hover:border-border transition-all duration-150",
+              )}
+            >
+              <ActiveIcon size={14} weight="fill" />
+              <span>{activeTabData.label}</span>
+              <CaretDown size={12} weight="bold" className="text-muted-foreground" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-44">
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              const isActive = activeTab === tab.id
+              return (
+                <DropdownMenuItem
+                  key={tab.id}
+                  onClick={() => onTabChange(tab.id)}
+                  className={cn(
+                    "cursor-pointer flex items-center gap-2",
+                    isActive && "bg-muted font-medium"
+                  )}
+                >
+                  <span className="w-4 flex items-center justify-center">
+                    {isActive && <Check size={14} weight="bold" />}
+                  </span>
+                  <Icon size={14} weight={isActive ? "fill" : "regular"} />
+                  {tab.label}
+                </DropdownMenuItem>
+              )
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* View Toggle */}
+        <div className="relative flex items-center rounded-lg border border-border/50 bg-muted/30 p-0.5">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onViewModeChange("grid")}
+            className={cn(
+              "size-8 rounded-md transition-all duration-150",
+              viewMode === "grid"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground bg-transparent hover:bg-transparent"
+            )}
+            aria-label="Grid view"
+          >
+            <SquaresFour size={16} weight={viewMode === "grid" ? "fill" : "regular"} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onViewModeChange("list")}
+            className={cn(
+              "size-8 rounded-md transition-all duration-150",
+              viewMode === "list"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground bg-transparent hover:bg-transparent"
+            )}
+            aria-label="List view"
+          >
+            <Rows size={16} weight={viewMode === "list" ? "fill" : "regular"} />
+          </Button>
+        </div>
       </div>
     </div>
   )
@@ -668,7 +731,7 @@ function FiltersSidebar({
                 type="button"
                 onClick={() => onFiltersChange({ ...filters, condition: filters.condition === c.id ? null : c.id })}
                 className={cn(
-                  "px-3 py-1.5 text-xs rounded-full transition-colors",
+                  "px-3 py-1.5 text-xs rounded-full transition-colors min-h-9",
                   filters.condition === c.id
                     ? "bg-foreground text-background font-medium"
                     : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
@@ -688,109 +751,7 @@ function FiltersSidebar({
   )
 }
 
-// =============================================================================
-// HORIZONTAL FILTER PILLS - Context-specific (above grid when category selected)
-// =============================================================================
 
-function HorizontalFilterPills({
-  locale,
-  categorySlug,
-  filters,
-  onFiltersChange,
-}: {
-  locale: string
-  categorySlug: string | null
-  filters: FilterState
-  onFiltersChange: (f: FilterState) => void
-}) {
-  // Dynamic filters based on category
-  const categoryFilters: { id: string; label: string; options: { value: string; label: string }[] }[] = []
-
-  if (categorySlug?.includes("electron") || categorySlug?.includes("phone") || categorySlug?.includes("computer")) {
-    categoryFilters.push(
-      { id: "brand", label: locale === "bg" ? "Марка" : "Brand", options: [
-        { value: "apple", label: "Apple" },
-        { value: "samsung", label: "Samsung" },
-        { value: "sony", label: "Sony" },
-      ]},
-      { id: "storage", label: locale === "bg" ? "Памет" : "Storage", options: [
-        { value: "64gb", label: "64GB" },
-        { value: "128gb", label: "128GB" },
-        { value: "256gb", label: "256GB" },
-      ]}
-    )
-  }
-
-  // Default condition filter
-  categoryFilters.push({
-    id: "condition",
-    label: locale === "bg" ? "Състояние" : "Condition",
-    options: [
-      { value: "new", label: locale === "bg" ? "Ново" : "New" },
-      { value: "like_new", label: locale === "bg" ? "Като ново" : "Like new" },
-      { value: "used", label: locale === "bg" ? "Използвано" : "Used" },
-    ],
-  })
-
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
-
-  return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-      {categoryFilters.map((filter) => (
-        <DropdownMenu 
-          key={filter.id} 
-          open={activeDropdown === filter.id} 
-          onOpenChange={(open) => setActiveDropdown(open ? filter.id : null)}
-        >
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className={cn(
-                "inline-flex items-center gap-1 px-3 py-1.5 text-xs rounded-full border whitespace-nowrap",
-                "bg-background border-border/60 hover:bg-muted/50",
-              )}
-            >
-              {filter.label}
-              <CaretDown size={12} weight="bold" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="min-w-32">
-            {filter.options.map((opt) => (
-              <DropdownMenuItem
-                key={opt.value}
-                onClick={() => {
-                  if (filter.id === "condition") {
-                    onFiltersChange({
-                      ...filters,
-                      condition: filters.condition === opt.value ? null : opt.value,
-                    })
-                  }
-                }}
-                className="cursor-pointer"
-              >
-                {opt.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ))}
-
-      {/* Active filter badges */}
-      {filters.condition && (
-        <button
-          type="button"
-          onClick={() => onFiltersChange({ ...filters, condition: null })}
-          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-full bg-foreground text-background font-medium whitespace-nowrap"
-        >
-          {filters.condition === "new" ? (locale === "bg" ? "Ново" : "New") :
-           filters.condition === "like_new" ? (locale === "bg" ? "Като ново" : "Like new") :
-           locale === "bg" ? "Използвано" : "Used"}
-          <X size={12} weight="bold" className="text-background/70" />
-        </button>
-      )}
-    </div>
-  )
-}
 
 // =============================================================================
 // PRODUCT GRID SKELETON
@@ -979,27 +940,18 @@ export function IntegratedDesktopLayout({
 
           {/* MAIN CONTENT */}
           <div className="flex-1 min-w-0 @container">
-            {/* Inline search + sort row */}
-            <InlineSearchRow
+            {/* Feed toolbar: count + category pills (left) | sort + view toggle (right) */}
+            <FeedToolbar
               locale={locale}
               productCount={products.length}
               activeTab={activeTab}
               onTabChange={setActiveTab}
               viewMode={viewMode}
               onViewModeChange={setViewMode}
+              categorySlug={activeCategorySlug}
+              filters={filters}
+              onFiltersChange={setFilters}
             />
-
-            {/* Horizontal filter pills when category selected */}
-            {categoryPath.length > 0 && (
-              <div className="mb-3">
-                <HorizontalFilterPills
-                  locale={locale}
-                  categorySlug={activeCategorySlug}
-                  filters={filters}
-                  onFiltersChange={setFilters}
-                />
-              </div>
-            )}
 
             {/* Product Grid - with proper container styling */}
             <div className="rounded-xl bg-card border border-border p-4 shadow-sm">

@@ -490,7 +490,7 @@ export function MobileCategoryBrowser({
 
       {/* Optional Page Title (for category pages) */}
       {pageTitle && (
-        <div className="bg-background px-(--page-inset) py-3 border-b border-border/40">
+        <div className="bg-background px-inset py-3 border-b border-border/40">
           <h1 className="text-lg font-bold">{pageTitle}</h1>
         </div>
       )}

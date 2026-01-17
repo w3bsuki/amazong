@@ -58,7 +58,7 @@ export function CategoryTabs({
       {/* Treido: overflow-x-auto no-scrollbar */}
       <div
         ref={tabsContainerRef}
-        className="relative flex items-center gap-1.5 overflow-x-auto no-scrollbar px-(--page-inset)"
+        className="relative flex items-center gap-1.5 overflow-x-auto no-scrollbar px-inset"
         role="tablist"
       >
         {/* "All" Tab */}

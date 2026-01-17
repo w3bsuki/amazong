@@ -13,7 +13,7 @@ export default function CategoriesLoading() {
     <div className="min-h-screen bg-background">
       {/* Header - matches page.tsx */}
       <div className="border-b border-border/30 bg-background">
-        <div className="px-(--page-inset) py-1.5">
+        <div className="px-inset py-1.5">
           <div className="flex items-baseline justify-between gap-2">
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-3 w-16" />
@@ -26,7 +26,7 @@ export default function CategoriesLoading() {
         {Array.from({ length: 10 }).map((_, i) => (
           <div
             key={i}
-            className="flex items-center gap-2 px-(--page-inset) min-h-touch-lg"
+            className="flex items-center gap-2 px-inset min-h-touch-lg"
           >
             {/* Category circle */}
             <Skeleton className="size-14 shrink-0 rounded-full" />
@@ -44,7 +44,7 @@ export default function CategoriesLoading() {
       </div>
 
       {/* Quick Actions - matches page.tsx */}
-      <div className="px-(--page-inset) py-3 bg-muted/20 border-t border-border/30">
+      <div className="px-inset py-3 bg-muted/20 border-t border-border/30">
         <div className="grid grid-cols-2 gap-2">
           <Skeleton className="h-14 w-full rounded-md" />
           <Skeleton className="h-14 w-full rounded-md" />

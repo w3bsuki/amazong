@@ -340,7 +340,7 @@ export function CategorySelector({
     <>
       {TriggerButton}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-2xl max-h-(--dialog-max-h-sm) p-0 gap-0 rounded-lg">
+        <DialogContent className="max-w-2xl max-h-dialog-sm p-0 gap-0 rounded-lg">
           <DialogHeader className="px-4 py-3 border-b">
             <DialogTitle className="text-base font-semibold">
               {locale === "bg" ? "Избери категория" : "Select Category"}

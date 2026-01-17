@@ -97,7 +97,7 @@ export function SubcategoryPills({
     >
       <div
         ref={containerRef}
-        className="flex items-center gap-1.5 px-(--page-inset) py-2 overflow-x-auto no-scrollbar"
+        className="flex items-center gap-1.5 px-inset py-2 overflow-x-auto no-scrollbar"
         role="tablist"
         aria-label={locale === "bg" ? "Подкатегории" : "Subcategories"}
       >

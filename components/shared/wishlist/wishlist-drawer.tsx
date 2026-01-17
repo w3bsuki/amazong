@@ -103,7 +103,7 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
               <div className="size-6 border-2 border-muted border-t-brand rounded-full animate-spin" />
             </div>
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-5 px-(--page-inset) text-center">
+            <div className="flex flex-col items-center justify-center py-5 px-inset text-center">
               <div className="size-11 bg-muted rounded-lg flex items-center justify-center mb-2">
                 <Heart size={22} weight="duotone" className="text-muted-foreground" />
               </div>
@@ -118,7 +118,7 @@ export const WishlistDrawer = forwardRef<WishlistDrawerHandle, WishlistDrawerPro
             </div>
           ) : (
             <>
-              <div className={cn("overflow-y-auto overscroll-contain px-(--page-inset)", contentMaxHeight)}>
+              <div className={cn("overflow-y-auto overscroll-contain px-inset", contentMaxHeight)}>
                 {items.map((item, index) => (
                   <div 
                     key={item.id}

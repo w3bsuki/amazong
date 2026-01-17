@@ -247,7 +247,7 @@ export function MobileSearchOverlay({
           </p>
 
           {/* Search Header - Close above, full-width search below */}
-          <header className="shrink-0 bg-background border-b border-border px-(--page-inset) pt-2 pb-2">
+          <header className="shrink-0 bg-background border-b border-border px-inset pt-2 pb-2">
             <div className="flex items-center justify-end">
               <Button
                 type="button"
@@ -316,7 +316,7 @@ export function MobileSearchOverlay({
             {/* Product Results */}
             {!isSearching && products.length > 0 && (
               <section aria-labelledby="products-heading" className="border-b border-border">
-                <div className="flex items-center justify-between px-(--page-inset) py-2 bg-muted">
+                <div className="flex items-center justify-between px-inset py-2 bg-muted">
                   <h3 id="products-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                     <Package size={14} weight="regular" aria-hidden="true" />
                     {strings.products}
@@ -369,7 +369,7 @@ export function MobileSearchOverlay({
 
             {/* No Results */}
             {!isSearching && query.length >= minSearchLength && products.length === 0 && (
-              <div role="status" aria-live="polite" className="px-(--page-inset) py-10 text-center">
+              <div role="status" aria-live="polite" className="px-inset py-10 text-center">
                 <Package size={48} weight="regular" className="text-muted-foreground/50 mx-auto mb-3" aria-hidden="true" />
                 <p className="text-base font-medium text-foreground">
                   {strings.noResults} &ldquo;{query}&rdquo;
@@ -384,7 +384,7 @@ export function MobileSearchOverlay({
                 {/* Recent Searches Section */}
                 {recentSearches.length > 0 && (
                   <section aria-labelledby="recent-searches-heading" className="border-b border-border">
-                    <div className="flex items-center justify-between px-(--page-inset) py-2 bg-muted">
+                    <div className="flex items-center justify-between px-inset py-2 bg-muted">
                       <h3 id="recent-searches-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                         <Clock size={14} weight="regular" aria-hidden="true" />
                         {strings.recentSearches}
@@ -403,7 +403,7 @@ export function MobileSearchOverlay({
                           <button
                             type="button"
                             onClick={() => handleSearch(search)}
-                            className="w-full flex items-center gap-2 px-(--page-inset) py-3 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
+                            className="w-full flex items-center gap-2 px-inset py-3 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
                           >
                             <Clock size={18} weight="regular" className="text-muted-foreground shrink-0" aria-hidden="true" />
                             <span className="flex-1 text-base text-foreground">{search}</span>
@@ -417,7 +417,7 @@ export function MobileSearchOverlay({
 
                 {/* Trending Searches Section */}
                 <section aria-labelledby="trending-searches-heading" className="border-b border-border">
-                  <div className="flex items-center gap-2 px-(--page-inset) py-2 bg-muted">
+                  <div className="flex items-center gap-2 px-inset py-2 bg-muted">
                     <h3 id="trending-searches-heading" className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                       <TrendUp size={14} weight="regular" aria-hidden="true" />
                       {strings.trending}
@@ -429,7 +429,7 @@ export function MobileSearchOverlay({
                         <button
                           type="button"
                           onClick={() => handleSearch(search)}
-                          className="w-full flex items-center gap-2 px-(--page-inset) py-3 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
+                          className="w-full flex items-center gap-2 px-inset py-3 hover:bg-muted active:bg-muted/80 text-left touch-action-manipulation transition-colors"
                         >
                           <span className="size-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white bg-cta-trust-blue" aria-hidden="true">
                             {index + 1}

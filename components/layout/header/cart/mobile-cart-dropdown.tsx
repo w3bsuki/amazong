@@ -111,7 +111,7 @@ export function MobileCartDropdown() {
                 </DrawerHeader>
 
                 {items.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center px-(--page-inset) py-5">
+                    <div className="flex flex-col items-center justify-center px-inset py-5">
                         <div className="size-11 bg-muted rounded-lg flex items-center justify-center mb-2">
                             <ShoppingCart size={22} weight="regular" className="text-muted-foreground/50" />
                         </div>
@@ -121,7 +121,7 @@ export function MobileCartDropdown() {
                         </p>
                     </div>
                 ) : (
-                    <div className={cn("flex-1 overflow-y-auto px-(--page-inset) overscroll-contain", contentMaxHeight)}>
+                    <div className={cn("flex-1 overflow-y-auto px-inset overscroll-contain", contentMaxHeight)}>
                         {items.map((item, index) => (
                             <div
                                 key={`${item.id}:${item.variantId ?? ""}`}

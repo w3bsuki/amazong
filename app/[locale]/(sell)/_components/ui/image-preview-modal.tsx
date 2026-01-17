@@ -37,7 +37,7 @@ export function ImagePreviewModal({
       <img
         src={image.url}
         alt="Product preview"
-        className="max-w-full max-h-(--dialog-max-h) object-contain rounded-lg"
+        className="max-w-full max-h-dialog object-contain rounded-lg"
         onClick={(e) => e.stopPropagation()}
       />
     </div>

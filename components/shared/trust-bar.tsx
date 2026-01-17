@@ -46,7 +46,7 @@ export function TrustBar({
           "flex items-center gap-2",
           "overflow-x-auto no-scrollbar",
           "py-2",
-          variant === "desktop" ? "px-3" : "px-(--page-inset)"
+          variant === "desktop" ? "px-3" : "px-inset"
         )}
         role="list"
       >

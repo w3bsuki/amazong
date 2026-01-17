@@ -255,7 +255,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
         >
           {/* Header */}
           <DrawerHeader className={cn(
-            "px-(--page-inset) min-h-touch-lg flex-shrink-0 border-b border-border/50 flex items-center py-3",
+            "px-inset min-h-touch-lg flex-shrink-0 border-b border-border/50 flex items-center py-3",
             activeSection ? "justify-start" : "justify-between"
           )}>
             {activeSection ? (
@@ -303,7 +303,7 @@ export function MobileFilters({ locale, resultsCount = 0, attributes = [], baseP
                     <div
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
-                      className="flex items-center justify-between py-2.5 px-(--page-inset) cursor-pointer active:bg-muted/60 border-b border-border/60"
+                      className="flex items-center justify-between py-2.5 px-inset cursor-pointer active:bg-muted/60 border-b border-border/60"
                     >
                       <span className="text-sm text-foreground">{section.label}</span>
                       <div className="flex items-center gap-2">

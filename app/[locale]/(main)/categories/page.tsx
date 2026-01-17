@@ -56,7 +56,7 @@ export default async function CategoriesPage({
 
       {/* Header */}
       <div className="border-b border-border/30 bg-background">
-        <div className="px-(--page-inset) py-1.5">
+        <div className="px-inset py-1.5">
           <div className="flex items-baseline justify-between gap-2">
             <h1 className="text-sm font-bold text-foreground">
               {locale === 'bg' ? 'Категории' : 'Categories'}
@@ -80,7 +80,7 @@ export default async function CategoriesPage({
             <Link
               key={cat.slug}
               href={`/categories/${cat.slug}`}
-              className="flex items-center gap-2 px-(--page-inset) min-h-touch-lg active:bg-muted/50"
+              className="flex items-center gap-2 px-inset min-h-touch-lg active:bg-muted/50"
             >
               <CategoryCircleVisual
                 category={cat}
@@ -111,7 +111,7 @@ export default async function CategoriesPage({
       </div>
 
       {/* Quick Actions */}
-      <div className="px-(--page-inset) py-3 bg-muted/20 border-t border-border/30">
+      <div className="px-inset py-3 bg-muted/20 border-t border-border/30">
         <div className="grid grid-cols-2 gap-2">
           <Link
             href="/sell"

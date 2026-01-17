@@ -123,7 +123,7 @@ export function DesktopSearch() {
             onSubmit={handleSearch}
             action={`/${locale}/search`}
             method="get"
-            className="relative flex h-11 w-full items-center rounded-full bg-search-bg border border-search-border transition-colors focus-within:border-search-focus-border focus-within:ring-search-focus-ring/30 focus-within:ring-[3px] focus-within:bg-background"
+            className="relative flex h-11 w-full items-center rounded-full bg-search-bg border border-search-border transition-colors focus-within:border-search-focus-border focus-within:ring-search-focus-ring/30 focus-within:ring-2 focus-within:bg-background"
           >
             <MagnifyingGlass
               size={18}

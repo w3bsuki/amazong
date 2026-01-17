@@ -18,7 +18,7 @@ export function Modal({ children, title, description }: ModalProps) {
 
   return (
     <Dialog open onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-4xl max-h-(--dialog-max-h) overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-dialog overflow-y-auto">
         {(title || description) && (
           <DialogHeader>
             {title && <DialogTitle>{title}</DialogTitle>}

@@ -175,7 +175,7 @@ export function SmartAnchorNav({
     >
       <div
         ref={containerRef}
-        className="flex items-center px-(--page-inset) h-(--spacing-nav-row) gap-1.5 overflow-x-auto no-scrollbar"
+        className="flex items-center px-inset h-(--spacing-nav-row) gap-1.5 overflow-x-auto no-scrollbar"
       >
         {/* === ANCHOR (only when drilled down) === */}
         {anchor && (

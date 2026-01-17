@@ -314,9 +314,9 @@ export function FilterModal({
 
   const displayCount = open ? liveCount : resultsCount
 
-  const contentPaddingClass = isMobile ? "px-(--page-inset) py-4" : "p-4"
-  const listBleedClass = isMobile ? "-mx-(--page-inset)" : "-mx-4"
-  const rowPadClass = isMobile ? "px-(--page-inset)" : "px-4"
+  const contentPaddingClass = isMobile ? "px-inset py-4" : "p-4"
+  const listBleedClass = isMobile ? "-mx-inset" : "-mx-4"
+  const rowPadClass = isMobile ? "px-inset" : "px-4"
 
   const renderAttributeSection = () => {
     if (!attribute) return null
@@ -633,7 +633,7 @@ export function FilterModal({
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[92dvh] flex flex-col rounded-t-2xl px-0 pb-0 bg-background">
 
-          <DrawerHeader className="px-(--page-inset) pt-4 pb-3 border-b border-border/30">
+          <DrawerHeader className="px-inset pt-4 pb-3 border-b border-border/30">
             <div className="flex items-center justify-between min-h-touch-sm">
               <span className="text-base font-semibold">{sectionLabel}</span>
               <div className="flex items-center gap-2">
@@ -687,7 +687,7 @@ export function FilterModal({
       <DialogContent
         className={cn(
           "w-full max-w-sm mx-4 rounded-2xl p-0 gap-0",
-          "max-h-(--dialog-max-h-sm) flex flex-col"
+          "max-h-dialog-sm flex flex-col"
         )}
         showCloseButton={false}
       >

@@ -39,6 +39,8 @@ interface SiteHeaderProps {
   hideSubheader?: boolean
   /** Hide entire header on mobile (< lg breakpoint) */
   hideOnMobile?: boolean
+  /** Hide entire header on desktop (>= md breakpoint) */
+  hideOnDesktop?: boolean
   /**
    * Header rendering variant.
    * - default: full header (search + menus)
@@ -50,7 +52,7 @@ interface SiteHeaderProps {
   userStats?: UserListingStats
 }
 
-export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobile = false, variant = "default", userStats }: SiteHeaderProps) {
+export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobile = false, hideOnDesktop = false, variant = "default", userStats }: SiteHeaderProps) {
   const [country, setCountry] = useState("Bulgaria")
   const [, setCountryCode] = useState("BG") // Used for shipping zone filtering
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
@@ -80,6 +82,10 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
   // Landing page: homepage gets seamless header (no bottom border)
   // Detect via pathname - "/" is homepage
   const isLandingPage = variant === "landing" || pathWithoutLocale === "/"
+  
+  // Homepage uses IntegratedDesktopLayout which has its own header (SlimTopBar).
+  // Hide main header on desktop when on homepage to avoid double headers.
+  const hideDesktopOnHomepage = isLandingPage
 
   const searchPlaceholder = locale === "bg"
     ? "Търсене..."
@@ -115,6 +121,8 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
         // Default/Product: border on desktop
         !isLandingPage && "md:border-b md:border-header-border",
         hideOnMobile && "hidden",
+        // Homepage uses IntegratedDesktopLayout with its own header
+        (hideOnDesktop || hideDesktopOnHomepage) && "md:hidden",
       )}
     >
       {/* Mobile Header + Search - Treido native iOS pattern - visible on mobile only */}

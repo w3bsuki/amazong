@@ -53,7 +53,7 @@ export function CategoryL3Pills({
 
   return (
     <div
-      className="bg-background py-1 px-(--page-inset) overflow-x-auto no-scrollbar border-b border-border/30"
+      className="bg-background py-1 px-inset overflow-x-auto no-scrollbar border-b border-border/30"
       ref={pillsContainerRef}
     >
       {isLoading ? (

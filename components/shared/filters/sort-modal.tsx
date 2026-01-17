@@ -83,13 +83,13 @@ export function SortModal({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-(--dialog-max-h-sm) rounded-t-3xl lg:hidden">
+      <DrawerContent className="max-h-dialog-sm rounded-t-3xl lg:hidden">
         {/* Drag handle */}
         <div className="flex justify-center pt-2">
           <div className="h-1.5 w-12 rounded-full bg-muted-foreground/25" />
         </div>
 
-        <DrawerHeader className="px-(--page-inset) pt-4 pb-3 border-b border-border/50">
+        <DrawerHeader className="px-inset pt-4 pb-3 border-b border-border/50">
           <DrawerTitle className="text-base font-semibold text-center">
             {t("sortBy")}
           </DrawerTitle>
@@ -106,7 +106,7 @@ export function SortModal({
                     onClick={() => handleSortChange(option.value)}
                     className={cn(
                       "w-full flex items-center justify-between",
-                      "px-(--page-inset) h-11",
+                      "px-inset h-11",
                       "text-sm font-medium text-left",
                       "transition-colors",
                       isActive

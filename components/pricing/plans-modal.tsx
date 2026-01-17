@@ -176,7 +176,7 @@ export function PlansModal({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       
-      <DialogContent className="max-w-lg sm:max-w-2xl max-h-(--dialog-max-h) overflow-visible p-0">
+      <DialogContent className="max-w-lg sm:max-w-2xl max-h-dialog overflow-visible p-0">
         <div className="px-4 pt-4 pb-3 sm:px-6 sm:pt-5">
           <DialogHeader className="text-center sm:text-center space-y-1">
             <div className="flex items-center justify-center">

@@ -444,7 +444,7 @@ export function FilterHub({
         {/* Header */}
         <DrawerHeader
           className={cn(
-            "px-(--page-inset) pb-3 border-b border-border/50",
+            "px-inset pb-3 border-b border-border/50",
             activeSection || isSingleMode ? "pt-4" : "pt-3"
           )}
         >
@@ -521,7 +521,7 @@ export function FilterHub({
                     key={section.id}
                     type="button"
                     onClick={() => setActiveSection(section.id)}
-                    className="w-full flex items-center justify-between px-(--page-inset) h-10 active:bg-muted/30 transition-colors text-left"
+                    className="w-full flex items-center justify-between px-inset h-10 active:bg-muted/30 transition-colors text-left"
                   >
                     <div className="flex flex-col">
                       <span className="text-sm text-foreground">
@@ -543,10 +543,10 @@ export function FilterHub({
             </div>
           ) : (
             /* Sub-view for specific filter (full mode drill-down or single mode) */
-            <div className="px-(--page-inset) py-4 space-y-2">
+            <div className="px-inset py-4 space-y-2">
               {/* Ratings */}
               {activeSection === "rating" && (
-                <div className="-mx-(--page-inset) divide-y divide-border/30">
+                <div className="-mx-inset divide-y divide-border/30">
                   {[4, 3, 2, 1].map((stars) => {
                     const isActive = pending.minRating === stars.toString()
                     return (
@@ -560,7 +560,7 @@ export function FilterHub({
                           }))
                         }
                         className={cn(
-                          "w-full flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
+                          "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
                           isActive
                             ? "bg-muted/40 text-foreground font-medium"
                             : "text-foreground active:bg-muted/30"
@@ -603,7 +603,7 @@ export function FilterHub({
 
               {/* Availability */}
               {activeSection === "availability" && (
-                <div className="-mx-(--page-inset)">
+                <div className="-mx-inset">
                   <button
                     type="button"
                     onClick={() =>
@@ -614,7 +614,7 @@ export function FilterHub({
                       }))
                     }
                     className={cn(
-                      "w-full flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
+                      "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
                       pending.availability === "instock"
                         ? "bg-muted/40 text-foreground font-medium"
                         : "text-foreground active:bg-muted/30"
@@ -644,13 +644,13 @@ export function FilterHub({
 
               {/* Category Section - L2+ drill-down (Phase 3) */}
               {activeSection === "category" && subcategories.length > 0 && (
-                <div className="-mx-(--page-inset) divide-y divide-border/30">
+                <div className="-mx-inset divide-y divide-border/30">
                   {/* "All in Category" option */}
                   <button
                     type="button"
                     onClick={() => setPendingCategorySlug(null)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
+                      "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
                       pendingCategorySlug === null
                         ? "bg-muted/40 text-foreground font-medium"
                         : "text-foreground active:bg-muted/30"
@@ -680,7 +680,7 @@ export function FilterHub({
                         type="button"
                         onClick={() => setPendingCategorySlug(isActive ? null : subcat.slug)}
                         className={cn(
-                          "w-full flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
+                          "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
                           isActive
                             ? "bg-muted/40 text-foreground font-medium"
                             : "text-foreground active:bg-muted/30"
@@ -723,7 +723,7 @@ export function FilterHub({
                         setPendingAttrValues(attr.name, isChecked ? [] : ["true"])
                       }
                       className={cn(
-                        "-mx-(--page-inset) w-[calc(100%+var(--page-inset)*2)] flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
+                        "-mx-inset w-[calc(100%+var(--spacing-inset)*2)] flex items-center gap-3 px-inset h-10 transition-colors text-left",
                         isChecked
                           ? "bg-muted/40 text-foreground font-medium"
                           : "text-foreground active:bg-muted/30"
@@ -800,7 +800,7 @@ export function FilterHub({
                     shouldForceMultiSelect(attr)
 
                   return (
-                    <div className="-mx-(--page-inset) divide-y divide-border/30">
+                    <div className="-mx-inset divide-y divide-border/30">
                       {options.map((option, idx) => {
                         const currentValues = getPendingAttrValues(attr.name)
                         const isActive = currentValues.includes(option)
@@ -823,7 +823,7 @@ export function FilterHub({
                               setPendingAttrValues(attr.name, newValues)
                             }}
                             className={cn(
-                              "w-full flex items-center gap-3 px-(--page-inset) h-10 transition-colors text-left",
+                              "w-full flex items-center gap-3 px-inset h-10 transition-colors text-left",
                               isActive
                                 ? "bg-muted/40 text-foreground font-medium"
                                 : "text-foreground active:bg-muted/30"

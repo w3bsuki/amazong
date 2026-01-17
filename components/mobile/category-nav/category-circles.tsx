@@ -178,7 +178,7 @@ export function CategoryCircles({
   }
 
   return (
-    <div className={cn("px-(--page-inset) py-2 overflow-x-auto no-scrollbar", className)}>
+    <div className={cn("px-inset py-2 overflow-x-auto no-scrollbar", className)}>
       <div
         ref={containerRef}
         className="flex items-start gap-1.5"

@@ -1,20 +1,14 @@
 /* ============================================================
-   COMPONENT CSS VARIABLES (Compact)
-   Used via Tailwind arbitrary value syntax: w-(--var-name)
-   
-   Keep only vars that are actually referenced in components.
+   COMPONENT CSS VARIABLES (Niche/Calc-based)
+   For values that can't be expressed in Tailwind theme.
+   Migrate to @theme when possible.
    ============================================================ */
 
 :root {
-  /* Page layout - USED in grids, sheets, drawers */
-  --page-inset: 0.25rem;
-  --page-inset-md: 0.5rem;
-  --page-inset-lg: 0.75rem;
-
-  /* Safe area - USED */
+  /* Safe area - system value calc */
   --safe-area-pb-sm: max(0.75rem, env(safe-area-inset-bottom));
 
-  /* Container widths - USED in dropdowns, modals, drawers */
+  /* Container widths - reference theme vars */
   --container-header-content: var(--container-header);
   --container-dropdown-sm: var(--width-dropdown-sm);
   --container-dropdown: var(--width-dropdown);
@@ -23,81 +17,77 @@
   --container-modal: var(--width-modal);
   --container-modal-lg: var(--width-modal-lg);
 
-  /* Dialog/modal dimensions - USED */
-  --dialog-max-h: 90dvh;
-  --dialog-max-h-sm: 75dvh;
-  --dialog-max-h-lg: 95dvh;
-  --dialog-max-w: calc(100% - 2rem);
+  /* Viewport-based heights - keep as-is */
   --dialog-h-85vh: 85vh;
   --dialog-h-50vh: 50vh;
 
-  /* Scroll area heights - USED */
+  /* Scroll area heights */
   --spacing-scroll-sm: 11.25rem;
   --spacing-scroll-md: 18.75rem;
   --spacing-scroll-lg: 25rem;
   --spacing-scroll-xl: 31.25rem;
 
-  /* Sheet/drawer - USED */
+  /* Sheet/drawer */
   --sheet-w-mobile: 85vw;
 
-  /* Page sections - USED */
+  /* Page sections */
   --page-section-min-h: 60vh;
   --page-section-min-h-lg: 80vh;
   --category-subheader-max-h: 70vh;
 
-  /* Wishlist drawer - USED */
+  /* Wishlist drawer - adaptive heights */
   --wishlist-drawer-max-h-empty: 30dvh;
   --wishlist-drawer-max-h-few: 40dvh;
   --wishlist-drawer-max-h: 55dvh;
 
-  /* Product page - USED */
+  /* Product page */
   --product-gallery-max-w-lg: 37.5rem;
   --write-review-dialog-max-w: 26.5625rem;
 
-  /* Support chat - USED */
+  /* Support chat */
   --support-chat-message-max-w: 80%;
 
-  /* Onboarding modal - USED */
+  /* Onboarding modal */
   --onboarding-modal-w: calc(100vw - 2rem);
   --onboarding-modal-max-h: 85vh;
   --onboarding-modal-max-h-sm: 90vh;
 
-  /* Product form modal - USED */
+  /* Product form modal */
   --product-form-modal-h: 98dvh;
   --product-form-modal-w: 98vw;
 
-  /* Plans - USED */
+  /* Plans */
   --plans-skeleton-card-w: calc(100vw - 3rem);
   --plans-table-head-w: 13.75rem;
 
-  /* Sidebar max heights - USED */
+  /* Sidebar max heights - calc-based */
   --category-sidebar-max-h: calc(100vh - 5rem);
   --search-sidebar-max-h: calc(100vh - 8rem);
 
-  /* Account - USED */
+  /* Account */
   --account-orders-sheet-scroll-h: calc(100vh - 12rem);
 
-  /* Business - USED */
+  /* Business */
   --business-notifications-scroll-h: 22.5rem;
 
-  /* UI component sizes - USED */
+  /* UI component sizes */
   --switch-h: 1.15rem;
   --textarea-min-h: 9.375rem;
   --chart-h-sm: 15.625rem;
   --badge-count-size: 1.125rem;
   --text-measure-54ch: 54ch;
 
-  /* Category - USED */
+  /* Category */
   --category-circle-mobile: 3.25rem;
   --deals-category-min-w: 4.375rem;
 
-  /* Skeletons - USED */
+  /* Skeletons */
   --home-category-skeleton-size: 4.5rem;
   --home-horizontal-card-skeleton-w: 16.25rem;
   --header-skeleton-h: 3.25rem;
   --header-skeleton-h-md: 6.25rem;
 
-  /* Layout widths - USED */
+  /* Layout widths */
   --sell-header-user-max-w: 6.25rem;
   --members-sort-w-sm: 11.25rem;
 }

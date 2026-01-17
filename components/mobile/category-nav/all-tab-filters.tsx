@@ -41,7 +41,7 @@ export function AllTabFilters({
   onFilterClick,
 }: AllTabFiltersProps) {
   return (
-    <div className="px-(--page-inset)">
+    <div className="px-inset">
       <div className="flex overflow-x-auto no-scrollbar gap-2 snap-x snap-mandatory items-center">
         {ALL_TAB_FILTERS.map((filter) => {
           const Icon = filter.icon

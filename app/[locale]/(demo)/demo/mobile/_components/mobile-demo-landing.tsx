@@ -396,7 +396,7 @@ function MobileHeader({
   return (
     <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/40 pt-safe">
       {/* Row 1: Hamburger + Logo + Search + Wishlist + Cart (Temu-style) */}
-      <div className="h-12 px-(--page-inset) flex items-center gap-1.5">
+      <div className="h-12 px-inset flex items-center gap-1.5">
         {/* Hamburger */}
         <button
           type="button"
@@ -463,7 +463,7 @@ function MobileHeader({
         ref={pillsRef}
         className="overflow-x-auto no-scrollbar py-2"
       >
-        <div className="flex items-center gap-2 px-(--page-inset)">
+        <div className="flex items-center gap-2 px-inset">
           {categories.map((cat) => {
             const isActive = activeCategory === cat.slug
             const label = locale === "bg" ? cat.nameBg : cat.name
@@ -500,7 +500,7 @@ function PromotedListings({ locale }: { locale: string }) {
   return (
     <section className="pt-3 pb-1">
       {/* Header */}
-      <div className="px-(--page-inset) mb-2.5 flex items-center justify-between">
+      <div className="px-inset mb-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Fire size={18} weight="fill" className="text-orange-500" />
           <span className="text-sm font-bold text-foreground">
@@ -518,7 +518,7 @@ function PromotedListings({ locale }: { locale: string }) {
       
       {/* Big horizontal scroll cards */}
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 px-(--page-inset)">
+        <div className="flex gap-3 px-inset">
           {PROMOTED_PRODUCTS.map((product) => {
             const hasDiscount = product.originalPrice && product.originalPrice > product.price
             const discountPercent = hasDiscount 
@@ -608,7 +608,7 @@ function OffersForYou({ locale }: { locale: string }) {
   return (
     <section className="py-3">
       {/* Header */}
-      <div className="px-(--page-inset) mb-2.5 flex items-center justify-between">
+      <div className="px-inset mb-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Tag size={18} weight="fill" className="text-primary" />
           <span className="text-sm font-bold text-foreground">
@@ -626,7 +626,7 @@ function OffersForYou({ locale }: { locale: string }) {
       
       {/* Horizontal scroll - same cards as Promoted */}
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 px-(--page-inset)">
+        <div className="flex gap-3 px-inset">
           {OFFERS_FOR_YOU.map((product) => {
             const hasDiscount = product.originalPrice && product.originalPrice > product.price
             const discountPercent = hasDiscount 
@@ -715,7 +715,7 @@ function TrustBadgesInline({ locale }: { locale: string }) {
   ]
   
   return (
-    <div className="mx-(--page-inset) my-3 flex items-center justify-between py-2.5 px-3 bg-muted/30 rounded-lg border border-border/30">
+    <div className="mx-inset my-3 flex items-center justify-between py-2.5 px-3 bg-muted/30 rounded-lg border border-border/30">
       {badges.map(({ icon: Icon, label }, i) => (
         <div key={label} className={cn(
           "flex items-center gap-1.5",
@@ -782,7 +782,7 @@ function SearchOverlay({
     <div className="fixed inset-0 z-50 bg-background flex flex-col">
       {/* Search Header */}
       <header className="shrink-0 border-b border-border/40 pt-safe">
-        <div className="h-14 px-(--page-inset) flex items-center gap-2">
+        <div className="h-14 px-inset flex items-center gap-2">
           {/* Back button */}
           <button
             type="button"
@@ -829,7 +829,7 @@ function SearchOverlay({
       <div className="flex-1 overflow-y-auto">
         {query ? (
           /* Search Results Preview */
-          <div className="px-(--page-inset) py-4">
+          <div className="px-inset py-4">
             <p className="text-sm text-muted-foreground text-center py-8">
               {locale === "bg" 
                 ? `Търсене за "${query}"...` 
@@ -841,7 +841,7 @@ function SearchOverlay({
           <div className="py-4 space-y-6">
             {/* Recent Searches */}
             <section>
-              <div className="px-(--page-inset) mb-2 flex items-center justify-between">
+              <div className="px-inset mb-2 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-foreground">
                   {locale === "bg" ? "Скорошни търсения" : "Recent Searches"}
                 </h3>
@@ -852,7 +852,7 @@ function SearchOverlay({
                   {locale === "bg" ? "Изчисти" : "Clear"}
                 </button>
               </div>
-              <div className="px-(--page-inset) flex flex-wrap gap-2">
+              <div className="px-inset flex flex-wrap gap-2">
                 {recentSearches.map((term) => (
                   <button
                     key={term}
@@ -867,7 +867,7 @@ function SearchOverlay({
             
             {/* Trending */}
             <section>
-              <div className="px-(--page-inset) mb-2">
+              <div className="px-inset mb-2">
                 <h3 className="text-sm font-semibold text-foreground">
                   {locale === "bg" ? "Популярни търсения" : "Trending"}
                 </h3>
@@ -877,7 +877,7 @@ function SearchOverlay({
                   <button
                     key={term}
                     type="button"
-                    className="w-full flex items-center gap-3 px-(--page-inset) h-11 active:bg-muted/40 transition-colors text-left"
+                    className="w-full flex items-center gap-3 px-inset h-11 active:bg-muted/40 transition-colors text-left"
                   >
                     <span className="size-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                       {i + 1}
@@ -940,7 +940,7 @@ function FilterDrawer({
   return (
     <NativeDrawer open={open} onOpenChange={onOpenChange} side="bottom">
       {/* Header */}
-      <div className="flex items-center justify-between px-(--page-inset) h-14 border-b border-border/50">
+      <div className="flex items-center justify-between px-inset h-14 border-b border-border/50">
         <h2 className="text-base font-semibold">{locale === "bg" ? "Филтри" : "Filters"}</h2>
         <div className="flex items-center gap-3">
           <button
@@ -961,7 +961,7 @@ function FilterDrawer({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-(--page-inset) space-y-5">
+      <div className="flex-1 overflow-y-auto p-inset space-y-5">
         {/* Rating */}
         <div>
           <h3 className="text-sm font-semibold mb-2">{locale === "bg" ? "Рейтинг" : "Rating"}</h3>
@@ -1048,7 +1048,7 @@ function FilterDrawer({
       </div>
 
       {/* Footer */}
-      <div className="p-(--page-inset) border-t border-border/50 pb-safe">
+      <div className="p-inset border-t border-border/50 pb-safe">
         <button
           type="button"
           onClick={handleApply}
@@ -1091,7 +1091,7 @@ function SortDrawer({
       <div className="flex items-center justify-center pt-3 pb-2">
         <div className="h-1.5 w-12 rounded-full bg-muted-foreground/25" />
       </div>
-      <div className="px-(--page-inset) pb-3 border-b border-border/50">
+      <div className="px-inset pb-3 border-b border-border/50">
         <h2 className="text-base font-semibold text-center">{locale === "bg" ? "Сортирай по" : "Sort By"}</h2>
       </div>
 
@@ -1108,7 +1108,7 @@ function SortDrawer({
                 onOpenChange(false)
               }}
               className={cn(
-                "w-full flex items-center justify-between px-(--page-inset) h-11 transition-colors text-left",
+                "w-full flex items-center justify-between px-inset h-11 transition-colors text-left",
                 isActive ? "bg-muted/50 text-foreground" : "active:bg-muted/30"
               )}
             >
@@ -1146,7 +1146,7 @@ function SubcategoryCircles({
   
   return (
     <div className="py-3 overflow-x-auto no-scrollbar">
-      <div className="flex items-start gap-3 px-(--page-inset)">
+      <div className="flex items-start gap-3 px-inset">
         {/* View All - First circle */}
         <Link
           href={`/categories/${categorySlug}`}
@@ -1206,7 +1206,7 @@ function InlineFilterSortBar({
   sectionTitle: string
 }) {
   return (
-    <div className="px-(--page-inset) py-3 flex items-center justify-between">
+    <div className="px-inset py-3 flex items-center justify-between">
       <div className="flex items-center gap-2">
         <h2 className="text-sm font-bold text-foreground">{sectionTitle}</h2>
         <span className="text-xs text-muted-foreground">({productCount})</span>
@@ -1240,7 +1240,7 @@ function SellPromoBanner({ locale }: { locale: string }) {
   return (
     <Link
       href="/sell"
-      className="mx-(--page-inset) mb-4 flex items-center justify-between gap-3 rounded-lg bg-foreground text-background p-3.5 active:opacity-90 transition-opacity"
+      className="mx-inset mb-4 flex items-center justify-between gap-3 rounded-lg bg-foreground text-background p-3.5 active:opacity-90 transition-opacity"
     >
       <div className="space-y-0.5 min-w-0">
         <p className="text-sm font-bold leading-tight">
@@ -1572,7 +1572,7 @@ export function MobileDemoLanding() {
         />
         
         {/* First batch of products */}
-        <div className="px-(--page-inset) grid grid-cols-2 gap-3">
+        <div className="px-inset grid grid-cols-2 gap-3">
           {firstProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -1585,7 +1585,7 @@ export function MobileDemoLanding() {
         
         {/* Rest of products */}
         {restProducts.length > 0 && (
-          <div className="px-(--page-inset) grid grid-cols-2 gap-3">
+          <div className="px-inset grid grid-cols-2 gap-3">
             {restProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -1594,7 +1594,7 @@ export function MobileDemoLanding() {
         
         {/* Empty state */}
         {filteredProducts.length === 0 && (
-          <div className="px-(--page-inset) py-12 text-center">
+          <div className="px-inset py-12 text-center">
             <Package size={48} className="mx-auto text-muted-foreground/30 mb-3" />
             <p className="text-sm text-muted-foreground">
               {locale === "bg" 
@@ -1609,7 +1609,7 @@ export function MobileDemoLanding() {
       <SellPromoBanner locale={locale} />
       
       {/* Load More */}
-      <div className="px-(--page-inset) pb-4">
+      <div className="px-inset pb-4">
         <button
           type="button"
           className="w-full h-11 rounded-md border border-border text-sm font-semibold text-foreground active:bg-muted transition-colors"

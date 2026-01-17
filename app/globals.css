@@ -284,6 +284,18 @@
   --spacing-touch: 2.5rem;       /* 40px - header icons */
   --spacing-touch-lg: 3rem;      /* 48px - bottom nav */
 
+  /* === PAGE INSETS (responsive edge padding) === */
+  --spacing-inset: 0.25rem;      /* 4px - mobile */
+  --spacing-inset-md: 0.5rem;    /* 8px - tablet */
+  --spacing-inset-lg: 0.75rem;   /* 12px - desktop */
+
+  /* === DIALOG/DRAWER SIZING === */
+  --height-dialog: 90dvh;
+  --height-dialog-sm: 75dvh;
+  --height-dialog-lg: 95dvh;
+  --width-dialog: calc(100% - 2rem);
+  --width-sheet-mobile: 85vw;
+
   /* === ICON SIZES (65% fill ratio for touch targets) === */
   --size-icon-xs: 1.25rem;       /* 20px - small inline */
   --size-icon-sm: 1.375rem;      /* 22px - compact header */

@@ -2,11 +2,14 @@ import { Suspense } from "react"
 import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
-import { DesktopProductFeed, DesktopProductFeedSkeleton } from "@/components/sections/desktop-product-feed"
 import { MobileHome } from "@/components/mobile/mobile-home"
 import { getNewestProducts, getBoostedProducts, toUI } from "@/lib/data/products"
 import { getCategoryHierarchy } from "@/lib/data/categories"
 import { createClient } from "@/lib/supabase/server"
+import { 
+  IntegratedDesktopLayout, 
+  IntegratedDesktopLayoutSkeleton 
+} from "@/components/desktop/integrated-desktop-layout"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -70,25 +73,20 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       </div>
 
       {/* ================================================================
-          DESKTOP: Clean Product-First Layout
-          - No hero banner - content starts immediately
-          - Unified Discovery Section (Categories + Filters + Products)
+          DESKTOP: Integrated Desktop Layout (from /demo/desktop)
+          - Unified header + content in one seamless container
+          - Slim top bar with logo + user actions
+          - Category sidebar + filters + product grid
           ================================================================ */}
       <div className="hidden md:block w-full">
-        {/* Unified Discovery Container - seamless with header */}
-        <div className="w-full bg-background pt-4 pb-6">
-          <div className="container">
-            {/* Product Feed with categories and filters */}
-            <Suspense fallback={<DesktopProductFeedSkeleton />}>
-              <DesktopProductFeed
-                locale={locale}
-                categories={categoriesWithChildren}
-                initialTab="newest"
-                initialProducts={initialProducts}
-              />
-            </Suspense>
-          </div>
-        </div>
+        <Suspense fallback={<IntegratedDesktopLayoutSkeleton />}>
+          <IntegratedDesktopLayout
+            locale={locale}
+            categories={categoriesWithChildren}
+            initialProducts={initialProducts}
+            user={user}
+          />
+        </Suspense>
       </div>
     </main>
   )

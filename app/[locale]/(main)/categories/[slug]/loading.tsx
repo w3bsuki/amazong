@@ -24,7 +24,7 @@ export default function CategorySlugLoading() {
         
         {/* Subcategory circles skeleton - matches CategoryCircles */}
         <div className="bg-background border-b border-border/50">
-          <div className="px-(--page-inset) py-3">
+          <div className="px-inset py-3">
             <div className="flex items-start gap-3 overflow-x-auto no-scrollbar">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="flex flex-col items-center gap-1.5 shrink-0 w-[4.5rem]">

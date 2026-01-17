@@ -76,7 +76,7 @@ export function ControlBar({
       <div
         className={cn(
           "sticky z-30 bg-background border-b border-border/40",
-          "px-(--page-inset) py-1.5",
+          "px-inset py-1.5",
           // Shadow appears when scrolled (via JS or CSS scroll-shadow)
           "transition-shadow",
           className

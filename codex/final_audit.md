@@ -11,6 +11,10 @@ Full repo scan for duplicate code, over‑engineering, tech debt, dead code, dea
 - **Cleanup debt**: backups, temp files, and reports are present at repo root and can mask real sources of truth.
 - **Testing gaps vs production checklist**: manual acceptance items are not automated, and smoke tests verify page loads but not critical flows like add‑to‑cart or checkout.
 
+## Addendum — Full coverage audit
+Folder-by-folder sweep with new findings:
+- [codex/codebase-audit-2026-01-17-full.md](codex/codebase-audit-2026-01-17-full.md)
+
 ---
 
 ## 1) Structure & boundaries

@@ -31,7 +31,7 @@ function ProductGrid({ children, density = "default", className }: ProductGridPr
   return (
     <div
       className={cn(
-        "grid gap-1 px-(--page-inset) md:gap-2 md:px-(--page-inset-md) lg:px-(--page-inset-lg)",
+        "grid gap-1 px-inset md:gap-2 md:px-inset-md lg:px-inset-lg",
         densityClasses[density],
         className
       )}

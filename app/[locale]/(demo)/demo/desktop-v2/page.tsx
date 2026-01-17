@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server"
 import { 
   IntegratedDesktopLayout, 
   IntegratedDesktopLayoutSkeleton 
-} from "@/app/[locale]/(main)/demo/desktop/_components/integrated-desktop-layout"
+} from "@/components/desktop/integrated-desktop-layout"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))

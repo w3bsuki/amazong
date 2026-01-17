@@ -17,7 +17,7 @@ import {
   Plus,
   Star,
 } from "@phosphor-icons/react"
-import { SlidersHorizontal, ArrowUpDown } from "lucide-react"
+import { ArrowUpDown } from "lucide-react"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { SortModal } from "@/components/shared/filters/sort-modal"
@@ -63,7 +63,7 @@ function SubcategoryCircles({
 
   return (
     <div className="py-3 overflow-x-auto no-scrollbar">
-      <div className="flex items-start gap-3 px-(--page-inset)">
+      <div className="flex items-start gap-3 px-inset">
         {/* View All - First circle */}
         <Link
           href={`/categories/${categorySlug}`}
@@ -128,7 +128,7 @@ function PromotedListingsStrip({
   return (
     <section className="pt-3 pb-1">
       {/* Header */}
-      <div className="px-(--page-inset) mb-2.5 flex items-center justify-between">
+      <div className="px-inset mb-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Fire size={18} weight="fill" className="text-orange-500" />
           <span className="text-sm font-bold text-foreground">
@@ -146,7 +146,7 @@ function PromotedListingsStrip({
 
       {/* Big horizontal scroll cards (demo style: w-40) */}
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 px-(--page-inset)">
+        <div className="flex gap-3 px-inset">
           {products.slice(0, 8).map((product) => {
             const hasDiscount = product.listPrice && product.listPrice > product.price
             const discountPercent = hasDiscount
@@ -278,7 +278,7 @@ function OffersForYou({
   return (
     <section className="py-3">
       {/* Header */}
-      <div className="px-(--page-inset) mb-2.5 flex items-center justify-between">
+      <div className="px-inset mb-2.5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Tag size={18} weight="fill" className="text-primary" />
           <span className="text-sm font-bold text-foreground">
@@ -296,7 +296,7 @@ function OffersForYou({
 
       {/* Horizontal scroll - same cards as Promoted */}
       <div className="overflow-x-auto no-scrollbar">
-        <div className="flex gap-3 px-(--page-inset)">
+        <div className="flex gap-3 px-inset">
           {offerProducts.map((product) => {
             const hasDiscount = product.listPrice && product.listPrice > product.price
             const discountPercent = hasDiscount
@@ -401,41 +401,29 @@ function OffersForYou({
 
 function InlineFilterSortBar({
   locale,
-  onFiltersClick,
   onSortClick,
   productCount,
   categoryName,
 }: {
   locale: string
-  onFiltersClick: () => void
   onSortClick: () => void
   productCount: number
   categoryName: string
 }) {
   return (
-    <div className="px-(--page-inset) py-3 flex items-center justify-between">
+    <div className="px-inset py-3 flex items-center justify-between">
       <div className="flex items-center gap-2">
         <h2 className="text-sm font-bold text-foreground">{categoryName}</h2>
         <span className="text-xs text-muted-foreground">({productCount})</span>
       </div>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onFiltersClick}
-          className="flex items-center gap-1.5 h-9 px-3 border border-border/60 rounded-full text-xs font-medium active:bg-muted transition-colors"
-        >
-          <SlidersHorizontal className="size-3.5" />
-          {locale === "bg" ? "Филтри" : "Filters"}
-        </button>
-        <button
-          type="button"
-          onClick={onSortClick}
-          className="flex items-center gap-1.5 h-9 px-3 border border-border/60 rounded-full text-xs font-medium active:bg-muted transition-colors"
-        >
-          <ArrowUpDown className="size-3.5" />
-          {locale === "bg" ? "Сортирай" : "Sort"}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={onSortClick}
+        className="flex items-center gap-1.5 h-9 px-3 border border-border/60 rounded-full text-xs font-medium active:bg-muted transition-colors"
+      >
+        <ArrowUpDown className="size-3.5" />
+        {locale === "bg" ? "Сортирай" : "Sort"}
+      </button>
     </div>
   )
 }
@@ -452,7 +440,7 @@ function TrustBadgesInline({ locale }: { locale: string }) {
   ]
 
   return (
-    <div className="mx-(--page-inset) my-3 flex items-center justify-between py-2.5 px-3 bg-muted/30 rounded-lg border border-border/30">
+    <div className="mx-inset my-3 flex items-center justify-between py-2.5 px-3 bg-muted/30 rounded-lg border border-border/30">
       {badges.map(({ icon: Icon, label }, i) => (
         <div
           key={label}
@@ -474,7 +462,7 @@ function SellPromoBanner({ locale }: { locale: string }) {
   return (
     <Link
       href="/sell"
-      className="mx-(--page-inset) mb-4 flex items-center justify-between gap-3 rounded-lg bg-foreground text-background p-3.5 active:opacity-90 transition-opacity"
+      className="mx-inset mb-4 flex items-center justify-between gap-3 rounded-lg bg-foreground text-background p-3.5 active:opacity-90 transition-opacity"
     >
       <div className="space-y-0.5 min-w-0">
         <p className="text-sm font-bold leading-tight">
@@ -593,10 +581,9 @@ export function MobileHome({
           <OffersForYou products={initialProducts} locale={locale} />
         )}
 
-        {/* Filter/Sort Bar */}
+        {/* Sort Bar */}
         <InlineFilterSortBar
           locale={locale}
-          onFiltersClick={() => setFilterHubOpen(true)}
           onSortClick={() => setSortModalOpen(true)}
           productCount={nav.activeFeed.products.length}
           categoryName={categoryName}

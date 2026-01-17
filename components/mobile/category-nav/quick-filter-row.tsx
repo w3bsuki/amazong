@@ -188,7 +188,7 @@ export function QuickFilterRow({
             <div
                 className={cn(
                     "bg-background border-b border-border/30",
-                    "px-(--page-inset) py-1.5",
+                    "px-inset py-1.5",
                     className
                 )}
             >
