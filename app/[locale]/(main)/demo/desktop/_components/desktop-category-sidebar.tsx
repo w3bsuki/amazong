@@ -197,7 +197,7 @@ export function DesktopCategorySidebar({
 
   // Base button styles
   const itemBase = cn(
-    "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-md text-sm transition-all text-left",
+    "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors text-left",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
   )
 
@@ -205,12 +205,12 @@ export function DesktopCategorySidebar({
   
   const itemInactive = cn(
     itemBase,
-    "text-muted-foreground hover:bg-background/60 hover:text-foreground"
+    "text-muted-foreground hover:bg-muted hover:text-foreground"
   )
 
   return (
-    <div className={cn("rounded-lg border border-border bg-muted/40", className)}>
-      <nav className="p-1.5 max-h-[50vh] overflow-y-auto">
+    <div className={cn("rounded-md bg-card", className)}>
+      <nav className="p-2 space-y-0.5">
           
           {/* Back Button (when drilled in) */}
           {viewLevel > 0 && backLabel && (
@@ -219,7 +219,7 @@ export function DesktopCategorySidebar({
               onClick={handleBack}
               className={cn(
                 itemBase,
-                "text-muted-foreground hover:bg-background/60 hover:text-foreground mb-1"
+                "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               <ArrowLeft size={18} weight="bold" className="shrink-0" />
@@ -236,7 +236,7 @@ export function DesktopCategorySidebar({
             >
               <SquaresFour size={20} weight={selectedPath.length === 0 ? "fill" : "regular"} className="shrink-0" />
               <span className="flex-1">{locale === "bg" ? "Всички" : "All"}</span>
-              <span className="text-xs tabular-nums opacity-60">{totalCount || "—"}</span>
+              <span className="text-xs tabular-nums opacity-70">{totalCount || "—"}</span>
             </button>
           )}
 
@@ -257,7 +257,7 @@ export function DesktopCategorySidebar({
                   onCategorySelect(path, currentL1)
                 }
               }}
-              className={cn(itemBase, "bg-foreground text-background font-medium mb-1")}
+              className={cn(itemBase, "bg-foreground text-background font-medium")}
             >
               <SquaresFour size={18} weight="fill" className="shrink-0" />
               <span className="flex-1 truncate">
@@ -265,7 +265,7 @@ export function DesktopCategorySidebar({
               </span>
               {typeof categoryCounts[headerCategory.slug] === "number" && (
                 <span className="text-xs tabular-nums opacity-70">
-                  ({categoryCounts[headerCategory.slug]})
+                  {categoryCounts[headerCategory.slug]}
                 </span>
               )}
             </button>
@@ -296,7 +296,7 @@ export function DesktopCategorySidebar({
                 
                 {/* Count */}
                 {typeof count === "number" && (
-                  <span className="text-xs tabular-nums opacity-60">{count}</span>
+                  <span className="text-xs tabular-nums opacity-70">{count}</span>
                 )}
                 
                 {/* Chevron if has children */}
@@ -306,7 +306,7 @@ export function DesktopCategorySidebar({
                     weight="bold" 
                     className={cn(
                       "shrink-0",
-                      selected ? "text-background/60" : "text-muted-foreground/40"
+                      selected ? "text-background/70" : "text-muted-foreground/50"
                     )} 
                   />
                 )}

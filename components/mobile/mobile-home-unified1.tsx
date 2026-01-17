@@ -5,26 +5,14 @@ import Image from "next/image"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import {
-  MagnifyingGlass,
   Sparkle as SparkleIcon,
   ShieldCheck,
   Tag,
   Package,
-  Sparkle,
-  House,
   SquaresFour,
-  Baby,
-  PawPrint,
-  Armchair,
-  Car,
-  Barbell,
-  Cpu,
-  TShirt,
-  Flower,
   ArrowRight,
   Truck,
   Fire,
-  List,
   Heart,
   Plus,
   Star,
@@ -34,12 +22,10 @@ import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-ov
 import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import { ProductFeed } from "@/components/shared/product/product-feed"
-import { SidebarMenuV2 } from "@/components/layout/sidebar/sidebar-menu-v2"
-import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
-import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
+import { MobileHeader } from "@/components/mobile/mobile-header"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryShortName, getCategoryName } from "@/lib/category-display"
+import { getCategoryName } from "@/lib/category-display"
 import { useCategoryNavigation } from "@/hooks/use-category-navigation"
 import { useTranslations } from "next-intl"
 import type { User } from "@supabase/supabase-js"
@@ -54,171 +40,6 @@ interface MobileHomeUnified1Props {
   initialCategories: CategoryTreeNode[]
   locale: string
   user?: { id: string } | null
-}
-
-// =============================================================================
-// Category Icon Component (from demo)
-// =============================================================================
-
-function CategoryIcon({ slug, active, size = 14 }: { slug: string; active: boolean; size?: number }) {
-  const weight = active ? "fill" : "regular"
-  const className = active ? "text-background" : "text-muted-foreground"
-
-  const slugLower = slug.toLowerCase()
-  if (slugLower.includes("electron") || slugLower.includes("tech")) {
-    return <Cpu size={size} weight={weight} className={className} />
-  }
-  if (slugLower.includes("fashion") || slugLower.includes("cloth") || slugLower.includes("мода")) {
-    return <TShirt size={size} weight={weight} className={className} />
-  }
-  if (slugLower.includes("home") || slugLower.includes("дом") || slugLower.includes("garden")) {
-    return <House size={size} weight={weight} className={className} />
-  }
-  if (slugLower.includes("beauty") || slugLower.includes("красота")) {
-    return <Flower size={size} weight={weight} className={className} />
-  }
-  if (slugLower.includes("sport") || slugLower.includes("fitness")) {
-    return <Barbell size={size} weight={weight} className={className} />
-  }
-  if (slugLower.includes("kid") || slugLower.includes("baby") || slugLower.includes("деца")) {
-    return <Baby size={size} weight={weight} className={className} />
-  }
-  if (slugLower.includes("pet") || slugLower.includes("животн")) {
-    return <PawPrint size={size} weight={weight} className={className} />
-  }
-  if (slugLower.includes("furniture") || slugLower.includes("мебел")) {
-    return <Armchair size={size} weight={weight} className={className} />
-  }
-  if (slugLower.includes("auto") || slugLower.includes("car") || slugLower.includes("авто")) {
-    return <Car size={size} weight={weight} className={className} />
-  }
-  if (slug === "all") {
-    return <Sparkle size={size} weight={weight} className={className} />
-  }
-  return <SquaresFour size={size} weight={weight} className={className} />
-}
-
-// =============================================================================
-// Temu-Style Header: Hamburger + Logo + Search + Wishlist + Cart (Single Row h-12)
-// =============================================================================
-
-function TemuStyleHeader({
-  user,
-  categories,
-  activeCategory,
-  onCategorySelect,
-  onSearchOpen,
-  locale,
-}: {
-  user?: User | { id: string } | null | undefined
-  categories: CategoryTreeNode[]
-  activeCategory: string
-  onCategorySelect: (slug: string) => void
-  onSearchOpen: () => void
-  locale: string
-}) {
-  const pillsRef = useRef<HTMLDivElement>(null)
-  const searchPlaceholder = locale === "bg" ? "Търсене..." : "Search..."
-  const allLabel = locale === "bg" ? "Всички" : "All"
-
-  // Scroll active pill into view
-  useEffect(() => {
-    const container = pillsRef.current
-    if (!container) return
-
-    const activeEl = container.querySelector(`[data-slug="${activeCategory}"]`) as HTMLElement
-    if (activeEl) {
-      const containerRect = container.getBoundingClientRect()
-      const activeRect = activeEl.getBoundingClientRect()
-
-      if (activeRect.left < containerRect.left || activeRect.right > containerRect.right) {
-        activeEl.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" })
-      }
-    }
-  }, [activeCategory])
-
-  return (
-    <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/40 pt-safe">
-      {/* Row 1: Hamburger + Logo + Search + Wishlist + Cart (Temu-style h-12) */}
-      <div className="h-12 px-(--page-inset) flex items-center gap-1">
-        {/* Hamburger Menu - uses SidebarMenuV2 (shadcn Drawer with full a11y) */}
-        <SidebarMenuV2 user={user as any} triggerClassName="justify-start -ml-2" />
-
-        {/* Logo - closer to hamburger */}
-        <Link href="/" className="shrink-0 -ml-2">
-          <span className="text-lg font-extrabold tracking-tight text-foreground">treido.</span>
-        </Link>
-
-        {/* Search Bar - Takes remaining space */}
-        <button
-          type="button"
-          onClick={onSearchOpen}
-          className={cn(
-            "flex-1 min-w-0 flex items-center gap-1.5 h-9 px-3 rounded-full",
-            "bg-muted/50 border border-border/30",
-            "text-muted-foreground text-sm text-left",
-            "active:bg-muted/70 transition-colors"
-          )}
-          aria-label={searchPlaceholder}
-          aria-haspopup="dialog"
-        >
-          <MagnifyingGlass size={16} weight="regular" className="text-muted-foreground shrink-0" />
-          <span className="flex-1 truncate font-normal text-xs">{searchPlaceholder}</span>
-        </button>
-
-        {/* Action Icons: Wishlist + Cart (with drawer components) */}
-        <div className="flex items-center shrink-0">
-          <MobileWishlistButton />
-          <MobileCartDropdown />
-        </div>
-      </div>
-
-      {/* Row 2: Category Pills */}
-      <div ref={pillsRef} className="overflow-x-auto no-scrollbar py-2">
-        <div className="flex items-center gap-2 px-(--page-inset)">
-          {/* "All" Pill */}
-          <button
-            type="button"
-            data-slug="all"
-            onClick={() => onCategorySelect("all")}
-            className={cn(
-              "shrink-0 flex items-center gap-1.5 h-9 px-3.5 rounded-full text-sm font-medium transition-colors",
-              activeCategory === "all"
-                ? "bg-foreground text-background"
-                : "bg-muted/50 text-muted-foreground active:bg-muted"
-            )}
-          >
-            <CategoryIcon slug="all" active={activeCategory === "all"} size={14} />
-            <span>{allLabel}</span>
-          </button>
-
-          {/* Category Pills */}
-          {categories.map((cat) => {
-            const isActive = activeCategory === cat.slug
-            const label = getCategoryShortName(cat, locale)
-
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                data-slug={cat.slug}
-                onClick={() => onCategorySelect(cat.slug)}
-                className={cn(
-                  "shrink-0 flex items-center gap-1.5 h-9 px-3.5 rounded-full text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-foreground text-background"
-                    : "bg-muted/50 text-muted-foreground active:bg-muted"
-                )}
-              >
-                <CategoryIcon slug={cat.slug} active={isActive} size={14} />
-                <span>{label}</span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-    </header>
-  )
 }
 
 // =============================================================================
@@ -740,8 +561,8 @@ export function MobileHomeUnified1({
         onOpenChange={setSearchOpen}
       />
 
-      {/* Temu-Style Header (hamburger menu is built into SidebarMenuV2) */}
-      <TemuStyleHeader
+      {/* Mobile Header (shared component) */}
+      <MobileHeader
         user={user ?? null}
         categories={initialCategories}
         activeCategory={nav.activeTab}

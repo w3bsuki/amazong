@@ -9,7 +9,6 @@ import { ProductCard } from "@/components/shared/product/product-card"
 import { ProductCardList } from "@/components/shared/product/product-card-list"
 import { EmptyStateCTA } from "@/components/shared/empty-state-cta"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCategoryCounts } from "@/hooks/use-category-counts"
 import { useViewMode } from "@/hooks/use-view-mode"
@@ -26,7 +25,6 @@ import {
   Tag,
   CaretDown,
   Rows,
-  MagnifyingGlass,
 } from "@phosphor-icons/react"
 import {
   DropdownMenu,
@@ -422,10 +420,10 @@ export function UnifiedDesktopFeed({
 
   return (
     <section id="listings" className="w-full" aria-label={t("sectionAriaLabel")}>
-      <div className="container py-4">
-        <div className="flex gap-4">
+      <div className="container py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
           {/* LEFT SIDEBAR: Categories + Filters */}
-          <aside className="hidden lg:flex flex-col w-60 shrink-0 space-y-3 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto">
+          <aside className="hidden lg:flex flex-col shrink-0 space-y-4 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto">
             <DesktopCategorySidebar
               categories={categories}
               locale={locale}
@@ -447,63 +445,54 @@ export function UnifiedDesktopFeed({
 
           {/* MAIN CONTENT */}
           <div className="flex-1 min-w-0 @container">
-            {/* Toolbar Row: Search (full width) | Count | Sort | View Toggle */}
-            <div className="flex items-center gap-3 mb-3">
-              {/* Search Bar - full width */}
-              <div className="relative flex-1">
-                <MagnifyingGlass
-                  size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                />
-                <Input
-                  type="search"
-                  placeholder={locale === "bg" ? "Търсене в продукти, марки и още..." : "Search products, brands and more..."}
-                  className="pl-9 h-9 text-sm bg-background border-border"
-                />
-              </div>
-
-              {/* Results count */}
-              <span className="text-sm text-muted-foreground whitespace-nowrap">
-                {productCount.toLocaleString()} {locale === "bg" ? "обяви" : "listings"}
+            {/* Toolbar Row: Count | Sort | View Toggle */}
+            <div className="flex items-center justify-between gap-4 mb-4">
+              {/* Results count - left aligned */}
+              <span className="text-sm font-medium text-foreground">
+                {productCount.toLocaleString()} <span className="text-muted-foreground font-normal">{locale === "bg" ? "обяви" : "listings"}</span>
               </span>
 
-              {/* Sort Dropdown */}
-              <CompactSortTabs
-                activeTab={activeTab}
-                onTabChange={handleTabChange}
-                locale={locale}
-              />
+              {/* Right controls */}
+              <div className="flex items-center gap-2">
 
-              {/* View Toggle */}
-              <div className="flex items-center gap-0.5 p-0.5 rounded-md bg-muted/50">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setViewMode("grid")}
-                  className={cn(
-                    "size-7 rounded",
-                    viewMode === "grid"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-transparent"
-                  )}
-                  aria-label="Grid view"
-                >
-                  <SquaresFour size={16} weight={viewMode === "grid" ? "fill" : "regular"} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setViewMode("list")}
-                  className={cn(
-                    "size-7 rounded",
-                    viewMode === "list"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-transparent"
-                  )}
-                  aria-label="List view"
-                >
-                  <Rows size={16} weight={viewMode === "list" ? "fill" : "regular"} />
-                </Button>
+                {/* Sort Dropdown */}
+                <CompactSortTabs
+                  activeTab={activeTab}
+                  onTabChange={handleTabChange}
+                  locale={locale}
+                />
+
+                {/* View Toggle */}
+                <div className="flex items-center rounded-md border border-border bg-muted/30">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setViewMode("grid")}
+                    className={cn(
+                      "size-8 rounded-l-md rounded-r-none border-r border-border/50",
+                      viewMode === "grid"
+                        ? "bg-background text-foreground"
+                        : "text-muted-foreground hover:text-foreground bg-transparent"
+                    )}
+                    aria-label="Grid view"
+                  >
+                    <SquaresFour size={16} weight={viewMode === "grid" ? "fill" : "regular"} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setViewMode("list")}
+                    className={cn(
+                      "size-8 rounded-r-md rounded-l-none",
+                      viewMode === "list"
+                        ? "bg-background text-foreground"
+                        : "text-muted-foreground hover:text-foreground bg-transparent"
+                    )}
+                    aria-label="List view"
+                  >
+                    <Rows size={16} weight={viewMode === "list" ? "fill" : "regular"} />
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -532,7 +521,7 @@ export function UnifiedDesktopFeed({
             )}
 
             {/* Product Grid - Container Query Responsive */}
-            <div className="rounded-lg border border-border bg-card p-4">
+            <div className="rounded-lg bg-transparent">
               <div role="list" aria-live="polite">
                 {products.length === 0 && isLoading ? (
                   <ProductGridSkeleton viewMode={viewMode} />
@@ -548,13 +537,12 @@ export function UnifiedDesktopFeed({
                         viewMode === "list"
                           ? "flex flex-col gap-3"
                           : cn(
-                              "grid gap-3",
+                              "grid gap-4",
                               // Container query breakpoints for optimal fill
                               "grid-cols-2",
-                              "@[480px]:grid-cols-3",
-                              "@[640px]:grid-cols-4",
-                              "@[896px]:grid-cols-5",
-                              "@[1152px]:grid-cols-6"
+                              "@[520px]:grid-cols-3",
+                              "@[720px]:grid-cols-4",
+                              "@[960px]:grid-cols-5"
                             )
                       )}
                     >
@@ -715,12 +703,11 @@ function ProductGridSkeleton({ viewMode }: { viewMode: "grid" | "list" }) {
         viewMode === "list"
           ? "flex flex-col gap-3"
           : cn(
-              "grid gap-3",
+              "grid gap-4",
               "grid-cols-2",
-              "@[480px]:grid-cols-3",
-              "@[640px]:grid-cols-4",
-              "@[896px]:grid-cols-5",
-              "@[1152px]:grid-cols-6"
+              "@[520px]:grid-cols-3",
+              "@[720px]:grid-cols-4",
+              "@[960px]:grid-cols-5"
             )
       )}
       aria-busy="true"
@@ -752,10 +739,10 @@ function ProductGridSkeleton({ viewMode }: { viewMode: "grid" | "list" }) {
 
 export function UnifiedDesktopFeedSkeleton() {
   return (
-    <div className="container py-4">
-      <div className="flex gap-4">
+    <div className="container py-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
         {/* Sidebar skeleton */}
-        <aside className="hidden lg:flex flex-col w-56 shrink-0 space-y-3">
+        <aside className="hidden lg:flex flex-col shrink-0 space-y-4">
           <div className="rounded-lg border border-border bg-muted/40 p-1.5">
             {Array.from({ length: 12 }).map((_, i) => (
               <Skeleton key={i} className="h-9 w-full rounded-md mb-1" />
@@ -780,14 +767,13 @@ export function UnifiedDesktopFeedSkeleton() {
           </div>
 
           {/* Products */}
-          <div className="rounded-lg border border-border bg-card p-4">
+          <div className="rounded-lg bg-transparent">
             <div className={cn(
-              "grid gap-3",
+              "grid gap-4",
               "grid-cols-2",
-              "@[480px]:grid-cols-3",
-              "@[640px]:grid-cols-4",
-              "@[896px]:grid-cols-5",
-              "@[1152px]:grid-cols-6"
+              "@[520px]:grid-cols-3",
+              "@[720px]:grid-cols-4",
+              "@[960px]:grid-cols-5"
             )}>
               {Array.from({ length: 18 }).map((_, i) => (
                 <div key={i} className="space-y-2">

@@ -60,16 +60,16 @@ export function DesktopFiltersCard({
     filters.priceMin !== "" || filters.priceMax !== "" || filters.condition !== null
 
   return (
-    <div className={cn("rounded-lg border border-border bg-muted/40", className)}>
-      <div className="px-3 py-2 border-b border-border/50">
+    <div className={cn("rounded-md bg-card", className)}>
+      <div className="px-3 py-2.5">
         <h3 className="text-sm font-semibold text-foreground">
           {locale === "bg" ? "Филтри" : "Filters"}
         </h3>
       </div>
-      <div className="p-3 space-y-3">
+      <div className="px-3 pb-3 space-y-4">
         {/* Price Range */}
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+          <label className="text-xs font-medium text-muted-foreground mb-2 block">
             {locale === "bg" ? "Цена" : "Price"}
           </label>
           <div className="flex items-center gap-2">
@@ -78,25 +78,25 @@ export function DesktopFiltersCard({
               placeholder={locale === "bg" ? "Мин" : "Min"}
               value={filters.priceMin}
               onChange={(e) => handlePriceChange("priceMin", e.target.value)}
-              className="h-8 text-sm bg-background"
+              className="h-9 text-sm"
             />
-            <span className="text-muted-foreground text-xs">–</span>
+            <span className="text-muted-foreground text-sm">–</span>
             <Input
               type="number"
               placeholder={locale === "bg" ? "Макс" : "Max"}
               value={filters.priceMax}
               onChange={(e) => handlePriceChange("priceMax", e.target.value)}
-              className="h-8 text-sm bg-background"
+              className="h-9 text-sm"
             />
           </div>
         </div>
 
         {/* Condition */}
         <div>
-          <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+          <label className="text-xs font-medium text-muted-foreground mb-2 block">
             {locale === "bg" ? "Състояние" : "Condition"}
           </label>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {conditions.map((c) => {
               const isActive = filters.condition === c.id
               return (
@@ -105,10 +105,10 @@ export function DesktopFiltersCard({
                   type="button"
                   onClick={() => handleConditionToggle(c.id)}
                   className={cn(
-                    "px-2.5 py-1 text-xs rounded-full border transition-colors",
+                    "px-3 py-1.5 text-xs rounded-full transition-colors",
                     isActive
-                      ? "bg-foreground text-background border-foreground font-medium"
-                      : "bg-background border-border hover:bg-muted/50"
+                      ? "bg-foreground text-background font-medium"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                   )}
                 >
                   {c.label}
@@ -123,7 +123,7 @@ export function DesktopFiltersCard({
           size="sm"
           onClick={onApply}
           disabled={!hasActiveFilters}
-          className="w-full h-8 text-xs"
+          className="w-full h-9 text-sm font-medium"
         >
           {locale === "bg" ? "Приложи" : "Apply"}
         </Button>

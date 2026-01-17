@@ -138,7 +138,7 @@ function UnifiedMobileHeader({
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/40 pt-safe">
       {/* Row 1: Hamburger + Logo + Actions */}
-      <div className="h-11 px-3 flex items-center gap-1">
+      <div className="h-11 px-4 flex items-center gap-2">
         {/* Hamburger Menu */}
         <SidebarMenu user={user as any} categories={categories} />
 
@@ -152,7 +152,7 @@ function UnifiedMobileHeader({
         <div className="flex-1" />
 
         {/* Action Icons: Wishlist + Notifications + Cart */}
-        <div className="flex items-center -mr-1.5">
+        <div className="flex items-center">
           <MobileWishlistButton />
           {user && <NotificationsDropdown user={user as any} />}
           <MobileCartDropdown />

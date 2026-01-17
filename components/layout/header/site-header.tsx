@@ -121,14 +121,14 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
       <div className="md:hidden bg-background/90 backdrop-blur-md border-b border-border/50 text-foreground pt-safe">
         {/* Top row - Logo & Actions */}
         <div className={cn(
-          "h-11 px-3 flex items-center gap-1",
+          "h-11 px-4 flex items-center gap-2",
           isProductPage && "border-b border-border/50"
         )}>
           {/* Back button on product pages, hamburger menu elsewhere */}
           {isProductPage ? (
             <button
               onClick={() => router.back()}
-              className="flex items-center justify-center size-9 -ml-1.5 rounded-full text-muted-foreground active:opacity-50"
+              className="flex items-center justify-center size-9 rounded-full text-muted-foreground active:opacity-50"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
               <CaretLeft size={22} weight="bold" />
@@ -141,7 +141,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
           </Link>
           <div className="flex-1" />
           {/* Mobile: wishlist + notifications + cart. Messages in bottom nav. */}
-          <div className="flex items-center -mr-1.5">
+          <div className="flex items-center">
             {user && <NotificationsDropdown user={user} />}
             <MobileWishlistButton />
             <MobileCartDropdown />
