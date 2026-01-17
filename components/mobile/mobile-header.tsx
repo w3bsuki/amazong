@@ -8,6 +8,7 @@ import { SidebarMenuV2 } from "@/components/layout/sidebar/sidebar-menu-v2"
 import { MobileCartDropdown } from "@/components/layout/header/cart/mobile-cart-dropdown"
 import { MobileWishlistButton } from "@/components/shared/wishlist/mobile-wishlist-button"
 import { CategoryNavItem } from "@/components/mobile/category-nav"
+import { getCategoryIcon } from "@/lib/category-icons"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryShortName } from "@/lib/category-display"
 import type { User } from "@supabase/supabase-js"
@@ -60,21 +61,21 @@ export function MobileHeader({
   return (
     <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/40 pt-safe">
       {/* Row 1: Hamburger + Logo + Search + Wishlist + Cart (h-12) */}
-      <div className="h-12 px-4 flex items-center gap-2">
-        {/* Hamburger Menu - uses SidebarMenuV2 (shadcn Drawer with full a11y) */}
-        <SidebarMenuV2 user={user as User | null} />
+      <div className="h-12 px-1 flex items-center">
+        {/* Hamburger Menu - 40px touch target, -ml-2 pulls icon to 4px edge */}
+        <SidebarMenuV2 user={user as User | null} triggerClassName="-ml-2" />
 
-        {/* Logo */}
-        <Link href="/" className="shrink-0">
+        {/* Logo - tight to hamburger */}
+        <Link href="/" className="shrink-0 -ml-1">
           <span className="text-lg font-extrabold tracking-tight text-foreground">treido.</span>
         </Link>
 
-        {/* Search Bar - Takes remaining space */}
+        {/* Search Bar - Takes remaining space, ml-2 for breathing room */}
         <button
           type="button"
           onClick={onSearchOpen}
           className={cn(
-            "flex-1 min-w-0 flex items-center gap-1.5 h-9 px-3 rounded-full",
+            "flex-1 min-w-0 flex items-center gap-1.5 h-9 ml-2 px-3 rounded-full",
             "bg-muted/50 border border-border/30",
             "text-muted-foreground text-sm text-left",
             "active:bg-muted/70 transition-colors"
@@ -86,16 +87,20 @@ export function MobileHeader({
           <span className="flex-1 truncate font-normal text-xs">{searchPlaceholder}</span>
         </button>
 
-        {/* Action Icons: Wishlist + Cart (with drawer components) */}
-        <div className="flex items-center shrink-0">
-          <MobileWishlistButton />
-          <MobileCartDropdown />
+        {/* Action Icons: Wishlist + Cart - -mr-1 gives badge room, negative margins tighten gap */}
+        <div className="flex items-center shrink-0 -mr-1">
+          <div className="-mr-1">
+            <MobileWishlistButton />
+          </div>
+          <div className="-ml-1">
+            <MobileCartDropdown />
+          </div>
         </div>
       </div>
 
       {/* Row 2: Category Pills */}
       <div ref={pillsRef} className="overflow-x-auto no-scrollbar py-2">
-        <div className="flex items-center gap-1.5 px-4">
+        <div className="flex items-center gap-2 px-1">
           {/* "All" Pill */}
           <CategoryNavItem
             onClick={() => onCategorySelect("all")}
@@ -103,7 +108,8 @@ export function MobileHeader({
             variant="pill"
             data-slug="all"
           >
-            {allLabel}
+            {getCategoryIcon("all", { size: 14 })}
+            <span>{allLabel}</span>
           </CategoryNavItem>
 
           {/* Category Pills */}
@@ -119,7 +125,8 @@ export function MobileHeader({
                 variant="pill"
                 data-slug={cat.slug}
               >
-                {label}
+                {getCategoryIcon(cat.slug, { size: 14 })}
+                <span>{label}</span>
               </CategoryNavItem>
             )
           })}

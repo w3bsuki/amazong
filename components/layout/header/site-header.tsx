@@ -121,36 +121,40 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
       <div className="md:hidden bg-background/90 backdrop-blur-md border-b border-border/50 text-foreground pt-safe">
         {/* Top row - Logo & Actions */}
         <div className={cn(
-          "h-11 px-4 flex items-center gap-2",
+          "h-12 px-1 flex items-center",
           isProductPage && "border-b border-border/50"
         )}>
-          {/* Back button on product pages, hamburger menu elsewhere */}
+          {/* Back button on product pages, hamburger menu elsewhere - -ml-2 pulls icon to 4px edge */}
           {isProductPage ? (
             <button
               onClick={() => router.back()}
-              className="flex items-center justify-center size-9 rounded-full text-muted-foreground active:opacity-50"
+              className="flex items-center justify-center size-10 -ml-2 rounded-full text-muted-foreground active:opacity-50 touch-action-manipulation tap-transparent"
               aria-label={locale === 'bg' ? 'Назад' : 'Go back'}
             >
-              <CaretLeft size={22} weight="bold" />
+              <CaretLeft size={24} weight="bold" />
             </button>
           ) : (
-            <SidebarMenu user={user} categories={categories} {...(userStats && { userStats })} />
+            <SidebarMenu user={user} categories={categories} triggerClassName="-ml-2" {...(userStats && { userStats })} />
           )}
-          <Link href="/" className="flex items-center shrink-0">
+          <Link href="/" className="flex items-center shrink-0 -ml-1">
             <span className="text-lg font-extrabold tracking-tighter leading-none text-foreground">treido.</span>
           </Link>
           <div className="flex-1" />
-          {/* Mobile: wishlist + notifications + cart. Messages in bottom nav. */}
-          <div className="flex items-center">
+          {/* Mobile: wishlist + notifications + cart - -mr-1 gives badge room, negative margins tighten gap */}
+          <div className="flex items-center shrink-0 -mr-1">
             {user && <NotificationsDropdown user={user} />}
-            <MobileWishlistButton />
-            <MobileCartDropdown />
+            <div className="-mr-1">
+              <MobileWishlistButton />
+            </div>
+            <div className="-ml-1">
+              <MobileCartDropdown />
+            </div>
           </div>
         </div>
 
         {/* Search bar row */}
         {!isProductPage && (
-          <div className="px-(--page-inset) pb-1.5">
+          <div className="px-1 pb-2">
             <button
               onClick={() => setIsMobileSearchOpen(true)}
               className={cn(
