@@ -59,7 +59,7 @@ export function MobileHeader({
   }, [activeCategory])
 
   return (
-    <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/40 pt-safe">
+    <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md pt-safe">
       {/* Row 1: Hamburger + Logo + Search + Wishlist + Cart (h-12) */}
       <div className="h-12 px-1 flex items-center">
         {/* Hamburger Menu - 40px touch target, -ml-2 pulls icon to 4px edge */}
@@ -99,7 +99,7 @@ export function MobileHeader({
       </div>
 
       {/* Row 2: Category Pills */}
-      <div ref={pillsRef} className="overflow-x-auto no-scrollbar py-2">
+      <div ref={pillsRef} className="overflow-x-auto no-scrollbar py-1">
         <div className="flex items-center gap-2 px-1">
           {/* "All" Pill */}
           <CategoryNavItem

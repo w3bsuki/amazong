@@ -154,7 +154,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
 
         {/* Search bar row */}
         {!isProductPage && (
-          <div className="px-1 pb-2">
+          <div className="px-1 pb-1.5">
             <button
               onClick={() => setIsMobileSearchOpen(true)}
               className={cn(
