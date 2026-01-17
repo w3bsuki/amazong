@@ -38,7 +38,7 @@ type Category = CategoryTreeNode
 // Types
 // =============================================================================
 
-interface MobileHomeTabsProps {
+interface MobileCategoryBrowserProps {
   initialProducts: UIProduct[]
   /** Which category slug the initialProducts are for. Defaults to "all" for homepage. */
   initialProductsSlug?: string
@@ -139,7 +139,7 @@ interface MobileHomeTabsProps {
 // Main Component
 // =============================================================================
 
-export function MobileHomeTabs({
+export function MobileCategoryBrowser({
   initialProducts,
   initialProductsSlug = "all",
   showViewAllLink = true,
@@ -166,7 +166,7 @@ export function MobileHomeTabs({
   contextualSubcategories = [],
   categoryId,
   parentCategory,
-}: MobileHomeTabsProps) {
+}: MobileCategoryBrowserProps) {
   const intlLocale = useLocale()
   const locale = localeProp || intlLocale
   const router = useRouter()

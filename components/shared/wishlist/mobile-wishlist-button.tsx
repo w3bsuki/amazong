@@ -23,11 +23,11 @@ export function MobileWishlistButton() {
     return (
       <span
         role="button"
-        className="flex items-center justify-center size-9 p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer"
+        className="flex items-center justify-center size-10 p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
-          <Heart size={22} weight="regular" className="text-header-text" />
+          <Heart size={24} weight="regular" className="text-header-text" />
         </span>
       </span>
     )
@@ -37,11 +37,11 @@ export function MobileWishlistButton() {
     <>
       <button
         onClick={() => drawerRef.current?.open()}
-        className="flex items-center justify-center size-9 p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
+        className="flex items-center justify-center size-10 p-0 rounded-md relative hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent"
         aria-label={tNav("wishlist")}
       >
         <span className="relative" aria-hidden="true">
-          <Heart size={22} weight="regular" className="text-header-text" />
+          <Heart size={24} weight="regular" className="text-header-text" />
           {totalItems > 0 && (
             <CountBadge
               count={totalItems}

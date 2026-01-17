@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { setRequestLocale } from "next-intl/server"
 import { routing } from "@/i18n/routing"
 import { DesktopProductFeed, DesktopProductFeedSkeleton } from "@/components/sections/desktop-product-feed"
-import { MobileHomeUnified1 } from "@/components/mobile/mobile-home-unified1"
+import { MobileHome } from "@/components/mobile/mobile-home"
 import { getNewestProducts, getBoostedProducts, toUI } from "@/lib/data/products"
 import { getCategoryHierarchy } from "@/lib/data/categories"
 import { createClient } from "@/lib/supabase/server"
@@ -59,7 +59,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       */}
       <div className="w-full md:hidden">
         <Suspense fallback={<div className="h-screen w-full bg-background animate-pulse" />}>
-          <MobileHomeUnified1
+          <MobileHome
             initialProducts={initialProducts.slice(0, 12)}
             promotedProducts={promotedProducts}
             initialCategories={categoriesWithChildren}

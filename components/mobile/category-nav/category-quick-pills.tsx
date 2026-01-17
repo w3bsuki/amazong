@@ -3,6 +3,7 @@
 import { useRef, useEffect } from "react"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryShortName } from "@/lib/category-display"
+import { getCategoryIcon } from "@/lib/category-icons"
 import { CategoryNavItem } from "./category-nav-item"
 
 type Category = CategoryTreeNode
@@ -68,7 +69,8 @@ export function CategoryQuickPills({
             variant="pill"
             data-tab="all"
           >
-            {allLabel}
+            {getCategoryIcon("all", { size: 14 })}
+            <span>{allLabel}</span>
           </CategoryNavItem>
         ) : (
           <CategoryNavItem
@@ -77,7 +79,8 @@ export function CategoryQuickPills({
             variant="pill"
             data-tab="all"
           >
-            {allLabel}
+            {getCategoryIcon("all", { size: 14 })}
+            <span>{allLabel}</span>
           </CategoryNavItem>
         )}
 
@@ -85,6 +88,7 @@ export function CategoryQuickPills({
         {categories.map((cat) => {
           const label = getCategoryShortName(cat, locale)
           const isActive = activeTab === cat.slug
+          const icon = getCategoryIcon(cat.slug, { size: 14 })
 
           return tabsNavigateToPages ? (
             <CategoryNavItem
@@ -94,7 +98,8 @@ export function CategoryQuickPills({
               variant="pill"
               data-tab={cat.slug}
             >
-              {label}
+              {icon}
+              <span>{label}</span>
             </CategoryNavItem>
           ) : (
             <CategoryNavItem
@@ -104,7 +109,8 @@ export function CategoryQuickPills({
               variant="pill"
               data-tab={cat.slug}
             >
-              {label}
+              {icon}
+              <span>{label}</span>
             </CategoryNavItem>
           )
         })}

@@ -31,7 +31,7 @@ function ProductGrid({ children, density = "default", className }: ProductGridPr
   return (
     <div
       className={cn(
-        "grid gap-2.5 px-(--page-inset) md:gap-4 md:px-(--page-inset-md) lg:px-(--page-inset-lg)",
+        "grid gap-1 px-(--page-inset) md:gap-2 md:px-(--page-inset-md) lg:px-(--page-inset-lg)",
         densityClasses[density],
         className
       )}
@@ -52,7 +52,7 @@ type ProductCardSkeletonProps = {
 function ProductCardSkeleton({ showQuickAdd = true }: ProductCardSkeletonProps) {
   return (
     <div className="overflow-hidden">
-      <div className="relative overflow-hidden rounded-sm bg-muted">
+      <div className="relative overflow-hidden rounded-(--radius-card) bg-muted">
         <AspectRatio ratio={4 / 5}>
           <Skeleton className="h-full w-full" />
         </AspectRatio>

@@ -266,8 +266,8 @@ function ProductCard({
         <span className="sr-only">{title}</span>
       </Link>
 
-      {/* Image Container - tight rounded corners */}
-      <div className="relative aspect-square overflow-hidden rounded-sm bg-muted">
+      {/* Image Container - using card radius for consistent e-commerce look */}
+      <div className="relative aspect-square overflow-hidden rounded-(--radius-card) bg-muted">
         <ProductCardImage
           src={image}
           alt={title}

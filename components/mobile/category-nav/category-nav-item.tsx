@@ -50,10 +50,10 @@ export const CategoryNavItem = forwardRef<
       : "text-muted-foreground hover:text-foreground"
   )
 
-  // Pill variant: Treido chip style - text-xs, h-8
+  // Pill variant: Treido chip style - text-xs, h-8, with icon support
   const pillStyles = cn(
-    "shrink-0 h-8 px-3 text-xs font-medium rounded-md whitespace-nowrap",
-    "flex items-center justify-center",
+    "shrink-0 h-8 px-3 text-xs font-medium rounded-full whitespace-nowrap",
+    "flex items-center justify-center gap-1.5",
     "border transition-colors",
     isActive
       ? "border-foreground bg-foreground text-background"

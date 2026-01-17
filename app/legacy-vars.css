@@ -7,9 +7,9 @@
 
 :root {
   /* Page layout - USED in grids, sheets, drawers */
-  --page-inset: 0.5rem;
-  --page-inset-md: 0.75rem;
-  --page-inset-lg: 1rem;
+  --page-inset: 0.25rem;
+  --page-inset-md: 0.5rem;
+  --page-inset-lg: 0.75rem;
 
   /* Safe area - USED */
   --safe-area-pb-sm: max(0.75rem, env(safe-area-inset-bottom));

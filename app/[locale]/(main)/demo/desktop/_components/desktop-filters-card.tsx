@@ -60,13 +60,13 @@ export function DesktopFiltersCard({
     filters.priceMin !== "" || filters.priceMax !== "" || filters.condition !== null
 
   return (
-    <div className={cn("rounded-md bg-card", className)}>
-      <div className="px-3 py-2.5">
+    <div className={cn("rounded-lg border border-border bg-background", className)}>
+      <div className="px-3 py-2.5 border-b border-border">
         <h3 className="text-sm font-semibold text-foreground">
           {locale === "bg" ? "Филтри" : "Filters"}
         </h3>
       </div>
-      <div className="px-3 pb-3 space-y-4">
+      <div className="px-3 py-3 space-y-4">
         {/* Price Range */}
         <div>
           <label className="text-xs font-medium text-muted-foreground mb-2 block">

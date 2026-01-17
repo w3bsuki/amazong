@@ -8,7 +8,8 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="card"
       className={cn(
         // Treido: flat cards (border + no heavy shadow)
-        "bg-card text-card-foreground flex flex-col gap-2 rounded-md border border-border shadow-none",
+        // Using --radius-card (0.75rem/12px) for professional e-commerce feel
+        "bg-card text-card-foreground flex flex-col gap-2 rounded-(--radius-card) border border-border shadow-none",
         className
       )}
       {...props}

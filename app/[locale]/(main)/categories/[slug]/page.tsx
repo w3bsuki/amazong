@@ -26,7 +26,7 @@ import {
 import { searchProducts } from "./_lib/search-products"
 import type { Product } from "./_lib/types"
 import { ITEMS_PER_PAGE } from "../../_lib/pagination"
-import { MobileHomeTabs } from "@/components/mobile/mobile-home-tabs"
+import { MobileCategoryBrowser } from "@/components/mobile/mobile-category-browser"
 import type { UIProduct } from "@/lib/data/products"
 
 // =============================================================================
@@ -322,7 +322,7 @@ function CategoryPageDynamicContent({
   return (
     <>
       <div className="lg:hidden">
-        <MobileHomeTabs
+        <MobileCategoryBrowser
           initialProducts={mobileInitialProducts}
           initialProductsSlug={slug}
           initialCategories={categoriesWithChildren}

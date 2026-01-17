@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { getCategoryName } from "@/lib/category-display"
 import { getCategoryIcon } from "@/lib/category-icons"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { ArrowLeft, SquaresFour, CaretRight } from "@phosphor-icons/react"
+import { ArrowLeft, SquaresFour, CaretRight, CaretDown, CaretUp } from "@phosphor-icons/react"
 
 // =============================================================================
 // TYPES
@@ -27,6 +27,8 @@ interface DesktopCategorySidebarProps {
   onCategorySelect: (path: CategoryPath[], category: CategoryTreeNode | null) => void
   /** Category counts by slug */
   categoryCounts?: Record<string, number>
+  /** Max visible items before "show more" (default: 12 - roughly 50% of typical viewport) */
+  initialVisibleCount?: number
   /** Additional CSS classes */
   className?: string
 }
@@ -50,6 +52,7 @@ export function DesktopCategorySidebar({
   selectedPath,
   onCategorySelect,
   categoryCounts = {},
+  initialVisibleCount = 12,
   className,
 }: DesktopCategorySidebarProps) {
   // Current view level: 0 = L0 list, 1 = L1 list, 2 = L2 list
@@ -58,6 +61,8 @@ export function DesktopCategorySidebar({
   const [currentL0, setCurrentL0] = useState<CategoryTreeNode | null>(null)
   // Which L1 is currently showing its children
   const [currentL1, setCurrentL1] = useState<CategoryTreeNode | null>(null)
+  // Whether to show all categories or just the initial count
+  const [isExpanded, setIsExpanded] = useState(false)
 
   // Sync view state with selected path
   useEffect(() => {
@@ -103,6 +108,23 @@ export function DesktopCategorySidebar({
     }
     return []
   }, [viewLevel, currentL0, currentL1, categories])
+
+  // Visible items (limited when collapsed, all when expanded)
+  const visibleItems = useMemo(() => {
+    if (isExpanded || currentItems.length <= initialVisibleCount) {
+      return currentItems
+    }
+    return currentItems.slice(0, initialVisibleCount)
+  }, [currentItems, isExpanded, initialVisibleCount])
+
+  // How many items are hidden
+  const hiddenCount = currentItems.length - visibleItems.length
+  const hasMore = hiddenCount > 0
+
+  // Reset expansion when drilling into categories
+  useEffect(() => {
+    setIsExpanded(false)
+  }, [viewLevel])
 
   // Current header category (the one we're viewing children of)
   const headerCategory = viewLevel === 2 ? currentL1 : viewLevel === 1 ? currentL0 : null
@@ -195,9 +217,9 @@ export function DesktopCategorySidebar({
     return selectedPath[selectedPath.length - 1]?.slug === slug
   }
 
-  // Base button styles
+  // Base button styles - slightly smaller padding for more compact fit
   const itemBase = cn(
-    "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors text-left",
+    "w-full flex items-center gap-2.5 px-3 py-1.5 rounded-md text-sm transition-colors text-left min-h-9",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
   )
 
@@ -209,8 +231,15 @@ export function DesktopCategorySidebar({
   )
 
   return (
-    <div className={cn("rounded-md bg-card", className)}>
-      <nav className="p-2 space-y-0.5">
+    <div className={cn("rounded-lg border border-border bg-background", className)}>
+      {/* Header */}
+      <div className="px-3 py-2.5 border-b border-border">
+        <h2 className="text-sm font-semibold text-foreground">
+          {locale === "bg" ? "Категории" : "Categories"}
+        </h2>
+      </div>
+      
+      <nav className="p-1.5 space-y-0.5">
           
           {/* Back Button (when drilled in) */}
           {viewLevel > 0 && backLabel && (
@@ -272,7 +301,7 @@ export function DesktopCategorySidebar({
           )}
 
           {/* Category Items */}
-          {currentItems.map((item) => {
+          {visibleItems.map((item) => {
             const name = getCategoryName(item, locale)
             const count = categoryCounts[item.slug]
             const hasChildren = item.children && item.children.length > 0
@@ -313,6 +342,35 @@ export function DesktopCategorySidebar({
               </button>
             )
           })}
+
+          {/* Show More / Show Less Toggle */}
+          {(hasMore || isExpanded) && currentItems.length > initialVisibleCount && (
+            <button
+              type="button"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className={cn(
+                "w-full flex items-center justify-center gap-1.5 py-2 mt-1",
+                "text-xs font-medium rounded-md transition-colors",
+                "bg-foreground text-background hover:bg-foreground/90"
+              )}
+            >
+              {isExpanded ? (
+                <>
+                  <CaretUp size={14} weight="bold" />
+                  <span>{locale === "bg" ? "По-малко" : "Show less"}</span>
+                </>
+              ) : (
+                <>
+                  <CaretDown size={14} weight="bold" />
+                  <span>
+                    {locale === "bg" 
+                      ? `Още ${hiddenCount}` 
+                      : `${hiddenCount} more`}
+                  </span>
+                </>
+              )}
+            </button>
+          )}
         </nav>
       </div>
   )

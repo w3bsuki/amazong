@@ -140,13 +140,13 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
             <span
                 role="button"
                 className={cn(
-                    "inline-flex items-center justify-center size-9 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer",
+                    "inline-flex items-center justify-center size-10 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent cursor-pointer [&_svg]:size-6",
                     triggerClassName
                 )}
                 aria-label={locale === "bg" ? "Меню" : "Menu"}
                 data-testid="mobile-menu-trigger"
             >
-                <List size={22} weight="bold" />
+                <List weight="bold" />
             </span>
         )
     }
@@ -159,7 +159,7 @@ export function SidebarMenuV2({ user, triggerClassName, userStats }: SidebarMenu
                     variant="ghost"
                     size="icon"
                     className={cn(
-                        "size-9 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-[22px]",
+                        "size-10 rounded-md text-header-text hover:bg-header-hover active:bg-header-active transition-colors touch-action-manipulation tap-transparent focus-visible:ring-0 focus-visible:ring-offset-0 [&_svg]:size-6",
                         triggerClassName
                     )}
                     aria-label={locale === "bg" ? "Меню" : "Menu"}

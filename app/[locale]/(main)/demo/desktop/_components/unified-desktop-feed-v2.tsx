@@ -419,11 +419,11 @@ export function UnifiedDesktopFeed({
   const productCount = products.length
 
   return (
-    <section id="listings" className="w-full" aria-label={t("sectionAriaLabel")}>
+    <section id="listings" className="w-full bg-muted/50" aria-label={t("sectionAriaLabel")}>
       <div className="container py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[256px_1fr] gap-5">
           {/* LEFT SIDEBAR: Categories + Filters */}
-          <aside className="hidden lg:flex flex-col shrink-0 space-y-4 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto">
+          <aside className="hidden lg:flex flex-col shrink-0 gap-3 sticky top-20 self-start">
             <DesktopCategorySidebar
               categories={categories}
               locale={locale}
@@ -431,12 +431,12 @@ export function UnifiedDesktopFeed({
               onCategorySelect={handleCategorySelect}
               categoryCounts={categoryCounts}
             />
+            {/* Filters Card - always visible */}
             <DesktopFiltersCard
               locale={locale}
               filters={filters}
               onFiltersChange={setFilters}
               onApply={() => {
-                // TODO: Apply filters to fetch
                 setPage(1)
                 fetchProducts(activeTab, 1, pageSize, false, activeCategorySlug)
               }}
@@ -444,70 +444,68 @@ export function UnifiedDesktopFeed({
           </aside>
 
           {/* MAIN CONTENT */}
-          <div className="flex-1 min-w-0 @container">
-            {/* Toolbar Row: Count | Sort | View Toggle */}
-            <div className="flex items-center justify-between gap-4 mb-4">
-              {/* Results count - left aligned */}
-              <span className="text-sm font-medium text-foreground">
-                {productCount.toLocaleString()} <span className="text-muted-foreground font-normal">{locale === "bg" ? "обяви" : "listings"}</span>
-              </span>
+          <div className="flex-1 min-w-0 @container space-y-4">
+            {/* TOOLBAR ROW: Search + Filters + Count + Sort + View — all inside a card */}
+            <div className="rounded-lg border border-border bg-background p-3">
+              <div className="flex items-center gap-3">
+                {/* Left: Category filters dropdowns (Size, Brand, Condition) */}
+                <div className="flex items-center gap-2 flex-1 min-w-0 overflow-x-auto no-scrollbar">
+                  <CategoryFilters
+                    categorySlug={activeCategorySlug}
+                    locale={locale}
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                  />
+                </div>
 
-              {/* Right controls */}
-              <div className="flex items-center gap-2">
+                {/* Right: Count + Sort + View */}
+                <div className="flex items-center gap-3 shrink-0">
+                  {/* Results count */}
+                  <span className="text-sm text-muted-foreground whitespace-nowrap">
+                    {productCount.toLocaleString()} {locale === "bg" ? "обяви" : "listings"}
+                  </span>
 
-                {/* Sort Dropdown */}
-                <CompactSortTabs
-                  activeTab={activeTab}
-                  onTabChange={handleTabChange}
-                  locale={locale}
-                />
+                  {/* Sort Dropdown */}
+                  <CompactSortTabs
+                    activeTab={activeTab}
+                    onTabChange={handleTabChange}
+                    locale={locale}
+                  />
 
-                {/* View Toggle */}
-                <div className="flex items-center rounded-md border border-border bg-muted/30">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setViewMode("grid")}
-                    className={cn(
-                      "size-8 rounded-l-md rounded-r-none border-r border-border/50",
-                      viewMode === "grid"
-                        ? "bg-background text-foreground"
-                        : "text-muted-foreground hover:text-foreground bg-transparent"
-                    )}
-                    aria-label="Grid view"
-                  >
-                    <SquaresFour size={16} weight={viewMode === "grid" ? "fill" : "regular"} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setViewMode("list")}
-                    className={cn(
-                      "size-8 rounded-r-md rounded-l-none",
-                      viewMode === "list"
-                        ? "bg-background text-foreground"
-                        : "text-muted-foreground hover:text-foreground bg-transparent"
-                    )}
-                    aria-label="List view"
-                  >
-                    <Rows size={16} weight={viewMode === "list" ? "fill" : "regular"} />
-                  </Button>
+                  {/* View Toggle */}
+                  <div className="flex items-center rounded-md border border-border bg-muted/40">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setViewMode("grid")}
+                      className={cn(
+                        "size-9 rounded-l-md rounded-r-none",
+                        viewMode === "grid"
+                          ? "bg-background text-foreground"
+                          : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+                      )}
+                      aria-label="Grid view"
+                    >
+                      <SquaresFour size={18} weight={viewMode === "grid" ? "fill" : "regular"} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setViewMode("list")}
+                      className={cn(
+                        "size-9 rounded-r-md rounded-l-none",
+                        viewMode === "list"
+                          ? "bg-background text-foreground"
+                          : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+                      )}
+                      aria-label="List view"
+                    >
+                      <Rows size={18} weight={viewMode === "list" ? "fill" : "regular"} />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Category-Specific Filters Row (when category selected) */}
-            {categoryPath.length > 0 && (
-              <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1">
-                {/* Dynamic filters based on category type */}
-                <CategoryFilters
-                  categorySlug={activeCategorySlug}
-                  locale={locale}
-                  filters={filters}
-                  onFiltersChange={setFilters}
-                />
-              </div>
-            )}
 
             {/* Quick Pills (L3 subcategories when at L2+ depth) */}
             {l3Subcategories.length > 0 && (
@@ -516,12 +514,11 @@ export function UnifiedDesktopFeed({
                 activeSlug={selectedL3Slug}
                 locale={locale}
                 onSelect={handleQuickPillSelect}
-                className="mb-3"
               />
             )}
 
-            {/* Product Grid - Container Query Responsive */}
-            <div className="rounded-lg bg-transparent">
+            {/* Product Grid Container */}
+            <div className="rounded-lg border border-border bg-background p-4">
               <div role="list" aria-live="polite">
                 {products.length === 0 && isLoading ? (
                   <ProductGridSkeleton viewMode={viewMode} />
@@ -657,15 +654,15 @@ function CompactSortTabs({
         <button
           type="button"
           className={cn(
-            "inline-flex items-center gap-1.5 rounded-md px-3 h-8",
+            "inline-flex items-center gap-1.5 rounded-md px-3 h-9",
             "text-sm font-medium whitespace-nowrap transition-colors border",
-            "bg-background text-foreground border-border hover:bg-muted/50",
+            "bg-muted/40 text-foreground border-border hover:bg-muted/60",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           )}
         >
-          <ActiveIcon size={14} weight="fill" />
+          <ActiveIcon size={16} weight="fill" />
           <span>{activeTabData.label}</span>
-          <CaretDown size={12} weight="bold" />
+          <CaretDown size={12} weight="bold" className="text-muted-foreground" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
@@ -739,49 +736,63 @@ function ProductGridSkeleton({ viewMode }: { viewMode: "grid" | "list" }) {
 
 export function UnifiedDesktopFeedSkeleton() {
   return (
-    <div className="container py-6">
-      <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
-        {/* Sidebar skeleton */}
-        <aside className="hidden lg:flex flex-col shrink-0 space-y-4">
-          <div className="rounded-lg border border-border bg-muted/40 p-1.5">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <Skeleton key={i} className="h-9 w-full rounded-md mb-1" />
-            ))}
-          </div>
-        </aside>
-
-        {/* Main content skeleton */}
-        <div className="flex-1 min-w-0 @container">
-          {/* Toolbar */}
-          <div className="flex items-center gap-3 mb-3">
-            <Skeleton className="h-9 w-64 rounded-md" />
-            <div className="flex-1" />
-            <Skeleton className="h-8 w-24 rounded-md" />
-            <Skeleton className="h-8 w-16 rounded-md" />
-          </div>
-
-          {/* Breadcrumb placeholder */}
-          <div className="flex items-center gap-2 mb-3">
-            <Skeleton className="h-6 w-20 rounded-full" />
-            <Skeleton className="h-4 w-16" />
-          </div>
-
-          {/* Products */}
-          <div className="rounded-lg bg-transparent">
-            <div className={cn(
-              "grid gap-4",
-              "grid-cols-2",
-              "@[520px]:grid-cols-3",
-              "@[720px]:grid-cols-4",
-              "@[960px]:grid-cols-5"
-            )}>
-              {Array.from({ length: 18 }).map((_, i) => (
-                <div key={i} className="space-y-2">
-                  <Skeleton className="aspect-square w-full rounded-md" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                </div>
+    <div className="bg-muted/50">
+      <div className="container py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[256px_1fr] gap-5">
+          {/* Sidebar skeleton */}
+          <aside className="hidden lg:flex flex-col shrink-0 gap-3">
+            <div className="rounded-lg border border-border bg-background p-1.5">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <Skeleton key={i} className="h-9 w-full rounded-md mb-1" />
               ))}
+            </div>
+            <div className="rounded-lg border border-border bg-background p-3 space-y-3">
+              <Skeleton className="h-4 w-16" />
+              <div className="flex gap-2">
+                <Skeleton className="h-9 flex-1 rounded-md" />
+                <Skeleton className="h-9 flex-1 rounded-md" />
+              </div>
+              <Skeleton className="h-4 w-20" />
+              <div className="flex gap-1.5">
+                <Skeleton className="h-7 w-14 rounded-full" />
+                <Skeleton className="h-7 w-18 rounded-full" />
+                <Skeleton className="h-7 w-14 rounded-full" />
+              </div>
+            </div>
+          </aside>
+
+          {/* Main content skeleton */}
+          <div className="flex-1 min-w-0 @container space-y-4">
+            {/* Toolbar */}
+            <div className="rounded-lg border border-border bg-background p-3">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-9 w-20 rounded-md" />
+                <Skeleton className="h-9 w-20 rounded-md" />
+                <Skeleton className="h-9 w-24 rounded-md" />
+                <div className="flex-1" />
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-9 w-28 rounded-md" />
+                <Skeleton className="h-9 w-20 rounded-md" />
+              </div>
+            </div>
+
+            {/* Products container */}
+            <div className="rounded-lg border border-border bg-background p-4">
+              <div className={cn(
+                "grid gap-4",
+                "grid-cols-2",
+                "@[520px]:grid-cols-3",
+                "@[720px]:grid-cols-4",
+                "@[960px]:grid-cols-5"
+              )}>
+                {Array.from({ length: 15 }).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="aspect-square w-full rounded-md" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -932,16 +943,16 @@ function CategoryFilters({ categorySlug, locale, filters, onFiltersChange }: Cat
             <button
               type="button"
               className={cn(
-                "inline-flex items-center gap-1 px-3 py-1.5 text-xs rounded-full border transition-colors whitespace-nowrap",
-                "bg-background border-border hover:bg-muted/50",
+                "inline-flex items-center gap-1.5 px-3 h-9 text-sm font-medium rounded-md transition-colors whitespace-nowrap",
+                "bg-muted/40 text-foreground border border-border hover:bg-muted/60",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               )}
             >
               {locale === "bg" ? filter.labelBg : filter.labelEn}
-              <CaretDown size={12} weight="bold" />
+              <CaretDown size={12} weight="bold" className="text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="min-w-32">
+          <DropdownMenuContent align="start" className="min-w-36">
             {filter.options.map((option) => (
               <DropdownMenuItem
                 key={option.value}
@@ -972,7 +983,7 @@ function CategoryFilters({ categorySlug, locale, filters, onFiltersChange }: Cat
             key={key}
             type="button"
             onClick={() => onFiltersChange({ ...filters, [key]: null } as FilterState)}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-full bg-foreground text-background font-medium whitespace-nowrap"
+            className="inline-flex items-center gap-1.5 px-3 h-9 text-sm font-medium rounded-md bg-foreground text-background whitespace-nowrap"
           >
             {locale === "bg" ? option.labelBg : option.labelEn}
             <span className="text-background/70">×</span>

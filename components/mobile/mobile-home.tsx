@@ -34,7 +34,7 @@ import type { User } from "@supabase/supabase-js"
 // Types
 // =============================================================================
 
-interface MobileHomeUnified1Props {
+interface MobileHomeProps {
   initialProducts: UIProduct[]
   promotedProducts?: UIProduct[]
   initialCategories: CategoryTreeNode[]
@@ -163,7 +163,7 @@ function PromotedListingsStrip({
                 className="shrink-0 w-40 active:opacity-80 transition-opacity"
               >
                 {/* Bigger image */}
-                <div className="relative aspect-square rounded-md overflow-hidden bg-muted mb-2">
+                <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-2">
                   {/* AD badge - top left for boosted listings */}
                   {product.isBoosted && (
                     <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-orange-500 text-white text-2xs font-bold rounded flex items-center gap-0.5">
@@ -313,7 +313,7 @@ function OffersForYou({
                 className="shrink-0 w-40 active:opacity-80 transition-opacity"
               >
                 {/* Same big card style as Promoted */}
-                <div className="relative aspect-square rounded-md overflow-hidden bg-muted mb-2">
+                <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-2">
                   {/* Discount badge */}
                   {hasDiscount && (
                     <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-2xs font-bold rounded">
@@ -497,13 +497,13 @@ function SellPromoBanner({ locale }: { locale: string }) {
 // Main Component
 // =============================================================================
 
-export function MobileHomeUnified1({
+export function MobileHome({
   initialProducts,
   promotedProducts,
   initialCategories,
   locale,
   user,
-}: MobileHomeUnified1Props) {
+}: MobileHomeProps) {
   const [searchOpen, setSearchOpen] = useState(false)
   const [filterHubOpen, setFilterHubOpen] = useState(false)
   const [sortModalOpen, setSortModalOpen] = useState(false)
