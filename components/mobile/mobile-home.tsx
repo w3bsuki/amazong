@@ -22,7 +22,7 @@ import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-ov
 import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import { ProductFeed } from "@/components/shared/product/product-feed"
-import { MobileHeader } from "@/components/mobile/mobile-header"
+import { SiteHeader } from "@/components/layout/header/site-header-unified"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
 import { getCategoryName } from "@/lib/category-display"
@@ -519,27 +519,6 @@ export function MobileHome({
     return nav.activeCategoryName || nav.activeTab
   }, [nav.isAllTab, nav.activeCategoryName, nav.activeTab, locale])
 
-  // Hide the main site header on mobile to avoid duplicate headers
-  useEffect(() => {
-    const siteHeader = document.querySelector("body > div > header")
-    if (!(siteHeader instanceof HTMLElement)) return
-
-    const previousDisplay = siteHeader.style.display
-    const mql = window.matchMedia("(max-width: 767px)")
-
-    const sync = () => {
-      siteHeader.style.display = mql.matches ? "none" : previousDisplay
-    }
-
-    sync()
-    mql.addEventListener?.("change", sync)
-
-    return () => {
-      mql.removeEventListener?.("change", sync)
-      siteHeader.style.display = previousDisplay
-    }
-  }, [])
-
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Search Overlay */}
@@ -549,14 +528,14 @@ export function MobileHome({
         onOpenChange={setSearchOpen}
       />
 
-      {/* Mobile Header (shared component) */}
-      <MobileHeader
-        user={user ?? null}
+      {/* Homepage Header - inline search + category pills */}
+      <SiteHeader
+        variant="homepage"
+        user={user as any}
         categories={initialCategories}
         activeCategory={nav.activeTab}
         onCategorySelect={nav.handleTabChange}
         onSearchOpen={() => setSearchOpen(true)}
-        locale={locale}
       />
 
       {/* Main Content */}

@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/components/layout/header/site-header";
+import { SiteHeader } from "@/components/layout/header/site-header-unified";
 import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu-v2";
 import { SiteFooter } from "@/components/layout/footer/site-footer";
 import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
@@ -74,7 +74,7 @@ export default async function UsernameLayout({
             <SkipLinks />
 
             <Suspense fallback={<div className="h-(--header-skeleton-h) w-full bg-header-bg md:h-(--header-skeleton-h-md)" />}>
-                <SiteHeader user={user} hideSubheader hideOnMobile categories={categories} {...(userStats && { userStats })} />
+                <SiteHeader user={user} categories={categories} {...(userStats && { userStats })} />
             </Suspense>
 
             <main id="main-content" role="main" className="flex-1 pb-20 md:pb-0">

@@ -13,8 +13,7 @@ export { QuickFilterRow } from "./quick-filter-row"
 export { StickyCategoryTabs } from "./sticky-category-tabs"
 
 // Phase 1: Contextual category navigation (Vinted-style)
-export { ContextualCategoryHeader } from "./contextual-category-header"
-export type { ContextualCategoryHeaderProps } from "./contextual-category-header"
+// ContextualCategoryHeader has been moved to site-header-unified.tsx
 export { SubcategoryPills } from "./subcategory-pills"
 export type { SubcategoryPillsProps } from "./subcategory-pills"
 export { InlineFilterBar } from "./inline-filter-bar"

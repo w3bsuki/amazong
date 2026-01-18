@@ -1,4 +1,4 @@
-import { SiteHeader } from "@/components/layout/header/site-header";
+import { SiteHeader } from "@/components/layout/header/site-header-unified";
 import type { UserListingStats } from "@/components/layout/sidebar/sidebar-menu-v2";
 import { SiteFooter } from "@/components/layout/footer/site-footer";
 import { MobileTabBar } from "@/components/mobile/mobile-tab-bar";
@@ -26,7 +26,7 @@ export function generateStaticParams() {
  * Async server component to fetch user and render header.
  * Moved outside MainLayout to avoid "Cannot create components during render" lint error.
  */
-async function HeaderWithUser({ categories, variant }: { categories: CategoryTreeNode[]; variant?: "default" | "product" | "landing" }) {
+async function HeaderWithUser({ categories }: { categories: CategoryTreeNode[] }) {
     const supabase = await createClient();
     const { data } = await supabase.auth.getUser();
 
@@ -57,7 +57,7 @@ async function HeaderWithUser({ categories, variant }: { categories: CategoryTre
         };
     }
 
-    return <SiteHeader user={data.user} categories={categories} variant={variant ?? "default"} {...(userStats && { userStats })} />;
+    return <SiteHeader user={data.user} categories={categories} {...(userStats && { userStats })} />;
 }
 
 /**

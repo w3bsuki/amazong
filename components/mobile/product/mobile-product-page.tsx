@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MobileGalleryOlx } from "./mobile-gallery-olx";
-import { MobileProductHeader } from "./mobile-product-header";
 import { MobilePriceLocationBlock } from "./mobile-price-location-block";
 import { MobileUrgencyBanner } from "./mobile-urgency-banner";
 import { MobileTrustBlock } from "./mobile-trust-block";
@@ -157,13 +156,7 @@ export function MobileProductPage(props: MobileProductPageProps) {
 
   return (
     <div className="min-h-screen bg-background pb-24 lg:hidden">
-      {/* Mobile Product Header - Back, Seller Avatar + Title, Share */}
-      <MobileProductHeader
-        title={product.title}
-        sellerName={viewModel.sellerName || seller?.display_name || seller?.username}
-        sellerUsername={seller?.username || username}
-        sellerAvatarUrl={viewModel.sellerAvatarUrl}
-      />
+      {/* Header rendered by layout - product variant auto-detected */}
 
       {/* JSON-LD Structured Data for SEO */}
       <script

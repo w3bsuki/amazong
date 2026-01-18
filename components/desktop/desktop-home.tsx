@@ -980,8 +980,7 @@ export function DesktopHome({
 
   return (
     <div className="min-h-screen bg-muted/40">
-      {/* Slim top bar */}
-      <SlimTopBar locale={locale} user={user ?? null} />
+      {/* Header is rendered by layout - no duplicate here */}
 
       {/* Main content - unified container */}
       <div className="container py-6">

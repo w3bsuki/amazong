@@ -4,44 +4,107 @@ This is the **single source of truth** for UI/UX and styling rules in this repo.
 
 Stack: **Next.js 16 + React 19 + Tailwind CSS v4 + shadcn/ui**.
 
-Goal: a clean, dense marketplace UI that is consistent, fast, and easy to maintain (Treido-inspired for mobile).
+Goal: A premium, world-class marketplace UI inspired by StockX, Grailed, and modern e-commerce leaders.
 
 Engineering boundaries and production rails: see `docs/ENGINEERING.md`.
 
 ---
 
-## Non‑negotiables (repo rails)
+## Design Philosophy
 
-- **No redesigns**. Improve hierarchy/consistency, keep layouts and behavior.
-- **No gradients**.
-- **Cards are flat**: border + subtle elevation at most (avoid heavy shadows).
-- **Prefer dense spacing**: mobile `gap-2`, desktop `gap-3`.
-- **Avoid arbitrary Tailwind values** (`h-[42px]`, `text-[13px]`) unless absolutely necessary.
-- **Use semantic tokens** from Tailwind v4 theme (e.g. `bg-background`, `text-foreground`, `border-border`).
-- **No hover/active scale gimmicks** (the repo intentionally discourages these).
+**Bold hierarchy, not bland minimalism.** Our design system uses semantic colors purposefully to create visual interest and clear information hierarchy. "Clean" doesn't mean boring—it means intentional.
+
+### Key Principles
+
+1. **Use semantic colors for meaning**
+   - Green (`shipping-free`, `success`) for positive signals (free shipping, verified, savings)
+   - Blue (`verified`, `info`) for trust signals and verification badges
+   - Red (`destructive`, `price-sale`) for urgency and sale prices
+   - Yellow/amber (`rating`, `warning`) for ratings and warnings
+
+2. **Create visual weight through contrast**
+   - Large, bold prices (text-4xl font-bold)
+   - Subtle backgrounds with color tints for emphasis
+   - Rounded containers with subtle borders
+   - Strategic use of shadows for elevation
+
+3. **Premium product presentations**
+   - Vertical thumbnail galleries (like StockX)
+   - Square product images with generous padding
+   - Dual CTA patterns (Buy Now / Make Offer)
+   - Trust signals with colored icon backgrounds
+
+---
+
+## Non-negotiables (repo rails)
+
+- **No arbitrary Tailwind values** (`h-[42px]`, `text-[13px]`) unless absolutely necessary.
+- **Use semantic tokens** from Tailwind v4 theme (see globals.css).
 - **All user-facing strings via `next-intl`**.
+- **Touch targets ≥32px minimum** (WCAG compliance).
+
+---
+
+## Semantic Color System
+
+Our globals.css defines rich semantic colors. **USE THEM.**
+
+### Status & Trust
+| Token | Class | Use |
+|-------|-------|-----|
+| `--color-success` | `text-success`, `bg-success` | Positive states |
+| `--color-warning` | `text-warning`, `bg-warning` | Warnings, attention |
+| `--color-error` | `text-error`, `bg-error` | Errors, destructive |
+| `--color-info` | `text-info`, `bg-info` | Informational |
+| `--color-verified` | `text-verified`, `bg-verified` | Verified badges |
+| `--color-shipping-free` | `text-shipping-free`, `bg-shipping-free` | Free shipping |
+
+### Pricing
+| Token | Class | Use |
+|-------|-------|-----|
+| `--color-price` | `text-price` | Regular prices |
+| `--color-price-sale` | `text-price-sale` | Sale/reduced prices |
+| `--color-price-original` | `text-price-original` | Strikethrough prices |
+| `--color-price-savings` | `text-price-savings` | "Save X%" text |
+
+### Condition Badges
+| Token | Class | Use |
+|-------|-------|-----|
+| `--color-condition-new` | `text-condition-new` | New items |
+| `--color-condition-likenew` | `text-condition-likenew`, `bg-condition-likenew-bg` | Like new |
+| `--color-condition-good` | `text-condition-good` | Good condition |
+| `--color-condition-fair` | `text-condition-fair` | Fair condition |
+
+### Ratings
+| Token | Class | Use |
+|-------|-------|-----|
+| `--color-rating` | `text-rating`, `fill-rating` | Star ratings |
+| `--color-wishlist` | `text-wishlist` | Heart/wishlist icons |
 
 ---
 
 ## Tokens (source of truth)
 
 - Colors/spacing/typography tokens live in `app/globals.css` under `@theme`.
-- Prefer semantic classes: `bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`.
-- Tailwind v4 CSS var usage is allowed when it maps to a token (examples): `w-(--token)`, `max-h-(--token)`.
+- **Semantic classes are first-class**: Use `bg-shipping-free/10`, `text-verified`, `text-price-savings` etc.
+- Core neutrals: `bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`.
 
-## Core principles (what makes it "Treido clean")
+## Core principles
 
-1) **Hierarchy through contrast, not color**
-   - Default to neutral/gray scale (via semantic tokens). Use brand color sparingly.
-   - Active states should be clear with *shape + contrast*, not just tint.
+1. **Hierarchy through typography AND color**
+   - Use semantic colors for status, trust, and pricing
+   - Bold prices, subtle metadata, colored accents for key info
+   - Don't be afraid of green for shipping, blue for trust
 
-2) **Consistency beats creativity**
-   - Chips, tabs, and filter pills should share the same sizing and states.
-   - Sticky surfaces should share the same "glass" recipe.
+2. **Premium presentation**
+   - Product images are heroes: large, padded, on subtle backgrounds
+   - Vertical thumbnail galleries on desktop
+   - Dual CTA patterns (Buy Now / Make Offer) like StockX
 
-3) **Touch-first ergonomics**
-   - Use existing touch-size utilities (`h-touch-sm`, `size-touch`, `pb-safe`, etc.)
-   - Prefer large hit targets over tiny icons.
+3. **Trust signals that pop**
+   - Colored backgrounds (`bg-shipping-free/5`, `bg-verified/10`)
+   - Icon circles with colored fills
+   - Clear visual separation from content
 
 ---
 

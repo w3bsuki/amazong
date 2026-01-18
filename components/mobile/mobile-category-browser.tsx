@@ -21,12 +21,12 @@ import {
   AllTabFilters,
   QuickFilterRow,
   // Phase 2: Contextual navigation components (Vinted-style)
-  ContextualCategoryHeader,
   SubcategoryPills,
   InlineFilterBar,
   // Phase 3: Treido-mock Smart Anchor Navigation
   SmartAnchorNav,
 } from "./category-nav"
+import { SiteHeader } from "@/components/layout/header/site-header-unified"
 import { ContextualDoubleDeckerNav } from "./category-nav/contextual-double-decker-nav"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
@@ -356,22 +356,16 @@ export function MobileCategoryBrowser({
     return (
       <div className="w-full min-h-screen bg-background">
         {/*
-          Treido pattern: One sticky “control stack” (header + nav + filters).
-          Avoid multiple nested sticky bars with brittle `top` offsets.
+          Contextual header with category name and back button.
+          This is rendered by the component because it has the category context.
         */}
-        <div className="sticky top-0 z-50 bg-background">
-          {/* 1) Contextual Category Header (48px) */}
-          <ContextualCategoryHeader
-            title={instant.categoryTitle || contextualInitialTitle}
-            backHref={backHref}
-            onBack={handleBack}
-            locale={locale}
-            showSearch={true}
-            sticky={true}
-            className="z-50"
-          />
-
-        </div>
+        <SiteHeader
+          variant="contextual"
+          user={null}
+          contextualTitle={instant.categoryTitle || contextualInitialTitle}
+          contextualBackHref={backHref}
+          onContextualBack={handleBack}
+        />
 
         {/* 2) Subcategory Circles (Contextual Mode) - Scrolls away */}
         {/* Uses Link navigation for SEO + proper loading.tsx states */}
