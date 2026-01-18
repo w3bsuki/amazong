@@ -1,21 +1,15 @@
 "use client"
 
-import { useState, useEffect, useRef, useMemo } from "react"
-import Image from "next/image"
+import { useState, useMemo } from "react"
 import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 import {
-  Sparkle as SparkleIcon,
   ShieldCheck,
   Tag,
-  Package,
-  SquaresFour,
   ArrowRight,
   Truck,
   Fire,
-  Heart,
   Plus,
-  Star,
 } from "@phosphor-icons/react"
 import { ArrowUpDown } from "lucide-react"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
@@ -23,12 +17,12 @@ import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import { ProductFeed } from "@/components/shared/product/product-feed"
 import { SiteHeader } from "@/components/layout/header/site-header-unified"
+import { SubcategoryCircles } from "@/components/mobile/subcategory-circles"
+import { HorizontalProductCard } from "@/components/mobile/horizontal-product-card"
 import type { UIProduct } from "@/lib/data/products"
 import type { CategoryTreeNode } from "@/lib/category-tree"
-import { getCategoryName } from "@/lib/category-display"
 import { useCategoryNavigation } from "@/hooks/use-category-navigation"
 import { useTranslations } from "next-intl"
-import type { User } from "@supabase/supabase-js"
 
 // =============================================================================
 // Types
@@ -43,74 +37,6 @@ interface MobileHomeProps {
 }
 
 // =============================================================================
-// Subcategory Circles (Temu pattern - visual browse when category selected)
-// =============================================================================
-
-function SubcategoryCircles({
-  subcategories,
-  categorySlug,
-  locale,
-  onSubcategoryClick,
-}: {
-  subcategories: CategoryTreeNode[]
-  categorySlug: string
-  locale: string
-  onSubcategoryClick?: (category: CategoryTreeNode) => void
-}) {
-  if (!subcategories || subcategories.length === 0) return null
-
-  const viewAllLabel = locale === "bg" ? "Виж всички" : "View all"
-
-  return (
-    <div className="py-3 overflow-x-auto no-scrollbar">
-      <div className="flex items-start gap-3 px-inset">
-        {/* View All - First circle */}
-        <Link
-          href={`/categories/${categorySlug}`}
-          className="flex flex-col items-center gap-1.5 shrink-0 w-16 active:opacity-80 transition-opacity"
-        >
-          <div className="size-14 rounded-full bg-foreground text-background flex items-center justify-center">
-            <SquaresFour size={22} weight="fill" />
-          </div>
-          <span className="text-2xs text-center text-foreground font-semibold leading-tight line-clamp-2">
-            {viewAllLabel}
-          </span>
-        </Link>
-
-        {/* Subcategory circles */}
-        {subcategories.slice(0, 10).map((sub) => (
-          <button
-            key={sub.id}
-            type="button"
-            onClick={() => onSubcategoryClick?.(sub)}
-            className="flex flex-col items-center gap-1.5 shrink-0 w-16 active:opacity-80 transition-opacity"
-          >
-            {/* Circle with image/icon */}
-            <div className="size-14 rounded-full bg-muted/50 border border-border/30 overflow-hidden flex items-center justify-center">
-              {sub.image_url ? (
-                <Image
-                  src={sub.image_url}
-                  alt={getCategoryName(sub, locale)}
-                  width={56}
-                  height={56}
-                  className="size-full object-cover"
-                />
-              ) : (
-                <Package size={20} className="text-muted-foreground/40" />
-              )}
-            </div>
-            {/* Label */}
-            <span className="text-2xs text-center text-muted-foreground font-medium leading-tight line-clamp-2">
-              {getCategoryName(sub, locale)}
-            </span>
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// =============================================================================
 // Promoted Listings Strip (demo style - w-40 cards)
 // =============================================================================
 
@@ -121,8 +47,6 @@ function PromotedListingsStrip({
   products: UIProduct[]
   locale: string
 }) {
-  const t = useTranslations("mobile")
-  
   if (!products || products.length === 0) return null
 
   return (
@@ -144,111 +68,12 @@ function PromotedListingsStrip({
         </Link>
       </div>
 
-      {/* Big horizontal scroll cards (demo style: w-40) */}
+      {/* Big horizontal scroll cards */}
       <div className="overflow-x-auto no-scrollbar">
         <div className="flex gap-3 px-inset">
-          {products.slice(0, 8).map((product) => {
-            const hasDiscount = product.listPrice && product.listPrice > product.price
-            const discountPercent = hasDiscount
-              ? Math.round(((product.listPrice! - product.price) / product.listPrice!) * 100)
-              : 0
-            const href = product.storeSlug && product.slug
-              ? `/${product.storeSlug}/${product.slug}`
-              : `/product/${product.id}`
-
-            return (
-              <Link
-                key={product.id}
-                href={href}
-                className="shrink-0 w-40 active:opacity-80 transition-opacity"
-              >
-                {/* Bigger image */}
-                <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-2">
-                  {/* AD badge - top left for boosted listings */}
-                  {product.isBoosted && (
-                    <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-orange-500 text-white text-2xs font-bold rounded flex items-center gap-0.5">
-                      <SparkleIcon size={10} weight="fill" />
-                      <span>AD</span>
-                    </div>
-                  )}
-                  {/* Discount badge - below AD badge or at top if not boosted */}
-                  {hasDiscount && (
-                    <div className={cn(
-                      "absolute left-1.5 z-10 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-2xs font-bold rounded",
-                      product.isBoosted ? "top-8" : "top-1.5"
-                    )}>
-                      -{discountPercent}%
-                    </div>
-                  )}
-                  {/* Wishlist button */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                    }}
-                    className="absolute top-1.5 right-1.5 z-10 size-8 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors"
-                    aria-label="Add to wishlist"
-                  >
-                    <Heart size={16} className="text-foreground" />
-                  </button>
-                  {/* Free shipping badge - bottom left */}
-                  {product.freeShipping && (
-                    <div className="absolute bottom-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-emerald-500 text-white text-2xs font-medium rounded flex items-center gap-0.5">
-                      <Truck size={10} weight="fill" />
-                      <span>Free</span>
-                    </div>
-                  )}
-                  {/* Product Image */}
-                  {product.image && product.image !== "/placeholder.svg" ? (
-                    <Image
-                      src={product.image}
-                      alt={product.title}
-                      fill
-                      className="object-cover"
-                      sizes="160px"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Package size={36} className="text-muted-foreground/15" />
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="space-y-0.5">
-                  <div className="flex items-baseline gap-1.5">
-                    <span
-                      className={cn(
-                        "text-sm font-bold",
-                        hasDiscount ? "text-price-sale" : "text-foreground"
-                      )}
-                    >
-                      €{product.price.toFixed(2)}
-                    </span>
-                    {hasDiscount && (
-                      <span className="text-2xs text-muted-foreground line-through">
-                        €{product.listPrice!.toFixed(2)}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-foreground line-clamp-2 leading-snug">
-                    {product.title}
-                  </p>
-                  {/* Rating */}
-                  {product.rating > 0 && (
-                    <div className="flex items-center gap-1">
-                      <Star size={11} weight="fill" className="text-rating" />
-                      <span className="text-2xs text-muted-foreground">
-                        {product.rating.toFixed(1)}{" "}
-                        <span className="opacity-60">({product.reviews?.toLocaleString()})</span>
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </Link>
-            )
-          })}
+          {products.slice(0, 8).map((product) => (
+            <HorizontalProductCard key={product.id} product={product} />
+          ))}
         </div>
       </div>
     </section>
@@ -297,98 +122,9 @@ function OffersForYou({
       {/* Horizontal scroll - same cards as Promoted */}
       <div className="overflow-x-auto no-scrollbar">
         <div className="flex gap-3 px-inset">
-          {offerProducts.map((product) => {
-            const hasDiscount = product.listPrice && product.listPrice > product.price
-            const discountPercent = hasDiscount
-              ? Math.round(((product.listPrice! - product.price) / product.listPrice!) * 100)
-              : 0
-            const href = product.storeSlug && product.slug
-              ? `/${product.storeSlug}/${product.slug}`
-              : `/product/${product.id}`
-
-            return (
-              <Link
-                key={product.id}
-                href={href}
-                className="shrink-0 w-40 active:opacity-80 transition-opacity"
-              >
-                {/* Same big card style as Promoted */}
-                <div className="relative aspect-square rounded-(--radius-card) overflow-hidden bg-muted mb-2">
-                  {/* Discount badge */}
-                  {hasDiscount && (
-                    <div className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-2xs font-bold rounded">
-                      -{discountPercent}%
-                    </div>
-                  )}
-                  {/* Wishlist */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                    }}
-                    className="absolute top-1.5 right-1.5 z-10 size-8 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center active:bg-background transition-colors"
-                    aria-label="Add to wishlist"
-                  >
-                    <Heart size={16} className="text-foreground" />
-                  </button>
-                  {/* Free shipping */}
-                  {product.freeShipping && (
-                    <div className="absolute bottom-1.5 left-1.5 z-10 px-1.5 py-0.5 bg-emerald-500 text-white text-2xs font-medium rounded flex items-center gap-0.5">
-                      <Truck size={10} weight="fill" />
-                      <span>Free</span>
-                    </div>
-                  )}
-                  {/* Product Image */}
-                  {product.image && product.image !== "/placeholder.svg" ? (
-                    <Image
-                      src={product.image}
-                      alt={product.title}
-                      fill
-                      className="object-cover"
-                      sizes="160px"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <Package size={36} className="text-muted-foreground/15" />
-                    </div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="space-y-0.5">
-                  <div className="flex items-baseline gap-1.5">
-                    <span
-                      className={cn(
-                        "text-sm font-bold",
-                        hasDiscount ? "text-price-sale" : "text-foreground"
-                      )}
-                    >
-                      €{product.price.toFixed(2)}
-                    </span>
-                    {hasDiscount && (
-                      <span className="text-2xs text-muted-foreground line-through">
-                        €{product.listPrice!.toFixed(2)}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-foreground line-clamp-2 leading-snug">
-                    {product.title}
-                  </p>
-                  {/* Rating */}
-                  {product.rating > 0 && (
-                    <div className="flex items-center gap-1">
-                      <Star size={11} weight="fill" className="text-rating" />
-                      <span className="text-2xs text-muted-foreground">
-                        {product.rating.toFixed(1)}{" "}
-                        <span className="opacity-60">({product.reviews?.toLocaleString()})</span>
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </Link>
-            )
-          })}
+          {offerProducts.map((product) => (
+            <HorizontalProductCard key={product.id} product={product} />
+          ))}
         </div>
       </div>
     </section>

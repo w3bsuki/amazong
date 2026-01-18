@@ -1,39 +1,13 @@
 "use client";
 
 // =============================================================================
-// PRODUCT MOBILE V2 — Premium C2C Mobile Commerce
+// PRODUCT MOBILE V2 — Compact C2C Mobile Commerce
 // =============================================================================
-//
-// Inspiration: Vinted, Depop, OfferUp, Instagram Shopping
-// Philosophy: Immersive, content-first, native app feel
-//
-// Key patterns:
-// - Hero gallery with floating overlays (no chrome stealing focus)
-// - Sticky price bar that appears on scroll
-// - Bottom sheet CTA always in thumb zone
-// - Card-based sections with generous whitespace
-// - Subtle depth with shadows, not borders
+// Horizontal-first. Price in bottom bar. Meta on top.
 // =============================================================================
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import {
-  ArrowLeft,
-  Heart,
-  Share2,
-  MoreHorizontal,
-  MapPin,
-  Star,
-  BadgeCheck,
-  ChevronRight,
-  MessageCircle,
-  Phone,
-  Truck,
-  Banknote,
-  Clock,
-  Eye,
-  Sparkles,
-} from "lucide-react";
 
 // =============================================================================
 // DATA
@@ -41,11 +15,13 @@ import {
 
 const PRODUCT = {
   id: "v2-001",
-  title: "iPhone 15 Pro Max 256GB",
-  subtitle: "Natural Titanium · Unlocked",
+  title: "iPhone 15 Pro Max",
+  specs: ["256GB", "Natural Titanium", "Unlocked", "98% Battery"],
   price: 1089,
   originalPrice: 1199,
   condition: "Like New",
+  conditionNote: "9/10 condition",
+  negotiable: true,
   location: "Sofia",
   posted: "2h",
   views: 847,
@@ -57,73 +33,76 @@ const PRODUCT = {
     "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&q=90",
   ],
   seller: {
-    name: "TechStore Pro",
+    name: "Alex",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=90",
     rating: 4.9,
     reviews: 342,
+    sold: 89,
     verified: true,
-    responseTime: "Usually replies within 1 hour",
-    active: true,
+    responseRate: 98,
+    responseTime: "< 1hr",
+    joined: "Mar 2021",
+    listings: 47,
+    lastActive: "2m",
+    badges: ["Fast Shipper", "Trusted"],
   },
-  specs: [
-    ["Brand", "Apple"],
-    ["Model", "iPhone 15 Pro Max"],
-    ["Storage", "256GB"],
-    ["Color", "Natural Titanium"],
-    ["Network", "Unlocked"],
-    ["Battery", "98%"],
+  details: [
+    { k: "Brand", v: "Apple" },
+    { k: "Model", v: "iPhone 15 Pro Max" },
+    { k: "Storage", v: "256GB" },
+    { k: "Color", v: "Natural Titanium" },
+    { k: "Battery", v: "98%" },
+    { k: "Warranty", v: "AppleCare+ Dec '25" },
   ],
-  description: `Selling my iPhone 15 Pro Max in excellent condition. Used for only 3 months, always with case and screen protector.
+  description: `My daily driver for 3 months. Always in case + screen protector from day 1.
 
-What's included:
-• Original box and accessories
+What you get:
+• Phone in perfect condition
+• Original box + all accessories  
 • 20W fast charger
-• Premium leather case
-• Screen protector installed
+• Leather case (worth €59)
+• Extra screen protector
 
-Phone is factory unlocked — works with any carrier worldwide. No scratches, dents, or any cosmetic damage.
+Factory unlocked, works worldwide. Zero scratches, zero issues. 
 
-AppleCare+ is active and transferable until December 2025.
-
-Selling because I'm upgrading to the 16 Pro Max. Happy to answer any questions!`,
+Upgrading to 16 Pro Max, my loss is your gain 🤝`,
 };
+
+const SIMILAR = [
+  { id: "s1", title: "iPhone 15 Pro", price: 899, img: "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=400&q=80", condition: "Excellent" },
+  { id: "s2", title: "iPhone 14 Pro Max", price: 749, img: "https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=400&q=80", condition: "Like New" },
+  { id: "s3", title: "iPhone 15 Plus", price: 699, img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400&q=80", condition: "Good" },
+];
 
 // =============================================================================
 // COMPONENT
 // =============================================================================
 
 export function ProductMobile2() {
-  const [imgIndex, setImgIndex] = useState(0);
+  const [img, setImg] = useState(0);
   const [saved, setSaved] = useState(false);
-  const [showStickyPrice, setShowStickyPrice] = useState(false);
-  const [descExpanded, setDescExpanded] = useState(false);
-  const priceRef = useRef<HTMLDivElement>(null);
+  const [tab, setTab] = useState<"details" | "desc">("details");
+  const [showSticky, setShowSticky] = useState(false);
+  const [imgViewerOpen, setImgViewerOpen] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
 
-  const discount = Math.round(((PRODUCT.originalPrice - PRODUCT.price) / PRODUCT.originalPrice) * 100);
-
-  // Observe price section for sticky header
-  useEffect(() => {
-    const el = priceRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => e && setShowStickyPrice(!e.isIntersecting),
-      { threshold: 0, rootMargin: "-56px 0px 0px 0px" }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  // Gallery scroll handler
+  // Gallery scroll sync
   useEffect(() => {
     const el = galleryRef.current;
     if (!el) return;
-    const handler = () => {
-      const idx = Math.round(el.scrollLeft / el.offsetWidth);
-      setImgIndex(idx);
-    };
-    el.addEventListener("scroll", handler, { passive: true });
-    return () => el.removeEventListener("scroll", handler);
+    const fn = () => setImg(Math.round(el.scrollLeft / el.offsetWidth));
+    el.addEventListener("scroll", fn, { passive: true });
+    return () => el.removeEventListener("scroll", fn);
+  }, []);
+
+  // Sticky header observer
+  useEffect(() => {
+    const el = titleRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => setShowSticky(!e.isIntersecting), { threshold: 0, rootMargin: "-1px" });
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
   const scrollToImg = (i: number) => {
@@ -131,313 +110,319 @@ export function ProductMobile2() {
   };
 
   return (
-    <div className="min-h-dvh bg-white pb-24 lg:hidden">
-      {/* ══════════════════════════════════════════════════════════════════ */}
-      {/* FLOATING HEADER — Glass overlay on gallery */}
-      {/* ══════════════════════════════════════════════════════════════════ */}
-      <header className="fixed top-0 inset-x-0 z-50">
-        <div className={`
-          flex items-center justify-between h-14 px-2
-          transition-all duration-200
-          ${showStickyPrice 
-            ? "bg-white/95 backdrop-blur-xl border-b border-neutral-100 shadow-sm" 
-            : "bg-gradient-to-b from-black/40 to-transparent"
-          }
-        `}>
-          {/* Left: Back */}
-          <button className={`
-            size-10 flex items-center justify-center rounded-full
-            ${showStickyPrice 
-              ? "text-neutral-900 active:bg-neutral-100" 
-              : "text-white bg-black/20 backdrop-blur-sm active:bg-black/30"
-            }
-          `}>
-            <ArrowLeft className="size-5" strokeWidth={2} />
+    <div className="min-h-dvh bg-[#f5f5f5] lg:hidden">
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* STICKY HEADER — Title on scroll */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <header className={`fixed top-0 inset-x-0 z-50 transition-transform duration-200 ${showSticky ? "translate-y-0" : "-translate-y-full"}`}>
+        <div className="h-12 bg-white/95 backdrop-blur-lg border-b border-neutral-200/50 px-3 flex items-center gap-3">
+          <button className="size-8 flex items-center justify-center -ml-1">
+            <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
           </button>
-
-          {/* Center: Price (appears on scroll) */}
-          <div className={`
-            flex items-center gap-2 transition-opacity duration-200
-            ${showStickyPrice ? "opacity-100" : "opacity-0 pointer-events-none"}
-          `}>
-            <span className="text-lg font-bold text-neutral-900">€{PRODUCT.price}</span>
-            <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-              -{discount}%
-            </span>
-          </div>
-
-          {/* Right: Actions */}
-          <div className="flex items-center gap-1">
-            <button 
-              onClick={() => setSaved(!saved)}
-              className={`
-                size-10 flex items-center justify-center rounded-full
-                ${showStickyPrice 
-                  ? `${saved ? "text-rose-500" : "text-neutral-900"} active:bg-neutral-100` 
-                  : `${saved ? "text-rose-500 bg-rose-500/20" : "text-white bg-black/20"} backdrop-blur-sm active:bg-black/30`
-                }
-              `}
-            >
-              <Heart className={`size-5 ${saved ? "fill-current" : ""}`} strokeWidth={2} />
-            </button>
-            <button className={`
-              size-10 flex items-center justify-center rounded-full
-              ${showStickyPrice 
-                ? "text-neutral-900 active:bg-neutral-100" 
-                : "text-white bg-black/20 backdrop-blur-sm active:bg-black/30"
-              }
-            `}>
-              <Share2 className="size-5" strokeWidth={2} />
-            </button>
-            <button className={`
-              size-10 flex items-center justify-center rounded-full
-              ${showStickyPrice 
-                ? "text-neutral-900 active:bg-neutral-100" 
-                : "text-white bg-black/20 backdrop-blur-sm active:bg-black/30"
-              }
-            `}>
-              <MoreHorizontal className="size-5" strokeWidth={2} />
-            </button>
-          </div>
+          <span className="flex-1 font-semibold text-sm truncate">{PRODUCT.title}</span>
+          <button onClick={() => setSaved(!saved)} className={`size-8 flex items-center justify-center ${saved ? "text-red-500" : ""}`}>
+            <svg className="size-5" fill={saved ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+          <button className="size-8 flex items-center justify-center -mr-1">
+            <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+          </button>
         </div>
       </header>
 
-      {/* ══════════════════════════════════════════════════════════════════ */}
-      {/* HERO GALLERY — Full bleed, immersive */}
-      {/* ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative bg-neutral-100">
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* GALLERY — Square aspect, horizontal thumbnail strip */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div className="relative bg-white">
+        {/* Floating nav */}
+        <div className="absolute top-3 left-3 right-3 z-20 flex justify-between">
+          <button className="size-9 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center active:scale-95">
+            <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <div className="flex gap-2">
+            <button className="size-9 rounded-full bg-white/90 backdrop-blur-sm shadow-lg flex items-center justify-center active:scale-95">
+              <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+            </button>
+            <button onClick={() => setSaved(!saved)} className={`size-9 rounded-full backdrop-blur-sm shadow-lg flex items-center justify-center active:scale-95 ${saved ? "bg-red-500 text-white" : "bg-white/90"}`}>
+              <svg className="size-5" fill={saved ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Main image */}
         <div 
           ref={galleryRef}
-          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          className="flex overflow-x-auto snap-x snap-mandatory"
+          style={{ scrollbarWidth: "none" }}
+          onClick={() => setImgViewerOpen(true)}
         >
           {PRODUCT.images.map((src, i) => (
             <div key={i} className="flex-none w-full snap-center">
               <div className="relative aspect-square">
-                <Image
-                  src={src}
-                  alt={`${PRODUCT.title} photo ${i + 1}`}
-                  fill
-                  className="object-cover"
-                  priority={i === 0}
-                  sizes="100vw"
-                />
+                <Image src={src} alt="" fill className="object-cover" priority={i === 0} sizes="100vw" />
               </div>
             </div>
           ))}
         </div>
 
-        {/* Condition badge — top left */}
-        <div className="absolute top-16 left-3">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-sm text-xs font-semibold text-neutral-900 shadow-sm">
-            <Sparkles className="size-3" />
-            {PRODUCT.condition}
-          </span>
-        </div>
-
-        {/* Image indicators — bottom */}
-        <div className="absolute bottom-4 inset-x-0 flex justify-center gap-1.5">
-          {PRODUCT.images.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => scrollToImg(i)}
-              className={`
-                h-1 rounded-full transition-all duration-200
-                ${i === imgIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"}
-              `}
-            />
+        {/* Horizontal thumbnail strip — replaces dots */}
+        <div className="flex gap-1.5 p-2 bg-white">
+          {PRODUCT.images.map((src, i) => (
+            <button 
+              key={i} 
+              onClick={(e) => { e.stopPropagation(); scrollToImg(i); }}
+              className={`flex-1 aspect-square rounded-lg overflow-hidden transition-all ${i === img ? "ring-2 ring-black ring-offset-1" : "opacity-60"}`}
+            >
+              <Image src={src} alt="" width={80} height={80} className="object-cover size-full" />
+            </button>
           ))}
         </div>
+      </div>
 
-        {/* Image counter — bottom right */}
-        <div className="absolute bottom-4 right-3">
-          <span className="px-2 py-1 rounded-md bg-black/60 text-white text-xs font-medium tabular-nums">
-            {imgIndex + 1}/{PRODUCT.images.length}
-          </span>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════ */}
-      {/* CONTENT */}
-      {/* ══════════════════════════════════════════════════════════════════ */}
-      <main className="px-4">
-        {/* Quick stats */}
-        <div className="flex items-center gap-4 py-3 text-xs text-neutral-500">
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* META ROW — Location, time, stats (TOP) */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div className="bg-white px-4 py-2 flex items-center justify-between text-xs text-neutral-500 border-b border-neutral-100">
+        <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
-            <MapPin className="size-3.5" />
+            <svg className="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            </svg>
             {PRODUCT.location}
           </span>
+          <span>{PRODUCT.posted} ago</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span>{PRODUCT.views} views</span>
           <span className="flex items-center gap-1">
-            <Clock className="size-3.5" />
-            {PRODUCT.posted} ago
-          </span>
-          <span className="flex items-center gap-1">
-            <Eye className="size-3.5" />
-            {PRODUCT.views}
-          </span>
-          <span className="flex items-center gap-1">
-            <Heart className="size-3.5" />
+            <svg className="size-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
             {PRODUCT.saves}
           </span>
         </div>
+      </div>
 
-        {/* Title + Price */}
-        <div ref={priceRef} className="pb-4 border-b border-neutral-100">
-          <h1 className="text-xl font-bold text-neutral-900 leading-tight">
-            {PRODUCT.title}
-          </h1>
-          <p className="text-sm text-neutral-500 mt-0.5">{PRODUCT.subtitle}</p>
-          
-          <div className="flex items-baseline gap-3 mt-3">
-            <span className="text-3xl font-extrabold text-neutral-900 tracking-tight">
-              €{PRODUCT.price}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* TITLE + BADGES — Compact, horizontal */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div ref={titleRef} className="bg-white px-4 py-3">
+        <h1 className="text-lg font-bold leading-tight">{PRODUCT.title}</h1>
+        
+        {/* Badge row — condition + negotiable */}
+        <div className="flex items-center gap-2 mt-1.5">
+          <span className="px-2 py-0.5 rounded-full bg-neutral-900 text-white text-xs font-semibold">
+            {PRODUCT.condition}
+          </span>
+          {PRODUCT.negotiable && (
+            <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+              Negotiable
             </span>
-            <span className="text-base text-neutral-400 line-through">
-              €{PRODUCT.originalPrice}
-            </span>
-            <span className="text-sm font-bold text-emerald-600">
-              Save €{PRODUCT.originalPrice - PRODUCT.price}
-            </span>
-          </div>
+          )}
+          <span className="text-xs text-neutral-400">{PRODUCT.conditionNote}</span>
         </div>
 
-        {/* ══════════════════════════════════════════════════════════════════ */}
-        {/* SELLER CARD */}
-        {/* ══════════════════════════════════════════════════════════════════ */}
-        <button className="w-full flex items-center gap-3 py-4 border-b border-neutral-100 text-left active:bg-neutral-50 -mx-4 px-4">
-          {/* Avatar */}
-          <div className="relative">
-            <div className="size-12 rounded-full overflow-hidden ring-2 ring-white">
-              <Image
-                src={PRODUCT.seller.avatar}
-                alt={PRODUCT.seller.name}
-                width={48}
-                height={48}
-                className="object-cover"
-              />
-            </div>
-            {PRODUCT.seller.active && (
-              <span className="absolute bottom-0 right-0 size-3 bg-emerald-500 rounded-full ring-2 ring-white" />
+        {/* Specs chips — horizontal, using full width */}
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          {PRODUCT.specs.map((spec) => (
+            <span key={spec} className="px-2 py-1 rounded-md bg-neutral-100 text-xs font-medium text-neutral-700">
+              {spec}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* SELLER — Compact row */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <button className="w-full bg-white mt-1 px-4 py-3 flex items-center gap-3 text-left active:bg-neutral-50">
+        <div className="relative flex-shrink-0">
+          <div className="size-11 rounded-full overflow-hidden">
+            <Image src={PRODUCT.seller.avatar} alt="" width={44} height={44} className="object-cover" />
+          </div>
+          <span className="absolute -bottom-0.5 -right-0.5 size-3 bg-emerald-500 rounded-full ring-2 ring-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-sm">{PRODUCT.seller.name}</span>
+            {PRODUCT.seller.verified && (
+              <svg className="size-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             )}
+            <span className="text-xs text-neutral-400">· {PRODUCT.seller.responseTime} reply</span>
           </div>
-
-          {/* Info */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-neutral-900 truncate">
-                {PRODUCT.seller.name}
-              </span>
-              {PRODUCT.seller.verified && (
-                <BadgeCheck className="size-4 text-sky-500 flex-shrink-0" fill="currentColor" stroke="white" strokeWidth={2} />
-              )}
-            </div>
-            <div className="flex items-center gap-1.5 text-sm text-neutral-500 mt-0.5">
-              <Star className="size-3.5 text-amber-400 fill-current" />
-              <span className="font-medium text-neutral-900">{PRODUCT.seller.rating}</span>
-              <span>·</span>
-              <span>{PRODUCT.seller.reviews} reviews</span>
-            </div>
-          </div>
-
-          <ChevronRight className="size-5 text-neutral-400 flex-shrink-0" />
-        </button>
-
-        {/* Response time */}
-        <div className="py-3 border-b border-neutral-100">
-          <p className="text-sm text-neutral-500">{PRODUCT.seller.responseTime}</p>
-        </div>
-
-        {/* ══════════════════════════════════════════════════════════════════ */}
-        {/* DETAILS */}
-        {/* ══════════════════════════════════════════════════════════════════ */}
-        <div className="py-4 border-b border-neutral-100">
-          <h2 className="text-sm font-semibold text-neutral-900 mb-3">Details</h2>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-            {PRODUCT.specs.map(([label, value]) => (
-              <div key={label} className="flex justify-between py-1.5">
-                <span className="text-sm text-neutral-500">{label}</span>
-                <span className="text-sm font-medium text-neutral-900">{value}</span>
-              </div>
-            ))}
+          <div className="flex items-center gap-1 text-xs text-neutral-500">
+            <svg className="size-3 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            <span className="font-medium text-neutral-700">{PRODUCT.seller.rating}</span>
+            <span>({PRODUCT.seller.reviews})</span>
+            <span className="mx-1">·</span>
+            <span>{PRODUCT.seller.sold} sold</span>
           </div>
         </div>
+        <svg className="size-5 text-neutral-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
 
-        {/* ══════════════════════════════════════════════════════════════════ */}
-        {/* DESCRIPTION */}
-        {/* ══════════════════════════════════════════════════════════════════ */}
-        <div className="py-4 border-b border-neutral-100">
-          <h2 className="text-sm font-semibold text-neutral-900 mb-3">Description</h2>
-          <p className={`text-sm text-neutral-600 whitespace-pre-line leading-relaxed ${!descExpanded ? "line-clamp-4" : ""}`}>
-            {PRODUCT.description}
-          </p>
-          {!descExpanded && (
-            <button 
-              onClick={() => setDescExpanded(true)}
-              className="text-sm font-semibold text-sky-600 mt-2 active:text-sky-700"
-            >
-              Read more
-            </button>
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* DELIVERY — Inline chips */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div className="bg-white mt-1 px-4 py-3">
+        <div className="flex items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+          <span className="flex-shrink-0 text-xs font-medium text-neutral-500">Get it:</span>
+          <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-neutral-100 text-xs">
+            <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            </svg>
+            Meetup
+          </span>
+          <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-neutral-100 text-xs">
+            <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10" />
+            </svg>
+            Ship
+          </span>
+          <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium">
+            <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+            </svg>
+            COD
+          </span>
+          <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-50 text-blue-700 text-xs">
+            <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            Protected
+          </span>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* TABS — Details / Description */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div className="bg-white mt-1">
+        <div className="flex border-b border-neutral-100">
+          <button 
+            onClick={() => setTab("details")}
+            className={`flex-1 py-2.5 text-sm font-semibold transition-colors relative ${tab === "details" ? "text-black" : "text-neutral-400"}`}
+          >
+            Details
+            {tab === "details" && <span className="absolute bottom-0 inset-x-4 h-0.5 bg-black rounded-full" />}
+          </button>
+          <button 
+            onClick={() => setTab("desc")}
+            className={`flex-1 py-2.5 text-sm font-semibold transition-colors relative ${tab === "desc" ? "text-black" : "text-neutral-400"}`}
+          >
+            Description
+            {tab === "desc" && <span className="absolute bottom-0 inset-x-4 h-0.5 bg-black rounded-full" />}
+          </button>
+        </div>
+
+        <div className="px-4 py-3">
+          {tab === "details" ? (
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+              {PRODUCT.details.map((d) => (
+                <div key={d.k} className="flex justify-between text-sm py-1">
+                  <span className="text-neutral-500">{d.k}</span>
+                  <span className="font-medium">{d.v}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-neutral-600 whitespace-pre-line leading-relaxed">
+              {PRODUCT.description}
+            </p>
           )}
         </div>
+      </div>
 
-        {/* ══════════════════════════════════════════════════════════════════ */}
-        {/* DELIVERY */}
-        {/* ══════════════════════════════════════════════════════════════════ */}
-        <div className="py-4">
-          <h2 className="text-sm font-semibold text-neutral-900 mb-3">How to get it</h2>
-          <div className="space-y-2">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-neutral-50">
-              <div className="size-10 rounded-lg bg-white flex items-center justify-center shadow-sm">
-                <MapPin className="size-5 text-neutral-700" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-neutral-900">Meet up</p>
-                <p className="text-xs text-neutral-500">Arrange a safe location in {PRODUCT.location}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-neutral-50">
-              <div className="size-10 rounded-lg bg-white flex items-center justify-center shadow-sm">
-                <Truck className="size-5 text-neutral-700" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-neutral-900">Shipping</p>
-                <p className="text-xs text-neutral-500">Nationwide · Buyer pays shipping</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-neutral-50">
-              <div className="size-10 rounded-lg bg-white flex items-center justify-center shadow-sm">
-                <Banknote className="size-5 text-neutral-700" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-neutral-900">Cash on delivery</p>
-                <p className="text-xs text-neutral-500">Pay when you receive the item</p>
-              </div>
-            </div>
-          </div>
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* SIMILAR — Compact horizontal scroll */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div className="bg-white mt-1 py-3">
+        <div className="flex items-center justify-between px-4 mb-2">
+          <span className="text-sm font-semibold">Similar</span>
+          <button className="text-xs font-medium text-blue-600">See all</button>
         </div>
-      </main>
+        <div className="flex gap-2 px-4 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+          {SIMILAR.map((item) => (
+            <button key={item.id} className="flex-none w-28 text-left active:opacity-80">
+              <div className="relative aspect-square rounded-lg overflow-hidden bg-neutral-100">
+                <Image src={item.img} alt="" fill className="object-cover" sizes="112px" />
+              </div>
+              <p className="text-xs font-medium mt-1.5 truncate">{item.title}</p>
+              <p className="text-sm font-bold">€{item.price}</p>
+            </button>
+          ))}
+        </div>
+      </div>
 
-      {/* ══════════════════════════════════════════════════════════════════ */}
-      {/* BOTTOM CTA */}
-      {/* ══════════════════════════════════════════════════════════════════ */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-neutral-100">
-        <div className="flex items-center gap-3 px-4 py-3 pb-[max(12px,env(safe-area-inset-bottom))]">
-          <button className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-white text-neutral-900 font-semibold text-sm active:bg-neutral-50">
-            <MessageCircle className="size-5" strokeWidth={2} />
-            Message
+      {/* Spacer */}
+      <div className="h-20" />
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* BOTTOM BAR — Make offer + Buy (price) */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      <div className="fixed bottom-0 inset-x-0 bg-white border-t border-neutral-200 z-40">
+        <div className="px-4 py-2.5 pb-[max(10px,env(safe-area-inset-bottom))] flex gap-2">
+          <button className="flex-1 h-11 rounded-xl border-2 border-neutral-900 text-neutral-900 font-bold text-sm flex items-center justify-center gap-1.5 active:bg-neutral-100">
+            <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            Make offer
           </button>
-          <button className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-neutral-900 text-white font-semibold text-sm active:bg-neutral-800">
-            <Phone className="size-5" strokeWidth={2} />
-            Call
+          <button className="flex-[1.3] h-11 rounded-xl bg-neutral-900 text-white font-bold text-sm flex items-center justify-center gap-1 active:bg-neutral-800">
+            Buy · €{PRODUCT.price}
           </button>
         </div>
       </div>
 
-      {/* Hide scrollbar */}
-      <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/* IMAGE VIEWER */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {imgViewerOpen && (
+        <div className="fixed inset-0 z-[60] bg-black flex flex-col">
+          <div className="flex items-center justify-between p-3">
+            <button onClick={() => setImgViewerOpen(false)} className="size-10 rounded-full bg-white/10 flex items-center justify-center">
+              <svg className="size-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <span className="text-white text-sm font-medium">{img + 1} / {PRODUCT.images.length}</span>
+            <div className="size-10" />
+          </div>
+          <div className="flex-1 flex items-center">
+            <Image src={PRODUCT.images[img]} alt="" fill className="object-contain" sizes="100vw" priority />
+          </div>
+          {/* Horizontal thumbnails at bottom */}
+          <div className="flex gap-2 p-3 justify-center">
+            {PRODUCT.images.map((src, i) => (
+              <button 
+                key={i} 
+                onClick={() => setImg(i)}
+                className={`size-12 rounded-lg overflow-hidden transition-all ${i === img ? "ring-2 ring-white" : "opacity-50"}`}
+              >
+                <Image src={src} alt="" width={48} height={48} className="object-cover size-full" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

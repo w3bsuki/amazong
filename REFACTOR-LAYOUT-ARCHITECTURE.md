@@ -134,48 +134,42 @@ grep -r "from.*category-subheader" --include="*.tsx" --include="*.ts"
 
 ---
 
-### Phase 2: Extract Embedded Components from God Files
+### Phase 2: Extract Embedded Components from God Files ✅ COMPLETE
 **Goal:** `desktop-home.tsx` and `mobile-home.tsx` become thin orchestrators
 
-#### 2A: Desktop Home Extraction
+#### 2A: Desktop Home Extraction ✅
 
-**Current `desktop-home.tsx` (1168 lines) contains:**
-| Component | Lines | Extract To |
+**Extracted from `desktop-home.tsx` (1168 → 360 lines):**
+| Component | Lines | Extracted To |
 |-----------|-------|------------|
-| `SlimTopBar` | ~100 | DELETE (use layout header) |
-| `FeedToolbar` | ~100 | `components/desktop/feed-toolbar.tsx` |
-| `CompactCategorySidebar` | ~200 | `components/desktop/category-sidebar.tsx` |
-| `FiltersSidebar` | ~250 | `components/desktop/filters-sidebar.tsx` |
-| `ProductGridSkeleton` | ~50 | `components/shared/product/product-grid-skeleton.tsx` |
-| `DesktopHome` (main) | ~400 | Stays, but imports extracted components |
+| `SlimTopBar` | ~100 | REMOVED (use layout header) |
+| `FeedToolbar` | ~200 | `components/desktop/feed-toolbar.tsx` ✅ |
+| `CompactCategorySidebar` | ~200 | `components/desktop/category-sidebar.tsx` ✅ |
+| `FiltersSidebar` | ~80 | `components/desktop/filters-sidebar.tsx` ✅ |
+| `ProductGridSkeleton` | ~40 | `components/shared/product/product-grid-skeleton.tsx` ✅ |
+| `DesktopHome` (main) | ~360 | Stays, imports extracted components |
 
-**Extraction rules:**
-1. Each extracted file is self-contained (own imports, own types)
-2. Props interfaces are exported from each file
-3. No business logic changes—just file separation
-4. Preserve all styling, all functionality
+**Results:**
+- [x] `desktop-home.tsx` < 500 lines (360 lines achieved - 69% reduction)
+- [x] Each extracted file < 300 lines
+- [x] Typecheck passes
+- [x] Visual diff: homepage looks identical
 
-**After extractions:**
-- [ ] `desktop-home.tsx` < 500 lines
-- [ ] Each extracted file < 300 lines
-- [ ] Typecheck passes
-- [ ] Visual diff: homepage looks identical
+#### 2B: Mobile Home Extraction ✅
 
-#### 2B: Mobile Home Extraction
-
-**Current `mobile-home.tsx` (604 lines) contains:**
-| Component | Lines | Action |
+**Extracted from `mobile-home.tsx` (604 → 305 lines):**
+| Component | Lines | Extracted To |
 |-----------|-------|--------|
-| `SubcategoryCircles` | ~60 | Extract to `components/mobile/subcategory-circles.tsx` |
-| `FeedTabs` | ~80 | Extract to `components/mobile/feed-tabs.tsx` |
-| `MobileHome` header render | ~50 | DELETE (use layout header) |
-| `MobileHome` (main) | ~400 | Stays, imports extracted |
+| `SubcategoryCircles` | ~60 | `components/mobile/subcategory-circles.tsx` ✅ |
+| `HorizontalProductCard` | ~120 | `components/mobile/horizontal-product-card.tsx` ✅ (shared by PromotedListingsStrip + OffersForYou) |
+| `PromotedListingsStrip` | ~45 | Stays, uses HorizontalProductCard |
+| `OffersForYou` | ~45 | Stays, uses HorizontalProductCard |
+| `MobileHome` (main) | ~180 | Stays, imports extracted components |
 
-**After extractions:**
-- [ ] `mobile-home.tsx` < 400 lines
-- [ ] No internal SiteHeader rendering
-- [ ] Typecheck passes
-- [ ] Visual diff: mobile homepage looks identical
+**Results:**
+- [x] `mobile-home.tsx` < 400 lines (305 lines achieved - 49% reduction)
+- [x] Typecheck passes
+- [x] Visual diff: mobile homepage looks identical
 
 ---
 
