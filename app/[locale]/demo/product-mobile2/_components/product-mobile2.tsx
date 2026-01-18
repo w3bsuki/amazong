@@ -100,7 +100,7 @@ export function ProductMobile2() {
   useEffect(() => {
     const el = titleRef.current;
     if (!el) return;
-    const obs = new IntersectionObserver(([e]) => setShowSticky(!e.isIntersecting), { threshold: 0, rootMargin: "-1px" });
+    const obs = new IntersectionObserver(([e]) => e && setShowSticky(!e.isIntersecting), { threshold: 0, rootMargin: "-1px" });
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
@@ -407,7 +407,7 @@ export function ProductMobile2() {
             <div className="size-10" />
           </div>
           <div className="flex-1 flex items-center">
-            <Image src={PRODUCT.images[img]} alt="" fill className="object-contain" sizes="100vw" priority />
+            <Image src={PRODUCT.images[img] ?? PRODUCT.images[0]} alt="" fill className="object-contain" sizes="100vw" priority />
           </div>
           {/* Horizontal thumbnails at bottom */}
           <div className="flex gap-2 p-3 justify-center">

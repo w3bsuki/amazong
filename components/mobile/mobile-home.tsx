@@ -12,11 +12,11 @@ import {
   Plus,
 } from "@phosphor-icons/react"
 import { ArrowUpDown } from "lucide-react"
+import { SiteHeader } from "@/components/layout/header/site-header-unified"
 import { MobileSearchOverlay } from "@/components/shared/search/mobile-search-overlay"
 import { FilterHub } from "@/components/shared/filters/filter-hub"
 import { SortModal } from "@/components/shared/filters/sort-modal"
 import { ProductFeed } from "@/components/shared/product/product-feed"
-import { SiteHeader } from "@/components/layout/header/site-header-unified"
 import { SubcategoryCircles } from "@/components/mobile/subcategory-circles"
 import { HorizontalProductCard } from "@/components/mobile/horizontal-product-card"
 import type { UIProduct } from "@/lib/data/products"
@@ -34,6 +34,12 @@ interface MobileHomeProps {
   initialCategories: CategoryTreeNode[]
   locale: string
   user?: { id: string } | null
+  /** Active category for header pills - passed to layout via context or searchParams */
+  activeCategory?: string
+  /** Callback when category pill is selected - passed to layout via context */
+  onCategorySelect?: (slug: string) => void
+  /** Callback to open search overlay - passed to layout via context */
+  onSearchOpen?: () => void
 }
 
 // =============================================================================
