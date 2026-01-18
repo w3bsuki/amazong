@@ -1,9 +1,9 @@
 "use client"
 
 /**
- * Integrated Desktop Layout
+ * Desktop Home
  * 
- * A unified header + content approach where:
+ * The desktop homepage layout with unified header + content approach where:
  * - Logo and user actions stay in a slim top bar
  * - Search is integrated INTO the content area (inline with sidebar + grid)
  * - Categories sidebar and product grid share a container
@@ -125,7 +125,7 @@ interface Product {
   tags?: string[]
 }
 
-interface IntegratedDesktopLayoutProps {
+interface DesktopHomeProps {
   locale: string
   categories: CategoryTreeNode[]
   initialProducts?: Product[]
@@ -354,87 +354,76 @@ function FeedToolbar({
           </span>
         </span>
 
-        {/* Loading skeleton for filter pills */}
+        {/* Category filter pills - loading skeleton */}
         {isLoadingAttributes && categorySlug && (
           <>
-            <Skeleton className="h-9 w-24 rounded-full shrink-0" />
-            <Skeleton className="h-9 w-20 rounded-full shrink-0" />
-            <Skeleton className="h-9 w-16 rounded-full shrink-0" />
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-9 w-24 rounded-full shrink-0" />
+            ))}
           </>
         )}
 
-        {/* Dynamic category filter pills from Supabase attributes */}
-        {!isLoadingAttributes && categoryFilters.map((filter) => {
-          const selectedValue = filters.attributes[filter.id]
-          const hasSelection = !!selectedValue
-          
-          return (
-            <DropdownMenu 
-              key={filter.id} 
-              open={activeDropdown === filter.id} 
-              onOpenChange={(open) => setActiveDropdown(open ? filter.id : null)}
-            >
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className={cn(
-                    "inline-flex items-center gap-1.5 px-3 h-9 text-sm rounded-full border whitespace-nowrap shrink-0",
-                    hasSelection
-                      ? "bg-foreground text-background border-foreground font-medium"
-                      : "bg-background border-border hover:bg-muted/50 transition-colors",
-                  )}
-                >
-                  {filter.label}
-                  <CaretDown size={12} weight="bold" className={hasSelection ? "text-background/70" : "text-muted-foreground"} />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="min-w-36 max-h-64 overflow-y-auto">
-                {filter.options.map((opt) => {
-                  const isSelected = selectedValue === opt.value
-                  return (
-                    <DropdownMenuItem
-                      key={opt.value}
-                      onClick={() => {
-                        const newValue = isSelected ? null : opt.value
-                        onFiltersChange({
-                          ...filters,
-                          attributes: {
-                            ...filters.attributes,
-                            [filter.id]: newValue,
-                          },
-                        })
-                      }}
-                      className={cn("cursor-pointer", isSelected && "bg-muted font-medium")}
-                    >
-                      <span className="w-4 flex items-center justify-center mr-1">
-                        {isSelected && <Check size={14} weight="bold" />}
-                      </span>
-                      {opt.label}
-                    </DropdownMenuItem>
-                  )
-                })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )
-        })}
+        {/* Category filter pills - only show when category selected */}
+        {!isLoadingAttributes && categoryFilters.map((filter) => (
+          <DropdownMenu 
+            key={filter.id} 
+            open={activeDropdown === filter.id} 
+            onOpenChange={(open) => setActiveDropdown(open ? filter.id : null)}
+          >
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-3 h-9 text-sm rounded-full border whitespace-nowrap shrink-0",
+                  "bg-background border-border hover:bg-muted/50 transition-colors",
+                  filters.attributes[filter.id] && "border-foreground/20 bg-foreground/5",
+                )}
+              >
+                {filter.label}
+                <CaretDown size={12} weight="bold" className="text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="min-w-36">
+              {filter.options.map((opt) => {
+                const isSelected = filters.attributes[filter.id] === opt.value
+                return (
+                  <DropdownMenuItem
+                    key={opt.value}
+                    onClick={() => {
+                      const newAttributes = { ...filters.attributes }
+                      if (newAttributes[filter.id] === opt.value) {
+                        delete newAttributes[filter.id]
+                      } else {
+                        newAttributes[filter.id] = opt.value
+                      }
+                      onFiltersChange({ ...filters, attributes: newAttributes })
+                    }}
+                    className={cn("cursor-pointer", isSelected && "bg-muted font-medium")}
+                  >
+                    <span className="w-4 flex items-center justify-center mr-1">
+                      {isSelected && <Check size={14} weight="bold" />}
+                    </span>
+                    {opt.label}
+                  </DropdownMenuItem>
+                )
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ))}
 
-        {/* Active filter badges - show selected values that can be cleared */}
-        {activeAttributeFilters.map((active) => (
+        {/* Active filter badges */}
+        {activeAttributeFilters.map((af) => (
           <button
-            key={active.id}
+            key={af.id}
             type="button"
-            onClick={() =>
-              onFiltersChange({
-                ...filters,
-                attributes: {
-                  ...filters.attributes,
-                  [active.id]: null,
-                },
-              })
-            }
+            onClick={() => {
+              const newAttributes = { ...filters.attributes }
+              delete newAttributes[af.id]
+              onFiltersChange({ ...filters, attributes: newAttributes })
+            }}
             className="inline-flex items-center gap-1.5 px-3 h-9 text-sm rounded-full bg-foreground text-background font-medium whitespace-nowrap shrink-0"
           >
-            {active.displayLabel}
+            {af.displayLabel}
             <X size={14} weight="bold" className="text-background/70" />
           </button>
         ))}
@@ -860,12 +849,12 @@ function ProductGridSkeleton({ viewMode }: { viewMode: "grid" | "list" }) {
 // MAIN COMPONENT
 // =============================================================================
 
-export function IntegratedDesktopLayout({
+export function DesktopHome({
   locale,
   categories,
   initialProducts = [],
   user,
-}: IntegratedDesktopLayoutProps) {
+}: DesktopHomeProps) {
   const t = useTranslations("TabbedProductFeed")
   const router = useRouter()
   const pathname = usePathname()
@@ -894,19 +883,11 @@ export function IntegratedDesktopLayout({
     return null
   }, [categoryPath])
 
-  // Fetch contextual attributes for the active category
   const { attributes: categoryAttributes, isLoading: isLoadingAttributes } = useCategoryAttributes(activeCategorySlug)
 
   // Clear attribute filters when category changes
-  const prevCategorySlug = useRef<string | null>(null)
   useEffect(() => {
-    if (prevCategorySlug.current !== activeCategorySlug) {
-      prevCategorySlug.current = activeCategorySlug
-      setFilters((prev) => ({
-        ...prev,
-        attributes: {},
-      }))
-    }
+    setFilters(prev => ({ ...prev, attributes: {} }))
   }, [activeCategorySlug])
 
   // Fetch products
@@ -1134,7 +1115,7 @@ export function IntegratedDesktopLayout({
   )
 }
 
-export function IntegratedDesktopLayoutSkeleton() {
+export function DesktopHomeSkeleton() {
   return (
     <div className="min-h-screen bg-muted/40">
       {/* Header skeleton */}

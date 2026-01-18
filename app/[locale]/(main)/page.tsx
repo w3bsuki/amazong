@@ -7,9 +7,9 @@ import { getNewestProducts, getBoostedProducts, toUI } from "@/lib/data/products
 import { getCategoryHierarchy } from "@/lib/data/categories"
 import { createClient } from "@/lib/supabase/server"
 import { 
-  IntegratedDesktopLayout, 
-  IntegratedDesktopLayoutSkeleton 
-} from "@/components/desktop/integrated-desktop-layout"
+  DesktopHome, 
+  DesktopHomeSkeleton 
+} from "@/components/desktop/desktop-home"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -73,14 +73,14 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       </div>
 
       {/* ================================================================
-          DESKTOP: Integrated Desktop Layout (from /demo/desktop)
+          DESKTOP: Desktop Home
           - Unified header + content in one seamless container
           - Slim top bar with logo + user actions
           - Category sidebar + filters + product grid
           ================================================================ */}
       <div className="hidden md:block w-full">
-        <Suspense fallback={<IntegratedDesktopLayoutSkeleton />}>
-          <IntegratedDesktopLayout
+        <Suspense fallback={<DesktopHomeSkeleton />}>
+          <DesktopHome
             locale={locale}
             categories={categoriesWithChildren}
             initialProducts={initialProducts}

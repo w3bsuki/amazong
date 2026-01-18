@@ -58,32 +58,53 @@ async function getCategoryAttributesCached(slugOrId: string) {
     return { ok: false as const, status: 500 as const, message: "Failed to fetch category attributes" }
   }
 
-  // Also fetch parent category attributes (if this category has a parent)
+  // Walk up the full parent chain to collect inherited attributes
+  // e.g., Clothing -> Men's -> Fashion (we need Fashion's attrs like Condition, Size, Color)
   const { data: category } = await supabase
     .from("categories")
     .select("parent_id")
     .eq("id", categoryId)
     .single()
 
-  let parentAttributes: CategoryAttributeRow[] = []
+  const inheritedAttributes: CategoryAttributeRow[] = []
+  const seenAttributeNames = new Set(attributes?.map((a) => a.name) || [])
 
-  if (category?.parent_id) {
-    cacheTag(`attrs:category:${category.parent_id}`)
+  // Walk up the parent chain
+  let currentParentId = category?.parent_id
+  while (currentParentId) {
+    cacheTag(`attrs:category:${currentParentId}`)
 
     const { data: parentAttrs } = await supabase
       .from("category_attributes")
       .select(CATEGORY_ATTRIBUTES_SELECT)
-      .eq("category_id", category.parent_id)
+      .eq("category_id", currentParentId)
       .order("sort_order", { ascending: true })
 
-    if (parentAttrs) parentAttributes = parentAttrs
+    // Add parent attrs that we haven't seen yet (child takes precedence)
+    if (parentAttrs) {
+      for (const attr of parentAttrs) {
+        if (!seenAttributeNames.has(attr.name)) {
+          inheritedAttributes.push(attr)
+          seenAttributeNames.add(attr.name)
+        }
+      }
+    }
+
+    // Get next parent
+    const { data: parentCat } = await supabase
+      .from("categories")
+      .select("parent_id")
+      .eq("id", currentParentId)
+      .single()
+
+    currentParentId = parentCat?.parent_id
   }
 
-  // Merge attributes - category-specific attributes take precedence
-  const attributeNames = new Set(attributes?.map((a) => a.name) || [])
-  const inheritedAttributes = parentAttributes.filter((pa) => !attributeNames.has(pa.name))
-
+  // Merge all attributes and sort by sort_order
+  // Inherited attrs from top-level parents (Fashion) have lower sort_order (0-7)
+  // Child-specific attrs (Clothing) have higher sort_order (10+)
   const allAttributes = [...(attributes || []), ...inheritedAttributes]
+    .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999))
 
   // Transform to cleaner format for frontend
   const formattedAttributes = allAttributes.map((attr) => ({

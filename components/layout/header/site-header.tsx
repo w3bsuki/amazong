@@ -83,7 +83,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
   // Detect via pathname - "/" is homepage
   const isLandingPage = variant === "landing" || pathWithoutLocale === "/"
   
-  // Homepage uses IntegratedDesktopLayout which has its own header (SlimTopBar).
+  // Homepage uses DesktopHome which has its own header (SlimTopBar).
   // Hide main header on desktop when on homepage to avoid double headers.
   const hideDesktopOnHomepage = isLandingPage
 
@@ -121,7 +121,7 @@ export function SiteHeader({ user, categories, hideSubheader = false, hideOnMobi
         // Default/Product: border on desktop
         !isLandingPage && "md:border-b md:border-header-border",
         hideOnMobile && "hidden",
-        // Homepage uses IntegratedDesktopLayout with its own header
+        // Homepage uses DesktopHome with its own header
         (hideOnDesktop || hideDesktopOnHomepage) && "md:hidden",
       )}
     >
